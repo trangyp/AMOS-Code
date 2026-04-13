@@ -66,6 +66,11 @@ __all__ = [
     "get_agent_bridge",
     "ToolDecision",
     "ExecutionContext",
+    # State manager
+    "CognitiveStateManager",
+    "get_state_manager",
+    "ReasoningStep",
+    "WorkflowSession",
     # Optional
     "SystemPromptBuilder",
 ]
