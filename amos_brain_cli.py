@@ -14,6 +14,7 @@ from amos_brain import (
     get_meta_controller, orchestrate_goal,
     GlobalLaws, KernelRouter
 )
+from amos_brain.memory import get_brain_memory
 
 
 def print_banner():
@@ -207,6 +208,31 @@ def cmd_replay(args):
         print(f"\n{replay[:2000]}...")
 
 
+def cmd_recall(args):
+    """Recall similar past reasoning from memory."""
+    problem = args.problem or input("Enter problem to recall: ")
+    memory = get_brain_memory()
+    recall = memory.recall_for_problem(problem)
+
+    print(f"\n🧠 RECALL: {problem}")
+    print("═" * 66)
+
+    if not recall.get("has_prior_reasoning"):
+        print("\nNo similar past reasoning found.")
+        return
+
+    print(f"\n{recall.get('context', '')}")
+    for item in recall.get("similar_entries", [])[:5]:
+        entry = item.get("entry", {})
+        similarity = item.get("similarity", 0)
+        print()
+        print(f"• Similarity: {similarity:.0%}")
+        print(f"  Problem: {entry.get('problem_preview', 'N/A')}")
+        recs = entry.get("recommendations", [])
+        if recs:
+            print(f"  Recommendations: {', '.join(recs[:3])}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="AMOS Brain Unified CLI - 8-Layer Cognitive OS",
@@ -215,10 +241,15 @@ def main():
 Commands:
   status         Show 8-layer architecture status
   think <task>   Process task through full brain
+  decide <task>  Alias of think
+  analyze <task> Alias of think
   orchestrate    Run meta-cognitive workflow
   laws           Check against global laws
+  audit          Alias of laws
   bridge         Test agent bridge validation
   replay         Show reasoning history
+  history        Alias of replay
+  recall         Recall similar past reasoning
 
 Examples:
   python amos_brain_cli.py status
@@ -235,7 +266,13 @@ Examples:
     # think
     think_parser = subparsers.add_parser('think', help='Process task')
     think_parser.add_argument('task', nargs='?', help='Task to process')
-    
+
+    decide_parser = subparsers.add_parser('decide', help='Alias of think')
+    decide_parser.add_argument('task', nargs='?', help='Decision/problem to analyze')
+
+    analyze_parser = subparsers.add_parser('analyze', help='Alias of think')
+    analyze_parser.add_argument('task', nargs='?', help='Topic/problem to analyze')
+
     # orchestrate
     orch_parser = subparsers.add_parser('orchestrate', help='Run orchestration')
     orch_parser.add_argument('--goal', help='Goal to achieve')
@@ -245,14 +282,24 @@ Examples:
     laws_parser = subparsers.add_parser('laws', help='Check laws')
     laws_parser.add_argument('--text', help='Text to validate')
     laws_parser.add_argument('--action', help='Action type')
-    
+
+    audit_parser = subparsers.add_parser('audit', help='Alias of laws')
+    audit_parser.add_argument('--text', help='Text to validate')
+    audit_parser.add_argument('--action', help='Action type')
+
     # bridge
     subparsers.add_parser('bridge', help='Test bridge')
     
     # replay
     replay_parser = subparsers.add_parser('replay', help='Replay reasoning')
     replay_parser.add_argument('--session-id', help='Session to replay')
-    
+
+    history_parser = subparsers.add_parser('history', help='Alias of replay')
+    history_parser.add_argument('--session-id', help='Session to replay')
+
+    recall_parser = subparsers.add_parser('recall', help='Recall similar past reasoning')
+    recall_parser.add_argument('problem', nargs='?', help='Problem to search for')
+
     args = parser.parse_args()
     
     if not args.command:
@@ -263,10 +310,15 @@ Examples:
     commands = {
         'status': cmd_status,
         'think': cmd_think,
+        'decide': cmd_think,
+        'analyze': cmd_think,
         'orchestrate': cmd_orchestrate,
         'laws': cmd_laws,
+        'audit': cmd_laws,
         'bridge': cmd_bridge,
         'replay': cmd_replay,
+        'history': cmd_replay,
+        'recall': cmd_recall,
     }
     
     try:

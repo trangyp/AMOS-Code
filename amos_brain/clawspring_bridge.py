@@ -12,7 +12,7 @@ class AMOSAgentBridge:
 
     Provides:
     - Brain-enhanced system prompts
-    - Pre/post processing with global laws
+    - Pre-processing with global laws
     - Reasoning engine integration
     """
 
@@ -27,6 +27,14 @@ class AMOSAgentBridge:
         if self._amos is None:
             self._amos = get_amos_integration()
         return self._amos
+
+    def _ensure_clawspring_path(self) -> None:
+        """Ensure clawspring package is in sys.path for imports."""
+        import sys
+        from pathlib import Path
+        clawspring_path = str(Path(__file__).resolve().parent.parent / "clawspring")
+        if clawspring_path not in sys.path:
+            sys.path.insert(0, clawspring_path)
 
     def _get_state(self):
         """Lazy-load agent state."""
@@ -70,6 +78,7 @@ class AMOSAgentBridge:
             return
 
         # Run through clawspring agent (lazy import)
+        self._ensure_clawspring_path()
         from agent import run as agent_run
         for event in agent_run(
             user_message=user_message,
