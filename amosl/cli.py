@@ -169,7 +169,7 @@ def cmd_verify(args) -> int:
         if result.satisfied:
             satisfied += 1
     
-    print(f"\n{satistfied}/{len(results)} axioms satisfied")
+    print(f"\n{satisfied}/{len(results)} axioms satisfied")
     
     if satisfied == len(results):
         print("✓ Program is AMOS-admissible")
