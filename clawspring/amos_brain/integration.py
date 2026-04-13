@@ -17,11 +17,16 @@ class AMOSBrainIntegration:
     def __init__(self):
         if self._initialized:
             return
-
-        from ..amos_runtime import get_runtime
-
-        self.runtime = get_runtime()
+        self._runtime = None
         self._initialized = True
+
+    @property
+    def runtime(self):
+        """Lazy-load runtime to prevent blocking during initialization."""
+        if self._runtime is None:
+            from ..amos_runtime import get_runtime
+            self._runtime = get_runtime()
+        return self._runtime
 
     def enhance_system_prompt(self, base_prompt: str) -> str:
         """Enhance system prompt with AMOS brain context."""

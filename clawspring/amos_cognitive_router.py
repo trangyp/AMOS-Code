@@ -5,7 +5,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -57,20 +57,29 @@ class CognitiveRouter:
     ]
 
     def __init__(self):
-        self._global_laws: dict[str, Any] = {}
-        self._load_brain_laws()
+        self._global_laws: Optional[dict[str, Any]] = None
 
-    def _load_brain_laws(self) -> None:
+    @property
+    def global_laws(self) -> dict[str, Any]:
+        """Lazy-load global laws to prevent blocking during initialization."""
+        if self._global_laws is None:
+            self._global_laws = self._load_brain_laws()
+        return self._global_laws
+
+    def _load_brain_laws(self) -> dict[str, Any]:
         """Load global laws from AMOS brain."""
-        brain_path = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/_LEGACY BRAIN/Core/AMOS_Os_Agent_v0.json")
+        brain_path = Path(
+            "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code"
+            "/_AMOS_BRAIN/_LEGACY BRAIN/Core/AMOS_Os_Agent_v0.json"
+        )
         try:
             with open(brain_path) as f:
                 data = json.load(f)[0]
             components = data.get("components", {})
             brain_root = components.get("AMOS_BRAIN_ROOT.json", {})
-            self._global_laws = brain_root.get("global_laws", {})
+            return brain_root.get("global_laws", {})
         except Exception:
-            self._global_laws = {}
+            return {}
 
     def analyze(self, task_description: str) -> TaskAnalysis:
         """Analyze task per AMOS orchestration: identify domain and risk."""
