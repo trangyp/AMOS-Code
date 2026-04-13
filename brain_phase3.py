@@ -9,7 +9,8 @@ def main():
     print("AMOS BRAIN: Phase 3 - Final Deployment Analysis")
     print("=" * 70)
 
-    repo = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+    # Use file-relative path for portability
+    repo = Path(__file__).resolve().parent
 
     # Check all built files
     files_built = {

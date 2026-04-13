@@ -285,14 +285,14 @@ class AMOSMCPServer:
 
     def _handle_amosl_compile(self, args: dict) -> dict:
         """Handle amosl_compile tool."""
-        from amosl import parse, compile_program, validate_invariants
-
         source = args.get("source", "")
 
         if not source:
             return {"error": "No AMOSL source code provided"}
 
         try:
+            from amosl import parse, compile_program, validate_invariants
+
             # Parse AMOSL source
             program = parse(source)
 

@@ -8,7 +8,8 @@ import json
 
 def check_current_state():
     """Check what has already been built."""
-    repo = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+    # Use file-relative path for portability
+    repo = Path(__file__).resolve().parent
 
     built_files = {
         "ci_cd_workflow": (repo / ".github" / "workflows" / "deploy.yml").exists(),
