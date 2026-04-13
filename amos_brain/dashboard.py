@@ -181,6 +181,17 @@ class BrainDashboard:
         mean = sum(scores) / n
         median = sorted_scores[n // 2] if n % 2 == 1 else (sorted_scores[n // 2 - 1] + sorted_scores[n // 2]) / 2
 
+        if n < 2:
+            return {
+                "trend": "insufficient_data",
+                "mean": mean,
+                "median": median,
+                "min": min(scores),
+                "max": max(scores),
+                "first_half_avg": mean,
+                "second_half_avg": mean,
+            }
+
         # Trend: compare first half vs second half
         mid = n // 2
         first_half = sum(scores[:mid]) / mid if mid > 0 else 0

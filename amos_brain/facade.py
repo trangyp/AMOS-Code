@@ -84,7 +84,7 @@ class BrainClient:
             BrainResponse with reasoning and compliance info
         """
         # Process through brain
-        result = self.processor.process(query, domain)
+        result = self.processor.process(query)
         
         # Monitor the reasoning
         self.monitor.record_reasoning(
@@ -99,8 +99,8 @@ class BrainClient:
         law_compliant = len(result.law_violations) == 0
         violations = [v["message"] for v in result.law_violations]
         
-        # Build content
-        content = "\n".join(result.reasoning_steps)
+        # Use the processor's actual output as primary content
+        content = result.output
         
         return BrainResponse(
             success=True,

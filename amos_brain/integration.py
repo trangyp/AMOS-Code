@@ -87,7 +87,7 @@ class AMOSBrainIntegration:
         return {
             "blocked": False,
             "routing": routing,
-            "pre_analysis": self.reasoning.full_analysis(user_message, context) if context else None
+            "pre_analysis": self.reasoning.full_analysis(user_message, context)
         }
 
     def enhance_system_prompt(self, base_prompt: str) -> str:

@@ -151,11 +151,12 @@ class RuleOfFour:
         Returns:
             Analysis results with all quadrants, cross-impacts, and recommendations
         """
-        required = required_quadrants or set(self.QUADRANTS.keys())
+        required = set(required_quadrants) if required_quadrants is not None else set(self.QUADRANTS.keys())
+        ordered_required = [key for key in self.QUADRANTS.keys() if key in required]
 
         # Analyze each quadrant
         quadrant_results = {}
-        for key in required:
+        for key in ordered_required:
             if key in self.QUADRANTS:
                 quadrant_results[key] = self._analyze_quadrant(self.QUADRANTS[key], problem)
 
@@ -167,12 +168,12 @@ class RuleOfFour:
 
         return {
             "problem": problem,
-            "quadrants_analyzed": list(required),
+            "quadrants_analyzed": ordered_required,
             "quadrant_details": quadrant_results,
             "cross_impacts": cross_impacts,
             "integration": integration,
-            "completeness_score": len(quadrant_results) / len(required),
-            "missing_quadrants": list(required - set(quadrant_results.keys()))
+            "completeness_score": len(quadrant_results) / len(required) if required else 1.0,
+            "missing_quadrants": [key for key in ordered_required if key not in quadrant_results]
         }
 
     def _analyze_quadrant(self, quadrant: Quadrant, problem: str) -> dict[str, Any]:
@@ -317,7 +318,7 @@ class ReasoningEngine:
         if integration.get("integrated_recommendation"):
             recs.append(f"[Four-Quadrant] {integration['integrated_recommendation']}")
 
-        return recs
+        return list(dict.fromkeys(recs))
 
     def _extract_assumptions(self, dual: dict[str, Any], quadrants: dict[str, Any]) -> list[str]:
         """Extract explicit assumptions from analysis."""

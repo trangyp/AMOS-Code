@@ -103,11 +103,11 @@ class CoherenceLocalBridge:
         """Assess human state from signal analysis."""
         noise_sum = sum(analysis.noise_components.values())
 
-        if noise_sum > 1.5:
+        if noise_sum > 0.8:
             return HumanState.OVERLOADED
-        elif noise_sum > 1.0:
-            return HumanState.ACTIVATED
         elif noise_sum > 0.5:
+            return HumanState.ACTIVATED
+        elif noise_sum > 0.2:
             return HumanState.HIGH_RISK
         else:
             return HumanState.STABLE

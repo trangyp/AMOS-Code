@@ -70,9 +70,17 @@ class BrainMemory:
             "tags": tags or [],
             "rule_of_two_applied": "rule_of_two" in analysis,
             "rule_of_four_applied": "rule_of_four" in analysis,
-            "confidence_score": analysis.get("structural_integrity_score", 0.0),
+            "confidence_score": (
+                analysis.get("rule_of_two", {}).get("confidence")
+                if isinstance(analysis.get("rule_of_two"), dict)
+                else None
+            ),
+            "structural_integrity_score": analysis.get("structural_integrity_score", 0.0),
             "recommendations": analysis.get("recommendations", []),
         }
+
+        if entry["confidence_score"] is None:
+            entry["confidence_score"] = analysis.get("structural_integrity_score", 0.0)
 
         # Save to clawspring memory if available
         if CLAWSPRING_MEMORY and MemoryEntry is not None:
@@ -105,7 +113,12 @@ class BrainMemory:
                 with open(filepath, "r", encoding="utf-8") as f:
                     entry = json.load(f)
                 entry_id = entry.get("id")
-                if entry_id:
+                if (
+                    entry_id and
+                    entry.get("namespace") == self.MEMORY_NAMESPACE and
+                    "problem" in entry and
+                    "timestamp" in entry
+                ):
                     self._local_cache[entry_id] = entry
             except Exception:
                 pass
