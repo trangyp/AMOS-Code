@@ -384,7 +384,7 @@ class SocialEngine:
     def get_status(self) -> Dict[str, Any]:
         """Get social engine status."""
         # Get unique agents
-        agents = set()
+        agents: Set[str] = set()
         for conn in self.connections:
             agents.add(conn.agent_a)
             agents.add(conn.agent_b)
@@ -410,9 +410,15 @@ def main() -> int:
 
     # Test agent registration
     print("\nCreating test connections...")
-    engine.create_connection("planner_agent", "analyst_agent", "collaborates", 0.8)
-    engine.create_connection("planner_agent", "code_worker", "delegates_to", 0.7)
-    engine.create_connection("analyst_agent", "auditor_agent", "reports_to", 0.9)
+    engine.create_connection(
+        "planner_agent", "analyst_agent", "collaborates", 0.8
+    )
+    engine.create_connection(
+        "planner_agent", "code_worker", "delegates_to", 0.7
+    )
+    engine.create_connection(
+        "analyst_agent", "auditor_agent", "reports_to", 0.9
+    )
 
     # Test messaging
     print("\nSending test messages...")
@@ -435,7 +441,10 @@ def main() -> int:
     engine.share_knowledge(
         "analyst_agent",
         "pattern_recognition",
-        {"pattern": "modular_architecture", "benefits": ["scalability", "maintainability"]},
+        {
+            "pattern": "modular_architecture",
+            "benefits": ["scalability", "maintainability"]
+        },
         share_scope="all"
     )
 
@@ -443,8 +452,9 @@ def main() -> int:
     print("\nSocial Graphs:")
     for agent in ["planner_agent", "analyst_agent", "code_worker"]:
         graph = engine.get_social_graph(agent)
-        print(f"  {agent}: {graph['connection_count']} connections, "
-              f"{graph['unread_messages']} unread")
+        conn_count = graph['connection_count']
+        unread = graph['unread_messages']
+        print(f"  {agent}: {conn_count} connections, {unread} unread")
 
     # Show status
     print("\nSocial Engine Status:")
