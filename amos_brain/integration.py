@@ -22,12 +22,19 @@ class AMOSBrainIntegration:
     """
 
     def __init__(self):
-        self.brain = get_brain()
+        self._brain = None
         self.laws = GlobalLaws()
         self.ubi = UBILaws()
         self.reasoning = ReasoningEngine()
         self.cognitive_stack = CognitiveStack()
         self._initialized = False
+
+    @property
+    def brain(self):
+        """Lazy-load brain to prevent blocking during initialization."""
+        if self._brain is None:
+            self._brain = get_brain()
+        return self._brain
 
     def initialize(self) -> dict[str, Any]:
         """Initialize brain integration and return status."""

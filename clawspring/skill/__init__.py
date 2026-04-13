@@ -12,7 +12,6 @@ from .executor import execute_skill  # noqa: F401
 
 # Importing builtin registers the built-in skills
 from . import builtin as _builtin  # noqa: F401
-from . import builtin_amos as _builtin_amos  # noqa: F401
 
 __all__ = [
     "SkillDef",

@@ -2,18 +2,19 @@
 
 Public API
 ----------
-check_voice_deps()   → (available: bool, reason: str | None)
+check_voice_deps()   → (available: bool, reason: Optional[str])
 record_once(...)     → raw PCM bytes  (int16, 16 kHz, mono)
 transcribe(...)      → text string
 voice_input(...)     → transcribed text (record + transcribe in one call)
 """
 
+from typing import Optional, Tuple, Callable
 from .recorder import check_recording_availability, record_until_silence
 from .stt import check_stt_availability, transcribe
 from .keyterms import get_voice_keyterms
 
 
-def check_voice_deps() -> tuple[bool, str | None]:
+def check_voice_deps() -> Tuple[bool, Optional[str]]:
     """Return (available, reason_if_not)."""
     rec_ok, rec_reason = check_recording_availability()
     if not rec_ok:
@@ -27,7 +28,7 @@ def check_voice_deps() -> tuple[bool, str | None]:
 def voice_input(
     language: str = "auto",
     max_seconds: int = 30,
-    on_energy: "callable | None" = None,
+    on_energy: Optional[Callable] = None,
 ) -> str:
     """Record until silence, then transcribe.  Returns transcribed text."""
     keyterms = get_voice_keyterms()

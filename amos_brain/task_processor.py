@@ -38,7 +38,7 @@ class ReasoningStep:
 class BrainTaskProcessor:
     """
     AMOS Brain Task Processor - Applies cognitive architecture to tasks.
-    
+
     Features:
     - Routes tasks through appropriate cognitive kernels
     - Applies Rule of 2 (two perspectives minimum)
@@ -46,14 +46,28 @@ class BrainTaskProcessor:
     - Validates output against Global Laws
     - Tracks reasoning chain
     """
-    
+
     def __init__(self):
-        self.brain = get_brain()
-        self.router = KernelRouter(self.brain)
+        self._brain = None
+        self._router = None
         self.laws = GlobalLaws()
         self.rule_of_two = RuleOfTwo()
         self.rule_of_four = RuleOfFour()
         self._task_counter = 0
+
+    @property
+    def brain(self):
+        """Lazy-load brain to prevent blocking during initialization."""
+        if self._brain is None:
+            self._brain = get_brain()
+        return self._brain
+
+    @property
+    def router(self):
+        """Lazy-load router to prevent blocking during initialization."""
+        if self._router is None:
+            self._router = KernelRouter(self.brain)
+        return self._router
     
     def process(self, task: str, context: dict | None = None) -> TaskResult:
         """

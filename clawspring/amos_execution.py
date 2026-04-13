@@ -143,7 +143,14 @@ class AMOSExecutionKernel:
     }
 
     def __init__(self, runtime: AMOSRuntime | None = None):
-        self.runtime = runtime or get_runtime()
+        self._runtime = runtime
+
+    @property
+    def runtime(self) -> AMOSRuntime:
+        """Lazy-load runtime to prevent blocking during initialization."""
+        if self._runtime is None:
+            self._runtime = get_runtime()
+        return self._runtime
 
     def create_plan(self, task: str, output_type: str = "structured_explanation") -> ExecutionPlan:
         """Create execution plan from cognitive analysis."""
