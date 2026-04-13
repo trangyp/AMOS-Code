@@ -23,6 +23,26 @@ AMOS Brain is a unified cognitive architecture that adds structured reasoning ca
 
 ## 🚀 Quick Start
 
+### Local LLM Mode (Recommended)
+
+Run AMOS with local models (Ollama, LM Studio, vLLM) - no API keys needed:
+
+```bash
+# With Ollama (default)
+export AMOS_MODEL=llama3.2:latest
+python amos_local.py
+
+# With LM Studio
+export AMOS_LLM_BACKEND=lmstudio
+export AMOS_MODEL=your-model-name
+python amos_local.py
+
+# Health check only
+python amos_local.py --check
+```
+
+### Legacy Mode (Cloud Providers)
+
 ```bash
 # Unified launcher - discover all features
 python amos_brain_launcher.py
@@ -38,7 +58,69 @@ See `amos_brain/README.md` and `AMOS_BRAIN_GUIDE.md` for full documentation.
 
 ---
 
-## 📦 Project Structure
+## � Local LLM Configuration
+
+The new `amos_local.py` launcher puts local models first, with AMOS as the governance layer.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AMOS_LLM_BACKEND` | Backend type: `ollama`, `lmstudio`, `vllm`, `llamacpp` | `ollama` |
+| `AMOS_MODEL` | Model name to use | `qwen2.5:14b-instruct` |
+| `AMOS_BASE_URL` | Custom server URL | Auto-detected by backend |
+| `AMOS_API_KEY` | API key for OpenAI-compatible | `local` |
+| `AMOS_TEMPERATURE` | Sampling temperature | `0.2` |
+
+### Backend-Specific Setup
+
+**Ollama:**
+```bash
+# Install and start Ollama
+ollama serve
+
+# Pull a model
+ollama pull llama3.2:latest
+
+# Run AMOS
+export AMOS_MODEL=llama3.2:latest
+python amos_local.py
+```
+
+**LM Studio:**
+```bash
+# 1. Start LM Studio
+# 2. Load a model in the UI
+# 3. Enable local server (port 1234)
+# 4. Run AMOS
+export AMOS_LLM_BACKEND=lmstudio
+export AMOS_MODEL=your-model-name
+python amos_local.py
+```
+
+**vLLM:**
+```bash
+# Start vLLM server
+python -m vllm.entrypoints.openai.api_server \
+  --model meta-llama/Llama-2-7b-chat-hf
+
+# Run AMOS
+export AMOS_LLM_BACKEND=vllm
+export AMOS_MODEL=meta-llama/Llama-2-7b-chat-hf
+python amos_local.py
+```
+
+### Features
+
+- **Streaming responses** - Tokens appear in real-time as model generates
+- **Automatic retries** - 3 retries with exponential backoff for resilience
+- **Health validation** - Checks model availability before starting
+- **Configuration validation** - Early error detection with actionable messages
+- **Actionable errors** - Clear guidance when things fail (e.g., "Run: ollama pull llama3.2")
+
+---
+
+## �📦 Project Structure
 
 | Component | Description |
 |-----------|-------------|

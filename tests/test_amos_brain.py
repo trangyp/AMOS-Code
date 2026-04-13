@@ -20,22 +20,19 @@ from typing import Any
 # Add parent to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from amos_brain import (
-    get_amos_integration,
-    BrainLoader,
-    GlobalLaws,
-    RuleOfTwo,
-    RuleOfFour,
-    CognitiveStack,
-)
+from amos_brain import get_amos_integration
+from amos_brain.loader import BrainLoader
+from amos_brain.laws import GlobalLaws
+from amos_brain.reasoning import RuleOfTwo, RuleOfFour
+from amos_brain.cognitive_stack import CognitiveStack
 from amos_brain.memory import get_brain_memory, BrainMemory
 from amos_brain.dashboard import BrainDashboard
 from amos_brain.cookbook import (
     ArchitectureDecision,
     ProjectPlanner,
     ProblemDiagnosis,
-    TechnologySelection,
-    RiskAssessment,
+    CodeReview,
+    SecurityAudit,
 )
 
 
@@ -357,25 +354,24 @@ class TestCookbookWorkflows(unittest.TestCase):
         self.assertEqual(result.workflow_name, "Problem Diagnosis & RCA")
         self.assertIsInstance(result.recommendations, list)
 
-    def test_technology_selection(self):
-        """Test TechnologySelection workflow."""
-        result = TechnologySelection.run(
-            "Message Queue",
-            options=["RabbitMQ", "Kafka"],
-            criteria=["scalability"]
+    def test_code_review(self):
+        """Test CodeReview workflow."""
+        result = CodeReview.run(
+            code="def example(): pass",
+            language="python"
         )
 
-        self.assertEqual(result.workflow_name, "Technology Selection")
+        self.assertEqual(result.workflow_name, "Code Review")
         self.assertIsInstance(result.recommendations, list)
 
-    def test_risk_assessment(self):
-        """Test RiskAssessment workflow."""
-        result = RiskAssessment.run(
-            "Database migration",
-            impacts=["revenue"]
+    def test_security_audit(self):
+        """Test SecurityAudit workflow."""
+        result = SecurityAudit.run(
+            code="def example(): pass",
+            language="python"
         )
 
-        self.assertEqual(result.workflow_name, "Risk Assessment")
+        self.assertEqual(result.workflow_name, "Security Audit")
         self.assertIsInstance(result.recommendations, list)
 
 
