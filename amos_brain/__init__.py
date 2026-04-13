@@ -10,6 +10,10 @@ from .task_processor import BrainTaskProcessor, process_task, TaskResult
 from .agent_bridge import (
     AMOSAgentBridge, get_agent_bridge, ToolDecision, ExecutionContext
 )
+from .state_manager import (
+    CognitiveStateManager, get_state_manager,
+    ReasoningStep, WorkflowSession
+)
 
 # Optional: prompt builder (requires brain_loader to be passed)
 try:
