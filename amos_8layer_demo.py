@@ -26,7 +26,7 @@ Usage:
 import time
 import argparse
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 from datetime import datetime
 from enum import Enum
 
