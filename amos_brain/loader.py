@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -163,14 +164,35 @@ class BrainLoader:
 
 # Global singleton
 _brain_loader: BrainLoader | None = None
+# Thread pool for timeout-protected loading
+_loader_executor = ThreadPoolExecutor(max_workers=1)
 
 
-def get_brain() -> BrainLoader:
-    """Get or create global brain loader instance."""
+def get_brain(timeout_seconds: float = 5.0) -> BrainLoader:
+    """Get or create global brain loader instance with timeout protection.
+
+    Args:
+        timeout_seconds: Maximum time to wait for loading (default 5s)
+
+    Returns:
+        BrainLoader instance (may have minimal config if timeout occurred)
+    """
     global _brain_loader
-    if _brain_loader is None:
-        _brain_loader = BrainLoader()
-        _brain_loader.load()
+    if _brain_loader is not None:
+        return _brain_loader
+
+    loader = BrainLoader()
+
+    try:
+        # Run loading in thread pool with timeout
+        future = _loader_executor.submit(loader.load)
+        future.result(timeout=timeout_seconds)
+        _brain_loader = loader
+    except FutureTimeoutError:
+        # Return minimal config on timeout
+        loader._config = BrainConfig()
+        _brain_loader = loader
+
     return _brain_loader
 
 

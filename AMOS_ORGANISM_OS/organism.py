@@ -39,6 +39,7 @@ from IMMUNE.compliance_engine import ComplianceEngine
 from MUSCLE.executor import MuscleExecutor
 from MUSCLE.code_runner import CodeRunner
 from MUSCLE.workflow_engine import WorkflowEngine
+from MUSCLE.brain_muscle_bridge import BrainMuscleBridge, get_brain_muscle_bridge
 
 
 @dataclass

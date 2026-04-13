@@ -5,3 +5,20 @@ build/
 dist/
 debug_payload.json
 brainstorm_outputs/
+
+# Large archive files (GitHub warns >50MB)
+_AMOS_BRAIN/_Archive/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temp files
+*.tmp
+*.log
