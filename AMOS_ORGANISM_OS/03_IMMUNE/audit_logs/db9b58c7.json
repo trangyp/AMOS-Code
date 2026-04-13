@@ -1,0 +1,12 @@
+{
+  "id": "db9b58c7",
+  "timestamp": "2026-04-13T12:36:21.011975",
+  "action": "cli_test",
+  "action_type": "write",
+  "target": "test.txt",
+  "source": "",
+  "risk_level": "medium",
+  "decision": "blocked",
+  "reason": "Approved with caution",
+  "metadata": {}
+}

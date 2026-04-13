@@ -1,7 +1,7 @@
-Français | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.CN.MD) | [한국어](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.DE.MD) | [Español](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.ES.MD)
+Français | [English](../README.md) | [中文](README.CN.MD) | [한국어](README.KO.MD) | [日本語](README.JP.MD) | [Deutsch](README.DE.MD) | [Español](README.ES.MD)
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
+  <a href="https://github.com/SafeRL-Lab/nano-claude-code">
     <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
   </a>
 

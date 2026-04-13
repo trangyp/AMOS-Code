@@ -243,6 +243,39 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_immune(args) -> int:
+    """Interact with IMMUNE security system."""
+    root = get_organism_root()
+    immune_dir = root / "03_IMMUNE"
+
+    sys.path.insert(0, str(immune_dir))
+    from immune_system import ImmuneSystem, ActionType
+
+    immune = ImmuneSystem()
+
+    if args.action == "status":
+        status = immune.status()
+        print("IMMUNE System Status")
+        print("=" * 40)
+        print(f"Active policies: {status['total_policies']}")
+        print(f"Audit logs: {status['total_audit_logs']}")
+        print(f"Policies: {', '.join(status['policies'])}")
+
+    elif args.action == "validate" and args.action_type:
+        action_type = getattr(ActionType, args.action_type.upper(), ActionType.READ)
+        result = immune.validate(
+            action="cli_test",
+            action_type=action_type,
+            target=args.target or "test_target"
+        )
+        print(f"Validation Result:")
+        print(f"  Approved: {result.approved}")
+        print(f"  Risk Level: {result.risk_level.value}")
+        print(f"  Reason: {result.reason}")
+
+    return 0
+
+
 def cmd_legal(args) -> int:
     """Interact with LEGAL engine."""
     root = get_organism_root()
@@ -398,6 +431,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--content", "-c", help="Content to check"
     )
     legal_parser.set_defaults(func=cmd_legal)
+
+    # Immune command
+    immune_parser = subparsers.add_parser(
+        "immune", help="Security system (IMMUNE)"
+    )
+    immune_parser.add_argument(
+        "action", choices=["status", "validate"], nargs="?",
+        default="status"
+    )
+    immune_parser.add_argument(
+        "--action-type", "-t", help="Action type to validate"
+    )
+    immune_parser.add_argument(
+        "--target", "-g", help="Target for validation"
+    )
+    immune_parser.set_defaults(func=cmd_immune)
 
     args = parser.parse_args(argv)
 
