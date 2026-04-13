@@ -12,6 +12,7 @@ from typing import Any
 
 from .config_validator import validate_config
 from .integration import AMOSBrainIntegration, get_amos_integration
+from .metrics import get_metrics, MetricsCollector
 from .model_backend import ModelBackend, build_backend_from_env
 
 

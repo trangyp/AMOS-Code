@@ -16,6 +16,8 @@ from unittest.mock import MagicMock, Mock, patch
 # Ensure amos_brain is in path  # noqa: E402
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa: E402
 
+import requests  # noqa: E402
+
 from amos_brain.model_backend import (  # noqa: E402
     OllamaBackend,
     OpenAICompatibleLocalBackend,
@@ -39,7 +41,9 @@ class TestWithRetry(unittest.TestCase):
 
     def test_retry_then_success(self):
         """Function that fails then succeeds should retry."""
-        mock_func = Mock(side_effect=[Exception("fail"), "success"])
+        mock_func = Mock(side_effect=[
+            requests.ConnectionError("fail"), "success"
+        ])
         decorated = with_retry(max_retries=3, base_delay=0.01)(mock_func)
 
         result = decorated()
@@ -49,10 +53,10 @@ class TestWithRetry(unittest.TestCase):
 
     def test_max_retries_exceeded(self):
         """Function that always fails should raise after max retries."""
-        mock_func = Mock(side_effect=Exception("always fails"))
+        mock_func = Mock(side_effect=requests.ConnectionError("always fails"))
         decorated = with_retry(max_retries=2, base_delay=0.01)(mock_func)
 
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(requests.ConnectionError) as ctx:
             decorated()
 
         self.assertIn("always fails", str(ctx.exception))

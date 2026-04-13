@@ -89,7 +89,7 @@ def run_tests():
     """Run integration tests."""
     print(clr("\n[Running Integration Tests...]", "cyan"))
     print()
-    result = subprocess.run([sys.executable, "tests/test_amos_brain.py"])
+    result = subprocess.run([sys.executable, "-m", "pytest", "tests/test_amos_brain.py", "-v"])
     print()
 
     if result.returncode == 0:

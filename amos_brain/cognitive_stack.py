@@ -149,9 +149,14 @@ class CognitiveStack:
             if keyword in query_lower:
                 matched_engines.update(engines)
 
-        # Default to all engines if no match
+        # Default to a narrow general-purpose subset if no match
         if not matched_engines:
-            return list(self.engines.keys())
+            fallback = [
+                "AMOS_Deterministic_Logic_And_Law_Engine",
+                "AMOS_Strategy_Game_Engine",
+                "AMOS_Engineering_And_Mathematics_Engine",
+            ]
+            return [name for name in fallback if name in self.engines]
 
         return list(matched_engines)
 

@@ -222,7 +222,11 @@ class MetaCognitiveController:
                     "L6": not any(v["law"] == "L6" for v in subtask.law_violations),
                 },
                 kernel_activations=task_result.kernels_used,
-                input_context={"task": subtask.description, "plan_id": plan_id},
+                input_context={
+                    "task": subtask.description,
+                    "plan_id": plan_id,
+                    "quadrants_checked": task_result.rule_of_four_check.get("quadrants_checked", []),
+                },
                 output_result=subtask.result or "Failed",
                 confidence=task_result.confidence
             )

@@ -41,15 +41,18 @@ class WorkflowSession:
         """Add a reasoning step to the chain."""
         self.reasoning_chain.append(step)
         self.updated_at = datetime.now().isoformat()
-        
+
         # Update kernel history
         for kernel in step.kernel_activations:
             if kernel not in self.kernel_history:
                 self.kernel_history.append(kernel)
-        
-        # Update quadrant coverage
-        for quadrant, count in self.quadrant_coverage.items():
-            self.quadrant_coverage[quadrant] = count + 1
+
+        # Update quadrant coverage from step context when present
+        quadrants = step.input_context.get("quadrants_checked") or step.input_context.get("quadrants") or []
+        if isinstance(quadrants, dict):
+            quadrants = list(quadrants.keys())
+        for quadrant in quadrants:
+            self.quadrant_coverage[quadrant] = self.quadrant_coverage.get(quadrant, 0) + 1
 
 
 class CognitiveStateManager:
@@ -275,9 +278,15 @@ class CognitiveStateManager:
             
             if compliance_over_time:
                 avg_compliance = sum(compliance_over_time) / len(compliance_over_time)
+                if compliance_over_time[-1] > compliance_over_time[0]:
+                    trend = "improving"
+                elif compliance_over_time[-1] < compliance_over_time[0]:
+                    trend = "declining"
+                else:
+                    trend = "stable"
                 trends[law_id] = {
                     "average": f"{avg_compliance:.0%}",
-                    "trend": "improving" if compliance_over_time[-1] > compliance_over_time[0] else "stable",
+                    "trend": trend,
                     "violations": len(compliance_over_time) - sum(compliance_over_time)
                 }
         

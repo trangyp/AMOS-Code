@@ -9,6 +9,14 @@ from amos_brain.memory import get_brain_memory, BrainMemory
 from amos_brain import get_amos_integration
 
 
+def _coerce_confidence(value: object) -> float:
+    """Coerce confidence value to float 0-1 range."""
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    mapping = {"low": 0.33, "medium": 0.66, "high": 0.9}
+    return mapping.get(str(value).lower(), 0.0)
+
+
 class BrainDashboard:
     """
     Generates analytics and reports on brain reasoning patterns.
@@ -77,7 +85,10 @@ class BrainDashboard:
 
         with_rule2 = sum(1 for h in history if h.get('rule_of_two_applied'))
         with_rule4 = sum(1 for h in history if h.get('rule_of_four_applied'))
-        avg_confidence = sum(h.get('confidence_score', 0) for h in history) / total
+        avg_confidence = sum(
+            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
+            for h in history
+        ) / total
 
         # Find most common tags
         tag_counts: dict[str, int] = defaultdict(int)
@@ -160,7 +171,10 @@ class BrainDashboard:
         if not history:
             return {"trend": "insufficient_data"}
 
-        scores = [h.get('confidence_score', 0) for h in history]
+        scores = [
+            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
+            for h in history
+        ]
         sorted_scores = sorted(scores)
 
         n = len(sorted_scores)
@@ -253,7 +267,7 @@ class BrainDashboard:
         # Confidence histogram (10 buckets)
         buckets = [0] * 10
         for h in history:
-            score = h.get('confidence_score', 0)
+            score = _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
             bucket = min(int(score * 10), 9)
             buckets[bucket] += 1
 
@@ -295,7 +309,10 @@ class BrainDashboard:
             insights.append(f"✓ Strong L3 compliance at {r4_rate:.0%} - comprehensive quadrant coverage")
 
         # Confidence insights
-        scores = [h.get('confidence_score', 0) for h in history]
+        scores = [
+            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
+            for h in history
+        ]
         avg_conf = sum(scores) / len(scores)
         if avg_conf < 0.5:
             insights.append(f"📉 Average confidence is {avg_conf:.0%} - decisions may need more information")
