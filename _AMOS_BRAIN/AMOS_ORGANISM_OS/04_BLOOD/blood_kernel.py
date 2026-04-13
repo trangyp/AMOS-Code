@@ -21,7 +21,7 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from collections import defaultdict
 import time
 
@@ -48,22 +48,30 @@ class Priority(Enum):
     LOW = 3
 
 
-@dataclass
+@dataclass(order=True)
 class Signal:
     """A signal/message flowing through the blood stream."""
-    signal_id: str
-    source: str
-    target: str
-    signal_type: SignalType
-    payload: Dict[str, Any]
-    priority: Priority = Priority.NORMAL
-    timestamp: str = ""
-    ttl: int = 60  # Time to live in seconds
-    delivered: bool = False
+    priority_val: int = field(compare=True, repr=False, default=2)
+    signal_id: str = field(compare=False, default="")
+    source: str = field(compare=False, default="")
+    target: str = field(compare=False, default="")
+    signal_type: SignalType = field(compare=False, default=SignalType.EVENT)
+    payload: Dict[str, Any] = field(compare=False, default_factory=dict)
+    priority: Priority = field(compare=False, default=Priority.NORMAL)
+    timestamp: str = field(compare=False, default="")
+    ttl: int = field(compare=False, default=60)
+    delivered: bool = field(compare=False, default=False)
+    seq: int = field(compare=True, default=0)
+    
+    _seq_counter = 0
     
     def __post_init__(self):
         if not self.timestamp:
             self.timestamp = datetime.utcnow().isoformat()
+        self.priority_val = self.priority.value
+        if self.seq == 0:
+            Signal._seq_counter += 1
+            self.seq = Signal._seq_counter
 
 
 @dataclass
@@ -157,8 +165,7 @@ class BloodKernel:
         while self._running:
             try:
                 # Get signal with timeout to allow checking _running
-                priority_tuple = self.signal_queue.get(timeout=0.5)
-                priority_value, signal = priority_tuple[0], priority_tuple[1]
+                signal = self.signal_queue.get(timeout=0.5)
                 
                 # Check TTL
                 signal_age = (datetime.utcnow() - datetime.fromisoformat(signal.timestamp)).total_seconds()
@@ -250,8 +257,8 @@ class BloodKernel:
         # Ensure channel exists
         self._ensure_channel(source, target)
         
-        # Queue signal (priority queue uses first element of tuple)
-        self.signal_queue.put((priority.value, signal))
+        # Queue signal (Signal is now orderable by priority_val then seq)
+        self.signal_queue.put(signal)
         
         logger.debug(f"Signal {signal_id} queued: {source} -> {target}")
         return signal_id

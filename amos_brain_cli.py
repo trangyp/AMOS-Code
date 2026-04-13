@@ -26,6 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain import get_amos_integration, RuleOfTwo, RuleOfFour, GlobalLaws
 from amos_brain.memory import get_brain_memory
+from amos_brain.dashboard import print_dashboard
 
 
 # ANSI colors
@@ -66,6 +67,7 @@ def print_help():
     print("  /history [n]        - Show last n reasoning entries (default: 5)")
     print("  /recall <problem>   - Find similar past reasoning")
     print("  /audit              - Show reasoning audit trail with compliance stats")
+    print("  /dashboard [days]   - Show reasoning analytics dashboard")
     print("  /help               - Show this help")
     print("  /quit               - Exit the CLI")
     print()
@@ -348,6 +350,10 @@ def main():
 
         elif cmd == "/audit":
             cmd_audit(memory)
+
+        elif cmd == "/dashboard":
+            days = int(args[0]) if args else 30
+            print_dashboard(days)
 
         else:
             print(clr(f"Unknown command: {cmd}. Type /help for available commands.", "yellow"))

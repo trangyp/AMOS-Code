@@ -17,7 +17,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 # Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent / "06_MUSCLE"))
+sys.path.insert(
+    0, str(Path(__file__).parent.parent / "06_MUSCLE")
+)
 sys.path.insert(0, str(Path(__file__).parent))
 
 from amos_worker_engine import AmosWorkerEngine, WorkerResult
@@ -50,7 +52,10 @@ class CostAwareWorker(AmosWorkerEngine):
                 success=False,
                 output=f"Budget exhausted for {budget_category}",
                 artifacts=[],
-                metadata={"budget_exhausted": True, "category": budget_category}
+                metadata={
+                    "budget_exhausted": True,
+                    "category": budget_category
+                }
             )
 
         # Estimate costs
@@ -87,7 +92,7 @@ class CostAwareWorker(AmosWorkerEngine):
             priority=plan.get("priority", 5)
         )
 
-        print(f"[BLOOD] Allocated resources: ${allocation.cost_estimate:.4f} estimated")
+        print(f"[BLOOD] Allocated: ${allocation.cost_estimate:.4f} est")
 
         # Execute the plan
         result = self.execute_plan(plan, context)
