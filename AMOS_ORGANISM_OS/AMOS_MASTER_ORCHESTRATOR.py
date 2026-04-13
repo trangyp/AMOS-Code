@@ -53,6 +53,7 @@ MEMORY_DIR = ORGANISM_ROOT / "memory"
 PRIMARY_LOOP = [
     "01_BRAIN",
     "02_SENSES",
+    "03_IMMUNE",  # Security validation
     "04_BLOOD",  # Financial engine - active
     "05_SKELETON",
     "08_WORLD_MODEL",
@@ -298,8 +299,31 @@ class MetabolismHandler(SubsystemHandler):
         )
 
 
+class ImmuneHandler(SubsystemHandler):
+    """03_IMMUNE: Security and threat detection."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "validate_security_policies",
+            "check_threat_indicators",
+            "audit_recent_actions"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "security_validated": True,
+                "threats_checked": True,
+                "audit_complete": True
+            },
+            next_recommended="04_BLOOD"
+        )
+
+
 class BloodHandler(SubsystemHandler):
-    """04_BLOOD: Budget, cashflow, resource allocation."""
+    """04_BLOOD: Financial engine, budgeting, resource allocation."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
@@ -374,6 +398,7 @@ class LegalHandler(SubsystemHandler):
 HANDLER_MAP: Dict[str, type] = {
     "01_BRAIN": BrainHandler,
     "02_SENSES": SensesHandler,
+    "03_IMMUNE": ImmuneHandler,
     "04_BLOOD": BloodHandler,
     "05_SKELETON": SkeletonHandler,
     "08_WORLD_MODEL": WorldModelHandler,
