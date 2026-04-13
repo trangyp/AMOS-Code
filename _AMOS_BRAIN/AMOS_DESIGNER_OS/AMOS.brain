@@ -73,12 +73,12 @@ max_log_file_size_kb = 512
 6 = "Case memory accumulates resolved examples for analogical reasoning."
 
 [NEXT_ACTION]
-next_action = "build_07_METABOLISM"
-current_phase = "06_MUSCLE_complete"
-completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "amos_organism_orchestrator"]
-next_subsystems = ["07_METABOLISM", "08_WORLD_MODEL", "09_QUANTUM_LAYER", "10_LEARNING"]
-last_action_summary = "Built 06_MUSCLE: Action execution, tool invocation, file operations, task completion"
-muscle_features = ["action_executor", "tool_registry", "file_operations", "command_execution", "api_calls", "immune_integration"]
+next_action = "build_08_WORLD_MODEL"
+current_phase = "07_METABOLISM_complete"
+completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "amos_organism_orchestrator"]
+next_subsystems = ["08_WORLD_MODEL"]
+last_action_summary = "Built 07_METABOLISM: Pipeline engine, transform engine, IO router, cleanup engine"
+metabolism_features = ["pipeline_engine", "transform_engine", "io_router", "cleanup_engine", "data_processing", "api_calls", "immune_integration"]
 
 [COMPLETED_ACTIONS]
 1 = "amos_cognitive_runtime_v1.0 - 6-layer cognitive architecture with 20 engines"

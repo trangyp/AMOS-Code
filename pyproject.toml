@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amos-brain"
+version = "3.05.5"
+description = "AMOS Brain - Unified Cognitive Architecture for AI Agents with Rule of 2, Rule of 4, and Global Laws L1-L6"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "AMOS Project"}
+]
+keywords = [
+    "ai",
+    "cognitive-architecture",
+    "reasoning",
+    "decision-making",
+    "rule-of-2",
+    "rule-of-4",
+    "clawspring",
+    "agent",
+    "memory"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = []
+
+[project.optional-dependencies]
+clawspring = ["clawspring"]
+dev = ["pytest", "pytest-asyncio", "black", "flake8", "mypy"]
+
+[project.scripts]
+amos-brain = "amos_brain_launcher:main"
+amos-tutorial = "amos_brain_tutorial:main"
+amos-cli = "amos_brain_cli:main"
+
+[project.urls]
+Homepage = "https://github.com/amos-project/amos-brain"
+Documentation = "https://github.com/amos-project/amos-brain/blob/main/AMOS_BRAIN_GUIDE.md"
+Repository = "https://github.com/amos-project/amos-brain"
+
+[tool.setuptools]
+packages = ["amos_brain", "tests"]
+
+[tool.setuptools.package-data]
+amos_brain = ["*.json", "*.md"]
+
+[tool.black]
+line-length = 79
+target-version = ['py39']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

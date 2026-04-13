@@ -36,6 +36,9 @@ from SENSES.signal_detector import SignalDetector
 from SKELETON.constraint_engine import ConstraintEngine
 from SKELETON.rule_validator import RuleValidator
 from SKELETON.structural_integrity import StructuralIntegrity
+from WORLD_MODEL.knowledge_graph import KnowledgeGraph
+from WORLD_MODEL.context_mapper import ContextMapper
+from WORLD_MODEL.semantic_index import SemanticIndex
 from IMMUNE.immune_system import ImmuneSystem, ActionType
 from IMMUNE.threat_detector import ThreatDetector
 from IMMUNE.compliance_engine import ComplianceEngine
@@ -94,6 +97,11 @@ class AmosOrganism:
         self.constraints = ConstraintEngine()
         self.rules = RuleValidator()
         self.integrity = StructuralIntegrity()
+
+        # Initialize WORLD_MODEL (knowledge layer)
+        self.knowledge = KnowledgeGraph()
+        self.context_mapper = ContextMapper()
+        self.semantic_index = SemanticIndex()
 
         # Initialize IMMUNE (safety layer)
         self.immune = ImmuneSystem()

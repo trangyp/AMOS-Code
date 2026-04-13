@@ -1,6 +1,31 @@
 
 # A collection of the newest Claude Code open source
 
+## 🧠 AMOS Brain Integration (NEW)
+
+**Unified Cognitive Architecture for AI Agents**
+
+The AMOS Brain adds structured reasoning to any AI agent:
+- **Rule of 2** - Dual perspective analysis (L2)
+- **Rule of 4** - Four quadrant systems thinking (L3)
+- **6 Global Laws** - L1-L6 compliance enforcement
+- **12 Domain Engines** - Routing to specialized intelligence
+- **Memory & Recall** - Persistent reasoning history
+- **Analytics Dashboard** - Decision pattern insights
+- **5 Cookbook Workflows** - Real-world decision templates
+
+**Quick Start:**
+```bash
+# Unified launcher - discover all features
+python amos_brain_launcher.py
+
+# Or start with tutorial
+python amos_brain_tutorial.py
+```
+
+See `amos_brain/README.md` and `AMOS_BRAIN_GUIDE.md` for full documentation.
+
+---
 
 > **License and Disclaimer** This repository is for academic research and educational purposes only. All subprojects are built from publicly accessible information. Users are responsible for complying with applicable laws, regulations, and service terms.
 
