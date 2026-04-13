@@ -303,7 +303,7 @@ class AmosOrganism:
             "active_subsystems": [
                 "01_BRAIN", "02_SENSES", "05_SKELETON", "08_WORLD_MODEL",
                 "09_QUANTUM_LAYER", "04_BLOOD", "07_METABOLISM", "03_IMMUNE",
-                "06_MUSCLE", "14_INTERFACES"
+                "06_MUSCLE", "13_FACTORY", "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
@@ -324,6 +324,12 @@ class AmosOrganism:
                 },
                 "immune": self.immune.status(),
                 "muscle": self.muscle.status(),
+                "factory": {
+                    "total_agents": len(self.agent_factory._registry),
+                    "total_templates": len(self.code_generator.templates),
+                    "total_build_tasks": len(self.builder.tasks),
+                    "total_quality_reports": len(self.quality.reports),
+                },
                 "memory": self.memory.stats(),
                 "workflow": {
                     "workflows": len(self.workflow.list_workflows()),

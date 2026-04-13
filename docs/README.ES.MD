@@ -1,19 +1,14 @@
 [English](https://github.com/trangyp/AMOS-Code/blob/main/README.md) | [中文](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.CN.MD)  |[한국어](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.DE.MD) | Português
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/trangyp/AMOS-Code)">
+  <a href="https://github.com/trangyp/AMOS-Code">
     <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
   </a>
 
 
 <h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: Una reimplementación rápida y fácil de usar de Claude Code en Python, compatible con cualquier modelo</h1>
 <p align="center">
-    <a href="https://github.com/chauncygu/collection-claude-code-source-code">La fuente más reciente sobre Claude Code</a>
-    ·
     <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
-  ·
-    <a href="https://deepwiki.com/trangyp/AMOS-Code">Introducción breve</a>
-
   </p>
 </div>
 

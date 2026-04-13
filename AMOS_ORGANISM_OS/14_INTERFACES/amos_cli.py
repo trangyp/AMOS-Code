@@ -300,6 +300,27 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_factory(args) -> int:
+    """Interact with Agent Factory."""
+    root = get_organism_root()
+    factory_dir = root / "13_FACTORY"
+
+    sys.path.insert(0, str(factory_dir))
+    from agent_factory import AgentFactory
+
+    factory = AgentFactory(root)
+
+    if args.action == "status":
+        report = factory.get_quality_report()
+        print("Agent Factory Status")
+        print("=" * 40)
+        print(f"Total agents: {report['total_agents']}")
+        print(f"Active: {report['active_agents']}")
+        print(f"By type: {report['agents_by_type']}")
+
+    return 0
+
+
 def cmd_life(args) -> int:
     """Interact with LIFE engine."""
     root = get_organism_root()
@@ -542,6 +563,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         default="status"
     )
     life_parser.set_defaults(func=cmd_life)
+
+    # Factory command
+    factory_parser = subparsers.add_parser(
+        "factory", help="Agent factory (FACTORY)"
+    )
+    factory_parser.add_argument(
+        "action", choices=["status", "create"], nargs="?",
+        default="status"
+    )
+    factory_parser.set_defaults(func=cmd_factory)
 
     args = parser.parse_args(argv)
 

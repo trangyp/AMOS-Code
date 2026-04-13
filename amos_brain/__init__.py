@@ -91,20 +91,25 @@ __all__ = [
 # Cookbook workflows (optional import)
 try:
     from .cookbook import (
-        ArchitectureDecision,
-        ProjectPlanner,
-        ProblemDiagnosis,
-        TechnologySelection,
-        RiskAssessment,
-        WorkflowResult,
+        ArchitectureDecision, CodeReview, SecurityAudit,
+        DesignPattern, ProblemDiagnosis, ProjectPlanner,
+        CookbookResult
     )
-    __all__.extend([
-        "ArchitectureDecision",
-        "ProjectPlanner",
-        "ProblemDiagnosis",
-        "TechnologySelection",
-        "RiskAssessment",
-        "WorkflowResult",
-    ])
-except Exception:
-    pass
+except ImportError:
+    ArchitectureDecision = None
+    CodeReview = None
+    SecurityAudit = None
+    DesignPattern = None
+    ProblemDiagnosis = None
+    ProjectPlanner = None
+    CookbookResult = None
+
+__all__.extend([
+    "ArchitectureDecision",
+    "CodeReview",
+    "SecurityAudit",
+    "DesignPattern",
+    "ProblemDiagnosis",
+    "ProjectPlanner",
+    "CookbookResult",
+])
