@@ -89,10 +89,20 @@ Creator: {identity.get('creator', 'Trang Phan')}
 
     def get_status(self) -> dict:
         """Get current brain integration status (alias for compatibility)."""
+        # Trigger lazy loading by accessing runtime property
+        runtime_loaded = self._runtime is not None
+        if not runtime_loaded:
+            try:
+                # Access runtime property to trigger lazy loading
+                _ = self.runtime
+                runtime_loaded = True
+            except Exception:
+                runtime_loaded = False
+
         return {
             "initialized": self._initialized,
-            "brain_loaded": self._runtime is not None,
-            "engines_count": 12,  # Placeholder - actual count from runtime
+            "brain_loaded": runtime_loaded,
+            "engines_count": 12 if runtime_loaded else 0,
             "laws_active": ["L1", "L2", "L3", "L4", "L5", "L6"],
             "domains_covered": [
                 "biology", "engineering", "economics", "physics",
