@@ -16,6 +16,7 @@ Commands:
     health      - Run health check on all subsystems
     dashboard   - Launch web dashboard
     features    - List all discovered features
+    brain       - Interact with AMOS Brain (think, decide, validate)
     help        - Show this help message
 
 Owner: Trang
@@ -27,6 +28,8 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+from amos_brain import think, decide, validate
 
 
 def print_banner():
@@ -98,7 +101,7 @@ def cmd_dashboard():
 
 def cmd_features():
     """List features."""
-    print("\n📋 AMOS Feature Inventory")
+    print("\n📋 AMOS Features")
     print("=" * 60)
     
     features = {
@@ -126,6 +129,67 @@ def cmd_features():
     print("Total: 15 Subsystems + 100+ Engines + 83 Knowledge Packs")
 
 
+def cmd_brain(args):
+    """Interact with AMOS Brain."""
+    if not args:
+        print("\n🧠 AMOS Brain CLI")
+        print("=" * 60)
+        print("\nUsage: python amos_cli.py brain <mode> <query>")
+        print("\nModes:")
+        print("  think <query>       - Process cognitive query")
+        print("  decide <question>   - Make a decision")
+        print("  validate <prop>     - Validate proposition")
+        print("\nExamples:")
+        print('  python amos_cli.py brain think "What is AI?"')
+        print('  python amos_cli.py brain decide "Should we deploy?"')
+        return
+
+    mode = args[0]
+    query = " ".join(args[1:]) if len(args) > 1 else ""
+
+    if not query:
+        print("❌ Please provide a query")
+        return
+
+    print(f"\n🧠 AMOS Brain: {mode.upper()}")
+    print("=" * 60)
+    print(f"Query: {query}")
+    print("-" * 60)
+
+    try:
+        if mode == "think":
+            result = think(query)
+            if hasattr(result, 'content'):
+                print(f"\n💭 Result:\n{result.content[:500]}")
+                if hasattr(result, 'reasoning') and result.reasoning:
+                    print(f"\n📝 Reasoning:")
+                    for i, r in enumerate(result.reasoning[:3], 1):
+                        print(f"  {i}. {r[:80]}")
+            else:
+                print(f"\nResult: {result}")
+
+        elif mode == "decide":
+            result = decide(query)
+            if hasattr(result, 'approved'):
+                status = "✅ APPROVED" if result.approved else "❌ REJECTED"
+                print(f"\n⚖️ Decision: {status}")
+                if hasattr(result, 'reasoning'):
+                    print(f"\nReasoning: {result.reasoning[:200]}")
+            else:
+                print(f"\nResult: {result}")
+
+        elif mode == "validate":
+            result = validate(query)
+            print(f"\n✓ Validation: {result}")
+
+        else:
+            print(f"❌ Unknown mode: {mode}")
+            print("Use: think, decide, or validate")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="AMOS Unified CLI",
@@ -138,12 +202,14 @@ Examples:
     python amos_cli.py health           # Run health check
     python amos_cli.py dashboard        # Launch web dashboard
     python amos_cli.py features         # List all features
+    python amos_cli.py brain think "What is the next step?"
+    python amos_cli.py brain decide "Should we proceed?" --options yes,no
         """
     )
     
     parser.add_argument(
         "command",
-        choices=["status", "activate", "deploy", "health", "dashboard", "features", "help"],
+        choices=["status", "activate", "deploy", "health", "dashboard", "features", "brain", "help"],
         help="Command to execute"
     )
     
@@ -169,6 +235,8 @@ Examples:
         cmd_dashboard()
     elif args.command == "features":
         cmd_features()
+    elif args.command == "brain":
+        cmd_brain(args.args)
     elif args.command == "help":
         parser.print_help()
     

@@ -13,7 +13,6 @@ services:
     container_name: amos-api
     ports:
       - "5000:5000"
-      - "8765:8765"  # WebSocket port
     environment:
       - PYTHONUNBUFFERED=1
       - AMOS_BRAIN_PATH=/app/_AMOS_BRAIN
@@ -42,7 +41,7 @@ services:
     container_name: amos-mcp-server
     command: ["python3", "amos_mcp_server.py", "--transport", "sse", "--port", "8080"]
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
@@ -50,7 +49,7 @@ services:
     networks:
       - amos-network
     depends_on:
-      amos-brain:
+      amos-api:
         condition: service_healthy
 
   # CLI Interface (interactive mode)
@@ -70,7 +69,7 @@ services:
     networks:
       - amos-network
     depends_on:
-      amos-brain:
+      amos-api:
         condition: service_healthy
 
   # WebSocket Server for real-time streaming

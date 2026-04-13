@@ -46,9 +46,10 @@ def print_result(result):
     """Print workflow result."""
     print()
     print(clr(f"Workflow: {result.workflow_name}", "cyan", "bold"))
-    print(clr(f"Problem: {result.problem}", "bold"))
+    print(clr(f"Problem: {result.input_data}", "bold"))
     print(f"Confidence: {clr(f'{result.confidence:.0%}', 'green')}")
-    print(f"Memory ID: {result.memory_id[:8]}...")
+    mid = result.memory_id[:8] if result.memory_id else 'n/a'
+    print(f"Memory ID: {mid}...")
     print()
 
     if result.recommendations:
@@ -92,8 +93,10 @@ def main():
     result = ProjectPlanner.run(
         "Build real-time notification system",
         timeline="6 weeks",
-        team="2 backend engineers, 1 DevOps",
-        constraints=["must handle 10k concurrent", "99.9% uptime SLA"]
+        constraints={
+            "team": "2 backend engineers, 1 DevOps",
+            "constraints": ["must handle 10k concurrent", "99.9% uptime SLA"],
+        }
     )
     print_result(result)
 
@@ -106,8 +109,7 @@ def main():
     result = ProblemDiagnosis.run(
         "Database connection pool exhaustion",
         symptoms=["500 errors after 2 hours", "gradual increase in latency"],
-        checked=["query performance", "indexes"],
-        timeline="Started 3 days ago, daily occurrence"
+        context="Checked: query performance, indexes. Timeline: Started 3 days ago, daily occurrence."
     )
     print_result(result)
 
@@ -120,8 +122,7 @@ def main():
     result = TechnologySelection.run(
         "Message Queue",
         options=["RabbitMQ", "Apache Kafka", "AWS SQS"],
-        criteria=["scalability", "operational-complexity", "cost"],
-        must_haves=["persistent messages", "high-throughput"]
+        criteria=["scalability", "operational-complexity", "cost", "persistent messages", "high-throughput"]
     )
     print_result(result)
 
@@ -133,9 +134,15 @@ def main():
 
     result = RiskAssessment.run(
         "Migrate production database to new cloud provider",
-        impacts=["revenue", "customer-trust", "data-integrity"],
-        mitigations=["parallel-run", "automated-rollback", "dry-run-testing"],
-        severity_threshold="high"
+        impacts=[
+            "revenue",
+            "customer-trust",
+            "data-integrity",
+            "parallel-run",
+            "automated-rollback",
+            "dry-run-testing",
+            "high-severity migration",
+        ]
     )
     print_result(result)
 
