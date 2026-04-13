@@ -571,7 +571,7 @@ def _notebook_edit(
     cells = nb.get("cells", [])
 
     # Resolve cell index
-    def _resolve_index(cid: str) -> int | None:
+    def _resolve_index(cid: str) -> Optional[int]:
         # Try exact id match first
         for i, c in enumerate(cells):
             if c.get("id") == cid:
@@ -666,7 +666,7 @@ def _detect_language(file_path: str) -> str:
     }.get(ext, "unknown")
 
 
-def _run_quietly(cmd: list[str], cwd: str | None = None, timeout: int = 30) -> tuple[int, str]:
+def _run_quietly(cmd: list[str], cwd: Optional[str] = None, timeout: int = 30) -> tuple[int, str]:
     """Run a command, return (returncode, combined_output)."""
     try:
         r = subprocess.run(
@@ -765,7 +765,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
 def _ask_user_question(
     question: str,
-    options: list[dict] | None = None,
+    options: Optional[list[dict]] = None,
     allow_freetext: bool = True,
 ) -> str:
     """

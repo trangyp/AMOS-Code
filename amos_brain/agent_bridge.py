@@ -81,15 +81,9 @@ class AMOSAgentBridge:
         Validate a tool call against AMOS global laws.
         
         Returns:
-            {
-                "approved": bool,
-                "reason": str,
-                "violations": list[dict],
-                "alternatives": list[str],
-                "risk_level": str,
-            }
+            dict with keys: approved, reason, violations, alternatives, risk_level
         """
-        result = {
+        result: dict[str, Any] = {
             "approved": True,
             "reason": "No violations detected",
             "violations": [],
@@ -167,13 +161,9 @@ class AMOSAgentBridge:
         Post-execution audit of tool result.
         
         Returns:
-            {
-                "valid": bool,
-                "issues": list[str],
-                "recommendations": list[str],
-            }
+            dict with keys: valid, issues, recommendations
         """
-        audit = {
+        audit: dict[str, Any] = {
             "valid": True,
             "issues": [],
             "recommendations": [],
@@ -240,7 +230,7 @@ Execute with AMOS cognitive discipline.
         approved = sum(1 for d in self._decision_log if d.approved)
         blocked = total - approved
         
-        violations_by_law = {}
+        violations_by_law: dict[str, int] = {}
         for decision in self._decision_log:
             for v in decision.law_violations:
                 law = v["law"]

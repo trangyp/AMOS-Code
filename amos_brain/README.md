@@ -79,8 +79,23 @@ python amos_clawspring.py --model claude-3-5-sonnet
 | `clawspring_bridge.py` | Agent runtime bridge |
 | `clawspring_plugin.py` | Auto-registration plugin |
 | `memory.py` | Reasoning persistence to clawspring memory |
+| `dashboard.py` | Analytics and reporting |
 | `demo_amos_brain.py` | Demo script |
 | `amos_brain_cli.py` | Interactive brain CLI |
+| `amos_brain_tutorial.py` | Interactive tutorial |
+
+## Getting Started
+
+```bash
+# Interactive tutorial (recommended first step)
+python amos_brain_tutorial.py
+
+# Brain CLI for daily use
+python amos_brain_cli.py
+
+# Brain-enhanced clawspring agent
+python amos_clawspring.py
+```
 
 ## CLI Commands
 
