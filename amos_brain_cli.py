@@ -34,10 +34,13 @@ def cmd_status(args):
     print("═" * 66)
     
     brain = get_brain()
+    healthy = True
     print(f"\n🧠 Layer 1: Brain Loader")
     print(f"   Engines: {len(brain.list_engines())}")
     print(f"   Laws: {len(brain._config.global_laws) if brain._config else 0}")
     print(f"   Domains: {len(brain._config.domains) if brain._config else 0}")
+    if not brain._config or not brain.list_engines():
+        healthy = False
     
     print(f"\n🔀 Layer 3: Kernel Router")
     router = KernelRouter(brain)
@@ -69,11 +72,12 @@ def cmd_status(args):
     print(f"\n🎯 Layer 8: Meta-Cognitive Controller")
     mc = get_meta_controller()
     summary = mc.get_execution_summary()
-    print(f"   Active plans: {summary['total_plans']}")
+    print(f"   Total plans: {summary['total_plans']}")
+    print(f"   Active plans: {len(summary['active_plans'])}")
     print(f"   Completed: {summary['completed_plans']}")
     
     print("\n" + "═" * 66)
-    print("Status: ✓ ALL 8 LAYERS OPERATIONAL")
+    print("Status: ✓ ALL 8 LAYERS OPERATIONAL" if healthy else "Status: ⚠ PARTIAL / DEGRADED")
 
 
 def cmd_think(args):
