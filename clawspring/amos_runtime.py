@@ -1,12 +1,11 @@
-"""AMOS Runtime Bootstrap - Loads and executes the AMOS brain with full law enforcement."""
+"""AMOS Runtime Bootstrap - Loads and executes the AMOS brain."""
 from __future__ import annotations
 
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 import json
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 from datetime import datetime
 
 
@@ -306,36 +305,18 @@ class AMOSRuntime:
 
 # Singleton runtime instance
 _runtime_instance: Optional[AMOSRuntime] = None
-# Thread pool for timeout-protected loading
-_runtime_executor = ThreadPoolExecutor(max_workers=1)
 
 
-def get_runtime(timeout_seconds: float = 5.0) -> AMOSRuntime:
-    """Get or create the global AMOS runtime with timeout protection.
-
-    Args:
-        timeout_seconds: Maximum time to wait for loading (default 5s)
+def get_runtime() -> AMOSRuntime:
+    """Get or create the global AMOS runtime.
 
     Returns:
-        AMOSRuntime instance (may use fallback config if timeout)
+        AMOSRuntime instance
     """
     global _runtime_instance
-    if _runtime_instance is not None:
-        return _runtime_instance
-
-    runtime = AMOSRuntime()
-
-    try:
-        # Run bootstrap in thread pool with timeout
-        future = _runtime_executor.submit(runtime.bootstrap)
-        future.result(timeout=timeout_seconds)
-        _runtime_instance = runtime
-    except FutureTimeoutError:
-        # Use fallback configuration on timeout
-        runtime._load_fallback_root()
-        runtime._loaded = True
-        _runtime_instance = runtime
-
+    if _runtime_instance is None:
+        _runtime_instance = AMOSRuntime()
+        _runtime_instance.bootstrap()
     return _runtime_instance
 
 

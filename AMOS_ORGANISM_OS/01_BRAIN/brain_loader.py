@@ -13,7 +13,6 @@ Version: 1.0.0
 from __future__ import annotations
 
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -325,22 +324,16 @@ class AmosBrainLoader:
 
 # Global instance
 _brain_loader: Optional[AmosBrainLoader] = None
-# Thread pool for timeout-protected loading
-_loader_executor = ThreadPoolExecutor(max_workers=1)
 
 
-def get_brain_loader(
-    brain_root: Optional[Path] = None,
-    timeout_seconds: float = 10.0
-) -> AmosBrainLoader:
-    """Get or create global brain loader with timeout protection.
+def get_brain_loader(brain_root: Optional[Path] = None) -> AmosBrainLoader:
+    """Get or create global brain loader.
 
     Args:
         brain_root: Path to brain root directory
-        timeout_seconds: Maximum time to wait for loading (default 10s)
 
     Returns:
-        AmosBrainLoader instance (may have partial config if timeout)
+        AmosBrainLoader instance
     """
     global _brain_loader
     if _brain_loader is not None:
@@ -350,18 +343,7 @@ def get_brain_loader(
         organism = Path(__file__).parent.parent
         brain_root = organism.parent / "_AMOS_BRAIN"
 
-    loader = AmosBrainLoader(brain_root)
-
-    try:
-        # Run loading in thread pool with timeout
-        future = _loader_executor.submit(loader.load_all_engines)
-        future.result(timeout=timeout_seconds)
-        _brain_loader = loader
-    except FutureTimeoutError:
-        # Return partial results on timeout
-        loader._loaded = True  # Mark as loaded to prevent retries
-        _brain_loader = loader
-
+    _brain_loader = AmosBrainLoader(brain_root)
     return _brain_loader
 
 
