@@ -266,6 +266,30 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize METABOLISM: {e}")
     
+    def _init_world_model(self):
+        """Initialize the WORLD_MODEL subsystem."""
+        try:
+            world_path = self.root / "08_WORLD_MODEL"
+            
+            # Add to path and import directly
+            if str(world_path) not in sys.path:
+                sys.path.insert(0, str(world_path))
+            
+            # Clear any cached module
+            if 'world_model_kernel' in sys.modules:
+                del sys.modules['world_model_kernel']
+            
+            import world_model_kernel
+            importlib.reload(world_model_kernel)
+            
+            self._world_model = world_model_kernel.WorldModelKernel(self.root)
+            self._subsystems["08_WORLD_MODEL"] = self._world_model
+            self.state["active_subsystems"].append("08_WORLD_MODEL")
+            
+            logger.info("WORLD_MODEL subsystem initialized with environmental representation")
+        except Exception as e:
+            logger.error(f"Failed to initialize WORLD_MODEL: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:

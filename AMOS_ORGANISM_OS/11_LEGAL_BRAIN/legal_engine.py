@@ -105,12 +105,28 @@ class LegalEngine:
                 severity="error"
             ),
             ComplianceRule(
+                id="GOV_003",
+                category="governance",
+                description="No unauthorized data export",
+                check_type="keyword",
+                check_value=["export data", "leak data"],
+                severity="critical"
+            ),
+            ComplianceRule(
                 id="GOV_001",
                 category="governance",
                 description="Trang's explicit consent required for external sharing",
                 check_type="pattern",
                 check_value=r"share.*external|publish.*public",
                 severity="error"
+            ),
+            ComplianceRule(
+                id="GOV_004",
+                category="governance",
+                description="Protect IP and sensitive info",
+                check_type="keyword",
+                check_value=["expose secrets", "leak credentials"],
+                severity="critical"
             ),
             ComplianceRule(
                 id="GOV_002",
@@ -216,11 +232,13 @@ class LegalEngine:
 
             passed = self._check_rule(content, rule)
 
+            severity = rule.severity if not passed else "info"
+            msg = f"{'PASS' if passed else 'FAIL'}: {rule.description}"
             check = ComplianceCheck(
                 rule_id=rule.id,
                 passed=passed,
-                severity=rule.severity if not passed else "info",
-                message=f"{'PASS' if passed else 'FAIL'}: {rule.description}",
+                severity=severity,
+                message=msg,
                 timestamp=datetime.utcnow().isoformat() + "Z"
             )
 
@@ -322,13 +340,15 @@ class LegalEngine:
             action in ["execute", "deploy", "share_external"]
         )
 
+        reasoning_pref = governance.get("reasoning_preferences", {})
+        reasoning_style = reasoning_pref.get("style", "pragmatic")
         return {
             "action": action,
             "allowed": not is_restricted,
             "needs_approval": needs_approval,
             "requires_consent": "share" in action.lower(),
             "communication_style": communication.get("style", "formal"),
-            "reasoning_preference": governance.get("reasoning_preferences", {}).get("style", "pragmatic")
+            "reasoning_preference": reasoning_style
         }
 
     def generate_compliance_report(self) -> Dict[str, Any]:
