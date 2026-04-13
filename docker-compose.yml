@@ -1,0 +1,77 @@
+# AMOS Brain + ClawSpring Docker Compose
+# Full stack with optional services
+
+version: '3.8'
+
+services:
+  # Core AMOS Brain
+  amos-brain:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: amos-brain:latest
+    container_name: amos-brain
+    environment:
+      - PYTHONUNBUFFERED=1
+      - AMOS_BRAIN_PATH=/app/_AMOS_BRAIN
+    volumes:
+      - amos-memory:/app/memory
+      - amos-logs:/app/logs
+    networks:
+      - amos-network
+    healthcheck:
+      test: ["CMD", "python3", "-c", "from amos_brain import get_amos_integration; a = get_amos_integration(); exit(0 if a.get_status()['initialized'] else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MCP Server (optional - for external IDE integration)
+  amos-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: amos-brain:latest
+    container_name: amos-mcp-server
+    command: ["python3", "amos_mcp_server.py", "--transport", "sse", "--port", "8080"]
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - amos-memory:/app/memory
+    networks:
+      - amos-network
+    depends_on:
+      amos-brain:
+        condition: service_healthy
+
+  # CLI Interface (interactive mode)
+  amos-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: amos-brain:latest
+    container_name: amos-cli
+    stdin_open: true
+    tty: true
+    command: ["bash"]
+    volumes:
+      - amos-memory:/app/memory
+      - amos-logs:/app/logs
+      - ./:/app/workspace
+    networks:
+      - amos-network
+    depends_on:
+      amos-brain:
+        condition: service_healthy
+
+volumes:
+  amos-memory:
+    driver: local
+  amos-logs:
+    driver: local
+
+networks:
+  amos-network:
+    driver: bridge

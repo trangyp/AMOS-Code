@@ -283,7 +283,9 @@ class AmosOrganism:
                 "senses": self.senses.status(),
                 "skeleton": self.constraints.status(),
                 "world_model": self.knowledge.status(),
-                "metabolism": self.pipeline.status(),
+                "metabolism": {
+                    "total_pipelines": len(self.pipeline.list_pipelines()),
+                },
                 "immune": self.immune.status(),
                 "muscle": self.muscle.status(),
                 "memory": self.memory.stats(),
