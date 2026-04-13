@@ -14,6 +14,10 @@ from .state_manager import (
     CognitiveStateManager, get_state_manager,
     ReasoningStep, WorkflowSession
 )
+from .meta_controller import (
+    MetaCognitiveController, get_meta_controller,
+    orchestrate_goal, WorkflowPlan, SubTask
+)
 
 # Optional: prompt builder (requires brain_loader to be passed)
 try:
@@ -71,6 +75,12 @@ __all__ = [
     "get_state_manager",
     "ReasoningStep",
     "WorkflowSession",
+    # Meta controller
+    "MetaCognitiveController",
+    "get_meta_controller",
+    "orchestrate_goal",
+    "WorkflowPlan",
+    "SubTask",
     # Optional
     "SystemPromptBuilder",
 ]

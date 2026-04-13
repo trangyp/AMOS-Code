@@ -39,6 +39,9 @@ from SKELETON.structural_integrity import StructuralIntegrity
 from WORLD_MODEL.knowledge_graph import KnowledgeGraph
 from WORLD_MODEL.context_mapper import ContextMapper
 from WORLD_MODEL.semantic_index import SemanticIndex
+from METABOLISM.pipeline_engine import PipelineEngine
+from METABOLISM.transform_engine import TransformEngine
+from METABOLISM.io_router import IORouter
 from IMMUNE.immune_system import ImmuneSystem, ActionType
 from IMMUNE.threat_detector import ThreatDetector
 from IMMUNE.compliance_engine import ComplianceEngine
@@ -102,6 +105,11 @@ class AmosOrganism:
         self.knowledge = KnowledgeGraph()
         self.context_mapper = ContextMapper()
         self.semantic_index = SemanticIndex()
+
+        # Initialize METABOLISM (data pipeline layer)
+        self.pipeline = PipelineEngine()
+        self.transform = TransformEngine()
+        self.io_router = IORouter()
 
         # Initialize IMMUNE (safety layer)
         self.immune = ImmuneSystem()

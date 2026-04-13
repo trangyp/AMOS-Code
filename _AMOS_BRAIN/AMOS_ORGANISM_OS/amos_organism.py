@@ -237,6 +237,33 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize MUSCLE: {e}")
     
+    def _init_metabolism(self):
+        """Initialize the METABOLISM subsystem."""
+        try:
+            metabolism_path = self.root / "07_METABOLISM"
+            
+            # Add to path and import directly
+            if str(metabolism_path) not in sys.path:
+                sys.path.insert(0, str(metabolism_path))
+            
+            # Clear any cached module
+            if 'metabolism_kernel' in sys.modules:
+                del sys.modules['metabolism_kernel']
+            
+            import metabolism_kernel
+            importlib.reload(metabolism_kernel)
+            
+            self._metabolism = metabolism_kernel.MetabolismKernel(self.root)
+            self._subsystems["07_METABOLISM"] = self._metabolism
+            self.state["active_subsystems"].append("07_METABOLISM")
+            
+            # Start monitoring
+            self._metabolism.start()
+            
+            logger.info("METABOLISM subsystem initialized with monitoring")
+        except Exception as e:
+            logger.error(f"Failed to initialize METABOLISM: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
@@ -349,7 +376,8 @@ class AMOSOrganism:
             "skeleton_state": self._skeleton.get_state() if self._skeleton else None,
             "immune_state": self._immune.get_state() if self._immune else None,
             "blood_state": self._blood.get_state() if self._blood else None,
-            "muscle_state": self._muscle.get_state() if self._muscle else None
+            "muscle_state": self._muscle.get_state() if self._muscle else None,
+            "metabolism_state": self._metabolism.get_state() if self._metabolism else None
         }
     
     def interactive_mode(self):

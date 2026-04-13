@@ -4,6 +4,28 @@ Connects the AMOS cognitive architecture to the ClawSpring agent runtime.
 
 📖 **Complete Usage Guide**: See [AMOS_BRAIN_GUIDE.md](../AMOS_BRAIN_GUIDE.md) for detailed documentation, examples, and best practices.
 
+## Installation
+
+```bash
+# Install from source
+pip install -e .
+
+# Or run directly without installing
+python -m amos_brain
+```
+
+## Quick Start
+
+```bash
+# Launch the unified menu
+python -m amos_brain
+
+# Or start specific components
+python amos_brain_tutorial.py    # Interactive tutorial
+python amos_brain_cli.py           # Brain CLI
+python tests/test_amos_brain.py    # Run tests
+```
+
 ## Architecture
 
 ```

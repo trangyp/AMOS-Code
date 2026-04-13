@@ -23,7 +23,14 @@ class BrainDashboard:
 
     def __init__(self, memory: BrainMemory | None = None):
         self.memory = memory or get_brain_memory()
-        self.amos = get_amos_integration()
+        self._amos = None
+
+    @property
+    def amos(self):
+        """Lazy-load AMOS integration to prevent blocking during init."""
+        if self._amos is None:
+            self._amos = get_amos_integration()
+        return self._amos
 
     def generate_report(
         self,
