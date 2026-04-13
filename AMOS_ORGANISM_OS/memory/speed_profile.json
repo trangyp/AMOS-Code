@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-04-13T12:48:40.728354Z",
-  "overall_score": 99.98,
+  "timestamp": "2026-04-13T19:06:57.571182Z",
+  "overall_score": 99.89,
   "benchmarks": [
     {
       "name": "registry_load",
-      "duration_ms": 0.21400000000000585,
+      "duration_ms": 1.1316670000000029,
       "memory_bytes": 20923,
       "status": "success",
       "metadata": {

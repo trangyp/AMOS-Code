@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
-    {name = "AMOS Project"}
+    {name = "Trang Phan (Trang Q. Phan)", email = "trang@amos-project.dev"}
 ]
 keywords = [
     "ai",
@@ -47,9 +47,9 @@ amos-tutorial = "amos_brain_tutorial:main"
 amos-cli = "amos_brain_cli:main"
 
 [project.urls]
-Homepage = "https://github.com/amos-project/amos-brain"
-Documentation = "https://github.com/amos-project/amos-brain/blob/main/AMOS_BRAIN_GUIDE.md"
-Repository = "https://github.com/amos-project/amos-brain"
+Homepage = "https://github.com/trangyp/AMOS-Code"
+Documentation = "https://github.com/trangyp/AMOS-Code/blob/main/AMOS_BRAIN_GUIDE.md"
+Repository = "https://github.com/trangyp/AMOS-Code"
 
 [tool.setuptools]
 packages = ["amos_brain", "tests"]

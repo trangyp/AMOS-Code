@@ -1,0 +1,21 @@
+# AMOS - Adaptive Multi-Objective System
+# Python Requirements
+
+# Core dependencies (all stdlib, no external deps required for base system)
+# Python 3.8+ recommended
+
+# Optional - for API server (amos_api.py)
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+
+# Optional - for enhanced connectors
+requests>=2.31.0
+
+# Optional - for database connectors
+# sqlite3 is stdlib, no external dep needed
+
+# Development dependencies (optional)
+# pytest>=7.4.0
+# black>=23.0.0
+# mypy>=1.5.0

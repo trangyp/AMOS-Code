@@ -63,6 +63,14 @@ from LEGAL_BRAIN.policy_engine import PolicyEngine
 from LEGAL_BRAIN.compliance_auditor import ComplianceAuditor
 from LEGAL_BRAIN.contract_manager import ContractManager
 from LEGAL_BRAIN.risk_governor import RiskGovernor
+from SOCIAL_ENGINE.agent_coordinator import AgentCoordinator
+from SOCIAL_ENGINE.communication_bridge import CommunicationBridge
+from SOCIAL_ENGINE.human_interface import HumanInterface
+from SOCIAL_ENGINE.negotiation_engine import NegotiationEngine
+from LIFE_ENGINE.growth_engine import GrowthEngine
+from LIFE_ENGINE.adaptation_system import AdaptationSystem
+from LIFE_ENGINE.health_monitor import HealthMonitor
+from LIFE_ENGINE.lifecycle_manager import LifecycleManager
 
 
 @dataclass
@@ -157,6 +165,18 @@ class AmosOrganism:
         self.compliance_auditor = ComplianceAuditor()
         self.contract_manager = ContractManager()
         self.risk_governor = RiskGovernor()
+
+        # Initialize SOCIAL_ENGINE (coordination & communication layer)
+        self.agent_coordinator = AgentCoordinator()
+        self.communication_bridge = CommunicationBridge()
+        self.human_interface = HumanInterface()
+        self.negotiation_engine = NegotiationEngine()
+
+        # Initialize LIFE_ENGINE (growth & evolution layer)
+        self.growth_engine = GrowthEngine()
+        self.adaptation_system = AdaptationSystem()
+        self.health_monitor = HealthMonitor()
+        self.lifecycle_manager = LifecycleManager()
 
         # Register workflow handlers
         self._register_workflow_handlers()
@@ -314,7 +334,8 @@ class AmosOrganism:
             "active_subsystems": [
                 "01_BRAIN", "02_SENSES", "05_SKELETON", "08_WORLD_MODEL",
                 "09_QUANTUM_LAYER", "04_BLOOD", "07_METABOLISM", "03_IMMUNE",
-                "06_MUSCLE", "13_FACTORY", "12_LEGAL_BRAIN", "14_INTERFACES"
+                "06_MUSCLE", "13_FACTORY", "12_LEGAL_BRAIN", "10_SOCIAL_ENGINE",
+                "11_LIFE_ENGINE", "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
@@ -346,6 +367,20 @@ class AmosOrganism:
                     "total_audits": len(self.compliance_auditor.audit_history),
                     "total_contracts": len(self.contract_manager.contracts),
                     "total_risk_assessments": len(self.risk_governor.assessments),
+                },
+                "social_engine": {
+                    "total_pools": len(self.agent_coordinator.pools),
+                    "total_tasks": len(self.agent_coordinator.tasks),
+                    "total_connections": len(self.communication_bridge.connections),
+                    "total_interactions": len(self.human_interface.interactions),
+                    "active_negotiations": len(self.negotiation_engine.active_negotiations),
+                },
+                "life_engine": {
+                    "total_plans": len(self.growth_engine.plans),
+                    "total_adaptations": len(self.adaptation_system.adaptations),
+                    "total_healing_actions": len(self.health_monitor.healing_actions),
+                    "lifecycle_stage": self.lifecycle_manager.current_stage.value,
+                    "milestones_achieved": sum(1 for m in self.lifecycle_manager.milestones.values() if m.achieved),
                 },
                 "memory": self.memory.stats(),
                 "workflow": {

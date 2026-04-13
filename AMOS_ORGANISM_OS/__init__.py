@@ -80,6 +80,13 @@ except ImportError:
     BrainMuscleBridge = None
     get_brain_muscle_bridge = None
 
+# Primary Loop
+try:
+    from .primary_loop import PrimaryLoop, CycleResult
+except ImportError:
+    PrimaryLoop = None
+    CycleResult = None
+
 # 14 Subsystem Registry
 SUBSYSTEMS = {
     "00_ROOT": {

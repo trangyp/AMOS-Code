@@ -19,6 +19,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Cache
+.mypy_cache/
+
 # Temp files
 *.tmp
 *.log

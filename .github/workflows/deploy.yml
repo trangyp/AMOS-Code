@@ -1,0 +1,50 @@
+name: Deploy AMOS to neurosyncai.tech
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-deploy.txt
+
+      - name: Test AMOS Brain & AMOSL
+        run: |
+          python -c "from amos_brain import BrainClient; c = BrainClient(); print('Brain OK:', c.get_status()['status'])"
+          python -c "from amosl import parse, compile_program; print('AMOSL OK: Compiler ready')"
+
+      - name: Build Docker image
+        run: |
+          docker build -t amos-brain:latest .
+
+      - name: Deploy to Hostinger
+        env:
+          HOSTINGER_API_KEY: ${{ secrets.HOSTINGER_API_KEY }}
+          HOSTINGER_DOMAIN: neurosyncai.tech
+        run: |
+          echo "Deploying to $HOSTINGER_DOMAIN..."
+          # Hostinger deployment via API or Git webhook
+          # For now, create deployment artifact
+          mkdir -p deploy-artifacts
+          docker save amos-brain:latest > deploy-artifacts/amos-brain.tar
+          echo "Deployment artifact created"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: amos-deployment
+          path: deploy-artifacts/

@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "amos": {
+      "name": "AMOS Brain",
+      "description": "Cognitive architecture with Rule of 2/4, Global Laws, and AMOSL compiler",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/amos_mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "tools": [
+        {
+          "name": "amos_reasoning",
+          "description": "Apply Rule of 2 and Rule of 4 to analyze problems with structural integrity"
+        },
+        {
+          "name": "amos_decide", 
+          "description": "Full decision analysis combining Rule of 2, Rule of 4, and Global Laws"
+        },
+        {
+          "name": "amos_laws_check",
+          "description": "Check text compliance with AMOS Global Laws L1-L6"
+        },
+        {
+          "name": "amos_status",
+          "description": "Get AMOS Brain status, engines, and capabilities"
+        },
+        {
+          "name": "amosl_compile",
+          "description": "Compile AMOSL source code to 4 IRs (CIR, QIR, BIR, HIR)"
+        }
+      ]
+    }
+  }
+}

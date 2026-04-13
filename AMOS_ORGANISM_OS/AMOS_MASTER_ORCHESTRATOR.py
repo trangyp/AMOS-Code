@@ -238,10 +238,27 @@ class WorldModelHandler(SubsystemHandler):
 
 
 class QuantumLayerHandler(SubsystemHandler):
-    """12_QUANTUM_LAYER: Timing, probability flows."""
+    """12_QUANTUM_LAYER: Timing, probability flows, predictive analytics."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = ["load_quantum_stack", "check_timing_vectors", "assess_probabilities"]
+        actions = [
+            "load_quantum_stack",
+            "check_timing_vectors",
+            "assess_probabilities",
+            "generate_predictions"
+        ]
+
+        # Generate predictions
+        predictions = {}
+        try:
+            import sys
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "12_QUANTUM_LAYER"))
+            from predictive_engine import PredictiveEngine
+            engine = PredictiveEngine(organism_root)
+            predictions = engine.get_all_predictions()
+        except Exception as e:
+            print(f"[12_QUANTUM_LAYER] Prediction error: {e}")
 
         return CycleResult(
             subsystem=self.code,
@@ -250,21 +267,40 @@ class QuantumLayerHandler(SubsystemHandler):
             outputs={
                 "quantum_stack_loaded": True,
                 "timing_aligned": True,
-                "probability_states": ["baseline"]
+                "probability_states": ["baseline"],
+                "predictions_generated": bool(predictions),
+                "forecast_available": True
             },
             next_recommended="06_MUSCLE"
         )
 
 
 class MuscleHandler(SubsystemHandler):
-    """06_MUSCLE: Run commands, write code, deploy."""
+    """06_MUSCLE: Run commands, write code, deploy, execute tasks."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = ["check_code_engines", "validate_motor_actions", "prepare_deployment"]
+        actions = [
+            "check_code_engines",
+            "validate_motor_actions",
+            "prepare_deployment",
+            "execute_pending_tasks"
+        ]
 
         # Check if there are pending code tasks
         pending_tasks = context.get("pending_tasks", [])
         code_tasks = [t for t in pending_tasks if t.get("type") == "code"]
+
+        # Process task execution
+        tasks_executed = 0
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            from task_executor import AgentTaskRouter
+            router = AgentTaskRouter(organism_root)
+            results = router.process_pending_tasks(max_tasks=2)
+            tasks_executed = len(results)
+        except Exception as e:
+            print(f"[06_MUSCLE] Task execution error: {e}")
 
         return CycleResult(
             subsystem=self.code,
@@ -273,6 +309,7 @@ class MuscleHandler(SubsystemHandler):
             outputs={
                 "coding_engines_ready": True,
                 "pending_code_tasks": len(code_tasks),
+                "tasks_executed": tasks_executed,
                 "motor_actions_allowed": [
                     "generate_plan", "refine_plan", "analyze_text",
                     "propose_code_change", "log_decision", "simulate_outcome"

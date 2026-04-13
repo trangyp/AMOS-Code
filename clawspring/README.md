@@ -2058,7 +2058,7 @@ ClawSpring v3.05.3 adds optional cloud backup of conversation sessions via **Git
 
 ```
 [myproject] ❯ /cloudsave setup ghp_xxxxxxxxxxxxxxxxxxxx
-✓ GitHub token saved (logged in as: Chauncygu). Cloud sync is ready.
+✓ GitHub token saved. Cloud sync is ready.
 ```
 
 ### Upload a session

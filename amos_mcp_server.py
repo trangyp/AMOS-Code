@@ -148,6 +148,25 @@ class AMOSMCPServer:
                 },
                 handler=self._handle_decide
             ),
+            "amosl_compile": Tool(
+                name="amosl_compile",
+                description=(
+                    "Compile AMOSL (Absolute Meta Operating System Language) source code. "
+                    "Generates 4 intermediate representations (CIR, QIR, BIR, HIR) and "
+                    "validates 8 invariant laws. Returns compilation statistics."
+                ),
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "source": {
+                            "type": "string",
+                            "description": "AMOSL source code to compile"
+                        }
+                    },
+                    "required": ["source"]
+                },
+                handler=self._handle_amosl_compile
+            ),
         }
 
     def _handle_reasoning(self, args: dict) -> dict:
@@ -259,6 +278,42 @@ class AMOSMCPServer:
             "assumptions": analysis.get("assumptions", []),
             "uncertainties": analysis.get("uncertainty_flags", [])
         }
+
+    def _handle_amosl_compile(self, args: dict) -> dict:
+        """Handle amosl_compile tool."""
+        from amosl import parse, compile_program, validate_invariants
+
+        source = args.get("source", "")
+
+        if not source:
+            return {"error": "No AMOSL source code provided"}
+
+        try:
+            # Parse AMOSL source
+            program = parse(source)
+
+            # Validate invariants
+            inv_valid, violations = validate_invariants(program)
+
+            # Compile to 4 IRs
+            cir, qir, bir, hir = compile_program(program)
+
+            return {
+                "success": True,
+                "invariants_valid": inv_valid,
+                "invariant_violations": violations,
+                "ir_stats": {
+                    "cir_blocks": len(cir.blocks),
+                    "qir_registers": len(qir.registers),
+                    "bir_species": len(bir.species),
+                    "hir_bridges": len(hir.bridges)
+                }
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
     def handle_request(self, request: dict) -> dict:
         """Handle incoming MCP request."""

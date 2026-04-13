@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
 """
-AMOS Unified - Complete integration of Brain + Organism OS + ClawSpring.
+AMOS Unified - Complete integration of all AMOS layers.
 
 This is the unified entry point that orchestrates:
-1. AMOS Brain (12 engines, 6 laws, Rule 2/4 reasoning)
-2. AMOS Organism OS (14 subsystems - brain, senses, muscle, blood, etc.)
-3. ClawSpring Agent Runtime (tools, memory, agent loop)
+1. AMOS v4 (Persistent Economic Organism - Pe, X, Y, Q layers)
+2. AMOS Core (Branch Field, Collapse, Morph, Time, Energy)
+3. AMOS Memory (Working, Episodic, Semantic, Procedural, Self)
+4. AMOS Meta-cognition (Reflection, Parameter Adaptation)
+5. AMOS Repo Intelligence (Code Understanding)
+6. AMOS Self-coding (Code Generation)
+
+Full State:
+  AMOS_v4 = (G,T,N,W,M,E,R,K,B,A,V,H,P,I,D,F,S,L,C,Pe,X,Y,Q)
 
 Primary Loop:
-  Brain -> Senses -> Skeleton -> World Model -> Quantum -> Muscle -> Metabolism -> Brain
+  Perceive → Branch → Simulate → Collapse → Execute → Learn → Persist
 
 Usage:
     python amos_unified.py                    # Start unified runtime
-    python amos_unified.py --mode organism    # Organism mode only
-    python amos_unified.py --mode brain       # Brain mode only
-    python amos_unified.py --mode full      # Full integration (default)
+    python amos_unified.py --mode v4          # v4 Economic mode
+    python amos_unified.py --mode core        # Core cognitive mode
+    python amos_unified.py --mode full        # Full integration (default)
 """
 from __future__ import annotations
 
@@ -33,35 +39,65 @@ class AMOSUnifiedRuntime:
     """
     Unified runtime integrating all AMOS layers.
     
-    Layers:
-    - Layer 1: Core Brain (12 engines, 6 laws)
-    - Layer 2: Organism OS (14 subsystems)
-    - Layer 3: ClawSpring Integration (agent runtime)
+    Architecture Stack:
+    - Layer 1: AMOS v4 (Economic Organism - Persistence, Resources, World Model)
+    - Layer 2: Core Cognitive (Branch Field, Collapse, Morph, Time, Energy)
+    - Layer 3: Memory Systems (5 memory types with consolidation)
+    - Layer 4: Meta-cognition (Reflection, Learning, Adaptation)
+    - Layer 5: Repo Intelligence (Code Understanding)
+    - Layer 6: Self-coding (Code Generation)
+    - Layer 7: Integration APIs (Brain, Organism OS, ClawSpring)
     """
     
     def __init__(self, mode: str = "full"):
         self.mode = mode
+        
+        # v4 Economic Layer
+        self.v4 = None
+        
+        # Core Cognitive Layer
+        self.core = None
+        self.time_engine = None
+        self.energy_system = None
+        
+        # Memory Layer
+        self.memory = None
+        
+        # Meta-cognition Layer
+        self.meta = None
+        
+        # Repo & Self-coding Layer
+        self.repo_intel = None
+        self.self_coding = None
+        
+        # Legacy Integration Layer
         self.brain = None
         self.organism = None
         self.clawspring = None
+        
         self._initialized = False
         
     def initialize(self) -> bool:
         """Initialize all layers based on mode."""
         print("╔════════════════════════════════════════════════════════════╗")
-        print("║           AMOS UNIFIED RUNTIME                             ║")
-        print("║    Brain × Organism OS × ClawSpring                        ║")
+        print("║           AMOS UNIFIED RUNTIME v4.0                        ║")
+        print("║    Persistent Economic Cognitive Organism                    ║")
         print("╚════════════════════════════════════════════════════════════╝")
         print()
         
         try:
-            if self.mode in ("brain", "full"):
-                self._init_brain()
+            if self.mode in ("v4", "full"):
+                self._init_v4()
             
-            if self.mode in ("organism", "full"):
-                self._init_organism()
+            if self.mode in ("core", "full"):
+                self._init_core()
+                self._init_memory()
+                self._init_meta()
             
             if self.mode == "full":
+                self._init_repo_and_coding()
+                self._init_brain()
+                self._init_organism()
                 self._init_clawspring()
                 self._wire_layers()
             
@@ -73,17 +109,123 @@ class AMOSUnifiedRuntime:
             
         except Exception as e:
             print(f"✗ Initialization failed: {e}")
+            import traceback
+            traceback.print_exc()
             return False
     
-    def _init_brain(self) -> None:
-        """Initialize AMOS Brain Layer 1."""
-        print("→ Initializing AMOS Brain (Layer 1)...")
-        from amos_brain import get_amos_integration
-        self.brain = get_amos_integration()
-        status = self.brain.get_status()
-        print(f"  ✓ Brain loaded: {status['engines_count']} engines")
-        print(f"  ✓ Laws active: {len(status['laws_active'])}")
+    def _init_v4(self) -> None:
+        """Initialize AMOS v4 Economic Organism."""
+        print("→ Initializing AMOS v4 Economic Organism...")
+        try:
+            from amos_v4 import AMOSv4
+            self.v4 = AMOSv4(name="AMOS_Unified_v4")
+            print("  ✓ v4 Persistence Layer (Pe)")
+            print("  ✓ v4 Economic Layer (X)")
+            print("  ✓ v4 World Model (Y)")
+            print("  ✓ v4 Resource Allocation (Q)")
+            print()
+        except ImportError as e:
+            print(f"  ! v4 not available: {e}")
+            print()
+    
+    def _init_core(self) -> None:
+        """Initialize AMOS Core Cognitive Engine."""
+        print("→ Initializing AMOS Core Cognitive Engine...")
+        try:
+            from amos_core import AMOSCore
+            self.core = AMOSCore()
+            print("  ✓ Universal State Graph")
+            print("  ✓ Global Workspace")
+            print("  ✓ Branch Field Engine")
+            print("  ✓ Collapse Engine")
+            print("  ✓ Morph Executor")
+            print()
+        except ImportError as e:
+            print(f"  ! Core not available: {e}")
+            print()
+        
+        # Time Engine
+        try:
+            from amos_time import TimeEngine
+            self.time_engine = TimeEngine()
+            print("  ✓ Time Engine (Event Sourcing)")
+        except ImportError:
+            pass
+        
+        # Energy System
+        try:
+            from amos_energy import AMOSEnergySystem
+            self.energy_system = AMOSEnergySystem()
+            print("  ✓ Energy System (Resource Allocation)")
+            print()
+        except ImportError:
+            pass
+    
+    def _init_memory(self) -> None:
+        """Initialize AMOS Memory Systems."""
+        print("→ Initializing AMOS Memory Systems...")
+        try:
+            from amos_memory import AMOSMemorySystem
+            self.memory = AMOSMemorySystem()
+            print("  ✓ Working Memory")
+            print("  ✓ Episodic Memory")
+            print("  ✓ Semantic Memory")
+            print("  ✓ Procedural Memory")
+            print("  ✓ Self Memory")
+            print()
+        except ImportError as e:
+            print(f"  ! Memory not available: {e}")
+            print()
+    
+    def _init_meta(self) -> None:
+        """Initialize AMOS Meta-cognition."""
+        print("→ Initializing AMOS Meta-cognition...")
+        try:
+            from amos_meta import MetaCognitionSystem
+            self.meta = MetaCognitionSystem()
+            print("  ✓ Prediction Tracking")
+            print("  ✓ Branch Efficiency Analysis")
+            print("  ✓ Failure Pattern Detection")
+            print("  ✓ Parameter Adaptation")
+            print("  ✓ Confidence Calibration")
+            print()
+        except ImportError as e:
+            print(f"  ! Meta-cognition not available: {e}")
+            print()
+    
+    def _init_repo_and_coding(self) -> None:
+        """Initialize Repo Intelligence and Self-coding."""
+        print("→ Initializing Repo Intelligence & Self-coding...")
+        
+        try:
+            from amos_repo import AMOSRepoIntelligence
+            self.repo_intel = AMOSRepoIntelligence(".")
+            print("  ✓ Repo Intelligence (Code Understanding)")
+        except ImportError:
+            pass
+        
+        try:
+            from amos_self_code import AMOSSelfCoding
+            self.self_coding = AMOSSelfCoding()
+            print("  ✓ Self-coding (Code Generation)")
+        except ImportError:
+            pass
+        
         print()
+    
+    def _init_brain(self) -> None:
+        """Initialize AMOS Brain Integration."""
+        print("→ Initializing AMOS Brain Integration...")
+        try:
+            from amos_brain import get_amos_integration
+            self.brain = get_amos_integration()
+            status = self.brain.get_status()
+            print(f"  ✓ Brain loaded: {status['engines_count']} engines")
+            print(f"  ✓ Laws active: {len(status['laws_active'])}")
+            print()
+        except ImportError as e:
+            print(f"  ! Brain integration not available: {e}")
+            print()
     
     def _init_organism(self) -> None:
         """Initialize AMOS Organism OS Layer 2."""
@@ -157,10 +299,34 @@ class AMOSUnifiedRuntime:
     
     def _show_status(self) -> None:
         """Show unified status."""
-        print("Layer Status:")
-        print(f"  [1] Brain:      {'✓' if self.brain else '✗'}")
-        print(f"  [2] Organism:   {'✓' if self.organism else '✗'}")
-        print(f"  [3] ClawSpring: {'✓' if self.clawspring else '✗'}")
+        print("=" * 60)
+        print("AMOS UNIFIED STATUS")
+        print("=" * 60)
+        print()
+        print("Layer 1 - Economic Organism (v4):")
+        print(f"  [Pe] Persistence:    {'✓' if self.v4 else '✗'}")
+        print(f"  [X]  Economics:    {'✓' if self.v4 else '✗'}")
+        print(f"  [Y]  World Model:  {'✓' if self.v4 else '✗'}")
+        print(f"  [Q]  Resources:    {'✓' if self.v4 else '✗'}")
+        print()
+        print("Layer 2 - Core Cognitive:")
+        print(f"  [C]  Core Engine:  {'✓' if self.core else '✗'}")
+        print(f"  [T]  Time Engine:  {'✓' if self.time_engine else '✗'}")
+        print(f"  [E]  Energy:       {'✓' if self.energy_system else '✗'}")
+        print()
+        print("Layer 3 - Memory Systems:")
+        print(f"  [M]  Memory:        {'✓' if self.memory else '✗'}")
+        print()
+        print("Layer 4 - Meta-cognition:")
+        print(f"  [Mc] Reflection:    {'✓' if self.meta else '✗'}")
+        print()
+        print("Layer 5 - Code Intelligence:")
+        print(f"  [R]  Repo Intel:   {'✓' if self.repo_intel else '✗'}")
+        print(f"  [Sc] Self-coding:  {'✓' if self.self_coding else '✗'}")
+        print()
+        print("Layer 6 - Integration:")
+        print(f"  [B]  Brain API:     {'✓' if self.brain else '✗'}")
+        print(f"  [O]  Organism OS:  {'✓' if self.organism else '✗'}")
         print()
     
     def _run_full_mode(self) -> int:
@@ -219,7 +385,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--mode",
-        choices=["brain", "organism", "full"],
+        choices=["v4", "core", "brain", "organism", "full"],
         default="full",
         help="Runtime mode (default: full)"
     )

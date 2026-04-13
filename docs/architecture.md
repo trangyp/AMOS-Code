@@ -7,7 +7,7 @@ For user-facing docs, see [README.md](../README.md).
 
 ## Overview
 
-Nano-claude-code is a ~3.4K-line Python CLI that lets LLMs (GPT, Gemini, etc.) operate as
+ClawSpring is a ~3.4K-line Python CLI that lets LLMs (GPT, Gemini, etc.) operate as
 coding agents with tool use, memory, sub-agents, and skills. The architecture is a flat
 module layout designed for readability and future migration to a package structure.
 

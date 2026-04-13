@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMOS Brain API - neurosyncai.tech</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .subtitle { color: #888; margin-bottom: 2rem; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .endpoint {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .method {
+            background: #4CAF50;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .method.post { background: #2196F3; }
+        .url { font-family: monospace; color: #aaa; }
+        textarea, input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            color: #fff;
+            margin: 0.5rem 0;
+            font-family: monospace;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover { background: #45a049; }
+        .response {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+        }
+        .status { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.5rem; }
+        .status.ok { background: #4CAF50; }
+        .status.error { background: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AMOS Brain API</h1>
+        <p class="subtitle">neurosyncai.tech - Cognitive Architecture Endpoint</p>
+
+        <div class="card">
+            <h3>Health Check</h3>
+            <button onclick="checkHealth()">Check Health</button>
+            <div id="healthResponse" class="response" style="display:none"></div>
+        </div>
+
+        <div class="card">
+            <h3>Think Endpoint</h3>
+            <textarea id="thinkQuery" rows="3" placeholder="Enter your query..."></textarea>
+            <button onclick="testThink()">Send to /think</button>
+            <div id="thinkResponse" class="response" style="display:none"></div>
+        </div>
+
+        <div class="card">
+            <h3>API Endpoints</h3>
+            <div class="endpoint"><span class="method">GET</span><span class="url">/health</span></div>
+            <div class="endpoint"><span class="method">GET</span><span class="url">/status</span></div>
+            <div class="endpoint"><span class="method post">POST</span><span class="url">/think</span></div>
+            <div class="endpoint"><span class="method post">POST</span><span class="url">/decide</span></div>
+            <div class="endpoint"><span class="method post">POST</span><span class="url">/validate</span></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        async function checkHealth() {
+            const res = document.getElementById('healthResponse');
+            res.style.display = 'block';
+            res.textContent = 'Loading...';
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                res.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                res.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function testThink() {
+            const query = document.getElementById('thinkQuery').value;
+            const res = document.getElementById('thinkResponse');
+            res.style.display = 'block';
+            res.textContent = 'Loading...';
+            try {
+                const response = await fetch(`${API_BASE}/think`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, domain: 'general' })
+                });
+                const data = await response.json();
+                res.textContent = JSON.stringify(data, null, 2);
+            } catch (e) {
+                res.textContent = 'Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>

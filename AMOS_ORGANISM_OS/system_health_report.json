@@ -1,0 +1,262 @@
+{
+  "summary": {
+    "timestamp": "2026-04-13T15:15:21.138813",
+    "total_subsystems": 14,
+    "healthy": 14,
+    "warnings": 0,
+    "errors": 1,
+    "overall_health": "healthy",
+    "completion_pct": 100.0
+  },
+  "subsystems": {
+    "00_ROOT": {
+      "name": "Root System",
+      "folder_exists": false,
+      "init_importable": false,
+      "core_modules": [],
+      "test_passed": false,
+      "errors": [
+        "Folder 00_ROOT not found"
+      ]
+    },
+    "01_BRAIN": {
+      "name": "Brain & Cognition",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "BrainOS",
+        "BrainState",
+        "Thought",
+        "Plan",
+        "SystemRouter",
+        "MemoryLayer"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "02_SENSES": {
+      "name": "Senses & Perception",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "EnvironmentScanner",
+        "FileChange",
+        "ContextGatherer",
+        "ContextSnapshot",
+        "SignalDetector",
+        "Signal"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "03_IMMUNE": {
+      "name": "Immune & Security",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "ImmuneSystem",
+        "SafetyPolicy",
+        "AuditLog",
+        "ThreatDetector",
+        "ComplianceEngine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "04_BLOOD": {
+      "name": "Blood & Resources",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "ResourceEngine",
+        "ResourcePool",
+        "ResourceAllocation",
+        "BudgetManager",
+        "Budget",
+        "BudgetCategory",
+        "CashflowTracker",
+        "CashflowRecord",
+        "CashflowType",
+        "ForecastEngine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "05_SKELETON": {
+      "name": "Skeleton & Structure",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "ConstraintEngine",
+        "Constraint",
+        "ConstraintResult",
+        "RuleValidator",
+        "Rule",
+        "ValidationOutcome",
+        "StructuralIntegrity",
+        "IntegrityCheck"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "06_MUSCLE": {
+      "name": "Muscle & Execution",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "MuscleExecutor",
+        "ExecutionResult",
+        "ExecutionContext",
+        "CodeRunner",
+        "WorkflowEngine",
+        "AmosWorkerEngine",
+        "WorkerResult",
+        "CodeWorker",
+        "FileWorker",
+        "get_worker_engine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "07_METABOLISM": {
+      "name": "Metabolism & Processing",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "PipelineEngine",
+        "Pipeline",
+        "PipelineStage",
+        "TransformEngine",
+        "Transform",
+        "TransformContext",
+        "IORouter",
+        "Route",
+        "RouteConfig",
+        "CleanupEngine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "08_WORLD_MODEL": {
+      "name": "World Model & Context",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "KnowledgeGraph",
+        "Entity",
+        "Relation",
+        "ContextMapper",
+        "ContextMap",
+        "SemanticIndex",
+        "IndexedDocument",
+        "MacroeconomicScanner",
+        "EconomicIndicator",
+        "MarketSignal"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "09_SOCIAL_ENGINE": {
+      "name": "Social Engine",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "SocialEngine",
+        "Message",
+        "SocialConnection",
+        "KnowledgeShare",
+        "get_social_engine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "10_LIFE_ENGINE": {
+      "name": "Life Engine",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "BioRhythmEngine",
+        "CircadianCycle",
+        "EnergyState",
+        "get_bio_rhythm_engine",
+        "HealthMonitor",
+        "HealthMetric",
+        "HealthStatus",
+        "get_health_monitor",
+        "MoodTracker",
+        "MoodState"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "11_LEGAL_BRAIN": {
+      "name": "Legal Brain",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "LegalEngine",
+        "ComplianceRule",
+        "ComplianceCheck",
+        "RiskAssessment",
+        "ContractManager",
+        "Contract",
+        "ContractStatus",
+        "get_contract_manager",
+        "IPTracker",
+        "IPAsset"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "12_QUANTUM_LAYER": {
+      "name": "Quantum Layer",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "SuperpositionManager",
+        "SuperpositionState",
+        "get_superposition_manager",
+        "ProbabilityEngine",
+        "ProbabilityDistribution",
+        "get_probability_engine",
+        "TimingSynchronizer",
+        "SynchronicityEvent",
+        "get_timing_synchronizer",
+        "QuantumDecisionEngine"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "13_FACTORY": {
+      "name": "Factory & Generation",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "AgentFactory",
+        "AgentSpec",
+        "AgentInstance",
+        "CodeGenerator",
+        "CodeTemplate",
+        "GeneratedCode",
+        "BuilderEngine",
+        "BuildTask",
+        "BuildResult",
+        "QualityChecker"
+      ],
+      "test_passed": true,
+      "errors": []
+    },
+    "14_INTERFACES": {
+      "name": "Interfaces & CLI",
+      "folder_exists": true,
+      "init_importable": true,
+      "core_modules": [
+        "AmosCLI",
+        "CommandHandler",
+        "APIServer"
+      ],
+      "test_passed": true,
+      "errors": []
+    }
+  }
+}

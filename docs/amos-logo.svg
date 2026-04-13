@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer ring - represents the Operating System -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#ringGradient)" stroke-width="3" opacity="0.6"/>
+  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#ringGradient)" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Middle ring - represents Meta cognition -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.4"/>
+  
+  <!-- Inner brain shape - represents Absolute intelligence -->
+  <path d="M100 45 
+           C120 45, 140 55, 145 75
+           C150 95, 145 115, 130 125
+           C125 130, 115 135, 100 135
+           C85 135, 75 130, 70 125
+           C55 115, 50 95, 55 75
+           C60 55, 80 45, 100 45Z" 
+        fill="url(#brainGradient)" 
+        filter="url(#glow)"/>
+  
+  <!-- Neural network nodes -->
+  <circle cx="85" cy="75" r="5" fill="#ffffff" opacity="0.9"/>
+  <circle cx="115" cy="75" r="5" fill="#ffffff" opacity="0.9"/>
+  <circle cx="100" cy="95" r="6" fill="#ffffff" opacity="0.9"/>
+  <circle cx="85" cy="110" r="4" fill="#ffffff" opacity="0.9"/>
+  <circle cx="115" cy="110" r="4" fill="#ffffff" opacity="0.9"/>
+  <circle cx="100" cy="120" r="3" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Neural connections -->
+  <line x1="85" y1="75" x2="100" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+  <line x1="115" y1="75" x2="100" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+  <line x1="85" y1="110" x2="100" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+  <line x1="115" y1="110" x2="100" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+  <line x1="85" y1="110" x2="100" y2="120" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+  <line x1="115" y1="110" x2="100" y2="120" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+  
+  <!-- L1-L6 indicator rings -->
+  <circle cx="100" cy="35" r="3" fill="#fbbf24"/>
+  <circle cx="130" cy="45" r="3" fill="#f59e0b"/>
+  <circle cx="145" cy="70" r="3" fill="#ef4444"/>
+  <circle cx="145" cy="100" r="3" fill="#ec4899"/>
+  <circle cx="130" cy="130" r="3" fill="#8b5cf6"/>
+  <circle cx="100" cy="145" r="3" fill="#3b82f6"/>
+  
+  <!-- Connection lines to levels -->
+  <line x1="100" y1="45" x2="100" y2="38" stroke="#fbbf24" stroke-width="1" opacity="0.7"/>
+  <line x1="130" y1="60" x2="130" y2="48" stroke="#f59e0b" stroke-width="1" opacity="0.7"/>
+  <line x1="140" y1="80" x2="145" y2="73" stroke="#ef4444" stroke-width="1" opacity="0.7"/>
+  
+  <!-- AMOS text -->
+  <text x="100" y="165" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#1e293b">AMOS</text>
+  <text x="100" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="500" text-anchor="middle" fill="#64748b" letter-spacing="2">BRAIN</text>
+</svg>

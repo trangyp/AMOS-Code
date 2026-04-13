@@ -300,6 +300,72 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_predict(args) -> int:
+    """Show predictive analytics forecast."""
+    root = get_organism_root()
+    quantum_dir = root / "12_QUANTUM_LAYER"
+
+    sys.path.insert(0, str(quantum_dir))
+    from predictive_engine import PredictiveEngine
+
+    engine = PredictiveEngine(root)
+
+    if args.target == "all":
+        print(engine.get_forecast_summary())
+    elif args.target == "queue":
+        print("Queue Forecast")
+        print("=" * 40)
+        try:
+            sys.path.insert(0, str(root / "07_METABOLISM"))
+            from task_queue import TaskQueue
+            queue = TaskQueue(root)
+            status = queue.get_status()
+            pred = engine.predict_queue_clearance(status.get("pending", 0))
+            print(f"Pending tasks: {status.get('pending', 0)}")
+            print(f"Estimated clearance: {pred.horizon}")
+            print(f"Confidence: {pred.confidence*100:.0f}%")
+        except Exception as e:
+            print(f"Error: {e}")
+    elif args.target == "resources":
+        print("Resource Forecast (24h)")
+        print("=" * 40)
+        for resource in ["compute", "storage", "budget"]:
+            pred = engine.predict_resource_usage(resource, 24)
+            print(f"{resource}: {pred.predicted_value:.1f}%")
+
+    return 0
+
+
+def cmd_execute(args) -> int:
+    """Execute pending tasks via Task Executor."""
+    root = get_organism_root()
+    muscle_dir = root / "06_MUSCLE"
+
+    sys.path.insert(0, str(muscle_dir))
+    from task_executor import AgentTaskRouter
+
+    router = AgentTaskRouter(root)
+
+    print("Executing pending tasks...")
+    print("=" * 40)
+
+    results = router.process_pending_tasks(max_tasks=args.count)
+
+    if results:
+        print(f"\nExecuted {len(results)} tasks:")
+        for r in results:
+            status = "✓" if r["success"] else "✗"
+            print(f"  {status} Task {r['task_id']} by {r['agent_id']}")
+    else:
+        print("\nNo pending tasks to execute")
+
+    # Show status
+    status = router.get_status()
+    print(f"\nRemaining: {status['tasks_pending']} pending")
+
+    return 0
+
+
 def cmd_task(args) -> int:
     """Interact with Task Queue."""
     root = get_organism_root()
@@ -639,6 +705,26 @@ def main(argv: Optional[List[str]] = None) -> int:
         default="medium", help="Task priority"
     )
     task_parser.set_defaults(func=cmd_task)
+
+    # Execute command
+    execute_parser = subparsers.add_parser(
+        "execute", help="Execute pending tasks (MUSCLE)"
+    )
+    execute_parser.add_argument(
+        "--count", "-c", type=int, default=5,
+        help="Maximum tasks to execute"
+    )
+    execute_parser.set_defaults(func=cmd_execute)
+
+    # Predict command
+    predict_parser = subparsers.add_parser(
+        "predict", help="Predictive analytics (QUANTUM_LAYER)"
+    )
+    predict_parser.add_argument(
+        "target", choices=["all", "queue", "resources"], nargs="?",
+        default="all", help="What to predict"
+    )
+    predict_parser.set_defaults(func=cmd_predict)
 
     args = parser.parse_args(argv)
 

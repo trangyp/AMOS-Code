@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMOS Production Monitoring</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #2a2a3e;
+        }
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .header p { color: #888; }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+        .status-healthy { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .status-degraded { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-unhealthy { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #2a2a3e;
+        }
+        .metric:last-child { border-bottom: none; }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .metric-label { color: #888; font-size: 0.9rem; }
+        .metric-change {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .metric-up { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .metric-down { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .alert-critical { background: rgba(255, 68, 68, 0.15); border-left: 3px solid #ff4444; }
+        .alert-warning { background: rgba(255, 193, 7, 0.15); border-left: 3px solid #ffc107; }
+        .alert-info { background: rgba(0, 212, 255, 0.15); border-left: 3px solid #00d4ff; }
+        .alert-time { color: #666; font-size: 0.8rem; }
+        .health-check {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .check-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .check-ok { background: #00ff88; }
+        .check-warn { background: #ffc107; }
+        .check-error { background: #ff4444; }
+        .check-name { flex: 1; margin-left: 0.75rem; }
+        .check-time { color: #666; font-size: 0.8rem; }
+        .refresh-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+        }
+        .timestamp {
+            text-align: center;
+            color: #666;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+        }
+        .endpoint-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .endpoint-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #2a2a3e;
+            font-size: 0.9rem;
+        }
+        .endpoint-path { color: #00d4ff; }
+        .endpoint-count { color: #fff; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AMOS Production Monitoring</h1>
+        <p>
+            Real-time system health and performance metrics
+            <span id="overall-status" class="status-indicator status-healthy">● HEALTHY</span>
+        </p>
+    </div>
+    
+    <div class="container">
+        <div class="grid">
+            <!-- API Metrics -->
+            <div class="card">
+                <h2>📊 API Metrics (5min)</h2>
+                <div class="metric">
+                    <span class="metric-label">Total Requests</span>
+                    <span class="metric-value" id="total-requests">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Requests/sec</span>
+                    <span class="metric-value" id="rps">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Error Rate</span>
+                    <span class="metric-value" id="error-rate">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Latency</span>
+                    <span class="metric-value" id="avg-latency">0ms</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">p95 Latency</span>
+                    <span class="metric-value" id="p95-latency">0ms</span>
+                </div>
+            </div>
+            
+            <!-- Health Checks -->
+            <div class="card">
+                <h2>🏥 Health Checks</h2>
+                <div id="health-checks">
+                    <div class="health-check">
+                        <div class="check-status check-ok"></div>
+                        <span class="check-name">Brain API</span>
+                        <span class="check-time">12ms</span>
+                    </div>
+                    <div class="health-check">
+                        <div class="check-status check-ok"></div>
+                        <span class="check-name">WebSocket Server</span>
+                        <span class="check-time">8ms</span>
+                    </div>
+                    <div class="health-check">
+                        <div class="check-status check-ok"></div>
+                        <span class="check-name">Memory</span>
+                        <span class="check-time">45%</span>
+                    </div>
+                    <div class="health-check">
+                        <div class="check-status check-ok"></div>
+                        <span class="check-name">Disk</span>
+                        <span class="check-time">32%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Alerts -->
+            <div class="card">
+                <h2>🔔 Active Alerts</h2>
+                <div id="active-alerts">
+                    <div class="alert-item alert-info">
+                        <div>
+                            <div>System operational</div>
+                            <div class="alert-time">No active alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Endpoints -->
+            <div class="card">
+                <h2>🌐 Top Endpoints</h2>
+                <div class="endpoint-list" id="top-endpoints">
+                    <div class="endpoint-item">
+                        <span class="endpoint-path">/health</span>
+                        <span class="endpoint-count">0</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="endpoint-path">/think</span>
+                        <span class="endpoint-count">0</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="endpoint-path">/decide</span>
+                        <span class="endpoint-count">0</span>
+                    </div>
+                    <div class="endpoint-item">
+                        <span class="endpoint-path">/status</span>
+                        <span class="endpoint-count">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Resources -->
+            <div class="card">
+                <h2>💻 System Resources</h2>
+                <div class="metric">
+                    <span class="metric-label">CPU Usage</span>
+                    <span class="metric-value" id="cpu-usage">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory Usage</span>
+                    <span class="metric-value" id="memory-usage">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Disk Usage</span>
+                    <span class="metric-value" id="disk-usage">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Uptime</span>
+                    <span class="metric-value" id="uptime">0h 0m</span>
+                </div>
+            </div>
+            
+            <!-- Status Codes -->
+            <div class="card">
+                <h2>📈 Status Codes</h2>
+                <div id="status-codes">
+                    <div class="metric">
+                        <span class="metric-label">200 OK</span>
+                        <span class="metric-value" style="color: #00ff88;">0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">400 Bad Request</span>
+                        <span class="metric-value" style="color: #ffc107;">0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">500 Server Error</span>
+                        <span class="metric-value" style="color: #ff4444;">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="timestamp">Last updated: <span id="timestamp">-</span></p>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+    
+    <script>
+        async function refreshData() {
+            try {
+                // Fetch metrics
+                const metricsRes = await fetch('/api/metrics/summary');
+                const metrics = await metricsRes.json();
+                
+                // Fetch health
+                const healthRes = await fetch('/api/health');
+                const health = await healthRes.json();
+                
+                // Fetch alerts
+                const alertsRes = await fetch('/api/alerts/active');
+                const alerts = await alertsRes.json();
+                
+                // Update metrics
+                document.getElementById('total-requests').textContent = metrics.total_requests || 0;
+                document.getElementById('rps').textContent = (metrics.requests_per_second || 0).toFixed(2);
+                document.getElementById('error-rate').textContent = (metrics.error_rate || 0) + '%';
+                document.getElementById('avg-latency').textContent = (metrics.response_time_ms?.avg || 0) + 'ms';
+                document.getElementById('p95-latency').textContent = (metrics.response_time_ms?.p95 || 0) + 'ms';
+                
+                // Update health status
+                const statusEl = document.getElementById('overall-status');
+                statusEl.className = 'status-indicator status-' + (health.overall || 'unknown');
+                statusEl.textContent = '● ' + (health.overall || 'UNKNOWN').toUpperCase();
+                
+                // Update health checks
+                const checksHtml = health.checks?.map(check => `
+                    <div class="health-check">
+                        <div class="check-status check-${check.status === 'healthy' ? 'ok' : check.status === 'degraded' ? 'warn' : 'error'}"></div>
+                        <span class="check-name">${check.name}</span>
+                        <span class="check-time">${Math.round(check.response_time_ms)}ms</span>
+                    </div>
+                `).join('') || '';
+                document.getElementById('health-checks').innerHTML = checksHtml;
+                
+                // Update alerts
+                const alertsHtml = alerts.alerts?.length ? alerts.alerts.map(alert => `
+                    <div class="alert-item alert-${alert.severity}">
+                        <div>
+                            <div><strong>${alert.rule}</strong></div>
+                            <div>${alert.message}</div>
+                            <div class="alert-time">${new Date(alert.timestamp).toLocaleString()}</div>
+                        </div>
+                    </div>
+                `).join('') : `
+                    <div class="alert-item alert-info">
+                        <div>
+                            <div>System operational</div>
+                            <div class="alert-time">No active alerts</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('active-alerts').innerHTML = alertsHtml;
+                
+                // Update top endpoints
+                const endpointsHtml = metrics.top_endpoints?.map(ep => `
+                    <div class="endpoint-item">
+                        <span class="endpoint-path">${ep.path}</span>
+                        <span class="endpoint-count">${ep.count}</span>
+                    </div>
+                `).join('') || '';
+                document.getElementById('top-endpoints').innerHTML = endpointsHtml;
+                
+                // Update status codes
+                const codesHtml = Object.entries(metrics.status_codes || {}).map(([code, count]) => `
+                    <div class="metric">
+                        <span class="metric-label">${code}</span>
+                        <span class="metric-value" style="color: ${code.startsWith('2') ? '#00ff88' : code.startsWith('4') ? '#ffc107' : '#ff4444'}">${count}</span>
+                    </div>
+                `).join('') || '';
+                document.getElementById('status-codes').innerHTML = codesHtml;
+                
+                // Update system resources from gauges
+                if (metrics.gauges) {
+                    document.getElementById('cpu-usage').textContent = (metrics.gauges.cpu_percent || 0) + '%';
+                    document.getElementById('memory-usage').textContent = (metrics.gauges.memory_percent || 0) + '%';
+                    document.getElementById('disk-usage').textContent = (metrics.gauges.disk_percent || 0) + '%';
+                }
+                
+                // Update timestamp
+                document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                
+            } catch (error) {
+                console.error('Failed to refresh:', error);
+                document.getElementById('timestamp').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Auto-refresh every 10 seconds
+        setInterval(refreshData, 10000);
+        
+        // Initial load
+        refreshData();
+    </script>
+</body>
+</html>

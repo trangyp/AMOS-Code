@@ -1,6 +1,9 @@
-# AMOS Brain - Absolute Meta Operating System
-
-**A comprehensive AI agent framework with structured reasoning, cognitive compliance, and multi-agent orchestration.**
+<div align="center">
+  <img src="docs/amos-logo.svg" alt="AMOS Brain Logo" width="180">
+  <h1>AMOS Brain</h1>
+  <p><strong>Absolute Meta Operating System</strong></p>
+  <p>A comprehensive AI agent framework with structured reasoning, cognitive compliance, and multi-agent orchestration.</p>
+</div>
 
 ---
 
@@ -97,4 +100,16 @@ MIT License - See LICENSE file for details.
 
 ---
 
+## 👤 Founder
+
+**Trang Phan (Trang Q. Phan)**
+
+Visionary technologist and AI architect dedicated to creating structured, compliant, and trustworthy AI systems. AMOS Brain represents years of research in cognitive architectures, multi-agent systems, and AI safety.
+
+[LinkedIn](https://www.linkedin.com/in/trangqphan/) | GitHub: [@trangyp](https://github.com/trangyp)
+
+---
+
 **AMOS Project** - Building the future of AI cognition.
+
+*Crafted with ❤️ by Trang Phan*

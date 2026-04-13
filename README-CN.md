@@ -1,6 +1,9 @@
-# AMOS Brain - 绝对元操作系统 (Absolute Meta Operating System)
-
-**一个具有结构化推理、认知合规和多代理编排的综合性 AI 代理框架。**
+<div align="center">
+  <img src="docs/amos-logo.svg" alt="AMOS Brain Logo" width="180">
+  <h1>AMOS Brain</h1>
+  <p><strong>绝对元操作系统 (Absolute Meta Operating System)</strong></p>
+  <p>一个具有结构化推理、认知合规和多代理编排的综合性 AI 代理框架。</p>
+</div>
 
 ---
 
@@ -97,4 +100,16 @@ MIT 许可 - 详情请参见 LICENSE 文件。
 
 ---
 
+## 👤 创始人
+
+**Trang Phan (Trang Q. Phan)**
+
+致力于创建结构化、合规和可信赖的 AI 系统的远见技术专家和 AI 架构师。AMOS Brain 代表了她在认知架构、多代理系统和 AI 安全方面多年的研究。
+
+[LinkedIn](https://www.linkedin.com/in/trangqphan/) | GitHub: [@trangyp](https://github.com/trangyp)
+
+---
+
 **AMOS 项目** - 构建 AI 认知的未来。
+
+*由 Trang Phan 精心打造 ❤️*

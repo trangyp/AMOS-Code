@@ -7,12 +7,12 @@ with open("README.MD", "r", encoding="utf-8") as fh:
 setup(
     name="amos-brain-clawspring",
     version="1.0.0",
-    author="Trang Phan",
-    author_email="",
+    author="Trang Phan (Trang Q. Phan)",
+    author_email="trang@amos-project.dev",
     description="AMOS Brain cognitive architecture integrated with ClawSpring agent runtime",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/amos/brain",
+    url="https://github.com/trangyp/AMOS-Code",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",

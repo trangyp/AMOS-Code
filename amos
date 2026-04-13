@@ -194,6 +194,97 @@ def cmd_demo(args: argparse.Namespace) -> int:
     return result.returncode
 
 
+def cmd_orchestrator(args: argparse.Namespace) -> int:
+    """Control the unified orchestrator."""
+    from amos_unified_orchestrator import AMOSUnifiedOrchestrator
+    
+    orch = AMOSUnifiedOrchestrator()
+    
+    if args.action == "status":
+        status = orch.get_status()
+        print("AMOS Orchestrator Status")
+        print("=" * 50)
+        orch_status = status['orchestrator']
+        print(f"Initialized:     {'✓' if orch_status['initialized'] else '✗'}")
+        print(f"Brain Connected: {'✓' if orch_status['brain_connected'] else '✗'}")
+        print(f"Subsystems:      {orch_status['subsystems_online']}/{orch_status['subsystems_total']}")
+        print(f"Health:          {orch_status['health_percentage']:.0f}%")
+        
+    elif args.action == "init":
+        print("Initializing AMOS Orchestrator...")
+        result = orch.initialize()
+        if result['operational']:
+            print("✓ Orchestrator operational")
+        else:
+            print("⚠ Orchestrator degraded")
+            
+    elif args.action == "task":
+        if not args.task:
+            print("Error: No task specified. Use --task 'your task'")
+            return 1
+        
+        print(f"Orchestrating task: {args.task}")
+        print("=" * 60)
+        
+        # Ensure initialized
+        if not orch.state.initialized:
+            orch.initialize()
+        
+        result = orch.orchestrate_task(args.task)
+        
+        print(f"\n✓ Task routed through: {', '.join(result['routing']['subsystems'])}")
+        print(f"✓ Execution: {'Success' if result['completed'] else 'Failed'}")
+        if result.get('execution', {}).get('result'):
+            print(f"Result: {result['execution']['result'][:80]}...")
+    
+    return 0
+
+
+def cmd_ecosystem(args: argparse.Namespace) -> int:
+    """Run complete ecosystem demonstration."""
+    import subprocess
+    demo_path = os.path.join(
+        os.path.dirname(__file__),
+        'demo_amos_ecosystem.py'
+    )
+    result = subprocess.run([sys.executable, demo_path])
+    return result.returncode
+
+
+def cmd_muscle(args: argparse.Namespace) -> int:
+    """Execute tasks through MUSCLE subsystem."""
+    from amos_muscle_executor import AMOSMuscleExecutor, ExecutionType
+    
+    executor = AMOSMuscleExecutor()
+    
+    if args.action == "status":
+        stats = executor.get_stats()
+        print("AMOS MUSCLE Executor Status")
+        print("=" * 50)
+        for key, value in stats.items():
+            print(f"  {key}: {value}")
+            
+    elif args.action == "exec":
+        if not args.command:
+            print("Error: No command specified")
+            return 1
+        
+        task_type = ExecutionType.PYTHON if args.type == "python" else ExecutionType.SHELL
+        
+        print(f"Executing {args.type} command...")
+        result = executor.execute(args.command, task_type)
+        
+        print(f"\n{'='*50}")
+        print(f"Result: {'✓ Success' if result.success else '✗ Failed'}")
+        print(f"Duration: {result.duration_ms}ms")
+        if result.output:
+            print(f"\nOutput:\n{result.output}")
+        if result.error:
+            print(f"\nError: {result.error}")
+    
+    return 0
+
+
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -230,6 +321,20 @@ def main() -> int:
     # Demo command
     subparsers.add_parser('demo', help='Run interactive demo')
     
+    # Orchestrator command
+    orch_p = subparsers.add_parser('orchestrator', help='Control unified orchestrator')
+    orch_p.add_argument('action', choices=['status', 'init', 'task'], help='Orchestrator action')
+    orch_p.add_argument('--task', help='Task to orchestrate (for task action)')
+    
+    # Ecosystem command
+    subparsers.add_parser('ecosystem', help='Run complete ecosystem demo')
+    
+    # Muscle command
+    muscle_p = subparsers.add_parser('muscle', help='Execute through MUSCLE subsystem')
+    muscle_p.add_argument('action', choices=['status', 'exec'], help='Muscle action')
+    muscle_p.add_argument('--command', help='Command to execute')
+    muscle_p.add_argument('--type', choices=['python', 'shell'], default='python', help='Execution type')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -245,6 +350,9 @@ def main() -> int:
         'dashboard': cmd_dashboard,
         'laws': cmd_laws,
         'demo': cmd_demo,
+        'orchestrator': cmd_orchestrator,
+        'ecosystem': cmd_ecosystem,
+        'muscle': cmd_muscle,
     }
     
     handler = commands.get(args.command)

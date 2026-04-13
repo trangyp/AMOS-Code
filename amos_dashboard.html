@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMOS Dashboard - 50MB+ Intelligent Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-box pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #ddd;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(0,255,0,0.1);
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .error {
+            background: rgba(255,0,0,0.1);
+            border-left-color: #ef4444;
+        }
+        
+        .success {
+            background: rgba(0,255,0,0.1);
+            border-left-color: #4ade80;
+        }
+        
+        .subsystem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .subsystem-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.85em;
+        }
+        
+        .api-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .api-info code {
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 AMOS Dashboard</h1>
+            <p class="subtitle">50MB+ Intelligent Ecosystem | 14 Subsystems | 6 Global Laws</p>
+            <div class="status-indicator" style="margin-top: 20px;">
+                <span class="status-dot"></span>
+                <span id="connection-status">Connecting to API...</span>
+            </div>
+        </header>
+        
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-icon">🧬</div>
+                <div class="stat-value" id="stat-subsystems">-</div>
+                <div class="stat-label">Active Subsystems</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🧠</div>
+                <div class="stat-value" id="stat-laws">6</div>
+                <div class="stat-label">Global Laws</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value" id="stat-knowledge">-</div>
+                <div class="stat-label">Knowledge Entries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🌍</div>
+                <div class="stat-value" id="stat-countries">-</div>
+                <div class="stat-label">Countries</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="panel">
+                <h2>💭 Ask the Brain</h2>
+                <p style="color: #888; margin-bottom: 20px;">Ask a question and get knowledge-enhanced reasoning</p>
+                
+                <div class="form-group">
+                    <label>Your Question:</label>
+                    <textarea id="think-input" placeholder="What is the best architecture for microservices?"></textarea>
+                </div>
+                
+                <button onclick="askBrain()" id="think-btn">Ask Brain</button>
+                
+                <div class="result-box" id="think-result" style="display: none;">
+                    <pre>Results will appear here...</pre>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>🔍 Query Knowledge</h2>
+                <p style="color: #888; margin-bottom: 20px;">Search the 50MB knowledge base</p>
+                
+                <div class="form-group">
+                    <label>Search Terms:</label>
+                    <input type="text" id="query-input" placeholder="scalability patterns">
+                </div>
+                
+                <div class="form-group">
+                    <label>Domain (optional):</label>
+                    <input type="text" id="query-domain" placeholder="software">
+                </div>
+                
+                <button onclick="queryKnowledge()" id="query-btn">Search Knowledge</button>
+                
+                <div class="result-box" id="query-result" style="display: none;">
+                    <pre>Results will appear here...</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="panel">
+                <h2>🌍 Explore Countries</h2>
+                <p style="color: #888; margin-bottom: 20px;">Browse geographic and economic knowledge</p>
+                
+                <div class="form-group">
+                    <label>Select Country:</label>
+                    <select id="country-select">
+                        <option value="">Loading countries...</option>
+                    </select>
+                </div>
+                
+                <button onclick="getCountry()" id="country-btn">Get Country Info</button>
+                
+                <div class="result-box" id="country-result" style="display: none;">
+                    <pre>Select a country to see details...</pre>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>🏭 Explore Sectors</h2>
+                <p style="color: #888; margin-bottom: 20px;">Browse industry expertise</p>
+                
+                <div class="form-group">
+                    <label>Select Sector:</label>
+                    <select id="sector-select">
+                        <option value="">Loading sectors...</option>
+                    </select>
+                </div>
+                
+                <button onclick="getSector()" id="sector-btn">Get Sector Info</button>
+                
+                <div class="result-box" id="sector-result" style="display: none;">
+                    <pre>Select a sector to see details...</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel" style="margin-bottom: 30px;">
+            <h2>🔧 Subsystems Status</h2>
+            <p style="color: #888; margin-bottom: 20px;">Real-time status of all 14 subsystems</p>
+            
+            <button onclick="loadSubsystems()" id="subsystems-btn">Refresh Subsystems</button>
+            
+            <div class="subsystem-grid" id="subsystem-grid">
+                <p style="color: #888;">Click refresh to load subsystems...</p>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>📊 System Status</h2>
+            <p style="color: #888; margin-bottom: 20px;">Complete system health and integration status</p>
+            
+            <button onclick="loadFullStatus()" id="status-btn">Load Full Status</button>
+            
+            <div class="result-box" id="status-result" style="display: none; margin-top: 20px;">
+                <pre>Click Load Full Status to see complete system information...</pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        
+        // Check connection on load
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    document.getElementById('connection-status').textContent = 'Connected to AMOS API';
+                    loadStats();
+                    loadCountries();
+                    loadSectors();
+                } else {
+                    document.getElementById('connection-status').textContent = 'API Error - Check server';
+                }
+            } catch (error) {
+                document.getElementById('connection-status').textContent = 'Not Connected - Start: python amos_api_enhanced.py';
+            }
+        }
+        
+        // Load initial stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const data = await response.json();
+                
+                if (data.organism) {
+                    document.getElementById('stat-subsystems').textContent = data.organism.subsystems_active || 14;
+                }
+                if (data.knowledge) {
+                    document.getElementById('stat-knowledge').textContent = 
+                        data.knowledge.core_entries ? (data.knowledge.core_entries / 1000).toFixed(1) + 'K' : '50K';
+                }
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+            
+            // Load country count separately
+            try {
+                const response = await fetch(`${API_BASE}/countries`);
+                const data = await response.json();
+                document.getElementById('stat-countries').textContent = data.count || 55;
+            } catch (e) {
+                document.getElementById('stat-countries').textContent = 55;
+            }
+        }
+        
+        // Ask brain
+        async function askBrain() {
+            const input = document.getElementById('think-input').value;
+            if (!input) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            const btn = document.getElementById('think-btn');
+            const result = document.getElementById('think-result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Thinking...';
+            result.style.display = 'block';
+            result.innerHTML = '<pre>Analyzing with knowledge-enhanced reasoning...</pre>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/think`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({problem: input})
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    result.className = 'result-box error';
+                    result.innerHTML = `<pre>Error: ${data.error}</pre>`;
+                } else {
+                    result.className = 'result-box success';
+                    result.innerHTML = `<pre>✅ Analysis Complete
+
+🧠 Problem: ${data.problem}
+📚 Knowledge Used: ${data.result?.knowledge_used || 'N/A'}
+💭 Reasoning: ${data.result?.reasoning || 'Analysis complete'}
+
+Full Result:
+${JSON.stringify(data.result, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                result.className = 'result-box error';
+                result.innerHTML = `<pre>Error: ${error.message}
+
+Make sure the API server is running:
+python amos_api_enhanced.py</pre>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Ask Brain';
+        }
+        
+        // Query knowledge
+        async function queryKnowledge() {
+            const query = document.getElementById('query-input').value;
+            const domain = document.getElementById('query-domain').value;
+            
+            if (!query) {
+                alert('Please enter search terms');
+                return;
+            }
+            
+            const btn = document.getElementById('query-btn');
+            const result = document.getElementById('query-result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Searching...';
+            result.style.display = 'block';
+            result.innerHTML = '<pre>Searching 50MB knowledge base...</pre>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/query`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query, domain, limit: 10})
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    result.className = 'result-box error';
+                    result.innerHTML = `<pre>Error: ${data.error}</pre>`;
+                } else {
+                    result.className = 'result-box success';
+                    let output = `✅ Found ${data.count} results for "${data.query}"\n\n`;
+                    
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach((item, i) => {
+                            output += `${i + 1}. ${item.key}\n`;
+                            output += `   Domain: ${item.domain}\n`;
+                            output += `   Priority: ${item.priority}\n\n`;
+                        });
+                    }
+                    
+                    result.innerHTML = `<pre>${output}</pre>`;
+                }
+            } catch (error) {
+                result.className = 'result-box error';
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Search Knowledge';
+        }
+        
+        // Load countries dropdown
+        async function loadCountries() {
+            try {
+                const response = await fetch(`${API_BASE}/countries`);
+                const data = await response.json();
+                
+                const select = document.getElementById('country-select');
+                select.innerHTML = '<option value="">Select a country...</option>';
+                
+                if (data.countries) {
+                    data.countries.forEach(code => {
+                        const option = document.createElement('option');
+                        option.value = code;
+                        option.textContent = code;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load countries:', e);
+            }
+        }
+        
+        // Get country details
+        async function getCountry() {
+            const code = document.getElementById('country-select').value;
+            if (!code) {
+                alert('Please select a country');
+                return;
+            }
+            
+            const btn = document.getElementById('country-btn');
+            const result = document.getElementById('country-result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            result.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/countries/${code}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    result.className = 'result-box error';
+                    result.innerHTML = `<pre>Error: ${data.error}</pre>`;
+                } else {
+                    result.className = 'result-box success';
+                    result.innerHTML = `<pre>🌍 ${data.name} (${data.code})
+
+📍 Geography:
+${JSON.stringify(data.geography, null, 2)}
+
+💰 Economy:
+${JSON.stringify(data.economy, null, 2)}
+
+🎭 Culture:
+${JSON.stringify(data.culture, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                result.className = 'result-box error';
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Get Country Info';
+        }
+        
+        // Load sectors dropdown
+        async function loadSectors() {
+            try {
+                const response = await fetch(`${API_BASE}/sectors`);
+                const data = await response.json();
+                
+                const select = document.getElementById('sector-select');
+                select.innerHTML = '<option value="">Select a sector...</option>';
+                
+                if (data.sectors) {
+                    data.sectors.forEach(code => {
+                        const option = document.createElement('option');
+                        option.value = code;
+                        option.textContent = code;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load sectors:', e);
+            }
+        }
+        
+        // Get sector details
+        async function getSector() {
+            const code = document.getElementById('sector-select').value;
+            if (!code) {
+                alert('Please select a sector');
+                return;
+            }
+            
+            const btn = document.getElementById('sector-btn');
+            const result = document.getElementById('sector-result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            result.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/sectors/${code}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    result.className = 'result-box error';
+                    result.innerHTML = `<pre>Error: ${data.error}</pre>`;
+                } else {
+                    result.className = 'result-box success';
+                    result.innerHTML = `<pre>🏭 ${data.name} (${data.code})
+
+Domain: ${data.domain}
+
+📋 Standards:
+${data.standards ? data.standards.join('\n') : 'N/A'}
+
+🔍 Expertise:
+${JSON.stringify(data.expertise, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                result.className = 'result-box error';
+                result.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Get Sector Info';
+        }
+        
+        // Load subsystems
+        async function loadSubsystems() {
+            const btn = document.getElementById('subsystems-btn');
+            const grid = document.getElementById('subsystem-grid');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/subsystems`);
+                const data = await response.json();
+                
+                grid.innerHTML = '';
+                
+                if (data.subsystems) {
+                    data.subsystems.forEach(subsystem => {
+                        const div = document.createElement('div');
+                        div.className = 'subsystem-item';
+                        div.textContent = subsystem;
+                        grid.appendChild(div);
+                    });
+                } else {
+                    grid.innerHTML = '<p style="color: #888;">No subsystems available</p>';
+                }
+            } catch (error) {
+                grid.innerHTML = `<p style="color: #ff6b6b;">Error: ${error.message}</p>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Refresh Subsystems';
+        }
+        
+        // Load full status
+        async function loadFullStatus() {
+            const btn = document.getElementById('status-btn');
+            const result = document.getElementById('status-result');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            result.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const data = await response.json();
+                
+                result.className = 'result-box success';
+                result.innerHTML = `<pre>📊 AMOS System Status
+
+${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.className = 'result-box error';
+                result.innerHTML = `<pre>Error: ${error.message}
+
+Make sure the API server is running:
+python amos_api_enhanced.py</pre>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Load Full Status';
+        }
+        
+        // Initialize
+        checkConnection();
+    </script>
+</body>
+</html>

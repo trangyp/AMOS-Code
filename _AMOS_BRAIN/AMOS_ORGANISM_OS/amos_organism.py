@@ -54,6 +54,7 @@ class AMOSOrganism:
         self._metabolism = None
         self._world_model = None
         self._quantum = None
+        self._learning = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")
@@ -82,6 +83,7 @@ class AMOSOrganism:
         self._init_metabolism()
         self._init_world_model()
         self._init_quantum()
+        self._init_learning()
         
         self.state["status"] = "ready"
         logger.info("AMOS Organism ready")
@@ -316,6 +318,30 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize QUANTUM_LAYER: {e}")
     
+    def _init_learning(self):
+        """Initialize the LEARNING subsystem."""
+        try:
+            learning_path = self.root / "10_LEARNING"
+            
+            # Add to path and import directly
+            if str(learning_path) not in sys.path:
+                sys.path.insert(0, str(learning_path))
+            
+            # Clear any cached module
+            if 'learning_kernel' in sys.modules:
+                del sys.modules['learning_kernel']
+            
+            import learning_kernel
+            importlib.reload(learning_kernel)
+            
+            self._learning = learning_kernel.LearningKernel(self.root)
+            self._subsystems["10_LEARNING"] = self._learning
+            self.state["active_subsystems"].append("10_LEARNING")
+            
+            logger.info("LEARNING subsystem initialized with adaptive capabilities")
+        except Exception as e:
+            logger.error(f"Failed to initialize LEARNING: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
@@ -431,7 +457,8 @@ class AMOSOrganism:
             "muscle_state": self._muscle.get_state() if self._muscle else None,
             "metabolism_state": self._metabolism.get_state() if self._metabolism else None,
             "world_model_state": self._world_model.get_state() if self._world_model else None,
-            "quantum_state": self._quantum.get_state() if self._quantum else None
+            "quantum_state": self._quantum.get_state() if self._quantum else None,
+            "learning_state": self._learning.get_state() if self._learning else None
         }
     
     def interactive_mode(self):

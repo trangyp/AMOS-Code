@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""
+AMOS Brain API Server
+====================
+
+Exposes AMOS cognitive capabilities via REST API for neurosyncai.tech
+
+Endpoints:
+  POST /think    - Cognitive analysis
+  POST /decide   - Decision making
+  POST /validate - Action validation
+  GET  /status   - Brain status
+  GET  /health   - Health check
+
+Usage:
+  python amos_api_server.py
+"""
+
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from amos_brain import BrainClient
+from amosl import parse, compile_program, validate_invariants
+from amos_monitoring_middleware import init_monitoring
+from amos_coherence_engine import AMOSCoherenceEngine
+import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = Flask(__name__, template_folder='templates')
+CORS(app)
+
+# Initialize brain client
+brain = BrainClient()
+
+# Initialize coherence engine
+coherence_engine = AMOSCoherenceEngine()
+logger.info("Coherence engine initialized")
+
+# Initialize monitoring middleware
+monitoring = init_monitoring(app)
+logger.info("Monitoring middleware initialized")
+
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint."""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'amos-brain-api',
+        'domain': 'neurosyncai.tech'
+    })
+
+
+@app.route('/status', methods=['GET'])
+def brain_status():
+    """Get full brain status."""
+    try:
+        status = brain.get_status()
+        return jsonify({
+            'success': True,
+            'status': status
+        })
+    except Exception as e:
+        logger.error(f"Status error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/think', methods=['POST'])
+def think_endpoint():
+    """Think endpoint - cognitive analysis."""
+    import time
+    from database import db
+    
+    start_time = time.time()
+    try:
+        data = request.get_json()
+        if not data or 'query' not in data:
+            return jsonify({'error': 'Missing required field: query'}), 400
+        
+        query = data['query']
+        domain = data.get('domain', 'general')
+        
+        logger.info(f"Think request: {query[:50]}...")
+        
+        result = brain.think(query, domain=domain)
+        
+        # Log to database
+        processing_time = int((time.time() - start_time) * 1000)
+        db.log_query(
+            api_key_hash='public',
+            endpoint='think',
+            query=query[:200],
+            domain=domain,
+            response_summary=result.content[:200],
+            confidence=str(result.confidence),
+            law_compliant=result.law_compliant,
+            processing_time_ms=processing_time
+        )
+        
+        return jsonify({
+            'success': True,
+            'content': result.content,
+            'reasoning': result.reasoning,
+            'confidence': result.confidence,
+            'law_compliant': result.law_compliant,
+            'domain': result.domain
+        })
+    except Exception as e:
+        logger.error(f"Think error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/decide', methods=['POST'])
+def decide_endpoint():
+    """
+    Decision making endpoint.
+
+    Request body:
+        {
+            "question": "Should we use X?",
+            "options": ["option1", "option2"] (optional)
+        }
+    """
+    try:
+        data = request.get_json()
+        if not data or 'question' not in data:
+            return jsonify({'error': 'Missing required field: question'}), 400
+
+        question = data['question']
+        options = data.get('options')
+
+        logger.info(f"Decide request: {question[:50]}...")
+
+        decision = brain.decide(question, options=options)
+
+        return jsonify({
+            'approved': decision.approved,
+            'decision_id': decision.decision_id,
+            'reasoning': decision.reasoning,
+            'risk_level': decision.risk_level,
+            'law_violations': decision.law_violations,
+            'alternative_actions': decision.alternative_actions
+        })
+    except Exception as e:
+        logger.error(f"Decide error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/validate', methods=['POST'])
+def validate_endpoint():
+    """
+    Action validation endpoint.
+
+    Request body:
+        {
+            "action": "Description of action to validate"
+        }
+    """
+    try:
+        data = request.get_json()
+        if not data or 'action' not in data:
+            return jsonify({'error': 'Missing required field: action'}), 400
+
+        action = data['action']
+
+        logger.info(f"Validate request: {action[:50]}...")
+
+        is_valid, violations = brain.validate_action(action)
+
+        return jsonify({
+            'valid': is_valid,
+            'violations': violations,
+            'action': action
+        })
+    except Exception as e:
+        logger.error(f"Validate error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/coherence', methods=['POST'])
+def coherence_endpoint():
+    """
+    Coherence Engine endpoint - Human coherence induction.
+
+    Request body:
+        {
+            "message": "I can't do this, it's impossible."
+        }
+
+    Response:
+        {
+            "success": true,
+            "response": "It sounds less like inability and more like fear...",
+            "state": "overloaded",
+            "intervention": "separate",
+            "signal": "fear entering before action",
+            "capacity": 0.3,
+            "clarity": 0.45,
+            "safety_maintained": true
+        }
+    """
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({'error': 'Missing required field: message'}), 400
+
+        message = data['message']
+        logger.info(f"Coherence request: {message[:50]}...")
+
+        # Process through coherence engine
+        result = coherence_engine.process(message)
+
+        return jsonify({
+            'success': True,
+            'response': result.response,
+            'state': result.detected_state.value,
+            'intervention': result.intervention_mode.value,
+            'signal': result.signal_detected,
+            'noise_reduced': result.noise_reduced,
+            'capacity': result.estimated_capacity,
+            'clarity': result.clarity_increase,
+            'agency_preserved': result.agency_preserved,
+            'safety_maintained': result.safety_maintained
+        })
+    except Exception as e:
+        logger.error(f"Coherence error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/amosl/compile', methods=['POST'])
+def amosl_compile():
+    """
+    AMOSL compiler endpoint.
+
+    Request body:
+        {
+            "source": "ontology { ... }"
+        }
+
+    Response:
+        {
+            "success": true,
+            "cir": { ... },
+            "qir": { ... },
+            "bir": { ... },
+            "hir": { ... },
+            "invariants_valid": true
+        }
+    """
+    try:
+        data = request.get_json()
+        if not data or 'source' not in data:
+            return jsonify({'error': 'Missing required field: source'}), 400
+
+        source = data['source']
+        logger.info(f"AMOSL compile request: {source[:50]}...")
+
+        # Parse AMOSL source
+        program = parse(source)
+
+        # Validate invariants
+        inv_valid, violations = validate_invariants(program)
+
+        # Compile to 4 IRs
+        cir, qir, bir, hir = compile_program(program)
+
+        return jsonify({
+            'success': True,
+            'invariants_valid': inv_valid,
+            'invariant_violations': violations,
+            'ir': {
+                'cir_blocks': len(cir.blocks),
+                'qir_registers': len(qir.registers),
+                'bir_species': len(bir.species),
+                'hir_bridges': len(hir.bridges)
+            }
+        })
+    except Exception as e:
+        logger.error(f"AMOSL compile error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    """Serve the AMOS Brain Dashboard."""
+    dashboard_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard')
+    return send_from_directory(dashboard_path, 'index.html')
+
+
+@app.route('/dashboard/<path:filename>')
+def dashboard_static(filename):
+    """Serve dashboard static files."""
+    dashboard_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dashboard')
+    return send_from_directory(dashboard_path, filename)
+
+
+@app.route('/admin', methods=['GET'])
+def admin_dashboard():
+    """Serve the Admin Dashboard."""
+    admin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin-dashboard')
+    return send_from_directory(admin_path, 'index.html')
+
+
+@app.route('/admin/<path:filename>')
+def admin_static(filename):
+    """Serve admin dashboard static files."""
+    admin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'admin-dashboard')
+    return send_from_directory(admin_path, filename)
+
+
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    """Get query history."""
+    from database import db
+    limit = request.args.get('limit', 100, type=int)
+    history = db.get_query_history(limit=limit)
+    return jsonify({'success': True, 'history': history})
+
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    """Get API usage statistics."""
+    from database import db
+    days = request.args.get('days', 7, type=int)
+    stats = db.get_usage_stats(days=days)
+    return jsonify({'success': True, 'stats': stats})
+
+
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint with API info."""
+    return jsonify({
+        'service': 'AMOS Brain API',
+        'domain': 'neurosyncai.tech',
+        'version': '1.0.0',
+        'dashboard': '/dashboard',
+        'admin': '/admin',
+        'monitoring': '/monitoring',
+        'features': [
+            'Cognitive Analysis (think)',
+            'Decision Making (decide)',
+            'Action Validation (validate)',
+            'Coherence Engine (coherence)',
+            'AMOSL Compiler (amosl/compile)',
+            'Query History (history)',
+            'Usage Stats (stats)',
+            'Real-time WebSocket (ws://)',
+            'Admin Dashboard (admin)',
+            'Production Monitoring (monitoring)',
+            'Health Checks (api/health)',
+            'Metrics Export (api/metrics)',
+            'Alert Management (api/alerts)'
+        ],
+        'endpoints': {
+            'health': '/health',
+            'status': '/status',
+            'think': 'POST /think',
+            'decide': 'POST /decide',
+            'validate': 'POST /validate',
+            'coherence': 'POST /coherence',
+            'amosl_compile': 'POST /amosl/compile',
+            'history': 'GET /api/history',
+            'stats': 'GET /api/stats',
+            'dashboard': '/dashboard',
+            'admin': '/admin',
+            'monitoring': '/monitoring',
+            'api_health': '/api/health',
+            'api_metrics': '/api/metrics',
+            'api_alerts': '/api/alerts/active'
+        }
+    })
+
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('DEBUG', 'false').lower() == 'true'
+
+    logger.info("Starting AMOS Brain API on port %s", port)
+    logger.info("Domain: neurosyncai.tech")
+
+    app.run(host='0.0.0.0', port=port, debug=debug)

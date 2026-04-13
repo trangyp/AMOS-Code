@@ -47,6 +47,9 @@ COPY amos.py .
 COPY amos_clawspring.py .
 COPY amos_mcp_server.py .
 COPY demo_amos_brain.py .
+COPY amos_api_server.py .
+COPY websocket_server.py .
+COPY requirements-deploy.txt .
 COPY amos .
 
 # Create directories for persistence
@@ -56,5 +59,7 @@ RUN mkdir -p /app/data /app/logs /app/memory
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python3 -c "from amos_brain import get_amos_integration; a = get_amos_integration(); print('OK' if a.get_status()['initialized'] else 'FAIL')" || exit 1
 
-# Default command
-CMD ["python3", "amos.py", "status"]
+# Default command (API server mode for neurosyncai.tech)
+ENV PORT=5000
+EXPOSE 5000 8765
+CMD ["python3", "amos_api_server.py"]
