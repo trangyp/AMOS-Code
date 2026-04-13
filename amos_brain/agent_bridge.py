@@ -92,8 +92,8 @@ class AMOSAgentBridge:
         }
         
         # L1: Law of Law - Check operational scope
-        ok, msg = self.global_laws.check_l1_constraint(f"tool_{tool_name}")
-        if not ok:
+        l1_ok, msg = self.global_laws.check_l1_constraint(f"tool_{tool_name}")
+        if not l1_ok:
             result["approved"] = False
             result["reason"] = msg
             result["violations"].append({"law": "L1", "message": msg})
@@ -118,8 +118,8 @@ class AMOSAgentBridge:
         
         # L5: Post-Theory Communication - Check for prohibited terms
         args_str = str(arguments)
-        ok, violations = self.global_laws.l5_communication_check(args_str)
-        if not ok:
+        l5_ok, violations = self.global_laws.l5_communication_check(args_str)
+        if not l5_ok:
             result["violations"].extend([
                 {"law": "L5", "message": v} for v in violations
             ])
@@ -135,7 +135,8 @@ class AMOSAgentBridge:
             arguments=arguments,
             reasoning_chain=[
                 f"Risk level: {result['risk_level']}",
-                f"L1 check: {'pass' if ok else 'fail'}",
+                f"L1 check: {'pass' if l1_ok else 'fail'}",
+                f"L5 check: {'pass' if l5_ok else 'fail'}",
             ],
             law_violations=result["violations"],
             approved=result["approved"],
