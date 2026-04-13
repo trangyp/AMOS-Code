@@ -5,7 +5,7 @@ Français | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/do
     <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
   </a>
 
-<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong> : une réimplémentation Python rapide et facile à utiliser de Claude Code, compatible avec n’importe quel modèle</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong> : une réimplémentation Python rapide et facile à utiliser de Claude Code, compatible avec n’importe quel modèle</h1>
 <p align="center">
     <a href="https://github.com/chauncygu/collection-claude-code-source-code">La source la plus récente de Claude Code</a>
     ·
@@ -35,18 +35,18 @@ Français | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/do
 - 13:47, 01 avr. 2026 : prise en charge de l’inférence VLLM (**~2000** lignes de code Python).
 - 11:30, 01 avr. 2026 : prise en charge de davantage de modèles **propriétaires** et **open source** : Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, ainsi que des modèles open source locaux via Ollama ou tout endpoint compatible OpenAI. (**~1700** lignes de code Python).
 - 09:50, 01 avr. 2026 : prise en charge de davantage de modèles **propriétaires** : Claude, GPT, Gemini. (**~1300** lignes de code Python).
-- 08:23, 01 avr. 2026 : publication de la version initiale de Nano Claude Code (**~900 lignes** de code Python).
+- 08:23, 01 avr. 2026 : publication de la version initiale de ClawSpring (**~900 lignes** de code Python).
 
 ---
 
-# Nano Claude Code
+# ClawSpring
 
-Nano Claude Code : **une réimplémentation Python légère** et **facile à utiliser** de Claude Code **compatible avec n’importe quel modèle**, comme Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, ainsi que des modèles open source locaux via Ollama ou tout endpoint compatible OpenAI.
+ClawSpring : **une réimplémentation Python légère** et **facile à utiliser** de Claude Code **compatible avec n’importe quel modèle**, comme Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, ainsi que des modèles open source locaux via Ollama ou tout endpoint compatible OpenAI.
 
 ---
 
 ## Sommaire
-  * [Pourquoi Nano Claude Code](#pourquoi-nano-claude-code)
+  * [Pourquoi ClawSpring](#pourquoi-nano-claude-code)
   * [Fonctionnalités](#fonctionnalités)
   * [Modèles pris en charge](#modèles-pris-en-charge)
   * [Installation](#installation)
@@ -73,15 +73,15 @@ Nano Claude Code : **une réimplémentation Python légère** et **facile à uti
   * [Structure du projet](#structure-du-projet)
   * [FAQ](#faq)
 
-## Pourquoi Nano Claude Code
+## Pourquoi ClawSpring
 
 Claude Code est un assistant de codage IA puissant, prêt pour la production — mais son code source est un bundle TypeScript/Node.js compilé de 12 Mo (~1 300 fichiers, ~283K lignes). Il est étroitement couplé à l’API Anthropic, difficile à modifier, et impossible à exécuter sur un modèle local ou alternatif.
 
-**Nano Claude Code** réimplémente la même boucle centrale en ~10K lignes de Python lisible, en conservant tout ce dont vous avez besoin et en supprimant le reste. Voir ici une analyse plus détaillée (Nano Claude Code v3.03), [version anglaise](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) et [version chinoise](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**ClawSpring** réimplémente la même boucle centrale en ~10K lignes de Python lisible, en conservant tout ce dont vous avez besoin et en supprimant le reste. Voir ici une analyse plus détaillée (ClawSpring v3.03), [version anglaise](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) et [version chinoise](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### En un coup d’œil
 
-| Dimension | Claude Code (TypeScript) | Nano Claude Code (Python) |
+| Dimension | Claude Code (TypeScript) | ClawSpring (Python) |
 |-----------|--------------------------|---------------------------|
 | Langage | TypeScript + React/Ink | Python 3.8+ |
 | Fichiers source | ~1 332 fichiers TS/TSX | 51 fichiers Python |
@@ -103,7 +103,7 @@ Claude Code est un assistant de codage IA puissant, prêt pour la production —
 - **Extraction de mémoire pilotée par IA** — le service `extractMemories` extrait proactivement des connaissances à partir des conversations sans appels d’outils explicites.
 - **Fiabilité en production** — un unique exécutable `cli.js`, couverture de tests complète, versions figées.
 
-### Là où Nano Claude Code l’emporte
+### Là où ClawSpring l’emporte
 
 - **Multi-fournisseur** — basculez entre Claude, GPT-4o, Gemini 2.5 Pro, DeepSeek, Qwen ou un modèle Llama local avec `--model` ou `/model`, sans recompilation.
 - **Prise en charge des modèles locaux** — fonctionne entièrement hors ligne avec Ollama, LM Studio ou tout modèle servi via vLLM.
@@ -124,7 +124,7 @@ Claude Code est un assistant de codage IA puissant, prêt pour la production —
 
 **Compression de contexte**
 
-| | Claude Code | Nano Claude Code |
+| | Claude Code | ClawSpring |
 |-|-------------|-----------------|
 | Déclenchement | Compte exact de tokens | estimation `len / 3.5`, déclenchement à 70 % |
 | Couche 1 | — | Snip : tronque les anciennes sorties d’outils (sans coût API) |
@@ -133,7 +133,7 @@ Claude Code est un assistant de codage IA puissant, prêt pour la production —
 
 **Mémoire** — le service `extractMemories` de Claude Code fait remonter proactivement des faits par le modèle. Le package `memory/` de Nano est piloté par des outils : le modèle appelle explicitement `MemorySave`, ce qui est plus prévisible et plus auditable.
 
-### Qui devrait utiliser Nano Claude Code
+### Qui devrait utiliser ClawSpring
 
 - Les développeurs qui veulent **utiliser un modèle local ou non-Anthropic** comme assistant de codage.
 - Les chercheurs qui étudient **le fonctionnement des assistants de codage agentiques** — tout le système tient sur un écran.
@@ -1153,7 +1153,7 @@ Claude:
 
 ## Saisie vocale
 
-Nano Claude Code v3.05 ajoute une chaîne voix-vers-prompt entièrement hors ligne. Dites votre demande à voix haute — elle est transcrite et envoyée comme si vous l’aviez tapée.
+ClawSpring v3.05 ajoute une chaîne voix-vers-prompt entièrement hors ligne. Dites votre demande à voix haute — elle est transcrite et envoyée comme si vous l’aviez tapée.
 
 ### Démarrage rapide
 
@@ -1166,7 +1166,7 @@ pip install sounddevice        # recommandé : multiplateforme, pas de binaire s
 # 2. Installer un backend STT local (recommandé — hors ligne, sans clé API)
 pip install faster-whisper numpy
 
-# 3. Démarrer Nano Claude Code et parler
+# 3. Démarrer ClawSpring et parler
 python nano_claude.py
 [myproject] ❯ /voice
   🎙  Listening… (speak now, auto-stops on silence, Ctrl+C to cancel)
@@ -1218,7 +1218,7 @@ Ces termes sont transmis dans `initial_prompt` de Whisper afin que le moteur STT
 
 ### Comparaison avec Claude Code
 
-| | Claude Code | Nano Claude Code v3.05 |
+| | Claude Code | ClawSpring v3.05 |
 |---|---|---|
 | Service STT | WebSocket privé Anthropic (`voice_stream`) | `faster-whisper` / `openai-whisper` / API OpenAI |
 | OAuth Anthropic requis | Oui | **Non** |

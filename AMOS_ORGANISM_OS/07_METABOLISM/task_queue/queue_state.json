@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-04-13T13:15:00.140560Z",
+  "total_tasks": 3,
+  "pending": 3,
+  "running": 0,
+  "tasks": [
+    {
+      "id": "e0ab52e4",
+      "title": "Analyze codebase",
+      "description": "Analyze the AMOS codebase for patterns",
+      "task_type": "analysis",
+      "source_subsystem": "01_BRAIN",
+      "target_agent": "analyst_agent",
+      "priority": "HIGH",
+      "status": "PENDING",
+      "created_at": "2026-04-13T13:15:00.139869",
+      "started_at": null,
+      "completed_at": null,
+      "params": {},
+      "result": null,
+      "error_message": null,
+      "retry_count": 0,
+      "max_retries": 3
+    },
+    {
+      "id": "653659c4",
+      "title": "Generate documentation",
+      "description": "Create documentation for new subsystem",
+      "task_type": "documentation",
+      "source_subsystem": "06_MUSCLE",
+      "target_agent": null,
+      "priority": "MEDIUM",
+      "status": "PENDING",
+      "created_at": "2026-04-13T13:15:00.140402",
+      "started_at": null,
+      "completed_at": null,
+      "params": {},
+      "result": null,
+      "error_message": null,
+      "retry_count": 0,
+      "max_retries": 3
+    },
+    {
+      "id": "dd885078",
+      "title": "Security audit",
+      "description": "Run security checks on all subsystems",
+      "task_type": "security",
+      "source_subsystem": "03_IMMUNE",
+      "target_agent": null,
+      "priority": "CRITICAL",
+      "status": "PENDING",
+      "created_at": "2026-04-13T13:15:00.140555",
+      "started_at": null,
+      "completed_at": null,
+      "params": {},
+      "result": null,
+      "error_message": null,
+      "retry_count": 0,
+      "max_retries": 3
+    }
+  ],
+  "task_history": []
+}

@@ -283,10 +283,18 @@ class MuscleHandler(SubsystemHandler):
 
 
 class MetabolismHandler(SubsystemHandler):
-    """07_METABOLISM: Pipelines, transforms, IO routing."""
+    """07_METABOLISM: Pipelines, transforms, IO routing, task queue."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = ["run_pipeline_cleanup", "route_io", "transform_data"]
+        actions = [
+            "run_pipeline_cleanup",
+            "route_io",
+            "transform_data",
+            "process_task_queue"
+        ]
+
+        # Get available agents for task assignment
+        available_agents = context.get("available_agents", [])
 
         return CycleResult(
             subsystem=self.code,
@@ -295,7 +303,9 @@ class MetabolismHandler(SubsystemHandler):
             outputs={
                 "pipelines_clean": True,
                 "io_routed": True,
-                "cycle_complete": True
+                "cycle_complete": True,
+                "agents_available": len(available_agents),
+                "task_queue_processed": True
             },
             next_recommended="01_BRAIN"
         )

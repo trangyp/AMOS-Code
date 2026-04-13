@@ -227,6 +227,9 @@ __all__ = [
     "AgentFactory",
     "BrainMuscleBridge",
     "get_brain_muscle_bridge",
+    # Primary Loop
+    "PrimaryLoop",
+    "CycleResult",
     # Registry
     "SUBSYSTEMS",
     "WIRING",

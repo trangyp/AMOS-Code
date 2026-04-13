@@ -346,6 +346,14 @@ def main():
         print(json.dumps(stats, indent=2))
 
     elif args.command == 'report':
+        # Try to load current session if no ID provided
+        if not args.session_id:
+            try:
+                with open('/tmp/amos_current_session') as f:
+                    sid = f.read().strip()
+                logger.current_session = logger._load_session(sid)
+            except Exception:
+                pass
         report = logger.generate_report(args.session_id)
         print(report)
 

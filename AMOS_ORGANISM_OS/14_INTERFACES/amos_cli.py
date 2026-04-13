@@ -300,6 +300,48 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_task(args) -> int:
+    """Interact with Task Queue."""
+    root = get_organism_root()
+    metabolism_dir = root / "07_METABOLISM"
+
+    sys.path.insert(0, str(metabolism_dir))
+    from task_queue import TaskQueue, TaskPriority
+
+    queue = TaskQueue(root)
+
+    if args.action == "status":
+        status = queue.get_status()
+        print("Task Queue Status")
+        print("=" * 40)
+        print(f"Status: {status['status']}")
+        print(f"Total tasks: {status['total_tasks']}")
+        print(f"Pending: {status['pending']}")
+        print(f"Running: {status['running']}")
+        print(f"Completed: {status['completed']}")
+
+    elif args.action == "list":
+        print("\nPending Tasks:")
+        for task in queue.get_pending_tasks():
+            print(f"  [{task.priority.name}] {task.title}")
+
+    elif args.action == "submit":
+        if args.title:
+            priority = getattr(TaskPriority, args.priority.upper())
+            queue.submit_task(
+                title=args.title,
+                description=args.description or "",
+                task_type=args.type,
+                source_subsystem="CLI",
+                priority=priority
+            )
+            print(f"Task submitted: {args.title}")
+        else:
+            print("Usage: amos task submit -t 'Task title' -d 'Description'")
+
+    return 0
+
+
 def cmd_factory(args) -> int:
     """Interact with Agent Factory."""
     root = get_organism_root()
@@ -573,6 +615,30 @@ def main(argv: Optional[List[str]] = None) -> int:
         default="status"
     )
     factory_parser.set_defaults(func=cmd_factory)
+
+    # Task command
+    task_parser = subparsers.add_parser(
+        "task", help="Task queue (METABOLISM)"
+    )
+    task_parser.add_argument(
+        "action", choices=["status", "submit", "list"], nargs="?",
+        default="status"
+    )
+    task_parser.add_argument(
+        "--title", "-t", help="Task title"
+    )
+    task_parser.add_argument(
+        "--description", "-d", help="Task description"
+    )
+    task_parser.add_argument(
+        "--type", choices=["analysis", "code", "documentation", "security"],
+        default="analysis", help="Task type"
+    )
+    task_parser.add_argument(
+        "--priority", "-p", choices=["low", "medium", "high", "critical"],
+        default="medium", help="Task priority"
+    )
+    task_parser.set_defaults(func=cmd_task)
 
     args = parser.parse_args(argv)
 

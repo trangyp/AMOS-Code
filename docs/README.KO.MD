@@ -7,7 +7,7 @@
     <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="로고" width="280"> 
   </a>
 
-<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: 모든 모델을 지원하는 빠르고 사용하기 쉬운 Claude Code의 Python 재구현</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong>: 모든 모델을 지원하는 빠르고 사용하기 쉬운 Claude Code의 Python 재구현</h1>
 <p align="center">
     <a href="https://github.com/chauncygu/collection-claude-code-source-code">최신 Claude Code 소스 모음</a>
     ·
@@ -32,18 +32,18 @@
 - 2026년 4월 1일 오후 1:47: VLLM 추론 지원(**약 2000줄**의 Python).
 - 2026년 4월 1일 오전 11:30: 더 많은 **폐쇄형 모델** 및 **오픈소스 모델** 지원: Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, Ollama 또는 OpenAI 호환 엔드포인트를 통한 로컬 오픈소스 모델(**약 1700줄**의 Python).
 - 2026년 4월 1일 오전 9:50: 더 많은 **폐쇄형 모델** 지원: Claude, GPT, Gemini(**약 1300줄**의 Python).
-- 2026년 4월 1일 오전 8:23: Nano Claude Code 초기 버전 공개(**약 900줄**의 Python).
+- 2026년 4월 1일 오전 8:23: ClawSpring 초기 버전 공개(**약 900줄**의 Python).
 
 ---
 
-# Nano Claude Code
+# ClawSpring
 
-Nano Claude Code는 Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek 및 Ollama 또는 임의의 OpenAI 호환 엔드포인트를 통한 로컬 오픈소스 모델 등 **모든 모델을 지원하는**, **가볍고 사용하기 쉬운** Claude Code의 Python 재구현입니다.
+ClawSpring는 Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek 및 Ollama 또는 임의의 OpenAI 호환 엔드포인트를 통한 로컬 오픈소스 모델 등 **모든 모델을 지원하는**, **가볍고 사용하기 쉬운** Claude Code의 Python 재구현입니다.
 
 ---
 
 ## 목차
-  * [왜 Nano Claude Code인가](#왜-nano-claude-code인가)
+  * [왜 ClawSpring인가](#왜-nano-claude-code인가)
   * [기능](#기능)
   * [지원 모델](#지원-모델)
   * [설치](#설치)
@@ -69,15 +69,15 @@ Nano Claude Code는 Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek 및 Ollama 
   * [프로젝트 구조](#프로젝트-구조)
   * [FAQ](#faq)
 
-## 왜 Nano Claude Code인가
+## 왜 ClawSpring인가
 
 Claude Code는 강력한 프로덕션급 AI 코딩 어시스턴트이지만, 소스 코드는 컴파일된 12MB TypeScript/Node.js 번들(약 1,300개 파일, 약 28.3만 줄)입니다. Anthropic API에 강하게 결합되어 있고 수정이 어렵고, 로컬 모델이나 다른 모델에 연결해 실행하는 것도 사실상 불가능합니다.
 
-**Nano Claude Code**는 동일한 핵심 루프를 읽기 쉬운 Python 약 1만 줄로 재구현했습니다. 필요한 것은 남기고, 불필요한 것은 덜어냈습니다. 보다 자세한 비교 분석은 여기에서 볼 수 있습니다(Nano Claude Code v3.03): [영문판](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md), [중문판](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**ClawSpring**는 동일한 핵심 루프를 읽기 쉬운 Python 약 1만 줄로 재구현했습니다. 필요한 것은 남기고, 불필요한 것은 덜어냈습니다. 보다 자세한 비교 분석은 여기에서 볼 수 있습니다(ClawSpring v3.03): [영문판](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md), [중문판](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### 한눈에 보기
 
-| 항목 | Claude Code (TypeScript) | Nano Claude Code (Python) |
+| 항목 | Claude Code (TypeScript) | ClawSpring (Python) |
 |-----------|--------------------------|---------------------------|
 | 언어 | TypeScript + React/Ink | Python 3.8+ |
 | 소스 파일 수 | 약 1,332개 TS/TSX 파일 | 51개 Python 파일 |
@@ -98,7 +98,7 @@ Claude Code는 강력한 프로덕션급 AI 코딩 어시스턴트이지만, 소
 - **AI 기반 메모리 추출** — 명시적 도구 호출 없이 대화에서 지식을 선제적으로 추출하는 `extractMemories`
 - **프로덕션 신뢰성** — 단일 배포 파일 `cli.js`, 포괄적인 테스트 커버리지, 버전 고정 릴리스
 
-### Nano Claude Code가 더 강한 부분
+### ClawSpring가 더 강한 부분
 
 - **멀티 프로바이더** — `--model` 또는 `/model`만으로 Claude, GPT-4o, Gemini 2.5 Pro, DeepSeek, Qwen, 로컬 Llama 간 전환 가능, 재컴파일 불필요
 - **로컬 모델 지원** — Ollama, LM Studio, 또는 vLLM 기반 모델로 완전 오프라인 실행 가능
@@ -116,7 +116,7 @@ Claude Code는 강력한 프로덕션급 AI 코딩 어시스턴트이지만, 소
 
 **컨텍스트 압축**
 
-| | Claude Code | Nano Claude Code |
+| | Claude Code | ClawSpring |
 |-|-------------|-----------------|
 | 트리거 | 정확한 토큰 수 | `len / 3.5` 추정, 70%에서 동작 |
 | 레이어 1 | — | Snip: 오래된 도구 출력 잘라내기(API 비용 없음) |
@@ -125,7 +125,7 @@ Claude Code는 강력한 프로덕션급 AI 코딩 어시스턴트이지만, 소
 
 **메모리** — Claude Code의 `extractMemories`는 모델이 사실을 선제적으로 드러내게 합니다. Nano의 `memory/` 패키지는 도구 기반이며, 모델이 `MemorySave`를 명시적으로 호출합니다. 더 예측 가능하고 감사하기 쉽습니다.
 
-### 누가 Nano Claude Code를 사용하면 좋은가
+### 누가 ClawSpring를 사용하면 좋은가
 
 - 코딩 어시스턴트로 **로컬 모델 또는 비-Anthropic 모델**을 쓰고 싶은 개발자
 - **에이전트형 코딩 어시스턴트가 어떻게 동작하는지** 연구하는 연구자
