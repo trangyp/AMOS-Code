@@ -209,6 +209,40 @@ def cmd_brain(args) -> int:
     return 0
 
 
+def cmd_blood(args) -> int:
+    """Interact with BLOOD financial engine."""
+    root = get_organism_root()
+    blood_dir = root / "04_BLOOD"
+
+    sys.path.insert(0, str(blood_dir))
+    from financial_engine import FinancialEngine
+
+    engine = FinancialEngine(root)
+
+    if args.action == "status":
+        status = engine.get_status()
+        print("BLOOD Financial Status")
+        print("=" * 40)
+        print(f"Status: {status['status']}")
+        print(f"Budget categories: {status['budget_categories']}")
+        print(f"Active allocations: {status['active_allocations']}")
+        print(f"Total transactions: {status['total_transactions']}")
+
+        print("\nBudget Status:")
+        for cat, budget in status['budget_status'].items():
+            if budget:
+                print(f"  {cat}: ${budget['remaining']:.2f} remaining")
+
+    elif args.action == "budget":
+        if args.category and args.amount:
+            engine.set_budget(args.category, args.amount, args.period)
+            print(f"Set budget for {args.category}: ${args.amount}")
+        else:
+            print("Usage: amos blood budget --category compute --amount 100")
+
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(

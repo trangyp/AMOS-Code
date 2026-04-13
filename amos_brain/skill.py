@@ -1,14 +1,19 @@
 """AMOS Brain Decision Analysis Skill - Built-in skill for structured reasoning."""
 from __future__ import annotations
 
-import sys
-import os
+# NOTE: Imports are lazy to avoid circular dependency with clawspring
+# This module is imported by amos_brain/__init__.py, so it must not
+# eagerly import clawspring modules which would trigger agent/tool imports
 
-# Add parent paths for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'clawspring'))
 
-from clawspring.skill.loader import SkillDef, register_builtin_skill
+def _get_skill_classes():
+    """Lazy import skill classes to avoid circular imports."""
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'clawspring'))
+    from clawspring.skill.loader import SkillDef, register_builtin_skill
+    return SkillDef, register_builtin_skill
 
 
 _DECIDE_PROMPT = """\

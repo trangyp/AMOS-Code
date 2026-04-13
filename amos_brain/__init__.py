@@ -57,6 +57,32 @@ __all__ = [
     "BrainTaskProcessor",
     "process_task",
     "TaskResult",
+    # Agent bridge
+    "AMOSAgentBridge",
+    "get_agent_bridge",
+    "ToolDecision",
+    "ExecutionContext",
     # Optional
     "SystemPromptBuilder",
 ]
+
+# Cookbook workflows (optional import)
+try:
+    from .cookbook import (
+        ArchitectureDecision,
+        ProjectPlanner,
+        ProblemDiagnosis,
+        TechnologySelection,
+        RiskAssessment,
+        WorkflowResult,
+    )
+    __all__.extend([
+        "ArchitectureDecision",
+        "ProjectPlanner",
+        "ProblemDiagnosis",
+        "TechnologySelection",
+        "RiskAssessment",
+        "WorkflowResult",
+    ])
+except Exception:
+    pass
