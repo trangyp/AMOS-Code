@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Callable
+import re
 
 
 @dataclass
@@ -110,8 +111,8 @@ class GlobalLaws:
 
     def _semantic_similarity(self, s1: str, s2: str) -> float:
         """Calculate semantic similarity between statements."""
-        words1 = set(s1.lower().split())
-        words2 = set(s2.lower().split())
+        words1 = set(re.findall(r"[a-z0-9]+", s1.lower()))
+        words2 = set(re.findall(r"[a-z0-9]+", s2.lower()))
         if not words1 or not words2:
             return 0.0
         intersection = words1 & words2
@@ -120,7 +121,13 @@ class GlobalLaws:
 
     def l5_communication_check(self, text: str) -> tuple[bool, list[str]]:
         """Check for prohibited terms and style violations."""
-        avoid_terms = ['field', 'sovereignty', 'truth_claims_without_evidence', 'abstract_spiritual_explanations']
+        avoid_terms = [
+            'sovereignty',
+            'truth_claims_without_evidence',
+            'abstract_spiritual_explanations',
+            'energy field',
+            'morphic field',
+        ]
         violations = []
         for term in avoid_terms:
             if term.replace('_', ' ') in text.lower() or term in text.lower():

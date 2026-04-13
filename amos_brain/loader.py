@@ -19,6 +19,7 @@ class BrainConfig:
     reasoning_constraints: dict = field(default_factory=dict)
     engines: dict = field(default_factory=dict)
     gap_management: dict = field(default_factory=dict)
+    loaded_specs: list[str] = field(default_factory=list)
 
 
 class BrainLoader:
@@ -48,6 +49,7 @@ class BrainLoader:
     def load(self) -> BrainConfig:
         """Load all brain specifications and merge into runtime config."""
         self._config = BrainConfig()
+        self._raw_specs = {}
 
         # Load master brain OS
         master_path = self.core_path / "AMOS_Brain_Master_Os_v0.json"
@@ -82,6 +84,7 @@ class BrainLoader:
             spec = data
 
         self._raw_specs['master'] = spec
+        self._config.loaded_specs.append("master")
         meta = spec.get('meta', {})
 
         self._config.name = spec.get('name', self._config.name)
@@ -106,6 +109,7 @@ class BrainLoader:
             spec = data
 
         self._raw_specs['agent'] = spec
+        self._config.loaded_specs.append("agent")
         components = spec.get('components', {})
         brain_root = components.get('AMOS_BRAIN_ROOT.json', {})
 
@@ -129,10 +133,8 @@ class BrainLoader:
             timeout_seconds: Maximum time to wait for loading (default 5s)
 
         Returns:
-            BrainConfig instance
-
-        Raises:
-            TimeoutError: If loading takes longer than timeout_seconds
+            BrainConfig instance. On timeout, returns a minimal default config
+            instead of raising, to avoid blocking the UI.
         """
         loop = asyncio.get_event_loop()
         try:
@@ -159,6 +161,7 @@ class BrainLoader:
                     except Exception:
                         pass
         self._raw_specs['cognitive_stack'] = stack_data
+        self._config.loaded_specs.append("cognitive_stack")
 
     def get_raw_spec(self, name: str) -> Any:
         """Get raw specification by name."""

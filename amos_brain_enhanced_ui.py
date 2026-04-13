@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import sys
-import threading
 import webbrowser
 from datetime import datetime
 from typing import Any, Dict
@@ -1280,7 +1279,7 @@ def run_enhanced_server(port: int = 8889) -> None:
         print(f"   ✓ Brain loaded: {organism.brain.state.session_id}")
     except Exception as e:
         print(f"   ⚠ Brain init warning: {e}")
-        from AMOS_ORGANISM_OS.AMOS_MASTER_ORCHESTRATOR import BrainOS
+        from AMOS_ORGANISM_OS.BRAIN.brain_os import BrainOS
         brain = BrainOS()
         EnhancedBrainUIHandler.brain = brain
         print(f"   ✓ Brain loaded (fallback): {brain.state.session_id}")

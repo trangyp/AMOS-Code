@@ -204,9 +204,13 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
 
     def get_status(self) -> dict[str, Any]:
         """Get current brain integration status."""
+        brain_loaded = bool(
+            self.brain._config is not None and
+            getattr(self.brain._config, "loaded_specs", [])
+        )
         return {
             "initialized": self._initialized,
-            "brain_loaded": self.brain._config is not None,
+            "brain_loaded": brain_loaded,
             "engines_count": len(self.cognitive_stack.engines),
             "laws_active": list(self.laws.LAWS.keys()),
             "domains_covered": self.brain._config.domains if self.brain._config else []

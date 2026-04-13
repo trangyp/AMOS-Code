@@ -372,7 +372,10 @@ class CognitiveStateManager:
     def _get_session(self, session_id: Optional[str]) -> Optional[WorkflowSession]:
         """Get a session by ID or current session."""
         if session_id:
-            return self._active_sessions.get(session_id)
+            session = self._active_sessions.get(session_id)
+            if session is not None:
+                return session
+            return self.load_session(session_id)
         return self._current_session
     
     def _calculate_duration(self, session: WorkflowSession) -> float:

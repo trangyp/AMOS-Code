@@ -8,7 +8,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
 
-from .loader import get_brain
 from .laws import GlobalLaws
 
 
@@ -265,8 +264,8 @@ class CognitiveMonitor:
         if len(recent_times) >= 10:
             avg = sum(recent_times[:-5]) / len(recent_times[:-5])
             recent_avg = sum(recent_times[-5:]) / 5
-            
-            if recent_avg > avg * 2:  # 2x spike
+
+            if avg > 0 and recent_avg > avg * 2:  # 2x spike
                 anomalies.append({
                     "type": "reasoning_time_spike",
                     "severity": "warning",

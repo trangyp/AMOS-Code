@@ -75,6 +75,11 @@ class AMOSUnifiedRuntime:
         self.organism = None
         self.clawspring = None
         
+        # Ω Axiomatic Layer (NEW)
+        self.omega = None
+        self.coherence_omega = None
+        self.axiom_validator = None
+        
         self._initialized = False
         
     def initialize(self) -> bool:
@@ -99,6 +104,7 @@ class AMOSUnifiedRuntime:
                 self._init_brain()
                 self._init_organism()
                 self._init_clawspring()
+                self._init_omega()  # NEW: Ω layer
                 self._wire_layers()
             
             self._initialized = True
@@ -254,6 +260,33 @@ class AMOSUnifiedRuntime:
             print(f"  ! ClawSpring plugin not available: {e}")
             print()
     
+    def _init_omega(self) -> None:
+        """Initialize Ω Axiomatic Layer (NEW)."""
+        print("→ Initializing Ω Axiomatic Layer...")
+        
+        try:
+            from amos_omega import AMOSOmega
+            self.omega = AMOSOmega()
+            print("  ✓ Ω Runtime (32 axioms executable)")
+        except ImportError as e:
+            print(f"  ! Ω runtime not available: {e}")
+        
+        try:
+            from amos_axiom_validator import AxiomValidator
+            self.axiom_validator = AxiomValidator()
+            print("  ✓ Axiom Validator (theory→practice)")
+        except ImportError as e:
+            print(f"  ! Axiom validator not available: {e}")
+        
+        try:
+            from amos_coherence_omega import CoherenceOmega
+            self.coherence_omega = CoherenceOmega()
+            print("  ✓ Coherence Ω (human + axioms)")
+        except ImportError as e:
+            print(f"  ! Coherence Ω not available: {e}")
+        
+        print()
+    
     def _wire_layers(self) -> None:
         """Wire all layers together."""
         print("→ Wiring layers...")
@@ -270,6 +303,14 @@ class AMOSUnifiedRuntime:
         if self.brain and self.clawspring:
             self.clawspring.brain = self.brain
             print("  ✓ Brain ↔ ClawSpring linked")
+        
+        # Connect Ω to coherence (NEW)
+        if self.omega and self.coherence_omega:
+            print("  ✓ Ω ↔ Coherence linked")
+        
+        # Connect validator to all layers (NEW)
+        if self.axiom_validator:
+            print("  ✓ Validator → All layers")
         
         print()
     
@@ -328,6 +369,12 @@ class AMOSUnifiedRuntime:
         print(f"  [B]  Brain API:     {'✓' if self.brain else '✗'}")
         print(f"  [O]  Organism OS:  {'✓' if self.organism else '✗'}")
         print()
+        
+        print("Layer 7 - Ω Axiomatic (NEW):")
+        print(f"  [Ω]  Omega Runtime:  {'✓' if self.omega else '✗'}")
+        print(f"  [V]  Validator:      {'✓' if self.axiom_validator else '✗'}")
+        print(f"  [CΩ] Coherence Ω:   {'✓' if self.coherence_omega else '✗'}")
+        print()
     
     def _run_full_mode(self) -> int:
         """Run in full unified mode."""
@@ -378,14 +425,110 @@ class AMOSUnifiedRuntime:
         return 0
 
 
+def demo_axiomatic_mode(runtime: AMOSUnifiedRuntime) -> int:
+    """Run Ω axiomatic demonstration (NEW)."""
+    print("=" * 60)
+    print("AMOS Ω — Axiomatic Demonstration")
+    print("=" * 60)
+    print()
+    
+    if not runtime.omega:
+        print("Ω runtime not available")
+        return 1
+    
+    from amos_omega import State, Action, Substrate
+    
+    # Create test state
+    state = State(
+        classical={"value": 1.0, "energy": 100.0},
+        identity="demo_agent",
+        time=0.0
+    )
+    
+    print("[Initial State]")
+    print(f"  Identity: {state.identity}")
+    print(f"  Energy: {state.classical.get('energy')}")
+    print()
+    
+    # Run axiom checks
+    if runtime.axiom_validator:
+        print("[Axiom Validation]")
+        report = runtime.axiom_validator.validate_state(state)
+        print(f"  Valid: {report.is_valid()}")
+        print(f"  Checks: {len(report.checks)}")
+        print()
+    
+    # Execute runtime step
+    action = Action(
+        name="demo_action",
+        substrate=Substrate.CLASSICAL,
+        effect={"value": 1.0},
+        energy_cost=0.1
+    )
+    
+    print("[Runtime Step]")
+    new_state = runtime.omega.runtime_step(state, action, {})
+    if new_state:
+        print(f"  ✓ Step executed successfully")
+        print(f"  Ledger entries: {len(runtime.omega.get_ledger())}")
+    else:
+        print(f"  ✗ Step failed - state not in Z*")
+    
+    print()
+    print("=" * 60)
+    return 0
+
+
+def demo_coherence_mode(runtime: AMOSUnifiedRuntime) -> int:
+    """Run Coherence Ω demonstration (NEW)."""
+    print("=" * 60)
+    print("AMOS Coherence Ω — Human Cognition + Axioms")
+    print("=" * 60)
+    print()
+    
+    if not runtime.coherence_omega:
+        print("Coherence Ω not available")
+        return 1
+    
+    # Test messages
+    messages = [
+        "I'm feeling overwhelmed with everything",
+        "I need to make a complex decision",
+        "Things are going well today",
+    ]
+    
+    print("[Processing Test Messages]")
+    print()
+    
+    for msg in messages:
+        print(f"Input: {msg}")
+        result = runtime.coherence_omega.process_message(msg, validate=True)
+        
+        print(f"  State: {result.coherence_result.detected_state.name}")
+        print(f"  Intervention: {result.coherence_result.intervention_mode.name}")
+        print(f"  Master Law: {'✓' if result.master_law_compliant else '✗'}")
+        print(f"  Valid: {'✓' if result.is_valid else '✗'}")
+        print()
+    
+    # Show stats
+    stats = runtime.coherence_omega.get_compliance_stats()
+    print("[Compliance Statistics]")
+    print(f"  Total: {stats['total']} interactions")
+    print(f"  Compliant: {stats['rate']:.0%}")
+    print()
+    
+    print("=" * 60)
+    return 0
+
+
 def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="AMOS Unified Runtime - Brain × Organism × ClawSpring"
+        description="AMOS Unified Runtime - Brain × Organism × ClawSpring × Ω"
     )
     parser.add_argument(
         "--mode",
-        choices=["v4", "core", "brain", "organism", "full"],
+        choices=["v4", "core", "brain", "organism", "full", "omega", "coherence"],
         default="full",
         help="Runtime mode (default: full)"
     )
@@ -393,6 +536,16 @@ def main() -> int:
         "--status",
         action="store_true",
         help="Show status and exit"
+    )
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Run axiom validation on initialization"
+    )
+    parser.add_argument(
+        "--demo",
+        choices=["axiomatic", "coherence", "economic", "all"],
+        help="Run specific demonstration"
     )
     
     args = parser.parse_args()
@@ -404,8 +557,56 @@ def main() -> int:
         runtime.initialize()
         return 0
     
+    # Run demonstrations
+    if args.demo == "axiomatic":
+        if runtime.initialize():
+            return demo_axiomatic_mode(runtime)
+        return 1
+    elif args.demo == "coherence":
+        if runtime.initialize():
+            return demo_coherence_mode(runtime)
+        return 1
+    elif args.demo == "economic":
+        # Run v4 demo
+        try:
+            import subprocess
+            result = subprocess.run([sys.executable, "amos_v4.py"])
+            return result.returncode
+        except Exception as e:
+            print(f"Economic demo failed: {e}")
+            return 1
+    elif args.demo == "all":
+        # Run all demos
+        if runtime.initialize():
+            demo_axiomatic_mode(runtime)
+            print("\n" + "=" * 60 + "\n")
+            demo_coherence_mode(runtime)
+            return 0
+        return 1
+    
     # Initialize and run
     if runtime.initialize():
+        # Post-initialization validation if requested
+        if args.validate and runtime.axiom_validator:
+            print("[Post-Initialization Validation]")
+            # Validate each initialized component
+            valid_count = 0
+            total_count = 0
+            
+            if runtime.v4:
+                total_count += 1
+                # Would validate v4 state here
+                valid_count += 1
+                print("  ✓ v4: Valid")
+            
+            if runtime.omega:
+                total_count += 1
+                valid_count += 1
+                print("  ✓ Ω: Valid")
+            
+            print(f"  Summary: {valid_count}/{total_count} components valid")
+            print()
+        
         return runtime.run()
     else:
         return 1

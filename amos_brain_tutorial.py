@@ -136,7 +136,7 @@ def demo_decide(amos, memory):
 
     lesson(
         "Key Takeaway",
-        "Use /decide <problem> whenever you need structured analysis.\n"
+        "Use `python amos_brain_cli.py decide <problem>` whenever you need structured analysis.\n"
         "The brain automatically applies Rule of 2 and Rule of 4,\n"
         "saving you time while ensuring comprehensive coverage."
     )
@@ -202,7 +202,7 @@ def demo_analyze(amos, memory):
 
     lesson(
         "Key Takeaway",
-        "Use /analyze <topic> for deep systems understanding.\n"
+        "Use `python amos_brain_cli.py analyze <topic>` for deep systems understanding.\n"
         "The brain automatically routes through relevant engines\n"
         "and provides multi-scale, multi-domain analysis."
     )
@@ -259,7 +259,7 @@ def demo_memory_recall(memory):
     lesson(
         "Key Takeaway",
         "The brain automatically recalls similar past reasoning\n"
-        "when you use /decide or /analyze. Check /history and /recall\n"
+        "when you use `decide` or `analyze`. Check `history` and `recall`\n"
         "to leverage your decision history."
     )
 
@@ -324,7 +324,7 @@ def demo_laws():
         "  - L2: At least 2 perspectives checked\n"
         "  - L3: All 4 quadrants considered\n"
         "  - L4: No contradictions in output\n\n"
-        "Use /audit to see your compliance statistics."
+        "Use `python amos_brain_cli.py audit --text ...` to validate text against the laws."
     )
 
 
