@@ -16,7 +16,9 @@ import sys
 import os
 
 # Ensure clawspring is in path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'clawspring'))
+clawspring_path = os.path.join(os.path.dirname(__file__), 'clawspring')
+if clawspring_path not in sys.path:
+    sys.path.insert(0, clawspring_path)
 
 # Import AMOS brain integration
 try:
@@ -81,7 +83,7 @@ def main():
     print_amos_banner()
 
     # Set default agent to AMOS if not specified
-    if '--agent' not in sys.argv and '-a' not in sys.argv:
+    if CLAWSPRING_AVAILABLE and '--agent' not in sys.argv and '-a' not in sys.argv:
         # Check if AMOS agent is available
         amos_def = get_agent_definition('amos')
         if amos_def:

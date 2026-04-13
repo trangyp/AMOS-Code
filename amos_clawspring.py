@@ -111,9 +111,11 @@ def run_clawspring():
     if "--amos" not in passthrough:
         passthrough.append("--amos")
     args = [sys.executable, clawspring_path] + passthrough
+    env = os.environ.copy()
+    env["AMOS_BRAIN_ENABLED"] = "true"
 
     try:
-        result = subprocess.run(args, cwd=os.path.dirname(clawspring_path))
+        result = subprocess.run(args, cwd=os.path.dirname(clawspring_path), env=env)
         return result.returncode
     except KeyboardInterrupt:
         return 0

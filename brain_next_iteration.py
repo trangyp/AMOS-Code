@@ -7,7 +7,8 @@ from amos_brain import think, decide
 
 def check_complete_stack():
     """Check everything that's been built."""
-    repo = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+    # Use file-relative path for portability
+    repo = Path(__file__).resolve().parent
 
     components = {
         # Infrastructure

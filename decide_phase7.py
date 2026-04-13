@@ -4,7 +4,7 @@
 from pathlib import Path
 from amos_brain import decide
 
-repo = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+repo = Path(__file__).resolve().parent
 
 # Count what we have
 existing = {
