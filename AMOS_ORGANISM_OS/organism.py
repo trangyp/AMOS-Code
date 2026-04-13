@@ -82,6 +82,11 @@ class AmosOrganism:
         self.router = SystemRouter()
         self.memory = MemoryLayer()
 
+        # Initialize SENSES (perception layer)
+        self.senses = EnvironmentScanner()
+        self.context = ContextGatherer()
+        self.signals = SignalDetector()
+
         # Initialize IMMUNE (safety layer)
         self.immune = ImmuneSystem()
         self.threat_detector = ThreatDetector()
