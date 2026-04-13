@@ -18,6 +18,7 @@ from .meta_controller import (
     MetaCognitiveController, get_meta_controller,
     orchestrate_goal, WorkflowPlan, SubTask
 )
+from .monitor import CognitiveMonitor, get_monitor, MetricPoint, Alert
 
 # Optional: prompt builder (requires brain_loader to be passed)
 try:

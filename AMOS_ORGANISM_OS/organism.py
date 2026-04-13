@@ -39,6 +39,9 @@ from SKELETON.structural_integrity import StructuralIntegrity
 from WORLD_MODEL.knowledge_graph import KnowledgeGraph
 from WORLD_MODEL.context_mapper import ContextMapper
 from WORLD_MODEL.semantic_index import SemanticIndex
+from BLOOD.resource_engine import ResourceEngine
+from BLOOD.budget_manager import BudgetManager
+from BLOOD.cashflow_tracker import CashflowTracker
 from METABOLISM.pipeline_engine import PipelineEngine
 from METABOLISM.transform_engine import TransformEngine
 from METABOLISM.io_router import IORouter

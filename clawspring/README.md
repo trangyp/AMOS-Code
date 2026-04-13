@@ -1,24 +1,21 @@
-English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.CN.MD) | [Français](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.FR.MD) | [한국어](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.KO.MD) | [日本語](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.DE.MD) | [Português](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/README.ES.MD)
+English | [中文](docs/README.CN.MD) | [Français](docs/README.FR.MD) | [한국어](docs/README.KO.MD) | [日本語](docs/README.JP.MD) | [Deutsch](docs/README.DE.MD) | [Português](docs/README.ES.MD)
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/clawspring)">
-    <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/logo-2.png" alt="Logo" width="280"> 
+  <a href="https://github.com/trangyp/AMOS-Code">
+    <img src="docs/logo-2.png" alt="Logo" width="280">
   </a>
 
   
-<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring (Nano Claude Code)</em></strong>: A Fast, Easy-to-Use Personal AI Assistant That Supports Any Model, Inspired by OpenClaw and Claude Code</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong>: A Fast, Easy-to-Use Personal AI Assistant That Supports Any Model</h1>
 <p align="center">
-    <a href="https://github.com/chauncygu/collection-claude-code-source-code">The newest source of Claude Code</a>
+    <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
     ·
-    <a href="https://github.com/SafeRL-Lab/clawspring/issues">Issue</a>
-  ·
-    <a href="https://deepwiki.com/SafeRL-Lab/clawspring">Brief Intro</a>
-  
+    <a href="https://github.com/trangyp/AMOS-Code/blob/main/clawspring/README.md">Documentation</a>
   </p>
 </div>
 
  <div align=center>
- <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/demo.gif" width="850"/> 
+ <img src="docs/demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline">Task Excution</center>
@@ -28,7 +25,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 ---
 
   <div align=center>
- <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/brainstorm_demo.gif" width="850"/> 
+ <img src="docs/brainstorm_demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline">Brainstorm Mode: Multi-Agent Brainstorm</center>
@@ -39,7 +36,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 ---
 
   <div align=center>
- <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/proactive_demo.gif" width="850"/> 
+ <img src="docs/proactive_demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline">Proactive Mode: Autonomous Agent</center>
@@ -48,7 +45,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 ---
 
   <div align=center>
- <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/ssj_demo.gif" width="850"/> 
+ <img src="docs/ssj_demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline">SSJ Developer Mode: Power Menu Workflow</center>
@@ -57,7 +54,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 ---
 
   <div align=center>
- <img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/telegram_demo.gif" width="850"/> 
+ <img src="docs/telegram_demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline">Telegram Bridge: Control clawspring from Your Phone</center>
@@ -70,14 +67,12 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 ## 🔥🔥🔥 News (Pacific Time)
 
 
-- Apr 06, 2026 (**v3.05.5**): **Project renamed from Nano Claude Code to ClawSpring**
-  - The project has been rebranded from **Nano Claude Code** to **ClawSpring** — a more distinctive name that captures the spirit of the tool: a sharp, agile coding assistant. The `Cl` in ClawSpring is a subtle nod to Claude.
-  - CLI command: `nano_claude` → `clawspring`
-  - PyPI package: `nano-claude-code` → `clawspring`
-  - Config directory: `~/.nano_claude/` → `~/.clawnest/` → `~/.clawspring/`
-  - Main entry point: `nano_claude.py` → `clawspring.py`
-  - All documentation, GitHub URLs, and internal references updated accordingly.
-  - Added **ClawSpring vs OpenClaw** comparison section to README.
+- Apr 06, 2026 (**v3.05.5**): **ClawSpring v3.05.5 Release**
+  - Enhanced AMOS Brain integration with cognitive architecture
+  - CLI command: `clawspring`
+  - Config directory: `~/.clawspring/`
+  - Main entry point: `clawspring.py`
+  - All documentation and internal references updated.
 
 - 00.29 PM, Apr 06, 2026 (**v3.05.5**): **SSJ Developer Mode, Telegram Bridge, Worker Command, and UX improvements**
   - **`/ssj` — SSJ Developer Mode**: Interactive power menu with 10 workflow options: Brainstorm, TODO viewer, Worker, Expert Debate, Propose Improvements, Code Review, README generator, Commit helper, Git Diff Scan, and Idea-to-Tasks Promotion. Menu stays open between actions and supports `/command` passthrough (e.g. `/exit` works from inside SSJ).
@@ -115,7 +110,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 - 06:00 PM, Apr 03, 2026: **v3.03** — Task management system (`task/` package): `TaskCreate` / `TaskUpdate` / `TaskGet` / `TaskList` tools with sequential IDs, dependency edges (blocks/blocked_by), metadata, persistence to `.clawspring/tasks.json`, thread-safe store, `/tasks` REPL command, 37 new tests (**~9500** lines of Python).
 - 02:50 PM, Apr 03, 2026: **v3.02** — Plugin system (`plugin/` package): install/uninstall/enable/disable/update via `/plugin` CLI, recommendation engine (keyword+tag matching), multi-scope (user/project), git-based marketplace. `AskUserQuestion` tool: interactive mid-task user prompts with numbered options and free-text input (**~8500** lines of Python).
 - 10:00 AM, Apr 03, 2026: **v3.01** — MCP (Model Context Protocol) support: `mcp/` package, stdio + SSE + HTTP transports, auto tool discovery, `/mcp` command, 34 new tests (**~7000** lines of Python).
-- 12:20 PM, Apr 02, 2026: **v3.0** — Multi-agent packages (`multi_agent/`), memory package (`memory/`), skill package (`skill/`) with built-in skills, argument substitution, fork/inline execution, AI memory search, git worktree isolation, agent type definitions (**~5000** lines of Python), see [update](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/update_readme_v3.0.md).
+- 12:20 PM, Apr 02, 2026: **v3.0** — Multi-agent packages (`multi_agent/`), memory package (`memory/`), skill package (`skill/`) with built-in skills, argument substitution, fork/inline execution, AI memory search, git worktree isolation, agent type definitions (**~5000** lines of Python).
 - 10:00 AM, Apr 02, 2026: **v2.0** — Context compression, memory, sub-agents, skills, diff view, tool plugin system (**~3400** lines of Python Code).
 - 01:47 PM, Apr 01, 2026: Support VLLM inference (**~2000** lines of Python Code).
 - 11:30 AM, Apr 01, 2026: Support more **closed-source** models and **open-source models**: Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, and local open-source models via Ollama or any OpenAI-compatible endpoint. (**~1700** lines of Python Code).
@@ -126,7 +121,7 @@ English | [中文](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/READM
 
 # ClawSpring
 
-ClawSpring: **A Lightweight** and **Easy-to-Use** Python Reimplementation of Claude Code **Supporting Any Model**, such as Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, and local open-source models via Ollama or any OpenAI-compatible endpoint.
+ClawSpring: **A Lightweight** and **Easy-to-Use** Python AI Assistant **Supporting Any Model**, such as Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, and local open-source models via Ollama or any OpenAI-compatible endpoint.
 
 ---
 
