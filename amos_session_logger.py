@@ -153,6 +153,8 @@ class AMOSSessionLogger:
         )
 
         self.current_session.add_interaction(interaction)
+        # Save session after each interaction
+        self._save_session()
         return True
 
     def get_current_stats(self) -> dict[str, Any]:

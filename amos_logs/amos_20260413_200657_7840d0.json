@@ -1,0 +1,33 @@
+{
+  "session": {
+    "session_id": "amos_20260413_200657_7840d0",
+    "start_time": "2026-04-13T20:06:57.799101",
+    "end_time": null,
+    "interactions": [
+      {
+        "timestamp": "2026-04-13T20:07:22.745526",
+        "interaction_type": "reasoning",
+        "name": "Architecture Analysis",
+        "input_hash": "1b37fe3e055aadb5",
+        "output_summary": "Rule of 2: 0.67 confidence. Scalability vs complexity trade-off.",
+        "engines_used": [],
+        "laws_applied": [],
+        "duration_ms": 0,
+        "success": true
+      }
+    ],
+    "metadata": {}
+  },
+  "stats": {
+    "session_id": "amos_20260413_200657_7840d0",
+    "duration_minutes": 0.4157746166666667,
+    "total_interactions": 1,
+    "interactions_by_type": {
+      "reasoning": 1
+    },
+    "unique_engines_used": 0,
+    "unique_laws_applied": 0,
+    "avg_response_time_ms": 0.0,
+    "success_rate": 1.0
+  }
+}

@@ -59,6 +59,10 @@ from FACTORY.agent_factory import AgentFactory
 from FACTORY.code_generator import CodeGenerator
 from FACTORY.builder_engine import BuilderEngine
 from FACTORY.quality_checker import QualityChecker
+from LEGAL_BRAIN.policy_engine import PolicyEngine
+from LEGAL_BRAIN.compliance_auditor import ComplianceAuditor
+from LEGAL_BRAIN.contract_manager import ContractManager
+from LEGAL_BRAIN.risk_governor import RiskGovernor
 
 
 @dataclass
@@ -147,6 +151,12 @@ class AmosOrganism:
         self.code_generator = CodeGenerator()
         self.builder = BuilderEngine(self.root_dir)
         self.quality = QualityChecker()
+
+        # Initialize LEGAL_BRAIN (compliance & governance layer)
+        self.policy_engine = PolicyEngine()
+        self.compliance_auditor = ComplianceAuditor()
+        self.contract_manager = ContractManager()
+        self.risk_governor = RiskGovernor()
 
         # Register workflow handlers
         self._register_workflow_handlers()
