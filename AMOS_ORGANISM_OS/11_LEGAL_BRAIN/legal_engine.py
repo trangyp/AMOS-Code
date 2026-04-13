@@ -307,9 +307,10 @@ class LegalEngine:
     def validate_governance(self, action: str, params: Dict) -> Dict[str, Any]:
         """Validate action against operator governance rules."""
         profile = self.operator_profile
-        governance = profile.get("governance", {}) if isinstance(profile, dict) else {}
+        is_dict = isinstance(profile, dict)
+        governance = profile.get("governance", {}) if is_dict else {}
         restricted = governance.get("restricted_actions", [])
-        comms = governance.get("communication_preferences", {})
+        communication = governance.get("communication_preferences", {})
 
         # Check if action is restricted
         is_restricted = any(r in action.lower() for r in restricted)

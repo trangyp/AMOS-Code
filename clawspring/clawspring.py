@@ -3344,6 +3344,8 @@ def main():
                         help="Show thinking + token counts")
     parser.add_argument("--thinking", action="store_true",
                         help="Enable extended thinking")
+    parser.add_argument("--amos", action="store_true",
+                        help="Enable AMOS Brain cognitive mode")
     parser.add_argument("--version", action="store_true", help="Print version")
     parser.add_argument("-h", "--help", action="store_true", help="Show help")
 
@@ -3380,6 +3382,8 @@ def main():
         config["verbose"] = True
     if args.thinking:
         config["thinking"] = True
+    if args.amos:
+        config["_amos_mode"] = True
 
     # Check API key for active provider (warn only, don't block local providers)
     if not has_api_key(config):
