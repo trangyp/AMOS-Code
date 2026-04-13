@@ -251,10 +251,12 @@ class AmosOrganism:
             "cycle_count": self.state.cycle_count,
             "current_subsystem": self.state.current_subsystem,
             "active_subsystems": [
-                "01_BRAIN", "03_IMMUNE", "06_MUSCLE", "14_INTERFACES"
+                "01_BRAIN", "02_SENSES", "03_IMMUNE", "06_MUSCLE",
+                "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
+                "senses": self.senses.status(),
                 "immune": self.immune.status(),
                 "muscle": self.muscle.status(),
                 "memory": self.memory.stats(),
@@ -267,6 +269,14 @@ class AmosOrganism:
                 "version": self.registry.get("_meta", {}).get("version", "0.0.0"),
             },
         }
+
+    def scan(self, path: str = None):
+        """Scan environment via SENSES."""
+        return self.senses.scan(path)
+
+    def gather_context(self) -> Dict[str, Any]:
+        """Gather environment context."""
+        return self.context.gather()
 
     def save(self) -> Path:
         """Save organism state."""

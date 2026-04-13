@@ -216,7 +216,10 @@ class FinancialEngine:
 
         budget = self.budgets[category]
         remaining = budget.allocated - budget.spent
-        utilization = budget.spent / budget.allocated if budget.allocated > 0 else 0
+        if budget.allocated > 0:
+            utilization = budget.spent / budget.allocated
+        else:
+            utilization = 0
 
         return {
             "category": category,
@@ -224,7 +227,11 @@ class FinancialEngine:
             "spent": budget.spent,
             "remaining": remaining,
             "utilization_rate": utilization,
-            "status": "healthy" if utilization < 0.8 else "warning" if utilization < 1.0 else "exhausted"
+            "status": (
+                "healthy" if utilization < 0.8
+                else "warning" if utilization < 1.0
+                else "exhausted"
+            )
         }
 
     def get_cashflow_summary(self, days: int = 30) -> Dict[str, Any]:
@@ -234,8 +241,12 @@ class FinancialEngine:
 
         recent = [c for c in self.cashflow if c.timestamp > cutoff_str]
 
-        inflows = sum(c.amount for c in recent if c.direction == "inflow")
-        outflows = sum(c.amount for c in recent if c.direction == "outflow")
+        inflows = sum(
+            c.amount for c in recent if c.direction == "inflow"
+        )
+        outflows = sum(
+            c.amount for c in recent if c.direction == "outflow"
+        )
 
         return {
             "period_days": days,
@@ -312,7 +323,9 @@ def main() -> int:
 
     # Test allocation
     print("\nAllocating resources for task...")
-    alloc = engine.allocate_resources("test_task_001", cpu_units=2.0, memory_mb=1024)
+    alloc = engine.allocate_resources(
+        "test_task_001", cpu_units=2.0, memory_mb=1024
+    )
     print(f"  Task ID: {alloc.task_id}")
     print(f"  Estimated cost: ${alloc.cost_estimate:.4f}")
 
