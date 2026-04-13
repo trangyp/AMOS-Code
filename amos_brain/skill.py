@@ -8,15 +8,8 @@ from __future__ import annotations
 
 def _get_skill_classes():
     """Lazy import skill classes to avoid circular imports."""
-    # Import from clawspring.skill explicitly (not root skill package)
-    import sys
-    import os
-    # Ensure clawspring is in path
-    clawspring_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    if clawspring_parent not in sys.path:
-        sys.path.insert(0, clawspring_parent)
-    # Import from clawspring.skill, not root skill
-    from clawspring.skill.loader import SkillDef, register_builtin_skill
+    # Import from root skill package (same one clawspring uses)
+    from skill.loader import SkillDef, register_builtin_skill
     return SkillDef, register_builtin_skill
 
 

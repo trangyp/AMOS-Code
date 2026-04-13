@@ -319,6 +319,29 @@ class BloodHandler(SubsystemHandler):
         )
 
 
+class SocialHandler(SubsystemHandler):
+    """09_SOCIAL_ENGINE: Agent communication, coordination."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "sync_agent_presence",
+            "process_messages",
+            "update_social_graph"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "agents_synced": True,
+                "messages_processed": True,
+                "social_graph_updated": True
+            },
+            next_recommended="10_LIFE_ENGINE"
+        )
+
+
 # ============================================================================
 # HANDLER FACTORY
 # ============================================================================
@@ -329,6 +352,7 @@ HANDLER_MAP: Dict[str, type] = {
     "04_BLOOD": BloodHandler,
     "05_SKELETON": SkeletonHandler,
     "08_WORLD_MODEL": WorldModelHandler,
+    "09_SOCIAL_ENGINE": SocialHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
     "06_MUSCLE": MuscleHandler,
     "07_METABOLISM": MetabolismHandler,

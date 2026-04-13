@@ -51,6 +51,7 @@ class AMOSOrganism:
         self._immune = None
         self._blood = None
         self._muscle = None
+        self._metabolism = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")

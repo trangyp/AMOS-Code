@@ -71,9 +71,9 @@ class AMOSAgentBridge:
         from agent import run as agent_run
         for event in agent_run(
             user_message=user_message,
-            state=self.state,
+            state=self._get_state(),
             config=config,
-            system_prompt=self.system_prompt
+            system_prompt=self._get_system_prompt()
         ):
             yield event
 
