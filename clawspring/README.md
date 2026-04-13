@@ -166,7 +166,7 @@ ClawSpring: **A Lightweight** and **Easy-to-Use** Python AI Assistant **Supporti
 
 Claude Code is a powerful, production-grade AI coding assistant — but its source code is a compiled, 12 MB TypeScript/Node.js bundle (~1,300 files, ~283K lines). It is tightly coupled to the Anthropic API, hard to modify, and impossible to run against a local or alternative model.
 
-**ClawSpring** reimplements the same core loop in ~10K lines of readable Python, keeping everything you need and dropping what you don't. See here for more detailed analysis (ClawSpring v3.03), [English version](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) and [Chinese version](https://github.com/SafeRL-Lab/clawspring/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**ClawSpring** reimplements the same core loop in ~10K lines of readable Python, keeping everything you need and dropping what you don't. See comparison docs: [English version](docs/comparison_claude_code_vs_nano_v3.03_en.md) and [Chinese version](docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### At a glance
 
@@ -406,8 +406,8 @@ Claude Code is a powerful, production-grade AI coding assistant — but its sour
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone and install
-git clone https://github.com/SafeRL-Lab/clawspring
-cd clawspring
+git clone https://github.com/trangyp/AMOS-Code.git
+cd AMOS-Code/clawspring
 uv tool install .
 ```
 
@@ -434,8 +434,8 @@ uv tool uninstall clawspring
 ### Alternative: run directly from the repo
 
 ```bash
-git clone https://github.com/SafeRL-Lab/clawspring
-cd clawspring
+git clone https://github.com/trangyp/AMOS-Code.git
+cd AMOS-Code/clawspring
 
 pip install -r requirements.txt
 # or manually (sounddevice is optional — only needed for /voice):

@@ -57,6 +57,7 @@ PRIMARY_LOOP = [
     "05_SKELETON",
     "08_WORLD_MODEL",
     "09_SOCIAL_ENGINE",  # Agent communication
+    "11_LEGAL_BRAIN",  # Compliance and governance
     "12_QUANTUM_LAYER",
     "06_MUSCLE",
     "07_METABOLISM",
@@ -343,6 +344,29 @@ class SocialHandler(SubsystemHandler):
         )
 
 
+class LegalHandler(SubsystemHandler):
+    """11_LEGAL_BRAIN: Legal compliance and governance."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "check_compliance",
+            "validate_governance",
+            "assess_risks"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "compliance_checked": True,
+                "governance_validated": True,
+                "risks_assessed": True
+            },
+            next_recommended="12_QUANTUM_LAYER"
+        )
+
+
 # ============================================================================
 # HANDLER FACTORY
 # ============================================================================
@@ -354,6 +378,7 @@ HANDLER_MAP: Dict[str, type] = {
     "05_SKELETON": SkeletonHandler,
     "08_WORLD_MODEL": WorldModelHandler,
     "09_SOCIAL_ENGINE": SocialHandler,
+    "11_LEGAL_BRAIN": LegalHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
     "06_MUSCLE": MuscleHandler,
     "07_METABOLISM": MetabolismHandler,

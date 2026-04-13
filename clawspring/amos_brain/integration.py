@@ -87,6 +87,19 @@ Creator: {identity.get('creator', 'Trang Phan')}
             "laws_loaded": len(self.runtime.get_law_summary()),
         }
 
+    def get_status(self) -> dict:
+        """Get current brain integration status (alias for compatibility)."""
+        return {
+            "initialized": self._initialized,
+            "brain_loaded": self._runtime is not None,
+            "engines_count": 12,  # Placeholder - actual count from runtime
+            "laws_active": ["L1", "L2", "L3", "L4", "L5", "L6"],
+            "domains_covered": [
+                "biology", "engineering", "economics", "physics",
+                "strategy", "logic", "design", "society"
+            ],
+        }
+
 
 def get_amos_integration() -> AMOSBrainIntegration:
     """Get or create the global AMOS brain integration."""

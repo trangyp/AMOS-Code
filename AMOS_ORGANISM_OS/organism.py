@@ -109,6 +109,11 @@ class AmosOrganism:
         self.context_mapper = ContextMapper()
         self.semantic_index = SemanticIndex()
 
+        # Initialize BLOOD (resource tracking layer)
+        self.resources = ResourceEngine()
+        self.budget = BudgetManager()
+        self.cashflow = CashflowTracker()
+
         # Initialize METABOLISM (data pipeline layer)
         self.pipeline = PipelineEngine()
         self.transform = TransformEngine()
