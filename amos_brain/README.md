@@ -111,6 +111,8 @@ python amos_brain_cli.py
 #   /history             - Show reasoning history
 #   /recall <problem>    - Find similar past reasoning
 #   /audit               - Show compliance audit
+#   /dashboard [days]    - Show reasoning analytics
+#   /help                - Show this help
 ```
 
 ## Tools Available

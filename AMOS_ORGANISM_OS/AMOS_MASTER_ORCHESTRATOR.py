@@ -296,6 +296,29 @@ class MetabolismHandler(SubsystemHandler):
         )
 
 
+class BloodHandler(SubsystemHandler):
+    """04_BLOOD: Budget, cashflow, resource allocation."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "check_budget_status",
+            "record_cycle_cost",
+            "update_cashflow"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "budget_healthy": True,
+                "cycle_cost_recorded": True,
+                "cashflow_updated": True
+            },
+            next_recommended="05_SKELETON"
+        )
+
+
 # ============================================================================
 # HANDLER FACTORY
 # ============================================================================
@@ -303,6 +326,7 @@ class MetabolismHandler(SubsystemHandler):
 HANDLER_MAP: Dict[str, type] = {
     "01_BRAIN": BrainHandler,
     "02_SENSES": SensesHandler,
+    "04_BLOOD": BloodHandler,
     "05_SKELETON": SkeletonHandler,
     "08_WORLD_MODEL": WorldModelHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
