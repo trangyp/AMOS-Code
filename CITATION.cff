@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use AMOSL in your research, please cite it as below."
+title: "AMOSL: Field-Theoretic Programming System"
+version: 4.0.0
+date-released: 2026-04-13
+authors:
+  - family-names: "Phan"
+    given-names: "Trang Q."
+    email: "trang@amos-project.dev"
+repository-code: "https://github.com/neurosyncai/AMOS-code"
+license: Apache-2.0
+keywords:
+  - field-theoretic programming
+  - multi-substrate computation
+  - formal verification
+  - category theory
+  - information geometry
+  - modal logic
+  - quantum computing
+  - biological computing
+abstract: |
+  AMOSL is a civilisational successor to traditional programming languages,
+  defined through a 5-layer formal hierarchy from 9-tuple language syntax
+  to 21-tuple maximal specification. It unifies field-theoretic dynamics with
+  computational semantics across classical, quantum, and biological substrates,
+  providing 10 provable axioms, 17-component admissibility verification,
+  and complete auditability through ledger homology.

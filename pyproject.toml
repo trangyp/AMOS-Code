@@ -51,6 +51,7 @@ dev = ["pytest", "pytest-asyncio", "black", "flake8", "mypy"]
 amos-brain = "amos_brain_launcher:main"
 amos-tutorial = "amos_brain_tutorial:main"
 amos-cli = "amos_brain_cli:main"
+amosl = "amosl.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/trangyp/AMOS-Code"
@@ -70,7 +71,7 @@ py-modules = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["amos_brain", "amos_brain.*"]
+include = ["amos_brain", "amos_brain.*", "amosl", "amosl.*"]
 exclude = ["tests", "tests.*"]
 
 [tool.setuptools.package-data]
