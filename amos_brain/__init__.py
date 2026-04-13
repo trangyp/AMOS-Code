@@ -49,4 +49,10 @@ __all__ = [
     # Router
     "KernelRouter",
     "TaskIntent",
+    # Task processor
+    "BrainTaskProcessor",
+    "process_task",
+    "TaskResult",
+    # Optional
+    "SystemPromptBuilder",
 ]
