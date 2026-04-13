@@ -64,8 +64,15 @@ class GlobalLaws:
             'legal representation',
             'political campaigning'
         ]
+        restricted_tools = {
+            'tool_Bash': 'Shell execution requires additional validation',
+            'tool_Write': 'Direct file mutation requires additional validation',
+            'tool_Edit': 'Direct file mutation requires additional validation',
+        }
         if action_type in prohibited:
             return False, f"L1 violation: {action_type} exceeds operational scope"
+        if action_type in restricted_tools:
+            return True, f"L1 guarded: {restricted_tools[action_type]}"
         return True, "L1 compliant"
 
     def enforce_l2_dual_check(self, analysis: str, counter_analysis: str | None) -> tuple[bool, str]:
