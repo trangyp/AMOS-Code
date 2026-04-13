@@ -11,9 +11,11 @@ Demonstrates:
 """
 
 import sys
-sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code')
+from pathlib import Path
 
-from amos_brain import get_brain, GlobalLaws, RuleOfTwo, RuleOfFour
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from amos_brain import GlobalLaws, RuleOfTwo, RuleOfFour
 from amos_brain.cognitive_stack import CognitiveStack
 from amos_brain.integration import get_amos_integration
 

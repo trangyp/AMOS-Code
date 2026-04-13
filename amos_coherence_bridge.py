@@ -32,10 +32,10 @@ class CoherenceLocalBridge:
         coherence_engine: CoherenceEngine | None = None,
     ):
         self.runtime = runtime or create_local_runtime()
-        self.coherence = coherence_engine or CoherenceEngine()
+        self.coherence = coherence_engine or AMOSCoherenceEngine()
         self.signal_detector = SignalDetectionEngine()
         self.state_regulator = StateRegulationEngine()
-        self.intervention_selector = InterventionSelector()
+        self.intervention_selector = InterventionSelectionEngine()
 
     def initialize(self) -> dict[str, Any]:
         """Initialize both systems."""
@@ -106,9 +106,9 @@ class CoherenceLocalBridge:
         if noise_sum > 1.5:
             return HumanState.OVERLOADED
         elif noise_sum > 1.0:
-            return HumanState.DYSREGULATED
+            return HumanState.ACTIVATED
         elif noise_sum > 0.5:
-            return HumanState.FRAGILE
+            return HumanState.HIGH_RISK
         else:
             return HumanState.STABLE
 
