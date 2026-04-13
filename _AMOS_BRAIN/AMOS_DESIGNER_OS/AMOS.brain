@@ -73,11 +73,12 @@ max_log_file_size_kb = 512
 6 = "Case memory accumulates resolved examples for analogical reasoning."
 
 [NEXT_ACTION]
-next_action = "build_08_WORLD_MODEL"
-current_phase = "07_METABOLISM_complete"
-completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "amos_organism_orchestrator"]
-next_subsystems = ["08_WORLD_MODEL", "09_QUANTUM_LAYER", "10_LEARNING", "11_CANON_INTEGRATION"]
-last_action_summary = "Built 07_METABOLISM: Performance monitoring, resource tracking, efficiency optimization, garbage collection"
+next_action = "phase_1_complete"
+current_phase = "08_WORLD_MODEL_complete"
+completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL", "amos_organism_orchestrator"]
+next_subsystems = ["09_SOCIAL_ENGINE", "10_LIFE_ENGINE", "11_LEGAL_BRAIN", "12_QUANTUM_LAYER"]
+last_action_summary = "Built 08_WORLD_MODEL: Macroeconomic scanner, geopolitical monitor, sector analyzer, world model engine"
+world_model_features = ["macroeconomic_scanner", "geopolitical_monitor", "sector_analyzer", "knowledge_graph", "world_model_engine"]
 metabolism_features = ["performance_monitoring", "resource_tracking", "efficiency_analysis", "garbage_collection", "homeostasis"]
 
 [COMPLETED_ACTIONS]

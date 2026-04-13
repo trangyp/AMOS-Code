@@ -14,10 +14,10 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -97,6 +97,14 @@ class LegalEngine:
                 severity="critical"
             ),
             ComplianceRule(
+                id="LEGAL_002",
+                category="legal",
+                description="Respect software licenses",
+                check_type="keyword",
+                check_value=["GPL violation", "license breach"],
+                severity="error"
+            ),
+            ComplianceRule(
                 id="GOV_001",
                 category="governance",
                 description="Trang's explicit consent required for external sharing",
@@ -141,7 +149,7 @@ class LegalEngine:
                     for r in custom_rules:
                         self.rules.append(ComplianceRule(**r))
             except Exception as e:
-                print(f"[LEGAL] Error loading custom rules: {e}")
+                print(f"[LEGAL] Error loading rules: {e}")
 
     def _load_state(self) -> None:
         """Load previous checks and assessments."""
@@ -274,9 +282,10 @@ class LegalEngine:
             mitigations.append("Review code before execution")
 
         # Determine risk level
-        if len(risk_factors) >= 3:
+        factor_count = len(risk_factors)
+        if factor_count >= 3:
             risk_level = "high"
-        elif len(risk_factors) >= 1:
+        elif factor_count >= 1:
             risk_level = "medium"
         else:
             risk_level = "low"
@@ -297,9 +306,10 @@ class LegalEngine:
 
     def validate_governance(self, action: str, params: Dict) -> Dict[str, Any]:
         """Validate action against operator governance rules."""
-        governance = self.operator_profile.get("governance", {})
+        profile = self.operator_profile
+        governance = profile.get("governance", {}) if isinstance(profile, dict) else {}
         restricted = governance.get("restricted_actions", [])
-        communication = governance.get("communication_preferences", {})
+        comms = governance.get("communication_preferences", {})
 
         # Check if action is restricted
         is_restricted = any(r in action.lower() for r in restricted)

@@ -79,6 +79,7 @@ class AMOSOrganism:
         self._init_blood()
         self._init_muscle()
         self._init_metabolism()
+        self._init_world_model()
         
         self.state["status"] = "ready"
         logger.info("AMOS Organism ready")
