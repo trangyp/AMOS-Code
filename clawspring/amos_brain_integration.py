@@ -143,9 +143,13 @@ class BrainSystemPromptInjector:
         Returns:
             Enhanced prompt with brain context
         """
-        # Get active kernels for domain
+        # Get active engines
         engines = self.brain.list_engines()
-        domain_engines = [e for e in engines if domain in e.get("domain", "")]
+        # Get domain-relevant engines (first 3)
+        domain_engines = engines[:3]
+        
+        # Build engine list string
+        engine_list = "\n".join(f"  - {e}" for e in domain_engines[:3])
         
         # Build injection
         brain_context = f"""
@@ -154,7 +158,7 @@ class BrainSystemPromptInjector:
 You are operating under the AMOS Brain Cognitive OS with the following constraints:
 
 ACTIVE COGNITIVE KERNELS ({len(domain_engines)}):
-{chr(10).join(f"  - {e['name']}: {e.get('description', 'N/A')[:50]}..." for e in domain_engines[:3])}
+{engine_list}
 
 GLOBAL LAWS (Must obey):
   L1: Law of Law - All actions must be lawful

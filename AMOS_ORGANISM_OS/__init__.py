@@ -207,3 +207,31 @@ def list_primary_loop() -> list:
 def list_supporting(category: str) -> list:
     """Return supporting subsystem codes for a category."""
     return WIRING["supporting"].get(category, [])
+
+
+__all__ = [
+    # Core
+    "AmosOrganism",
+    "OrganismState",
+    # Subsystems
+    "BrainOS",
+    "SystemRouter",
+    "RoutingDecision",
+    "EnvironmentScanner",
+    "MuscleExecutor",
+    "PipelineEngine",
+    "ResourceEngine",
+    "ImmuneSystem",
+    "KnowledgeGraph",
+    "ScenarioEngine",
+    "AgentFactory",
+    "BrainMuscleBridge",
+    "get_brain_muscle_bridge",
+    # Registry
+    "SUBSYSTEMS",
+    "WIRING",
+    "ORGANISM_ROOT",
+    # Helpers
+    "list_primary_loop",
+    "list_supporting",
+]

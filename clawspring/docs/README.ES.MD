@@ -32,18 +32,18 @@ Português | [English](../README.md) | [中文](README.CN.MD) | [Français](READ
 - 01:47 PM, 01 de abril de 2026: Soporte para inferencia con VLLM (**~2000** líneas de Python).
 - 11:30 AM, 01 de abril de 2026: Soporte para más modelos **cerrados** y **abiertos**: Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, y modelos abiertos locales vía Ollama o cualquier endpoint compatible con OpenAI. (**~1700** líneas de Python).
 - 09:50 AM, 01 de abril de 2026: Soporte para más modelos **cerrados**: Claude, GPT, Gemini. (**~1300** líneas de Python).
-- 08:23 AM, 01 de abril de 2026: Lanzamiento de la versión inicial de Nano Claude Code (**~900 líneas** de Python).
+- 08:23 AM, 01 de abril de 2026: Lanzamiento de la versión inicial de ClawSpring (**~900 líneas** de Python).
 
 ---
 
-# Nano Claude Code
+# ClawSpring
 
-Nano Claude Code: **una reimplementación ligera** y **fácil de usar** de Claude Code en Python, **compatible con cualquier modelo**, como Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek y modelos abiertos locales vía Ollama o cualquier endpoint compatible con OpenAI.
+ClawSpring: **una reimplementación ligera** y **fácil de usar** de Claude Code en Python, **compatible con cualquier modelo**, como Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek y modelos abiertos locales vía Ollama o cualquier endpoint compatible con OpenAI.
 
 ---
 
 ## Contenido
-  * [¿Por qué Nano Claude Code?](#por-qué-nano-claude-code)
+  * [¿Por qué ClawSpring?](#por-qué-nano-claude-code)
   * [Características](#características)
   * [Modelos compatibles](#modelos-compatibles)
   * [Instalación](#instalación)
@@ -69,15 +69,15 @@ Nano Claude Code: **una reimplementación ligera** y **fácil de usar** de Claud
   * [Estructura del proyecto](#estructura-del-proyecto)
   * [Preguntas frecuentes](#preguntas-frecuentes)
 
-## ¿Por qué Nano Claude Code?
+## ¿Por qué ClawSpring?
 
 Claude Code es un potente asistente de programación con IA de nivel de producción, pero su código fuente es un bundle compilado de TypeScript/Node.js de 12 MB (~1300 archivos, ~283K líneas). Está fuertemente acoplado a la API de Anthropic, es difícil de modificar e imposible de ejecutar con un modelo local o alternativo.
 
-**Nano Claude Code** reimplementa el mismo bucle central en ~10K líneas de Python legibles, conservando todo lo que necesitas y eliminando lo que no. Aquí puedes ver un análisis más detallado (Nano Claude Code v3.03), [versión en inglés](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) y [versión en chino](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**ClawSpring** reimplementa el mismo bucle central en ~10K líneas de Python legibles, conservando todo lo que necesitas y eliminando lo que no. Aquí puedes ver un análisis más detallado (ClawSpring v3.03), [versión en inglés](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) y [versión en chino](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### Vista rápida
 
-| Dimensión | Claude Code (TypeScript) | Nano Claude Code (Python) |
+| Dimensión | Claude Code (TypeScript) | ClawSpring (Python) |
 |-----------|--------------------------|---------------------------|
 | Lenguaje | TypeScript + React/Ink | Python 3.8+ |
 | Archivos fuente | ~1,332 archivos TS/TSX | 51 archivos Python |
@@ -98,7 +98,7 @@ Claude Code es un potente asistente de programación con IA de nivel de producci
 - **Extracción de memoria impulsada por IA** — el servicio `extractMemories` extrae conocimiento de las conversaciones de forma proactiva sin llamadas explícitas a herramientas.
 - **Fiabilidad de producción** — un único `cli.js` distribuible, amplia cobertura de pruebas y lanzamientos con versiones fijadas.
 
-### Donde Nano Claude Code gana
+### Donde ClawSpring gana
 
 - **Multiproveedor** — cambia entre Claude, GPT-4o, Gemini 2.5 Pro, DeepSeek, Qwen o un Llama local con `--model` o `/model`, sin recompilar.
 - **Soporte para modelos locales** — ejecución completamente offline con Ollama, LM Studio o cualquier modelo servido por vLLM.
@@ -116,7 +116,7 @@ Claude Code es un potente asistente de programación con IA de nivel de producci
 
 **Compresión de contexto**
 
-| | Claude Code | Nano Claude Code |
+| | Claude Code | ClawSpring |
 |-|-------------|-----------------|
 | Activación | Conteo exacto de tokens | Estimación `len / 3.5`, se activa al 70 % |
 | Capa 1 | — | Snip: trunca salidas antiguas de herramientas (sin coste de API) |
@@ -125,7 +125,7 @@ Claude Code es un potente asistente de programación con IA de nivel de producci
 
 **Memoria** — el servicio `extractMemories` de Claude Code hace que el modelo saque hechos de forma proactiva. El paquete `memory/` de Nano está guiado por herramientas: el modelo llama explícitamente a `MemorySave`, lo que resulta más predecible y auditable.
 
-### Quién debería usar Nano Claude Code
+### Quién debería usar ClawSpring
 
 - Desarrolladores que quieran **usar un modelo local o que no sea de Anthropic** como asistente de programación.
 - Investigadores que estudien **cómo funcionan los asistentes de programación agénticos** — todo el sistema cabe en una sola pantalla.

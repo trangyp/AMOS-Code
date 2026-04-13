@@ -58,18 +58,32 @@ class AMOSSession:
         if not self.interactions:
             return {"total_interactions": 0}
 
-        types = {}
+        types: dict[str, int] = {}
         engines = set()
         laws = set()
         total_duration = 0
         success_count = 0
 
         for i in self.interactions:
-            types[i.interaction_type] = types.get(i.interaction_type, 0) + 1
-            engines.update(i.engines_used)
-            laws.update(i.laws_applied)
-            total_duration += i.duration_ms
-            if i.success:
+            # Handle both dataclass and dict (when loaded from JSON)
+            if isinstance(i, dict):
+                itype = i.get('interaction_type', 'unknown')
+                iengines = i.get('engines_used', [])
+                ilaws = i.get('laws_applied', [])
+                iduration = i.get('duration_ms', 0)
+                isuccess = i.get('success', True)
+            else:
+                itype = i.interaction_type
+                iengines = i.engines_used
+                ilaws = i.laws_applied
+                iduration = i.duration_ms
+                isuccess = i.success
+
+            types[itype] = types.get(itype, 0) + 1
+            engines.update(iengines)
+            laws.update(ilaws)
+            total_duration += iduration
+            if isuccess:
                 success_count += 1
 
         return {

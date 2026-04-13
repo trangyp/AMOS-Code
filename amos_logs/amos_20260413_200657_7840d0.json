@@ -14,16 +14,28 @@
         "laws_applied": [],
         "duration_ms": 0,
         "success": true
+      },
+      {
+        "timestamp": "2026-04-13T20:09:55.416333",
+        "interaction_type": "skill",
+        "name": "/amos-status",
+        "input_hash": "dbf8d71817d77e96",
+        "output_summary": "12 engines active, 6 laws enforced",
+        "engines_used": [],
+        "laws_applied": [],
+        "duration_ms": 0,
+        "success": true
       }
     ],
     "metadata": {}
   },
   "stats": {
     "session_id": "amos_20260413_200657_7840d0",
-    "duration_minutes": 0.4157746166666667,
-    "total_interactions": 1,
+    "duration_minutes": 2.9602908,
+    "total_interactions": 2,
     "interactions_by_type": {
-      "reasoning": 1
+      "reasoning": 1,
+      "skill": 1
     },
     "unique_engines_used": 0,
     "unique_laws_applied": 0,

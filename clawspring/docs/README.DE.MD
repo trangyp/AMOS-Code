@@ -28,18 +28,18 @@ Deutsch | [English](../README.md) | [中文](README.CN.MD) | [Français](README.
 - 01. Apr 2026, 13:47: Unterstützung für VLLM-Inferenz.
 - 01. Apr 2026, 11:30: Unterstützung für weitere Closed-Source- und Open-Source-Modelle: Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek sowie lokale Modelle via Ollama oder beliebige OpenAI-kompatible Endpunkte.
 - 01. Apr 2026, 09:50: Unterstützung für weitere Closed-Source-Modelle: Claude, GPT, Gemini.
-- 01. Apr 2026, 08:23: Erste Version von Nano Claude Code veröffentlicht.
+- 01. Apr 2026, 08:23: Erste Version von ClawSpring veröffentlicht.
 
 ---
 
-# Nano Claude Code
+# ClawSpring
 
-Nano Claude Code ist eine **leichte** und **einfach zu nutzende** Python-Neuimplementierung von Claude Code, die **jedes Modell** unterstützt, darunter Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek sowie lokale Open-Source-Modelle über Ollama oder beliebige OpenAI-kompatible Endpunkte.
+ClawSpring ist eine **leichte** und **einfach zu nutzende** Python-Neuimplementierung von Claude Code, die **jedes Modell** unterstützt, darunter Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek sowie lokale Open-Source-Modelle über Ollama oder beliebige OpenAI-kompatible Endpunkte.
 
 ---
 
 ## Inhalt
-- [Warum Nano Claude Code](#warum-nano-claude-code)
+- [Warum ClawSpring](#warum-nano-claude-code)
 - [Funktionen](#funktionen)
 - [Unterstützte Modelle](#unterstützte-modelle)
 - [Installation](#installation)
@@ -65,15 +65,15 @@ Nano Claude Code ist eine **leichte** und **einfach zu nutzende** Python-Neuimpl
 - [Projektstruktur](#projektstruktur)
 - [FAQ](#faq)
 
-## Warum Nano Claude Code
+## Warum ClawSpring
 
 Claude Code ist ein leistungsstarker, produktionsreifer KI-Coding-Assistent – aber der Quellcode ist ein kompiliertes 12-MB-TypeScript/Node.js-Bundle (ca. 1300 Dateien, ca. 283K Zeilen). Er ist eng an die Anthropic-API gekoppelt, schwer anzupassen und praktisch nicht mit lokalen oder alternativen Modellen nutzbar.
 
-**Nano Claude Code** implementiert dieselbe Kernschleife in etwa 10K Zeilen gut lesbarem Python neu. Alles Wichtige bleibt erhalten, Unnötiges wird weggelassen. Eine ausführlichere Analyse gibt es hier: [Englische Version](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) und [Chinesische Version](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**ClawSpring** implementiert dieselbe Kernschleife in etwa 10K Zeilen gut lesbarem Python neu. Alles Wichtige bleibt erhalten, Unnötiges wird weggelassen. Eine ausführlichere Analyse gibt es hier: [Englische Version](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) und [Chinesische Version](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### Auf einen Blick
 
-| Dimension | Claude Code (TypeScript) | Nano Claude Code (Python) |
+| Dimension | Claude Code (TypeScript) | ClawSpring (Python) |
 |---|---|---|
 | Sprache | TypeScript + React/Ink | Python 3.8+ |
 | Quelldateien | ~1.332 TS/TSX-Dateien | 51 Python-Dateien |
@@ -94,7 +94,7 @@ Claude Code ist ein leistungsstarker, produktionsreifer KI-Coding-Assistent – 
 - **KI-gesteuerte Memory-Extraktion** — `extractMemories`
 - **Produktionszuverlässigkeit** — ein verteilbares `cli.js`, umfangreiche Tests, versionierte Releases
 
-### Wo Nano Claude Code stärker ist
+### Wo ClawSpring stärker ist
 
 - **Multi-Provider** — Wechsel zwischen Claude, GPT-4o, Gemini 2.5 Pro, DeepSeek, Qwen oder lokalen Llama-Modellen über `--model` oder `/model`
 - **Lokale Modelle** — vollständig offline mit Ollama, LM Studio oder vLLM
@@ -112,7 +112,7 @@ Claude Code ist ein leistungsstarker, produktionsreifer KI-Coding-Assistent – 
 
 **Kontextkompression**
 
-| | Claude Code | Nano Claude Code |
+| | Claude Code | ClawSpring |
 |---|---|---|
 | Trigger | Exakte Tokenzahl | Schätzung `len / 3.5`, Auslösung bei 70 % |
 | Ebene 1 | — | Snip alter Tool-Ausgaben |
@@ -121,7 +121,7 @@ Claude Code ist ein leistungsstarker, produktionsreifer KI-Coding-Assistent – 
 
 **Memory** — Claude Code extrahiert Wissen proaktiv. Nano verwendet ein explizites, tool-basiertes `MemorySave`, was vorhersehbarer und auditierbarer ist.
 
-### Für wen eignet sich Nano Claude Code?
+### Für wen eignet sich ClawSpring?
 
 - Entwickler, die **lokale oder nicht-Anthropic-Modelle** als Coding-Assistenten verwenden möchten
 - Forschende, die verstehen möchten, **wie agentische Coding-Assistenten funktionieren**

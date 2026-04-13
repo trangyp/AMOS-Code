@@ -314,7 +314,7 @@ class AmosOrganism:
             "active_subsystems": [
                 "01_BRAIN", "02_SENSES", "05_SKELETON", "08_WORLD_MODEL",
                 "09_QUANTUM_LAYER", "04_BLOOD", "07_METABOLISM", "03_IMMUNE",
-                "06_MUSCLE", "13_FACTORY", "14_INTERFACES"
+                "06_MUSCLE", "13_FACTORY", "12_LEGAL_BRAIN", "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
@@ -340,6 +340,12 @@ class AmosOrganism:
                     "total_templates": len(self.code_generator.templates),
                     "total_build_tasks": len(self.builder.tasks),
                     "total_quality_reports": len(self.quality.reports),
+                },
+                "legal_brain": {
+                    "total_policies": len(self.policy_engine.policies),
+                    "total_audits": len(self.compliance_auditor.audit_history),
+                    "total_contracts": len(self.contract_manager.contracts),
+                    "total_risk_assessments": len(self.risk_governor.assessments),
                 },
                 "memory": self.memory.stats(),
                 "workflow": {
