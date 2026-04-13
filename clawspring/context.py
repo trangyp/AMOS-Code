@@ -22,7 +22,10 @@ def _get_amos_brain():
             if str(amos_path) not in sys.path:
                 sys.path.insert(0, str(amos_path))
             from amos_brain import get_brain
-            from amos_cognitive_router import get_router
+            try:
+                from .amos_cognitive_router import get_router
+            except ImportError:
+                from amos_cognitive_router import get_router
             _amos_brain_loader = get_brain()
             _amos_router = get_router()
         except Exception as e:

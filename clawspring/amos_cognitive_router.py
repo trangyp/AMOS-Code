@@ -102,7 +102,7 @@ class CognitiveRouter:
             risk_level = "critical"
         elif any(term in task_lower for term in self.HIGH_RISK_TERMS):
             risk_level = "high"
-        elif primary_domain in ["security", "legal", "medical"]:
+        elif primary_domain in ["security", "legal"]:
             risk_level = "medium"
 
         # 3. Determine requirements
@@ -143,12 +143,15 @@ class CognitiveRouter:
 
         # Always include meta-logic for reasoning
         if requires_reasoning:
-            engines.extend(["AMOS_Cognition_Engine", "AMOS_Mind_Os"])
+            engines.extend([
+                "AMOS_Deterministic_Logic_And_Law_Engine",
+                "AMOS_Strategy_Game_Engine",
+            ])
 
         # Domain-specific engines
         domain_engine_map = {
-            "software": ["AMOS_Tech_Engine", "AMOS_Engineering_And_Mathematics_Engine"],
-            "ai_ml": ["AMOS_Human_Intelligence_Engine", "AMOS_Signal_Processing_Engine"],
+            "software": ["AMOS_Engineering_And_Mathematics_Engine", "AMOS_Design_Language_Engine"],
+            "ai_ml": ["AMOS_Signal_Processing_Engine", "AMOS_Engineering_And_Mathematics_Engine"],
             "infrastructure": ["AMOS_Electrical_Power_Engine", "AMOS_Mechanical_Structural_Engine"],
             "data": ["AMOS_Numerical_Methods_Engine"],
             "design": ["AMOS_Design_Language_Engine"],
@@ -163,7 +166,7 @@ class CognitiveRouter:
 
         # Add emotion engine for high-stakes decisions
         if requires_reasoning and len(engines) > 2:
-            engines.append("AMOS_Emotion_Engine")
+            engines.append("AMOS_Society_Culture_Engine")
 
         return list(dict.fromkeys(engines))  # Remove duplicates
 

@@ -56,7 +56,15 @@ Repository = "https://github.com/trangyp/AMOS-Code"
 
 [tool.setuptools]
 include-package-data = true
-py-modules = ["amos_brain_launcher", "amos_brain_tutorial", "amos_brain_cli"]
+py-modules = [
+    "amos",
+    "amos_clawspring",
+    "amos_mcp_server",
+    "demo_amos_brain",
+    "amos_brain_launcher",
+    "amos_brain_tutorial",
+    "amos_brain_cli",
+]
 
 [tool.setuptools.packages.find]
 include = ["amos_brain", "amos_brain.*"]
