@@ -33,7 +33,7 @@ class GlobalLaw:
 class BrainLoader:
     """Loads AMOS brain configuration from JSON files."""
 
-    DEFAULT_BRAIN_PATH = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN")
+    DEFAULT_BRAIN_PATH = Path(__file__).resolve().parent.parent.parent / "_AMOS_BRAIN"
 
     def __init__(self, brain_path: Path | None = None):
         self.brain_path = brain_path or self.DEFAULT_BRAIN_PATH

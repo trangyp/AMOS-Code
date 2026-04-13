@@ -667,7 +667,7 @@ def main() -> int:
 
     # Run initial diagnostic cycle
     print("\n[AMOS] Running diagnostic cycle...")
-    results = orchestrator.run_cycle()
+    results = orchestrator.run_cycle({"organism_root": ORGANISM_ROOT})
     print(f"[AMOS] Diagnostic processed {len(results)} subsystems")
 
     # Print summary
@@ -686,7 +686,7 @@ def main() -> int:
         json.dump(status, f, indent=2)
 
     print(f"\n[AMOS] State saved to: {state_file}")
-    print("[AMOS] Logs written to: {LOGS_DIR / 'orchestrator.log'}")
+    print(f"[AMOS] Logs written to: {LOGS_DIR / 'orchestrator.log'}")
     print("\n[AMOS] Orchestrator ready.")
 
     return 0

@@ -33,7 +33,9 @@ class AMOSAgentBridge:
         if self._state is None:
             # Lazy import to avoid circular deps and syntax errors
             import sys
-            sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring')
+            from pathlib import Path
+            clawspring_path = str(Path(__file__).resolve().parent.parent / "clawspring")
+            sys.path.insert(0, clawspring_path)
             from agent import AgentState
             self._state = AgentState()
         return self._state

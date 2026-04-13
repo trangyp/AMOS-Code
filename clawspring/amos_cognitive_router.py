@@ -68,9 +68,9 @@ class CognitiveRouter:
 
     def _load_brain_laws(self) -> dict[str, Any]:
         """Load global laws from AMOS brain."""
-        brain_path = Path(
-            "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code"
-            "/_AMOS_BRAIN/_LEGACY BRAIN/Core/AMOS_Os_Agent_v0.json"
+        brain_path = (
+            Path(__file__).resolve().parent.parent
+            / "_AMOS_BRAIN/_LEGACY BRAIN/Core/AMOS_Os_Agent_v0.json"
         )
         try:
             with open(brain_path) as f:

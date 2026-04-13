@@ -1,0 +1,24 @@
+{
+  "cycle_count": 1,
+  "current_position": "01_BRAIN",
+  "active_subsystems": [
+    "00_ROOT",
+    "01_BRAIN",
+    "02_SENSES",
+    "03_IMMUNE",
+    "04_BLOOD",
+    "05_SKELETON",
+    "06_MUSCLE",
+    "07_METABOLISM",
+    "08_WORLD_MODEL",
+    "09_SOCIAL_ENGINE",
+    "10_LIFE_ENGINE",
+    "11_LEGAL_BRAIN",
+    "12_QUANTUM_LAYER",
+    "13_FACTORY",
+    "14_INTERFACES"
+  ],
+  "last_cycle_time": 0.024860143661499023,
+  "error_count": 0,
+  "running": false
+}

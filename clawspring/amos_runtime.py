@@ -24,7 +24,7 @@ class AMOSState:
 class AMOSRuntime:
     """Full AMOS brain runtime with law enforcement and cognitive orchestration."""
     
-    BRAIN_PATH = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN")
+    BRAIN_PATH = Path(__file__).resolve().parent.parent / "_AMOS_BRAIN"
     
     def __init__(self):
         self.brain_root: dict = {}
