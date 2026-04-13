@@ -14,6 +14,72 @@ from pathlib import Path
 
 ORGANISM_ROOT = Path(__file__).resolve().parent
 
+# Core exports
+try:
+    from .organism import AmosOrganism, OrganismState
+except ImportError as e:
+    AmosOrganism = None
+    OrganismState = None
+    print(f"[AMOS Organism] Warning: Could not import core classes: {e}")
+
+# Subsystem exports (optional - may not all be implemented)
+try:
+    from .BRAIN.brain_os import BrainOS
+except ImportError:
+    BrainOS = None
+
+try:
+    from .BRAIN.router import SystemRouter, RoutingDecision
+except ImportError:
+    SystemRouter = None
+    RoutingDecision = None
+
+try:
+    from .SENSES.environment_scanner import EnvironmentScanner
+except ImportError:
+    EnvironmentScanner = None
+
+try:
+    from .MUSCLE.executor import MuscleExecutor
+except ImportError:
+    MuscleExecutor = None
+
+try:
+    from .METABOLISM.pipeline_engine import PipelineEngine
+except ImportError:
+    PipelineEngine = None
+
+try:
+    from .BLOOD.resource_engine import ResourceEngine
+except ImportError:
+    ResourceEngine = None
+
+try:
+    from .IMMUNE.immune_system import ImmuneSystem
+except ImportError:
+    ImmuneSystem = None
+
+try:
+    from .WORLD_MODEL.knowledge_graph import KnowledgeGraph
+except ImportError:
+    KnowledgeGraph = None
+
+try:
+    from .QUANTUM_LAYER.scenario_engine import ScenarioEngine
+except ImportError:
+    ScenarioEngine = None
+
+try:
+    from .FACTORY.agent_factory import AgentFactory
+except ImportError:
+    AgentFactory = None
+
+try:
+    from .MUSCLE.brain_muscle_bridge import BrainMuscleBridge, get_brain_muscle_bridge
+except ImportError:
+    BrainMuscleBridge = None
+    get_brain_muscle_bridge = None
+
 # 14 Subsystem Registry
 SUBSYSTEMS = {
     "00_ROOT": {

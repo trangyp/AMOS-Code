@@ -23,6 +23,7 @@ class SectorHealth(Enum):
     STABLE = "stable"
     DECLINING = "declining"
     DISTRESSED = "distressed"
+    TRANSITIONING = "transitioning"
 
 
 @dataclass

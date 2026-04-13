@@ -73,12 +73,13 @@ max_log_file_size_kb = 512
 6 = "Case memory accumulates resolved examples for analogical reasoning."
 
 [NEXT_ACTION]
-next_action = "build_11_LEGAL_BRAIN"
-current_phase = "10_LIFE_ENGINE_complete"
-completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE", "amos_organism_orchestrator"]
-next_subsystems = ["11_LEGAL_BRAIN", "12_QUANTUM_LAYER"]
-last_action_summary = "Built 10_LIFE_ENGINE: Bio rhythm engine, health monitor, mood tracker, cognitive cycle manager"
-life_engine_features = ["bio_rhythm_engine", "health_monitor", "mood_tracker", "cognitive_cycle_manager", "circadian_cycles", "focus_sessions"]
+next_action = "build_12_QUANTUM_LAYER"
+current_phase = "11_LEGAL_BRAIN_complete"
+completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE", "11_LEGAL_BRAIN", "amos_organism_orchestrator"]
+next_subsystems = ["12_QUANTUM_LAYER"]
+last_action_summary = "Built 11_LEGAL_BRAIN: Legal engine, contract manager, IP tracker, regulatory scanner"
+legal_brain_features = ["legal_engine", "contract_manager", "ip_tracker", "regulatory_scanner", "compliance_checking", "risk_assessment"]
+quantum_layer_features = ["superposition_management", "qubit_registry", "quantum_entanglement", "probabilistic_decisions", "uncertainty_quantification", "multi_path_exploration"]
 metabolism_features = ["performance_monitoring", "resource_tracking", "efficiency_analysis", "garbage_collection", "homeostasis"]
 
 [COMPLETED_ACTIONS]
