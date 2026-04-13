@@ -500,13 +500,20 @@ class TechnologySelection:
         category: str,
         options: list[str],
         criteria: list[str] | None = None,
+        **extra: Any,
     ) -> CookbookResult:
+        merged_criteria = list(criteria or [])
+        for key, value in extra.items():
+            if isinstance(value, list):
+                merged_criteria.extend(str(v) for v in value)
+            else:
+                merged_criteria.append(f"{key}: {value}")
         client = BrainClient()
         prompt = f"""Technology Selection:
 
 Category: {category}
 Options: {', '.join(options)}
-Criteria: {', '.join(criteria or [])}
+Criteria: {', '.join(merged_criteria)}
 
 Compare the options using Rule of 2 and Rule of 4.
 Return a recommendation, tradeoffs, and selection rationale.
@@ -536,12 +543,19 @@ class RiskAssessment:
         cls,
         change: str,
         impacts: list[str] | None = None,
+        **extra: Any,
     ) -> CookbookResult:
+        merged_impacts = list(impacts or [])
+        for key, value in extra.items():
+            if isinstance(value, list):
+                merged_impacts.extend(str(v) for v in value)
+            else:
+                merged_impacts.append(f"{key}: {value}")
         client = BrainClient()
         prompt = f"""Risk Assessment:
 
 Change: {change}
-Impacts: {', '.join(impacts or [])}
+Impacts: {', '.join(merged_impacts)}
 
 Assess the main risks, mitigations, fallback paths, and monitoring signals.
 """

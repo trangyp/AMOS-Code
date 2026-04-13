@@ -23,14 +23,12 @@ Usage:
     python amos_8layer_demo.py --layer 7    # Demo specific layer
 """
 
-import sys
 import time
 import argparse
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import dataclass
+from typing import Any
 from datetime import datetime
 from enum import Enum
-import json
 
 
 class Layer(Enum):
