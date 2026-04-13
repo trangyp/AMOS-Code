@@ -1,0 +1,7 @@
+include README.md
+include AMOS_BRAIN_GUIDE.md
+include LICENSE
+recursive-include amos_brain *.py
+recursive-include tests *.py
+global-exclude __pycache__
+global-exclude *.py[co]
