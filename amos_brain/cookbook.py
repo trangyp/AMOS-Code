@@ -15,9 +15,29 @@ class CookbookResult:
     input_data: str
     analysis: str
     recommendations: list[str]
-    confidence: str
+    confidence: float
     law_compliant: bool
     session_id: str
+
+    @property
+    def workflow_name(self) -> str:
+        return self.recipe_name
+
+    @property
+    def memory_id(self) -> str:
+        return self.session_id
+
+
+def _normalize_confidence(value: object) -> float:
+    """Normalize confidence to float [0,1]."""
+    if isinstance(value, (int, float)):
+        return max(0.0, min(1.0, float(value)))
+    mapping = {
+        "low": 0.33,
+        "medium": 0.66,
+        "high": 0.9,
+    }
+    return mapping.get(str(value).lower(), 0.5)
 
 
 class ArchitectureDecision:
@@ -34,7 +54,7 @@ class ArchitectureDecision:
         )
     """
     
-    RECIPE_NAME = "Architecture Decision Record"
+    RECIPE_NAME = "Architecture Decision Record (ADR)"
     
     @classmethod
     def analyze(
@@ -83,10 +103,15 @@ Provide:
             input_data=question,
             analysis=response.content[:500],
             recommendations=recommendations or ["See full analysis"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=session_id
         )
+
+    @classmethod
+    def run(cls, question: str, context: dict[str, Any] | None = None) -> CookbookResult:
+        """Alias for analyze() - test compatibility."""
+        return cls.analyze(question, context)
 
 
 class CodeReview:
@@ -152,7 +177,7 @@ Identify:
             input_data=code[:100],
             analysis=response.content[:500],
             recommendations=recommendations or ["No major issues found"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=session_id
         )
@@ -213,7 +238,7 @@ Check against Global Laws:
             input_data=system_description[:100],
             analysis=response.content[:500],
             recommendations=recommendations or ["Review analysis"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=session_id
         )
@@ -273,7 +298,7 @@ Recommend the best pattern with justification."""
             input_data=problem,
             analysis=response.content[:500],
             recommendations=recommendations or ["See analysis"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=""
         )
@@ -341,7 +366,7 @@ Identify:
             input_data=problem,
             analysis=response.content[:500],
             recommendations=recommendations or ["Investigate further"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=""
         )
@@ -404,10 +429,23 @@ Provide:
             input_data=project_description[:100],
             analysis=response.content[:500],
             recommendations=recommendations or ["See plan details"],
-            confidence=response.confidence,
+            confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
             session_id=""
         )
+
+    @classmethod
+    def run(
+        cls,
+        project_description: str,
+        timeline: str | None = None,
+        constraints: dict[str, Any] | None = None,
+    ) -> CookbookResult:
+        """Alias for plan() - test compatibility."""
+        merged = dict(constraints or {})
+        if timeline is not None:
+            merged["timeline"] = timeline
+        return cls.plan(project_description, merged)
 
 
 # Convenience functions for quick usage
@@ -434,6 +472,77 @@ def select_pattern(problem: str, **kwargs) -> CookbookResult:
 def diagnose_problem(problem: str, symptoms: list[str], **kwargs) -> CookbookResult:
     """Quick problem diagnosis."""
     return ProblemDiagnosis.diagnose(problem, symptoms, **kwargs)
+
+
+class TechnologySelection:
+    """Recipe: Technology Selection."""
+    RECIPE_NAME = "Technology Selection"
+
+    @classmethod
+    def run(
+        cls,
+        category: str,
+        options: list[str],
+        criteria: list[str] | None = None,
+    ) -> CookbookResult:
+        client = BrainClient()
+        prompt = f"""Technology Selection:
+
+Category: {category}
+Options: {', '.join(options)}
+Criteria: {', '.join(criteria or [])}
+
+Compare the options using Rule of 2 and Rule of 4.
+Return a recommendation, tradeoffs, and selection rationale.
+"""
+        response = client.think(prompt, domain="software")
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["recommend", "choose", "select", "tradeoff"])
+        ][:5]
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=category,
+            analysis=response.content[:500],
+            recommendations=recommendations or ["See selection analysis"],
+            confidence=_normalize_confidence(response.confidence),
+            law_compliant=response.law_compliant,
+            session_id="",
+        )
+
+
+class RiskAssessment:
+    """Recipe: Risk Assessment."""
+    RECIPE_NAME = "Risk Assessment"
+
+    @classmethod
+    def run(
+        cls,
+        change: str,
+        impacts: list[str] | None = None,
+    ) -> CookbookResult:
+        client = BrainClient()
+        prompt = f"""Risk Assessment:
+
+Change: {change}
+Impacts: {', '.join(impacts or [])}
+
+Assess the main risks, mitigations, fallback paths, and monitoring signals.
+"""
+        response = client.think(prompt, domain="risk")
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["risk", "mitigate", "fallback", "monitor"])
+        ][:5]
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=change,
+            analysis=response.content[:500],
+            recommendations=recommendations or ["See risk analysis"],
+            confidence=_normalize_confidence(response.confidence),
+            law_compliant=response.law_compliant,
+            session_id="",
+        )
 
 
 def plan_project(description: str, **kwargs) -> CookbookResult:

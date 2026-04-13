@@ -18,6 +18,9 @@ def _lazy_import(module_name: str):
             elif module_name == "get_brain":
                 from .loader import get_brain as gb
                 _lazy_modules[module_name] = gb
+            elif module_name == "BrainLoader":
+                from .loader import BrainLoader as bl
+                _lazy_modules[module_name] = bl
             elif module_name == "get_amos_integration":
                 from .integration import get_amos_integration as gai
                 _lazy_modules[module_name] = gai
@@ -30,6 +33,42 @@ def _lazy_import(module_name: str):
             elif module_name == "validate":
                 from .facade import validate as v
                 _lazy_modules[module_name] = v
+            elif module_name == "create_local_runtime":
+                from .local_runtime import create_local_runtime as clr
+                _lazy_modules[module_name] = clr
+            elif module_name == "GlobalLaws":
+                from .laws import GlobalLaws as gl
+                _lazy_modules[module_name] = gl
+            elif module_name == "RuleOfTwo":
+                from .reasoning import RuleOfTwo as r2
+                _lazy_modules[module_name] = r2
+            elif module_name == "RuleOfFour":
+                from .reasoning import RuleOfFour as r4
+                _lazy_modules[module_name] = r4
+            elif module_name == "CognitiveStack":
+                from .cognitive_stack import CognitiveStack as cs
+                _lazy_modules[module_name] = cs
+            elif module_name == "KernelRouter":
+                from .kernel_router import KernelRouter as kr
+                _lazy_modules[module_name] = kr
+            elif module_name == "process_task":
+                from .task_processor import process_task as pt
+                _lazy_modules[module_name] = pt
+            elif module_name == "get_agent_bridge":
+                from .agent_bridge import get_agent_bridge as gab
+                _lazy_modules[module_name] = gab
+            elif module_name == "get_state_manager":
+                from .state_manager import get_state_manager as gsm
+                _lazy_modules[module_name] = gsm
+            elif module_name == "get_meta_controller":
+                from .meta_controller import get_meta_controller as gmc
+                _lazy_modules[module_name] = gmc
+            elif module_name == "orchestrate_goal":
+                from .meta_controller import orchestrate_goal as og
+                _lazy_modules[module_name] = og
+            elif module_name == "get_metrics":
+                from .metrics import get_metrics as gm
+                _lazy_modules[module_name] = gm
         except Exception as e:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
@@ -78,6 +117,36 @@ def validate(*args, **kwargs):
     return _lazy_import("validate")(*args, **kwargs)
 
 
+def process_task(*args, **kwargs):
+    """Task processing (lazy import)."""
+    return _lazy_import("process_task")(*args, **kwargs)
+
+
+def get_agent_bridge():
+    """Get agent bridge (lazy import)."""
+    return _lazy_import("get_agent_bridge")()
+
+
+def get_state_manager():
+    """Get state manager (lazy import)."""
+    return _lazy_import("get_state_manager")()
+
+
+def get_meta_controller():
+    """Get meta controller (lazy import)."""
+    return _lazy_import("get_meta_controller")()
+
+
+def orchestrate_goal(*args, **kwargs):
+    """Orchestrate goal (lazy import)."""
+    return _lazy_import("orchestrate_goal")(*args, **kwargs)
+
+
+def get_metrics():
+    """Get metrics collector (lazy import)."""
+    return _lazy_import("get_metrics")()
+
+
 # Optional features - deferred to avoid import-time failures
 SystemPromptBuilder = None
 ArchitectureDecision = None
@@ -93,7 +162,7 @@ def _load_optional_features():
     """Load optional features on first use - not at import time."""
     global SystemPromptBuilder, ArchitectureDecision, CodeReview
     global SecurityAudit, DesignPattern, ProblemDiagnosis
-    global ProjectPlanner, CookbookResult
+    global ProjectPlanner, TechnologySelection, RiskAssessment, CookbookResult
     
     try:
         from .prompt_builder import SystemPromptBuilder as spb
@@ -109,6 +178,8 @@ def _load_optional_features():
             DesignPattern as dp,
             ProblemDiagnosis as pd,
             ProjectPlanner as pp,
+            TechnologySelection as ts,
+            RiskAssessment as ra,
             CookbookResult as cbr,
         )
         ArchitectureDecision = ad
@@ -117,6 +188,8 @@ def _load_optional_features():
         DesignPattern = dp
         ProblemDiagnosis = pd
         ProjectPlanner = pp
+        TechnologySelection = ts
+        RiskAssessment = ra
         CookbookResult = cbr
     except Exception:
         pass
@@ -136,9 +209,21 @@ class _OptionalLoader:
 
 def __getattr__(name: str):
     """Dynamic attribute loading for optional features."""
+    core_lazy_names = {
+        "BrainLoader",
+        "GlobalLaws",
+        "RuleOfTwo",
+        "RuleOfFour",
+        "CognitiveStack",
+        "KernelRouter",
+    }
+    if name in core_lazy_names:
+        return _lazy_import(name)
     if name in (
+        "SystemPromptBuilder",
         "ArchitectureDecision", "CodeReview", "SecurityAudit",
-        "DesignPattern", "ProblemDiagnosis", "ProjectPlanner", "CookbookResult"
+        "DesignPattern", "ProblemDiagnosis", "ProjectPlanner",
+        "TechnologySelection", "RiskAssessment", "CookbookResult"
     ):
         _OptionalLoader.ensure_loaded()
         return globals()[name]
@@ -152,6 +237,18 @@ __all__ = [
     "think",
     "decide",
     "validate",
+    "process_task",
+    "get_agent_bridge",
+    "get_state_manager",
+    "get_meta_controller",
+    "orchestrate_goal",
+    "get_metrics",
+    "BrainLoader",
+    "GlobalLaws",
+    "RuleOfTwo",
+    "RuleOfFour",
+    "CognitiveStack",
+    "KernelRouter",
     # Types
     "BrainResponse",
     "Decision",
@@ -164,5 +261,7 @@ __all__ = [
     "DesignPattern",
     "ProblemDiagnosis",
     "ProjectPlanner",
+    "TechnologySelection",
+    "RiskAssessment",
     "CookbookResult",
 ]

@@ -31,8 +31,10 @@ class BrainMemory:
     REASONING_PREFIX = "[AMOS Reasoning]"
 
     def __init__(self, memory_dir: Path | None = None):
-        self.memory_dir = memory_dir
+        self.memory_dir = memory_dir or Path.home() / ".amos_brain" / "memory"
+        self.memory_dir.mkdir(parents=True, exist_ok=True)
         self._local_cache: dict[str, Any] = {}
+        self._load_local_entries()
 
     def save_reasoning(
         self,
@@ -51,12 +53,14 @@ class BrainMemory:
         Returns:
             Memory entry ID
         """
-        # Generate entry ID from problem hash
-        entry_id = self._hash_problem(problem)
+        # Generate stable fingerprint plus unique entry id
+        fingerprint = self._hash_problem(problem)
+        entry_id = f"{fingerprint}-{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}"
 
         # Build memory entry
         entry = {
             "id": entry_id,
+            "problem_fingerprint": fingerprint,
             "timestamp": datetime.utcnow().isoformat(),
             "namespace": self.MEMORY_NAMESPACE,
             "problem": problem,
@@ -86,8 +90,25 @@ class BrainMemory:
 
         # Also cache locally
         self._local_cache[entry_id] = entry
+        self._persist_local_entry(entry)
 
         return entry_id
+
+    def _persist_local_entry(self, entry: dict[str, Any]) -> None:
+        filepath = self.memory_dir / f"{entry['id']}.json"
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(entry, f, indent=2, default=str)
+
+    def _load_local_entries(self) -> None:
+        for filepath in self.memory_dir.glob("*.json"):
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    entry = json.load(f)
+                entry_id = entry.get("id")
+                if entry_id:
+                    self._local_cache[entry_id] = entry
+            except Exception:
+                pass
 
     def find_similar_reasoning(
         self,
@@ -226,6 +247,7 @@ class BrainMemory:
         for item in similar:
             entry = item["entry"]
             contexts.append({
+                "entry": entry,
                 "past_problem": entry["problem_preview"],
                 "similarity": item["similarity"],
                 "timestamp": entry["timestamp"],

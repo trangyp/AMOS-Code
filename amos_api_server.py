@@ -29,18 +29,31 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder='templates')
-CORS(app)
+# Configure CORS with restricted origins
+CORS(app, origins=["http://localhost:3000", "https://neurosyncai.tech"])
 
-# Initialize brain client
-brain = BrainClient()
+# Initialize services with error handling (prevents startup crashes)
+brain = None
+coherence_engine = None
+monitoring = None
 
-# Initialize coherence engine
-coherence_engine = AMOSCoherenceEngine()
-logger.info("Coherence engine initialized")
+try:
+    brain = BrainClient()
+    logger.info("Brain client initialized")
+except Exception as e:
+    logger.warning(f"Brain client not available: {e}")
 
-# Initialize monitoring middleware
-monitoring = init_monitoring(app)
-logger.info("Monitoring middleware initialized")
+try:
+    coherence_engine = AMOSCoherenceEngine()
+    logger.info("Coherence engine initialized")
+except Exception as e:
+    logger.warning(f"Coherence engine not available: {e}")
+
+try:
+    monitoring = init_monitoring(app)
+    logger.info("Monitoring middleware initialized")
+except Exception as e:
+    logger.warning(f"Monitoring not available: {e}")
 
 
 @app.route('/health', methods=['GET'])
@@ -56,6 +69,11 @@ def health_check():
 @app.route('/status', methods=['GET'])
 def brain_status():
     """Get full brain status."""
+    if brain is None:
+        return jsonify({
+            'success': False,
+            'error': 'Brain client not available'
+        }), 503
     try:
         status = brain.get_status()
         return jsonify({

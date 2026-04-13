@@ -118,6 +118,13 @@ class AMOSLocalRuntime:
         )
         system_prompt = self.amos.enhance_system_prompt(base_system)
 
+        # Start metrics tracking
+        metrics = get_metrics()
+        req_metrics = metrics.start_request(
+            backend=getattr(self.backend, 'base_url', 'unknown'),
+            model=getattr(self.backend, 'model', 'unknown'),
+        )
+
         # Call local LLM backend
         try:
             result = self.backend.generate(
@@ -126,7 +133,11 @@ class AMOSLocalRuntime:
                 temperature=0.2,
                 max_tokens=1200,
             )
+            metrics.end_request(req_metrics, success=True)
         except Exception as e:
+            metrics.end_request(
+                req_metrics, success=False, error_type=type(e).__name__
+            )
             return {
                 "ok": False,
                 "error": f"Model generation failed: {e}",
@@ -180,6 +191,13 @@ class AMOSLocalRuntime:
 
         yield {"type": "status", "routing": pre.get("routing")}
 
+        # Start metrics tracking
+        metrics = get_metrics()
+        req_metrics = metrics.start_request(
+            backend=getattr(self.backend, 'base_url', 'unknown'),
+            model=getattr(self.backend, 'model', 'unknown'),
+        )
+
         # Stream from local LLM backend
         try:
             full_text = ""
@@ -192,9 +210,13 @@ class AMOSLocalRuntime:
                 full_text += chunk
                 yield {"type": "chunk", "content": chunk}
 
+            metrics.end_request(req_metrics, success=True)
             yield {"type": "done", "full_text": full_text}
 
         except Exception as e:
+            metrics.end_request(
+                req_metrics, success=False, error_type=type(e).__name__
+            )
             yield {"type": "error", "error": f"Model generation failed: {e}"}
 
     def chat_loop(self) -> None:
@@ -263,6 +285,22 @@ class AMOSLocalRuntime:
             except EOFError:
                 break
 
+        # Show metrics summary at session end
+        print("\n" + "=" * 60)
+        print("Session Metrics Summary")
+        print("=" * 60)
+        metrics_summary = self.get_metrics_summary()
+        if metrics_summary.get("status") != "no_data":
+            print(f"Total requests: {metrics_summary.get('total_requests', 0)}")
+            print(f"Success rate: {metrics_summary.get('success_rate', 0):.1%}")
+            print(f"Avg latency: {metrics_summary.get('avg_latency_ms', 0):.0f}ms")
+            print(f"P95 latency: {metrics_summary.get('p95_latency_ms', 0):.0f}ms")
+            if metrics_summary.get('failed', 0) > 0:
+                print(f"Failed requests: {metrics_summary.get('failed', 0)}")
+        else:
+            print("No metrics data collected.")
+        print("=" * 60)
+
     def get_status(self) -> dict[str, Any]:
         """Get current runtime status."""
         return {
@@ -270,6 +308,11 @@ class AMOSLocalRuntime:
             "amos": self.amos.get_status() if self.amos else None,
             "backend": self.backend.health_check() if self.backend else None,
         }
+
+    def get_metrics_summary(self) -> dict[str, Any]:
+        """Get metrics summary for operational visibility."""
+        metrics = get_metrics()
+        return metrics.get_summary()
 
 
 def create_local_runtime(

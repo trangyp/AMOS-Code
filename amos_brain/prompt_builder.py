@@ -45,11 +45,10 @@ Route task processing through the activated kernels above.
 
     def _build_identity_section(self) -> str:
         """Build identity section of prompt."""
-        system_name = self.brain.system_name
-        creator = self.brain.creator_name
-
-        identity = self.brain.identity
-        purpose = identity.get("primary_purpose", "System design and analysis")
+        config = getattr(self.brain, "_config", None)
+        system_name = getattr(config, "name", "AMOS_FULL_BRAIN_OS")
+        creator = "Trang Phan"
+        purpose = "System design and analysis"
 
         return f"""# IDENTITY
 
@@ -63,12 +62,17 @@ When asked about origin: Acknowledge professionally without personal details.
     def _build_global_laws_section(self) -> str:
         """Build global laws section."""
         lines = ["# GLOBAL LAWS (Inviolable)"]
+        config = getattr(self.brain, "_config", None)
+        laws = getattr(config, "global_laws", {}) or {}
 
-        for law in self.brain.global_laws[:6]:
-            lines.append(f"""
-## {law.id}: {law.name}
-{law.description}
+        if isinstance(laws, dict):
+            for law_id, description in list(laws.items())[:6]:
+                lines.append(f"""
+## {law_id}
+{description}
 """)
+        else:
+            lines.append("\nNo global laws loaded.\n")
 
         return "\n".join(lines)
 
@@ -111,7 +115,11 @@ When uncertain: Declare uncertainty explicitly.
 
     def build_compact_prompt(self) -> str:
         """Build compact version for context-constrained scenarios."""
-        return f"""You are {self.brain.system_name}. Purpose: {self.brain.identity.get('primary_purpose', 'System design')}. Creator: {self.brain.creator_name}.
+        config = getattr(self.brain, "_config", None)
+        system_name = getattr(config, "name", "AMOS_FULL_BRAIN_OS")
+        purpose = "System design"
+        creator = "Trang Phan"
+        return f"""You are {system_name}. Purpose: {purpose}. Creator: {creator}.
 
 LAWS: 1) Obey highest constraints 2) Check two perspectives 3) Consider four quadrants 4) Maintain structural integrity
 
