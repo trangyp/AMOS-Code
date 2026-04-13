@@ -53,6 +53,7 @@ MEMORY_DIR = ORGANISM_ROOT / "memory"
 PRIMARY_LOOP = [
     "01_BRAIN",
     "02_SENSES",
+    "04_BLOOD",  # Financial engine - active
     "05_SKELETON",
     "08_WORLD_MODEL",
     "12_QUANTUM_LAYER",

@@ -49,6 +49,7 @@ class AMOSOrganism:
         self._senses = None
         self._skeleton = None
         self._immune = None
+        self._blood = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")
@@ -72,6 +73,7 @@ class AMOSOrganism:
         self._init_senses()
         self._init_skeleton()
         self._init_immune()
+        self._init_blood()
         
         self.state["status"] = "ready"
         logger.info("AMOS Organism ready")
@@ -175,6 +177,33 @@ class AMOSOrganism:
             logger.info("IMMUNE subsystem initialized with safety boundaries")
         except Exception as e:
             logger.error(f"Failed to initialize IMMUNE: {e}")
+    
+    def _init_blood(self):
+        """Initialize the BLOOD subsystem."""
+        try:
+            blood_path = self.root / "04_BLOOD"
+            
+            # Add to path and import directly
+            if str(blood_path) not in sys.path:
+                sys.path.insert(0, str(blood_path))
+            
+            # Clear any cached module
+            if 'blood_kernel' in sys.modules:
+                del sys.modules['blood_kernel']
+            
+            import blood_kernel
+            importlib.reload(blood_kernel)
+            
+            self._blood = blood_kernel.BloodKernel(self.root)
+            self._subsystems["04_BLOOD"] = self._blood
+            self.state["active_subsystems"].append("04_BLOOD")
+            
+            # Start circulation
+            self._blood.start()
+            
+            logger.info("BLOOD subsystem initialized with circulation active")
+        except Exception as e:
+            logger.error(f"Failed to initialize BLOOD: {e}")
     
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
