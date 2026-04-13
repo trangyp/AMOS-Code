@@ -58,6 +58,7 @@ PRIMARY_LOOP = [
     "05_SKELETON",
     "08_WORLD_MODEL",
     "09_SOCIAL_ENGINE",  # Agent communication
+    "10_LIFE_ENGINE",  # Personal life management
     "11_LEGAL_BRAIN",  # Compliance and governance
     "12_QUANTUM_LAYER",
     "06_MUSCLE",

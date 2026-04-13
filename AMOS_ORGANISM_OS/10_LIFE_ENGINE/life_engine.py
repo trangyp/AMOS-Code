@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -250,7 +250,8 @@ class LifeEngine:
                         routine.streak = 1
 
                 self._save_state()
-                print(f"[LIFE] Completed: {routine.name} (streak: {routine.streak})")
+                print(f"[LIFE] Done: {routine.name}")
+                print(f"         Streak: {routine.streak} days")
                 return True
         return False
 
@@ -345,8 +346,6 @@ class LifeEngine:
 
     def get_status(self) -> Dict[str, Any]:
         """Get life engine status."""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
-
         # Count completed routines today
         routines_done = sum(1 for r in self.routines if r.completed)
 
@@ -381,7 +380,9 @@ def main() -> int:
     schedule = engine.get_today_schedule()
     for item in schedule:
         status = "✓" if item["completed"] else "○"
-        print(f"  {status} [{item['time']}] {item['activity']}")
+        time = item['time']
+        activity = item['activity']
+        print(f"  {status} [{time}] {activity}")
 
     # Show habit stats
     print("\nHabit Statistics:")
@@ -395,14 +396,18 @@ def main() -> int:
     print("\nLife Balance Scores:")
     balance = engine.calculate_life_balance()
     for category, score in balance.items():
-        bar = "█" * int(score) + "░" * (10 - int(score))
+        filled = int(score)
+        empty = 10 - filled
+        bar = "█" * filled + "░" * empty
         print(f"  {category:12} [{bar}] {score:.1f}")
 
     # Show status
     print("\nLife Engine Status:")
     status = engine.get_status()
-    print(f"  Routines: {status['routines']['completed_today']}/"
-          f"{status['routines']['total']} completed")
+    routines = status['routines']
+    completed = routines['completed_today']
+    total = routines['total']
+    print(f"  Routines: {completed}/{total} completed")
     print(f"  Active goals: {status['goals']['active']}")
 
     return 0

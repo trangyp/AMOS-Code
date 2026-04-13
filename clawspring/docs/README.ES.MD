@@ -1,24 +1,21 @@
-[English](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/README.md) | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.CN.MD)  |[한국어](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.DE.MD) | Português
+Português | [English](../README.md) | [中文](README.CN.MD) | [Français](README.FR.MD) | [한국어](README.KO.MD) | [日本語](README.JP.MD) | [Deutsch](README.DE.MD) | Português
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+  <a href="https://github.com/trangyp/AMOS-Code">
+    <img src="logo-2.png" alt="Logo" width="280">
   </a>
 
 
-<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: Una reimplementación rápida y fácil de usar de Claude Code en Python, compatible con cualquier modelo</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong>: Proyecto AMOS - Un Asistente de IA Rápido y Fácil de Usar</h1>
 <p align="center">
-    <a href="https://github.com/chauncygu/collection-claude-code-source-code">La fuente más reciente sobre Claude Code</a>
+    <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
     ·
-    <a href="https://github.com/SafeRL-Lab/nano-claude-code/issues">Issues</a>
-  ·
-    <a href="https://deepwiki.com/SafeRL-Lab/nano-claude-code">Introducción breve</a>
-
+    <a href="https://github.com/trangyp/AMOS-Code/blob/main/clawspring/README.md">Documentación</a>
   </p>
 </div>
 
  <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="demo.gif" width="850"/> 
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>

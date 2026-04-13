@@ -1,22 +1,20 @@
-[English](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/README.md) | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.CN.MD)  |[한국어](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.JP.MD) | Deutsch | [Português](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.ES.MD)
+Deutsch | [English](../README.md) | [中文](README.CN.MD) | [Français](README.FR.MD) | [한국어](README.KO.MD) | [日本語](README.JP.MD) | [Português](README.ES.MD)
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+  <a href="https://github.com/trangyp/AMOS-Code">
+    <img src="logo-2.png" alt="Logo" width="280">
   </a>
 
-<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: Eine schnelle, leicht verständliche Python-Neuimplementierung von Claude Code mit Unterstützung für jedes Modell</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong>: AMOS-Projekt - Ein schneller, einfacher KI-Assistent</h1>
 <p align="center">
-    <a href="https://github.com/chauncygu/collection-claude-code-source-code">Neueste Claude-Code-Quellen</a>
+    <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
     ·
-    <a href="https://github.com/SafeRL-Lab/nano-claude-code/issues">Issues</a>
-  ·
-    <a href="https://deepwiki.com/SafeRL-Lab/nano-claude-code">Kurze Einführung</a>
+    <a href="https://github.com/trangyp/AMOS-Code/blob/main/clawspring/README.md">Dokumentation</a>
   </p>
 </div>
 
 <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="demo.gif" width="850"/> 
 </div>
 
 ---

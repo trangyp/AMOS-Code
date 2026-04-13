@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-AMOS CLI Interface (14_INTERFACES)
-=================================
+AMOS Unified CLI (14_INTERFACES)
+===============================
 
-Command-line interface for interacting with the AMOS Organism.
-Provides commands for orchestration, agent management, and task execution.
+Command-line interface for the complete AMOS system:
+- Brain (cognition)
+- Organism (execution)
+- Bridge (coordination)
 
 Owner: Trang
-Version: 1.0.0
+Version: 2.0.0 - Now with standalone amos_brain
 """
 
 from __future__ import annotations
@@ -17,6 +19,10 @@ import json
 import sys
 from pathlib import Path
 from typing import List, Optional
+
+# Add paths for standalone brain
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def get_organism_root() -> Path:
@@ -148,62 +154,113 @@ def cmd_workers(args) -> int:
 
 
 def cmd_brain(args) -> int:
-    """Interact with AMOS brain."""
-    root = get_organism_root()
-    brain_root = root.parent / "_AMOS_BRAIN"
-
-    # Try brain loader first
-    sys.path.insert(0, str(root / "01_BRAIN"))
+    """Interact with standalone AMOS brain package."""
     try:
-        from brain_loader import get_brain_loader
+        from amos_brain import get_amos_integration
+        from amos_brain.memory import get_brain_memory
+        from amos_brain.dashboard import print_dashboard
+        from amos_brain.cookbook import ArchitectureDecision
 
-        loader = get_brain_loader(brain_root)
-        loader.load_all_engines()
+        amos = get_amos_integration()
 
-        if args.engines:
-            status = loader.get_status()
-            print(f"Brain Engines ({status['engines_count']}):")
-            for engine in status['engines']:
-                print(f"  - {engine}")
-            print(f"\nTotal size: {status['total_size_mb']:.2f} MB")
-            return 0
+        if args.action == "status":
+            status = amos.get_status()
+            print("AMOS Brain Status (Standalone Package)")
+            print("=" * 50)
+            print(f"Initialized: {status.get('initialized')}")
+            print(f"Engines: {status.get('engines_count')} domain engines")
+            print(f"Laws: {len(status.get('laws_active', []))} global laws")
+            print("\nActive Laws:")
+            for law in status.get('laws_active', []):
+                print(f"  • {law}")
 
-        if args.search:
-            print(f"Searching brain for: '{args.search}'")
-            results = loader.search(args.search, max_results=10)
-            print(f"\nFound {len(results)} results:")
-            for r in results:
-                content = str(r.content)[:100]
-                print(f"  [{r.engine_name}] {r.path}")
-                print(f"    Score: {r.relevance_score:.2f} | {content}...")
-            return 0
-
-    except Exception as e:
-        print(f"[INFO] Brain loader not available: {e}")
-
-    # Fallback to cognitive runtime
-    sys.path.insert(0, str(root.parent))
-    try:
-        from amos_cognitive_runtime import AMOSCognitiveRuntime
-
-        runtime = AMOSCognitiveRuntime(brain_root)
-
-        if args.action == "think":
-            result = runtime.think(args.question, args.mode)
-            print(json.dumps(result, indent=2))
-
-        elif args.action == "status":
-            status = runtime.get_status()
-            print(json.dumps(status, indent=2))
+        elif args.action == "think":
+            if not args.question:
+                print("[ERROR] --question required for think action")
+                return 1
+            print(f"Analyzing: {args.question}")
+            print("-" * 50)
+            analysis = amos.analyze_with_rules(args.question)
+            print(f"\nRule of 2 Confidence: {analysis.get('rule_of_two', {}).get('confidence', 0):.0%}")
+            print(f"Rule of 4 Coverage: {analysis.get('rule_of_four', {}).get('completeness_score', 0):.0%}")
+            print("\nRecommendations:")
+            for rec in analysis.get('recommendations', []):
+                print(f"  • {rec}")
 
         elif args.action == "engines":
-            engines = runtime.list_available_engines()
-            print(f"Available engines ({len(engines)}):")
-            for e in engines:
-                print(f"  - {e}")
+            status = amos.get_status()
+            print(f"Domain Engines ({status.get('engines_count', 0)}):")
+            for domain in status.get('domains_covered', []):
+                print(f"  • {domain}")
+
+        elif args.action == "dashboard":
+            days = int(args.days) if hasattr(args, 'days') else 30
+            print_dashboard(days)
+
+        elif args.action == "memory":
+            memory = get_brain_memory()
+            if args.subaction == "history":
+                history = memory.get_reasoning_history(limit=args.limit or 5)
+                print(f"Reasoning History (last {len(history)}):")
+                for entry in history:
+                    print(f"  [{entry.get('timestamp', 'unknown')[:10]}] {entry.get('problem_preview', 'N/A')[:50]}...")
+            elif args.subaction == "recall":
+                if not args.query:
+                    print("[ERROR] --query required for recall")
+                    return 1
+                recall = memory.recall_for_problem(args.query)
+                if recall.get("has_prior_reasoning"):
+                    print(f"Found {len(recall.get('similar_entries', []))} similar past analyses")
+                else:
+                    print("No similar past reasoning found")
 
     except Exception as e:
-        print(f"[ERROR] Brain not available: {e}")
+        print(f"[ERROR] Brain error: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+    return 0
+
+
+def cmd_bridge(args) -> int:
+    """Execute tasks through brain-organism bridge."""
+    try:
+        from amos_brain_organism_bridge import BrainOrganismBridge
+
+        bridge = BrainOrganismBridge()
+
+        if args.action == "status":
+            status = bridge.get_system_status()
+            print("Brain-Organism Bridge Status")
+            print("=" * 50)
+            print(f"Brain: {status['brain']['engines']} engines, {status['brain']['laws']} laws")
+            print(f"Organism: {'Connected' if status['organism']['connected'] else 'Stub mode'}")
+            print(f"Bridge: {status['bridge']['status']} (v{status['bridge']['version']})")
+
+        elif args.action == "execute":
+            if not args.task:
+                print("[ERROR] --task required")
+                return 1
+
+            print(f"Executing: {args.task}")
+            print("-" * 50)
+
+            context = {}
+            if args.context:
+                context = json.loads(args.context)
+
+            result = bridge.analyze_and_execute(args.task, context)
+
+            print(f"\nStatus: {result.status.upper()}")
+            print(f"Action: {result.organism_action}")
+            print(f"Resources: {result.resources_used}")
+            print(f"\nOutput:\n{result.output}")
+
+    except Exception as e:
+        print(f"[ERROR] Bridge error: {e}")
+        import traceback
+        traceback.print_exc()
         return 1
 
     return 0
@@ -367,24 +424,22 @@ def main(argv: Optional[List[str]] = None) -> int:
     worker_parser.add_argument("--topic", "-t", help="Analysis topic")
     worker_parser.set_defaults(func=cmd_workers)
 
-    # Brain command
-    brain_parser = subparsers.add_parser("brain", help="Interact with brain")
-    brain_parser.add_argument("action", choices=["think", "status", "engines"])
-    brain_parser.add_argument(
-        "--question", "-q", help="Question to think about"
-    )
-    brain_parser.add_argument(
-        "--mode", "-m", default="exploratory_mapping",
-        help="Reasoning mode"
-    )
-    brain_parser.add_argument(
-        "--search", "-s", help="Search term for brain"
-    )
-    brain_parser.add_argument(
-        "--engines", "-e", action="store_true",
-        help="List brain engines"
-    )
+    # Brain command (standalone package)
+    brain_parser = subparsers.add_parser("brain", help="AMOS brain (standalone)")
+    brain_parser.add_argument("action", choices=["status", "think", "engines", "dashboard", "memory"])
+    brain_parser.add_argument("--question", "-q", help="Question for think")
+    brain_parser.add_argument("--days", "-d", type=int, default=30, help="Dashboard days")
+    brain_parser.add_argument("--subaction", choices=["history", "recall"], help="Memory subaction")
+    brain_parser.add_argument("--limit", "-l", type=int, default=5, help="History limit")
+    brain_parser.add_argument("--query", help="Recall query")
     brain_parser.set_defaults(func=cmd_brain)
+
+    # Bridge command (unified execution)
+    bridge_parser = subparsers.add_parser("bridge", help="Brain-Organism bridge")
+    bridge_parser.add_argument("action", choices=["status", "execute"])
+    bridge_parser.add_argument("--task", "-t", help="Task to execute")
+    bridge_parser.add_argument("--context", "-c", help="JSON context")
+    bridge_parser.set_defaults(func=cmd_bridge)
 
     # Blood command
     blood_parser = subparsers.add_parser(

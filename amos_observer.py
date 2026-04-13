@@ -69,7 +69,7 @@ class AMOSObserver:
         print("=" * 60)
 
         engines = []
-        stack = getattr(integration.brain, 'cognitive_stack', None)
+        stack = integration.cognitive_stack
         if stack:
             for name, engine in stack.engines.items():
                 engine_info = {
@@ -93,7 +93,7 @@ class AMOSObserver:
         print("=" * 60)
 
         laws_info = {}
-        laws = getattr(integration.brain, 'global_laws', None)
+        laws = integration.laws
         if laws:
             for law_id, law in laws.LAWS.items():
                 laws_info[law_id] = {
@@ -129,7 +129,7 @@ class AMOSObserver:
 
         # Stage 2: Reasoning
         print("\n[Stage 2] Reasoning...")
-        reasoning = integration.reasoning_engine
+        reasoning = integration.reasoning
         if reasoning:
             analysis = reasoning.full_analysis(problem)
             trace['stages'].append({'stage': 'reasoning', 'result': analysis})
