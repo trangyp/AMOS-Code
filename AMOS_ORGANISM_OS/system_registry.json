@@ -59,7 +59,7 @@
       "name": "Blood",
       "folder": "04_BLOOD",
       "role": "Money/blood engine: budgeting, cashflow, investing, forecasting.",
-      "status": "planned",
+      "status": "active",
       "kernel_refs": ["FINANCE_KERNEL", "RESOURCE_KERNEL"],
       "priority": 4
     },

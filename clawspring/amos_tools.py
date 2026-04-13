@@ -314,17 +314,24 @@ AMOS_TOOLS = [
 
 # ── Registration ──────────────────────────────────────────────────────────────
 
+def _ensure_amos() -> None:
+    """Lightweight AMOS check - doesn't load heavy resources."""
+    # Just verify the runtime module is available
+    # Actual runtime loading is deferred until tool is used
+    from amos_runtime import AMOSRuntime
+    return
+
+
 def register_amos_tools() -> None:
     """Register all AMOS tools with the tool registry."""
     for tool in AMOS_TOOLS:
         register_tool(tool)
-    
-    # Initialize AMOS on registration
+
+    # Lightweight initialization check - doesn't block
     try:
         _ensure_amos()
-        print("[AMOS] Brain integration initialized successfully")
     except Exception as e:
-        print(f"[AMOS] Warning: Brain initialization failed: {e}")
+        print(f"[AMOS] Warning: AMOS tools not available: {e}")
 
 
 # Auto-register on import
