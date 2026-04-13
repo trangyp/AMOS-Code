@@ -4,6 +4,7 @@ from .kernel_router import KernelRouter
 from .prompt_builder import SystemPromptBuilder
 from .laws import GlobalLaws
 from .expression_translator import ExpressionTranslator, translate_expression
+from .integration import AMOSBrainIntegration, get_amos_integration
 
 __all__ = [
     "BrainLoader",
@@ -12,4 +13,6 @@ __all__ = [
     "GlobalLaws",
     "ExpressionTranslator",
     "translate_expression",
+    "AMOSBrainIntegration",
+    "get_amos_integration",
 ]
