@@ -24,8 +24,10 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# Load environment variables
-export $(grep -v '^#' .env | xargs)
+# Load environment variables safely
+set -a  # Automatically export all variables
+source .env
+set +a
 
 echo "Step 1: Building Docker image..."
 docker build -t amos-brain:latest .

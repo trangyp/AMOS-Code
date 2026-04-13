@@ -60,10 +60,16 @@ class BrainDashboard:
 
         # Filter by date if needed
         cutoff = datetime.utcnow() - timedelta(days=days)
-        recent = [
-            h for h in history
-            if h.get('timestamp') and datetime.fromisoformat(h['timestamp']) > cutoff
-        ]
+        recent = []
+        for h in history:
+            ts = h.get("timestamp")
+            if not ts:
+                continue
+            try:
+                if datetime.fromisoformat(ts) > cutoff:
+                    recent.append(h)
+            except ValueError:
+                continue
 
         return {
             "period_days": days,
@@ -119,7 +125,12 @@ class BrainDashboard:
         for h in history:
             ts = h.get('timestamp', '')
             if ts:
-                week = ts[:7]  # YYYY-MM
+                try:
+                    dt = datetime.fromisoformat(ts)
+                except ValueError:
+                    continue
+                iso_year, iso_week, _ = dt.isocalendar()
+                week = f"{iso_year}-W{iso_week:02d}"
                 weekly[week]["total"] += 1
                 if h.get('rule_of_two_applied'):
                     weekly[week]["r2"] += 1
