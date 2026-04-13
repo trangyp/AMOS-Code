@@ -194,9 +194,13 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
         """Get formatted summary of all global laws."""
         return self.laws.get_all_laws_summary()
 
-    def analyze_with_rules(self, problem: str) -> dict[str, Any]:
+    def analyze_with_rules(
+        self,
+        problem: str,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Analyze a problem using Rule of 2 and Rule of 4."""
-        return self.reasoning.full_analysis(problem)
+        return self.reasoning.full_analysis(problem, context)
 
     def get_status(self) -> dict[str, Any]:
         """Get current brain integration status."""

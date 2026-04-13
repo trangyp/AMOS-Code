@@ -26,7 +26,8 @@ from typing import Any, Dict, List, Optional
 # CONSTANTS & PATHS
 # ============================================================================
 
-AMOS_ROOT = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
+# Use file-relative path for portability
+AMOS_ROOT = Path(__file__).resolve().parent.parent
 ORGANISM_ROOT = AMOS_ROOT / "AMOS_ORGANISM_OS"
 BRAIN_ROOT = AMOS_ROOT / "_AMOS_BRAIN"
 

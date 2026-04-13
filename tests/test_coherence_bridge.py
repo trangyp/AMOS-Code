@@ -12,7 +12,8 @@ import unittest
 from unittest.mock import Mock, patch
 
 # Add project to path  # noqa: E402
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa: E402
+_here = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
+sys.path.insert(0, os.path.join(_here, '..'))  # noqa: E402
 
 from amos_coherence_bridge import (  # noqa: E402
     CoherenceLocalBridge,

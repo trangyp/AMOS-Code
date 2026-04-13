@@ -923,9 +923,12 @@ def main():
     """Command-line interface for AMOS Cognitive Runtime."""
     import argparse
     
+    # Compute default brain dir relative to this file for portability
+    default_brain_dir = str(Path(__file__).resolve().parent / "_AMOS_BRAIN")
+    
     parser = argparse.ArgumentParser(description="AMOS Cognitive Runtime")
     parser.add_argument("--brain-dir", type=str, 
-                        default="/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN",
+                        default=default_brain_dir,
                         help="Path to AMOS brain directory")
     parser.add_argument("--question", type=str, help="Question to analyze")
     parser.add_argument("--mode", type=str, default="exploratory_mapping",

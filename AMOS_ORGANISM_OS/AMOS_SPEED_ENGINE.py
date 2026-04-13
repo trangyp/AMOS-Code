@@ -191,8 +191,8 @@ def main() -> int:
     print("AMOS SPEED ENGINE v1.0.0")
     print("=" * 60)
 
-    base_path = "/Users/nguyenxuanlinh/Documents/Trang Phan"
-    root = Path(base_path) / "Downloads/AMOS-code/AMOS_ORGANISM_OS"
+    # Use file-relative path for portability
+    root = Path(__file__).resolve().parent
     engine = AmosSpeedEngine(root)
 
     print("\n[SPEED] Running benchmarks...")

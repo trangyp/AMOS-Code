@@ -224,7 +224,11 @@ class AMOSMCPServer:
 
         return {
             "text_preview": text[:100] + "..." if len(text) > 100 else text,
-            "checks_performed": ["L4" if check_l4 else None, "L5" if check_l5 else None],
+            "checks_performed": [
+                law_id
+                for law_id, enabled in [("L4", check_l4), ("L5", check_l5)]
+                if enabled
+            ],
             "compliant": len(issues) == 0,
             "issues_found": issues
         }
