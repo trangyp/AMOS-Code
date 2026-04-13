@@ -17,7 +17,6 @@ from contextlib import asynccontextmanager
 from amos_database import get_database, QueryRecord, MetricRecord
 from amos_metrics_collector import get_metrics_collector
 from amos_health_monitor import get_health_monitor
-from amos_alerting import get_health_monitor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

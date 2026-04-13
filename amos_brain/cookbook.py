@@ -371,6 +371,19 @@ Identify:
             session_id=""
         )
 
+    @classmethod
+    def run(
+        cls,
+        problem: str,
+        symptoms: list[str],
+        context: str = "",
+        **extra: Any,
+    ) -> CookbookResult:
+        """Alias for diagnose() with extra tolerance."""
+        extra_context = ", ".join(f"{k}={v}" for k, v in extra.items()) if extra else ""
+        merged_context = f"{context} {extra_context}".strip()
+        return cls.diagnose(problem, symptoms, merged_context)
+
 
 class ProjectPlanner:
     """
@@ -440,11 +453,14 @@ Provide:
         project_description: str,
         timeline: str | None = None,
         constraints: dict[str, Any] | None = None,
+        **extra: Any,
     ) -> CookbookResult:
         """Alias for plan() - test compatibility."""
         merged = dict(constraints or {})
         if timeline is not None:
             merged["timeline"] = timeline
+        if extra:
+            merged.update(extra)
         return cls.plan(project_description, merged)
 
 

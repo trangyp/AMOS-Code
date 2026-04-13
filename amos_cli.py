@@ -48,10 +48,10 @@ def cmd_status():
     print("\n📊 AMOS System Status")
     print("=" * 60)
     print(f"Timestamp: {datetime.utcnow().isoformat()}")
-    print(f"Phase: deep_knowledge_integration_complete")
-    print(f"Health: HEALTHY")
-    print(f"Completion: 100%")
-    print(f"Deployment: LIVE")
+    print("Phase: deep_knowledge_integration_complete")
+    print("Health: HEALTHY")
+    print("Completion: 100%")
+    print("Deployment: LIVE")
     print("\n✅ All 15 subsystems operational")
     print("   00_ROOT through 15_KNOWLEDGE_CORE")
     print("\n📦 Features: 60+ discovered and cataloged")
@@ -82,7 +82,9 @@ def cmd_deploy(args):
 def cmd_health():
     """Run health check."""
     print("\n🏥 Running Health Check...")
-    script = Path(__file__).parent / "AMOS_ORGANISM_OS" / "system_health_monitor.py"
+    script = (
+        Path(__file__).parent / "AMOS_ORGANISM_OS" / "system_health_monitor.py"
+    )
     if script.exists():
         subprocess.run([sys.executable, str(script)])
     else:
@@ -105,18 +107,26 @@ def cmd_features():
     print("=" * 60)
     
     features = {
-        "Core Subsystems": ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", 
-                          "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM",
-                          "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE",
-                          "11_LEGAL_BRAIN", "12_QUANTUM_LAYER", "13_FACTORY", 
-                          "14_INTERFACES", "15_KNOWLEDGE_CORE"],
-        "Cognitive Engines": ["Biology", "Design", "Economics", "Engineering",
-                            "Physics", "Signal Processing", "Society & Culture",
-                            "Strategy & Game"],
-        "Core Brain": ["Cognition", "Consciousness", "Emotion", "Intelligence",
-                      "Mind OS", "Personality"],
-        "Tech Kernels": ["Automation", "Coding", "Data Science", "ML Engineering",
-                        "Security", "Cloud", "DevOps"],
+        "Core Subsystems": [
+            "00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE",
+            "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM",
+            "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE",
+            "11_LEGAL_BRAIN", "12_QUANTUM_LAYER", "13_FACTORY",
+            "14_INTERFACES", "15_KNOWLEDGE_CORE"
+        ],
+        "Cognitive Engines": [
+            "Biology", "Design", "Economics", "Engineering",
+            "Physics", "Signal Processing", "Society & Culture",
+            "Strategy & Game"
+        ],
+        "Core Brain": [
+            "Cognition", "Consciousness", "Emotion", "Intelligence",
+            "Mind OS", "Personality"
+        ],
+        "Tech Kernels": [
+            "Automation", "Coding", "Data Science", "ML Engineering",
+            "Security", "Cloud", "DevOps"
+        ],
         "Knowledge Packs": ["55 Countries", "19 Sectors", "7 States"],
     }
     
@@ -162,7 +172,7 @@ def cmd_brain(args):
             if hasattr(result, 'content'):
                 print(f"\n💭 Result:\n{result.content[:500]}")
                 if hasattr(result, 'reasoning') and result.reasoning:
-                    print(f"\n📝 Reasoning:")
+                    print("\n📝 Reasoning:")
                     for i, r in enumerate(result.reasoning[:3], 1):
                         print(f"  {i}. {r[:80]}")
             else:
@@ -209,7 +219,10 @@ Examples:
     
     parser.add_argument(
         "command",
-        choices=["status", "activate", "deploy", "health", "dashboard", "features", "brain", "help"],
+        choices=[
+            "status", "activate", "deploy", "health",
+            "dashboard", "features", "brain", "help"
+        ],
         help="Command to execute"
     )
     

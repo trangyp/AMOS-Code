@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "amos-brain"
-version = "3.05.5"
-description = "AMOS Brain - Absolute Meta Operating System. A unified cognitive architecture for AI agents with Rule of 2, Rule of 4, and Global Laws L1-L6"
-readme = "README.MD"
+version = "4.0.0"
+description = "AMOS Brain + AMOSL - Field-Theoretic Programming System. 5-lens mathematical regime: Axiomatic, Logical, Category, Control, InfoGeo, Field. Multi-substrate computation across classical, quantum, and biological domains."
+readme = "README_AMOSL_RELEASE.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 authors = [
@@ -15,13 +15,16 @@ authors = [
 keywords = [
     "ai",
     "cognitive-architecture",
-    "reasoning",
-    "decision-making",
-    "rule-of-2",
-    "rule-of-4",
-    "clawspring",
-    "agent",
-    "memory"
+    "field-theoretic-programming",
+    "multi-substrate-computation",
+    "mathematical-regime",
+    "lagrangian-dynamics",
+    "category-theory",
+    "modal-logic",
+    "information-geometry",
+    "quantum-computing",
+    "biological-computing",
+    "verified-computation"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

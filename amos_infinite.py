@@ -2,7 +2,7 @@
 """
 AMOS ∞ — Deepest Formal Closure
 
-Recursive, higher-order, multi-scale, law-constrained ontology of executable reality.
+Recursive, higher-order, multi-scale ontology of executable reality.
 
 Implements:
 - Hyperbundle state space (Section 4)
@@ -22,25 +22,21 @@ The absolute governing equation:
 
 Usage:
     from amos_infinite import AMOSInfinite, HyperState
-    
     amos_inf = AMOSInfinite()
     state = HyperState(
         classical={'value': 1.0},
         quantum={'rho': density_matrix},
         biological={'sequence': 'ATCG'},
-        scale_params={'theta': 1.0, 'temperature': 300}
+        new_state_params={'theta': 1.0, 'temperature': 300}
     )
-    
     new_state = amos_inf.evolve(state, action, world_context)
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple, Any, Callable, Union
+from typing import Dict, List, Optional, Set, Tuple, Any, Callable
 from enum import Enum, auto
-from abc import ABC, abstractmethod
-import numpy as np
 from datetime import datetime
-import json
+import numpy as np
 
 
 # ============================================================================
