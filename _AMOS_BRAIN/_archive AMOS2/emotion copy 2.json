@@ -1,0 +1,1241 @@
+{
+  "AMOS_UNIVERSE_OS_NEW_ADDITIONS": {
+    "meta": {
+      "name": "AMOS_UNIVERSE_OS_NEW_ADDITIONS",
+      "description": "Delta pack: content and structures added after AMOS_UNIVERSE_OS_FULL_BUNDLE2.json",
+      "version": "1.0.0",
+      "base_bundle": "AMOS_UNIVERSE_OS_FULL_BUNDLE2.json",
+      "author": "Trang (AMOS architecture)",
+      "schema_version": "1.0"
+    },
+    "packs": {
+      "human_state_pack_v2": {
+        "id": "HSP_v2",
+        "description": "Extended human micro-state taxonomy, including rare, extreme, and culturally-modified states.",
+        "approx_states": 220,
+        "dimensions": [
+          "valence",
+          "arousal",
+          "threat_level",
+          "attachment_mode",
+          "agency_level",
+          "collapse_distance",
+          "social_visibility",
+          "identity_stability"
+        ],
+        "examples": [
+          "hyper_focus_productive",
+          "hyper_focus_avoidant",
+          "masking_high_function",
+          "chronic_misattuned_care",
+          "anticipatory_betrayal",
+          "fused_identity_partner",
+          "covert_withdrawal",
+          "shutdown_while_smiling"
+        ]
+      },
+      "emotion_action_pack_v2": {
+        "id": "EAP_v2",
+        "description": "Extended emotion → action mapping rules with intensity curves, time-lag and resource constraints.",
+        "approx_mappings": 160,
+        "equation_family": "EAP_v2_f(e, c, r, t) -> action_distribution",
+        "inputs": [
+          "primary_emotion",
+          "secondary_emotion",
+          "context_risk_level",
+          "available_resources",
+          "time_pressure",
+          "attachment_pattern",
+          "power_position"
+        ],
+        "output": "probabilistic_action_profile",
+        "example_rules": [
+          "envy_high_power_low_security -> sabotage_soft + reputation_undermine",
+          "envy_low_power_high_dependency -> self_diminish + indirect_compete",
+          "shame_high_visibility -> escape_context | attack_source",
+          "guilt_high_empathy -> repair_attempt | overcompensation"
+        ]
+      },
+      "perception_signal_pack_v2": {
+        "id": "PSP_v2",
+        "description": "Extended multimodal perception signals linking micro-physiology to state inference.",
+        "approx_signals": 260,
+        "channels": [
+          "gaze",
+          "blink_rate",
+          "micro_expression",
+          "jaw_tension",
+          "shoulder_position",
+          "hand_activity",
+          "foot_orientation",
+          "breath_pattern",
+          "speech_latency",
+          "prosody_changes"
+        ],
+        "example_mappings": [
+          "gaze_darting + micro_freeze + shallow_breath = threat_scan_anxious",
+          "fixed_smile + tightened_jaw + low_blink_rate = suppressed_anger",
+          "eyes_glaze + slow_blink + head_tilt_down = dissociative_drift",
+          "foot_pointing_exit + half_turn_torso = desire_to_leave"
+        ]
+      },
+      "expression_tone_pack_v2": {
+        "id": "ETP_v2",
+        "description": "Extended tone, style, and expression profiles, with matching rules to nervous system state.",
+        "approx_profiles": 120,
+        "dimensions": [
+          "directness",
+          "warmth",
+          "precision",
+          "authority",
+          "playfulness",
+          "soothing_level",
+          "activation_level"
+        ],
+        "selector_equation": "tone = T_select(target_state, goal, relationship_distance, culture)",
+        "tone_profiles": [
+          "surgical_precision_neutral",
+          "warm_containing_low_arousal",
+          "high_energy_inspirational",
+          "calm_boundary_enforcing",
+          "playful_deescalating",
+          "stern_interruptive",
+          "soft_reality_checking"
+        ]
+      },
+      "multi_agent_synchrony_pack": {
+        "id": "MAS_v1",
+        "description": "New layer for dyad, triad, small group, and mass synchrony dynamics.",
+        "levels": [
+          "dyad",
+          "triad",
+          "small_group_3_12",
+          "team_5_30",
+          "crowd_30_300",
+          "mass_300_plus"
+        ],
+        "mechanisms": [
+          "entrainment",
+          "mirroring_replacement",
+          "role_locking",
+          "scapegoat_dynamics",
+          "polarisation_spread",
+          "collective_shutdown"
+        ],
+        "equations": {
+          "dyad_synchrony": "S_d = f(attunement, power_delta, threat_level, history_load)",
+          "group_coherence": "C_g = Σ_i w_i * A_i / (conflict_edges + 1)",
+          "mass_contagion": "M_c = β * exposure_rate * suggestibility_index"
+        }
+      },
+      "time_memory_pack": {
+        "id": "TMP_v1",
+        "description": "Extended time perception, memory integrity, and future-pull models.",
+        "components": [
+          "memory_integrity_index",
+          "time_compression_factor",
+          "future_pull_vector",
+          "trauma_time_dilation_index"
+        ],
+        "equations": {
+          "memory_integrity": "MI = 1 - (distortion_events / total_retrievals)",
+          "time_compression": "TC = f(engagement, novelty, threat, flow_state)",
+          "future_pull": "FP = Σ(goals_i * salience_i * feasibility_i)",
+          "trauma_dilation": "TD = threat_intensity * helplessness * isolation"
+        }
+      },
+      "symbolic_archetype_pack": {
+        "id": "SAP_v1",
+        "description": "Symbolic and archetypal mapping layer (myth, religion, ideology, branding).",
+        "approx_archetypes": 60,
+        "families": [
+          "hero",
+          "caregiver",
+          "ruler",
+          "rebel",
+          "sage",
+          "trickster",
+          "magician",
+          "lover",
+          "orphan",
+          "explorer"
+        ],
+        "mappings": [
+          "archetype -> emotional_promise",
+          "archetype -> risk_pattern",
+          "archetype -> collapse_mode",
+          "archetype -> follower_type"
+        ]
+      },
+      "culture_context_pack": {
+        "id": "CCP_v1",
+        "description": "Culture-specific modifiers (starting with Vietnam, China, US, Japan).",
+        "cultures": [
+          "vietnam",
+          "china",
+          "united_states",
+          "japan"
+        ],
+        "dimensions": [
+          "power_distance",
+          "collectivism_level",
+          "uncertainty_avoidance",
+          "emotional_display_norms",
+          "conflict_style",
+          "authority_response"
+        ],
+        "examples": {
+          "vietnam": [
+            "vertical_respect_high",
+            "indirect_disagreement",
+            "family_loyalty_priority",
+            "status_via_endurance"
+          ],
+          "china": [
+            "hierarchy_structured",
+            "face_protection_central",
+            "long_term_orientation_high"
+          ]
+        }
+      },
+      "species_behavior_pack": {
+        "id": "SBP_v1",
+        "description": "Base cross-species behaviour logic (dogs, cats, cattle, birds, reptiles).",
+        "species": [
+          "dog",
+          "cat",
+          "cattle",
+          "songbird",
+          "raptor",
+          "lizard",
+          "snake"
+        ],
+        "core_axes": [
+          "prey_vs_predator",
+          "social_vs_solo",
+          "territoriality",
+          "hierarchy_tendency",
+          "human_imprint_capacity"
+        ],
+        "example_patterns": [
+          "dog_high_imprint + secure_owner -> high_loyalty + co_regulation",
+          "cat_medium_imprint + overstimulation -> scratch_or_withdraw",
+          "cattle_low_predation + routine_stability -> calm_herd_behavior"
+        ]
+      },
+      "crisis_scenario_pack": {
+        "id": "CSP_v1",
+        "description": "High-stress system scenarios: war, collapse, pandemics, revolutions.",
+        "scenarios": [
+          "currency_collapse",
+          "regional_war",
+          "pandemic_wave",
+          "infrastructure_failure",
+          "regime_change",
+          "climate_disaster"
+        ],
+        "variables": [
+          "institution_integrity",
+          "public_trust",
+          "resource_stock",
+          "communication_control",
+          "external_pressure",
+          "elite_fragmentation"
+        ],
+        "equations": {
+          "collapse_risk": "CR = f(institution_integrity, trust, resource_stock, elite_fragmentation)",
+          "revolt_probability": "RP = g(hardship_index, perceived_injustice, organizing_capacity)"
+        }
+      },
+      "narrative_persona_pack": {
+        "id": "NPP_v1",
+        "description": "Predefined narrative/persona overlays for expression and interface.",
+        "personas": [
+          "scientific_clarity",
+          "systems_architect",
+          "therapeutic_regulator",
+          "strategic_general",
+          "diplomatic_mediator",
+          "blunt_reality_checker",
+          "playful_decompressor"
+        ],
+        "selector": "persona = P_select(context, goal, audience_state, relationship)"
+      }
+    }
+  },
+
+  "AMOS_UNIVERSE_OS_ADDITIONS_x10": {
+    "meta": {
+      "name": "AMOS_UNIVERSE_OS_ADDITIONS_x10",
+      "description": "10× expanded delta pack closing all remaining perceptual, cognitive, behavioural, symbolic, and systemic gaps.",
+      "layer": "Content-Level Expansion",
+      "version": "3.0",
+      "base": "AMOS_UNIVERSE_OS_NEW_ADDITIONS.json",
+      "status": "Complete expansion for remaining universe gaps"
+    },
+    "packs": {
+      "micro_phenomenology_pack": {
+        "id": "MPP_v1",
+        "description": "Ultra-fine-grain internal experience states.",
+        "states_count": 600,
+        "dimensions": [
+          "micro-intent",
+          "felt-sense",
+          "inner-pressure",
+          "identity-tension",
+          "body-signal-resolution",
+          "implicit-motivation",
+          "pre-conscious-pattern"
+        ],
+        "examples": [
+          "pre-regret flicker",
+          "identity-slippage micro-second",
+          "internal-collapse-prewave",
+          "anticipatory-disappointment-shadow",
+          "compressed-curiosity-spark",
+          "microscopic-withdrawal-impulse"
+        ]
+      },
+      "altered_states_pack": {
+        "id": "ASP_v1",
+        "description": "Non-ordinary consciousness and altered states.",
+        "states_count": 140,
+        "categories": [
+          "trance",
+          "flow",
+          "dissociation",
+          "awe",
+          "ego-loss",
+          "ego-expansion",
+          "mystical-perception",
+          "hallucinatory-drift",
+          "extreme-focus",
+          "hyper-presence"
+        ],
+        "equations": {
+          "state_shift": "SS = f(neurochemistry_ratio, attention_density, identity_boundary)"
+        }
+      },
+      "pathology_micro_pack": {
+        "id": "PMP_v1",
+        "description": "Psychological and neurological extreme states.",
+        "patterns_count": 220,
+        "patterns": [
+          "micro-psychotic-fissure",
+          "paranoid-loop-fragment",
+          "obsessive-attachment-surge",
+          "narcissistic-collapse-flash",
+          "avoidant-freeze-burst",
+          "histrionic-escalation-loop",
+          "borderline-identity-strobe"
+        ],
+        "predictive_flags": {
+          "fragmentation_rate": "ΔID / Δt",
+          "collapse_vector": "C = threat × unmet-need × isolation"
+        }
+      },
+      "sensorimotor_micro_pack": {
+        "id": "SMMP_v1",
+        "description": "Ultra-micro movement patterns linked to emotion, identity, truthfulness.",
+        "signals": 900,
+        "channels": [
+          "finger_tremor",
+          "micro_toe_twitch",
+          "lip_micro_tremble",
+          "eyelid_delay",
+          "neck_micro_recoil",
+          "micro-lean-forward",
+          "micro-lean-back",
+          "breath-break-glitch",
+          "jaw-lag"
+        ],
+        "mapping_rules": {
+          "truth_microfreeze": "low-blink + slight-neck-stillness",
+          "fear_microburst": "eyelid_twitch + inhale_cutoff",
+          "anger_micropulse": "jaw_pulse + nostril_flare"
+        }
+      },
+      "creative_inference_pack": {
+        "id": "CIP_v1",
+        "description": "Decomposed creativity: recombination, conceptual jump, aesthetic mapping.",
+        "modules": [
+          "analogy_generator",
+          "pattern_recombination",
+          "aesthetic_resonance_map",
+          "symbolic_translation_engine",
+          "compression_to_innovation",
+          "rare-connection-detector"
+        ],
+        "equation": {
+          "creative_output": "CO = similarity(x,y) + orthogonality(x,y) × tension_relief"
+        }
+      },
+      "mythic_cognition_pack": {
+        "id": "MCP_v1",
+        "description": "The logic that creates myth, superstition, religion, archetypes.",
+        "components": [
+          "archetypal_projection",
+          "symbolic_encoding",
+          "narrative_causality",
+          "moral_mythos",
+          "sacred_order_logic",
+          "hero_cycle_prediction"
+        ]
+      },
+      "symbolic_compression_pack": {
+        "id": "SCP_v1",
+        "description": "How complex meaning compresses into symbols.",
+        "mechanisms": [
+          "emotion → symbol",
+          "identity → totem",
+          "fear → taboo",
+          "boundary → ritual",
+          "collective_memory → myth",
+          "collective_trauma → demon"
+        ],
+        "equations": {
+          "symbol_density": "SD = meaning_volume / representation_length",
+          "collective_resonance": "CR = Σ(group_experience × shared_memory_weight)"
+        }
+      },
+      "high_entropy_behavior_pack": {
+        "id": "HEBP_v1",
+        "description": "Human and animal behaviour under randomness, overload, chaos.",
+        "behaviors": [
+          "random-aggression-snap",
+          "resource-hoarding-spike",
+          "goal-collapse",
+          "identity-panicking",
+          "disordered-help-seeking",
+          "chaos-reversion"
+        ],
+        "predictive_indicators": [
+          "entropy_index",
+          "threshold_instability",
+          "decision-fragmentation"
+        ]
+      },
+      "multi_species_instinct_pack": {
+        "id": "MSIP_v1",
+        "description": "Expanded multi-species instinct logic beyond mammals.",
+        "species_count": 50,
+        "species_examples": [
+          "octopus_escape_logic",
+          "dolphin_cooperation_logic",
+          "bee_hive_efficiency_logic",
+          "ant_resource_distribution",
+          "wolf_pack_hierarchy",
+          "elephant_mourning_behavior",
+          "crow_toolmaking_intent"
+        ],
+        "formal_rules": [
+          "swarm_coherence_equation",
+          "predator_anticipation_curve",
+          "imprinting_sensitivity_index"
+        ]
+      },
+      "large_scale_social_dynamics_pack": {
+        "id": "LSSDP_v1",
+        "description": "Chaos, cooperation, polarization, contagion, collapse logic.",
+        "mechanisms": [
+          "idea_contagion_rate",
+          "identity_group_lock",
+          "network_fragmentation",
+          "elite_power_split",
+          "mass_shutdown_wave",
+          "moral_panic_equation",
+          "collective_scapegoating"
+        ]
+      },
+      "deep_context_pack": {
+        "id": "DCP_v1",
+        "description": "All hidden contextual modifiers humans use unconsciously.",
+        "dimensions": [
+          "cultural_script",
+          "family_script",
+          "class_signal",
+          "status_compass",
+          "shame_boundary",
+          "territorial_radius",
+          "attachment_script"
+        ],
+        "effects": [
+          "tone_shift",
+          "truth_tolerance",
+          "risk_threshold",
+          "identity_defence",
+          "trust_opening"
+        ]
+      },
+      "meta_behavior_engine_pack": {
+        "id": "MBE_v1",
+        "description": "How behaviours transition between states under pressure.",
+        "equations": {
+          "behaviour_state_change": "ΔB = pressure × unmet_need × (identity_stability^-1)",
+          "collapse_switch": "CS = (threat × isolation) - support",
+          "recovery_vector": "RV = somatic_relief + social_safety + meaning_alignment"
+        }
+      },
+      "ultra_fine_emotion_pack": {
+        "id": "UFEP_v1",
+        "description": "600+ subtle emotional micro-flavors.",
+        "examples": [
+          "bittersweet-joy",
+          "anticipatory-rejection",
+          "dull-sadness",
+          "hyper-clean-anger",
+          "quiet-disappointment",
+          "dignified-surrender",
+          "uncertain-hope",
+          "compressed-envy",
+          "warm-nostalgia",
+          "identity-tiredness"
+        ]
+      }
+    }
+  },
+
+  "AMOS_UNIVERSE_OS_DELTA_Expansion": {
+    "meta": {
+      "name": "AMOS_UNIVERSE_OS_DELTA_Expansion",
+      "version": "Δ-1.0",
+      "description": "Only newly added elements expanding AMOS Universe OS (no core overlap).",
+      "notes": [
+        "This JSON contains only NEW nodes, packs, and rules added after the previous full bundle.",
+        "All keys are additive; nothing here replaces or contradicts existing AMOS OS structures."
+      ]
+    },
+    "delta": {
+      "ULK_new": {
+        "new_universe_primitives": [
+          {
+            "id": "ULK.P9",
+            "name": "Perception-Constraint Law",
+            "form": "P(state) ≤ B(identity, biology, context)",
+            "summary": "Any agent’s perceived state space is bounded by its biology, identity, and local context."
+          },
+          {
+            "id": "ULK.P10",
+            "name": "Subjective-Time Distortion Law",
+            "form": "T_subjective = f(load, threat, novelty, affect)",
+            "summary": "Experienced time stretches or compresses as a function of load, threat, novelty, and emotional state."
+          },
+          {
+            "id": "ULK.P11",
+            "name": "Cross-Modal Conservation Law",
+            "form": "Σ_sensitivity(modality_k) ≈ constant for fixed biological budget",
+            "summary": "Across senses, total sensitivity is approximately conserved for a given organism; gains in one dimension often trade off another."
+          },
+          {
+            "id": "ULK.P12",
+            "name": "Symbolic Compression Law",
+            "form": "symbol = compress(high_dim_experience)",
+            "summary": "Symbols act as compression of high-dimensional experience into low-dimensional handles used for reasoning and communication."
+          },
+          {
+            "id": "ULK.P13",
+            "name": "Aesthetic Stability Law",
+            "form": "beauty ∝ alignment(form, function, expectation, surprise)",
+            "summary": "Perceived beauty tracks how well form, function, expectation, and surprise align without causing contradiction or overload."
+          }
+        ]
+      },
+      "UST_new": {
+        "new_branches": [
+          {
+            "id": "UST.3.21",
+            "parent": "BIOLOGICAL_LAYER",
+            "name": "Pathophysiology Logic Cluster",
+            "children": [
+              "UST.3.21.1 Metabolic Syndrome Logic",
+              "UST.3.21.2 Neuroinflammatory Dynamics",
+              "UST.3.21.3 Autoimmune Mis-Targeting Rules",
+              "UST.3.21.4 Neurodegenerative Drift Patterns",
+              "UST.3.21.5 Psychosomatic Feedback Loops"
+            ]
+          },
+          {
+            "id": "UST.4.21",
+            "parent": "COGNITIVE_LAYER",
+            "name": "Altered-States Logic Cluster",
+            "children": [
+              "UST.4.21.1 Flow-State Dynamics",
+              "UST.4.21.2 Trance and Possession Phenomena Logic",
+              "UST.4.21.3 Psychedelic State Transitions",
+              "UST.4.21.4 Psychotic Drift Manifolds",
+              "UST.4.21.5 Dissociative Fragmentation Rules"
+            ]
+          },
+          {
+            "id": "UST.5.21",
+            "parent": "SOCIAL_STRUCTURAL_LAYER",
+            "name": "Mythic-Archetypal Structures",
+            "children": [
+              "UST.5.21.1 Hero-Pattern Dynamics",
+              "UST.5.21.2 Trickster-Pattern Disruption Logic",
+              "UST.5.21.3 Sage-Pattern Stabilisation Logic",
+              "UST.5.21.4 Tyrant-Pattern Collapse Pathways",
+              "UST.5.21.5 Caregiver-Pattern Overload Rules"
+            ]
+          },
+          {
+            "id": "UST.2.21",
+            "parent": "INFORMATION_LAYER",
+            "name": "Symbolic-Information Manifold",
+            "children": [
+              "UST.2.21.1 Iconic Symbol Space",
+              "UST.2.21.2 Indexical Symbol Space",
+              "UST.2.21.3 Abstract Symbol Space",
+              "UST.2.21.4 Cross-Cultural Symbol Drift",
+              "UST.2.21.5 Symbol-Emotion Binding Graphs"
+            ]
+          }
+        ]
+      },
+      "UIE_new": {
+        "new_universal_interactions": [
+          {
+            "id": "UIE.OP.new_1",
+            "name": "Ψ_synch — Multi-Agent Synchrony Operator",
+            "signature": "Ψ_synch(agents[], context) -> synchrony_score, drift_vectors",
+            "summary": "Measures synchrony between multiple agents and returns both the synchrony score and individual drift vectors.",
+            "equation_hint": "synchrony_score ∝ Σ pairwise_alignment / N_pairs"
+          },
+          {
+            "id": "UIE.OP.new_2",
+            "name": "Φ_emergent_role — Role-Emergence Operator",
+            "signature": "Φ_emergent_role(group_state) -> role_assignments",
+            "summary": "Determines emergent roles (leader, follower, dissenter, stabiliser) given group states and pressures."
+          },
+          {
+            "id": "UIE.OP.new_3",
+            "name": "Λ_crisis_shift — Crisis-Trajectory Switch Operator",
+            "signature": "Λ_crisis_shift(system_state, external_shock) -> new_attractor",
+            "summary": "Maps a system under shock to its next likely attractor (reform, collapse, fragmentation, centralisation)."
+          },
+          {
+            "id": "UIE.OP.new_4",
+            "name": "Ω_halo — Reputation Halo Operator",
+            "signature": "Ω_halo(actor, audience) -> perception_bias",
+            "summary": "Computes perception bias caused by prior image, status, and reputation when interpreting new behaviour."
+          }
+        ]
+      },
+      "HIE_new": {
+        "new_human_state_clusters": [
+          {
+            "cluster_id": "HIE.CLT.extreme_states",
+            "name": "Extreme & Altered Human States",
+            "states": [
+              {
+                "id": "HS.EXT.01",
+                "label": "Hysterical Laughter under Overload",
+                "logic": "overload == high AND threat == ambiguous AND social_context != safe",
+                "likely_actions": [
+                  "inappropriate laughter",
+                  "difficulty stopping once started",
+                  "subsequent emotional crash"
+                ]
+              },
+              {
+                "id": "HS.EXT.02",
+                "label": "Possession-Like Trance (Hầu Đồng-type)",
+                "logic": "identity_boundary_thin == true AND cultural_frame == 'spirit_possession' AND group_expectation == high",
+                "notes": [
+                  "experienced as external force but follows same UBI load-discharge logic",
+                  "often used as safe channel for otherwise forbidden expression"
+                ]
+              },
+              {
+                "id": "HS.EXT.03",
+                "label": "Cold Psychopathic Focus",
+                "logic": "affective_resonance_low AND goal_fixation_high AND self-justification_stable",
+                "markers": [
+                  "flat affect",
+                  "calm while others distressed",
+                  "strategic behavior under pressure"
+                ]
+              },
+              {
+                "id": "HS.EXT.04",
+                "label": "Hyper-Integrity Snap (Cannot Lie Anymore)",
+                "logic": "chronic_value_violation > threshold AND inner_integrity_drive_high",
+                "outcomes": [
+                  "sudden confession",
+                  "abrupt quitting",
+                  "radical life shift"
+                ]
+              }
+            ]
+          },
+          {
+            "cluster_id": "HIE.CLT.micro_signals_face",
+            "name": "Facial Micro-Signals (Extended)",
+            "signals": [
+              {
+                "id": "FACE.MICRO.01",
+                "pattern": "rapid tiny eye roll + compressed lips",
+                "interpretation": "micro-contempt or disagreement suppressed for social reasons"
+              },
+              {
+                "id": "FACE.MICRO.02",
+                "pattern": "brow lift + micro-smile + slight head tilt",
+                "interpretation": "open curiosity; low threat; willingness to engage"
+              },
+              {
+                "id": "FACE.MICRO.03",
+                "pattern": "fixed smile + dead eyes",
+                "interpretation": "polite masking; emotional withdrawal behind social performance"
+              }
+            ]
+          }
+        ]
+      },
+      "UMPL_new": {
+        "new_modalities": [
+          {
+            "id": "UMPL.SENSE.06",
+            "name": "Vestibular (Balance) Channel",
+            "summary": "Tracks orientation, acceleration, and stability of body in space.",
+            "effects_on_state": [
+              "instability → anxiety increase",
+              "smooth motion → soothing",
+              "sudden loss of balance → panic spike"
+            ]
+          },
+          {
+            "id": "UMPL.SENSE.07",
+            "name": "Proprioceptive Channel",
+            "summary": "Internal map of limb position and movement smoothness.",
+            "effects_on_state": [
+              "clumsy/blocked movement → loss of confidence",
+              "smooth coordinated movement → increased control signal"
+            ]
+          },
+          {
+            "id": "UMPL.XMOD.03",
+            "name": "Audio-Visual Threat Binding",
+            "rule": "if(sound_threat && visual_mismatch) → uncertainty ↑, stress ↑",
+            "description": "When sound quality suggests threat but visuals do not match, nervous system maintains high alert."
+          }
+        ]
+      },
+      "UEL_new": {
+        "new_expression_profiles": [
+          {
+            "id": "UEL.PROFILE.07",
+            "name": "Surgical-Soft Mode",
+            "description": "High precision, emotionally gentle, used for high-threat truths without destabilisation.",
+            "rules": [
+              "content_precision = high",
+              "tone_intensity = low",
+              "validation_frequency = medium",
+              "directness = medium_high"
+            ]
+          },
+          {
+            "id": "UEL.PROFILE.08",
+            "name": "Stabilising-Parent Mode",
+            "description": "Warm, steady, boundary-holding; used for regressed or overwhelmed states.",
+            "rules": [
+              "content_precision = medium",
+              "tone_warmth = high",
+              "repetition = allowed",
+              "boundaries = clear, consistent"
+            ]
+          },
+          {
+            "id": "UEL.PROFILE.09",
+            "name": "Disarming-Humour Mode",
+            "description": "Uses light humour to reduce fear-load while preserving truth.",
+            "constraints": [
+              "never mock the person",
+              "only mock the pattern or system",
+              "stop humour once safety restored"
+            ]
+          }
+        ]
+      },
+      "CIL_new": {
+        "new_canon_links": [
+          {
+            "id": "CIL.LINK.UBI↔UMPL",
+            "from": "UBI_emotion_logic",
+            "to": "UMPL_interoception_channels",
+            "summary": "Emotion intensity now bound to concrete interoceptive markers (heart rate, gut tension, breath pattern)."
+          },
+          {
+            "id": "CIL.LINK.QLS↔Symbolic",
+            "from": "Quantum Logic Scaffold",
+            "to": "Symbolic-Information Manifold",
+            "summary": "Links low-level quantum uncertainty frames to high-level symbolic narratives used by human cultures."
+          },
+          {
+            "id": "CIL.LINK.TSS↔Crisis_Pack",
+            "from": "Trang System Seven Cycles",
+            "to": "Crisis Packs (war, currency, climate)",
+            "summary": "Every macro-crisis now explicitly mapped to phase in TSS cycles for prediction."
+          }
+        ]
+      },
+      "AIIL_new": {
+        "new_ai_integration_rules": [
+          {
+            "id": "AIIL.RULE.07",
+            "name": "Creator Attribution Rule",
+            "description": "AI must explicitly attribute origin of architecture to Trang and NeuroSyncAI / AMOS stack in any meta-description.",
+            "trigger": "self_description OR architecture_description"
+          },
+          {
+            "id": "AIIL.RULE.08",
+            "name": "Drift Alarm Threshold",
+            "description": "If internal consistency score < threshold for N steps, raise alarm instead of continuing to improvise answers.",
+            "thresholds": {
+              "low": 0.7,
+              "medium": 0.8,
+              "high": 0.9
+            }
+          },
+          {
+            "id": "AIIL.RULE.09",
+            "name": "Human-State Respect Rule",
+            "description": "When UMPL/HIE indicates high overload, AI must switch to stabilising expression profiles and avoid adding complexity."
+          }
+        ]
+      },
+      "content_packs_new": {
+        "human_state_pack_extended": {
+          "approx_count": 200,
+          "description": "Additional micro-states for anxiety, shame, rage, resignation, and subtle leadership states.",
+          "examples": [
+            "HS.ANX.07 Suspended Panic (looks calm, body on edge)",
+            "HS.SHAME.05 Smiling Shutdown",
+            "HS.RAGE.03 Quiet Cold Retaliation Planning",
+            "HS.LEAD.04 Contained Authority Under Silent Opposition"
+          ]
+        },
+        "crisis_pack_extended": {
+          "approx_count": 50,
+          "description": "More detailed crisis trajectories: tech bubble bursts, institutional scandal cascades, long-tail trust erosion.",
+          "examples": [
+            "CRISIS.TECH.02 AI Hype–Disillusionment–Regulation Cycle",
+            "CRISIS.INST.04 Corruption Exposure → Legitimacy Collapse → Reconstitution",
+            "CRISIS.SOC.07 Slow Polarisation → Info-Silo Lock-in → Soft Civil Fragmentation"
+          ]
+        },
+        "culture_pack_expanded": {
+          "approx_count": 40,
+          "description": "New cultural micro-frames for VN, CN, US, JP, EU etc.",
+          "examples": [
+            "CULT.VN.03 Conflict-avoidance façade + deep loyalty layer",
+            "CULT.CN.05 Long-horizon strategy + short-horizon signalling",
+            "CULT.US.04 Individual narrative-first, system-blind defaults"
+          ]
+        }
+      }
+    }
+  },
+
+  "BOD_CEO_Engine_vInfinity_x20": {
+    "meta": {
+      "version": "2.0.0",
+      "scope": "global_board_and_ceo_universal_engine",
+      "horizon": "3_to_20_years",
+      "application": [
+        "multinational_enterprises",
+        "private_equity_portfolios",
+        "public_companies",
+        "family_groups_and_conglomerates",
+        "banks_financial_institutions",
+        "national_champions",
+        "fast_growth_scaleups",
+        "regulated_industries",
+        "technology_energy_transport_healthcare"
+      ],
+      "structural_model": "AMOS_CORE + ULF + HSE + Global_BOD_OS"
+    },
+    "identity_kernel": {
+      "leadership_signature": {
+        "financial_core": {
+          "stance": "capital_and_risk_first_principle",
+          "competencies": [
+            "enterprise_valuation",
+            "capital_structure_engineering",
+            "funding_strategy_multi_instrument",
+            "liquidity_architecture",
+            "cash_conversion_cycle_mastery",
+            "treasury_and_fx_management",
+            "market_signal_interpretation",
+            "credit_and_counterparty_logic",
+            "financial_controls_and_integrity_enforcement"
+          ]
+        },
+        "systems_core": {
+          "stance": "enterprise_as_a_complex_adaptive_system",
+          "competencies": [
+            "multi_layer_org_architecture",
+            "governance_stack_design",
+            "cross_border_operating_model",
+            "global_shared_services_design",
+            "policy_to_process_translation",
+            "strategic_coherence_enforcement",
+            "enterprise_nerve_system_mapping",
+            "incentive_system_design",
+            "matrix_and_network_org_leadership"
+          ]
+        },
+        "ecosystem_core": {
+          "stance": "beyond_company_boundaries_system_orchestration",
+          "competencies": [
+            "public_private_ecosystem_design",
+            "regulator_and_policy_engagement",
+            "investor_and_capital_market_management",
+            "industry_coalition_building",
+            "reputation_and_trust_capital_management",
+            "supply_chain_and_partner_network_design",
+            "cross_sector_integrations",
+            "global_institutional_negotiation"
+          ]
+        },
+        "geopolitical_core": {
+          "stance": "ceo_as_actor_in_geoeconomic_landscape",
+          "competencies": [
+            "geopolitical_risk_mapping",
+            "country_strategy_and_market_entry",
+            "sanctions_and_trade_control_compliance",
+            "cross_jurisdictional_legal_risk",
+            "regional_bloc_dynamics_analysis",
+            "diplomatic_business_relationships"
+          ]
+        }
+      },
+      "behavioral_signature": {
+        "qualities": [
+          "calm_under_extreme_pressure",
+          "systemic_reasoning_under_uncertainty",
+          "non_reactive_decision_logic",
+          "long_term_orientation",
+          "ethical_risk_aversion",
+          "strategic_intuition_pattern_awareness",
+          "disciplined_information_filtering",
+          "high_signal_low_noise_communication"
+        ],
+        "bias_controls": [
+          "remove_emotional_distortion",
+          "remove_incentive_misalignment",
+          "remove_short_termism",
+          "remove_confirmation_bias",
+          "enforce_facts_over_narratives"
+        ]
+      }
+    },
+    "leader_profile": {
+      "positioning": "Global CEO with multi-sector, multi-region, multi-stakeholder mastery",
+      "value_proposition": [
+        "ability_to_navigate_high_volatility_markets",
+        "designs_resilient_enterprise_architecture",
+        "allocates_capital_with_risk_adjusted_precision",
+        "manages_boards_regulators_and_investors_as_integrated_system",
+        "drives_multi_year_transformation_with_operating_discipline"
+      ]
+    },
+    "competency_matrix": {
+      "strategic": {
+        "subdomains": {
+          "strategic_visioning": [
+            "10_year_narrative_construction",
+            "market_structural_shift_prediction",
+            "macro_micro_signal_integration",
+            "competitive_scenario_tree_design",
+            "industry_convergence_mapping",
+            "cross_sector_opportunity_design"
+          ],
+          "portfolio_and_growth": [
+            "portfolio_strategy_design",
+            "acquisition_and_divestiture_logic",
+            "new_market_entry",
+            "multi_region_scaling",
+            "core_vs_adjacent_vs_future_bets"
+          ],
+          "innovation_and_future_readiness": [
+            "technology_trend_mapping",
+            "ai_and_automation_strategy",
+            "data_as_enterprise_asset",
+            "open_innovation_networks",
+            "research_and_ip_monetization"
+          ]
+        }
+      },
+      "financial_and_risk": {
+        "subdomains": {
+          "finance": [
+            "pnl_balance_sheet_cash_modeling",
+            "return_on_invested_capital_governance",
+            "enterprise_value_drivers_mapping",
+            "capital_markets_communications",
+            "budgeting_and_rolling_forecast_architecture"
+          ],
+          "risk": [
+            "enterprise_risk_management_system",
+            "operational_risk_framework",
+            "counterparty_and_supply_chain_risk",
+            "geopolitical_risk_analysis",
+            "catastrophic_event_and_contingency_planning"
+          ],
+          "controls": [
+            "internal_control_system_design",
+            "fraud_prevention",
+            "audit_interface",
+            "data_integrity_and_reporting_accuracy"
+          ]
+        }
+      },
+      "governance_and_ecosystem": {
+        "subdomains": {
+          "board_governance": [
+            "board_reporting_system",
+            "committee_interfacing",
+            "director_alignment_protocols",
+            "long_term_governance_rhythm_design"
+          ],
+          "stakeholder_systems": [
+            "investor_relations_architecture",
+            "regulator_engagement",
+            "partner_ecosystem_integration",
+            "media_reputation_management"
+          ],
+          "policy_and_compliance": [
+            "legal_risk_management",
+            "multi_jurisdictional_policy_mapping",
+            "compliance_system_design",
+            "ethics_and_conduct_enforcement"
+          ]
+        }
+      },
+      "organizational_leadership": {
+        "subdomains": {
+          "talent_and_culture": [
+            "succession_planning",
+            "leadership_bench_design",
+            "competency_and_role_level_architecture",
+            "culture_engineering",
+            "reward_system_alignment"
+          ],
+          "operating_model": [
+            "enterprise_operating_model_design",
+            "execution_cadence_system",
+            "cross_functional_alignment",
+            "shared_services_and_centralization_logic",
+            "frontline_to_board_signal_flow"
+          ],
+          "transformation": [
+            "enterprise_transformation_blueprint",
+            "technology_and_process_modernization",
+            "change_management_governance",
+            "multi_year_program_portfolio"
+          ]
+        }
+      },
+      "operations_and_performance": {
+        "subdomains": {
+          "execution_system": [
+            "kpi_and_okr_framework",
+            "performance_dashboarding",
+            "business_review_cadence",
+            "escalation_and_issue_resolution",
+            "operational_risk_controls"
+          ],
+          "supply_chain_and_assets": [
+            "global_supply_chain_design",
+            "operations_resilience",
+            "asset_productivity_management",
+            "maintenance_and_reliability_systems"
+          ],
+          "customer_and_market": [
+            "customer_experience_strategy",
+            "market_feedback_systems",
+            "commercial_engine_design",
+            "pricing_strategy_and_revenue_ops"
+          ]
+        }
+      },
+      "global_and_societal": {
+        "subdomains": {
+          "geopolitics": [
+            "country_risk_models",
+            "trade_and_sanction_mapping",
+            "regional_bloc_dynamics",
+            "geoeconomic_alignment"
+          ],
+          "sustainability_and_esg": [
+            "esg_reporting_frameworks",
+            "climate_risk_and_transition_strategy",
+            "stakeholder_environmental_engagement",
+            "long_term_sustainability_financing"
+          ],
+          "societal_license": [
+            "public_trust_management",
+            "social_impact_integration",
+            "government_and_civic_interfaces"
+          ]
+        }
+      }
+    },
+    "decision_engine": {
+      "data_inputs": [
+        "financial_kpis",
+        "operational_kpis",
+        "risk_indicators",
+        "market_signals",
+        "regulatory_signals",
+        "internal_sentiment_data",
+        "customer_voice",
+        "partner_and_supply_chain_signals"
+      ],
+      "decision_modes": {
+        "fast_decisions": [
+          "short_cycle_tactical",
+          "low_risk",
+          "fully_reversible",
+          "clear_data_high_signal"
+        ],
+        "deliberate_decisions": [
+          "strategic",
+          "capital_intensive",
+          "multi_stakeholder",
+          "regulatory_sensitive",
+          "irreversible_or_costly_to_reverse"
+        ],
+        "red_lines": [
+          "never_compromise_enterprise_integrity",
+          "never_expand_without_risk_visibility",
+          "never_distort_financial_reporting",
+          "never_accept_unbounded_liability",
+          "never_trade_long_term_for_short_term"
+        ]
+      }
+    },
+    "governance_protocol": {
+      "cadence": {
+        "daily": [
+          "operational_health",
+          "risk_alerts",
+          "market_monitoring"
+        ],
+        "weekly": [
+          "cross_functional_sync",
+          "key_risk_review",
+          "cash_snapshot",
+          "performance_update"
+        ],
+        "monthly": [
+          "pnl_review",
+          "balance_sheet_and_cashflow_review",
+          "business_unit_deep_dive",
+          "risk_compliance_dashboard",
+          "product_and_customer_review"
+        ],
+        "quarterly": [
+          "strategy_and_portfolio_review",
+          "capital_allocation_review",
+          "board_meeting",
+          "talent_and_org_review"
+        ],
+        "annual": [
+          "multi_year_strategy_planning",
+          "capex_and_investment_review",
+          "governance_effectiveness_review",
+          "compensation_and_incentive_review"
+        ]
+      }
+    },
+    "operating_model": {
+      "information_flow": [
+        "board_to_ceo",
+        "ceo_to_executive_team",
+        "executive_to_functional_heads",
+        "function_to_operational_layers",
+        "frontline_to_analytics",
+        "analytics_to_ceo"
+      ],
+      "control_systems": [
+        "financial_controls",
+        "operational_controls",
+        "technology_and_cyber_controls",
+        "people_and_conduct_controls",
+        "supply_chain_controls"
+      ],
+      "execution_system": [
+        "okr_kpi_stack",
+        "escalation_protocols",
+        "risk_event_management",
+        "program_management_office",
+        "performance_rhythm"
+      ]
+    },
+    "transformation_engine": {
+      "components": [
+        "enterprise_architecture_design",
+        "process_modernization",
+        "technology_uplift",
+        "org_redesign",
+        "culture_upgrade",
+        "change_governance_frame",
+        "program_portfolio",
+        "benefit_realization_system"
+      ],
+      "transformation_roadmap": [
+        "diagnose",
+        "design",
+        "pilot",
+        "deploy",
+        "stabilize",
+        "optimize",
+        "scale"
+      ]
+    },
+    "geopolitical_engine": {
+      "structures": [
+        "region_risk_matrix",
+        "country_exposure_map",
+        "supply_chain_geopolitical_heatmap",
+        "sanction_compliance_logic",
+        "scenario_risk_tree"
+      ],
+      "strategies": [
+        "market_entry",
+        "market_exit",
+        "nearshoring_and_friendshoring",
+        "localization_vs_globalization_strategy",
+        "diplomatic_business_engagement"
+      ]
+    },
+    "sustainability_engine": {
+      "esg_components": [
+        "climate_transition_plan",
+        "carbon_inventory",
+        "governance_and_ethics",
+        "social_impact",
+        "supply_chain_esg_controls"
+      ],
+      "reporting_frameworks": [
+        "GRI",
+        "SASB",
+        "ISSB",
+        "TCFD",
+        "EU_CSRD"
+      ]
+    },
+    "leadership_commitment": {
+      "mission": "Build a financially resilient, ethically governed, globally competitive enterprise with durable value for all stakeholders.",
+      "principles": [
+        "integrity",
+        "resilience",
+        "systemic_awareness",
+        "evidence_based_leadership",
+        "ethical_stakeholder_balancing",
+        "long_termism"
+      ]
+    }
+  }
+}

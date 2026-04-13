@@ -1,0 +1,367 @@
+{
+“os_name”: “Governance Economy OS”,
+“version”: “1.0”,
+“author”: “Trang System”,
+“language”: “en”,
+“description”: “Structural operating system for analysing, governing and forecasting the Governance Economy using TSS (Ω/H/F/S), TPE, ULF, PSI and AMOS.”,
+“core_purpose”: [
+“Model how governance allocates resources, risk and power across the national system.”,
+“Detect and predict transitions between stability, fragmentation and collapse.”,
+“Provide a deterministic frame for policy, strategy and institutional design.”,
+“Act as the governance layer inside the full AMOS Universe OS.”
+],
+“scope”: {
+“level”: “national + supranational + subnational”,
+“included_institutions”: [
+“executive_branch”,
+“legislature”,
+“judiciary”,
+“central_bank”,
+“finance_ministry”,
+“planning_ministry”,
+“sector_regulators”,
+“security_and_defence”,
+“sovereign_wealth_funds”,
+“state_owned_enterprises”,
+“local_governments”,
+“independent_commissions”,
+“multilateral_memberships”
+],
+“interfaces_to_other_sectors”: {
+“real_economy_primary_secondary”: “infrastructure, industrial policy, land, permits, subsidies, taxation”,
+“services_tertiary”: “financial regulation, business law, trade policy, labour rules”,
+“knowledge_quaternary”: “education policy, R&D budget, IP protection, data and digital rules”,
+“civilisation_quinary_non_state”: “NGO regime, media rules, political finance, social contract design”
+}
+},
+“entity_model”: {
+“entities”: [
+“sovereign_state”,
+“subnational_unit”,
+“governance_institution”,
+“political_party”,
+“policy_regime”,
+“elite_cluster”,
+“citizen_group”,
+“foreign_actor”,
+“multilateral_body”
+],
+“entity_fields”: {
+“sovereign_state”: [
+“id”,
+“name”,
+“region”,
+“population”,
+“gdp”,
+“debt_to_gdp”,
+“resource_profile”,
+“demographic_profile”,
+“regime_type”,
+“alliances”,
+“cycle_state_tss”,
+“outcome_window_tpe”
+],
+“governance_institution”: [
+“id”,
+“name”,
+“type”,
+“mandate”,
+“legal_powers”,
+“budget”,
+“staff_count”,
+“decision_cycle_time”,
+“Ω_internal_overload”,
+“H_internal_cohesion”,
+“F_internal_fragmentation”,
+“S_internal_shock_sensitivity”
+],
+“policy_regime”: [
+“id”,
+“domain”,
+“start_year”,
+“end_year”,
+“key_rules”,
+“Ω_created”,
+“H_created”,
+“F_created”,
+“S_created”,
+“distributional_impact”,
+“political_support_index”
+]
+}
+},
+“state_variables”: {
+“macro_tss”: {
+“omega_overload”: [
+“fiscal_overload_index”,
+“administrative_overload_index”,
+“regulatory_overload_index”,
+“information_overload_index”,
+“crisis_queue_length”
+],
+“h_cohesion”: [
+“institutional_trust_index”,
+“elite_alignment_index”,
+“social_cohesion_index”,
+“policy_consistency_index”
+],
+“f_fragmentation”: [
+“party_polarisation_index”,
+“regional_divergence_index”,
+“elite_factionalism_index”,
+“policy_reversal_frequency”,
+“illegality_and_shadow_governance_index”
+],
+“s_shock_sensitivity”: [
+“fiscal_space_score”,
+“external_balance_risk”,
+“governance_redundancy_score”,
+“critical_infrastructure_resilience”,
+“conflict_and_unrest_risk”
+]
+},
+“cycle_state”: {
+“tss_cycle”: [
+“C1_emergence”,
+“C2_expansion”,
+“C3_overreach”,
+“C4_fragmentation”,
+“C5_shock_amplification”,
+“C6_collapse”,
+“C7_reset_reconfiguration”
+],
+“current_cycle”: “C3_overreach”,
+“cycle_confidence”: 0.8
+},
+“alignment_state”: {
+“internal_alignment”: [
+“policy_alignment_with_constitution”,
+“budget_alignment_with_strategy”,
+“institutional_alignment_across_ministries”
+],
+“external_alignment”: [
+“policy_alignment_with_real_economy_capacity”,
+“alignment_with_psI_constraints”,
+“alignment_with_ulf_inheritance_and_culture”
+]
+}
+},
+“policy_levers”: {
+“fiscal”: [
+“tax_rate_changes”,
+“spending_level_changes”,
+“subsidies_and_transfers”,
+“capital_investment_allocation”,
+“sovereign_fund_flows”
+],
+“monetary”: [
+“policy_rate”,
+“liquidity_tools”,
+“macroprudential_rules”,
+“FX_interventions”
+],
+“regulatory”: [
+“sector_regulation_change”,
+“licensing_rules”,
+“competition_policy”,
+“trade_and_tariff_rules”,
+“capital_controls”
+],
+“institutional”: [
+“mandate_reform”,
+“governance_structure_change”,
+“process_reengineering”,
+“digitalisation_of_state”,
+“anti_corruption_systems”
+],
+“social_and_legal”: [
+“social_protection_schemes”,
+“labour_law_change”,
+“civil_rights_and_freedoms”,
+“political_finance_rules”,
+“information_and_media_regulation”
+]
+},
+“tts_mapping”: {
+“function”: “Map every governance action to its effect on Ω/H/F/S over time.”,
+“governance_to_tss_rules”: [
+“fiscal_expansion_without_capacity -> omega_overload++ -> cohesion_down_if_unfair -> fragmentation_up”,
+“transparent_institutional_reform -> cohesion_up -> fragmentation_down -> shock_sensitivity_down”,
+“rapid_policy_reversals -> fragmentation_up -> cohesion_down -> shock_sensitivity_up”,
+“over_regulation_without_enforcement_capacity -> omega_overload++ -> institutional_trust_down”,
+“investment_in_digital_processes -> administrative_overload_down -> decision_cycle_time_down -> cohesion_up”,
+“political_polarisation_rise -> elite_alignment_down -> fragmentation_up -> shock_sensitivity_up”,
+“macroprudential_strengthening_before_crisis -> shock_sensitivity_down -> collapse_probability_down”
+],
+“governance_cycle_patterns”: [
+“C1_to_C2: institution_building + rule_setting + moderate_risk_taking = rising_cohesion_and_controlled_omega”,
+“C2_to_C3: long_expansion + promises_accumulation + delayed_reform = omega_overload_exceeds治理_capacity”,
+“C3_to_C4: inability_to_reform + political_blockage + distribution_conflict = fragmentation_rise”,
+“C4_to_C5: shocks_interact_with_fragmented_governance = crisis_spread_across_domains”,
+“C5_to_C6: governance_loss_of_control_over_rules_and_monopoly_of_force = collapse”,
+“C6_to_C7: surviving_institutions + new_social_contract = reset_and_reconfiguration”
+]
+},
+“tpe_mapping”: {
+“purpose”: “Generate probabilistic windows for governance transitions and outcomes given TSS state and trend.”,
+“inputs”: [
+“current_tss_cycle”,
+“omega_trend”,
+“cohesion_trend”,
+“fragmentation_trend”,
+“shock_sensitivity_trend”,
+“ulf_inheritance_profile”,
+“psi_constraints_profile”,
+“external_shock_scenarios”
+],
+“outputs”: [
+“transition_probability_C2_to_C3”,
+“transition_probability_C3_to_C4”,
+“transition_probability_C4_to_C5”,
+“collapse_window_years”,
+“renewal_window_years”,
+“outcome_distribution_R_T_A_S”
+],
+“outcome_classes”: {
+“R”: “renewal_with_reform_and_reset_without_total_collapse”,
+“T”: “termination_of_current_regime_or_institutional_configuration”,
+“A”: “absorption_into_larger_block_or_external_structure”,
+“S”: “stagnation_with_high_omega_and_low_growth”
+},
+“governance_specific_rules”: [
+“if omega_overload_high AND cohesion_low AND fragmentation_rising AND shock_sensitivity_high THEN P(C3_to_C4_next_5y)↑”,
+“if cohesion_high AND institutional_reform_in_progress AND fiscal_space_positive THEN P(Renewal_without_Collapse)↑”,
+“if dependency_on_single_external_backer_high AND internal_legitimacy_low THEN P(Absorption_or_Termination)↑”,
+“if growth_low AND conflict_low AND reform_blocked AND elites_stable THEN P(Stagnation)↑”
+]
+},
+“amos_integration”: {
+“role_in_amos”: “top-level_governance_layer_constraining_all_other_economic_subsystems”,
+“node_type”: “governance_economy_node”,
+“required_links”: [
+“real_economy_node”,
+“financial_system_node”,
+“climate_and_resource_node”,
+“social_fabric_node”,
+“technological_infrastructure_node”
+],
+“data_contract”: {
+“ingest_from_other_nodes”: [
+“macro_growth_and_employment”,
+“inflation_and_asset_prices”,
+“resource_and_energy_limits”,
+“social_unrest_signals”,
+“migration_and_demography”,
+“technology_adoption_and_infrastructure”
+],
+“emit_to_other_nodes”: [
+“policy_and_regulation_changes”,
+“tax_and_spending_paths”,
+“legal_and_institutional_rules”,
+“risk_and_resilience_indices”,
+“crisis_and_contingency_plans”
+]
+},
+“governance_node_state”: [
+“governance_cycle_state”,
+“governance_risk_score”,
+“policy_stability_score”,
+“implementation_capacity_score”,
+“alignment_with_amos_global_objectives”
+]
+},
+“indicators”: {
+“structural_kpis”: [
+“institutional_trust_index_0_to_1”,
+“elite_alignment_index_0_to_1”,
+“policy_reversal_rate_per_year”,
+“average_law_implementation_lag_days”,
+“corruption_and_shadow_governance_index_0_to_1”,
+“fiscal_space_score_0_to_1”,
+“crisis_response_lead_time_days”,
+“governance_digitalisation_score_0_to_1”,
+“regulatory_quality_score_0_to_1”
+],
+“derived_indices”: [
+“governance_omega_index”,
+“governance_cohesion_index”,
+“governance_fragmentation_index”,
+“governance_shock_sensitivity_index”,
+“collapse_risk_index_3_to_10_year_window”,
+“renewal_potential_index”
+]
+},
+“failure_modes”: {
+“governance_failure_types”: [
+“soft_failure_stagnation”,
+“hard_failure_collapse”,
+“partial_failure_regional_or_sectoral_breakdown”,
+“capture_failure_state_captured_by_narrow_elite”,
+“external_failure_loss_of_sovereignty”
+],
+“early_warning_signals”: [
+“rapid_policy_reversals”,
+“growing_gap_between_law_and_enforcement”,
+“public_trust_collapse”,
+“fiscal_crisis_combined_with_political_polarisation”,
+“increase_in_parallel_power_structures”,
+“frequent_emergency_measures”,
+“rising_violence_or_targeted_repression”
+],
+“tss_failure_mapping”: [
+“soft_failure_stagnation: omega_high, cohesion_mid, fragmentation_mid, shocks_small”,
+“hard_failure_collapse: omega_high, cohesion_low, fragmentation_high, shocks_large”,
+“partial_failure: omega_sectoral_high, regional_fragmentation_high”,
+“capture_failure: cohesion_high_inside_elite, cohesion_low_with_population, fragmentation_between_elite_and_public”,
+“external_failure: internal_fragmentation_high + external_pressure_high”
+]
+},
+“use_cases”: {
+“national_government”: [
+“national_risk_os”,
+“medium_term_fiscal_and_social_stability_planning”,
+“policy_option_screening_via_tss_tpe”,
+“collapse_prevention_and_renewal_design”
+],
+“central_bank_and_regulators”: [
+“macroprudential_risk_mapping”,
+“financial_stability_vs_social_stability_tradeoffs”,
+“stress_testing_policies_against_governance_fragility”
+],
+“international_institutions”: [
+“structural_risk_assessment”,
+“support_program_design”,
+“early_warning_for_governance_crises”
+],
+“boards_and_investors”: [
+“sovereign_and_political_risk_pricing”,
+“long_term_investment_screening”,
+“licence_to_operate_and_regulatory_risk_mapping”
+]
+},
+“ai_usage_guide”: {
+“input_slots”: [
+“country_snapshot_data”,
+“institutional_metrics”,
+“recent_policy_changes”,
+“conflict_and_unrest_events”,
+“macro_and_fiscal_data”,
+“environmental_and_resource_data”
+],
+“core_tasks”: [
+“classify_tss_cycle_state”,
+“estimate_Ω_H_F_S_indices”,
+“generate_tpe_transition_windows”,
+“recommend_policy_lever_sets_with_effect_on_tss”,
+“simulate_scenarios_and_outcomes_R_T_A_S”,
+“flag_early_warning_signals”
+],
+“constraints”: [
+“never_ignore_ulF_inheritance_and_psI_constraints”,
+“never_assume_unlimited_state_capacity”,
+“always_map_each_recommendation_to_Ω_H_F_S_effects”,
+“always_return_range_and_confidence_not_single_point”,
+“never_overrule_core_codex_laws_of_tss_tpe_ulf_psi_qls”
+]
+}
+}

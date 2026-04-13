@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "name": "AMOS_AGENT_REGISTRY",
+    "version": "1.0.0",
+    "description": "Python runtime registry linking AMOS_CANON agents to wrapper modules."
+  },
+  "agents": {
+    "Architecture_Agent": {
+      "module_path": "Agents/Architecture_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/BRAIN_SYSTEM/Architecture_Agent.json"
+    },
+    "Automation_Agent": {
+      "module_path": "Agents/Automation_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Automation_Agent.json"
+    },
+    "Cashflow_Agent": {
+      "module_path": "Agents/Cashflow_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/MONEY_SYSTEM/Cashflow_Agent.json"
+    },
+    "Coding_Agent": {
+      "module_path": "Agents/Coding_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Coding_Agent.json"
+    },
+    "Compliance_Agent": {
+      "module_path": "Agents/Compliance_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LEGAL_SYSTEM/Compliance_Agent.json"
+    },
+    "Context_Agent": {
+      "module_path": "Agents/Context_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/SENSE_SYSTEM/Context_Agent.json"
+    },
+    "Contract_Agent": {
+      "module_path": "Agents/Contract_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LEGAL_SYSTEM/Contract_Agent.json"
+    },
+    "Decomposer_Agent": {
+      "module_path": "Agents/Decomposer_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/BRAIN_SYSTEM/Decomposer_Agent.json"
+    },
+    "Deployment_Agent": {
+      "module_path": "Agents/Deployment_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Deployment_Agent.json"
+    },
+    "DevOps_Agent": {
+      "module_path": "Agents/DevOps_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/DevOps_Agent.json"
+    },
+    "Document_Agent": {
+      "module_path": "Agents/Document_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Document_Agent.json"
+    },
+    "FinanceRisk_Agent": {
+      "module_path": "Agents/FinanceRisk_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/MONEY_SYSTEM/FinanceRisk_Agent.json"
+    },
+    "Finance_Agent": {
+      "module_path": "Agents/Finance_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/MONEY_SYSTEM/Finance_Agent.json"
+    },
+    "GeoAnalyst_Agent": {
+      "module_path": "Agents/GeoAnalyst_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/WORLD_MODEL_SYSTEM/GeoAnalyst_Agent.json"
+    },
+    "Health_Agent": {
+      "module_path": "Agents/Health_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LIFE_SYSTEM/Health_Agent.json"
+    },
+    "IP_Agent": {
+      "module_path": "Agents/IP_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LEGAL_SYSTEM/IP_Agent.json"
+    },
+    "Investment_Agent": {
+      "module_path": "Agents/Investment_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/MONEY_SYSTEM/Investment_Agent.json"
+    },
+    "LegalRisk_Agent": {
+      "module_path": "Agents/LegalRisk_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LEGAL_SYSTEM/LegalRisk_Agent.json"
+    },
+    "Legal_Agent": {
+      "module_path": "Agents/Legal_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LEGAL_SYSTEM/Legal_Agent.json"
+    },
+    "Life_Agent": {
+      "module_path": "Agents/Life_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LIFE_SYSTEM/Life_Agent.json"
+    },
+    "LoadBalancer_Agent": {
+      "module_path": "Agents/LoadBalancer_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LIFE_SYSTEM/LoadBalancer_Agent.json"
+    },
+    "MacroAnalyst_Agent": {
+      "module_path": "Agents/MacroAnalyst_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/WORLD_MODEL_SYSTEM/MacroAnalyst_Agent.json"
+    },
+    "Opportunity_Agent": {
+      "module_path": "Agents/Opportunity_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/MONEY_SYSTEM/Opportunity_Agent.json"
+    },
+    "Planner_Agent": {
+      "module_path": "Agents/Planner_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/BRAIN_SYSTEM/Planner_Agent.json"
+    },
+    "Refactor_Agent": {
+      "module_path": "Agents/Refactor_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Refactor_Agent.json"
+    },
+    "Reflection_Agent": {
+      "module_path": "Agents/Reflection_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/BRAIN_SYSTEM/Reflection_Agent.json"
+    },
+    "Routine_Agent": {
+      "module_path": "Agents/Routine_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/LIFE_SYSTEM/Routine_Agent.json"
+    },
+    "SectorAnalyst_Agent": {
+      "module_path": "Agents/SectorAnalyst_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/WORLD_MODEL_SYSTEM/SectorAnalyst_Agent.json"
+    },
+    "Sensors_Agent": {
+      "module_path": "Agents/Sensors_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/SENSE_SYSTEM/Sensors_Agent.json"
+    },
+    "Shock_Agent": {
+      "module_path": "Agents/Shock_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/WORLD_MODEL_SYSTEM/Shock_Agent.json"
+    },
+    "StateSummarizer_Agent": {
+      "module_path": "Agents/StateSummarizer_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/SENSE_SYSTEM/StateSummarizer_Agent.json"
+    },
+    "Strategist_Agent": {
+      "module_path": "Agents/Strategist_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/BRAIN_SYSTEM/Strategist_Agent.json"
+    },
+    "Trend_Agent": {
+      "module_path": "Agents/Trend_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/WORLD_MODEL_SYSTEM/Trend_Agent.json"
+    },
+    "Writing_Agent": {
+      "module_path": "Agents/Writing_Agent.py",
+      "canon_spec": "/Users/trangphan/Documents/GitHub/AMOS-SYSTEM/AMOS_CANON/AGENTS/EXECUTION_SYSTEM/Writing_Agent.json"
+    }
+  },
+  "_meta": {
+    "build_timestamp": 1764478554,
+    "git_commit": "e73a9df0214dbc80c3b73b109a6dc9b078e3fc7a",
+    "checksum": "8438c3aaa09a2f56b9fd848d412700f3b3fe63c6283f7bb5dba4d2c4b406284c",
+    "generated_by": "AMOS_BUILD_EVERYTHING"
+  }
+}

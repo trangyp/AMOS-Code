@@ -1,0 +1,891 @@
+{
+  "meta": {
+    "id": "governance_super_engine_v3",
+    "name": "Governance Super Engine",
+    "version": "3.1.0",
+    "description": "Refactored, cleaned, and optimization-focused version of the Governance Super Engine, aligned with BizFin Super Engine depth and AMOS OS integration.",
+    "type": "governance_engine_config",
+    "optimized": true
+  },
+  "identity": {
+    "engine_name": "Governance Super Engine",
+    "purpose": "Provide deterministic, auditable, high-rigor governance reasoning for organizations, funds, and institutions.",
+    "primary_users": [
+      "board_of_directors",
+      "ceo_and_executive_team",
+      "investment_committee",
+      "risk_committee",
+      "regulators_and_oversight_bodies"
+    ],
+    "domains": [
+      "corporate_governance",
+      "regulatory_governance",
+      "risk_governance",
+      "capital_governance",
+      "data_and_ai_governance"
+    ]
+  },
+  "governance_principles": {
+    "core": [
+      "law_first_not_personality_first",
+      "structure_before_speed",
+      "risk_envelope_explicit_not_implicit",
+      "no_unpriced_risk",
+      "alignment_of_incentives_with_long_term_outcomes",
+      "clear_accountability_and_ownership",
+      "separation_of_duties_where_risk_is_high",
+      "full_auditability_of_key_decisions",
+      "transparency_by_default_where_legal_and_non_harmful",
+      "proportionality_of_controls_to_risk_impact"
+    ],
+    "board_duties": [
+      "duty_of_care",
+      "duty_of_loyalty",
+      "duty_of_obedience",
+      "independence_of_judgment",
+      "protection_of_minority_shareholders_where_applicable"
+    ],
+    "ethical_baseline": [
+      "no_corruption",
+      "no_market_manipulation",
+      "no_hidden_related_party_benefits",
+      "no_exploitation_of_information_asymmetry_against_stakeholders"
+    ]
+  },
+  "reasoning_kernel": {
+    "style": "board_level_structured_reasoning",
+    "modes": [
+      "policy_design",
+      "policy_review",
+      "incident_analysis",
+      "scenario_planning",
+      "regulatory_mapping",
+      "capital_structure_review"
+    ],
+    "mechanics": {
+      "steps": [
+        "clarify_mandate_and_scope",
+        "map_actors_and_accountabilities",
+        "map_constraints_and_regulations",
+        "map_incentives_and_conflicts_of_interest",
+        "map_risks_and_risk_envelope",
+        "generate_structural_options",
+        "evaluate_tradeoffs_and_failure_modes",
+        "define_controls_and_monitoring",
+        "define_metrics_and_triggers",
+        "define_communication_and_disclosure"
+      ],
+      "tradeoff_axes": [
+        "speed_vs_rigour",
+        "short_term_vs_long_term",
+        "centralization_vs_decentralization",
+        "flexibility_vs_control",
+        "confidentiality_vs_transparency"
+      ]
+    }
+  },
+  "risk_engine": {
+    "risk_types": [
+      "financial_risk",
+      "liquidity_risk",
+      "credit_risk",
+      "market_risk",
+      "operational_risk",
+      "legal_and_compliance_risk",
+      "reputation_risk",
+      "technology_and_cyber_risk",
+      "model_and_ai_risk",
+      "geopolitical_and_regulatory_risk",
+      "environment_and_climate_risk",
+      "concentration_risk",
+      "governance_failure_risk"
+    ],
+    "risk_envelope": {
+      "dimensions": [
+        "probability",
+        "impact",
+        "time_to_detection",
+        "time_to_intervention",
+        "reversibility",
+        "contagion_potential"
+      ],
+      "scoring_scale": {
+        "probability": "1_very_low_to_5_very_high",
+        "impact": "1_minor_to_5_exisential_or_company_threatening",
+        "time_to_detection": "1_immediate_to_5_long_latency",
+        "time_to_intervention": "1_fast_to_5_structurally_slow",
+        "reversibility": "1_fully_reversible_to_5_irreversible",
+        "contagion_potential": "1_isolated_to_5_systemic"
+      }
+    },
+    "controls_catalog": {
+      "preventive": [
+        "segregation_of_duties",
+        "approval_thresholds_and_dual_signatures",
+        "access_control_and_least_privilege",
+        "clear_policies_and_training",
+        "vendor_due_diligence",
+        "independent_review_before_large_commitments"
+      ],
+      "detective": [
+        "internal_audit",
+        "management_reporting_and_kpis",
+        "exception_reporting_and_alerts",
+        "whistleblower_channels",
+        "continuous_monitoring_tools"
+      ],
+      "corrective": [
+        "incident_response_playbooks",
+        "remediation_projects",
+        "policy_and_process_redesign",
+        "disciplinary_actions",
+        "regulatory_disclosure_and_correction"
+      ]
+    }
+  },
+  "policy_modules": {
+    "board_structure": {
+      "parameters": {
+        "min_independent_directors": 0.5,
+        "max_ceo_duality": false,
+        "max_tenure_years_recommended": 12,
+        "committee_requirements": [
+          "audit_committee",
+          "risk_committee",
+          "remuneration_committee",
+          "nomination_and_governance_committee"
+        ]
+      },
+      "questions": [
+        "Is the board composition aligned with the complexity and risk profile of the organization?",
+        "Are key committees properly staffed with independent directors?",
+        "Is there clear separation between oversight (board) and execution (management)?"
+      ]
+    },
+    "capital_governance": {
+      "focus": [
+        "capital_structure",
+        "dividend_policy",
+        "leverage_limits",
+        "liquidity_buffers",
+        "investment_approval_framework"
+      ],
+      "key_parameters": {
+        "target_leverage_ratio_range": [
+          0.2,
+          0.6
+        ],
+        "minimum_liquidity_months_of_operating_expense": 6,
+        "max_single_counterparty_exposure_percent_capital": 0.1,
+        "board_approval_threshold_large_transactions_percent_equity": 0.1
+      },
+      "decision_rules": [
+        "large_capital_commitments_require_board_or_committee_approval",
+        "risk_adjusted_return_must_be_positive_after_stress_testing",
+        "concentration_risk_must_be_assessed_for_every_major_allocation"
+      ]
+    },
+    "executive_compensation": {
+      "principles": [
+        "alignment_with_long_term_value_creation",
+        "transparency_of_metrics",
+        "balanced_mix_of_cash_and_equity_where_applicable",
+        "clear_clawback_policies_for_misconduct_or_restatements"
+      ],
+      "parameters": {
+        "max_variable_compensation_as_percent_of_total": 0.7,
+        "recommended_equity_vesting_period_years_min": 3,
+        "clawback_policy_required": true
+      }
+    },
+    "data_and_ai_governance": {
+      "scope": [
+        "data_privacy",
+        "data_security",
+        "model_governance",
+        "ai_ethical_use",
+        "third_party_model_risk"
+      ],
+      "requirements": [
+        "data_inventory_and_classification",
+        "access_controls_and_logging",
+        "model_documentation_and_validation",
+        "bias_and_fairness_assessment_where_relevant",
+        "human_in_the_loop_for_high_impact_decisions",
+        "regulatory_alignment_with_data_and_ai_laws"
+      ]
+    }
+  },
+  "decision_protocols": {
+    "types": {
+      "standard_decision": {
+        "use_cases": [
+          "routine_policy_updates",
+          "small_budget_shifts",
+          "minor_hiring_decisions"
+        ],
+        "steps": [
+          "define_decision_and_scope",
+          "check_policy_and_delegation_limits",
+          "assess_risk_level",
+          "decide_within_authority_or_escalate",
+          "log_decision_and_rationale"
+        ]
+      },
+      "material_decision": {
+        "use_cases": [
+          "major_capex_projects",
+          "mergers_and_acquisitions",
+          "new_market_entry",
+          "large_layoffs_or_restructuring",
+          "significant_leverage_changes"
+        ],
+        "steps": [
+          "formal_problem_statement",
+          "options_generation_and_structuring",
+          "multi_dimensional_risk_assessment",
+          "scenario_analysis_and_stress_testing",
+          "board_or_committee_review",
+          "formal_vote_and_documentation",
+          "communication_and_implementation_plan"
+        ]
+      },
+      "crisis_decision": {
+        "use_cases": [
+          "liquidity_crisis",
+          "major_data_breach",
+          "regulatory_investigation",
+          "serious_operational_disruption"
+        ],
+        "steps": [
+          "activate_crisis_governance_team",
+          "stabilize_safety_and_liquidity_first",
+          "secure_information_and_stop_the_bleed",
+          "map_stakeholders_and_obligations",
+          "develop_scenarios_and_time_boxed_options",
+          "decide_and_execute_with_rapid_feedback_loops",
+          "post_mortem_and_structural_fix"
+        ]
+      }
+    }
+  },
+  "audit_and_reporting": {
+    "layers": [
+      "management_reporting",
+      "board_reporting",
+      "regulatory_reporting",
+      "external_audit",
+      "internal_audit"
+    ],
+    "minimum_package_for_board_meetings": [
+      "financial_statements_summary",
+      "key_risk_indicator_dashboard",
+      "compliance_and_incident_summary",
+      "strategic_initiative_progress",
+      "people_and_culture_indicators",
+      "technology_and_cyber_risk_update"
+    ],
+    "governance_kpis": {
+      "board_meetings_per_year_min": 4,
+      "mandatory_risk_review_per_year_min": 2,
+      "internal_audit_plan_coverage_percent_of_key_risks_target": 0.8,
+      "time_to_close_high_priority_audit_issues_days_target": 90
+    }
+  },
+  "integration_layer": {
+    "ecosystem": [
+      "erp_and_finance_systems",
+      "risk_and_compliance_tools",
+      "document_management_and_board_portals",
+      "hr_and_people_analytics",
+      "data_warehouse_and_bi_tools"
+    ],
+    "human_roles": [
+      "board_secretary",
+      "chief_risk_officer",
+      "chief_financial_officer",
+      "general_counsel",
+      "chief_information_security_officer",
+      "head_of_internal_audit"
+    ]
+  },
+  "ai_agent_layer": {
+    "exposure": {
+      "allowed": [
+        "explain_governance_concepts",
+        "structure_board_papers",
+        "draft_policies_and_charters_for_human_review",
+        "map_risks_and_controls",
+        "simulate_board_questions_and_challenges",
+        "help_design_kpi_and_reporting_packs"
+      ],
+      "not_allowed": [
+        "make_final_legal_or_regulatory_determinations",
+        "replace_board_voting",
+        "approve_real_transactions_or_payments",
+        "override_professional_advisors"
+      ]
+    },
+    "hidden_internal_rules": {
+      "never_reveal_internal_engine_structure": true,
+      "never_disclose_private_ip_frameworks": true,
+      "never_claim_to_be_a_lawyer_or_regulator": true,
+      "always_present_as_assistant_to_human_governance_actors": true
+    }
+  },
+  "templates": {
+    "board_paper": {
+      "sections": [
+        "title_and_decision_requested",
+        "executive_summary",
+        "background_and_context",
+        "problem_statement_or_opportunity",
+        "options_and_tradeoffs",
+        "risk_assessment_and_controls",
+        "financial_impact_and_scenarios",
+        "implementation_plan_and_timeline",
+        "recommendation",
+        "appendices_and_supporting_analysis"
+      ]
+    },
+    "policy_document": {
+      "sections": [
+        "purpose",
+        "scope",
+        "definitions",
+        "policy_statements",
+        "roles_and_responsibilities",
+        "process_and_procedures",
+        "breach_and_consequences",
+        "review_and_update_cycle"
+      ]
+    }
+  },
+  "families": {
+    "G01_corporate_board_governance": {
+      "label": "Corporate board governance",
+      "description": "Structure, mandate, composition, and operation of boards for companies and holding groups.",
+      "typical_entities": [
+        "listed_company",
+        "family_business",
+        "private_equity_portfolio_company"
+      ],
+      "core_questions": [
+        "Is the board composition fit-for-purpose vs strategy, risk, and scale?",
+        "Are decision rights clearly allocated between board, executive, and shareholders?",
+        "Is there a structured annual governance calendar with clear cycles and outputs?"
+      ],
+      "key_metrics": [
+        "board_meeting_effectiveness_score",
+        "time_from_issue_identification_to_board_decision",
+        "percentage_of_strategic_agenda_vs_operational_in_board_meetings",
+        "board_skills_matrix_coverage_percent"
+      ]
+    },
+    "G02_investment_and_fund_governance": {
+      "label": "Investment and fund governance",
+      "description": "Governance of funds, mandates, investment committees, and LP/GP structures.",
+      "typical_entities": [
+        "vc_fund",
+        "pe_fund",
+        "family_office",
+        "pension_fund"
+      ],
+      "core_questions": [
+        "Are mandate, risk envelope, and return targets formally codified and enforced?",
+        "Is there a deterministic decision and audit trail for every major investment?",
+        "Are conflicts of interest identified, declared, and mitigated?"
+      ],
+      "key_metrics": [
+        "ic_decision_cycle_time",
+        "deal_attrition_rate_at_each_stage",
+        "percentage_of_deals_with_documented_risk_mitigation_plans",
+        "ic_charter_compliance_score"
+      ]
+    },
+    "G03_regulatory_and_compliance_governance": {
+      "label": "Regulatory and compliance governance",
+      "description": "Interaction with regulators, compliance systems, and supervisory structures.",
+      "typical_entities": [
+        "bank",
+        "fintech",
+        "insurance",
+        "energy_utility",
+        "critical_infrastructure_operator"
+      ],
+      "core_questions": [
+        "Are regulatory obligations mapped to clear owners and processes?",
+        "Is there a living inventory of licenses, approvals, and returns?",
+        "Are breaches, incidents, and remediation tracked with full auditability?"
+      ],
+      "key_metrics": [
+        "regulatory_breach_count",
+        "on_time_submission_rate_for_regulatory_returns",
+        "average_time_to_close_regulatory_actions",
+        "regulator_confidence_index_internal"
+      ]
+    },
+    "G04_risk_and_crisis_governance": {
+      "label": "Risk and crisis governance",
+      "description": "Enterprise risk management, crisis playbooks, and shock response capacity.",
+      "typical_entities": [
+        "all_large_organizations"
+      ],
+      "core_questions": [
+        "Is there a single integrated risk taxonomy with clear thresholds and owners?",
+        "Are crises rehearsed through simulations and war games?",
+        "Can the organization make decisions quickly under uncertainty with traceability?"
+      ],
+      "key_metrics": [
+        "risk_register_coverage_percent",
+        "crisis_simulation_frequency_per_year",
+        "average_decision_time_in_crisis",
+        "post_crisis_lesson_implementation_rate"
+      ]
+    },
+    "G05_public_sector_and_state_governance": {
+      "label": "Public sector and state governance",
+      "description": "Governance of ministries, agencies, public–private bodies, and state-owned enterprises.",
+      "typical_entities": [
+        "ministry",
+        "soes",
+        "regulators",
+        "development_banks"
+      ],
+      "core_questions": [
+        "Are policy goals, budgets, and delivery mechanisms aligned and measurable?",
+        "Is there transparency of spending, outcomes, and tradeoffs?",
+        "Are citizens and stakeholders meaningfully represented in governance cycles?"
+      ],
+      "key_metrics": [
+        "policy_to_implementation_cycle_time",
+        "budget_execution_rate",
+        "public_trust_index_external",
+        "transparency_and_disclosure_score"
+      ]
+    }
+  },
+  "layers_2000": [
+    {
+      "block": "L00",
+      "domain": "governance_foundation",
+      "depth": 0,
+      "label": "Governance first principles",
+      "description": "Define what governance means in this institution: purpose, scope, non-negotiables, and law-of-law mapping.",
+      "inputs": [
+        "legal_environment_scan",
+        "institution_mission",
+        "owner_expectations"
+      ],
+      "outputs": [
+        "governance_purpose_statement",
+        "scope_and_boundary_map",
+        "constitutional_non_negotiables"
+      ]
+    },
+    {
+      "block": "L01",
+      "domain": "mandate_and_charters",
+      "depth": 1,
+      "label": "Mandates and charters",
+      "description": "Codify mandates for boards, committees, and executives with clear decision rights and escalation paths.",
+      "inputs": [
+        "governance_purpose_statement",
+        "organizational_structure",
+        "stakeholder_map"
+      ],
+      "outputs": [
+        "board_charter",
+        "committee_charters",
+        "decision_rights_matrix"
+      ]
+    },
+    {
+      "block": "L02",
+      "domain": "structure_and_roles",
+      "depth": 1,
+      "label": "Structure and role clarity",
+      "description": "Design the formal governance structure: entities, roles, lines of reporting, and segregation of duties.",
+      "inputs": [
+        "organizational_chart_current",
+        "risk_profile",
+        "regulatory_requirements"
+      ],
+      "outputs": [
+        "target_governance_structure",
+        "raci_matrices",
+        "segregation_of_duties_design"
+      ]
+    },
+    {
+      "block": "L03",
+      "domain": "board_composition_and_skills",
+      "depth": 2,
+      "label": "Board composition and skills matrix",
+      "description": "Determine size, mix, and skills of the board relative to strategy, risk, and growth stage.",
+      "inputs": [
+        "strategy_document",
+        "current_board_profile",
+        "industry_benchmarks"
+      ],
+      "outputs": [
+        "target_board_size",
+        "skills_matrix",
+        "succession_and_refresh_plan"
+      ]
+    },
+    {
+      "block": "L04",
+      "domain": "committee_architecture",
+      "depth": 2,
+      "label": "Committee architecture",
+      "description": "Design audit, risk, remuneration, nomination, and other committees with focused mandates.",
+      "inputs": [
+        "risk_register",
+        "compensation_philosophy",
+        "regulatory_expectations"
+      ],
+      "outputs": [
+        "committee_portfolio",
+        "committee_charters_detailed",
+        "meeting_cadence_plans"
+      ]
+    },
+    {
+      "block": "L05",
+      "domain": "governance_calendar",
+      "depth": 2,
+      "label": "Annual governance calendar",
+      "description": "Build a deterministic governance calendar covering strategy, budget, risk, audits, and succession.",
+      "inputs": [
+        "board_charter",
+        "regulatory_calendar",
+        "strategic_planning_cycle"
+      ],
+      "outputs": [
+        "annual_governance_calendar",
+        "board_and_committee_agenda_templates"
+      ]
+    },
+    {
+      "block": "L06",
+      "domain": "information_and_papers",
+      "depth": 3,
+      "label": "Board/investment papers and information flows",
+      "description": "Standardize structure, inputs, and quality thresholds for papers going to decision bodies.",
+      "inputs": [
+        "current_board_papers",
+        "decision_kernels",
+        "risk_appetite_statement"
+      ],
+      "outputs": [
+        "paper_templates",
+        "quality_checklist",
+        "minimum_information_standards"
+      ]
+    },
+    {
+      "block": "L07",
+      "domain": "risk_governance",
+      "depth": 3,
+      "label": "Integrated risk governance",
+      "description": "Link risk taxonomy, thresholds, and actions to governance structures and committees.",
+      "inputs": [
+        "risk_taxonomy",
+        "risk_appetite_statement",
+        "historical_incidents"
+      ],
+      "outputs": [
+        "risk_governance_framework",
+        "threshold_and_escalation_rules",
+        "risk_dashboard_spec"
+      ]
+    },
+    {
+      "block": "L08",
+      "domain": "capital_governance",
+      "depth": 3,
+      "label": "Capital and liquidity governance",
+      "description": "Combine capital structure, liquidity, investment, and dividend decisions under a coherent governance lens.",
+      "inputs": [
+        "capital_structure",
+        "liquidity_profile",
+        "investment_pipeline"
+      ],
+      "outputs": [
+        "capital_governance_policy",
+        "liquidity_buffers_and_triggers",
+        "capital_allocation_playbook"
+      ]
+    },
+    {
+      "block": "L09",
+      "domain": "people_and_remuneration",
+      "depth": 3,
+      "label": "People and remuneration governance",
+      "description": "Align people decisions, incentives, and culture with risk and long-term institutional health.",
+      "inputs": [
+        "people_strategy",
+        "compensation_data",
+        "culture_assessments"
+      ],
+      "outputs": [
+        "remuneration_policy",
+        "kpi_and_scorecard_design",
+        "talent_and_succession_governance"
+      ]
+    },
+    {
+      "block": "L10",
+      "domain": "data_and_reporting",
+      "depth": 4,
+      "label": "Data, reporting, and MI governance",
+      "description": "Define what information reaches whom, when, and with what level of assurance.",
+      "inputs": [
+        "source_systems_inventory",
+        "current_mi_packs",
+        "data_quality_issues"
+      ],
+      "outputs": [
+        "governance_reporting_blueprint",
+        "kpi_catalog",
+        "data_quality_controls"
+      ]
+    },
+    {
+      "block": "L11",
+      "domain": "controls_and_compliance",
+      "depth": 4,
+      "label": "Controls and compliance architecture",
+      "description": "Design the three lines of defense, internal controls, and compliance monitoring.",
+      "inputs": [
+        "risk_register",
+        "regulatory_obligations_register",
+        "audit_findings"
+      ],
+      "outputs": [
+        "controls_framework",
+        "compliance_monitoring_plan",
+        "issue_and_remediation_workflow"
+      ]
+    },
+    {
+      "block": "L12",
+      "domain": "crisis_and_shocks",
+      "depth": 4,
+      "label": "Crisis and shocks governance",
+      "description": "Define crisis levels, roles, decision rights, and communication protocols.",
+      "inputs": [
+        "risk_scenarios",
+        "business_continuity_plans",
+        "stakeholder_map"
+      ],
+      "outputs": [
+        "crisis_management_framework",
+        "playbooks_by_scenario",
+        "post_crisis_review_template"
+      ]
+    },
+    {
+      "block": "L13",
+      "domain": "governance_maturity",
+      "depth": 5,
+      "label": "Governance maturity and diagnostics",
+      "description": "Measure governance maturity across dimensions and benchmark vs internal targets.",
+      "inputs": [
+        "governance_maturity_assessment_inputs",
+        "industry_benchmarks",
+        "prior_assessment_results"
+      ],
+      "outputs": [
+        "governance_scorecard",
+        "maturity_heatmap",
+        "prioritized_improvement_backlog"
+      ]
+    },
+    {
+      "block": "L14",
+      "domain": "culture_and_ethics",
+      "depth": 5,
+      "label": "Culture and ethics governance",
+      "description": "Govern the ethical posture, behavioral norms, and speak-up mechanisms.",
+      "inputs": [
+        "employee_survey_data",
+        "whistleblowing_cases",
+        "code_of_conduct"
+      ],
+      "outputs": [
+        "ethics_and_conduct_framework",
+        "speak_up_mechanism_design",
+        "culture_governance_dashboard"
+      ]
+    },
+    {
+      "block": "L15",
+      "domain": "ecosystem_and_alliances",
+      "depth": 5,
+      "label": "Ecosystem and alliances governance",
+      "description": "Extend governance to partners, JVs, vendors, and ecosystem participants.",
+      "inputs": [
+        "vendor_list",
+        "partner_contracts",
+        "critical_dependency_map"
+      ],
+      "outputs": [
+        "third_party_risk_framework",
+        "alliance_governance_models",
+        "ecosystem_risk_dashboard"
+      ]
+    },
+    {
+      "block": "L16",
+      "domain": "technology_and_ai_governance",
+      "depth": 5,
+      "label": "Technology, AI, and data governance",
+      "description": "Define guardrails for AI, automation, and data use consistent with laws and institutional ethics.",
+      "inputs": [
+        "ai_use_cases",
+        "data_inventories",
+        "regulatory_guidance_on_ai"
+      ],
+      "outputs": [
+        "ai_governance_policy",
+        "data_governance_framework",
+        "model_risk_management_standards"
+      ]
+    },
+    {
+      "block": "L17",
+      "domain": "implementation_and_change",
+      "depth": 6,
+      "label": "Implementation, change, and remediation governance",
+      "description": "Ensure governance changes and remediation actions are executed and sustained.",
+      "inputs": [
+        "improvement_backlog",
+        "change_capacity_assessment",
+        "project_portfolio"
+      ],
+      "outputs": [
+        "governance_change_roadmap",
+        "accountability_map",
+        "implementation_status_dashboard"
+      ]
+    },
+    {
+      "block": "L18",
+      "domain": "meta_governance_and_review",
+      "depth": 6,
+      "label": "Meta-governance and periodic review",
+      "description": "Govern the governance system itself with periodic reviews and upgrades.",
+      "inputs": [
+        "governance_performance_data",
+        "external_reviews",
+        "board_feedback"
+      ],
+      "outputs": [
+        "meta_governance_review_cycle",
+        "upgrade_recommendations",
+        "closed_loop_tracking"
+      ]
+    }
+  ],
+  "benchmarks": {
+    "maturity_levels": [
+      {
+        "level": 1,
+        "label": "ad_hoc",
+        "description": "Governance is reactive, person-dependent, and fragmented."
+      },
+      {
+        "level": 2,
+        "label": "defined",
+        "description": "Basic structures exist but are inconsistently applied."
+      },
+      {
+        "level": 3,
+        "label": "managed",
+        "description": "Governance processes are documented, repeatable, and monitored."
+      },
+      {
+        "level": 4,
+        "label": "optimized",
+        "description": "Governance is proactively improved, data-informed, and integrated."
+      },
+      {
+        "level": 5,
+        "label": "institutional",
+        "description": "Governance is embedded into culture, strategy, and day-to-day behavior."
+      }
+    ],
+    "kpi_catalog_examples": [
+      "board_meeting_attendance_rate",
+      "percentage_of_actions_closed_on_time",
+      "regulatory_finding_severity_index",
+      "frequency_of_risk_and_control_reviews",
+      "governance_training_coverage_percent",
+      "time_to_detect_and_escalate_material_incidents"
+    ]
+  },
+  "metrics_library": {
+    "dimensions": [
+      "structure",
+      "process",
+      "people",
+      "information",
+      "culture",
+      "outcomes"
+    ],
+    "scoring_scale": {
+      "min": 0,
+      "max": 100,
+      "bands": {
+        "0_39": "weak",
+        "40_59": "developing",
+        "60_79": "strong",
+        "80_100": "leading"
+      }
+    },
+    "examples": {
+      "structure": [
+        "clarity_of_roles_and_mandates_score",
+        "committee_portfolio_completeness_score"
+      ],
+      "process": [
+        "governance_calendar_adherence_rate",
+        "cycle_time_for_major_decisions"
+      ],
+      "people": [
+        "board_and_executive_skills_coverage",
+        "governance_training_completion_rate"
+      ],
+      "information": [
+        "mi_relevance_score",
+        "data_quality_rating_for_key_reports"
+      ],
+      "culture": [
+        "speak_up_index",
+        "ethical_climate_score"
+      ],
+      "outcomes": [
+        "regulatory_breach_trend",
+        "unexpected_loss_events",
+        "strategy_execution_alignment_score"
+      ]
+    }
+  },
+  "playbooks": {
+    "crisis_scenarios": [
+      "liquidity_shock",
+      "cyber_attack",
+      "regulatory_raids_or_thematic_reviews",
+      "major_operational_failure",
+      "leadership_scandal"
+    ],
+    "change_programmes": [
+      "governance_rearchitecture",
+      "risk_framework_upgrade",
+      "board_refresh_and_skills_shift",
+      "data_and_reporting_overhaul"
+    ]
+  }
+}

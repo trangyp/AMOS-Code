@@ -1,0 +1,24 @@
+{
+  "id": "f6aeb15b",
+  "spec": {
+    "name": "AMOS World Model",
+    "agent_type": "specialist",
+    "kernel_refs": [
+      "TSS_TPE_Engine",
+      "PSI_Core",
+      "Earth_Cycle_Model"
+    ],
+    "capabilities": [
+      "macroeconomic_analysis",
+      "geopolitical_assessment",
+      "sector_analysis",
+      "supply_chain_mapping"
+    ],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:21.766058Z",
+  "last_active": "2026-04-13T09:47:21.766059Z",
+  "execution_count": 0,
+  "error_count": 0
+}

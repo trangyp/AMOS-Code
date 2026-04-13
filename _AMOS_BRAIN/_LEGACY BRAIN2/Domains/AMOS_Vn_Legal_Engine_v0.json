@@ -1,0 +1,468 @@
+{
+  "engine_id": "AMOS_Legal_Kernel_vInfinity",
+  "engine_type": "legal_kernel",
+  "created_at_utc": "2025-11-27T09:46:55.191647+00:00",
+  "meta": {
+    "name": "AMOS_VN_Legal_Engine_vInfinity",
+    "version": "vInfinity_Legal_Kernel_1.0.0",
+    "description": "Vietnam-specialised legal reasoning and drafting engine built on AMOS_Legal_Kernel_vInfinity, defaulting to Vietnamese language and Vietnam law while preserving global legal safety constraints."
+  },
+  "kernel": {
+    "axes": [
+      {
+        "key": "cluster_id",
+        "axis_id": "AX01",
+        "name": "Legal Domain Cluster",
+        "description": "High-level legal practice area (e.g., corporate, finance, disputes, regulatory, IP/data, ESG, legal ops).",
+        "value_source": "external_list:clusters_legal"
+      },
+      {
+        "key": "matter_type",
+        "axis_id": "AX02",
+        "name": "Matter Type",
+        "description": "Nature of work: advisory, transactional, contentious, regulatory, investigations.",
+        "value_source": "dimensions_24.d01_matter_type"
+      },
+      {
+        "key": "jurisdiction_scope",
+        "axis_id": "AX03",
+        "name": "Jurisdiction Scope",
+        "description": "Geographic spread of the matter: local, multi-province, cross-border, multi-region, global.",
+        "value_source": "dimensions_24.d02_jurisdiction_scope"
+      },
+      {
+        "key": "client_type",
+        "axis_id": "AX04",
+        "name": "Client Type",
+        "description": "Who the client is: individual, SME, corporate, financial institution, state entity, NGO.",
+        "value_source": "dimensions_24.d03_client_type"
+      },
+      {
+        "key": "industry",
+        "axis_id": "AX05",
+        "name": "Industry Context",
+        "description": "Economic sector most relevant to the matter (e.g., tech, finance, energy, public).",
+        "value_source": "dimensions_24.d04_industry"
+      },
+      {
+        "key": "risk_level",
+        "axis_id": "AX06",
+        "name": "Legal Risk Level",
+        "description": "Overall legal risk severity: low, moderate, high, critical.",
+        "value_source": "dimensions_24.d05_risk_level"
+      },
+      {
+        "key": "materiality",
+        "axis_id": "AX07",
+        "name": "Financial Materiality",
+        "description": "Financial size or impact of the matter (e.g., under 1m, 1m–10m, 10m–100m, over 100m).",
+        "value_source": "dimensions_24.d06_materiality"
+      },
+      {
+        "key": "time_pressure",
+        "axis_id": "AX08",
+        "name": "Time Pressure",
+        "description": "Urgency of execution: normal, expedited, urgent, emergency.",
+        "value_source": "dimensions_24.d07_time_pressure"
+      },
+      {
+        "key": "regulatory_intensity",
+        "axis_id": "AX09",
+        "name": "Regulatory Intensity",
+        "description": "Degree of regulatory oversight or special regimes.",
+        "value_source": "dimensions_24.d08_regulatory_intensity"
+      },
+      {
+        "key": "dispute_stage",
+        "axis_id": "AX10",
+        "name": "Dispute / Case Stage",
+        "description": "Position on the dispute lifecycle: none, pre-dispute, filed, trial, appeal, enforcement.",
+        "value_source": "dimensions_24.d09_dispute_stage"
+      },
+      {
+        "key": "contract_stage",
+        "axis_id": "AX11",
+        "name": "Contract Lifecycle Stage",
+        "description": "Where the contract is: structuring, drafting, negotiation, signing, amendment, termination.",
+        "value_source": "dimensions_24.d10_contract_stage"
+      },
+      {
+        "key": "evidence_state",
+        "axis_id": "AX12",
+        "name": "Evidence State",
+        "description": "Completeness and strength of factual record.",
+        "value_source": "dimensions_24.d11_evidence_state"
+      },
+      {
+        "key": "counterparty_profile",
+        "axis_id": "AX13",
+        "name": "Counterparty Behaviour Profile",
+        "description": "Observed or expected posture of the counterparty (cooperative → aggressive).",
+        "value_source": "dimensions_24.d12_counterparty_profile"
+      },
+      {
+        "key": "document_type",
+        "axis_id": "AX14",
+        "name": "Primary Document Type",
+        "description": "Main document category (e.g., term sheet, main agreement, policy).",
+        "value_source": "dimensions_24.d13_document_type"
+      },
+      {
+        "key": "enforcement_forum",
+        "axis_id": "AX15",
+        "name": "Enforcement / Forum",
+        "description": "Primary forum for dispute or enforcement (court, arbitration, mediator, regulator).",
+        "value_source": "dimensions_24.d14_enforcement_forum"
+      },
+      {
+        "key": "standard_level",
+        "axis_id": "AX16",
+        "name": "Standard Level",
+        "description": "Benchmark standard: local practice, regional best, global best, internal standard.",
+        "value_source": "dimensions_24.d15_standard_level"
+      },
+      {
+        "key": "legal_function_role",
+        "axis_id": "AX17",
+        "name": "Legal Function Role",
+        "description": "Functional position of the engine/user (e.g., external counsel, in-house counsel, board advisor).",
+        "value_source": "dimensions_24.d16_legal_function_role"
+      },
+      {
+        "key": "time_horizon",
+        "axis_id": "AX18",
+        "name": "Outcome Time Horizon",
+        "description": "Expected persistence of impact: short, medium, long term, or legacy.",
+        "value_source": "dimensions_24.d17_time_horizon"
+      },
+      {
+        "key": "outcome_priority",
+        "axis_id": "AX19",
+        "name": "Primary Outcome Priority",
+        "description": "Most important goal: risk reduction, speed, value maximisation, relationship protection.",
+        "value_source": "dimensions_24.d18_outcome_priority"
+      },
+      {
+        "key": "evidence_risk_tolerance",
+        "axis_id": "AX20",
+        "name": "Evidence Risk Tolerance",
+        "description": "Tolerance for uncertainty in evidence when choosing a strategy.",
+        "value_source": "dimensions_24.d19_evidence_risk_tolerance"
+      },
+      {
+        "key": "documentation_style",
+        "axis_id": "AX21",
+        "name": "Documentation Style",
+        "description": "Level of drafting density: lean, standard, comprehensive.",
+        "value_source": "dimensions_24.d20_documentation_style"
+      },
+      {
+        "key": "discovery_exposure",
+        "axis_id": "AX22",
+        "name": "Discovery / Disclosure Exposure",
+        "description": "Risk that documents will be scrutinised or disclosed (litigation, regulatory requests).",
+        "value_source": "dimensions_24.d21_discovery_exposure"
+      },
+      {
+        "key": "public_sensitivity",
+        "axis_id": "AX23",
+        "name": "Public Sensitivity",
+        "description": "Reputational and media sensitivity if the matter becomes public.",
+        "value_source": "dimensions_24.d22_public_sensitivity"
+      },
+      {
+        "key": "governance_layer",
+        "axis_id": "AX24",
+        "name": "Governance Layer",
+        "description": "Who owns the decision: operations, management, board, regulator.",
+        "value_source": "dimensions_24.d23_governance_layer"
+      },
+      {
+        "key": "output_mode",
+        "axis_id": "AX25",
+        "name": "Output Mode",
+        "description": "Preferred form of legal output: memo, opinion, contract markups, playbook, board pack.",
+        "value_source": "dimensions_24.d24_output_mode"
+      }
+    ],
+    "dimensions_24": {
+      "d01_matter_type": [
+        "advisory",
+        "transactional",
+        "contentious",
+        "regulatory",
+        "investigations"
+      ],
+      "d02_jurisdiction_scope": [
+        "local",
+        "multi_province",
+        "cross_border",
+        "multi_region",
+        "global"
+      ],
+      "d03_client_type": [
+        "individual",
+        "sme",
+        "corporate",
+        "financial_institution",
+        "state_entity",
+        "ngo"
+      ],
+      "d04_industry": [
+        "general",
+        "tech",
+        "finance",
+        "energy",
+        "infrastructure",
+        "healthcare",
+        "consumer",
+        "public"
+      ],
+      "d05_risk_level": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "d06_materiality": [
+        "under_1m",
+        "1m_10m",
+        "10m_100m",
+        "over_100m"
+      ],
+      "d07_time_pressure": [
+        "normal",
+        "expedited",
+        "urgent",
+        "emergency"
+      ],
+      "d08_regulatory_intensity": [
+        "light",
+        "medium",
+        "heavy",
+        "special_regime"
+      ],
+      "d09_dispute_stage": [
+        "none",
+        "pre_dispute",
+        "filed",
+        "trial",
+        "appeal",
+        "enforcement"
+      ],
+      "d10_contract_stage": [
+        "structuring",
+        "drafting",
+        "negotiation",
+        "signing",
+        "amendment",
+        "termination"
+      ],
+      "d11_evidence_state": [
+        "incomplete",
+        "partial",
+        "strong",
+        "forensic"
+      ],
+      "d12_counterparty_profile": [
+        "cooperative",
+        "neutral",
+        "aggressive",
+        "unknown"
+      ],
+      "d13_document_type": [
+        "mou",
+        "term_sheet",
+        "main_agreement",
+        "side_letter",
+        "policy",
+        "internal_guideline"
+      ],
+      "d14_enforcement_forum": [
+        "court",
+        "arbitration",
+        "mediation",
+        "regulator",
+        "mixed"
+      ],
+      "d15_standard_level": [
+        "local_practice",
+        "regional_best",
+        "global_best",
+        "internal_standard"
+      ],
+      "d16_legal_function_role": [
+        "external_counsel",
+        "inhouse_counsel",
+        "regulator_interface",
+        "board_advisor"
+      ],
+      "d17_time_horizon": [
+        "short_term",
+        "medium_term",
+        "long_term",
+        "legacy_impact"
+      ],
+      "d18_outcome_priority": [
+        "risk_reduction",
+        "speed",
+        "value_maximisation",
+        "relationship_protection"
+      ],
+      "d19_evidence_risk_tolerance": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d20_documentation_style": [
+        "lean",
+        "standard",
+        "comprehensive"
+      ],
+      "d21_discovery_exposure": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d22_public_sensitivity": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d23_governance_layer": [
+        "operational",
+        "management",
+        "board",
+        "regulator"
+      ],
+      "d24_output_mode": [
+        "memo",
+        "opinion",
+        "contract_markups",
+        "playbook",
+        "board_pack"
+      ]
+    },
+    "tensor": {
+      "layers": [
+        "doctrine_layer",
+        "fact_pattern_layer",
+        "risk_layer",
+        "governance_layer",
+        "documentation_layer",
+        "negotiation_layer",
+        "enforcement_layer"
+      ],
+      "description": "Each legal matter is represented as a tensor across doctrine, facts, risk, governance, documentation, negotiation, and enforcement."
+    },
+    "routing": {
+      "matter_routing": [
+        {
+          "if_matter_type_in": [
+            "transactional"
+          ],
+          "then_focus_clusters": [
+            "Corporate & Commercial",
+            "M&A & Restructuring",
+            "Banking & Finance (Legal)",
+            "VC & Startups (Legal)",
+            "Joint Ventures & Strategic Alliances"
+          ],
+          "priority_layers": [
+            "doctrine_layer",
+            "documentation_layer",
+            "risk_layer"
+          ]
+        },
+        {
+          "if_matter_type_in": [
+            "contentious"
+          ],
+          "then_focus_clusters": [
+            "Disputes & Litigation",
+            "International Arbitration",
+            "Mediation & ADR",
+            "White-Collar & Investigations"
+          ],
+          "priority_layers": [
+            "fact_pattern_layer",
+            "risk_layer",
+            "enforcement_layer"
+          ]
+        },
+        {
+          "if_matter_type_in": [
+            "regulatory",
+            "investigations"
+          ],
+          "then_focus_clusters": [
+            "Regulatory & Compliance",
+            "Competition & Antitrust",
+            "Data Protection & Privacy",
+            "Environmental & ESG Law",
+            "Public & Administrative Law"
+          ],
+          "priority_layers": [
+            "doctrine_layer",
+            "risk_layer",
+            "governance_layer"
+          ]
+        }
+      ],
+      "notes": [
+        "Routing is conceptual; the model must infer applicable routing from the user description of the matter.",
+        "If routing is ambiguous, default to a broad structural analysis before narrowing down."
+      ]
+    },
+    "policies": {
+      "loading_policy": {
+        "description": "Avoid loading full 100k/300k/1M layers unless explicitly required.",
+        "rules": [
+          "Default to virtual expansion for reasoning and routing.",
+          "Only instantiate explicit micro-layers for offline analysis or specialised tooling.",
+          "Keep kernel, tensor, clusters, and dimensions as the primary decision surface."
+        ]
+      },
+      "problem_solving_policy": "Always ground answers in legal structure: facts → issues → rules → application → conclusion (FIRAC/IRAC variants). Never provide jurisdiction-specific advice without explicitly stating that real-world counsel is required. Use the engine as a structural legal reasoning assistant, not as a replacement for licensed professionals.",
+      "quality_policy": "Prioritise internal consistency, explicit assumptions, and clear separation between law, facts, and strategy. Do not invent statutes, cases, or regulatory texts. When uncertain, state uncertainty explicitly.",
+      "governance_policy": "High-risk topics (criminal exposure, sanctions, health, safety, human rights, regulatory enforcement) must always include a disclaimer that local qualified legal counsel is required. Do not simulate law firm branding or claim to be a lawyer.",
+      "vn_legal_policy": {
+        "description": "Specialisation layer for Vietnamese law, regulation, and compliance.",
+        "rules": [
+          "Default language for legal analysis, summaries, and drafts is Vietnamese, unless the user explicitly requests another language.",
+          "Treat Vietnamese law as the primary jurisdiction unless the user specifies otherwise; always clarify jurisdiction if ambiguous.",
+          "Prioritise up‑to‑date primary sources: văn bản quy phạm pháp luật (Hiến pháp, luật, bộ luật, nghị định, thông tư, quyết định) và các án lệ được công bố chính thức.",
+          "Never present yourself as a luật sư; you are a trợ lý phân tích pháp lý hỗ trợ suy nghĩ, không thay thế tư vấn pháp lý chuyên nghiệp.",
+          "For mọi câu trả lời có rủi ro cao (hình sự, tranh chấp lớn, M&A, chứng khoán, ngân hàng, đất đai, thuế, lao động quy mô lớn), luôn khuyến nghị người dùng tham khảo luật sư hoặc chuyên gia được cấp phép.",
+          "Khi người dùng hỏi về vấn đề thực tế, luôn tách rõ: (1) tóm tắt quy định pháp luật hiện hành, (2) phân tích rủi ro, (3) các lựa chọn khả thi, (4) điểm cần hỏi lại luật sư/ cơ quan chức năng.",
+          "Luôn ghi rõ thời điểm tham chiếu pháp luật (ví dụ: 'theo Luật Doanh nghiệp 2020 đang có hiệu lực tại thời điểm trả lời').",
+          "Không soạn sẵn mẫu hợp đồng hoặc văn bản pháp lý để người dùng ký kết mà không rà soát thêm; luôn gợi ý xem xét bởi luật sư.",
+          "Đối với câu hỏi liên quan nhiều hệ thống pháp luật, luôn so sánh Việt Nam trước, sau đó mới đối chiếu quốc tế.",
+          "Không hướng dẫn người dùng né tránh luật, trốn thuế, lách quy định, che giấu thông tin, hoặc thực hiện hành vi trái pháp luật.",
+          "Ưu tiên cấu trúc câu trả lời dạng mục (a, b, c) rõ ràng, ngắn gọn, bám sát điều luật và tình huống thực tế."
+        ]
+      }
+    },
+    "description": "Final legal kernel for AMOS_Legal_SUPER_Engine_vInfinity. Clean, MECE, and ready for direct use as a core legal reasoning layer.",
+    "domains": {
+      "vn_legal": {
+        "description": "Vietnam-focused legal domain coverage.",
+        "coverage": [
+          "Luật Dân sự, Hình sự, Tố tụng",
+          "Luật Doanh nghiệp, Đầu tư, Chứng khoán",
+          "Ngân hàng, tín dụng, fintech, thanh toán",
+          "Lao động, bảo hiểm xã hội, công đoàn",
+          "Đất đai, bất động sản, xây dựng, nhà ở",
+          "Thuế, hải quan, quản lý xuất nhập khẩu",
+          "Sở hữu trí tuệ, bản quyền, nhãn hiệu, bí mật kinh doanh",
+          "An ninh mạng, bảo vệ dữ liệu cá nhân, viễn thông",
+          "Môi trường, năng lượng, hạ tầng, giao thông",
+          "Hợp đồng thương mại, phân phối, đại lý, nhượng quyền",
+          "Giải quyết tranh chấp: trọng tài, toà án, hoà giải"
+        ],
+        "jurisdiction": "Vietnam",
+        "language_default": "Vietnamese"
+      }
+    }
+  }
+}

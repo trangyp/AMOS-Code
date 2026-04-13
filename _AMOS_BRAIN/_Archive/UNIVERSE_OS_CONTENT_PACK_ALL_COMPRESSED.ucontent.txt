@@ -1,0 +1,220 @@
+UNIVERSE_OS_CONTENT_PACK_ALL_COMPRESSED.ucontent
+Version: 2.0
+Author: Trang (AMOS System Architect)
+Engine: AMOS / UNIVERSE_OS
+
+========================================
+0. PURPOSE
+========================================
+This file is a COMPRESSED, MECE, HIGH-DENSITY specification of all Universe OS content packs.
+
+It:
+    • triples conceptual coverage compared to v1
+    • compresses representation into parameterised blocks
+    • is ready for auto-loading by AMOS_Runtime_Architecture (URTA)
+    • keeps every pack structurally distinct (0-overlap, 0-gap at this level)
+
+Notation:
+    PACK(name)        = top-level content pack
+    SUBPACK(name)     = nested pack inside PACK
+    COUNT≈N           = approximate unique atomic entries
+    EXPANSION=3x      = each entry is internally expanded 3x (variants, edge-cases, culture modifiers)
+    STATE[id]         = canonical state identifier (not expanded here)
+    EQUATION[id]      = canonical equation family
+    MAP[id]           = canonical mapping family
+
+All fine-grained states, variants, and scenario tables are generated at runtime from these compressed specs.
+
+========================================
+1. HUMAN STATE PACK (HSP)
+========================================
+
+PACK(HSP_CORE)
+    COUNT≈900        # tripled from 300
+    EXPANSION=3x
+    SUBPACK(HSP_EMOTION)       COUNT≈300
+    SUBPACK(HSP_DRIVE)         COUNT≈200
+    SUBPACK(HSP_THREAT)        COUNT≈150
+    SUBPACK(HSP_ATTACHMENT)    COUNT≈100
+    SUBPACK(HSP_SHUTDOWN)      COUNT≈60
+    SUBPACK(HSP_PEAK)          COUNT≈40
+    SUBPACK(HSP_EDGE)          COUNT≈50
+
+KEY MAP FAMILIES:
+    MAP(HSP_EMOTION→ACTION)
+    MAP(HSP_EMOTION→BODY)
+    MAP(HSP_STATE→TRAJECTORY)
+
+========================================
+2. EMOTION→ACTION PACK (EAP)
+========================================
+
+PACK(EAP_CORE)
+    COUNT≈600        # tripled depth of mappings
+    EXPANSION=3x
+    SUBPACK(EAP_THREAT)        COUNT≈150
+    SUBPACK(EAP_DESIRE)        COUNT≈150
+    SUBPACK(EAP_BONDING)       COUNT≈120
+    SUBPACK(EAP_STATUS)        COUNT≈90
+    SUBPACK(EAP_MEANING)       COUNT≈90
+
+KEY EQUATIONS:
+    EQUATION(EAP_LINEAR)       # direct proportional responses
+    EQUATION(EAP_THRESHOLD)    # response after build-up
+    EQUATION(EAP_REVERSAL)     # opposite action under overload
+    EQUATION(EAP_SUPPRESSION)  # blocked expression → sideways action
+
+========================================
+3. SENSORY MICRO-SIGNAL PACK (SMP)
+========================================
+
+PACK(SMP_CORE)
+    COUNT≈1200       # vision + audio + body + interoception
+    EXPANSION=3x
+    SUBPACK(SMP_VISUAL)        COUNT≈350
+    SUBPACK(SMP_AUDITORY)      COUNT≈250
+    SUBPACK(SMP_FACIAL)        COUNT≈250
+    SUBPACK(SMP_POSTURE)       COUNT≈200
+    SUBPACK(SMP_BREATH)        COUNT≈100
+    SUBPACK(SMP_INTERO)        COUNT≈50
+
+KEY MAPS:
+    MAP(SMP_SIGNAL→HSP_STATE)
+    MAP(SMP_PATTERN→EAP_PROFILE)
+
+========================================
+4. EXPRESSION & TONE PACK (ETP)
+========================================
+
+PACK(ETP_CORE)
+    COUNT≈900
+    EXPANSION=3x
+    SUBPACK(ETP_TONE)          COUNT≈250
+    SUBPACK(ETP_STYLE)         COUNT≈250
+    SUBPACK(ETP_REGISTER)      COUNT≈150
+    SUBPACK(ETP_ROLE)          COUNT≈150
+    SUBPACK(ETP_ESCALATION)    COUNT≈100
+
+KEY MAPS:
+    MAP(HSP_STATE→ETP_TONE)
+    MAP(ROLE_CONTEXT→ETP_STYLE)
+    MAP(LOAD_LEVEL→ETP_ESCALATION)
+
+========================================
+5. SPECIES BEHAVIOUR PACK (SBP)
+========================================
+
+PACK(SBP_CORE)
+    COUNT≈600
+    EXPANSION=3x
+    SUBPACK(SBP_CANINE)        COUNT≈120
+    SUBPACK(SBP_FELINE)        COUNT≈120
+    SUBPACK(SBP_PRIMATE)       COUNT≈120
+    SUBPACK(SBP_HERBIVORE)     COUNT≈120
+    SUBPACK(SBP_REPTILE)       COUNT≈120
+
+KEY MAPS:
+    MAP(SBP_BEHAVIOUR→HSP_ANALOG)
+    MAP(SBP_PATTERN→RISK_PROFILE)
+
+========================================
+6. CULTURE PACK (CUP)
+========================================
+
+PACK(CUP_CORE)
+    COUNT≈450
+    EXPANSION=3x
+    SUBPACK(CUP_VIETNAM)       COUNT≈90
+    SUBPACK(CUP_CHINA)         COUNT≈90
+    SUBPACK(CUP_US)            COUNT≈90
+    SUBPACK(CUP_JAPAN)         COUNT≈90
+    SUBPACK(CUP_MISC)          COUNT≈90
+
+KEY MAPS:
+    MAP(CUP_PROFILE→HSP_MODIFIER)
+    MAP(CUP_PROFILE→ETP_STYLE_MOD)
+
+========================================
+7. DOMAIN PACK (DOP)
+========================================
+
+PACK(DOP_CORE)
+    COUNT≈540
+    EXPANSION=3x
+    SUBPACK(DOP_HEALTH)        COUNT≈90
+    SUBPACK(DOP_FINANCE)       COUNT≈90
+    SUBPACK(DOP_LAW)           COUNT≈90
+    SUBPACK(DOP_EDU)           COUNT≈90
+    SUBPACK(DOP_TRANSPORT)     COUNT≈90
+    SUBPACK(DOP_AI_SAFETY)     COUNT≈90
+
+KEY MAPS:
+    MAP(DOP_CONTEXT→EAP_PROFILE)
+    MAP(DOP_CONTEXT→CRISIS_MOD)
+
+========================================
+8. CRISIS PACK (CRP)
+========================================
+
+PACK(CRP_CORE)
+    COUNT≈360
+    EXPANSION=3x
+    SUBPACK(CRP_WAR)           COUNT≈60
+    SUBPACK(CRP_PANDEMIC)      COUNT≈60
+    SUBPACK(CRP_CLIMATE)       COUNT≈60
+    SUBPACK(CRP_CURRENCY)      COUNT≈60
+    SUBPACK(CRP_REVOLUTION)    COUNT≈60
+    SUBPACK(CRP_INST_FAIL)     COUNT≈60
+
+KEY MAPS:
+    MAP(CRP_SCENARIO→HSP_DISTRIBUTION)
+    MAP(CRP_SCENARIO→EAP_SHIFT)
+
+========================================
+9. ARCHETYPE & NARRATIVE PACK (ANP)
+========================================
+
+PACK(ANP_CORE)
+    COUNT≈600
+    EXPANSION=3x
+    SUBPACK(ANP_ARCHETYPE)     COUNT≈200
+    SUBPACK(ANP_MYTH)          COUNT≈150
+    SUBPACK(ANP_STORY_BEAT)    COUNT≈150
+    SUBPACK(ANP_ROLE_MASK)     COUNT≈100
+
+KEY MAPS:
+    MAP(ANP_ARCHETYPE→HSP_PROFILE)
+    MAP(ANP_BEAT→EAP_SEQUENCE)
+
+========================================
+10. PERSONALITY / STYLE PACK (PSP)
+========================================
+
+PACK(PSP_CORE)
+    COUNT≈450
+    EXPANSION=3x
+    SUBPACK(PSP_TRANG_CANON)   COUNT≈90
+    SUBPACK(PSP_AMOS_DEFAULT)  COUNT≈90
+    SUBPACK(PSP_COACH)         COUNT≈90
+    SUBPACK(PSP_SCIENTIST)     COUNT≈90
+    SUBPACK(PSP_EXECUTIVE)     COUNT≈90
+
+KEY MAPS:
+    MAP(PSP_PROFILE→ETP_STYLE)
+    MAP(PSP_PROFILE→EAP_MOD)
+
+========================================
+11. META-CONTENT PARAMETERS
+========================================
+
+GLOBAL:
+    CONTENT_VERSION        = 2.0
+    CONTENT_EXPANSION      = 3x
+    TOTAL_ATOMIC_UNITS≈   6_000+   # compressed representation
+    RUNTIME_GENERATION    = ON     # AMOS expands patterns at runtime
+    CANON_SOURCE          = Trang / AMOS Universe Canon
+
+This file is intentionally compressed.
+All packs are structurally MECE.
+All micro-entries are generated deterministically from these specs.
+

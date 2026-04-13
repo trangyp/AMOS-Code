@@ -1,0 +1,94 @@
+{
+  "_meta": {
+    "name": "AMOS World State",
+    "version": "1.0.0",
+    "owner": "Trang",
+    "created_at": "2025-01-13T09:22:00Z",
+    "purpose": "Global state tracking for the AMOS organism across all subsystems."
+  },
+  "system_health": {
+    "overall_status": "operational",
+    "last_check": "2025-01-13T09:22:00Z",
+    "subsystems": {
+      "00_ROOT": "active",
+      "01_BRAIN": "active",
+      "02_SENSES": "active",
+      "03_IMMUNE": "active",
+      "04_BLOOD": "planned",
+      "05_SKELETON": "active",
+      "06_MUSCLE": "active",
+      "07_METABOLISM": "active",
+      "08_WORLD_MODEL": "active",
+      "09_SOCIAL_ENGINE": "active",
+      "10_LIFE_ENGINE": "active",
+      "11_LEGAL_BRAIN": "active",
+      "12_QUANTUM_LAYER": "active",
+      "13_FACTORY": "active",
+      "14_INTERFACES": "active"
+    }
+  },
+  "active_cycles": {
+    "primary_loop": {
+      "current_position": "01_BRAIN",
+      "cycle_count": 0,
+      "last_transition": null,
+      "next_expected": "02_SENSES"
+    },
+    "supporting_loops": {
+      "risk_loop": {
+        "status": "idle",
+        "last_run": null
+      },
+      "life_loop": {
+        "status": "idle",
+        "last_run": null
+      },
+      "social_loop": {
+        "status": "idle",
+        "last_run": null
+      }
+    }
+  },
+  "memory_state": {
+    "working_memory": {
+      "capacity": 16,
+      "current_load": 0,
+      "active_threads": []
+    },
+    "canonical_memory": {
+      "loaded_engines": [
+        "AMOS_Cognition_Engine",
+        "AMOS_Os_Agent",
+        "AMOS_Ubi_Engine"
+      ],
+      "available_engines": [
+        "AMOS_Consciousness_Engine",
+        "AMOS_Emotion_Engine",
+        "AMOS_Mind_Os",
+        "AMOS_Personality_Engine",
+        "AMOS_Quantum_Stack"
+      ]
+    },
+    "case_memory": {
+      "indexed_patterns": 0,
+      "recent_cases": []
+    }
+  },
+  "context": {
+    "current_task": null,
+    "current_domain": null,
+    "active_agents": [],
+    "pending_decisions": [],
+    "recent_events": []
+  },
+  "resources": {
+    "compute": {
+      "status": "available",
+      "allocated_to": null
+    },
+    "storage": {
+      "logs_size_bytes": 0,
+      "memory_size_bytes": 0
+    }
+  }
+}

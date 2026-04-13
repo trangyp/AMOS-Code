@@ -1,0 +1,19 @@
+{
+  "id": "b3314c3c",
+  "spec": {
+    "name": "Meta Orchestrator",
+    "agent_type": "router",
+    "kernel_refs": [
+      "K_META_LOGIC",
+      "K_MATH_COMPUTE",
+      "K_BIO_NEURO"
+    ],
+    "capabilities": [],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:22.495608Z",
+  "last_active": "2026-04-13T09:47:22.495609Z",
+  "execution_count": 0,
+  "error_count": 0
+}

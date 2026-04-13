@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-04-13T09:38:04.488283Z",
+  "overall_score": 99.98,
+  "benchmarks": [
+    {
+      "name": "registry_load",
+      "duration_ms": 0.24175000000000585,
+      "memory_bytes": 20924,
+      "status": "success",
+      "metadata": {
+        "files_loaded": 3
+      }
+    }
+  ],
+  "recommendations": []
+}

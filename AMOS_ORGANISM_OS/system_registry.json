@@ -1,0 +1,184 @@
+{
+  "_meta": {
+    "name": "AMOS 7-System Organism Registry",
+    "version": "1.0.0",
+    "owner": "Trang",
+    "created_at": "2025-01-13T09:22:00Z",
+    "purpose": "Single source of truth for the AMOS digital organism: subsystems, responsibilities and wiring rules."
+  },
+  "organism_root": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS",
+  "subsystems": {
+    "00_ROOT": {
+      "code": "00_ROOT",
+      "name": "Root",
+      "folder": "00_ROOT",
+      "role": "Identity, goals, global config, bootstrap specs.",
+      "status": "active",
+      "kernel_refs": ["AMOS_OS_ROOT", "AMOS_BRAIN_ROOT", "Language_Overlay_And_IP_Protection"],
+      "priority": 0
+    },
+    "01_BRAIN": {
+      "code": "01_BRAIN",
+      "name": "Brain",
+      "folder": "01_BRAIN",
+      "role": "Reasoning, planning, decomposition, memory, routing decisions.",
+      "status": "active",
+      "kernel_refs": [
+        "K_META_LOGIC",
+        "K_MATH_COMPUTE",
+        "K_BIO_NEURO",
+        "K_MIND_BEHAVIOR",
+        "AMOS_Cognition_Engine",
+        "AMOS_Consciousness_Engine",
+        "AMOS_Emotion_Engine",
+        "AMOS_Mind_Os",
+        "AMOS_Personality_Engine"
+      ],
+      "priority": 1
+    },
+    "02_SENSES": {
+      "code": "02_SENSES",
+      "name": "Senses",
+      "folder": "02_SENSES",
+      "role": "Filesystem, environment, system load, context, emotion inputs.",
+      "status": "active",
+      "kernel_refs": ["SENSORY_KERNEL", "CONTEXT_KERNEL", "AMOS_Si_Engine"],
+      "priority": 2
+    },
+    "03_IMMUNE": {
+      "code": "03_IMMUNE",
+      "name": "Immune",
+      "folder": "03_IMMUNE",
+      "role": "Safety, legal, compliance, anomaly and boundary detection.",
+      "status": "active",
+      "kernel_refs": ["SAFETY_KERNEL", "IP_KERNEL_SHIELD", "AUDIT_QUALITY_ENGINE"],
+      "priority": 3
+    },
+    "04_BLOOD": {
+      "code": "04_BLOOD",
+      "name": "Blood",
+      "folder": "04_BLOOD",
+      "role": "Money/blood engine: budgeting, cashflow, investing, forecasting.",
+      "status": "planned",
+      "kernel_refs": ["FINANCE_KERNEL", "RESOURCE_KERNEL"],
+      "priority": 4
+    },
+    "05_SKELETON": {
+      "code": "05_SKELETON",
+      "name": "Skeleton",
+      "folder": "05_SKELETON",
+      "role": "Rules, constraints, hierarchy, permissions, time architecture.",
+      "status": "active",
+      "kernel_refs": ["RULE_KERNEL", "TIME_KERNEL", "AMOS_Skeleton_Engine"],
+      "priority": 5
+    },
+    "06_MUSCLE": {
+      "code": "06_MUSCLE",
+      "name": "Muscle",
+      "folder": "06_MUSCLE",
+      "role": "Run commands, write code, deploy and automate workflows.",
+      "status": "active",
+      "kernel_refs": ["CODE_KERNEL", "DEPLOY_KERNEL", "AMOS_Unified_Coding_Engine"],
+      "priority": 6
+    },
+    "07_METABOLISM": {
+      "code": "07_METABOLISM",
+      "name": "Metabolism",
+      "folder": "07_METABOLISM",
+      "role": "Pipelines, transforms, IO routing and cleanup.",
+      "status": "active",
+      "kernel_refs": ["PIPELINE_KERNEL", "TRANSFORM_KERNEL", "AMOS_Metabolism_Engine"],
+      "priority": 7
+    },
+    "08_WORLD_MODEL": {
+      "code": "08_WORLD_MODEL",
+      "name": "World Model",
+      "folder": "08_WORLD_MODEL",
+      "role": "Macroeconomics, geopolitics, sectors, supply chains, global signals.",
+      "status": "active",
+      "kernel_refs": ["TSS_TPE_Engine", "PSI_Core", "Earth_Cycle_Model"],
+      "priority": 8
+    },
+    "09_SOCIAL_ENGINE": {
+      "code": "09_SOCIAL_ENGINE",
+      "name": "Social Engine",
+      "folder": "09_SOCIAL_ENGINE",
+      "role": "Humans, negotiation, influence, social pattern analysis.",
+      "status": "active",
+      "kernel_refs": ["SOCIAL_KERNEL", "NEGOIATION_KERNEL", "AMOS_Nei_Engine"],
+      "priority": 9
+    },
+    "10_LIFE_ENGINE": {
+      "code": "10_LIFE_ENGINE",
+      "name": "Life Engine",
+      "folder": "10_LIFE_ENGINE",
+      "role": "Sleep, energy, health, mood, routines, cognitive cycles.",
+      "status": "active",
+      "kernel_refs": ["BIO_RHYTHM_KERNEL", "HEALTH_KERNEL", "AMOS_Nbi_Engine"],
+      "priority": 10
+    },
+    "11_LEGAL_BRAIN": {
+      "code": "11_LEGAL_BRAIN",
+      "name": "Legal Brain",
+      "folder": "11_LEGAL_BRAIN",
+      "role": "Contracts, IP, compliance, regulatory scanning.",
+      "status": "active",
+      "kernel_refs": ["AMOS_Vn_Legal_Engine", "CONTRACT_KERNEL"],
+      "priority": 11
+    },
+    "12_QUANTUM_LAYER": {
+      "code": "12_QUANTUM_LAYER",
+      "name": "Quantum Layer",
+      "folder": "12_QUANTUM_LAYER",
+      "role": "Timing, probability flows, synchronicities, collapse logic.",
+      "status": "active",
+      "kernel_refs": ["AMOS_Quantum_Stack", "AMOS_Bei_Engine", "QUANTUM_KERNEL"],
+      "priority": 12
+    },
+    "13_FACTORY": {
+      "code": "13_FACTORY",
+      "name": "Factory",
+      "folder": "13_FACTORY",
+      "role": "Agent creation, quality monitoring, self-upgrade and replacement.",
+      "status": "active",
+      "kernel_refs": ["AMOS_SUPER_FABRICATION", "AGENT_FACTORY_KERNEL"],
+      "priority": 13
+    },
+    "14_INTERFACES": {
+      "code": "14_INTERFACES",
+      "name": "Interfaces",
+      "folder": "14_INTERFACES",
+      "role": "CLI, API, web dashboard and chat integration.",
+      "status": "active",
+      "kernel_refs": ["INTERFACE_KERNEL", "CLI_KERNEL", "API_KERNEL"],
+      "priority": 14
+    }
+  },
+  "wiring": {
+    "primary_loop": [
+      "01_BRAIN",
+      "02_SENSES",
+      "05_SKELETON",
+      "08_WORLD_MODEL",
+      "12_QUANTUM_LAYER",
+      "06_MUSCLE",
+      "07_METABOLISM",
+      "01_BRAIN"
+    ],
+    "supporting": {
+      "risk": ["03_IMMUNE", "11_LEGAL_BRAIN", "04_BLOOD"],
+      "life": ["10_LIFE_ENGINE", "04_BLOOD", "02_SENSES"],
+      "social": ["09_SOCIAL_ENGINE", "08_WORLD_MODEL", "10_LIFE_ENGINE"],
+      "factory": ["13_FACTORY", "01_BRAIN", "05_SKELETON", "07_METABOLISM"],
+      "interfaces": ["14_INTERFACES", "01_BRAIN", "06_MUSCLE", "07_METABOLISM"]
+    }
+  },
+  "kernel_mappings": {
+    "_AMOS_BRAIN": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN",
+    "Core": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/Core",
+    "Cognitive_Stack": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/Core/Cognitive_Stack",
+    "Ubi": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS_BRAIN/Core/Ubi",
+    "Kernels": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/Kernels",
+    "Domains": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/Domains"
+  }
+}

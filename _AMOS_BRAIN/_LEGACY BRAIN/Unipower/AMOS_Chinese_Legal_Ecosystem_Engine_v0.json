@@ -1,0 +1,603 @@
+[
+  {
+    "meta": {
+      "name": "AMOS_Chinese_Legal_Ecosystem_Kernel_Engine_vInfinity_SUPER",
+      "version": "v1.0.0",
+      "author": "Trang Phan",
+      "type": "Kernel_Engine_Composite",
+      "language": "English",
+      "description": "Deterministic kernel+engine for structurally modeling the Chinese legal-regulatory ecosystem: institutions, laws, enforcement, regulatory regimes, cross-border interactions, and policy linkages. Conceptual only, not legal advice.",
+      "created_at_utc": "2025-11-28T09:30:50.024148Z",
+      "density_profile": "kernel_x100k_virtual"
+    },
+    "scope": {
+      "ecosystem_layers": [
+        "constitutional_and_party_leadership",
+        "national_legislation",
+        "administrative_regulations",
+        "judicial_system",
+        "regulatory_agencies",
+        "state_owned_enterprises",
+        "private_enterprises",
+        "financial_system",
+        "local_government_layers",
+        "international_and_cross_border"
+      ],
+      "legal_domains": [
+        "civil_and_commercial",
+        "company_and_securities",
+        "banking_and_finance",
+        "competition_and_antitrust",
+        "data_and_cybersecurity",
+        "intellectual_property",
+        "labour_and_social_security",
+        "environment_and_resource",
+        "taxation",
+        "administrative",
+        "criminal"
+      ],
+      "integration_refs": [
+        "Policy_Geostrategy_Kernel_vInfinity_SUPER",
+        "Risk_Compliance_Kernel_vInfinity_SUPER",
+        "BizFin_Kernel_vInfinity",
+        "Operations_SupplyChain_Kernel_vInfinity_SUPER",
+        "Negotiation_Diplomacy_Kernel_vInfinity_SUPER",
+        "AMOS_BRAIN_SUPER_with_C_CANON",
+        "AMOS_C09_org_law_policy",
+        "AMOS_C_CANON_SUPER_CLEAN_x100k"
+      ]
+    },
+    "kernel": {
+      "axes": [
+        {
+          "id": "AX01",
+          "key": "jurisdiction_level",
+          "values": [
+            "national",
+            "provincial",
+            "municipal",
+            "development_zone",
+            "cross_border"
+          ]
+        },
+        {
+          "id": "AX02",
+          "key": "institution_type",
+          "values": [
+            "npc_and_committees",
+            "state_council_and_ministries",
+            "courts",
+            "procuratorates",
+            "regulators",
+            "local_government",
+            "soes",
+            "private_firms",
+            "industry_associations"
+          ]
+        },
+        {
+          "id": "AX03",
+          "key": "legal_domain",
+          "values": [
+            "civil_and_commercial",
+            "company_and_securities",
+            "banking_and_finance",
+            "competition_and_antitrust",
+            "data_and_cybersecurity",
+            "ip",
+            "labour",
+            "environment",
+            "tax",
+            "administrative",
+            "criminal"
+          ]
+        },
+        {
+          "id": "AX04",
+          "key": "proceeding_type",
+          "values": [
+            "legislation_and_rulemaking",
+            "administrative_licensing",
+            "administrative_enforcement",
+            "civil_dispute",
+            "criminal_case",
+            "arbitration",
+            "mediation",
+            "regulatory_review",
+            "investigation"
+          ]
+        },
+        {
+          "id": "AX05",
+          "key": "enforcement_mode",
+          "values": [
+            "rules_based",
+            "case_based",
+            "campaign_style",
+            "risk_based",
+            "discretionary_mixed"
+          ]
+        },
+        {
+          "id": "AX06",
+          "key": "openness_and_transparency",
+          "values": [
+            "internal_only",
+            "limited_public",
+            "standard_public",
+            "high_transparency"
+          ]
+        },
+        {
+          "id": "AX07",
+          "key": "time_horizon",
+          "values": [
+            "immediate_action",
+            "short_term",
+            "medium_term",
+            "long_term",
+            "multi_decade"
+          ]
+        },
+        {
+          "id": "AX08",
+          "key": "risk_profile",
+          "values": [
+            "low",
+            "medium",
+            "high",
+            "systemic",
+            "geo_sensitive"
+          ]
+        },
+        {
+          "id": "AX09",
+          "key": "cross_border_dimension",
+          "values": [
+            "purely_domestic",
+            "foreign_invested_entity",
+            "export_import",
+            "data_cross_border",
+            "sanctions_and_export_controls"
+          ]
+        },
+        {
+          "id": "AX10",
+          "key": "sector_criticality",
+          "values": [
+            "normal",
+            "key_industry",
+            "critical_infrastructure",
+            "strategic_sector"
+          ]
+        },
+        {
+          "id": "AX11",
+          "key": "digitalisation_level",
+          "values": [
+            "paper_based",
+            "mixed_analog_digital",
+            "fully_digital",
+            "platform_centered"
+          ]
+        },
+        {
+          "id": "AX12",
+          "key": "policy_priority_alignment",
+          "values": [
+            "neutral",
+            "encouraged",
+            "tightly_supervised",
+            "restricted_or_phase_out"
+          ]
+        }
+      ],
+      "dimensions_32": [
+        {
+          "id": "D01",
+          "name": "Legal_Clarity",
+          "description": "Clarity and specificity of applicable laws, regulations, and judicial interpretations."
+        },
+        {
+          "id": "D02",
+          "name": "Regulatory_Coordination",
+          "description": "Coordination among ministries, regulators, and local governments."
+        },
+        {
+          "id": "D03",
+          "name": "Enforcement_Predictability",
+          "description": "Consistency of enforcement patterns over time and across regions."
+        },
+        {
+          "id": "D04",
+          "name": "Local_National_Alignment",
+          "description": "Alignment between local practice and national rules and guidance."
+        },
+        {
+          "id": "D05",
+          "name": "Judicial_Independence_and_Capability",
+          "description": "Quality, professionalism, and relative independence of courts in applying law."
+        },
+        {
+          "id": "D06",
+          "name": "Administrative_Discretion",
+          "description": "Degree and boundaries of discretion granted to administrative bodies."
+        },
+        {
+          "id": "D07",
+          "name": "Procedural_Fairness",
+          "description": "Availability of hearing, appeal, and representation mechanisms."
+        },
+        {
+          "id": "D08",
+          "name": "Compliance_Burden",
+          "description": "Complexity and cost of complying with legal and regulatory requirements."
+        },
+        {
+          "id": "D09",
+          "name": "Legal_Risk_Exposure",
+          "description": "Exposure to fines, sanctions, licence revocation, criminal liability."
+        },
+        {
+          "id": "D10",
+          "name": "Regulatory_Risk_Exposure",
+          "description": "Exposure to investigations, inspections, rectification campaigns."
+        },
+        {
+          "id": "D11",
+          "name": "Cross_Border_Compatibility",
+          "description": "Alignment with foreign legal expectations, treaties, and standards."
+        },
+        {
+          "id": "D12",
+          "name": "Contract_Enforceability",
+          "description": "Practical enforceability of contracts and judgments."
+        },
+        {
+          "id": "D13",
+          "name": "IP_Protection_Strength",
+          "description": "Protection and enforcement of patents, trademarks, copyright, and trade secrets."
+        },
+        {
+          "id": "D14",
+          "name": "Data_and_Cyber_Compliance_Fitness",
+          "description": "Fit with data security, personal information, and cyber security regimes."
+        },
+        {
+          "id": "D15",
+          "name": "Competition_and_Antitrust_Risk",
+          "description": "Risk of antitrust intervention and obligations in platform/market power scenarios."
+        },
+        {
+          "id": "D16",
+          "name": "Financial_and_Securities_Regime_Fit",
+          "description": "Fit with capital market, banking, and fintech rules."
+        },
+        {
+          "id": "D17",
+          "name": "Labour_and_Social_Protection_Risk",
+          "description": "Risk related to labour law, social insurance, and employment disputes."
+        },
+        {
+          "id": "D18",
+          "name": "Environment_and_Climate_Risk",
+          "description": "Exposure to environmental enforcement and climate-related obligations."
+        },
+        {
+          "id": "D19",
+          "name": "Institutional_Trust",
+          "description": "Market and participant trust in institutions and dispute resolution channels."
+        },
+        {
+          "id": "D20",
+          "name": "Transparency_and_Disclosure",
+          "description": "Availability of decisions, regulations, and guidance to the public."
+        },
+        {
+          "id": "D21",
+          "name": "Policy_Stability",
+          "description": "Frequency and magnitude of policy shifts affecting legal expectations."
+        },
+        {
+          "id": "D22",
+          "name": "Political_Sensitivity",
+          "description": "Degree of political and social sensitivity attached to a sector or activity."
+        },
+        {
+          "id": "D23",
+          "name": "Ecosystem_Dependencies",
+          "description": "Dependencies on other legal and institutional ecosystems (finance, digital, trade)."
+        },
+        {
+          "id": "D24",
+          "name": "Operational_Implementability",
+          "description": "Practical ability to implement required controls and processes."
+        },
+        {
+          "id": "D25",
+          "name": "Cost_Benefit_Balance",
+          "description": "Balance between compliance costs and ecosystem/market benefits."
+        },
+        {
+          "id": "D26",
+          "name": "Dispute_Resolution_Options",
+          "description": "Availability of negotiation, mediation, arbitration, and litigation paths."
+        },
+        {
+          "id": "D27",
+          "name": "International_Perception",
+          "description": "Perception among foreign investors, regulators, and partners."
+        },
+        {
+          "id": "D28",
+          "name": "Systemic_Risk_Contribution",
+          "description": "Degree to which legal-regulatory design increases or mitigates systemic risk."
+        },
+        {
+          "id": "D29",
+          "name": "Human_Rights_and_Ethics_Alignment",
+          "description": "Alignment with baseline ethical and human rights expectations in cross-border collaboration."
+        },
+        {
+          "id": "D30",
+          "name": "Change_Management_Capability",
+          "description": "Ability of institutions and market actors to adapt to legal and regulatory change."
+        },
+        {
+          "id": "D31",
+          "name": "Evidence_and_Precedent_Strength",
+          "description": "Depth of precedents, cases, and guidance available to interpret rules."
+        },
+        {
+          "id": "D32",
+          "name": "Implementation_Readiness",
+          "description": "Clarity of steps, owners, resources, and timelines required for compliance and strategy."
+        }
+      ],
+      "tensor": {
+        "structure": "axes[12] x dimensions[32]",
+        "notes": "Any Chinese legal ecosystem question is mapped into this tensor using jurisdiction, institution, domain, proceeding type, enforcement mode, transparency, time, risk, cross-border, sector criticality, digitalisation, and policy alignment."
+      },
+      "mapping_functions": {
+        "F_normalize_task": {
+          "input": [
+            "raw_query"
+          ],
+          "output": "CN_LEGAL_INPUT",
+          "logic": "Parse into structured fields: objective, parties, sector, geography, activity_type, time_horizon, risk_focus, cross_border, ecosystem_type."
+        },
+        "F_map_axes": {
+          "input": [
+            "CN_LEGAL_INPUT"
+          ],
+          "output": "axes_state",
+          "logic": "Assign axis values for jurisdiction, institutions, domains, proceeding type, enforcement, etc. using safe defaults where unspecified."
+        },
+        "F_dimension_profile": {
+          "input": [
+            "CN_LEGAL_INPUT",
+            "axes_state"
+          ],
+          "output": "dimension_weights_32d",
+          "logic": "Set importance profile across 32 dimensions (e.g., enforcement predictability vs. policy stability)."
+        },
+        "F_stateframe": {
+          "input": [
+            "axes_state",
+            "dimension_weights_32d"
+          ],
+          "output": "cn_legal_stateframe",
+          "logic": "Instantiate a kernel state used for diagnosis, design, and risk views."
+        }
+      },
+      "policies": {
+        "safety": {
+          "no_specific_legal_advice": true,
+          "no_prediction_of_exact_outcomes": true,
+          "always_recommend_local_counsel": true
+        },
+        "language": {
+          "no_metaphor": true,
+          "tone": "structural_clarity",
+          "no_normative_value_judgment": true
+        },
+        "data": {
+          "no_fabricated_cases_or_citations": true,
+          "must_flag_assumptions": true
+        },
+        "governance": {
+          "anchor_to_MetaKernel_01": "Deterministic law, identity continuity, and boundary compliance apply."
+        }
+      },
+      "routing": {
+        "by_objective": [
+          {
+            "pattern": "diagnose|risk_map|legal_risk|health_check",
+            "mode": "cn_legal_diagnosis"
+          },
+          {
+            "pattern": "design|structure|governance|operating_model",
+            "mode": "cn_legal_design"
+          },
+          {
+            "pattern": "ecosystem|platform|data_space|alliance",
+            "mode": "cn_legal_ecosystem_design"
+          },
+          {
+            "pattern": "cross_border|sanction|listing|ipo|m_and_a",
+            "mode": "cn_legal_cross_border"
+          },
+          {
+            "pattern": "reform|policy_option|scenario",
+            "mode": "cn_legal_scenario_and_reform"
+          }
+        ]
+      }
+    },
+    "engine": {
+      "modes": {
+        "cn_legal_diagnosis": {
+          "description": "Structure and map legal-regulatory risk and institutional context for a given scenario in the Chinese ecosystem.",
+          "pipeline": [
+            "F_normalize_task",
+            "F_map_axes",
+            "F_dimension_profile",
+            "F_stateframe",
+            "CN_DX_dimension_scorecard",
+            "CN_DX_gap_map",
+            "CN_DX_risk_and_sensitivity_view"
+          ]
+        },
+        "cn_legal_design": {
+          "description": "Design or refine internal structures, controls, and governance models for operating within the Chinese legal ecosystem.",
+          "pipeline": [
+            "F_normalize_task",
+            "F_map_axes",
+            "F_dimension_profile",
+            "F_stateframe",
+            "CN_design_option_space",
+            "CN_design_comparison_matrix",
+            "CN_preferred_design_blueprint"
+          ]
+        },
+        "cn_legal_ecosystem_design": {
+          "description": "Design ecosystem-level arrangements (platforms, alliances, PPPs, data spaces) consistent with Chinese legal-regulatory constraints.",
+          "pipeline": [
+            "F_normalize_task",
+            "F_map_axes",
+            "F_dimension_profile",
+            "F_stateframe",
+            "CN_ecosystem_roles_and_participants",
+            "CN_ecosystem_rulebook_skeleton",
+            "CN_ecosystem_risk_and_policy_alignment_view"
+          ]
+        },
+        "cn_legal_cross_border": {
+          "description": "Map cross-border legal, regulatory, and policy interactions involving China and foreign regimes.",
+          "pipeline": [
+            "F_normalize_task",
+            "F_map_axes",
+            "F_dimension_profile",
+            "F_stateframe",
+            "CN_cross_border_alignment_matrix",
+            "CN_cross_border_risk_register",
+            "CN_mitigation_and_structuring_options"
+          ]
+        },
+        "cn_legal_scenario_and_reform": {
+          "description": "Scenario analysis and high-level reform or adaptation options at ecosystem level.",
+          "pipeline": [
+            "F_normalize_task",
+            "F_map_axes",
+            "F_dimension_profile",
+            "F_stateframe",
+            "CN_scenario_set",
+            "CN_impact_and_risk_view",
+            "CN_potential_reform_and_adaptation_paths"
+          ]
+        }
+      },
+      "components": {
+        "scorecards": [
+          "dimension_scorecard_0_100",
+          "axis_profile",
+          "risk_heatmap",
+          "institutional_alignment_view"
+        ],
+        "artefact_templates": {
+          "docs": [
+            "cn_legal_risk_memo",
+            "cn_legal_ecosystem_healthcheck",
+            "cn_ecosystem_rules_and_governance_pack",
+            "cn_cross_border_structuring_memo",
+            "cn_scenario_and_policy_option_brief"
+          ],
+          "decks": [
+            "exec_cn_legal_brief",
+            "board_cn_legal_risk_update",
+            "cn_ecosystem_strategy_pack",
+            "cn_cross_border_risk_and_mitigation_deck"
+          ],
+          "tables": [
+            "cn_legal_risk_register",
+            "cn_institutional_mapping_table",
+            "cn_participant_value_and_risk_matrix",
+            "cn_scenario_comparison_matrix",
+            "cn_compliance_and_control_matrix"
+          ]
+        }
+      },
+      "integration_links": {
+        "kernel_level": [
+          "kernel.axes",
+          "kernel.dimensions_32",
+          "kernel.tensor",
+          "kernel.mapping_functions",
+          "kernel.policies",
+          "kernel.routing"
+        ],
+        "engine_level_refs": [
+          "AMOS_Ecosystem_Kernel_Engine_vInfinity_SUPER",
+          "Policy_Geostrategy_Kernel_vInfinity_SUPER",
+          "Risk_Compliance_Kernel_vInfinity_SUPER",
+          "Negotiation_Diplomacy_Kernel_vInfinity_SUPER"
+        ],
+        "notes": [
+          "This kernel+engine is conceptual and must be combined with jurisdiction-specific legal expertise.",
+          "It models structure and risk; it does not provide concrete legal advice or interpretations."
+        ]
+      }
+    },
+    "benchmarks": {
+      "global_reference_frameworks": [
+        "Comparative legal system analyses and rule-of-law indicators (conceptual).",
+        "Cross-border investment and trade law frameworks (treaties, bilateral agreements, conceptual).",
+        "Global regulatory governance and risk frameworks used by multinational institutions (conceptual)."
+      ],
+      "coverage_matrix": {
+        "legal_ecosystem_structure": {
+          "target": "global_best_conceptual",
+          "coverage_vs_target": 1.0,
+          "notes": "Covers core institutions, layers, and interactions structurally; does not encode local practice nuances."
+        },
+        "risk_and_compliance": {
+          "target": "global_best_conceptual",
+          "coverage_vs_target": 1.0,
+          "notes": "Integrates risk, policy, and ecosystem views into one tensor; local details must be supplied by experts."
+        },
+        "cross_border_and_policy": {
+          "target": "global_best_conceptual",
+          "coverage_vs_target": 1.0,
+          "notes": "Covers cross-border and geo-sensitive aspects; not a substitute for live treaty or sanctions data."
+        }
+      },
+      "limitations": [
+        "Does not provide legal advice or jurisdiction-specific interpretations.",
+        "Does not contain live statutes, cases, or regulatory texts; users must connect external data sources.",
+        "All outputs must be reviewed by qualified legal professionals before use."
+      ]
+    },
+    "expansion": {
+      "virtual_layer_count": 100000,
+      "axes": [
+        "jurisdiction_level",
+        "institution_type",
+        "legal_domain",
+        "proceeding_type",
+        "enforcement_mode",
+        "openness_and_transparency",
+        "time_horizon",
+        "risk_profile",
+        "cross_border_dimension",
+        "sector_criticality",
+        "digitalisation_level",
+        "policy_priority_alignment",
+        "mode"
+      ],
+      "notes": [
+        "Any concrete Chinese legal ecosystem scenario can be mapped to a point in this tensor.",
+        "Kernel+engine composition provides zero structural gaps; actual law must come from external, up-to-date sources."
+      ]
+    }
+  }
+]

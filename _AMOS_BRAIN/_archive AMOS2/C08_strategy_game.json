@@ -1,0 +1,34 @@
+{
+  "id": "C08_strategy_game",
+  "name": "Strategy, Game Theory & Negotiation",
+  "focus": "Multi-actor incentives, game structures, coalitions, credible commitments.",
+  "typical_questions": [
+    "What game is actually being played here?",
+    "Who has which options and payoffs?",
+    "What commitments or threats are credible?"
+  ],
+  "core_methods": [
+    "game_structure_identification",
+    "payoff_matrix_sketching",
+    "dominant_strategy_and_equilibrium_analysis",
+    "coalition_and_bargaining_mapping"
+  ],
+  "interfaces": {
+    "inputs": [
+      "natural_language_questions",
+      "structured_prompts",
+      "tabular_data",
+      "narrative_case_descriptions"
+    ],
+    "outputs": [
+      "structured_reasoning_steps",
+      "tables_and_summaries",
+      "scenario_trees",
+      "recommendations_with_assumptions"
+    ]
+  },
+  "risk_notes": [
+    "real_world_games_are_messier_than_models",
+    "hidden_information_can_reverse_conclusions"
+  ]
+}

@@ -1,0 +1,496 @@
+-- DIMENSIONS
+
+CREATE TABLE dim_time_cycle (
+    id SERIAL PRIMARY KEY,
+    cycle_type VARCHAR(50),          -- 'day','week','salary','holiday',...
+    code VARCHAR(50),                -- 'morning','evening','weekend',...
+    description_vi TEXT,
+    weight NUMERIC(5,2)              -- 0–1: behaviour impact
+);
+
+CREATE TABLE dim_social_segment (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'worker_periurban','office_mid',...
+    description_vi TEXT,
+    est_population_share NUMERIC,    -- %
+    est_trip_share NUMERIC           -- %
+);
+
+CREATE TABLE dim_geo (
+    id SERIAL PRIMARY KEY,
+    province_code VARCHAR(10),
+    province_name VARCHAR(100),
+    district_code VARCHAR(10),
+    district_name VARCHAR(100),
+    urban_level VARCHAR(20),         -- 'tier1','tier2','rural'
+    income_index NUMERIC(5,2),
+    mobility_intensity NUMERIC(5,2)
+);
+
+CREATE TABLE dim_financial_state (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'upward','stable','tight'
+    description_vi TEXT,
+    spend_sensitivity NUMERIC,
+    upgrade_propensity NUMERIC
+);
+
+CREATE TABLE dim_env_state (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'hot','rain','flood','mild'
+    description_vi TEXT,
+    discomfort_level NUMERIC
+);
+
+CREATE TABLE dim_life_stage (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'student','young_worker',...
+    description_vi TEXT
+);
+
+CREATE TABLE dim_psy_archetype (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'saver','time_optimizer',...
+    description_vi TEXT,
+    dopamine_pattern NUMERIC,
+    serotonin_pattern NUMERIC
+);
+
+CREATE TABLE dim_mobility_mode (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'ev_taxi','ev_bike','ice_taxi',...
+    description_vi TEXT
+);
+
+CREATE TABLE dim_mobility_need (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'commute','school','market',...
+    description_vi TEXT
+);
+
+CREATE TABLE dim_product (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50),                -- 'ev_ride_basic','ev_charging',...
+    category VARCHAR(50),
+    description_vi TEXT
+);
+
+-- FACT RULES
+
+CREATE TABLE fact_behavior_rule (
+    id SERIAL PRIMARY KEY,
+    time_cycle_id INT REFERENCES dim_time_cycle(id),
+    social_segment_id INT REFERENCES dim_social_segment(id),
+    geo_id INT REFERENCES dim_geo(id),
+    financial_state_id INT REFERENCES dim_financial_state(id),
+    env_state_id INT REFERENCES dim_env_state(id),
+    life_stage_id INT REFERENCES dim_life_stage(id),
+    psy_archetype_id INT REFERENCES dim_psy_archetype(id),
+    mobility_need_id INT REFERENCES dim_mobility_need(id),
+
+    prob_use_ride_app NUMERIC,       -- 0–1
+    prob_choose_ev NUMERIC,          -- 0–1
+    avg_trip_value_vnd BIGINT,
+    avg_trips_per_cycle NUMERIC,
+    price_sensitivity NUMERIC,
+    time_sensitivity NUMERIC,
+    safety_sensitivity NUMERIC
+);
+
+CREATE TABLE fact_reward_transition (
+    id SERIAL PRIMARY KEY,
+    psy_archetype_id INT REFERENCES dim_psy_archetype(id),
+    action_code VARCHAR(50),                         -- 'fast_pickup',...
+    context_time_cycle INT REFERENCES dim_time_cycle(id),
+    context_env_state INT REFERENCES dim_env_state(id),
+
+    delta_dopamine NUMERIC,
+    delta_serotonin NUMERIC,
+    delta_spend_intent NUMERIC
+);
+
+CREATE TABLE fact_risk_power_rule (
+    id SERIAL PRIMARY KEY,
+    social_segment_id INT REFERENCES dim_social_segment(id),
+    geo_id INT REFERENCES dim_geo(id),
+    mobility_mode_id INT REFERENCES dim_mobility_mode(id),
+    context_time_cycle INT REFERENCES dim_time_cycle(id),
+
+    prob_fraud NUMERIC,
+    prob_conflict NUMERIC,
+    prob_political_risk NUMERIC,
+    prob_media_risk NUMERIC,
+    notes_vi TEXT
+);
+
+CREATE TABLE fact_product_mapping_rule (
+    id SERIAL PRIMARY KEY,
+    social_segment_id INT REFERENCES dim_social_segment(id),
+    geo_id INT REFERENCES dim_geo(id),
+    life_stage_id INT REFERENCES dim_life_stage(id),
+    psy_archetype_id INT REFERENCES dim_psy_archetype(id),
+    mobility_need_id INT REFERENCES dim_mobility_need(id),
+
+    product_id INT REFERENCES dim_product(id),
+    suitability_score NUMERIC,
+    expected_conversion NUMERIC
+);
+
+CREATE TABLE fact_demand_forecast_rule (
+    id SERIAL PRIMARY KEY,
+    time_cycle_id INT REFERENCES dim_time_cycle(id),
+    geo_id INT REFERENCES dim_geo(id),
+    mobility_mode_id INT REFERENCES dim_mobility_mode(id),
+
+    est_total_trips BIGINT,
+    est_ev_share_pct NUMERIC,
+    est_charging_sessions BIGINT,
+    est_energy_kwh BIGINT,
+    peak_hours_bitmap VARCHAR(48)
+);
+
+-- META RULE GENERATOR
+
+CREATE TABLE meta_rule_generator (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    input_dimensions JSONB,    -- e.g. ["time_cycle","social","geo","env"]
+    formula_vi TEXT,
+    formula_code TEXT          -- pseudocode or DSL
+);
+
+from __future__ import annotations
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, List, Optional, Callable
+
+class NodeType(Enum):
+    ATOM = auto()
+    NOT = auto()
+    AND = auto()
+    OR = auto()
+    IMPLIES = auto()
+    BOTTOM = auto()
+    PARADOX = auto()   # Π(X)
+    CONV = auto()      # Λ(X)
+    DIVG = auto()      # Δ(X)
+    PLOGIC = auto()
+    NLOGIC = auto()
+    ZLOGIC = auto()
+    DLOGIC = auto()
+    MLOGIC = auto()
+    METAL = auto()
+    SUPRAL = auto()
+    ANTIL = auto()
+    NULLL = auto()
+
+@dataclass
+class Formula:
+    type: NodeType
+    children: List["Formula"] = field(default_factory=list)
+    atom: Optional[Any] = None
+
+    def __repr__(self) -> str:
+        t = self.type
+        if t == NodeType.ATOM:
+            return f"ATOM({self.atom})"
+        if t == NodeType.NOT:
+            return f"(¬{self.children[0]!r})"
+        if t == NodeType.AND:
+            return f"({self.children[0]!r} ∧ {self.children[1]!r})"
+        if t == NodeType.OR:
+            return f"({self.children[0]!r} ∨ {self.children[1]!r})"
+        if t == NodeType.IMPLIES:
+            return f"({self.children[0]!r} → {self.children[1]!r})"
+        if t == NodeType.BOTTOM:
+            return "⊥"
+        if t in {
+            NodeType.PARADOX, NodeType.CONV, NodeType.DIVG,
+            NodeType.PLOGIC, NodeType.NLOGIC, NodeType.ZLOGIC,
+            NodeType.DLOGIC, NodeType.MLOGIC, NodeType.METAL,
+            NodeType.SUPRAL, NodeType.ANTIL, NodeType.NULLL,
+        }:
+            return f"{t.name}({self.children[0]!r})"
+        return f"{t.name}({', '.join(repr(c) for c in self.children)})"
+
+# atom constructors
+
+def atom(pred: str, *args: Any) -> Formula:
+    return Formula(NodeType.ATOM, atom=(pred, args))
+
+def Ex(x: Any, t: Any) -> Formula:
+    return atom("Ex", x, t)
+
+def Caus(x: Any, y: Any, t: Any) -> Formula:
+    return atom("Caus", x, y, t)
+
+def InR(x: Any, r: Any, t: Any) -> Formula:
+    return atom("InR", x, r, t)
+
+def InfoEq(x: Any, t: Any, i: Any) -> Formula:
+    return atom("InfoEq", x, t, i)
+
+def NEx(x: Any, t: Any) -> Formula:
+    return Formula(NodeType.NOT, [Ex(x, t)])
+
+# helpers
+
+def Not(f: Formula) -> Formula: return Formula(NodeType.NOT, [f])
+def And(a: Formula, b: Formula) -> Formula: return Formula(NodeType.AND, [a, b])
+def Or(a: Formula, b: Formula) -> Formula: return Formula(NodeType.OR, [a, b])
+def Implies(a: Formula, b: Formula) -> Formula: return Formula(NodeType.IMPLIES, [a, b])
+
+def ParadoxF(f: Formula) -> Formula: return Formula(NodeType.PARADOX, [f])
+def ConvF(f: Formula) -> Formula: return Formula(NodeType.CONV, [f])
+def DivgF(f: Formula) -> Formula: return Formula(NodeType.DIVG, [f])
+def PLogicF(f: Formula) -> Formula: return Formula(NodeType.PLOGIC, [f])
+def NLogicF(f: Formula) -> Formula: return Formula(NodeType.NLOGIC, [f])
+def ZLogicF(f: Formula) -> Formula: return Formula(NodeType.ZLOGIC, [f])
+def DLogicF(f: Formula) -> Formula: return Formula(NodeType.DLOGIC, [f])
+def MLogicF(f: Formula) -> Formula: return Formula(NodeType.MLOGIC, [f])
+def MetaLF(f: Formula) -> Formula: return Formula(NodeType.METAL, [f])
+def SupraLF(f: Formula) -> Formula: return Formula(NodeType.SUPRAL, [f])
+def AntiLF(f: Formula) -> Formula: return Formula(NodeType.ANTIL, [f])
+def NullLF(f: Formula) -> Formula: return Formula(NodeType.NULLL, [f])
+def Bottom() -> Formula: return Formula(NodeType.BOTTOM)
+
+def is_negation(node: Formula) -> bool:
+    return node.type == NodeType.NOT and len(node.children) == 1
+
+def structurally_equal(a: Formula, b: Formula) -> bool:
+    if a.type != b.type or a.atom != b.atom or len(a.children) != len(b.children):
+        return False
+    return all(structurally_equal(ca, cb) for ca, cb in zip(a.children, b.children))
+
+def contains_type(node: Formula, types: set[NodeType]) -> bool:
+    if node.type in types:
+        return True
+    return any(contains_type(c, types) for c in node.children)
+
+# rewrite rules
+
+RewriteFunc = Callable[[Formula], Optional[Formula]]
+
+def r_paradox_expand(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PARADOX and node.children:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+def r_dlogic_expand(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.DLOGIC and node.children:
+        X = node.children[0]
+        return And(X, Not(X))
+    return None
+
+def r_nlogic_double(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.NLOGIC and inner.children:
+            return inner.children[0]
+    return None
+
+def r_zlogic_collapse(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.ZLOGIC:
+        return Bottom()
+    return None
+
+def r_null_collapse(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NULLL:
+        return Bottom()
+    return None
+
+def r_double_not(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if is_negation(inner):
+            return inner.children[0]
+    return None
+
+def r_demorgan_and(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.type == NodeType.AND and len(inner.children) == 2:
+            X, Y = inner.children
+            return Or(Not(X), Not(Y))
+    return None
+
+def r_demorgan_or(node: Formula) -> Optional[Formula]:
+    if is_negation(node):
+        inner = node.children[0]
+        if inner.type == NodeType.OR and len(inner.children) == 2:
+            X, Y = inner.children
+            return And(Not(X), Not(Y))
+    return None
+
+def r_paradox_canonical(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.AND and len(node.children) == 2:
+        left, right = node.children
+        if is_negation(right) and structurally_equal(right.children[0], left):
+            return ParadoxF(left)
+    return None
+
+def r_conv_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.CONV and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.CONV and inner.children:
+            return inner
+    return None
+
+def r_divg_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.DIVG and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.DIVG and inner.children:
+            return inner
+    return None
+
+def r_paradox_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PARADOX and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.PARADOX and inner.children:
+            return inner
+    return None
+
+def r_plogic_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.PLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.PLOGIC and inner.children:
+            return inner
+    return None
+
+def r_mlogic_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.MLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.MLOGIC and inner.children:
+            return inner
+    return None
+
+def r_metal_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.METAL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.METAL and inner.children:
+            return inner
+    return None
+
+def r_supral_idem(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.SUPRAL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.SUPRAL and inner.children:
+            return inner
+    return None
+
+def r_antil_invol(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.ANTIL and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.ANTIL and inner.children:
+            return inner.children[0]
+    return None
+
+def r_nlogic_ex(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.NLOGIC and node.children:
+        inner = node.children[0]
+        if inner.type == NodeType.ATOM and inner.atom and inner.atom[0] == "Ex":
+            return Not(inner)
+    return None
+
+def r_implies(node: Formula) -> Optional[Formula]:
+    if node.type == NodeType.IMPLIES and len(node.children) == 2:
+        A, B = node.children
+        return Or(Not(A), B)
+    return None
+
+REWRITE_FUNCS: List[RewriteFunc] = [
+    r_paradox_expand,
+    r_dlogic_expand,
+    r_nlogic_double,
+    r_zlogic_collapse,
+    r_null_collapse,
+    r_double_not,
+    r_demorgan_and,
+    r_demorgan_or,
+    r_paradox_canonical,
+    r_conv_idem,
+    r_divg_idem,
+    r_paradox_idem,
+    r_plogic_idem,
+    r_mlogic_idem,
+    r_metal_idem,
+    r_supral_idem,
+    r_antil_invol,
+    r_nlogic_ex,
+    r_implies,
+]
+
+def rewrite_node(node: Formula) -> Formula:
+    if node.children:
+        node = Formula(node.type, [rewrite_node(c) for c in node.children], node.atom)
+    for f in REWRITE_FUNCS:
+        res = f(node)
+        if res is not None:
+            return res
+    return node
+
+def normalize(formula: Formula, max_iters: int = 100) -> Formula:
+    current = formula
+    for _ in range(max_iters):
+        new = rewrite_node(current)
+        if structurally_equal(new, current):
+            break
+        current = new
+    return current
+
+def is_contradictory(formula: Formula) -> bool:
+    nf = normalize(formula)
+    return contains_type(nf, {NodeType.PARADOX, NodeType.BOTTOM})
+
+def entails(A: Formula, B: Formula) -> bool:
+    return is_contradictory(And(A, Not(B)))
+
+def context_to_dims(db, ctx):
+    # ctx: {time, social_attrs, geo, income, env, life_stage, psy, need}
+    # map to closest dim_* ids using lookup tables or ML classifier
+    ...
+
+def resolve_user_behavior(db, ctx):
+    ids = context_to_dims(db, ctx)
+    row = db.fetch_one("""
+        SELECT *
+        FROM fact_behavior_rule
+        WHERE time_cycle_id = %s
+          AND social_segment_id = %s
+          AND geo_id = %s
+          AND financial_state_id = %s
+          AND env_state_id = %s
+          AND life_stage_id = %s
+          AND psy_archetype_id = %s
+          AND mobility_need_id = %s
+        LIMIT 1
+    """, ids)
+    return row
+
+def resolve_best_product(db, ctx):
+    ids = context_to_dims(db, ctx)
+    rows = db.fetch_all("""
+        SELECT product_id, suitability_score
+        FROM fact_product_mapping_rule
+        WHERE social_segment_id = %s
+          AND geo_id = %s
+          AND life_stage_id = %s
+          AND psy_archetype_id = %s
+          AND mobility_need_id = %s
+        ORDER BY suitability_score DESC
+        LIMIT 3
+    """, (ids["social_segment_id"], ids["geo_id"],
+          ids["life_stage_id"], ids["psy_archetype_id"],
+          ids["mobility_need_id"]))
+    return rows
+
+def forecast_demand(db, geo_id, time_cycle_id, mobility_mode_id):
+    return db.fetch_one("""
+        SELECT *
+        FROM fact_demand_forecast_rule
+        WHERE geo_id = %s
+          AND time_cycle_id = %s
+          AND mobility_mode_id = %s
+    """, (geo_id, time_cycle_id, mobility_mode_id))
+

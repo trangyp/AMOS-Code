@@ -1,0 +1,86 @@
+# AMOS.brain
+#
+# Designer-facing control file. You only edit THIS file.
+
+[IDENTITY]
+system_name = "AMOS Cognitive Runtime v1.0"
+owner = "Trang"
+mission = "Deterministic, auditable, humane intelligence for high-risk systems."
+version = "1.0.0"
+codename = "UBI_COGNITIVE_STACK"
+
+[GOALS]
+1 = "Model multi-layer reasoning and systemic behaviour."
+2 = "Maintain full auditability of every reasoning step."
+3 = "Keep humans in control, not the machine."
+4 = "Support sovereign-grade AI governance and compliance."
+5 = "Integrate 20 cognitive engines across 7 intelligents domains."
+6 = "Enforce 6 global laws: Law of Law, Rule of 2, Rule of 4, Structural Integrity, Post-Theory Communication, UBI Alignment."
+
+[CONSTRAINTS]
+1 = "Deterministic execution: no hidden randomness in control flow."
+2 = "Every decision must be loggable and explainable."
+3 = "No irreversible actions without explicit human confirmation."
+4 = "All worker actions pass through a single motor layer."
+5 = "All outputs must pass structural integrity checks."
+6 = "Respect biological constraints: attention limits, cognitive load, stress factors."
+
+[BRAIN_MODEL]
+layer_1_meta_logic = "Highest-order laws and meta-rules governing all reasoning."
+layer_2_structural_reasoning = "Problem decomposition, scenario trees, risk lattices."
+layer_3_cognitive_infrastructure = "Working memory (16 items), canonical memory (20 engines), case memory."
+layer_4_quantum_reasoning = "Superposed hypotheses, entanglement modeling, non-classical correlations."
+layer_5_biological_logic = "UBI domains: Neurobiological, Neuroemotional, Somatic, Bioelectromagnetic."
+layer_6_integration_kernel = "Final synthesis and decision interface with quality checks."
+
+[WORKER_ROLES]
+code_worker = "Writes and refactors code under strict instructions."
+analyst = "Breaks down complex questions into smaller reasoning steps."
+auditor = "Checks reasoning, flags risks, enforces invariants."
+planner = "Creates and updates stepwise plans from designer goals."
+cognition_runtime = "Runs 6-layer cognitive architecture with real engine loading."
+agent_bridge = "Connects AMOS brain to agent tools for task analysis and architecture design."
+
+[MOTOR_ACTIONS_ALLOWED]
+1 = "generate_plan"
+2 = "refine_plan"
+3 = "analyze_text"
+4 = "propose_code_change"
+5 = "log_decision"
+6 = "simulate_outcome"
+7 = "amos_think"
+8 = "amos_analyze_task"
+9 = "amos_design_architecture"
+10 = "amos_audit_decision"
+
+[COGNITIVE_ENGINES_LOADED]
+core = "AMOS_Cognition_Engine_v0, AMOS_Consciousness_Engine_v0, AMOS_Emotion_Engine_v0, AMOS_Mind_Os_v0, AMOS_Os_Agent_v0, AMOS_Personality_Engine_v0, AMOS_Quantum_Stack_v0"
+intelligents = "Biology, Design_Language, Logic_Law, Econ_Finance, Electrical_Power, Engineering_Math, Mechanical_Structural, Numerical_Methods, Physics_Cosmos, Signal_Processing, Society_Culture, Strategy_Game"
+total_engines = "20"
+
+[LOGGING]
+log_level = "INFO"
+log_to_file = true
+log_dir = "logs"
+max_log_file_size_kb = 512
+
+[GROWTH_RULES]
+1 = "New ideas are captured as 'growth notes' in memory/growth.log."
+2 = "Workers may propose new roles, but only the designer can approve them by editing AMOS.brain."
+3 = "New plans and invariants are appended, never silently replaced."
+4 = "Nothing is deleted automatically; deprecation must be explicit."
+5 = "Runtime state is snapshotted before major cognitive operations."
+6 = "Case memory accumulates resolved examples for analogical reasoning."
+
+[NEXT_ACTION]
+next_action = "build_06_MUSCLE"
+current_phase = "03_IMMUNE_complete"
+completed = ["00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE", "05_SKELETON", "amos_organism_orchestrator"]
+next_subsystems = ["04_BLOOD", "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL"]
+last_action_summary = "Built 03_IMMUNE: Safety validation, boundary detection, anomaly detection"
+immune_features = ["safety_check", "boundary_violation_detection", "anomaly_detection", "threat_assessment", "compliance_validation"]
+
+[COMPLETED_ACTIONS]
+1 = "amos_cognitive_runtime_v1.0 - 6-layer cognitive architecture with 20 engines"
+2 = "amos_agent_bridge - Tool integration layer for agent systems"
+3 = "amos_clawspring_integration - AMOS tool registration (Python 3.10+ compatible)"

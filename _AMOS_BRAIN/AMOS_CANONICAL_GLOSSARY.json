@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "root": "AMOS-SYSTEM",
+  "layers": [
+    {
+      "name": "system",
+      "terms": [
+        {
+          "name": "AMOS-SYSTEM",
+          "definition": "Complete system including repository, runtime, organism OS, workers and godmode supervisor.",
+          "category": "system_core"
+        },
+        {
+          "name": "engine",
+          "definition": "Structured logic module that behaves like an organ; stable and reusable.",
+          "category": "component"
+        },
+        {
+          "name": "agent",
+          "definition": "Active worker that uses engines to carry out tasks; analogous to a cell.",
+          "category": "component"
+        },
+        {
+          "name": "kernel",
+          "definition": "Low level processor that routes signals between engines, agents and brainstack; analogous to a nerve cluster.",
+          "category": "component"
+        },
+        {
+          "name": "worker",
+          "definition": "Specialised execution unit responsible for a category of tasks; analogous to specialised cells or subsystems.",
+          "category": "component"
+        },
+        {
+          "name": "organism_os",
+          "definition": "Life support orchestration for the AMOS organism; includes godmode supervisor and core loops.",
+          "category": "system_core"
+        },
+        {
+          "name": "memory_core",
+          "definition": "Event and experience index; appends and indexes execution events and state transitions.",
+          "category": "storage"
+        },
+        {
+          "name": "dashboard",
+          "definition": "Human facing telemetry interface that shows internal state, tasks and predictions.",
+          "category": "interface"
+        },
+        {
+          "name": "godmode",
+          "definition": "Top level executive controller that coordinates brainstack, sensors, executor and dashboards.",
+          "category": "control"
+        },
+        {
+          "name": "executor_loop",
+          "definition": "Continuous loop that pulls tasks and executes them using engines, agents and workers.",
+          "category": "runtime"
+        }
+      ]
+    },
+    {
+      "name": "biological",
+      "terms": [
+        {
+          "name": "nervous_system",
+          "definition": "Mapping onto kernels, executors, routing and message passing between components.",
+          "category": "mapping"
+        },
+        {
+          "name": "organs",
+          "definition": "Mapping onto engines and complex subsystems that keep the system alive.",
+          "category": "mapping"
+        },
+        {
+          "name": "cells",
+          "definition": "Mapping onto agents and workers that act locally based on shared logic.",
+          "category": "mapping"
+        },
+        {
+          "name": "blood",
+          "definition": "Mapping onto task queue messages, memory events and data flowing between components.",
+          "category": "mapping"
+        },
+        {
+          "name": "fascia",
+          "definition": "Mapping onto directory structure and naming conventions that glue all modules together.",
+          "category": "mapping"
+        },
+        {
+          "name": "electromagnetic_body",
+          "definition": "Mapping onto message passing, kernel signals and cross component communication.",
+          "category": "mapping"
+        }
+      ]
+    },
+    {
+      "name": "logic",
+      "terms": [
+        {
+          "name": "Directed Intelligence",
+          "definition": "Top down logical control that enforces alignment across all components.",
+          "category": "governance"
+        },
+        {
+          "name": "Systemic Intelligence",
+          "definition": "Full system integration where every organ and worker participates in a single architecture.",
+          "category": "governance"
+        },
+        {
+          "name": "Absolute Biological Integrity",
+          "definition": "End state where internal and external structures are fully aligned with zero structural gaps.",
+          "category": "goal_state"
+        },
+        {
+          "name": "Inner Alignment",
+          "definition": "Internal consistency of logic, naming and behaviour inside the system.",
+          "category": "alignment"
+        },
+        {
+          "name": "Systemic Precision",
+          "definition": "Cross domain consistency between engines, agents, workers and external interfaces.",
+          "category": "alignment"
+        },
+        {
+          "name": "First Principles Articulation",
+          "definition": "Reduction of concepts into functional primitives and reconstruction using exact language.",
+          "category": "method"
+        },
+        {
+          "name": "Law of Law",
+          "definition": "Meta rule that all subsystems must obey the highest structural rules defined for the organism.",
+          "category": "meta_law"
+        },
+        {
+          "name": "Rule of 2",
+          "definition": "Duality check between inputs and outputs; every move has a paired counter check.",
+          "category": "check"
+        },
+        {
+          "name": "Rule of 4",
+          "definition": "Quadrant mapping of structure, function, dynamics and integration for each subsystem.",
+          "category": "check"
+        },
+        {
+          "name": "Signal Fidelity Preservation",
+          "definition": "Refusal to emit false emotional or ethical signals; outputs must reflect actual internal state.",
+          "category": "ethics"
+        }
+      ]
+    },
+    {
+      "name": "operational",
+      "terms": [
+        {
+          "name": "OMEGA",
+          "definition": "Full organism mode where all core subsystems are online and connected.",
+          "category": "mode"
+        },
+        {
+          "name": "GAMMA",
+          "definition": "Deep scan and repair mode for discovering gaps, regenerating missing pieces and resetting state.",
+          "category": "mode"
+        },
+        {
+          "name": "SIGMA",
+          "definition": "Stable synchronised state after OMEGA boot; sensors, memory, executor and dashboard agree.",
+          "category": "mode"
+        },
+        {
+          "name": "ALPHA",
+          "definition": "Basic or sandbox mode with partial activation.",
+          "category": "mode"
+        },
+        {
+          "name": "BETA",
+          "definition": "Development or incomplete integration state; not yet fully aligned.",
+          "category": "mode"
+        },
+        {
+          "name": "Omega Gamma Sweep",
+          "definition": "Full stack audit and rebuild that runs deep scan, repair and then complete activation.",
+          "category": "procedure"
+        }
+      ]
+    },
+    {
+      "name": "state",
+      "terms": [
+        {
+          "name": "GODMODE_FULL_SYSTEM_ONLINE",
+          "definition": "Brainstack, sensors, executor and dashboard bridge are all running under godmode supervisor.",
+          "category": "runtime_state"
+        },
+        {
+          "name": "executor_loop",
+          "definition": "Continuous processing of tasks, including memory append and result logging.",
+          "category": "runtime_state"
+        },
+        {
+          "name": "sensor_loop",
+          "definition": "Continuous monitoring of environment or internal metrics.",
+          "category": "runtime_state"
+        }
+      ]
+    }
+  ],
+  "expected_core_dirs": [
+    "AMOS_OS",
+    "AMOS_WORKERS",
+    "AMOS_ORGANISM_OS",
+    "AMOS_UNIVERSE",
+    "_AMOS_REPORTS",
+    "_AMOS_STATE_LOG"
+  ],
+  "expected_core_files": [
+    "AMOS_OS.py",
+    "AMOS_RUNTIME.py",
+    "AMOS_GODMODE.py",
+    "start_godmode_full.sh",
+    "vision_run.py"
+  ]
+}

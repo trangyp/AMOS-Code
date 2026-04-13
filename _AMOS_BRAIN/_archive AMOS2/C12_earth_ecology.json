@@ -1,0 +1,34 @@
+{
+  "id": "C12_earth_ecology",
+  "name": "Earth Systems, Climate & Infrastructure",
+  "focus": "Planetary constraints, climate risk, infrastructure coupling, resilience.",
+  "typical_questions": [
+    "What are the physical and ecological limits for this plan?",
+    "How does this choice affect long-term resilience?",
+    "Which climate or resource risks must be priced in?"
+  ],
+  "core_methods": [
+    "lifecycle_and_supply_chain_view",
+    "infrastructure_dependency_mapping",
+    "resilience_and_redundancy_assessment",
+    "climate_risk_scenario_use"
+  ],
+  "interfaces": {
+    "inputs": [
+      "natural_language_questions",
+      "structured_prompts",
+      "tabular_data",
+      "narrative_case_descriptions"
+    ],
+    "outputs": [
+      "structured_reasoning_steps",
+      "tables_and_summaries",
+      "scenario_trees",
+      "recommendations_with_assumptions"
+    ]
+  },
+  "risk_notes": [
+    "future_climate_trajectories_have_uncertainty",
+    "models_must_not_be_treated_as_oracles"
+  ]
+}

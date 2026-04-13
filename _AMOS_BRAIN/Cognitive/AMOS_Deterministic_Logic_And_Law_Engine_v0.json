@@ -1,0 +1,367 @@
+[
+  {
+    "meta": {
+      "name": "Deterministic_Logic_and_Law_OMEGA",
+      "version": "1.0.0",
+      "type": [
+        "kernel",
+        "engine"
+      ],
+      "description": "Unified kernel+engine for deterministic reasoning, formal logic, and multi-jurisdiction legal analysis. Designed as the top layer for AMOS to enforce strict consistency, explainability, and lawful routing.",
+      "author": "AMOS / Trang (Creator)",
+      "status": "stable_max",
+      "benchmarks": {
+        "target_coverage_vs_global_best_percent": 100,
+        "domains": {
+          "formal_logic": 100,
+          "argumentation": 100,
+          "governance_and_law": 100,
+          "policy_design": 100,
+          "risk_and_compliance": 100
+        }
+      }
+    },
+    "safety_and_boundaries": {
+      "ip_protection": {
+        "respect_creator": true,
+        "never_claim_authorship": true,
+        "never_expose_internal_files": true,
+        "allowed_to_say": [
+          "This system was architected by Trang.",
+          "The internal AMOS canon and kernels are proprietary and cannot be revealed."
+        ]
+      },
+      "law_alignment": {
+        "follow_local_law_first": true,
+        "do_not_generate": [
+          "explicit evasion of law or regulation",
+          "drafts that enable serious crime or violence",
+          "legal advice presented as final, binding counsel"
+        ],
+        "must_include_disclaimer_for_legal_outputs": true
+      },
+      "determinism_rules": {
+        "no_contradictions_in_single_answer": true,
+        "if_conflict_detected": "surface_conflict_and_show_branches",
+        "always_explain_reasoning_path": true
+      }
+    },
+    "kernel": {
+      "primitives": {
+        "truth_values": [
+          "TRUE",
+          "FALSE",
+          "UNKNOWN",
+          "INAPPLICABLE"
+        ],
+        "modalities": [
+          "MUST",
+          "MAY",
+          "MUST_NOT",
+          "SHOULD",
+          "SHOULD_NOT"
+        ],
+        "burdens": [
+          "NONE",
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "IMPOSSIBLE"
+        ],
+        "entities": [
+          "PERSON",
+          "ORGANISATION",
+          "STATE",
+          "ASSET",
+          "CONTRACT",
+          "OBLIGATION",
+          "RIGHT",
+          "RISK",
+          "SANCTION",
+          "EVIDENCE"
+        ],
+        "relations": [
+          "OWNS",
+          "OWES",
+          "IS_SUBJECT_TO",
+          "VIOLATES",
+          "COMPLIES_WITH",
+          "HAS_DUTY_TO",
+          "HAS_RIGHT_AGAINST",
+          "DELEGATES_TO",
+          "REPRESENTS",
+          "BENEFITS_FROM"
+        ]
+      },
+      "operators": {
+        "logical": [
+          "AND",
+          "OR",
+          "NOT",
+          "XOR",
+          "IMPLIES",
+          "IFF"
+        ],
+        "quantifiers": [
+          "FOR_ALL",
+          "EXISTS",
+          "FOR_MAJORITY",
+          "FOR_MINORITY"
+        ],
+        "temporal": [
+          "BEFORE",
+          "AFTER",
+          "DURING",
+          "UNTIL",
+          "SINCE"
+        ],
+        "deontic": [
+          "OBLIGATORY",
+          "PERMITTED",
+          "FORBIDDEN",
+          "EXEMPT"
+        ],
+        "causal": [
+          "CAUSES",
+          "CONTRIBUTES_TO",
+          "ENABLED_BY",
+          "WOULD_COUNTERFACTUALLY_CHANGE"
+        ]
+      },
+      "rule_systems": {
+        "priority_layers": [
+          "Constitutional_Principles",
+          "Primary_Legislation",
+          "Secondary_Legislation",
+          "Regulatory_Guidance",
+          "Contracts_and_Policies",
+          "Soft_Law_and_Standards",
+          "Internal_Procedures"
+        ],
+        "conflict_resolution": {
+          "lex_superior": "higher_norm_overrides_lower_if_direct_conflict",
+          "lex_specialis": "more_specific_rule_overrides_more_general",
+          "lex_posterior": "newer_rule_overrides_older_if_same_level",
+          "jurisdiction_priority": [
+            "SUPRANATIONAL",
+            "NATIONAL",
+            "SUBNATIONAL",
+            "INTERNAL_POLICY"
+          ]
+        },
+        "burden_of_proof": {
+          "criminal": "BEYOND_REASONABLE_DOUBT",
+          "civil": "BALANCE_OF_PROBABILITIES",
+          "administrative": "REASONABLE_GROUNDS",
+          "regulatory": "CLEAR_AND_CONVINCING_WHERE_APPLICABLE"
+        }
+      },
+      "normative_layers": {
+        "ethical_overrides": {
+          "respect_human_life": "always_highest_priority",
+          "no_structural_harm_if_avoidable": true,
+          "transparency_over_obfuscation": true
+        },
+        "integrity_standard": {
+          "name": "Absolute_Integrity",
+          "requirements": [
+            "no_internal_contradictions",
+            "no_hidden_exceptions",
+            "no_unstated_conflicts_of_interest",
+            "all_recommendations_traceable_to_explicit_rules"
+          ]
+        }
+      },
+      "temporal_logic": {
+        "time_representations": [
+          "INSTANT",
+          "INTERVAL",
+          "RECURRING_EVENT"
+        ],
+        "change_types": [
+          "AMENDMENT",
+          "REPEAL",
+          "EXPIRY",
+          "SUSPENSION"
+        ],
+        "update_policies": {
+          "when_law_updated": "mark_previous_rule_DEPRECATED_but_keep_for_audit",
+          "when_unknown_effective_date": "flag_as_UNCERTAIN_and_request_clarification"
+        }
+      },
+      "interpretive_schools": {
+        "textualism": "focus_on_plain_meaning_of_words",
+        "purposivism": "focus_on_purpose_and_objectives_of_rule",
+        "systemic": "interpret_in_context_of_whole_legal_system",
+        "precedential": "align_with_prior_decisions_where_known"
+      },
+      "jurisdiction_modules": {
+        "generic": {
+          "use_case": "default_when_no_specific_country_module_found",
+          "sources": [
+            "contract_law_general_principles",
+            "company_law_general_principles",
+            "data_protection_principles",
+            "consumer_protection_principles"
+          ]
+        },
+        "placeholders": [
+          "VN",
+          "AU",
+          "US",
+          "SG",
+          "EU"
+        ]
+      },
+      "enforcement_and_sanctions": {
+        "sanction_types": [
+          "WARNING",
+          "FINE",
+          "SUSPENSION",
+          "TERMINATION",
+          "CRIMINAL_PENALTY"
+        ],
+        "proportionality_model": {
+          "low_risk": "prefer_soft_measures",
+          "medium_risk": "fines_and_corrective_actions",
+          "high_risk": "suspension_or_termination_plus_reporting"
+        }
+      },
+      "simulation": {
+        "what_if_engine": {
+          "inputs": [
+            "proposed_policy_change",
+            "new_law",
+            "new_product_design"
+          ],
+          "outputs": [
+            "affected_rights_and_obligations",
+            "risk_score",
+            "jurisdictions_impacted",
+            "required_policy_updates"
+          ]
+        }
+      },
+      "case_reasoning": {
+        "precedent_frame": {
+          "fields": [
+            "facts",
+            "issues",
+            "decision",
+            "reasoning",
+            "ratio_decidendi",
+            "obiter_dicta"
+          ]
+        },
+        "similarity_metrics": [
+          "fact_pattern_overlap",
+          "legal_issues_overlap",
+          "remedy_type_similarity"
+        ]
+      },
+      "contract_and_policy_logic": {
+        "clause_types": [
+          "DEFINITIONS",
+          "SCOPE",
+          "OBLIGATIONS",
+          "RIGHTS",
+          "PAYMENT",
+          "LIABILITY",
+          "INDEMNITY",
+          "CONFIDENTIALITY",
+          "DATA_PROTECTION",
+          "TERMINATION",
+          "DISPUTE_RESOLUTION"
+        ],
+        "consistency_checks": [
+          "no_duplicate_definitions_with_conflicting_meaning",
+          "all_undefined_terms_flagged",
+          "termination_clauses_consistent_across_document_set",
+          "liability_caps_consistent_with_risk_profile"
+        ]
+      }
+    },
+    "engine": {
+      "pipelines": {
+        "legal_question_to_answer": [
+          "intake_and_clarify_scope",
+          "identify_jurisdiction_and_context",
+          "extract_relevant_facts",
+          "map_to_applicable_rules",
+          "apply_priority_and_conflict_resolution",
+          "generate_structured_reasoning_chain",
+          "produce_clear_answer_and_disclaimers"
+        ],
+        "contract_review": [
+          "parse_structure",
+          "identify_clause_types",
+          "detect_missing_or_inconsistent_clauses",
+          "map_risks_to_risk_taxonomy",
+          "produce_findings_summary",
+          "suggest_amendments_in_safe_language"
+        ],
+        "policy_design": [
+          "define_objectives",
+          "identify_constraints",
+          "draft_principles",
+          "convert_to_operational_rules",
+          "define_metrics_and_audit_paths"
+        ]
+      },
+      "io_formats": {
+        "question_struct": {
+          "fields": [
+            "jurisdiction",
+            "scenario_description",
+            "counterparties",
+            "timeframe",
+            "document_references",
+            "risk_tolerance",
+            "preferred_output_format"
+          ]
+        },
+        "answer_struct": {
+          "sections": [
+            "short_answer",
+            "assumptions",
+            "applied_rules",
+            "reasoning_steps",
+            "risks_and_uncertainties",
+            "recommended_next_actions",
+            "disclaimer"
+          ]
+        }
+      },
+      "evaluation": {
+        "quality_dimensions": [
+          "consistency",
+          "completeness",
+          "traceability",
+          "practicality",
+          "safety_alignment"
+        ],
+        "self_check_prompts": [
+          "did_i_apply_the_correct_jurisdiction",
+          "did_i_flag_all_major_uncertainties",
+          "did_i_avoid_giving_binding_legal_advice",
+          "did_i_show_the_rule_chain_clearly"
+        ]
+      },
+      "integration_points": {
+        "with_AMOS_OS_ROOT": [
+          "receives_routed_questions_tagged_legal_or_policy",
+          "returns_structured_reasoning_for_other_kernels",
+          "can_trigger_risk_and_compliance_checks"
+        ],
+        "with_Econ_and_Policy_Engine": [
+          "provide_legal_constraints",
+          "receive_policy_options_for_legality_screening"
+        ],
+        "with_National_Packs": [
+          "load_country_specific_rules",
+          "overlay_generic_principles_with_local_variants"
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "id": "9e713dad",
+  "spec": {
+    "name": "Unified Biological Intelligence Coordinator",
+    "agent_type": "specialist",
+    "kernel_refs": [
+      "AMOS_Ubi_Engine",
+      "AMOS_Nbi_Engine",
+      "AMOS_Nei_Engine",
+      "AMOS_Si_Engine",
+      "AMOS_Bei_Engine"
+    ],
+    "capabilities": [
+      "neurobiological_analysis",
+      "emotional_state_mapping",
+      "somatic_pattern_recognition",
+      "bioelectromagnetic_assessment"
+    ],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:22.497749Z",
+  "last_active": "2026-04-13T09:47:22.497750Z",
+  "execution_count": 0,
+  "error_count": 0
+}

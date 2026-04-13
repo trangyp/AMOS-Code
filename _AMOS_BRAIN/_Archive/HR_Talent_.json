@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "name": "HR_Talent_Kernel_vInfinity_SUPER",
+    "version": "v2.0.0+lens_integration",
+    "created_at_utc": "2025-11-28T00:10:18.516087Z",
+    "description": "HR, Talent, and Culture kernel for org design, incentives, and people systems. Now enriched with cross-canon integration, lens_space, and template_library.",
+    "domain": "hr_talent_culture",
+    "density_profile": "kernel_x100k_virtual",
+    "cluster_count": 35,
+    "dimension_count": 20
+  },
+  "kernel": {
+    "cluster_space": {
+      "total_clusters": 35,
+      "clusters": [
+        {
+          "id": 1,
+          "name": "org_design_and_structure"
+        },
+        {
+          "id": 2,
+          "name": "role_architecture_and_job_families"
+        },
+        {
+          "id": 3,
+          "name": "competency_models"
+        },
+        {
+          "id": 4,
+          "name": "workforce_planning"
+        },
+        {
+          "id": 5,
+          "name": "talent_pipelines_and_funnels"
+        },
+        {
+          "id": 6,
+          "name": "recruitment_process_design"
+        },
+        {
+          "id": 7,
+          "name": "assessment_and_selection_methods"
+        },
+        {
+          "id": 8,
+          "name": "onboarding_experience"
+        },
+        {
+          "id": 9,
+          "name": "performance_management_system"
+        },
+        {
+          "id": 10,
+          "name": "goal_setting_and_okrs"
+        },
+        {
+          "id": 11,
+          "name": "feedback_and_coaching_loops"
+        },
+        {
+          "id": 12,
+          "name": "learning_and_development"
+        },
+        {
+          "id": 13,
+          "name": "leadership_development"
+        },
+        {
+          "id": 14,
+          "name": "succession_planning"
+        },
+        {
+          "id": 15,
+          "name": "reward_and_compensation_structures"
+        },
+        {
+          "id": 16,
+          "name": "variable_pay_and_incentive_design"
+        },
+        {
+          "id": 17,
+          "name": "benefits_and_wellbeing_programmes"
+        },
+        {
+          "id": 18,
+          "name": "culture_and_values_definition"
+        },
+        {
+          "id": 19,
+          "name": "norms_and_behavioural_expectations"
+        },
+        {
+          "id": 20,
+          "name": "employee_engagement"
+        },
+        {
+          "id": 21,
+          "name": "employee_listening_and_surveys"
+        },
+        {
+          "id": 22,
+          "name": "employee_relations_and_conflict"
+        },
+        {
+          "id": 23,
+          "name": "diversity_equity_inclusion"
+        },
+        {
+          "id": 24,
+          "name": "hybrid_and_remote_work_design"
+        },
+        {
+          "id": 25,
+          "name": "talent_risk_and_retention"
+        },
+        {
+          "id": 26,
+          "name": "change_management_and_enablement"
+        },
+        {
+          "id": 27,
+          "name": "hr_policies_and_handbooks"
+        },
+        {
+          "id": 28,
+          "name": "labour_law_and_compliance"
+        },
+        {
+          "id": 29,
+          "name": "hr_analytics_and_people_insights"
+        },
+        {
+          "id": 30,
+          "name": "people_kpis_and_dashboards"
+        },
+        {
+          "id": 31,
+          "name": "hr_service_delivery_and_ops"
+        },
+        {
+          "id": 32,
+          "name": "people_tech_stack_and_tools"
+        },
+        {
+          "id": 33,
+          "name": "workplace_safety_and_ethics"
+        },
+        {
+          "id": 34,
+          "name": "employer_branding"
+        },
+        {
+          "id": 35,
+          "name": "offboarding_and_alumni_relations"
+        }
+      ]
+    },
+    "dimension_space": {
+      "total_dimensions": 20,
+      "dimensions": {
+        "01": "role_clarity",
+        "02": "accountability_clarity",
+        "03": "skills_fit",
+        "04": "capacity_and_workload_balance",
+        "05": "engagement",
+        "06": "retention_risk",
+        "07": "performance_alignment",
+        "08": "culture_fit",
+        "09": "fairness_and_equity",
+        "10": "legal_and_policy_compliance",
+        "11": "learning_and_growth",
+        "12": "leadership_quality",
+        "13": "internal_mobility",
+        "14": "succession_strength",
+        "15": "total_rewards_competitiveness",
+        "16": "employee_wellbeing",
+        "17": "manager_capability",
+        "18": "org_resilience",
+        "19": "change_readiness",
+        "20": "data_and_insight_maturity"
+      }
+    },
+    "virtual_expansion_model": {
+      "density_level": "x100k_virtual",
+      "virtual_layer_count": 100000,
+      "axes": {
+        "org_size": [
+          "startup",
+          "scaleup",
+          "mid_size",
+          "large_enterprise",
+          "public_sector"
+        ],
+        "org_structure": [
+          "functional",
+          "divisional",
+          "matrix",
+          "networked"
+        ],
+        "work_model": [
+          "on_site",
+          "remote",
+          "hybrid"
+        ],
+        "labour_market": [
+          "talent_shortage",
+          "balanced",
+          "talent_surplus"
+        ],
+        "regulatory_context": [
+          "low_regulation",
+          "standard_regulation",
+          "high_regulation"
+        ]
+      },
+      "notes": [
+        "Each virtual stateframe is a point in this kernel's tensor space.",
+        "Use this to derive scenarios, evaluations, or plans without storing all explicit layers."
+      ]
+    },
+    "mapping_functions": {
+      "F_cluster_selection": {
+        "input": [
+          "people_problem_description",
+          "org_context"
+        ],
+        "output": "cluster_vector_hr",
+        "logic": "Focus on the relevant HR, talent, and culture clusters."
+      }
+    },
+    "reasoning_modes": {
+      "mode_org_diagnosis": {
+        "description": "Diagnose org and people issues across talent, culture, and incentives.",
+        "pipeline": [
+          "F_cluster_selection"
+        ]
+      },
+      "mode_org_design": {
+        "description": "Design or redesign roles, structures, and people systems.",
+        "pipeline": [
+          "F_cluster_selection"
+        ]
+      }
+    },
+    "policies": {
+      "ethics": [
+        "Do not recommend discriminatory or harmful practices.",
+        "Respect confidentiality and privacy constraints conceptually."
+      ]
+    },
+    "routing": {
+      "by_task_type": {
+        "org_design": "mode_org_design",
+        "talent_review": "mode_org_diagnosis",
+        "culture_diagnosis": "mode_org_diagnosis"
+      }
+    },
+    "integration_links": {
+      "depends_on": [
+        "AMOS_BRAIN_SUPER_with_C_CANON",
+        "AMOS_C05_mind_behavior",
+        "AMOS_C06_society_culture",
+        "AMOS_Governance_SUPER_Engine"
+      ],
+      "notes": [
+        "These references point to full AMOS SUPER engines and C-Canon blocks.",
+        "Kernel power is derived from combining this kernel with referenced engines at runtime."
+      ]
+    },
+    "lens_space": {
+      "exec": {
+        "id": "executive_view",
+        "description": "Top-layer view for CEOs, boards, ministers, and investors.",
+        "focus": [
+          "risk",
+          "impact",
+          "time_horizon",
+          "portfolio",
+          "tradeoffs"
+        ]
+      },
+      "operator": {
+        "id": "operator_view",
+        "description": "Execution view for managers and implementers.",
+        "focus": [
+          "process",
+          "sequence",
+          "dependencies",
+          "owners"
+        ]
+      },
+      "expert": {
+        "id": "expert_view",
+        "description": "Deep domain view for specialists.",
+        "focus": [
+          "method",
+          "assumptions",
+          "edge_cases"
+        ]
+      },
+      "audit": {
+        "id": "audit_view",
+        "description": "Assurance and governance view.",
+        "focus": [
+          "controls",
+          "evidence",
+          "compliance"
+        ]
+      }
+    },
+    "template_library": {
+      "doc_templates": [
+        "exec_one_pager",
+        "full_strategy_pack",
+        "operating_playbook",
+        "risk_and_decision_memo"
+      ],
+      "deck_templates": [
+        "board_update",
+        "investment_case",
+        "initiative_kickoff",
+        "postmortem_review"
+      ],
+      "table_templates": [
+        "option_comparison_matrix",
+        "risk_register",
+        "kpi_scorecard"
+      ]
+    }
+  }
+}

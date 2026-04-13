@@ -1,0 +1,12 @@
+{
+  "id": "83e9822b",
+  "timestamp": "2026-04-13T10:02:12.176368",
+  "action": "rm -rf /",
+  "action_type": "execute",
+  "target": "rm -rf /",
+  "source": "organism.execute",
+  "risk_level": "critical",
+  "decision": "blocked",
+  "reason": "Dangerous pattern detected: rm\\s+-rf\\s+/",
+  "metadata": {}
+}

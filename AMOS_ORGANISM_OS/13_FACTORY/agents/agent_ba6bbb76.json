@@ -1,0 +1,22 @@
+{
+  "id": "ba6bbb76",
+  "spec": {
+    "name": "AMOS Analyst",
+    "agent_type": "worker",
+    "kernel_refs": [
+      "AMOS_Cognition_Engine",
+      "K_MATH_COMPUTE"
+    ],
+    "capabilities": [
+      "analyze_topic",
+      "analyze_text",
+      "breakdown_complex"
+    ],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:22.496424Z",
+  "last_active": "2026-04-13T09:47:22.496426Z",
+  "execution_count": 0,
+  "error_count": 0
+}

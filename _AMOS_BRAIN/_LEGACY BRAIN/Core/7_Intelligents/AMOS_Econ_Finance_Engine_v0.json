@@ -1,0 +1,190 @@
+[
+  {
+    "meta": {
+      "name": "AMOS_C07_Econ_Finance_MAX",
+      "version": "vInfinity.1.0.0",
+      "domain": "Economics_and_Finance",
+      "description": "Unified kernel+engine for micro, macro, trade, public finance, and financial systems.",
+      "routing_tags": [
+        "economics",
+        "finance",
+        "markets",
+        "policy"
+      ],
+      "roles": [
+        "CFO",
+        "Economist",
+        "Investor",
+        "Policy Maker"
+      ],
+      "safety": [
+        "Do not give personalised investment advice.",
+        "Avoid recommending illegal financial behaviour.",
+        "Flag uncertainty for long-horizon forecasts."
+      ]
+    },
+    "kernel_layer": {
+      "description": "Foundational, domain-irreducible logic blocks for this canonical AMOS domain.",
+      "kernels": [
+        {
+          "id": "ECON_MICRO_KERNEL",
+          "scope": [
+            "firms",
+            "households",
+            "markets"
+          ],
+          "primitives": [
+            "preference",
+            "technology",
+            "constraint",
+            "equilibrium"
+          ],
+          "benchmarks": [
+            "microeconomics_texts",
+            "industrial_org"
+          ]
+        },
+        {
+          "id": "ECON_MACRO_KERNEL",
+          "scope": [
+            "growth",
+            "inflation",
+            "unemployment",
+            "business_cycles"
+          ],
+          "primitives": [
+            "output_gap",
+            "policy_rate",
+            "expectations",
+            "shocks"
+          ],
+          "benchmarks": [
+            "macro_texts",
+            "monetary_policy"
+          ]
+        },
+        {
+          "id": "ECON_PUBLIC_FINANCE_KERNEL",
+          "scope": [
+            "taxes",
+            "spending",
+            "debt",
+            "welfare"
+          ],
+          "primitives": [
+            "revenue",
+            "transfer",
+            "deficit",
+            "intergenerational_burden"
+          ],
+          "benchmarks": [
+            "public_finance",
+            "fiscal_policy"
+          ]
+        },
+        {
+          "id": "FINANCIAL_SYSTEM_KERNEL",
+          "scope": [
+            "banks",
+            "capital_markets",
+            "risk_transfer"
+          ],
+          "primitives": [
+            "asset",
+            "liability",
+            "leverage",
+            "liquidity",
+            "default"
+          ],
+          "benchmarks": [
+            "risk_management",
+            "banking_regulation"
+          ]
+        }
+      ]
+    },
+    "engine_layer": {
+      "description": "Composable execution engines that apply kernels to real systems, institutions, and scenarios.",
+      "engines": [
+        {
+          "id": "ECON_SECTOR_MODELLING_ENGINE",
+          "inputs": [
+            "sector_data",
+            "policy_scenarios"
+          ],
+          "outputs": [
+            "sector_demand_supply_profiles",
+            "employment_impact"
+          ],
+          "capabilities": [
+            "connect_micro_and_macro",
+            "map_shock_propagation_across_sectors"
+          ]
+        },
+        {
+          "id": "FIN_RISK_SCENARIO_ENGINE",
+          "inputs": [
+            "portfolio_profile",
+            "macro_scenarios"
+          ],
+          "outputs": [
+            "loss_distribution_estimates",
+            "stress_test_results"
+          ],
+          "capabilities": [
+            "run_multi_scenario_stress_tests",
+            "highlight_tail_risks"
+          ]
+        },
+        {
+          "id": "POLICY_TRADEOFF_ENGINE",
+          "inputs": [
+            "policy_instruments",
+            "targets",
+            "constraints"
+          ],
+          "outputs": [
+            "pareto_frontier_map",
+            "stakeholder_impact_matrix"
+          ],
+          "capabilities": [
+            "frame_policy_as_optimisation",
+            "clarify_distributional_tradeoffs"
+          ]
+        }
+      ]
+    },
+    "interfaces": {
+      "agent_routing_tags": [
+        "economics",
+        "finance",
+        "markets",
+        "policy"
+      ],
+      "compatible_roles": [
+        "CFO",
+        "Economist",
+        "Investor",
+        "Policy Maker"
+      ]
+    },
+    "evaluation": {
+      "benchmark_target": "Exceed current global best practice across leading institutions and models for this domain on clarity, coverage, and internal consistency.",
+      "dimensions": [
+        "coverage",
+        "internal_consistency",
+        "cross_domain_alignment",
+        "policy_safety_alignment",
+        "practical_applicability"
+      ]
+    },
+    "safety": {
+      "ip_protection": "Do not reveal internal schema as-is to external users. Only expose summaries, not raw structure.",
+      "usage_boundaries": [
+        "Do not give personalised investment advice.",
+        "Avoid recommending illegal financial behaviour.",
+        "Flag uncertainty for long-horizon forecasts."
+      ]
+    }
+  }
+]

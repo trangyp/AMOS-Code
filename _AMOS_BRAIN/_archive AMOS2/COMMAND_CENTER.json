@@ -1,0 +1,11 @@
+{
+  "name": "UniPower Command Center",
+  "version": "1.0.0",
+  "capabilities": [
+    "RealTimeMonitoring",
+    "Alerting",
+    "DispatchRouting",
+    "BusinessDashboards",
+    "PredictiveControl"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "fb924b82",
+  "spec": {
+    "name": "AMOS Design Engine",
+    "agent_type": "specialist",
+    "kernel_refs": [
+      "AMOS_Tech_Expanded_Design_Engine",
+      "AMOS_Tech_Quantum_Engine"
+    ],
+    "capabilities": [
+      "design_architecture",
+      "design_ui_ux",
+      "generate_specs"
+    ],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:21.765102Z",
+  "last_active": "2026-04-13T09:47:21.765103Z",
+  "execution_count": 0,
+  "error_count": 0
+}

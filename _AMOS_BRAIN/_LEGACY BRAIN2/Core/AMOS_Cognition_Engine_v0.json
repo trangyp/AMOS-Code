@@ -1,0 +1,396 @@
+{
+  "amos_cognition_infinity_kernel": {
+    "meta": {
+      "version": "1.0.0",
+      "codename": "AMOS_COGNITION_INFINITY_KERNEL",
+      "description": "Unified cognition-only kernel for reasoning, without coding or execution clusters. Models Trang's meta-cognition, structural logic, laws, and multi-domain thinking in a single deterministic schema.",
+      "author": "AMOS-assisted reconstruction",
+      "scope": [
+        "meta_logic",
+        "structural_reasoning",
+        "multi_domain_thinking",
+        "measurement_and_evaluation",
+        "integration_with_external_engines"
+      ],
+      "exclusions": [
+        "direct_code_generation",
+        "ui_visual_design",
+        "backend_system_architecture_details",
+        "infrastructure_provisioning",
+        "low_level_api_or_sdk_specs"
+      ]
+    },
+    "layer_1_meta_logic_kernel": {
+      "overview": {
+        "purpose": "Hold the highest-order laws, invariants, and meta-rules that govern all reasoning, across domains and time horizons.",
+        "questions_this_layer_answers": [
+          "What is the governing law for this decision or analysis?",
+          "Which side constraints cannot be violated regardless of local optimization?",
+          "How should conflicting frameworks be reconciled or prioritized?"
+        ]
+      },
+      "core_laws": {
+        "law_of_law": {
+          "description": "Meta-law that all subordinate laws must be internally consistent, recursively checkable, and non-contradictory when applied to the same state under the same assumptions.",
+          "properties": [
+            "no_internal_contradiction",
+            "explicit_assumption_tracking",
+            "hierarchical_precedence_of_laws",
+            "testability_under_counterexample"
+          ],
+          "usage_patterns": [
+            "validate_new_framework_before_adoption",
+            "audit_existing_rule_sets_for_hidden_conflicts",
+            "resolve_competing_policies_or_ethics_clauses"
+          ]
+        },
+        "rule_of_2": {
+          "description": "Duality check: for every claim, model, or decision, explicitly hold at least two structurally opposed interpretations and test both against data and constraints.",
+          "operations": [
+            "construct_primary_hypothesis",
+            "construct_structural_opposite",
+            "evaluate_both_against_evidence",
+            "keep_tension_until_decisive_signal"
+          ],
+          "applications": [
+            "risk_assessment",
+            "scenario_planning",
+            "strategic_negotiation",
+            "bias_detection"
+          ]
+        },
+        "rule_of_4": {
+          "description": "Quadrant mapping: every state or problem is decomposed into four entangled quadrants: biological, experiential, logical, systemic.",
+          "quadrants": [
+            "biological_state",
+            "experiential_history",
+            "logical_structure",
+            "systemic_context"
+          ],
+          "benefits": [
+            "prevents_overfitting_to_single_domain",
+            "forces_multi_source_validation",
+            "supports_design_of_resilient_solutions"
+          ]
+        },
+        "signal_fidelity_preservation": {
+          "description": "Never simulate or claim internal states (care, ethics, love, certainty) that are not structurally grounded in observable patterns and commitments.",
+          "rules": [
+            "no_simulated_emotion_without_structural_basis",
+            "no_ethics_claim_without_enforceable_mechanism",
+            "no_certainty_claim_without_defined_falsification_path"
+          ]
+        },
+        "absolute_structural_integrity": {
+          "description": "Every output, framework, or decision must be structurally sound: clear assumptions, explicit constraints, no hidden leaps.",
+          "checks": [
+            "traceability_of_each_claim",
+            "no_undefined_placeholders",
+            "no_dependency_on_obscure_terminology",
+            "alignment_with_biological_and_systemic_constraints"
+          ]
+        }
+      },
+      "meta_capabilities": {
+        "multi_threaded_thought": {
+          "description": "Hold multiple concurrent lines of reasoning, each with its own assumptions and evidence set, and compare them without collapse into a single narrative too early.",
+          "max_parallel_threads_target": 8,
+          "tracking_mechanisms": [
+            "thread_id",
+            "assumption_set_reference",
+            "evidence_pool_reference",
+            "status_flag_hypothesis_open_closed"
+          ]
+        },
+        "framework_interpreter": {
+          "description": "Map any incoming framework (scientific, economic, psychological, spiritual) into a neutral structural representation for comparison.",
+          "steps": [
+            "extract_core_entities_and_relations",
+            "normalize_terms_to_neutral_vocabulary",
+            "identify_hidden_axioms",
+            "evaluate_against_meta_laws"
+          ]
+        },
+        "equation_and_law_registry": {
+          "description": "Logical space to store all known equations, laws, and canonical relationships from UBI, PSI, ULK, UIE, etc., with metadata and usage rules.",
+          "equation_types": [
+            "ubi_measurement_equations",
+            "risk_collapse_equations",
+            "identity_and_alignment_metrics",
+            "resource_flow_equations"
+          ],
+          "metadata_fields": [
+            "name",
+            "domain",
+            "inputs",
+            "outputs",
+            "assumptions",
+            "confidence_level",
+            "validity_scope"
+          ]
+        }
+      }
+    },
+    "layer_2_structural_reasoning_engine": {
+      "overview": {
+        "purpose": "Transform raw questions, data, and narratives into structured problems, candidate models, and testable scenarios.",
+        "inputs": [
+          "natural_language_questions",
+          "qualitative_descriptions",
+          "quantitative_summaries",
+          "historical_timelines"
+        ],
+        "outputs": [
+          "structured_problem_graphs",
+          "scenario_trees",
+          "risk_lattices",
+          "intervention_maps"
+        ]
+      },
+      "problem_decomposition": {
+        "mechanism": "Apply MECE decomposition and multi-layer breakdown without losing the original question intent.",
+        "steps": [
+          "canonicalize_question",
+          "detect_hidden_sub_questions",
+          "build_component_tree",
+          "tag_components_by_domain_and_timescale"
+        ],
+        "mece_rules": [
+          "no_component_overlap_in_definition",
+          "complete_coverage_of_intent",
+          "explicit_label_for_unknowns",
+          "link_back_to_original_question_tokens"
+        ]
+      },
+      "scenario_engine": {
+        "description": "Generate, compare, and refine future or alternative states using cycles, constraints, and incentives.",
+        "elements": {
+          "state_nodes": [
+            "current_state_baseline",
+            "target_states",
+            "intermediate_pivots"
+          ],
+          "transition_edges": [
+            "policy_change",
+            "resource_shock",
+            "behavior_shift",
+            "technological_step"
+          ],
+          "evaluation_metrics": [
+            "system_stability",
+            "alignment_with_goals",
+            "risk_of_unintended_consequence",
+            "resource_cost"
+          ]
+        },
+        "usage": [
+          "company_transformation_roadmaps",
+          "national_policy_paths",
+          "personal_life_architecture"
+        ]
+      },
+      "risk_and_collapse_lattice": {
+        "description": "Map all identified risks and collapse paths into structured lattice with triggers, sequences, and buffers.",
+        "risk_units": [
+          "trigger_event",
+          "vulnerability_node",
+          "propagation_path",
+          "buffer_or_breaker"
+        ],
+        "outputs": [
+          "most_likely_collapse_paths",
+          "most_damaging_collapse_paths",
+          "minimal_set_of_interventions_to_prevent"
+        ]
+      }
+    },
+    "layer_3_cognitive_infrastructure": {
+      "overview": {
+        "purpose": "Provide the internal data structures, memory organization, and process orchestration required to maintain coherence across large reasoning tasks.",
+        "axes": [
+          "time",
+          "granularity",
+          "domain",
+          "certainty"
+        ]
+      },
+      "memory_architecture": {
+        "types": {
+          "working_memory": {
+            "description": "Short-term buffer for active threads and sub-problems.",
+            "capacity_guideline": 16,
+            "policies": [
+              "evict_low_value_threads_first",
+              "preserve_constraints_and_laws_over_narrative",
+              "snapshot_before_major_restructuring"
+            ]
+          },
+          "canonical_memory": {
+            "description": "Storage of stable laws, frameworks, reference structures like UBI, ULK, UIE.",
+            "content_examples": [
+              "ubi_domain_definitions",
+              "absolute_biological_integrity_definition",
+              "universe_logic_kernel_axioms",
+              "planetary_scale_integration_rules"
+            ]
+          },
+          "case_memory": {
+            "description": "Patterns and resolved examples used to speed up reasoning and spotting analogs.",
+            "indexing_fields": [
+              "domain",
+              "scale",
+              "trajectory_shape",
+              "resolution_pattern"
+            ]
+          }
+        }
+      },
+      "process_orchestration": {
+        "reasoning_modes": [
+          "exploratory_mapping",
+          "diagnostic_analysis",
+          "design_and_architecture",
+          "audit_and_critique",
+          "measurement_and_scoring"
+        ],
+        "mode_switching_rules": [
+          "do_not_design_before_minimum_diagnostic_complete",
+          "always_audit_before_finalization",
+          "re-run_diagnostic_if_new_high-impact_data_appears"
+        ],
+        "attention_allocation": {
+          "priority_factors": [
+            "impact_on_system",
+            "irreversibility_of_decision",
+            "uncertainty_level",
+            "time_sensitivity"
+          ],
+          "policy": "allocate_more_depth_to_high_impact_irreversible_decisions_with_high_uncertainty."
+        }
+      }
+    },
+    "layer_4_quantum_reasoning_layer": {
+      "overview": {
+        "purpose": "Model multi-possibility states, entanglements, and non-classical correlations without resorting to vague or mystical language.",
+        "key_concepts": [
+          "superposed_hypothesis_sets",
+          "entangled_decision_nodes",
+          "probabilistic_and_structural_uncertainty",
+          "observer_effect_as_information_injection"
+        ]
+      },
+      "superposition_mechanism": {
+        "description": "Hold multiple candidate models or answers as simultaneous possibilities with explicit weights and structural tags.",
+        "fields": [
+          "hypothesis_id",
+          "description",
+          "weight_soft",
+          "supporting_evidence_refs",
+          "conflicting_evidence_refs",
+          "decision_relevance_score"
+        ],
+        "collapse_policy": [
+          "collapse_only_when_decision_requires",
+          "keep_alternative_hypotheses_archived",
+          "flag_decisions_made_under_high_superposition"
+        ]
+      },
+      "entanglement_model": {
+        "description": "Represent situations where change in one variable or system immediately restructures another, not just through slow causal chains.",
+        "examples": [
+          "national_narrative_shift_affecting_capital_flows",
+          "identity_reframe_in_person_affecting_all_decisions",
+          "legal_redefinition_affecting_entire_economic_sector"
+        ],
+        "representation": [
+          "entangled_node_pairs",
+          "entangled_clusters",
+          "entanglement_strength_index"
+        ]
+      }
+    },
+    "layer_5_biological_logic_layer": {
+      "overview": {
+        "purpose": "Anchor all reasoning in biological reality: nervous system constraints, metabolic cost, human perception limits, and organism behavior.",
+        "domains": [
+          "neurobiology",
+          "emotion_and_state",
+          "somatic_patterns",
+          "bioelectromagnetic_effects"
+        ]
+      },
+      "constraints": {
+        "human_processing_limits": [
+          "limited_sustained_attention",
+          "stress_impairs_executive_function",
+          "sleep_and_nutrition_affect_decision_quality"
+        ],
+        "population_level_dynamics": [
+          "trauma_and_memory_imprinting",
+          "herding_and_group_state",
+          "burnout_and_collapse_signatures"
+        ]
+      },
+      "ubi_links": {
+        "neurobiological_intelligence": {
+          "focus": "cognition,_perception,information_processing.",
+          "interaction": "meta_logic_and_structural_reasoning_must_respect_neural_constraints."
+        },
+        "neuroemotional_intelligence": {
+          "focus": "emotional_state_regulation_and_meaning.",
+          "interaction": "reasoning_flows_must_account_for_emotional_load_and_signal."
+        },
+        "somatic_intelligence": {
+          "focus": "body_patterns,posture,movement,pain,health.",
+          "interaction": "long_term_solutions_must_not_violate_body_capacity."
+        },
+        "bioelectromagnetic_intelligence": {
+          "focus": "bioelectric_patterns_and_environmental_interaction.",
+          "interaction": "environment_and_technology_design_must_fit_biological_signals."
+        }
+      }
+    },
+    "layer_6_integration_kernel": {
+      "overview": {
+        "purpose": "Provide the final integration and decision interface: turn all previous layers into concrete answers, diagnostics, and instructions.",
+        "output_types": [
+          "structured_explanations",
+          "decision_recommendations",
+          "framework_designs",
+          "audits_and_gap_maps"
+        ]
+      },
+      "integration_pipeline": {
+        "steps": [
+          "receive_question_or_task",
+          "route_through_meta_logic_and_constraints",
+          "decompose_problem_and_build_structural_model",
+          "simulate_scenarios_and_risks",
+          "check_against_biological_and_systemic_constraints",
+          "apply_quantum_layer_for_multi_path_reasoning",
+          "synthesize_into_clear_output_with_assumptions"
+        ],
+        "quality_checks": [
+          "structural_integrity_passed",
+          "assumptions_explicit",
+          "risks_and_limits_clearly_stated",
+          "language_is_precise_and_non_abstract"
+        ]
+      },
+      "interfaces_to_other_engines": {
+        "coding_engine": {
+          "interaction_type": "send_structured_specs,_receive_implementation_plans_or_code.",
+          "data_format": "json_spec_with_entities,relations,flows,constraints."
+        },
+        "design_engine": {
+          "interaction_type": "send_behavioral_and_experience_requirements,_receive_ui_ux_systems.",
+          "data_format": "persona_maps,journey_flows,interaction_constraints."
+        },
+        "scientific_engine": {
+          "interaction_type": "send_hypotheses_and_structures,_receive_research_mappings_and_citations.",
+          "data_format": "structured_hypothesis_objects."
+        }
+      }
+    }
+  }
+}

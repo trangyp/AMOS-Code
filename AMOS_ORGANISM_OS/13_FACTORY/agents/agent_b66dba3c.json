@@ -1,0 +1,20 @@
+{
+  "id": "b66dba3c",
+  "spec": {
+    "name": "AMOS Unified OS Agent",
+    "agent_type": "orchestrator",
+    "kernel_refs": [
+      "AMOS_BRAIN_ROOT",
+      "AMOS_KERNEL_CONFIG",
+      "AMOS_EXPRESSION_TRANSLATION",
+      "AMOS_Omni_KERNEL"
+    ],
+    "capabilities": [],
+    "constraints": {}
+  },
+  "status": "idle",
+  "created_at": "2026-04-13T09:47:22.494954Z",
+  "last_active": "2026-04-13T09:47:22.495110Z",
+  "execution_count": 0,
+  "error_count": 0
+}

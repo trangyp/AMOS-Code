@@ -1,0 +1,380 @@
+{
+  "engine_name": "C11_Design_Language",
+  "version": "v1.0.0",
+  "author": "Trang Phan (canonical owner)",
+  "description": "C11 design language is the unified structural design system for all AMOS / UBI / NeuroSyncAI surfaces, documents, products, and interfaces. It defines visual, linguistic, interaction, and information-pattern rules with absolute structural integrity.",
+  "governance": {
+    "principles": [
+      "Structure over decoration",
+      "Information hierarchy over visual noise",
+      "No metaphor, no abstraction, no emotional framing",
+      "Every visual or linguistic element must map to a function",
+      "Consistency across all surfaces and media",
+      "Accessibility and low-cognitive-load by default"
+    ],
+    "ownership": {
+      "canonical_owner": "Trang Phan",
+      "change_control": "Any change to core C11 tokens or rules must be explicitly audited for structural integrity and versioned."
+    }
+  },
+  "tokens": {
+    "color": {
+      "tiers": {
+        "primary": [
+          "C11.primary.100",
+          "C11.primary.80",
+          "C11.primary.60"
+        ],
+        "accent": [
+          "C11.accent.100",
+          "C11.accent.60"
+        ],
+        "neutral": [
+          "C11.neutral.100",
+          "C11.neutral.80",
+          "C11.neutral.60",
+          "C11.neutral.40"
+        ],
+        "state": {
+          "success": "C11.state.success",
+          "warning": "C11.state.warning",
+          "error": "C11.state.error",
+          "info": "C11.state.info"
+        }
+      },
+      "rules": [
+        "Use a maximum of one primary and one accent color per view.",
+        "Structural information must never rely on color alone.",
+        "State colors are reserved for status, alerts, and validation, not for decoration."
+      ]
+    },
+    "typography": {
+      "scales": {
+        "display": [
+          "C11.type.display",
+          "C11.type.h1"
+        ],
+        "headline": [
+          "C11.type.h2",
+          "C11.type.h3"
+        ],
+        "body": [
+          "C11.type.body",
+          "C11.type.body_small"
+        ],
+        "mono": [
+          "C11.type.code"
+        ]
+      },
+      "rules": [
+        "One primary body font, one mono font. No additional font families.",
+        "Headlines carry structural information (section, priority) not style expression.",
+        "Maximum three type sizes per single screen or page."
+      ]
+    },
+    "spacing": {
+      "scale": [
+        "4",
+        "8",
+        "12",
+        "16",
+        "24",
+        "32",
+        "40"
+      ],
+      "rules": [
+        "Use spacing tokens only from the scale, no arbitrary values.",
+        "Between unrelated blocks: at least 24.",
+        "Between related elements: 8 or 12.",
+        "Whitespace is treated as an information-divider, not decoration."
+      ]
+    },
+    "elevation": {
+      "levels": [
+        "flat",
+        "raised",
+        "overlay"
+      ],
+      "rules": [
+        "Use elevation only to indicate interaction priority or hierarchy.",
+        "Maximum one overlay level per view.",
+        "Avoid strong shadows; prefer subtle separation."
+      ]
+    },
+    "radius": {
+      "tokens": [
+        "0",
+        "4",
+        "8",
+        "16"
+      ],
+      "rules": [
+        "Use consistent radius per product family.",
+        "Charts, cards, and input fields must align on radius choice."
+      ]
+    }
+  },
+  "layout_system": {
+    "grid": {
+      "desktop": {
+        "columns": 12,
+        "min_gutter": 16,
+        "max_content_width": 1280
+      },
+      "tablet": {
+        "columns": 8,
+        "min_gutter": 12,
+        "max_content_width": 960
+      },
+      "mobile": {
+        "columns": 4,
+        "min_gutter": 8,
+        "max_content_width": 480
+      },
+      "rules": [
+        "Always align key elements to the grid.",
+        "Do not center-align dense information blocks; left-align text and metrics.",
+        "Use vertical rhythm based on spacing tokens, not arbitrary heights."
+      ]
+    },
+    "information_hierarchy": {
+      "levels": [
+        "Level 1: page / view purpose",
+        "Level 2: main sections (3–5 max)",
+        "Level 3: components / groups",
+        "Level 4: fields / labels / micro-metadata"
+      ],
+      "rules": [
+        "Every screen must have exactly one Level 1 element.",
+        "No more than 5 Level 2 areas per screen.",
+        "If information exceeds these bounds, introduce pagination or drill-down views."
+      ]
+    }
+  },
+  "component_library": {
+    "primitive_components": [
+      "Text",
+      "Heading",
+      "Button",
+      "Input",
+      "Select",
+      "Checkbox",
+      "Radio",
+      "Badge",
+      "Card",
+      "Table",
+      "ChartFrame",
+      "Tag",
+      "IconSlot"
+    ],
+    "composed_components": [
+      "MetricCard",
+      "Timeline",
+      "SummaryPanel",
+      "SideNav",
+      "TopNav",
+      "FilterBar",
+      "InspectorPanel",
+      "Dialog",
+      "Toast",
+      "StatusStrip",
+      "WizardStepper",
+      "PromptEditor",
+      "ResultPanel"
+    ],
+    "rules": [
+      "Components must be structurally named by function, not metaphor (e.g. SummaryPanel, not StoryBox).",
+      "Each component must have a single primary action and clear states: default, hover, active, disabled.",
+      "Do not duplicate components with minor stylistic changes; use variants."
+    ]
+  },
+  "interaction_patterns": {
+    "principles": [
+      "Predictable over clever",
+      "Low click and low cognitive load",
+      "One clear next step per state",
+      "Undo and escape paths must be visible"
+    ],
+    "patterns": {
+      "navigation": [
+        "Primary navigation: side or top, persistent.",
+        "Secondary navigation: tabs or segmented controls within a single context.",
+        "Do not mix more than 2 navigation styles per surface."
+      ],
+      "forms": [
+        "Group fields by task, not by database structure.",
+        "Show required fields clearly; avoid hiding constraints.",
+        "Inline validation with precise, neutral language."
+      ],
+      "flows": [
+        "Linear flows (WizardStepper) for high-risk actions.",
+        "Branching flows only when necessary and clearly labelled.",
+        "Always indicate current step and total steps."
+      ]
+    }
+  },
+  "linguistic_system": {
+    "languages": [
+      "en",
+      "vi"
+    ],
+    "tone": [
+      "Neutral",
+      "Precise",
+      "Instructional",
+      "Non-emotional",
+      "Non-metaphorical"
+    ],
+    "rules": [
+      "Avoid adjectives that express value judgement (e.g. amazing, fantastic, terrible).",
+      "Use verbs that indicate observable action (view, save, compare, export, run).",
+      "Labels must be unambiguous even out of context.",
+      "Error messages must describe what happened and what the user can do next."
+    ],
+    "key_mappings": {
+      "en": {
+        "dashboard": "Dashboard",
+        "run_analysis": "Run analysis",
+        "save_changes": "Save changes",
+        "cancel": "Cancel",
+        "export": "Export",
+        "filter": "Filter",
+        "status": "Status",
+        "details": "Details"
+      },
+      "vi": {
+        "dashboard": "Bảng điều khiển",
+        "run_analysis": "Chạy phân tích",
+        "save_changes": "Lưu thay đổi",
+        "cancel": "Hủy",
+        "export": "Xuất dữ liệu",
+        "filter": "Lọc",
+        "status": "Trạng thái",
+        "details": "Chi tiết"
+      }
+    }
+  },
+  "content_patterns": {
+    "doc_types": [
+      "Whitepaper",
+      "Playbook",
+      "SystemSpec",
+      "ProcessGuide",
+      "Report",
+      "DashboardView"
+    ],
+    "structure_templates": {
+      "Whitepaper": [
+        "Introduction",
+        "Purpose and Scope",
+        "Architecture and Logic",
+        "Methods",
+        "Findings",
+        "Limitations",
+        "Applications",
+        "References"
+      ],
+      "Playbook": [
+        "Purpose",
+        "Context",
+        "Inputs",
+        "Steps",
+        "Decision Points",
+        "Failure Modes",
+        "Examples"
+      ],
+      "SystemSpec": [
+        "Overview",
+        "Terminology",
+        "Architecture",
+        "Data Model",
+        "Interfaces",
+        "Governance and Safety",
+        "Examples"
+      ]
+    },
+    "rules": [
+      "Each document type must follow its template unless there is a deliberate, documented reason to diverge.",
+      "Use headings to encode structure, not for emphasis.",
+      "No decorative quotes or slogans in system documentation."
+    ]
+  },
+  "accessibility": {
+    "rules": [
+      "Ensure sufficient color contrast based on WCAG-level guidance.",
+      "Support keyboard navigation for all interactive elements.",
+      "Provide text alternatives for icons and non-text UI.",
+      "Do not rely on animation for critical information.",
+      "Avoid motion-heavy or flashing visuals."
+    ]
+  },
+  "localisation": {
+    "supported_locales": [
+      "en-US",
+      "en-GB",
+      "vi-VN"
+    ],
+    "rules": [
+      "All static text must be externalised to language files.",
+      "Do not hard-code strings into components.",
+      "When in doubt, prioritise clarity of meaning over word-for-word translation.",
+      "Numbers, dates, and currencies must respect locale standards where relevant."
+    ]
+  },
+  "evaluation": {
+    "checklists": {
+      "screen_review": [
+        "Is the primary purpose of the screen clear within 3 seconds?",
+        "Is there exactly one primary action?",
+        "Are there at most 5 main sections?",
+        "Are tokens (color, type, spacing) consistent with C11?",
+        "Is error handling clear and recoverable?"
+      ],
+      "doc_review": [
+        "Does the document follow its structural template?",
+        "Are all claims supported, traceable, or clearly marked as hypothesis?",
+        "Is language neutral and precise?",
+        "Are diagrams readable and structurally necessary?"
+      ]
+    },
+    "scoring": {
+      "visual_consistency_score": {
+        "range": [
+          0,
+          100
+        ]
+      },
+      "information_clarity_score": {
+        "range": [
+          0,
+          100
+        ]
+      },
+      "interaction_predictability_score": {
+        "range": [
+          0,
+          100
+        ]
+      },
+      "linguistic_precision_score": {
+        "range": [
+          0,
+          100
+        ]
+      }
+    }
+  },
+  "integration": {
+    "with_UBI": [
+      "NBI: Layout and information architecture show cognitive structure clearly.",
+      "NEI: Visual and interaction design minimise emotional overload and noise.",
+      "SI: Typography and density respect somatic comfort and fatigue limits.",
+      "BEI: Themes and cycles can be visually mapped without visual clutter."
+    ],
+    "with_AMOS_engines": [
+      "Design Engine: Uses C11 tokens and templates as the default output style.",
+      "Coding Engine: Uses C11 naming and file structuring conventions in UI-related code.",
+      "Scientific Engine: Uses C11 doc templates for all scientific outputs."
+    ]
+  }
+}

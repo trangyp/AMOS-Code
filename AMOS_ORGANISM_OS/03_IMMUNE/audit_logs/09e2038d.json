@@ -1,0 +1,12 @@
+{
+  "id": "09e2038d",
+  "timestamp": "2026-04-13T10:02:12.176099",
+  "action": "echo hello",
+  "action_type": "execute",
+  "target": "echo hello",
+  "source": "organism.execute",
+  "risk_level": "high",
+  "decision": "blocked",
+  "reason": "Approved with caution",
+  "metadata": {}
+}

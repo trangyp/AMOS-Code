@@ -1,0 +1,480 @@
+{
+  "meta": {
+    "name": "VN_Driver_Charging_Logistics_SUPER_Engine_vInfinity_clean",
+    "version": "vInfinity_clean_2.0.0",
+    "created_at_utc": "2025-11-27T09:22:50.183031Z",
+    "description": "Refactored, size-optimised version of VN_Driver_Charging_Logistics_SUPER_Engine_x100k. Removes explicit x100k layers and keeps a canonical virtual expansion model plus all axes for drivers, logistics, charging, roles, scenarios, and Vietnam geography.",
+    "country": "Vietnam",
+    "density_profile": "x100k_virtual_kernel_only",
+    "primitive_count": 19,
+    "domain_count": 9,
+    "province_count": 63,
+    "source_engine": "VN_Driver_Charging_Logistics_SUPER_Engine_x100k"
+  },
+  "engine": {
+    "primitives": [
+      "driver",
+      "vehicle",
+      "charging_point",
+      "battery_asset",
+      "route",
+      "trip",
+      "session",
+      "tariff",
+      "payment_flow",
+      "energy_flow",
+      "grid_node",
+      "policy_rule",
+      "contract",
+      "service_plan",
+      "maintenance_event",
+      "downtime_event",
+      "safety_event",
+      "data_stream",
+      "control_signal"
+    ],
+    "vn_domains": [
+      "driver_behaviour_and_experience",
+      "vehicle_and_fleet_management",
+      "charging_infrastructure_network",
+      "energy_grid_and_load_interaction",
+      "pricing_payments_and_finance",
+      "digital_os_and_data_integration",
+      "regulation_policy_and_compliance",
+      "city_ecosystem_and_urban_planning",
+      "logistics_and_last_mile_networks"
+    ],
+    "vn_geography": {
+      "provinces_63": [
+        "Ha Noi",
+        "Ho Chi Minh",
+        "Hai Phong",
+        "Da Nang",
+        "Can Tho",
+        "An Giang",
+        "Ba Ria – Vung Tau",
+        "Bac Giang",
+        "Bac Kan",
+        "Bac Lieu",
+        "Bac Ninh",
+        "Ben Tre",
+        "Binh Dinh",
+        "Binh Duong",
+        "Binh Phuoc",
+        "Binh Thuan",
+        "Ca Mau",
+        "Cao Bang",
+        "Dak Lak",
+        "Dak Nong",
+        "Dien Bien",
+        "Dong Nai",
+        "Dong Thap",
+        "Gia Lai",
+        "Ha Giang",
+        "Ha Nam",
+        "Ha Tinh",
+        "Hai Duong",
+        "Hau Giang",
+        "Hoa Binh",
+        "Hung Yen",
+        "Khanh Hoa",
+        "Kien Giang",
+        "Kon Tum",
+        "Lai Chau",
+        "Lam Dong",
+        "Lang Son",
+        "Lao Cai",
+        "Long An",
+        "Nam Dinh",
+        "Nghe An",
+        "Ninh Binh",
+        "Ninh Thuan",
+        "Phu Tho",
+        "Phu Yen",
+        "Quang Binh",
+        "Quang Nam",
+        "Quang Ngai",
+        "Quang Ninh",
+        "Quang Tri",
+        "Soc Trang",
+        "Son La",
+        "Tay Ninh",
+        "Thai Binh",
+        "Thai Nguyen",
+        "Thanh Hoa",
+        "Thua Thien Hue",
+        "Tien Giang",
+        "Tra Vinh",
+        "Tuyen Quang",
+        "Vinh Long",
+        "Vinh Phuc",
+        "Yen Bai"
+      ],
+      "urban_archetypes": [
+        "mega_city_core",
+        "tier1_urban",
+        "tier2_city",
+        "industrial_cluster",
+        "tourism_cluster",
+        "rural_town",
+        "remote_area"
+      ]
+    },
+    "vehicle_and_ownership": {
+      "vehicle_segments": [
+        "ev_2w_motorbike",
+        "ev_3w_taxi",
+        "ev_4w_passenger_car",
+        "ev_4w_taxi_ridehail",
+        "ev_minibus_shuttle",
+        "ev_bus_city",
+        "ev_truck_light",
+        "ev_truck_heavy"
+      ],
+      "ownership_models": [
+        "private_individual",
+        "small_fleet_owner",
+        "corporate_fleet",
+        "platform_fleet_operator",
+        "public_transport_operator"
+      ]
+    },
+    "charging_stack": {
+      "charging_site_types": [
+        "home_charging",
+        "apartment_shared_parking",
+        "office_campus",
+        "mall_parking",
+        "street_side_public",
+        "bus_depot",
+        "truck_depot",
+        "highway_service_area",
+        "battery_swap_station",
+        "micro_hub_last_mile"
+      ],
+      "connector_types": [
+        "ac_slow",
+        "ac_fast",
+        "dc_fast",
+        "dc_ultrafast",
+        "battery_swap"
+      ],
+      "session_patterns": [
+        "opportunistic_top_up",
+        "overnight_depot",
+        "overnight_home",
+        "en_route_fast_charge",
+        "peak_hour_fast_turnover"
+      ],
+      "payment_modes": [
+        "qr_wallet",
+        "bank_card",
+        "telco_wallet",
+        "subscription_plan",
+        "postpaid_invoice",
+        "gov_subsidy_credit"
+      ]
+    },
+    "roles_layer": [
+      {
+        "id": "driver_individual",
+        "description": "Individual driver or rider using EV for personal or income use."
+      },
+      {
+        "id": "fleet_owner",
+        "description": "Entity owning multiple EVs (SME or corporate)."
+      },
+      {
+        "id": "platform_operator",
+        "description": "Ride-hail, delivery, or mobility platform controlling demand."
+      },
+      {
+        "id": "cpo",
+        "description": "Charging Point Operator managing sites and uptime."
+      },
+      {
+        "id": "emsp",
+        "description": "e-Mobility Service Provider managing driver-facing app and access."
+      },
+      {
+        "id": "oem",
+        "description": "Vehicle and battery manufacturer or assembler."
+      },
+      {
+        "id": "dso_dno",
+        "description": "Distribution or grid operator in Vietnam context."
+      },
+      {
+        "id": "city_regulator",
+        "description": "City-level authority defining urban rules."
+      },
+      {
+        "id": "national_regulator",
+        "description": "National-level bodies defining policy."
+      },
+      {
+        "id": "fintech_bank",
+        "description": "Bank, e-wallet, or payment gateway provider."
+      },
+      {
+        "id": "infra_investor",
+        "description": "Investor in charging and energy infrastructure."
+      }
+    ],
+    "time_and_scenarios": {
+      "time_horizons": [
+        "now_0_2_years",
+        "near_2_5_years",
+        "mid_5_10_years",
+        "long_10_plus_years"
+      ],
+      "scenarios": [
+        "baseline_adoption",
+        "rapid_2w_4w_switch",
+        "bus_fleet_electrification",
+        "logistics_electrification",
+        "policy_push_subsidies",
+        "grid_constraint_shock",
+        "technology_breakthrough",
+        "economic_downturn",
+        "climate_event_disruption"
+      ]
+    },
+    "virtual_expansion_model": {
+      "density_level": "x100k_virtual",
+      "virtual_layer_count": 100000,
+      "axes": {
+        "primitive": [
+          "driver",
+          "vehicle",
+          "charging_point",
+          "battery_asset",
+          "route",
+          "trip",
+          "session",
+          "tariff",
+          "payment_flow",
+          "energy_flow",
+          "grid_node",
+          "policy_rule",
+          "contract",
+          "service_plan",
+          "maintenance_event",
+          "downtime_event",
+          "safety_event",
+          "data_stream",
+          "control_signal"
+        ],
+        "domain": [
+          "driver_behaviour_and_experience",
+          "vehicle_and_fleet_management",
+          "charging_infrastructure_network",
+          "energy_grid_and_load_interaction",
+          "pricing_payments_and_finance",
+          "digital_os_and_data_integration",
+          "regulation_policy_and_compliance",
+          "city_ecosystem_and_urban_planning",
+          "logistics_and_last_mile_networks"
+        ],
+        "province": [
+          "Ha Noi",
+          "Ho Chi Minh",
+          "Hai Phong",
+          "Da Nang",
+          "Can Tho",
+          "An Giang",
+          "Ba Ria – Vung Tau",
+          "Bac Giang",
+          "Bac Kan",
+          "Bac Lieu",
+          "Bac Ninh",
+          "Ben Tre",
+          "Binh Dinh",
+          "Binh Duong",
+          "Binh Phuoc",
+          "Binh Thuan",
+          "Ca Mau",
+          "Cao Bang",
+          "Dak Lak",
+          "Dak Nong",
+          "Dien Bien",
+          "Dong Nai",
+          "Dong Thap",
+          "Gia Lai",
+          "Ha Giang",
+          "Ha Nam",
+          "Ha Tinh",
+          "Hai Duong",
+          "Hau Giang",
+          "Hoa Binh",
+          "Hung Yen",
+          "Khanh Hoa",
+          "Kien Giang",
+          "Kon Tum",
+          "Lai Chau",
+          "Lam Dong",
+          "Lang Son",
+          "Lao Cai",
+          "Long An",
+          "Nam Dinh",
+          "Nghe An",
+          "Ninh Binh",
+          "Ninh Thuan",
+          "Phu Tho",
+          "Phu Yen",
+          "Quang Binh",
+          "Quang Nam",
+          "Quang Ngai",
+          "Quang Ninh",
+          "Quang Tri",
+          "Soc Trang",
+          "Son La",
+          "Tay Ninh",
+          "Thai Binh",
+          "Thai Nguyen",
+          "Thanh Hoa",
+          "Thua Thien Hue",
+          "Tien Giang",
+          "Tra Vinh",
+          "Tuyen Quang",
+          "Vinh Long",
+          "Vinh Phuc",
+          "Yen Bai"
+        ],
+        "urban_archetype": [
+          "mega_city_core",
+          "tier1_urban",
+          "tier2_city",
+          "industrial_cluster",
+          "tourism_cluster",
+          "rural_town",
+          "remote_area"
+        ],
+        "vehicle_segment": [
+          "ev_2w_motorbike",
+          "ev_3w_taxi",
+          "ev_4w_passenger_car",
+          "ev_4w_taxi_ridehail",
+          "ev_minibus_shuttle",
+          "ev_bus_city",
+          "ev_truck_light",
+          "ev_truck_heavy"
+        ],
+        "ownership_model": [
+          "private_individual",
+          "small_fleet_owner",
+          "corporate_fleet",
+          "platform_fleet_operator",
+          "public_transport_operator"
+        ],
+        "charging_site_type": [
+          "home_charging",
+          "apartment_shared_parking",
+          "office_campus",
+          "mall_parking",
+          "street_side_public",
+          "bus_depot",
+          "truck_depot",
+          "highway_service_area",
+          "battery_swap_station",
+          "micro_hub_last_mile"
+        ],
+        "connector_type": [
+          "ac_slow",
+          "ac_fast",
+          "dc_fast",
+          "dc_ultrafast",
+          "battery_swap"
+        ],
+        "session_pattern": [
+          "opportunistic_top_up",
+          "overnight_depot",
+          "overnight_home",
+          "en_route_fast_charge",
+          "peak_hour_fast_turnover"
+        ],
+        "payment_mode": [
+          "qr_wallet",
+          "bank_card",
+          "telco_wallet",
+          "subscription_plan",
+          "postpaid_invoice",
+          "gov_subsidy_credit"
+        ],
+        "stakeholder_role": [
+          "driver_individual",
+          "fleet_owner",
+          "platform_operator",
+          "cpo",
+          "emsp",
+          "oem",
+          "dso_dno",
+          "city_regulator",
+          "national_regulator",
+          "fintech_bank",
+          "infra_investor"
+        ],
+        "time_horizon": [
+          "now_0_2_years",
+          "near_2_5_years",
+          "mid_5_10_years",
+          "long_10_plus_years"
+        ],
+        "scenario": [
+          "baseline_adoption",
+          "rapid_2w_4w_switch",
+          "bus_fleet_electrification",
+          "logistics_electrification",
+          "policy_push_subsidies",
+          "grid_constraint_shock",
+          "technology_breakthrough",
+          "economic_downturn",
+          "climate_event_disruption"
+        ]
+      },
+      "notes": [
+        "Each driver–charging stateframe in Vietnam is one point in this combination space.",
+        "Use this model to derive specific route, charging, pricing, and investment frames without storing 100k rows.",
+        "Acts as the canonical VN driver and charging kernel for AMOS."
+      ]
+    },
+    "policies": {
+      "interpretation_policy": {
+        "description": "How to interpret a Vietnam driver and charging stateframe.",
+        "rules": [
+          "A stateframe is a structured description of how a vehicle type, driver, and charging pattern interact with the grid, prices, and policy in a specific province and urban archetype.",
+          "Stateframes are analytical constructs, not direct measurements or forecasts.",
+          "Multiple stateframes may be combined to describe alternative pathways to electrification."
+        ]
+      },
+      "usage_policy": {
+        "description": "How to use the engine in planning and analysis.",
+        "rules": [
+          "Use the engine to generate structured scenarios and option sets, not deterministic predictions.",
+          "Align outputs with current Vietnamese regulation, tariffs, and market data before implementation.",
+          "For high-stakes investment or public policy, require additional expert and data validation."
+        ]
+      },
+      "safety_and_grid_policy": {
+        "description": "Safety boundaries related to grid, pricing, and driver well-being.",
+        "rules": [
+          "Do not propose charging patterns that exceed plausible grid capacity or ignore basic safety standards.",
+          "Avoid plans that would encourage unsafe driving behaviour or unrealistic working hours.",
+          "Flag scenarios with concentrated fast charging at weak grid nodes as HIGH_RISK for further engineering review."
+        ]
+      }
+    },
+    "routing": {
+      "task_router": {
+        "description": "Maps user tasks to engine domains and axes.",
+        "examples": [
+          "If the task is about driver income → emphasise domains: driver_behaviour_and_experience, pricing_payments_and_finance.",
+          "If the task is about depot design → emphasise vehicle_and_fleet_management, charging_infrastructure_network, energy_grid_and_load_interaction.",
+          "If the task is about city policy → emphasise regulation_policy_and_compliance, city_ecosystem_and_urban_planning, energy_grid_and_load_interaction.",
+          "If the task is about fintech or QR payments → emphasise pricing_payments_and_finance, digital_os_and_data_integration."
+        ],
+        "fallback": "If routing is ambiguous, start with driver_behaviour_and_experience and charging_infrastructure_network, then refine."
+      }
+    }
+  }
+}
