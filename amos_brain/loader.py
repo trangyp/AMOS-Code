@@ -1,8 +1,8 @@
 """Brain configuration loader - loads and validates AMOS brain JSON specs."""
 from __future__ import annotations
 
+import asyncio
 import json
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -108,9 +108,32 @@ class BrainLoader:
             except Exception:
                 pass  # Skip invalid files
 
+    async def load_async(self, timeout_seconds: float = 5.0) -> BrainConfig:
+        """Async load with timeout protection to prevent UI hanging.
+
+        Args:
+            timeout_seconds: Maximum time to wait for loading (default 5s)
+
+        Returns:
+            BrainConfig instance
+
+        Raises:
+            TimeoutError: If loading takes longer than timeout_seconds
+        """
+        loop = asyncio.get_event_loop()
+        try:
+            return await asyncio.wait_for(
+                loop.run_in_executor(None, self.load),
+                timeout=timeout_seconds
+            )
+        except asyncio.TimeoutError:
+            # Return a minimal config on timeout to prevent hanging
+            self._config = BrainConfig()
+            return self._config
+
     def _load_cognitive_stack(self, path: Path) -> None:
         """Load cognitive stack organization."""
-        stack_data = {}
+        stack_data: dict[str, Any] = {}
         for category_dir in path.iterdir():
             if category_dir.is_dir():
                 category_name = category_dir.name
@@ -148,4 +171,23 @@ def get_brain() -> BrainLoader:
     if _brain_loader is None:
         _brain_loader = BrainLoader()
         _brain_loader.load()
+    return _brain_loader
+
+
+async def get_brain_async(timeout_seconds: float = 5.0) -> BrainLoader:
+    """Get or create global brain loader instance asynchronously with timeout.
+
+    This prevents the IDE from showing 'taking a long time' messages
+    when brain loading is slow due to large JSON files.
+
+    Args:
+        timeout_seconds: Maximum time to wait for loading (default 5s)
+
+    Returns:
+        BrainLoader instance (may have minimal config if timeout occurred)
+    """
+    global _brain_loader
+    if _brain_loader is None:
+        _brain_loader = BrainLoader()
+        await _brain_loader.load_async(timeout_seconds)
     return _brain_loader

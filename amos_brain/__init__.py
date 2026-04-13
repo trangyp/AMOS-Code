@@ -1,6 +1,6 @@
 """AMOS Brain Integration Layer - Connects cognitive architecture to agent runtime."""
 
-from .loader import BrainLoader, get_brain, BrainConfig
+from .loader import BrainLoader, get_brain, get_brain_async, BrainConfig
 from .cognitive_stack import CognitiveStack, DomainEngine
 from .reasoning import ReasoningEngine, RuleOfTwo, RuleOfFour, Perspective, Quadrant
 from .laws import GlobalLaws, UBILaws, Law
@@ -29,6 +29,7 @@ __all__ = [
     # Core brain
     "BrainLoader",
     "get_brain",
+    "get_brain_async",
     "BrainConfig",
     # Cognitive stack
     "CognitiveStack",
