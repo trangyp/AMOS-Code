@@ -315,7 +315,8 @@ class AMOSOrganism:
             "active_subsystems": self.state["active_subsystems"],
             "brain_state": self._brain.get_state() if self._brain else None,
             "skeleton_state": self._skeleton.get_state() if self._skeleton else None,
-            "immune_state": self._immune.get_state() if self._immune else None
+            "immune_state": self._immune.get_state() if self._immune else None,
+            "blood_state": self._blood.get_state() if self._blood else None
         }
     
     def interactive_mode(self):
