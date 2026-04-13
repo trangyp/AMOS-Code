@@ -24,12 +24,26 @@ class BrainConfig:
 class BrainLoader:
     """Loads AMOS brain specifications from JSON files."""
 
-    LEGACY_CORE_PATH = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_AMOS_BRAIN/_LEGACY BRAIN/Core")
+    DEFAULT_CORE_CANDIDATES = [
+        Path(__file__).resolve().parent / "_AMOS_BRAIN" / "_LEGACY BRAIN" / "Core",
+        Path(__file__).resolve().parent / "_AMOS_BRAIN",
+        Path(__file__).resolve().parent.parent / "_AMOS_BRAIN" / "_LEGACY BRAIN" / "Core",
+        Path(__file__).resolve().parent.parent / "_AMOS_BRAIN",
+    ]
 
     def __init__(self, core_path: Path | None = None):
-        self.core_path = core_path or self.LEGACY_CORE_PATH
+        self.core_path = core_path or self._resolve_core_path()
         self._config: BrainConfig | None = None
         self._raw_specs: dict[str, Any] = {}
+
+    def _resolve_core_path(self) -> Path:
+        for candidate in self.DEFAULT_CORE_CANDIDATES:
+            if candidate.exists():
+                return candidate
+        raise FileNotFoundError(
+            "Could not locate AMOS brain core data. "
+            "Pass core_path explicitly or place the data under _AMOS_BRAIN."
+        )
 
     def load(self) -> BrainConfig:
         """Load all brain specifications and merge into runtime config."""

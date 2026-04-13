@@ -111,7 +111,8 @@ def demo_2_cognitive_analysis(amos):
     if "rule_of_two" in analysis:
         r2 = analysis["rule_of_two"]
         print(f"\n✓ {color('Rule of 2', 'green')} (Dual Perspective):")
-        print(f"  Confidence: {color(f'{r2.get(\"confidence\", 0):.0%}', 'green')}")
+        confidence_val = r2.get('confidence', 0)
+        print(f"  Confidence: {color(f'{confidence_val:.0%}', 'green')}")
         perspectives = r2.get("perspectives", [])
         for i, p in enumerate(perspectives[:2], 1):
             viewpoint = p.viewpoint if hasattr(p, 'viewpoint') else str(p)[:60]
@@ -121,7 +122,8 @@ def demo_2_cognitive_analysis(amos):
     if "rule_of_four" in analysis:
         r4 = analysis["rule_of_four"]
         print(f"\n✓ {color('Rule of 4', 'green')} (Four Quadrants):")
-        print(f"  Coverage: {color(f'{r4.get(\"completeness_score\", 0):.0%}', 'green')}")
+        coverage_val = r4.get('completeness_score', 0)
+        print(f"  Coverage: {color(f'{coverage_val:.0%}', 'green')}")
         print(f"  Quadrants analyzed: {len(r4.get('quadrants_analyzed', []))}/4")
 
     # Recommendations
@@ -158,7 +160,8 @@ def demo_3_cookbook_workflows():
         print(f"\nRunning {color(name, 'yellow')}...")
         try:
             result = workflow_fn()
-            print(f"  ✓ Confidence: {color(f'{result.confidence:.0%}', 'green')}")
+            confidence_pct = result.confidence
+            print(f"  ✓ Confidence: {color(f'{confidence_pct:.0%}', 'green')}")
             print(f"  ✓ Recommendations: {len(result.recommendations)}")
             if result.recommendations:
                 print(f"    Top: {result.recommendations[0][:60]}...")

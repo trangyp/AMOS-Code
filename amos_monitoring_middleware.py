@@ -210,9 +210,9 @@ class MonitoringMiddleware:
         @app.route('/monitoring', methods=['GET'])
         def monitoring_dashboard():
             """Serve monitoring dashboard."""
-            from flask import render_template_string
+            from pathlib import Path
             try:
-                template_path = app.root_path / 'templates' / 'monitoring.html'
+                template_path = Path(app.root_path) / 'templates' / 'monitoring.html'
                 if template_path.exists():
                     return template_path.read_text()
                 else:

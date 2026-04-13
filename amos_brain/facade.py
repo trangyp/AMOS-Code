@@ -23,6 +23,7 @@ class BrainResponse:
     law_compliant: bool
     violations: list[str]
     metadata: dict[str, Any]
+    domain: str = "general"
 
 
 @dataclass
@@ -113,7 +114,8 @@ class BrainClient:
                 "kernels_used": result.kernels_used,
                 "rule_of_two": result.rule_of_two_check,
                 "rule_of_four": result.rule_of_four_check,
-            }
+            },
+            domain=domain
         )
     
     def decide(

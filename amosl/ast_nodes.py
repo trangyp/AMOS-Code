@@ -39,13 +39,13 @@ class ASTNode:
 @dataclass
 class Program(ASTNode):
     """Root program node.
-    
-    Represents: Program = Ontology + State + Dynamics + Constraints + 
+
+    Represents: Program = Ontology + State + Dynamics + Constraints +
                           Observation + Evolution + Verification
     """
-    ontology: OntologyDecl
-    state: StateDecl
-    dynamics: DynamicsDecl
+    ontology: OntologyDecl = field(default_factory=lambda: OntologyDecl())
+    state: StateDecl = field(default_factory=lambda: StateDecl())
+    dynamics: DynamicsDecl = field(default_factory=lambda: DynamicsDecl())
     constraints: list[ConstraintDecl] = field(default_factory=list)
     effects: list[EffectDecl] = field(default_factory=list)
     measures: list[MeasureDecl] = field(default_factory=list)
