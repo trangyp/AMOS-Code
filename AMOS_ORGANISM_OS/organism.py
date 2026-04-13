@@ -90,6 +90,11 @@ class AmosOrganism:
         self.context = ContextGatherer()
         self.signals = SignalDetector()
 
+        # Initialize SKELETON (constraint layer)
+        self.constraints = ConstraintEngine()
+        self.rules = RuleValidator()
+        self.integrity = StructuralIntegrity()
+
         # Initialize IMMUNE (safety layer)
         self.immune = ImmuneSystem()
         self.threat_detector = ThreatDetector()
@@ -254,12 +259,13 @@ class AmosOrganism:
             "cycle_count": self.state.cycle_count,
             "current_subsystem": self.state.current_subsystem,
             "active_subsystems": [
-                "01_BRAIN", "02_SENSES", "03_IMMUNE", "06_MUSCLE",
-                "14_INTERFACES"
+                "01_BRAIN", "02_SENSES", "05_SKELETON", "03_IMMUNE",
+                "06_MUSCLE", "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
                 "senses": self.senses.status(),
+                "skeleton": self.constraints.status(),
                 "immune": self.immune.status(),
                 "muscle": self.muscle.status(),
                 "memory": self.memory.stats(),
@@ -280,6 +286,11 @@ class AmosOrganism:
     def gather_context(self) -> Dict[str, Any]:
         """Gather environment context."""
         return self.context.gather()
+
+    def validate_constraints(self, filepath: str) -> bool:
+        """Validate file against constraints via SKELETON."""
+        results = self.constraints.validate_file(filepath)
+        return all(r.passed for r in results)
 
     def save(self) -> Path:
         """Save organism state."""

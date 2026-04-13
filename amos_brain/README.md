@@ -2,6 +2,8 @@
 
 Connects the AMOS cognitive architecture to the ClawSpring agent runtime.
 
+📖 **Complete Usage Guide**: See [AMOS_BRAIN_GUIDE.md](../AMOS_BRAIN_GUIDE.md) for detailed documentation, examples, and best practices.
+
 ## Architecture
 
 ```
