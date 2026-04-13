@@ -337,11 +337,12 @@ class TestCookbookWorkflows(unittest.TestCase):
     def test_project_planner(self):
         """Test ProjectPlanner workflow."""
         result = ProjectPlanner.run(
-            "Build notification system",
-            timeline="6 weeks"
+            project_name="Test Project",
+            description="A test project",
+            constraints=["budget", "timeline"]
         )
 
-        self.assertEqual(result.workflow_name, "Project Planning & Estimation")
+        self.assertEqual(result.workflow_name, "Project Planner")
         self.assertIsInstance(result.recommendations, list)
 
     def test_problem_diagnosis(self):
