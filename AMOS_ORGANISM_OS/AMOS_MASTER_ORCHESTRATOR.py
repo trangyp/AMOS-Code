@@ -319,7 +319,30 @@ class ImmuneHandler(SubsystemHandler):
                 "threats_checked": True,
                 "audit_complete": True
             },
-            next_recommended="04_BLOOD"
+            next_recommended="11_LEGAL_BRAIN"
+        )
+
+
+class LifeHandler(SubsystemHandler):
+    """10_LIFE_ENGINE: Personal life management for Trang."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "check_daily_schedule",
+            "update_habit_streaks",
+            "calculate_life_balance"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "schedule_checked": True,
+                "habits_updated": True,
+                "life_balance_calculated": True
+            },
+            next_recommended="11_LEGAL_BRAIN"
         )
 
 
@@ -404,6 +427,7 @@ HANDLER_MAP: Dict[str, type] = {
     "05_SKELETON": SkeletonHandler,
     "08_WORLD_MODEL": WorldModelHandler,
     "09_SOCIAL_ENGINE": SocialHandler,
+    "10_LIFE_ENGINE": LifeHandler,
     "11_LEGAL_BRAIN": LegalHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
     "06_MUSCLE": MuscleHandler,

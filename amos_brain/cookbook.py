@@ -1,515 +1,441 @@
-"""
-AMOS Brain Cookbook - Real-world workflow examples.
-
-Pre-built workflows for common scenarios:
-  - Architecture Decision Records (ADRs)
-  - Project Planning & Estimation
-  - Problem Diagnosis & Root Cause Analysis
-  - Technology Selection
-  - Risk Assessment
-  - Post-Mortem Analysis
-
-Usage:
-  from amos_brain.cookbook import ArchitectureDecision
-  result = ArchitectureDecision.run("Should we use microservices?")
-"""
+"""AMOS Brain Cookbook - Pre-built cognitive workflows (Layer 12)."""
 from __future__ import annotations
 
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
 
-from amos_brain import get_amos_integration
-from amos_brain.memory import get_brain_memory, save_reasoning_result
+from .facade import BrainClient, think, decide
+from .state_manager import get_state_manager
 
 
 @dataclass
-class WorkflowResult:
-    """Result from running a cookbook workflow."""
-    workflow_name: str
-    problem: str
-    analysis: dict[str, Any]
-    memory_id: str
+class CookbookResult:
+    """Result from a cookbook recipe."""
+    recipe_name: str
+    input_data: str
+    analysis: str
     recommendations: list[str]
-    confidence: float
+    confidence: str
+    law_compliant: bool
+    session_id: str
 
 
 class ArchitectureDecision:
     """
-    Workflow for architecture decisions.
-
-    Use when: Choosing between architectural approaches,
-              technology stacks, or system designs.
-
+    Recipe: Architecture Decision Records (ADR).
+    
+    Use for: Technology selection, architectural patterns,
+             migration decisions, system design choices.
+    
     Example:
-        result = ArchitectureDecision.run(
-            "Should we migrate from monolith to microservices?"
+        result = ArchitectureDecision.analyze(
+            "Should we use microservices or monolith?",
+            context={"team_size": 10, "scale": "medium"}
         )
     """
-
-    WORKFLOW_NAME = "Architecture Decision Record (ADR)"
-    TEMPLATE_TAGS = ["architecture", "adr", "system-design"]
-
+    
+    RECIPE_NAME = "Architecture Decision Record"
+    
     @classmethod
-    def run(cls, problem: str, context: dict[str, Any] | None = None) -> WorkflowResult:
-        """
-        Execute architecture decision workflow.
-
-        Args:
-            problem: The architectural decision to analyze
-            context: Optional context (current stack, constraints, etc.)
-
-        Returns:
-            WorkflowResult with analysis and recommendations
-        """
-        amos = get_amos_integration()
-        memory = get_brain_memory()
-
-        # Check for similar past decisions
-        recall = memory.recall_for_problem(problem)
-        if recall.get("has_prior_reasoning"):
-            print(f"[Found {len(recall.get('similar_entries', []))} similar past decisions]")
-
-        # Enrich problem with context
-        enriched_problem = cls._enrich_problem(problem, context)
-
-        # Run analysis
-        analysis = amos.analyze_with_rules(enriched_problem)
-
-        # Architecture-specific post-processing
-        recommendations = cls._structure_recommendations(analysis)
-
-        # Save to memory
-        memory_id = memory.save_reasoning(
-            problem,
-            analysis,
-            tags=cls.TEMPLATE_TAGS
-        )
-
-        return WorkflowResult(
-            workflow_name=cls.WORKFLOW_NAME,
-            problem=problem,
-            analysis=analysis,
-            memory_id=memory_id,
-            recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
-        )
-
-    @classmethod
-    def _enrich_problem(cls, problem: str, context: dict[str, Any] | None) -> str:
-        """Enrich problem with architectural context."""
-        if not context:
-            return problem
-
-        enrichments = [f"\nContext: {problem}"]
-
-        if "current_stack" in context:
-            enrichments.append(f"Current: {context['current_stack']}")
-        if "constraints" in context:
-            enrichments.append(f"Constraints: {context['constraints']}")
-        if "scale" in context:
-            enrichments.append(f"Scale: {context['scale']}")
-        if "team_size" in context:
-            enrichments.append(f"Team: {context['team_size']}")
-
-        return "\n".join(enrichments)
-
-    @classmethod
-    def _structure_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
-        """Structure recommendations for architecture decisions."""
-        recs = []
-
-        # Rule of 2 recommendations
-        if "rule_of_two" in analysis:
-            r2 = analysis["rule_of_two"]
-            recs.append(f"[Dual-Perspective] {r2.get('recommendation', 'N/A')}")
-
-        # Rule of 4 recommendations
-        if "rule_of_four" in analysis:
-            r4 = analysis["rule_of_four"]
-            integration = r4.get("integration", {})
-            if integration.get("integrated_recommendation"):
-                recs.append(f"[Four-Quadrant] {integration['integrated_recommendation']}")
-
-        # Add generic recommendations
-        recs.extend(analysis.get("recommendations", []))
-
-        return recs
-
-
-class ProjectPlanner:
-    """
-    Workflow for project planning and estimation.
-
-    Use when: Planning a new project, estimating scope,
-              or breaking down complex work.
-
-    Example:
-        result = ProjectPlanner.run(
-            "Build a real-time analytics dashboard",
-            timeline="3 months",
-            team="2 backend, 1 frontend, 1 devops"
-        )
-    """
-
-    WORKFLOW_NAME = "Project Planning & Estimation"
-    TEMPLATE_TAGS = ["planning", "project", "estimation"]
-
-    @classmethod
-    def run(
+    def analyze(
         cls,
-        project: str,
-        timeline: str | None = None,
-        team: str | None = None,
-        constraints: list[str] | None = None
-    ) -> WorkflowResult:
-        """
-        Execute project planning workflow.
+        question: str,
+        context: dict[str, Any] | None = None
+    ) -> CookbookResult:
+        """Analyze an architectural decision."""
+        client = BrainClient()
+        sm = get_state_manager()
+        
+        # Build enriched prompt
+        prompt = f"""Architecture Decision: {question}
 
-        Args:
-            project: Project description
-            timeline: Timeline constraints
-            team: Team composition
-            constraints: List of constraints
+Consider these factors:
+- Technical feasibility and complexity
+- Team capabilities and learning curve
+- Operational overhead and maintenance
+- Scalability and performance characteristics
+- Risk assessment and mitigation strategies
 
-        Returns:
-            WorkflowResult with planning analysis
-        """
-        amos = get_amos_integration()
-        memory = get_brain_memory()
-
-        # Build enriched problem
-        problem_parts = [f"Project: {project}"]
-
-        if timeline:
-            problem_parts.append(f"Timeline: {timeline}")
-        if team:
-            problem_parts.append(f"Team: {team}")
-        if constraints:
-            problem_parts.append(f"Constraints: {', '.join(constraints)}")
-
-        problem = "\n".join(problem_parts)
-
-        # Analyze
-        analysis = amos.analyze_with_rules(problem)
-
-        # Planning-specific insights
-        recommendations = cls._planning_recommendations(analysis)
-
-        # Save
-        memory_id = memory.save_reasoning(problem, analysis, tags=cls.TEMPLATE_TAGS)
-
-        return WorkflowResult(
-            workflow_name=cls.WORKFLOW_NAME,
-            problem=project,
-            analysis=analysis,
-            memory_id=memory_id,
-            recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+Provide:
+1. Clear recommendation with justification
+2. Alternative options considered
+3. Pros/cons analysis (Rule of 2 perspectives)
+4. Implementation approach
+5. Rollback strategy"""
+        
+        if context:
+            prompt += f"\n\nContext: {context}"
+        
+        # Process through brain
+        response = client.think(prompt, domain="software")
+        
+        # Extract recommendations from reasoning
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["recommend", "suggest", "choose", "use"])
+        ][:3]
+        
+        # Create session for audit
+        session = sm.create_session(goal=f"ADR: {question[:50]}", domain="software")
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=question,
+            analysis=response.content[:500],
+            recommendations=recommendations or ["See full analysis"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=session.session_id
         )
 
+
+class CodeReview:
+    """
+    Recipe: Cognitive Code Review.
+    
+    Use for: Reviewing code changes with law compliance,
+             security analysis, best practice validation.
+    
+    Example:
+        result = CodeReview.analyze(code="def transfer_money...")
+    """
+    
+    RECIPE_NAME = "Cognitive Code Review"
+    
     @classmethod
-    def _planning_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
-        """Extract planning-specific recommendations."""
-        recs = []
+    def analyze(
+        cls,
+        code: str,
+        language: str = "python",
+        focus_areas: list[str] | None = None
+    ) -> CookbookResult:
+        """Analyze code with cognitive rules."""
+        client = BrainClient()
+        sm = get_state_manager()
+        
+        focus = focus_areas or ["security", "maintainability", "performance"]
+        
+        prompt = f"""Code Review ({language}):
 
-        # Look for risk indicators
-        if "assumptions" in analysis:
-            for assumption in analysis["assumptions"]:
-                if any(risk in assumption.lower() for risk in ["risk", "uncertain", "unknown"]):
-                    recs.append(f"[Risk] {assumption}")
+```
+{code[:1000]}
+```
 
-        # Add standard recommendations
-        recs.extend(analysis.get("recommendations", []))
+Focus areas: {', '.join(focus)}
 
-        return recs
+Apply Rule of 2:
+1. What are the strengths of this code?
+2. What are the potential issues or risks?
+
+Apply Rule of 4:
+- Technical: Code quality and patterns
+- Biological: Human readability and maintainability
+- Economic: Performance and resource usage
+- Environmental: Integration and deployment impact
+
+Identify:
+- Security vulnerabilities
+- Law of Structural Integrity violations
+- UBI alignment issues"""
+        
+        response = client.think(prompt, domain="software")
+        
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["issue", "risk", "improve", "fix", "consider"])
+        ][:5]
+        
+        session = sm.create_session(goal=f"Code review: {language}", domain="software")
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=code[:100],
+            analysis=response.content[:500],
+            recommendations=recommendations or ["No major issues found"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=session.session_id
+        )
+
+
+class SecurityAudit:
+    """
+    Recipe: Security Compliance Audit.
+    
+    Use for: Security analysis, vulnerability assessment,
+             compliance checking, threat modeling.
+    """
+    
+    RECIPE_NAME = "Security Audit"
+    
+    @classmethod
+    def analyze(
+        cls,
+        system_description: str,
+        threat_model: str = "STRIDE"
+    ) -> CookbookResult:
+        """Perform security audit."""
+        client = BrainClient()
+        sm = get_state_manager()
+        
+        prompt = f"""Security Audit ({threat_model}):
+
+System: {system_description}
+
+Apply security analysis:
+1. Identify attack surfaces
+2. Map trust boundaries
+3. Analyze data flow risks
+4. Check authentication/authorization
+5. Review input validation
+6. Assess logging and monitoring
+
+Apply Rule of 2:
+- Attacker perspective: How would you exploit this?
+- Defender perspective: How would you protect this?
+
+Check against Global Laws:
+- L4: Structural Integrity (secure by design)
+- L5: Clear communication of risks
+- L6: Universal benefit alignment (privacy, safety)"""
+        
+        response = client.think(prompt, domain="security")
+        
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["risk", "vulnerab", "threat", "mitigate", "protect"])
+        ][:5]
+        
+        session = sm.create_session(goal="Security audit", domain="security")
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=system_description[:100],
+            analysis=response.content[:500],
+            recommendations=recommendations or ["Review analysis"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=session.session_id
+        )
+
+
+class DesignPattern:
+    """
+    Recipe: Design Pattern Selection.
+    
+    Use for: Choosing design patterns, refactoring decisions,
+             pattern implementation guidance.
+    """
+    
+    RECIPE_NAME = "Design Pattern Selection"
+    
+    @classmethod
+    def select(
+        cls,
+        problem: str,
+        available_patterns: list[str] | None = None
+    ) -> CookbookResult:
+        """Select appropriate design pattern."""
+        client = BrainClient()
+        
+        patterns = available_patterns or [
+            "Singleton", "Factory", "Observer", "Strategy",
+            "Decorator", "Adapter", "Command", "Repository"
+        ]
+        
+        prompt = f"""Design Pattern Selection:
+
+Problem: {problem}
+
+Available patterns: {', '.join(patterns)}
+
+Analyze using Rule of 2:
+1. When is each pattern the RIGHT choice?
+2. When is each pattern the WRONG choice?
+
+Apply Rule of 4:
+- Technical: Implementation complexity
+- Biological: Developer understanding
+- Economic: Maintenance cost
+- Environmental: Integration fit
+
+Recommend the best pattern with justification."""
+        
+        response = client.think(prompt, domain="software")
+        
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["pattern", "recommend", "use", "choose"])
+        ][:3]
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=problem,
+            analysis=response.content[:500],
+            recommendations=recommendations or ["See analysis"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=""
+        )
 
 
 class ProblemDiagnosis:
     """
-    Workflow for problem diagnosis and root cause analysis.
-
-    Use when: Debugging complex issues, investigating outages,
-              or analyzing failures.
-
-    Example:
-        result = ProblemDiagnosis.run(
-            "API latency spikes during peak hours",
-            symptoms=["500ms+ response times", "only 2-4 PM"],
-            checked=["database", "caching"]
-        )
+    Recipe: Root Cause Analysis.
+    
+    Use for: Debugging, incident analysis, problem investigation,
+             root cause identification.
     """
-
-    WORKFLOW_NAME = "Problem Diagnosis & RCA"
-    TEMPLATE_TAGS = ["diagnosis", "debugging", "rca", "incident"]
-
+    
+    RECIPE_NAME = "Root Cause Analysis"
+    
     @classmethod
-    def run(
+    def diagnose(
         cls,
         problem: str,
-        symptoms: list[str] | None = None,
-        checked: list[str] | None = None,
-        timeline: str | None = None
-    ) -> WorkflowResult:
-        """
-        Execute problem diagnosis workflow.
+        symptoms: list[str],
+        context: str = ""
+    ) -> CookbookResult:
+        """Diagnose problem root cause."""
+        client = BrainClient()
+        
+        prompt = f"""Root Cause Analysis:
 
-        Args:
-            problem: Problem description
-            symptoms: Observable symptoms
-            checked: Components already checked
-            timeline: When problem started/occurs
+Problem: {problem}
 
-        Returns:
-            WorkflowResult with diagnosis analysis
-        """
-        amos = get_amos_integration()
-        memory = get_brain_memory()
+Symptoms:
+{chr(10).join(f'- {s}' for s in symptoms)}
 
-        # Build problem statement
-        parts = [f"Problem: {problem}"]
+Context: {context}
 
-        if symptoms:
-            parts.append(f"Symptoms: {', '.join(symptoms)}")
-        if checked:
-            parts.append(f"Already checked: {', '.join(checked)}")
-        if timeline:
-            parts.append(f"Timeline: {timeline}")
+Apply 5 Whys methodology:
+1. Why does this symptom occur?
+2. Why does THAT happen?
+3. Continue until root cause found
 
-        full_problem = "\n".join(parts)
+Apply Rule of 2:
+- Observable symptoms vs underlying cause
+- Immediate fix vs systemic solution
 
-        # Check for similar past issues
-        recall = memory.recall_for_problem(problem)
-        if recall.get("has_prior_reasoning"):
-            print("[Similar past issues found - checking for known solutions]")
+Apply Rule of 4:
+- Technical: Code/system issues
+- Biological: Human factors
+- Economic: Cost of fix vs impact
+- Environmental: Infrastructure/dependencies
 
-        # Analyze
-        analysis = amos.analyze_with_rules(full_problem)
-
-        # Diagnosis-specific recommendations
-        recommendations = cls._diagnosis_recommendations(analysis)
-
-        # Save with high priority tagging
-        memory_id = memory.save_reasoning(full_problem, analysis, tags=cls.TEMPLATE_TAGS)
-
-        return WorkflowResult(
-            workflow_name=cls.WORKFLOW_NAME,
-            problem=problem,
-            analysis=analysis,
-            memory_id=memory_id,
-            recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+Identify:
+- Root cause
+- Contributing factors
+- Immediate mitigation
+- Long-term prevention"""
+        
+        response = client.think(prompt, domain="diagnostics")
+        
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["cause", "fix", "solution", "prevent", "mitigate"])
+        ][:5]
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=problem,
+            analysis=response.content[:500],
+            recommendations=recommendations or ["Investigate further"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=""
         )
 
-    @classmethod
-    def _diagnosis_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
-        """Structure diagnosis recommendations."""
-        recs = []
 
-        # Look for uncertainty flags (potential root causes)
-        for flag in analysis.get("uncertainty_flags", []):
-            recs.append(f"[Investigate] {flag}")
-
-        # Add standard recommendations
-        recs.extend(analysis.get("recommendations", []))
-
-        return recs
-
-
-class TechnologySelection:
+class ProjectPlanner:
     """
-    Workflow for technology/tool selection.
-
-    Use when: Choosing between frameworks, libraries,
-              tools, or platforms.
-
-    Example:
-        result = TechnologySelection.run(
-            "Frontend framework",
-            options=["React", "Vue", "Svelte"],
-            criteria=["performance", "ecosystem", "learning-curve"]
-        )
+    Recipe: Project Planning & Estimation.
+    
+    Use for: Task breakdown, effort estimation, milestone planning,
+             risk assessment for projects.
     """
-
-    WORKFLOW_NAME = "Technology Selection"
-    TEMPLATE_TAGS = ["technology", "selection", "evaluation"]
-
+    
+    RECIPE_NAME = "Project Planner"
+    
     @classmethod
-    def run(
+    def plan(
         cls,
-        category: str,
-        options: list[str],
-        criteria: list[str] | None = None,
-        must_haves: list[str] | None = None
-    ) -> WorkflowResult:
-        """
-        Execute technology selection workflow.
+        project_description: str,
+        constraints: dict[str, Any] | None = None
+    ) -> CookbookResult:
+        """Create project plan with cognitive analysis."""
+        client = BrainClient()
+        
+        cons = constraints or {}
+        
+        prompt = f"""Project Planning:
 
-        Args:
-            category: Category (e.g., "database", "frontend framework")
-            options: List of options to evaluate
-            criteria: Evaluation criteria
-            must_haves: Non-negotiable requirements
+Project: {project_description}
 
-        Returns:
-            WorkflowResult with selection analysis
-        """
-        amos = get_amos_integration()
-        memory = get_brain_memory()
+Constraints: {cons}
 
-        # Build selection problem
-        parts = [f"Select {category} from: {', '.join(options)}"]
+Create plan using Rule of 2:
+1. Optimistic path (best case)
+2. Pessimistic path (risks considered)
 
-        if criteria:
-            parts.append(f"Criteria: {', '.join(criteria)}")
-        if must_haves:
-            parts.append(f"Must-haves: {', '.join(must_haves)}")
+Apply Rule of 4 analysis:
+- Technical: Architecture and implementation
+- Biological: Team capacity and skills
+- Economic: Budget and ROI
+- Environmental: Dependencies and external factors
 
-        problem = "\n".join(parts)
-
-        # Analyze
-        analysis = amos.analyze_with_rules(problem)
-
-        # Selection-specific recommendations
-        recommendations = cls._selection_recommendations(analysis, options)
-
-        # Save
-        memory_id = memory.save_reasoning(problem, analysis, tags=cls.TEMPLATE_TAGS)
-
-        return WorkflowResult(
-            workflow_name=cls.WORKFLOW_NAME,
-            problem=f"Select {category}",
-            analysis=analysis,
-            memory_id=memory_id,
-            recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+Provide:
+1. Task breakdown (WBS)
+2. Effort estimates (with uncertainty)
+3. Critical path identification
+4. Risk register
+5. Milestone schedule
+6. Resource requirements"""
+        
+        response = client.think(prompt, domain="project")
+        
+        recommendations = [
+            step for step in response.reasoning
+            if any(k in step.lower() for k in ["task", "milestone", "risk", "estimate", "plan"])
+        ][:5]
+        
+        return CookbookResult(
+            recipe_name=cls.RECIPE_NAME,
+            input_data=project_description[:100],
+            analysis=response.content[:500],
+            recommendations=recommendations or ["See plan details"],
+            confidence=response.confidence,
+            law_compliant=response.law_compliant,
+            session_id=""
         )
 
-    @classmethod
-    def _selection_recommendations(
-        cls,
-        analysis: dict[str, Any],
-        options: list[str]
-    ) -> list[str]:
-        """Structure selection recommendations."""
-        recs = []
 
-        # Extract option-specific recommendations
-        for rec in analysis.get("recommendations", []):
-            for option in options:
-                if option.lower() in rec.lower():
-                    recs.append(f"[{option}] {rec}")
-                    break
-            else:
-                recs.append(rec)
-
-        return recs
+# Convenience functions for quick usage
+def analyze_architecture(question: str, **kwargs) -> CookbookResult:
+    """Quick architecture decision analysis."""
+    return ArchitectureDecision.analyze(question, kwargs)
 
 
-class RiskAssessment:
-    """
-    Workflow for risk assessment and mitigation planning.
-
-    Use when: Evaluating risks for projects, decisions,
-              or operational changes.
-
-    Example:
-        result = RiskAssessment.run(
-            "Deploy new payment processor",
-            impacts=["revenue", "customer-trust"],
-            mitigations=["canary-deployment", "rollback-plan"]
-        )
-    """
-
-    WORKFLOW_NAME = "Risk Assessment"
-    TEMPLATE_TAGS = ["risk", "assessment", "mitigation"]
-
-    @classmethod
-    def run(
-        cls,
-        action: str,
-        impacts: list[str] | None = None,
-        mitigations: list[str] | None = None,
-        severity_threshold: str = "medium"
-    ) -> WorkflowResult:
-        """
-        Execute risk assessment workflow.
-
-        Args:
-            action: Action/decision being assessed
-            impacts: Areas of impact
-            mitigations: Planned mitigations
-            severity_threshold: Risk level threshold
-
-        Returns:
-            WorkflowResult with risk analysis
-        """
-        amos = get_amos_integration()
-        memory = get_brain_memory()
-
-        # Build problem
-        parts = [f"Risk assessment for: {action}"]
-
-        if impacts:
-            parts.append(f"Impact areas: {', '.join(impacts)}")
-        if mitigations:
-            parts.append(f"Planned mitigations: {', '.join(mitigations)}")
-
-        problem = "\n".join(parts)
-
-        # Analyze
-        analysis = amos.analyze_with_rules(problem)
-
-        # Risk-specific recommendations
-        recommendations = cls._risk_recommendations(analysis)
-
-        # Save
-        memory_id = memory.save_reasoning(problem, analysis, tags=cls.TEMPLATE_TAGS)
-
-        return WorkflowResult(
-            workflow_name=cls.WORKFLOW_NAME,
-            problem=action,
-            analysis=analysis,
-            memory_id=memory_id,
-            recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
-        )
-
-    @classmethod
-    def _risk_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
-        """Structure risk recommendations."""
-        recs = []
-
-        # Flag high-risk assumptions
-        for assumption in analysis.get("assumptions", []):
-            if any(risk in assumption.lower() for risk in ["fail", "break", "loss", "outage"]):
-                recs.append(f"[High Risk] {assumption}")
-
-        recs.extend(analysis.get("recommendations", []))
-
-        return recs
+def review_code(code: str, **kwargs) -> CookbookResult:
+    """Quick code review."""
+    return CodeReview.analyze(code, **kwargs)
 
 
-# Convenience functions for quick access
-def decide_architecture(problem: str, **context) -> WorkflowResult:
-    """Quick access to architecture decision workflow."""
-    return ArchitectureDecision.run(problem, context)
+def audit_security(system: str, **kwargs) -> CookbookResult:
+    """Quick security audit."""
+    return SecurityAudit.analyze(system, **kwargs)
 
 
-def plan_project(project: str, **kwargs) -> WorkflowResult:
-    """Quick access to project planning workflow."""
-    return ProjectPlanner.run(project, **kwargs)
+def select_pattern(problem: str, **kwargs) -> CookbookResult:
+    """Quick design pattern selection."""
+    return DesignPattern.select(problem, **kwargs)
 
 
-def diagnose_problem(problem: str, **kwargs) -> WorkflowResult:
-    """Quick access to problem diagnosis workflow."""
-    return ProblemDiagnosis.run(problem, **kwargs)
+def diagnose_problem(problem: str, symptoms: list[str], **kwargs) -> CookbookResult:
+    """Quick problem diagnosis."""
+    return ProblemDiagnosis.diagnose(problem, symptoms, **kwargs)
 
 
-def select_technology(category: str, options: list[str], **kwargs) -> WorkflowResult:
-    """Quick access to technology selection workflow."""
-    return TechnologySelection.run(category, options, **kwargs)
-
-
-def assess_risk(action: str, **kwargs) -> WorkflowResult:
-    """Quick access to risk assessment workflow."""
-    return RiskAssessment.run(action, **kwargs)
+def plan_project(description: str, **kwargs) -> CookbookResult:
+    """Quick project planning."""
+    return ProjectPlanner.plan(description, **kwargs)

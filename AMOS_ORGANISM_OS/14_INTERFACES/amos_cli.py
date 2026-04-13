@@ -300,6 +300,36 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_life(args) -> int:
+    """Interact with LIFE engine."""
+    root = get_organism_root()
+    life_dir = root / "10_LIFE_ENGINE"
+
+    sys.path.insert(0, str(life_dir))
+    from life_engine import LifeEngine
+
+    engine = LifeEngine(root)
+
+    if args.action == "status":
+        status = engine.get_status()
+        print("LIFE Engine Status")
+        print("=" * 40)
+        print(f"Status: {status['status']}")
+        print(f"Routines: {status['routines']['completed_today']}/"
+              f"{status['routines']['total']} completed")
+        print(f"Habits tracked: {status['habits']['total']}")
+        print(f"Active goals: {status['goals']['active']}")
+
+    elif args.action == "schedule":
+        schedule = engine.get_today_schedule()
+        print("\nToday's Schedule:")
+        for item in schedule:
+            status = "✓" if item["completed"] else "○"
+            print(f"  {status} [{item['time']}] {item['activity']}")
+
+    return 0
+
+
 def cmd_immune(args) -> int:
     """Interact with IMMUNE security system."""
     root = get_organism_root()
@@ -502,6 +532,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--target", "-g", help="Target for validation"
     )
     immune_parser.set_defaults(func=cmd_immune)
+
+    # Life command
+    life_parser = subparsers.add_parser(
+        "life", help="Personal life management (LIFE)"
+    )
+    life_parser.add_argument(
+        "action", choices=["status", "schedule"], nargs="?",
+        default="status"
+    )
+    life_parser.set_defaults(func=cmd_life)
 
     args = parser.parse_args(argv)
 

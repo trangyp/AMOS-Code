@@ -346,12 +346,13 @@ class LifeEngine:
 
     def get_status(self) -> Dict[str, Any]:
         """Get life engine status."""
+        today_str = datetime.utcnow().strftime("%Y-%m-%d")
         # Count completed routines today
         routines_done = sum(1 for r in self.routines if r.completed)
 
         return {
             "status": "operational",
-            "date": today,
+            "date": today_str,
             "routines": {
                 "total": len(self.routines),
                 "completed_today": routines_done,
