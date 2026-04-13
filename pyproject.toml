@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "amos-brain"
 version = "3.05.5"
-description = "AMOS Brain - Unified Cognitive Architecture for AI Agents with Rule of 2, Rule of 4, and Global Laws L1-L6"
+description = "AMOS Brain - Absolute Meta Operating System. A unified cognitive architecture for AI agents with Rule of 2, Rule of 4, and Global Laws L1-L6"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"

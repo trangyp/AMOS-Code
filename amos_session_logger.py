@@ -107,6 +107,8 @@ class AMOSSessionLogger:
             start_time=datetime.now().isoformat(),
             metadata=metadata or {}
         )
+        # Save immediately so other processes can load it
+        self._save_session()
         return session_id
 
     def end_session(self) -> dict[str, Any]:
@@ -289,6 +291,13 @@ def main():
             f.write(sid)
 
     elif args.command == 'end':
+        # Try to load current session
+        try:
+            with open('/tmp/amos_current_session') as f:
+                sid = f.read().strip()
+            logger.current_session = logger._load_session(sid)
+        except Exception:
+            pass
         stats = logger.end_session()
         print(json.dumps(stats, indent=2))
 
@@ -310,6 +319,13 @@ def main():
         print("Logged" if success else "No active session")
 
     elif args.command == 'stats':
+        # Try to load current session
+        try:
+            with open('/tmp/amos_current_session') as f:
+                sid = f.read().strip()
+            logger.current_session = logger._load_session(sid)
+        except Exception:
+            pass
         stats = logger.get_current_stats()
         print(json.dumps(stats, indent=2))
 

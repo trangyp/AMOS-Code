@@ -1,4 +1,4 @@
-# AMOS Brain - Unified Cognitive Architecture for AI Agents
+# AMOS Brain - Absolute Meta Operating System
 
 **A comprehensive AI agent framework with structured reasoning, cognitive compliance, and multi-agent orchestration.**
 

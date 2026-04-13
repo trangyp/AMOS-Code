@@ -1,4 +1,4 @@
-# AMOS Brain - 统一认知架构 AI 代理
+# AMOS Brain - 绝对元操作系统 (Absolute Meta Operating System)
 
 **一个具有结构化推理、认知合规和多代理编排的综合性 AI 代理框架。**
 
