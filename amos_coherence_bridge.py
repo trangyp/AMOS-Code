@@ -29,7 +29,7 @@ class CoherenceLocalBridge:
     def __init__(
         self,
         runtime: AMOSLocalRuntime | None = None,
-        coherence_engine: CoherenceEngine | None = None,
+        coherence_engine: AMOSCoherenceEngine | None = None,
     ):
         self.runtime = runtime or create_local_runtime()
         self.coherence = coherence_engine or AMOSCoherenceEngine()
@@ -67,7 +67,7 @@ class CoherenceLocalBridge:
 
         # Step 3: Intervention selection (local)
         intervention = self.intervention_selector.select(
-            state, analysis.pattern, analysis.clarity_score
+            analysis, state, analysis.clarity_score
         )
 
         # Step 4: Generate response via local LLM
@@ -149,8 +149,8 @@ Respond with clarity, compassion, and structural precision.
         interventions = {
             "MIRROR": f"I hear you saying: {message}",
             "GROUND": "Let's take a moment to breathe and ground ourselves.",
-            "CLARIFY": "Can you help me understand what is most important now?",
-            "SIMPLIFY": "It sounds complex. What is one small step to focus on?",
+            "CLARIFY": "Can you help me understand what is most important?",
+            "SIMPLIFY": "It sounds complex. What is one small step to focus?",
         }
         return interventions.get(intervention.name, "Tell me more.")
 

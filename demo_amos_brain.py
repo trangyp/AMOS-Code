@@ -73,8 +73,8 @@ def demo_law_enforcement():
     print(f"  Result: {'✓' if passed else '✗'} {result}")
 
     no_counter = None
-    failed, result = laws.enforce_l2_dual_check(analysis, no_counter)
-    print(f"  Without counter: {'✓' if failed else '✗'} {result}")
+    passed_without_counter, result = laws.enforce_l2_dual_check(analysis, no_counter)
+    print(f"  Without counter: {'✓' if passed_without_counter else '✗'} {result}")
     print()
 
     # L4: Communication check
