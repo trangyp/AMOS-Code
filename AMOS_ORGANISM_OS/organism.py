@@ -276,13 +276,14 @@ class AmosOrganism:
             "current_subsystem": self.state.current_subsystem,
             "active_subsystems": [
                 "01_BRAIN", "02_SENSES", "05_SKELETON", "08_WORLD_MODEL",
-                "03_IMMUNE", "06_MUSCLE", "14_INTERFACES"
+                "07_METABOLISM", "03_IMMUNE", "06_MUSCLE", "14_INTERFACES"
             ],
             "subsystems": {
                 "brain": self.brain.status(),
                 "senses": self.senses.status(),
                 "skeleton": self.constraints.status(),
                 "world_model": self.knowledge.status(),
+                "metabolism": self.pipeline.status(),
                 "immune": self.immune.status(),
                 "muscle": self.muscle.status(),
                 "memory": self.memory.stats(),

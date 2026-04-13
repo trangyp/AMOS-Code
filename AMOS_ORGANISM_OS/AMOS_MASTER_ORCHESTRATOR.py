@@ -56,6 +56,7 @@ PRIMARY_LOOP = [
     "04_BLOOD",  # Financial engine - active
     "05_SKELETON",
     "08_WORLD_MODEL",
+    "09_SOCIAL_ENGINE",  # Agent communication
     "12_QUANTUM_LAYER",
     "06_MUSCLE",
     "07_METABOLISM",
