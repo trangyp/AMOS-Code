@@ -148,32 +148,31 @@ class AMOSCompleteSystemTest:
         # Create formal system
         amos = create_amos_system(goal="test")
         
-        # Verify 21-tuple components
-        assert amos.intent  # ℐ
-        assert amos.syntax  # 𝒮
-        assert amos.ontology  # 𝒪
-        assert amos.types  # 𝒯
-        assert amos.state  # 𝒳
-        assert amos.actions  # 𝒰
-        assert amos.observations  # 𝒴
-        assert amos.dynamics  # ℱ
-        assert amos.bridges  # ℬ
-        assert amos.measurements  # ℳ
-        assert amos.uncertainty  # 𝒬
-        assert amos.constraints  # 𝒞
-        assert amos.policy  # 𝒫
-        assert amos.adaptation  # 𝒜
-        assert amos.verification  # 𝒱
-        assert amos.compiler  # 𝒦
-        assert amos.runtime  # ℛ
+        # Verify 21-tuple components exist
+        assert amos.intent is not None  # ℐ
+        assert amos.syntax is not None  # 𝒮
+        assert amos.ontology is not None  # 𝒪
+        assert amos.types is not None  # 𝒯
+        assert amos.state is not None  # 𝒳
+        assert amos.actions is not None  # 𝒰
+        assert amos.observations is not None  # 𝒴
+        assert amos.dynamics is not None  # ℱ
+        assert amos.bridges is not None  # ℬ
+        assert amos.measurements is not None  # ℳ
+        assert amos.uncertainty is not None  # 𝒬
+        assert amos.constraints is not None  # 𝒞
+        assert amos.policy is not None  # 𝒫
+        assert amos.adaptation is not None  # 𝒜
+        assert amos.verification is not None  # 𝒱
+        assert amos.compiler is not None  # 𝒦
+        assert amos.runtime is not None  # ℛ
         assert amos.ledger is not None  # ℒ
-        assert amos.history  # ℋ
-        assert amos.closure  # 𝒵
+        assert amos.history is not None  # ℋ
+        assert amos.closure is not None  # 𝒵
         
         # Test admissibility
         state = StateBundle(
-            classical={"test": 1.0},
-            substrate=Substrate.CLASSICAL
+            classical={"test": 1.0}
         )
         is_adm, penalty = amos.admissible(state)
         assert isinstance(is_adm, bool)

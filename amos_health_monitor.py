@@ -133,12 +133,18 @@ class AMOSHealthMonitor:
         """Get current health (non-async version)."""
         if self.health_history:
             return self.health_history[-1]
-        return SystemHealth(
-            overall=HealthStatus.UNKNOWN,
-            checks=[],
-            timestamp=datetime.utcnow(),
-            uptime_seconds=time.time() - self._start_time
-        )
+        # Run checks if no history exists
+        import asyncio
+        try:
+            return asyncio.get_event_loop().run_until_complete(self.check_health())
+        except RuntimeError:
+            # No event loop running, return default
+            return SystemHealth(
+                overall=HealthStatus.UNKNOWN,
+                checks=[],
+                timestamp=datetime.utcnow(),
+                uptime_seconds=time.time() - self._start_time
+            )
     
     def get_health_trend(self, hours: int = 24) -> Dict:
         """Analyze health trend over time."""
