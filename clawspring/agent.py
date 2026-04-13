@@ -11,9 +11,14 @@ import tools as _tools_init  # ensure built-in tools are registered on import
 from providers import stream, AssistantTurn, TextChunk, ThinkingChunk
 from compaction import maybe_compact
 
-# AMOS Brain integration (optional)
+# AMOS Brain integration (standalone package)
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 try:
-    from amos_runtime import get_runtime, analyze_task
+    from amos_brain import get_amos_integration
+    from amos_brain.cookbook import ArchitectureDecision
     _amos_available = True
 except Exception:
     _amos_available = False
