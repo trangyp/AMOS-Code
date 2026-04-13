@@ -55,6 +55,10 @@ from MUSCLE.executor import MuscleExecutor
 from MUSCLE.code_runner import CodeRunner
 from MUSCLE.workflow_engine import WorkflowEngine
 from MUSCLE.brain_muscle_bridge import BrainMuscleBridge, get_brain_muscle_bridge
+from FACTORY.agent_factory import AgentFactory
+from FACTORY.code_generator import CodeGenerator
+from FACTORY.builder_engine import BuilderEngine
+from FACTORY.quality_checker import QualityChecker
 
 
 @dataclass
@@ -136,6 +140,12 @@ class AmosOrganism:
         self.muscle = MuscleExecutor()
         self.code_runner = CodeRunner()
         self.workflow = WorkflowEngine()
+
+        # Initialize FACTORY (code generation layer)
+        self.agent_factory = AgentFactory(self.root_dir)
+        self.code_generator = CodeGenerator()
+        self.builder = BuilderEngine(self.root_dir)
+        self.quality = QualityChecker()
 
         # Register workflow handlers
         self._register_workflow_handlers()

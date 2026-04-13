@@ -76,7 +76,7 @@ Provide:
         ][:3]
         
         # Create session for audit
-        session = sm.create_session(goal=f"ADR: {question[:50]}", domain="software")
+        session_id = sm.start_session(goal=f"ADR: {question[:50]}", domain="software")
         
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
@@ -85,7 +85,7 @@ Provide:
             recommendations=recommendations or ["See full analysis"],
             confidence=response.confidence,
             law_compliant=response.law_compliant,
-            session_id=session.session_id
+            session_id=session_id
         )
 
 
@@ -145,7 +145,7 @@ Identify:
             if any(k in step.lower() for k in ["issue", "risk", "improve", "fix", "consider"])
         ][:5]
         
-        session = sm.create_session(goal=f"Code review: {language}", domain="software")
+        session_id = sm.start_session(goal=f"Code review: {language}", domain="software")
         
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
@@ -154,7 +154,7 @@ Identify:
             recommendations=recommendations or ["No major issues found"],
             confidence=response.confidence,
             law_compliant=response.law_compliant,
-            session_id=session.session_id
+            session_id=session_id
         )
 
 
@@ -206,7 +206,7 @@ Check against Global Laws:
             if any(k in step.lower() for k in ["risk", "vulnerab", "threat", "mitigate", "protect"])
         ][:5]
         
-        session = sm.create_session(goal="Security audit", domain="security")
+        session_id = sm.start_session(goal="Security audit", domain="security")
         
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
@@ -215,7 +215,7 @@ Check against Global Laws:
             recommendations=recommendations or ["Review analysis"],
             confidence=response.confidence,
             law_compliant=response.law_compliant,
-            session_id=session.session_id
+            session_id=session_id
         )
 
 

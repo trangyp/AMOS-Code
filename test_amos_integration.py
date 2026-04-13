@@ -182,6 +182,16 @@ class TestRunner:
         print("\n[Agent Loop]")
 
         def test():
+            import sys
+            from pathlib import Path
+            # Ensure paths are set up for agent import
+            clawspring_path = Path(__file__).parent / "clawspring"
+            if str(clawspring_path) not in sys.path:
+                sys.path.insert(0, str(clawspring_path))
+            root_path = Path(__file__).parent
+            if str(root_path) not in sys.path:
+                sys.path.insert(0, str(root_path))
+
             from agent import _amos_available, _get_enhanced_system_prompt
             assert _amos_available, "AMOS not available in agent"
             enhanced = _get_enhanced_system_prompt("Test prompt", use_amos=True)

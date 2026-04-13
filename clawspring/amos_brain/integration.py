@@ -24,7 +24,12 @@ class AMOSBrainIntegration:
     def runtime(self):
         """Lazy-load runtime to prevent blocking during initialization."""
         if self._runtime is None:
-            from ..amos_runtime import get_runtime
+            try:
+                # Try relative import first (when loaded as part of clawspring package)
+                from ..amos_runtime import get_runtime
+            except ImportError:
+                # Fall back to absolute import (when loaded standalone)
+                from clawspring.amos_runtime import get_runtime
             self._runtime = get_runtime()
         return self._runtime
 

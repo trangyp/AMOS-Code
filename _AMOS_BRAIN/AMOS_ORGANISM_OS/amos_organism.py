@@ -292,6 +292,30 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize WORLD_MODEL: {e}")
     
+    def _init_quantum(self):
+        """Initialize the QUANTUM_LAYER subsystem."""
+        try:
+            quantum_path = self.root / "09_QUANTUM_LAYER"
+            
+            # Add to path and import directly
+            if str(quantum_path) not in sys.path:
+                sys.path.insert(0, str(quantum_path))
+            
+            # Clear any cached module
+            if 'quantum_layer_kernel' in sys.modules:
+                del sys.modules['quantum_layer_kernel']
+            
+            import quantum_layer_kernel
+            importlib.reload(quantum_layer_kernel)
+            
+            self._quantum = quantum_layer_kernel.QuantumLayerKernel(self.root)
+            self._subsystems["09_QUANTUM_LAYER"] = self._quantum
+            self.state["active_subsystems"].append("09_QUANTUM_LAYER")
+            
+            logger.info("QUANTUM_LAYER subsystem initialized with probabilistic computing")
+        except Exception as e:
+            logger.error(f"Failed to initialize QUANTUM_LAYER: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:

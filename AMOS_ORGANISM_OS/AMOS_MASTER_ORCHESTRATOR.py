@@ -61,6 +61,7 @@ PRIMARY_LOOP = [
     "10_LIFE_ENGINE",  # Personal life management
     "11_LEGAL_BRAIN",  # Compliance and governance
     "12_QUANTUM_LAYER",
+    "13_FACTORY",  # Agent factory
     "06_MUSCLE",
     "07_METABOLISM",
 ]
@@ -411,7 +412,30 @@ class LegalHandler(SubsystemHandler):
                 "governance_validated": True,
                 "risks_assessed": True
             },
-            next_recommended="12_QUANTUM_LAYER"
+            next_recommended="06_MUSCLE"
+        )
+
+
+class FactoryHandler(SubsystemHandler):
+    """13_FACTORY: Agent creation and management."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "sync_agent_registry",
+            "monitor_agent_health",
+            "spawn_needed_agents"
+        ]
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "registry_synced": True,
+                "agents_monitored": True,
+                "spawned_count": 0
+            },
+            next_recommended="06_MUSCLE"
         )
 
 
@@ -430,6 +454,7 @@ HANDLER_MAP: Dict[str, type] = {
     "10_LIFE_ENGINE": LifeHandler,
     "11_LEGAL_BRAIN": LegalHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
+    "13_FACTORY": FactoryHandler,
     "06_MUSCLE": MuscleHandler,
     "07_METABOLISM": MetabolismHandler,
 }

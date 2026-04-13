@@ -1,8 +1,8 @@
-[English](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/README.md) | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.CN.MD)  |[한국어](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/README.DE.MD) | Português
+[English](https://github.com/trangyp/AMOS-Code/blob/main/README.md) | [中文](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.CN.MD)  |[한국어](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.KO.MD) | [日本語](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.JP.MD) | [Deutsch](https://github.com/trangyp/AMOS-Code/blob/main/docs/README.DE.MD) | Português
 
 <div align="center">
-  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+  <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/trangyp/AMOS-Code)">
+    <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
   </a>
 
 
@@ -10,15 +10,15 @@
 <p align="center">
     <a href="https://github.com/chauncygu/collection-claude-code-source-code">La fuente más reciente sobre Claude Code</a>
     ·
-    <a href="https://github.com/SafeRL-Lab/nano-claude-code/issues">Issues</a>
+    <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
   ·
-    <a href="https://deepwiki.com/SafeRL-Lab/nano-claude-code">Introducción breve</a>
+    <a href="https://deepwiki.com/trangyp/AMOS-Code">Introducción breve</a>
 
   </p>
 </div>
 
  <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/demo.gif" width="850"/> 
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>
@@ -30,7 +30,7 @@
 - 06:00 PM, 03 de abril de 2026: **v3.03** — Sistema de gestión de tareas (paquete `task/`): herramientas `TaskCreate` / `TaskUpdate` / `TaskGet` / `TaskList` con IDs secuenciales, aristas de dependencia (`blocks`/`blocked_by`), metadatos, persistencia en `.nano_claude/tasks.json`, almacenamiento seguro para hilos, comando REPL `/tasks`, 37 pruebas nuevas (**~9500** líneas de Python).
 - 02:50 PM, 03 de abril de 2026: **v3.02** — Sistema de plugins (paquete `plugin/`): instalar/desinstalar/habilitar/deshabilitar/actualizar mediante CLI `/plugin`, motor de recomendación (coincidencia por palabras clave + etiquetas), múltiples ámbitos (usuario/proyecto), marketplace basado en git. Herramienta `AskUserQuestion`: preguntas interactivas al usuario en mitad de una tarea, con opciones numeradas y entrada libre (**~8500** líneas de Python).
 - 10:00 AM, 03 de abril de 2026: **v3.01** — Soporte para MCP (Model Context Protocol): paquete `mcp/`, transportes stdio + SSE + HTTP, descubrimiento automático de herramientas, comando `/mcp`, 34 pruebas nuevas (**~7000** líneas de Python).
-- 12:20 PM, 02 de abril de 2026: **v3.0** — Paquetes multiagente (`multi_agent/`), memoria (`memory/`), habilidades (`skill/`) con habilidades integradas, sustitución de argumentos, ejecución fork/inline, búsqueda de memoria con IA, aislamiento con git worktree, definiciones de tipos de agente (**~5000** líneas de Python), ver [actualización](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/update_readme_v3.0.md).
+- 12:20 PM, 02 de abril de 2026: **v3.0** — Paquetes multiagente (`multi_agent/`), memoria (`memory/`), habilidades (`skill/`) con habilidades integradas, sustitución de argumentos, ejecución fork/inline, búsqueda de memoria con IA, aislamiento con git worktree, definiciones de tipos de agente (**~5000** líneas de Python), ver [actualización](https://github.com/trangyp/AMOS-Code/blob/main/docs/update_readme_v3.0.md).
 - 10:00 AM, 02 de abril de 2026: **v2.0** — Compresión de contexto, memoria, subagentes, habilidades, vista diff, sistema de plugins de herramientas (**~3400** líneas de Python).
 - 01:47 PM, 01 de abril de 2026: Soporte para inferencia con VLLM (**~2000** líneas de Python).
 - 11:30 AM, 01 de abril de 2026: Soporte para más modelos **cerrados** y **abiertos**: Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, y modelos abiertos locales vía Ollama o cualquier endpoint compatible con OpenAI. (**~1700** líneas de Python).
@@ -76,7 +76,7 @@ Nano Claude Code: **una reimplementación ligera** y **fácil de usar** de Claud
 
 Claude Code es un potente asistente de programación con IA de nivel de producción, pero su código fuente es un bundle compilado de TypeScript/Node.js de 12 MB (~1300 archivos, ~283K líneas). Está fuertemente acoplado a la API de Anthropic, es difícil de modificar e imposible de ejecutar con un modelo local o alternativo.
 
-**Nano Claude Code** reimplementa el mismo bucle central en ~10K líneas de Python legibles, conservando todo lo que necesitas y eliminando lo que no. Aquí puedes ver un análisis más detallado (Nano Claude Code v3.03), [versión en inglés](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) y [versión en chino](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
+**Nano Claude Code** reimplementa el mismo bucle central en ~10K líneas de Python legibles, conservando todo lo que necesitas y eliminando lo que no. Aquí puedes ver un análisis más detallado (Nano Claude Code v3.03), [versión en inglés](https://github.com/trangyp/AMOS-Code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_en.md) y [versión en chino](https://github.com/trangyp/AMOS-Code/blob/main/docs/comparison_claude_code_vs_nano_v3.03_cn.md)
 
 ### Vista rápida
 
