@@ -107,7 +107,10 @@ def run_clawspring():
     )
 
     # Pass through all command line args except script name
-    args = [sys.executable, clawspring_path] + sys.argv[1:]
+    passthrough = list(sys.argv[1:])
+    if "--amos" not in passthrough:
+        passthrough.append("--amos")
+    args = [sys.executable, clawspring_path] + passthrough
 
     try:
         result = subprocess.run(args, cwd=os.path.dirname(clawspring_path))
