@@ -17,18 +17,33 @@ class AMOSAgentBridge:
     """
 
     def __init__(self):
-        self.amos = get_amos_integration()
-        # Lazy import to avoid circular deps and syntax errors
-        import sys
-        sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring')
-        from agent import AgentState
-        self.state = AgentState()
-        self.system_prompt = self._build_system_prompt()
+        self._amos = None
+        self._state = None
+        self._system_prompt = None
 
-    def _build_system_prompt(self) -> str:
+    @property
+    def amos(self):
+        """Lazy-load AMOS integration to prevent blocking during init."""
+        if self._amos is None:
+            self._amos = get_amos_integration()
+        return self._amos
+
+    def _get_state(self):
+        """Lazy-load agent state."""
+        if self._state is None:
+            # Lazy import to avoid circular deps and syntax errors
+            import sys
+            sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/clawspring')
+            from agent import AgentState
+            self._state = AgentState()
+        return self._state
+
+    def _get_system_prompt(self) -> str:
         """Build system prompt enhanced with AMOS brain context."""
-        base_prompt = """You are an AI assistant with structured reasoning capabilities."""
-        return self.amos.enhance_system_prompt(base_prompt)
+        if self._system_prompt is None:
+            base_prompt = """You are an AI assistant with structured reasoning capabilities."""
+            self._system_prompt = self.amos.enhance_system_prompt(base_prompt)
+        return self._system_prompt
 
     def run_with_brain(self, user_message: str, config: dict[str, Any]) -> Any:
         """

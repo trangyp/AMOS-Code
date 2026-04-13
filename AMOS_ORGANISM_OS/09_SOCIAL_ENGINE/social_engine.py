@@ -256,14 +256,16 @@ class SocialEngine:
         self.connections.append(conn)
         self._save_state()
 
-        print(f"[SOCIAL] Connection: {agent_a} <-> {agent_b} ({connection_type})")
+        print(f"[SOCIAL] Connection: {agent_a} <-> {agent_b}")
+        print(f"  Type: {connection_type}")
         return conn
 
     def _update_connection(self, agent_a: str, agent_b: str) -> None:
         """Update connection with new interaction."""
         for conn in self.connections:
-            if ((conn.agent_a == agent_a and conn.agent_b == agent_b) or
-                (conn.agent_a == agent_b and conn.agent_b == agent_a)):
+            agent_match = (conn.agent_a == agent_a and conn.agent_b == agent_b)
+            reverse_match = (conn.agent_a == agent_b and conn.agent_b == agent_a)
+            if agent_match or reverse_match:
                 conn.last_interaction = datetime.utcnow().isoformat() + "Z"
                 # Strengthen connection slightly
                 conn.strength = min(1.0, conn.strength + 0.01)
