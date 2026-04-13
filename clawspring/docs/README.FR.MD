@@ -1,22 +1,20 @@
 Français | [English](../README.md) | [中文](README.CN.MD) | [한국어](README.KO.MD) | [日本語](README.JP.MD) | [Deutsch](README.DE.MD) | [Español](README.ES.MD)
 
 <div align="center">
-  <a href="https://github.com/SafeRL-Lab/nano-claude-code">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+  <a href="https://github.com/trangyp/AMOS-Code">
+    <img src="logo-2.png" alt="Logo" width="280">
   </a>
 
-<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong> : une réimplémentation Python rapide et facile à utiliser de Claude Code, compatible avec n’importe quel modèle</h1>
+<h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong> : Projet AMOS - Un Assistant IA Personnel Rapide</h1>
 <p align="center">
-    <a href="https://github.com/chauncygu/collection-claude-code-source-code">La source la plus récente de Claude Code</a>
+    <a href="https://github.com/trangyp/AMOS-Code/issues">Issues</a>
     ·
-    <a href="https://github.com/SafeRL-Lab/nano-claude-code/issues">Issue</a>
-  ·
-    <a href="https://deepwiki.com/SafeRL-Lab/nano-claude-code">Brève introduction</a>
+    <a href="https://github.com/trangyp/AMOS-Code/blob/main/clawspring/README.md">Documentation</a>
 </p>
 </div>
 
 <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="demo.gif" width="850"/>
 </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>

@@ -39,6 +39,9 @@ from SKELETON.structural_integrity import StructuralIntegrity
 from WORLD_MODEL.knowledge_graph import KnowledgeGraph
 from WORLD_MODEL.context_mapper import ContextMapper
 from WORLD_MODEL.semantic_index import SemanticIndex
+from QUANTUM_LAYER.scenario_engine import ScenarioEngine
+from QUANTUM_LAYER.monte_carlo import MonteCarloSimulator
+from QUANTUM_LAYER.decision_optimizer import DecisionOptimizer
 from BLOOD.resource_engine import ResourceEngine
 from BLOOD.budget_manager import BudgetManager
 from BLOOD.cashflow_tracker import CashflowTracker
@@ -108,6 +111,11 @@ class AmosOrganism:
         self.knowledge = KnowledgeGraph()
         self.context_mapper = ContextMapper()
         self.semantic_index = SemanticIndex()
+
+        # Initialize QUANTUM_LAYER (decision optimization layer)
+        self.scenarios = ScenarioEngine()
+        self.monte_carlo = MonteCarloSimulator()
+        self.decision_optimizer = DecisionOptimizer()
 
         # Initialize BLOOD (resource tracking layer)
         self.resources = ResourceEngine()

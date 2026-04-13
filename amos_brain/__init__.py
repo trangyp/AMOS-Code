@@ -20,6 +20,7 @@ from .meta_controller import (
 )
 from .monitor import CognitiveMonitor, get_monitor, MetricPoint, Alert
 from .facade import BrainClient, think, validate, decide, BrainResponse, Decision
+from .config import CognitiveConfig, get_config, LawEnforcementConfig, FeatureFlags
 
 # Optional: prompt builder (requires brain_loader to be passed)
 try:

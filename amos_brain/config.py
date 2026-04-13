@@ -58,9 +58,9 @@ class EnvironmentProfile:
 
 
 @dataclass
-class BrainConfig:
+class CognitiveConfig:
     """
-    AMOS Brain Configuration Manager - Layer 11.
+    AMOS Cognitive Configuration Manager - Layer 11.
     
     Provides enterprise configuration for the cognitive OS:
     - Environment profiles (dev/staging/prod)
@@ -215,7 +215,7 @@ class BrainConfig:
         return filepath
     
     @classmethod
-    def load_from_file(cls, filepath: Path) -> BrainConfig:
+    def load_from_file(cls, filepath: Path) -> "CognitiveConfig":
         """Load configuration from JSON file."""
         with open(filepath) as f:
             data = json.load(f)
@@ -249,7 +249,7 @@ class BrainConfig:
         return config
     
     @classmethod
-    def from_env(cls) -> BrainConfig:
+    def from_env(cls) -> "CognitiveConfig":
         """Create configuration from environment variables."""
         config = cls(
             environment=os.getenv("AMOS_ENV", "development")
@@ -270,19 +270,19 @@ class BrainConfig:
 
 
 # Global config instance
-_config_instance: BrainConfig | None = None
+_config_instance: CognitiveConfig | None = None
 
 
-def get_config() -> BrainConfig:
+def get_config() -> CognitiveConfig:
     """Get or create global brain configuration."""
     global _config_instance
     if _config_instance is None:
         # Try to load from file, env, or create default
         config_path = Path.home() / ".amos_brain" / "config" / "brain_config.json"
         if config_path.exists():
-            _config_instance = BrainConfig.load_from_file(config_path)
+            _config_instance = CognitiveConfig.load_from_file(config_path)
         else:
-            _config_instance = BrainConfig.from_env()
+            _config_instance = CognitiveConfig.from_env()
     return _config_instance
 
 

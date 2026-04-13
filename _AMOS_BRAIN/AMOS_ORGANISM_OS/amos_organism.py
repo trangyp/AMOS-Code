@@ -53,6 +53,7 @@ class AMOSOrganism:
         self._muscle = None
         self._metabolism = None
         self._world_model = None
+        self._quantum = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")
