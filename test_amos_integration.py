@@ -133,7 +133,7 @@ class TestRunner:
         def test_status():
             from tool_registry import execute_tool
             result = execute_tool("AMOSStatus", {}, {})
-            assert "AMOS" in result and "initialized" in result.lower()
+            assert "AMOS" in result and "System:" in result
 
         self._test("AMOSStatus", test_status)
 

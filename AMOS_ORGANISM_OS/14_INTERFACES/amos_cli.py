@@ -243,6 +243,37 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_social(args) -> int:
+    """Interact with SOCIAL engine."""
+    root = get_organism_root()
+    social_dir = root / "09_SOCIAL_ENGINE"
+
+    sys.path.insert(0, str(social_dir))
+    from social_engine import SocialEngine
+
+    engine = SocialEngine(root)
+
+    if args.action == "status":
+        status = engine.get_status()
+        print("SOCIAL Engine Status")
+        print("=" * 40)
+        print(f"Status: {status['status']}")
+        print(f"Registered agents: {status['registered_agents']}")
+        print(f"Total messages: {status['total_messages']}")
+        print(f"Total connections: {status['total_connections']}")
+        print(f"Knowledge shares: {status['knowledge_shares']}")
+
+    elif args.action == "graph" and args.agent:
+        graph = engine.get_social_graph(args.agent)
+        print(f"\nSocial Graph for {args.agent}:")
+        print(f"  Connections: {graph['connection_count']}")
+        print(f"  Messages sent: {graph['messages_sent']}")
+        print(f"  Messages received: {graph['messages_received']}")
+        print(f"  Unread: {graph['unread_messages']}")
+
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -312,6 +343,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         help="Budget period"
     )
     blood_parser.set_defaults(func=cmd_blood)
+
+    # Social command
+    social_parser = subparsers.add_parser(
+        "social", help="Agent communication (SOCIAL)"
+    )
+    social_parser.add_argument(
+        "action", choices=["status", "graph"], nargs="?",
+        default="status"
+    )
+    social_parser.add_argument(
+        "--agent", "-a", help="Agent ID for graph view"
+    )
+    social_parser.set_defaults(func=cmd_social)
 
     args = parser.parse_args(argv)
 
