@@ -27,6 +27,32 @@ class KernelRouter:
         "psychology": ["emotion", "behavior", "mind", "mental", "cognitive"],
     }
 
+    DOMAIN_ENGINE_HINTS = {
+        "software": [
+            "AMOS_Engineering_And_Mathematics_Engine",
+            "AMOS_Design_Language_Engine",
+        ],
+        "ai": [
+            "AMOS_Signal_Processing_Engine",
+            "AMOS_Engineering_And_Mathematics_Engine",
+        ],
+        "cloud": [
+            "AMOS_Electrical_Power_Engine",
+            "AMOS_Mechanical_Structural_Engine",
+        ],
+        "logic": [
+            "AMOS_Deterministic_Logic_And_Law_Engine",
+            "AMOS_Strategy_Game_Engine",
+        ],
+        "ubi": [
+            "AMOS_Biology_And_Cognition_Engine",
+        ],
+        "psychology": [
+            "AMOS_Society_Culture_Engine",
+            "AMOS_Biology_And_Cognition_Engine",
+        ],
+    }
+
     def __init__(self, brain_loader):
         self.brain = brain_loader
 
@@ -53,8 +79,14 @@ class KernelRouter:
             risk_level = "medium"
 
         # Determine requirements
-        requires_code = any(kw in task_lower for kw in ["code", "implement", "write"])
-        requires_reasoning = any(kw in task_lower for kw in ["analyze", "design", "plan"])
+        requires_code = any(
+            kw in task_lower
+            for kw in ["code", "implement", "write", "bug", "fix", "refactor", "debug", "function", "class"]
+        )
+        requires_reasoning = any(
+            kw in task_lower
+            for kw in ["analyze", "design", "plan", "architecture", "review", "compare"]
+        )
         requires_memory = any(kw in task_lower for kw in ["remember", "previous", "context"])
 
         return TaskIntent(
@@ -72,20 +104,34 @@ class KernelRouter:
 
         # Get available engines from brain
         engines = self.brain.list_engines() if self.brain else []
+        engine_set = set(engines)
 
-        # Match engines to domains
         active_engines = []
-        for engine_name in engines:
-            # Check if engine matches any detected domain
-            engine_lower = engine_name.lower()
-            for domain in [intent.primary_domain] + intent.secondary_domains:
-                if domain in engine_lower or any(kw in engine_lower for kw in self.DOMAIN_KEYWORDS.get(domain, [])):
+        seen = set()
+        for domain in [intent.primary_domain] + intent.secondary_domains:
+            for engine_name in self.DOMAIN_ENGINE_HINTS.get(domain, []):
+                if engine_name in engine_set and engine_name not in seen:
                     active_engines.append({
                         "id": engine_name,
                         "name": engine_name,
                         "domain": domain,
                     })
-                    break
+                    seen.add(engine_name)
+
+        # Fallback to logic-safe engines if nothing matched
+        if not active_engines:
+            for engine_name in [
+                "AMOS_Deterministic_Logic_And_Law_Engine",
+                "AMOS_Engineering_And_Mathematics_Engine",
+                "AMOS_Design_Language_Engine",
+            ]:
+                if engine_name in engine_set and engine_name not in seen:
+                    active_engines.append({
+                        "id": engine_name,
+                        "name": engine_name,
+                        "domain": intent.primary_domain,
+                    })
+                    seen.add(engine_name)
 
         return active_engines
 

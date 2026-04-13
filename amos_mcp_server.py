@@ -9,11 +9,8 @@ Tools exposed:
 - amos_decide: Full decision analysis workflow
 
 Usage:
-  #_stdio (for MCP clients like clawspring)
+  # stdio (for MCP clients like clawspring)
   python amos_mcp_server.py
-
-  # sse (for HTTP clients)
-  python amos_mcp_server.py --transport sse --port 8080
 
 MCP Configuration (add to ~/.clawspring/mcp.json):
 {
@@ -352,11 +349,11 @@ class AMOSMCPServer:
 
             if tool_name in self.tools:
                 result = self.tools[tool_name].handler(arguments)
-                return {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]}
+                return {"result": {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]}}
             else:
-                return {"error": f"Unknown tool: {tool_name}"}
+                return {"error": {"code": -32601, "message": f"Unknown tool: {tool_name}"}}
 
-        return {"error": f"Unknown method: {method}"}
+        return {"error": {"code": -32601, "message": f"Unknown method: {method}"}}
 
     async def run_stdio(self):
         """Run server in stdio mode (for MCP clients)."""
@@ -368,10 +365,26 @@ class AMOSMCPServer:
 
                 request = json.loads(line)
                 response = self.handle_request(request)
-                response["jsonrpc"] = "2.0"
-                response["id"] = request.get("id")
+                if "result" in response:
+                    payload = {
+                        "jsonrpc": "2.0",
+                        "id": request.get("id"),
+                        "result": response["result"],
+                    }
+                elif "error" in response:
+                    payload = {
+                        "jsonrpc": "2.0",
+                        "id": request.get("id"),
+                        "error": response["error"],
+                    }
+                else:
+                    payload = {
+                        "jsonrpc": "2.0",
+                        "id": request.get("id"),
+                        "error": {"code": -32603, "message": "Malformed server response"},
+                    }
 
-                print(json.dumps(response), flush=True)
+                print(json.dumps(payload), flush=True)
             except json.JSONDecodeError:
                 continue
             except Exception as e:
@@ -388,16 +401,12 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="AMOS Brain MCP Server")
-    parser.add_argument("--transport", choices=["stdio", "sse"], default="stdio")
-    parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--transport", choices=["stdio"], default="stdio")
     args = parser.parse_args()
 
     server = AMOSMCPServer()
 
-    if args.transport == "stdio":
-        await server.run_stdio()
-    else:
-        print(f"SSE transport on port {args.port} not yet implemented")
+    await server.run_stdio()
 
 
 if __name__ == "__main__":

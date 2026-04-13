@@ -190,7 +190,11 @@ def main():
 
     if status.get('initialized'):
         print(clr("✓ Brain ready", "green"))
-        print(f"  {status.get('engines_count', 0)} engines | 6 laws | 12 domains")
+        print(
+            f"  {status.get('engines_count', 0)} engines | "
+            f"{len(status.get('laws_active', []))} laws | "
+            f"{len(status.get('domains_covered', []))} domains"
+        )
     else:
         print(clr("✗ Brain initialization failed", "red"))
         return 1

@@ -39,11 +39,7 @@ class AMOSAgentBridge:
     def _get_state(self):
         """Lazy-load agent state."""
         if self._state is None:
-            # Lazy import to avoid circular deps and syntax errors
-            import sys
-            from pathlib import Path
-            clawspring_path = str(Path(__file__).resolve().parent.parent / "clawspring")
-            sys.path.insert(0, clawspring_path)
+            self._ensure_clawspring_path()
             from agent import AgentState
             self._state = AgentState()
         return self._state
