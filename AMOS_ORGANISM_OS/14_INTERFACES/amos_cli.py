@@ -243,6 +243,35 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_legal(args) -> int:
+    """Interact with LEGAL engine."""
+    root = get_organism_root()
+    legal_dir = root / "11_LEGAL_BRAIN"
+
+    sys.path.insert(0, str(legal_dir))
+    from legal_engine import LegalEngine
+
+    engine = LegalEngine(root)
+
+    if args.action == "status":
+        status = engine.get_status()
+        print("LEGAL Engine Status")
+        print("=" * 40)
+        print(f"Status: {status['status']}")
+        print(f"Active rules: {status['active_rules']}")
+        print(f"Total checks: {status['total_checks_performed']}")
+        print(f"Pass rate: {status['recent_pass_rate']:.1%}")
+
+    elif args.action == "check" and args.content:
+        results = engine.check_compliance(args.content, "cli_check")
+        print(f"\nCompliance Check Results:")
+        for r in results:
+            status = "✓" if r.passed else "✗"
+            print(f"  {status} [{r.rule_id}] {r.message}")
+
+    return 0
+
+
 def cmd_social(args) -> int:
     """Interact with SOCIAL engine."""
     root = get_organism_root()
@@ -356,6 +385,19 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--agent", "-a", help="Agent ID for graph view"
     )
     social_parser.set_defaults(func=cmd_social)
+
+    # Legal command
+    legal_parser = subparsers.add_parser(
+        "legal", help="Legal compliance (LEGAL)"
+    )
+    legal_parser.add_argument(
+        "action", choices=["status", "check"], nargs="?",
+        default="status"
+    )
+    legal_parser.add_argument(
+        "--content", "-c", help="Content to check"
+    )
+    legal_parser.set_defaults(func=cmd_legal)
 
     args = parser.parse_args(argv)
 

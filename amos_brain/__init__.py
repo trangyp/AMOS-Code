@@ -19,6 +19,7 @@ from .meta_controller import (
     orchestrate_goal, WorkflowPlan, SubTask
 )
 from .monitor import CognitiveMonitor, get_monitor, MetricPoint, Alert
+from .facade import BrainClient, think, validate, decide, BrainResponse, Decision
 
 # Optional: prompt builder (requires brain_loader to be passed)
 try:

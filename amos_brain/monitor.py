@@ -340,11 +340,11 @@ class CognitiveMonitor:
         
         self._trigger_hooks("alert", alert)
     
-    def _trigger_hooks(self, event_type: str, data: Any):
+    def _trigger_hooks(self, event_type: str, *data: Any):
         """Trigger registered hooks."""
         for hook in self._hooks:
             try:
-                hook(event_type, data)
+                hook(event_type, *data)
             except Exception:
                 pass
 

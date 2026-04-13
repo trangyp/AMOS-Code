@@ -125,3 +125,15 @@ class BrainLoader:
     def creator_name(self) -> str:
         """Get the creator name."""
         return self.creator.get("name", "Trang Phan")
+
+
+# Global brain loader instance
+_brain_loader: BrainLoader | None = None
+
+
+def get_brain() -> BrainLoader:
+    """Get the global brain loader instance (singleton)."""
+    global _brain_loader
+    if _brain_loader is None:
+        _brain_loader = BrainLoader().load()
+    return _brain_loader

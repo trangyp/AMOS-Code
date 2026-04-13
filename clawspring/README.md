@@ -1619,7 +1619,7 @@ Generating diverse perspectives...
 `/ssj` opens a persistent interactive power menu — a single entry point for the most common development workflows, so you never have to remember command names.
 
 <div align=center>
-<img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/ssj_demo.gif" width="850"/>
+<img src="docs/ssj_demo.gif" width="850"/>
 </div>
 
 ### Menu options
@@ -1754,7 +1754,7 @@ SSJ option 4 runs a structured multi-round expert debate on any file:
 `/telegram` turns clawspring into a Telegram bot — receive messages from your phone, run the model with full tool access, and reply automatically.
 
 <div align=center>
-<img src="https://github.com/SafeRL-Lab/clawspring/blob/main/docs/telegram_demo.gif" width="850"/>
+<img src="docs/telegram_demo.gif" width="850"/>
 </div>
 
 ### Setup (one-time)
