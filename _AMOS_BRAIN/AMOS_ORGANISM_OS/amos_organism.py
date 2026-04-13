@@ -207,6 +207,34 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize BLOOD: {e}")
     
+    def _init_muscle(self):
+        """Initialize the MUSCLE subsystem."""
+        try:
+            muscle_path = self.root / "06_MUSCLE"
+            
+            # Add to path and import directly
+            if str(muscle_path) not in sys.path:
+                sys.path.insert(0, str(muscle_path))
+            
+            # Clear any cached module
+            if 'muscle_kernel' in sys.modules:
+                del sys.modules['muscle_kernel']
+            
+            import muscle_kernel
+            importlib.reload(muscle_kernel)
+            
+            self._muscle = muscle_kernel.MuscleKernel(self.root)
+            self._subsystems["06_MUSCLE"] = self._muscle
+            self.state["active_subsystems"].append("06_MUSCLE")
+            
+            # Connect to IMMUNE for safety checks
+            if self._immune:
+                self._muscle.set_immune_checker(self._immune.check_safety)
+            
+            logger.info("MUSCLE subsystem initialized with action execution")
+        except Exception as e:
+            logger.error(f"Failed to initialize MUSCLE: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:

@@ -293,6 +293,26 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     brain_parser.set_defaults(func=cmd_brain)
 
+    # Blood command
+    blood_parser = subparsers.add_parser(
+        "blood", help="Financial engine (BLOOD)"
+    )
+    blood_parser.add_argument(
+        "action", choices=["status", "budget"], nargs="?",
+        default="status"
+    )
+    blood_parser.add_argument(
+        "--category", "-c", help="Budget category"
+    )
+    blood_parser.add_argument(
+        "--amount", "-a", type=float, help="Budget amount"
+    )
+    blood_parser.add_argument(
+        "--period", "-p", default="monthly",
+        help="Budget period"
+    )
+    blood_parser.set_defaults(func=cmd_blood)
+
     args = parser.parse_args(argv)
 
     if not args.command:

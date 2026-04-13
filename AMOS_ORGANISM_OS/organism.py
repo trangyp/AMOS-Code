@@ -33,6 +33,9 @@ from BRAIN.memory_layer import MemoryLayer
 from SENSES.environment_scanner import EnvironmentScanner
 from SENSES.context_gatherer import ContextGatherer
 from SENSES.signal_detector import SignalDetector
+from SKELETON.constraint_engine import ConstraintEngine
+from SKELETON.rule_validator import RuleValidator
+from SKELETON.structural_integrity import StructuralIntegrity
 from IMMUNE.immune_system import ImmuneSystem, ActionType
 from IMMUNE.threat_detector import ThreatDetector
 from IMMUNE.compliance_engine import ComplianceEngine
