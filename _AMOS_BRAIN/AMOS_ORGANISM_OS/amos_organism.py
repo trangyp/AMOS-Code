@@ -430,7 +430,8 @@ class AMOSOrganism:
             "blood_state": self._blood.get_state() if self._blood else None,
             "muscle_state": self._muscle.get_state() if self._muscle else None,
             "metabolism_state": self._metabolism.get_state() if self._metabolism else None,
-            "world_model_state": self._world_model.get_state() if self._world_model else None
+            "world_model_state": self._world_model.get_state() if self._world_model else None,
+            "quantum_state": self._quantum.get_state() if self._quantum else None
         }
     
     def interactive_mode(self):

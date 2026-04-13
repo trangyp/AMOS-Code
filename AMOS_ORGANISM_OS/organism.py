@@ -94,6 +94,7 @@ class AmosOrganism:
     """
 
     def __init__(self):
+        self.root_dir = Path(__file__).parent
         self.state = OrganismState()
 
         # Initialize core subsystems (Primary Loop)
