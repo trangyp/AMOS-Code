@@ -182,32 +182,30 @@ class MetaCognitiveController:
             
             # Execute sub-task with law validation
             subtask.status = TaskStatus.IN_PROGRESS
-            
-            # Process through brain
-            task_result = self.processor.process(subtask.description)
-            
-            # Check for law violations
-            if task_result.law_violations:
+
+            task_result = None
+            while True:
+                task_result = self.processor.process(subtask.description)
+
+                if not task_result.law_violations:
+                    subtask.law_violations = []
+                    subtask.status = TaskStatus.COMPLETED
+                    subtask.completed_at = datetime.now().isoformat()
+                    subtask.result = task_result.output[:200]
+                    results["completed"] += 1
+                    break
+
                 subtask.law_violations = task_result.law_violations
-                
-                # Self-correction: retry with adjusted approach
-                if subtask.retry_count < self._max_retries:
-                    subtask.retry_count += 1
-                    results["retried"] += 1
-                    
-                    # Adjust description for retry
-                    subtask.description = f"[Retry {subtask.retry_count}] {subtask.description}"
-                    subtask.status = TaskStatus.PENDING
-                    # Will be reprocessed in next iteration
-                    continue
-                else:
+
+                if subtask.retry_count >= self._max_retries:
                     subtask.status = TaskStatus.FAILED
                     results["failed"] += 1
-            else:
-                subtask.status = TaskStatus.COMPLETED
-                subtask.completed_at = datetime.now().isoformat()
-                subtask.result = task_result.output[:200]
-                results["completed"] += 1
+                    break
+
+                subtask.retry_count += 1
+                results["retried"] += 1
+                subtask.description = f"[Retry {subtask.retry_count}] {subtask.description}"
+                subtask.status = TaskStatus.IN_PROGRESS
             
             # Record in state manager
             self.state_manager.record_reasoning_step(
@@ -238,9 +236,17 @@ class MetaCognitiveController:
                 "violations": len(subtask.law_violations)
             })
         
+        # Set terminal plan status
+        if all(t.status == TaskStatus.COMPLETED for t in plan.subtasks):
+            plan.status = "completed"
+        elif any(t.status == TaskStatus.FAILED for t in plan.subtasks):
+            plan.status = "failed"
+        else:
+            plan.status = "active"
+
         # Close state session
         self.state_manager.close_session()
-        
+
         return results
     
     def _get_task_status(self, plan_id: str, task_id: str) -> TaskStatus:
@@ -333,7 +339,7 @@ class MetaCognitiveController:
         total_plans = len(self._active_plans)
         completed_plans = sum(
             1 for p in self._active_plans.values()
-            if all(t.status == TaskStatus.COMPLETED for t in p.subtasks)
+            if p.status == "completed"
         )
         
         return {
