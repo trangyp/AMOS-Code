@@ -215,6 +215,8 @@ Use Read/Grep/Web tools as needed for research on the topic.
 
 def register_amos_skills() -> None:
     """Register AMOS brain decision analysis skills."""
+    # Lazy import to avoid circular dependency
+    SkillDef, register_builtin_skill = _get_skill_classes()
 
     register_builtin_skill(SkillDef(
         name="decide",
@@ -255,5 +257,11 @@ def register_amos_skills() -> None:
     ))
 
 
-# Auto-register on import
-register_amos_skills()
+# Auto-register on import (but only if clawspring is available)
+# This is wrapped in try/except because amos_brain is imported before
+# clawspring is fully initialized during early startup
+try:
+    register_amos_skills()
+except Exception:
+    # Skills will be unavailable until clawspring fully loads
+    pass

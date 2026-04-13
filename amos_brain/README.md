@@ -115,6 +115,54 @@ python amos_brain_cli.py
 #   /help                - Show this help
 ```
 
+## Cookbook Workflows
+
+Pre-built workflows for common scenarios:
+
+```python
+from amos_brain.cookbook import (
+    ArchitectureDecision,
+    ProjectPlanner,
+    ProblemDiagnosis,
+    TechnologySelection,
+    RiskAssessment,
+)
+
+# Architecture Decision
+result = ArchitectureDecision.run(
+    "Should we use microservices?",
+    context={"current_stack": "monolith", "team_size": 8}
+)
+
+# Project Planning
+result = ProjectPlanner.run(
+    "Build notification system",
+    timeline="6 weeks",
+    team="2 backend, 1 DevOps"
+)
+
+# Problem Diagnosis
+result = ProblemDiagnosis.run(
+    "API latency spikes",
+    symptoms=["500ms+ response times"],
+    checked=["database"]
+)
+
+# Technology Selection
+result = TechnologySelection.run(
+    "Message Queue",
+    options=["RabbitMQ", "Kafka", "SQS"],
+    criteria=["scalability", "cost"]
+)
+
+# Risk Assessment
+result = RiskAssessment.run(
+    "Database migration",
+    impacts=["revenue", "data-integrity"],
+    mitigations=["rollback-plan"]
+)
+```
+
 ## Tools Available
 
 When registered with ClawSpring:
