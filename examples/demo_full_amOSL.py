@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
 
-from amosl.runtime.kernel import RuntimeKernel, StateManifold
+from amosl.runtime import RuntimeKernel
 from amosl.prover import TheoremProver
 from amosl.ledger import Ledger
 from amosl.bridge import BridgeExecutor, BridgeType

@@ -245,7 +245,15 @@ class CognitiveConfig:
             enable_audit_logging=feat_data.get("audit_logging", True),
             enable_anomaly_detection=feat_data.get("anomaly_detection", True),
         )
-        
+
+        # Load custom kernels
+        custom_kernels = data.get("custom_kernels", [])
+        if isinstance(custom_kernels, list):
+            for kernel in custom_kernels:
+                kernel_id = kernel.get("id")
+                if kernel_id:
+                    config._custom_kernels[kernel_id] = kernel
+
         return config
     
     @classmethod
@@ -265,7 +273,22 @@ class CognitiveConfig:
         config.features.enable_monitoring = (
             os.getenv("AMOS_MONITORING", "true").lower() == "true"
         )
-        
+        config.features.enable_rule_of_four = (
+            os.getenv("AMOS_RULE_OF_FOUR", "true").lower() == "true"
+        )
+        config.features.enable_state_persistence = (
+            os.getenv("AMOS_STATE_PERSISTENCE", "true").lower() == "true"
+        )
+        config.features.enable_meta_cognition = (
+            os.getenv("AMOS_META_COGNITION", "true").lower() == "true"
+        )
+        config.features.enable_audit_logging = (
+            os.getenv("AMOS_AUDIT_LOGGING", "true").lower() == "true"
+        )
+        config.features.enable_anomaly_detection = (
+            os.getenv("AMOS_ANOMALY_DETECTION", "true").lower() == "true"
+        )
+
         return config
 
 

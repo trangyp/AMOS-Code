@@ -29,7 +29,7 @@ import json
 from amos_omega import State, Action, Substrate, Sort, Observation, Bridge
 from amos_v4 import Goal
 from amos_memory import MemoryEntry, EpisodicMemory
-from amos_energy import EnergyBudget
+from amos_energy import BranchEnergyBudget
 
 
 class ValidationLevel(Enum):
@@ -157,19 +157,15 @@ class AxiomValidator:
             if entity.hybrid is not None:
                 substrates.add(Substrate.HYBRID)
                 
-        elif isinstance(entity, CognitiveState):
-            # Cognitive states are hybrid (classical + meta)
-            substrates.add(Substrate.CLASSICAL)
-            substrates.add(Substrate.META)
-            
-        elif isinstance(entity, (Belief, Goal)):
+        elif isinstance(entity, Goal):
+            # Goals are classical terms
             substrates.add(Substrate.CLASSICAL)
             
         elif isinstance(entity, MemoryEntry):
             # Memory is stored classically
             substrates.add(Substrate.CLASSICAL)
             
-        elif isinstance(entity, EnergyBudget):
+        elif isinstance(entity, BranchEnergyBudget):
             # Energy is a classical resource
             substrates.add(Substrate.CLASSICAL)
             
@@ -193,9 +189,8 @@ class AxiomValidator:
         
         # Check if entity has a valid type
         valid_types = [
-            "State", "Action", "CognitiveState", "Belief", 
-            "Goal", "MemoryEntry", "EnergyBudget", "Bridge",
-            "Observation", "dict", "list", "str", "float", "int"
+            "State", "Action", "Goal", "MemoryEntry",
+            "BranchEnergyBudget", "dict", "list", "str", "float", "int"
         ]
         
         has_type = entity_type in valid_types or hasattr(entity, '__dataclass_fields__')
@@ -664,9 +659,9 @@ def demo_axiom_validator():
     
     # Test 5: Energy overflow
     print("\n[Test 5: Energy Overflow]")
-    from amos_omega import EnergyBudget as OMEnergy
-    
-    energy = OMEnergy(total_capacity=100.0, reserve_minimum=0.1)
+    from amos_energy import EnergyPool
+
+    energy = EnergyPool(name="test", total_capacity=100.0)
     energy.allocated = 95.0  # Almost exhausted
     
     expensive_action = Action(

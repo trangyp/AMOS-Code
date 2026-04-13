@@ -1,22 +1,38 @@
 # AMOS - Complete System Index
 
-**Version:** v1-v5 Complete  
-**Total Lines:** ~10,000  
-**Files:** 16  
-**Status:** Production Ready
+**Version:** v1-v5 + Ω Axiomatic Complete  
+**Total Lines:** ~15,000  
+**Files:** 25+  
+**Status:** Production Ready  
+**Layers:** 7 (Implementation v1-v5, Production, Ω Axiomatic)
 
 ---
 
 ## 🚀 Quick Start (30 seconds)
 
 ```bash
-# View the practical scenario (recommended first)
+# Run the unified system with all 7 layers
+python amos_unified.py --status
+
+# Run axiomatic demonstration (Ω layer)
+python amos_unified.py --demo axiomatic
+
+# Run coherence demonstration (human + axioms)
+python amos_unified.py --demo coherence
+
+# Run all demonstrations
+python amos_unified.py --demo all
+
+# Run unified integration test
+python test_amos_unified.py
+
+# View the practical scenario
 python amos_scenario_demo.py
 
-# Run the complete operational system
+# Run operational system
 python run_amos.py
 
-# Run test suite to verify everything works
+# Run legacy test suite
 python test_amos.py
 ```
 
@@ -51,21 +67,34 @@ python test_amos.py
 | `amos_connectors.py` | 850 | Real-World Interface | Data ingestion, Execution, Notifications, Persistence | `python amos_connectors.py` |
 | `amos_operational.py` | 400 | **Complete Operational System** | Continuous loop, Health monitoring, Recovery | `python amos_operational.py` |
 
+### Ω Axiomatic Layer (NEW)
+
+| File | Lines | Purpose | Run Command |
+|------|-------|---------|-------------|
+| `OMEGA_AXIOMS.md` | ~900 | 32 formal axioms specification | Documentation |
+| `amos_omega.py` | ~700 | Executable Ω implementation | `python amos_omega.py` |
+| `amos_axiom_validator.py` | ~700 | Theory→practice bridge | `python amos_axiom_validator.py` |
+| `amos_coherence_omega.py` | ~600 | Human cognition + axioms | `python amos_coherence_omega.py` |
+| `test_amos_unified.py` | ~700 | Full stack integration tests | `python test_amos_unified.py` |
+
 ### Entry Points & Tools
 
 | File | Lines | Purpose | Run Command |
 |------|-------|---------|-------------|
-| `amos_master_controller.py` | 400 | Unified controller for all versions | `python amos_master_controller.py --help` |
-| `run_amos.py` | 60 | Simple launcher (recommended) | `python run_amos.py` |
-| `test_amos.py` | 475 | Comprehensive test suite | `python test_amos.py` |
-| `amos_scenario_demo.py` | 350 | Practical scenario demonstration | `python amos_scenario_demo.py` |
+| `amos_unified.py` | 600+ | **Unified launcher with Ω layer** | `python amos_unified.py --help` |
+| `amos_master_controller.py` | 400 | Legacy controller for all versions | `python amos_master_controller.py --help` |
+| `run_amos.py` | 60 | Simple launcher | `python run_amos.py` |
+| `test_amos.py` | 475 | Legacy test suite | `python test_amos.py` |
+| `amos_scenario_demo.py` | 350 | Practical scenario | `python amos_scenario_demo.py` |
 
 ### Documentation
 
 | File | Purpose |
 |------|---------|
-| `README_AMOS.md` | Complete architecture documentation |
-| `AMOS_INDEX.md` | This file - system index and quick reference |
+| `README_AMOS.md` | Complete architecture documentation (v1-v5) |
+| `OMEGA_AXIOMS.md` | 32 formal axioms (Ω layer) |
+| `AMOS_INDEX.md` | This file - complete system index |
+| `AMOS_DEPLOYMENT_GUIDE.md` | Deployment instructions |
 
 ---
 
@@ -88,16 +117,69 @@ python test_amos.py
 
 ---
 
-## 🧬 Architecture Overview
+## 🧬 Architecture Overview (7 Layers)
 
 ```
-AMOS v5 (Civilization-Scale)
-    ├── Political Intelligence
-    ├── Negotiation Engine
-    ├── Narrative Shaping
-    └── Ecosystem Building
+Layer 7 - Ω Axiomatic (NEW) ← HIGHEST LEVEL
+    ├── 32 Formal Axioms (OMEGA_AXIOMS.md)
+    ├── Executable Ω (amos_omega.py)
+    ├── Axiom Validator (amos_axiom_validator.py)
+    └── Coherence Ω (amos_coherence_omega.py)
+        ↓ Validates & governs all below
+        
+Layer 6 - Integration
+    ├── Brain API (amos_brain)
+    ├── Organism OS (AMOS_ORGANISM_OS)
+    └── ClawSpring Plugin
         ↓
-AMOS v4-Production (Economic Organism) ← RECOMMENDED ENTRY POINT
+        
+Layer 5 - Code Intelligence
+    ├── Repo Intelligence (amos_repo.py)
+    └── Self-coding (amos_self_code.py)
+        ↓
+        
+Layer 4 - Meta-cognition (amos_meta.py)
+    ├── Prediction Tracking
+    ├── Branch Efficiency Analysis
+    └── Failure Pattern Detection
+        ↓
+        
+Layer 3 - Memory Systems (amos_memory.py)
+    ├── Working Memory
+    ├── Episodic Memory
+    ├── Semantic Memory
+    ├── Procedural Memory
+    └── Self Memory
+        ↓
+        
+Layer 2 - Core Cognitive
+    ├── Core Engine (amos_core.py)
+    ├── Time Engine (amos_time.py)
+    └── Energy System (amos_energy.py)
+        ↓
+        
+Layer 1 - Economic Organism ← RECOMMENDED ENTRY POINT
+    ├── v4 Basic (amos_v4.py)
+    ├── v4 Production Runtime (amos_v4_runtime.py)
+    └── v5 Civilization (amos_v5.py)
+        ↓
+        
+Production System
+    ├── Connectors (amos_connectors.py)
+    └── Operational (amos_operational.py)
+```
+
+### The Ω Governing Equation
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   x_{t+1} = Commit_Z* ∘ R ∘ V ∘ M ∘ B ∘ A ∘ D (x_t, u_t, w_t) │
+│                                                             │
+│   Outcome = Explain(ℒ)                                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
     ├── Enhanced World Model (uncertainty, signal filtering)
     ├── Adaptive Allocator (learning ωᵢ weights)
     ├── Identity-Preserving Economics
