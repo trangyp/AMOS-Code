@@ -62,7 +62,8 @@ The AMOS Brain analyzed the current repository state and identified:
 | 80 | `amos_brain_tutorial.py` | Fixed wording to match CLI commands |
 
 ### Test Results
-```
+
+```text
 Model Backend Tests:     13 PASS
 Coherence Bridge Tests:   8 PASS
 Total:                   21 PASS ✅

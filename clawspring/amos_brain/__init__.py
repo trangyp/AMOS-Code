@@ -5,6 +5,8 @@ from .prompt_builder import SystemPromptBuilder
 from .laws import GlobalLaws
 from .expression_translator import ExpressionTranslator, translate_expression
 from .integration import AMOSBrainIntegration, get_amos_integration
+from .engine_executor import EngineExecutor, execute_cognitive_task, ExecutionResult
+from .multi_agent_orchestrator import MultiAgentOrchestrator, run_cognitive_consensus, ConsensusResult
 
 __all__ = [
     "BrainLoader",
@@ -16,4 +18,10 @@ __all__ = [
     "translate_expression",
     "AMOSBrainIntegration",
     "get_amos_integration",
+    "EngineExecutor",
+    "execute_cognitive_task",
+    "ExecutionResult",
+    "MultiAgentOrchestrator",
+    "run_cognitive_consensus",
+    "ConsensusResult",
 ]

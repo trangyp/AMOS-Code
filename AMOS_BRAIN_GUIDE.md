@@ -22,10 +22,10 @@ This interactive tutorial teaches Rule of 2, Rule of 4, and all CLI commands.
 
 ### 2. Try the CLI
 ```bash
-python amos_brain_cli.py
-amos> /decide Should we adopt microservices?
-amos> /status
-amos> /dashboard
+python clawspring/clawspring.py --amos
+/decide Should we adopt microservices?
+/amos
+/dashboard
 ```
 
 ### 3. Use Cookbook Workflows
@@ -74,13 +74,13 @@ The brain routes queries through relevant domain engines:
 
 ---
 
-## CLI Usage
+## Interactive Shell Usage
 
 ### /decide - Structured Decision Analysis
 Use for any significant decision.
 
 ```bash
-amos> /decide Should we adopt remote work permanently?
+/decide Should we adopt remote work permanently?
 ```
 
 **Output includes:**
@@ -94,7 +94,7 @@ amos> /decide Should we adopt remote work permanently?
 Use for understanding complex systems or topics.
 
 ```bash
-amos> /analyze Impact of AI on software development
+/analyze Impact of AI on software development
 ```
 
 **Output includes:**
@@ -107,7 +107,7 @@ amos> /analyze Impact of AI on software development
 Before making a decision, check if you've analyzed similar problems.
 
 ```bash
-amos> /recall Should we allow developers to work remotely?
+/recall Should we allow developers to work remotely?
 ```
 
 **Output includes:**
@@ -119,8 +119,7 @@ amos> /recall Should we allow developers to work remotely?
 Track your reasoning patterns over time.
 
 ```bash
-amos> /dashboard        # Last 30 days
-amos> /dashboard 7      # Last 7 days
+/dashboard
 ```
 
 **Output includes:**
@@ -134,7 +133,7 @@ amos> /dashboard 7      # Last 7 days
 Check your law compliance statistics.
 
 ```bash
-amos> /audit
+/audit --text "Your text here"
 ```
 
 **Output includes:**

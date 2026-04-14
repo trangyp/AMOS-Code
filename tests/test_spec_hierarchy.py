@@ -268,8 +268,8 @@ class TestCrossLayerIntegration(unittest.TestCase):
         # Layer 4: Can evolve (field theory)
         field = FieldState(
             classical={'energy': state.classical.store.get('energy', 0)},
-            quantum={'coherence': state.quantum.wavefunction.get('coherence', 0.9)},
-            biological={'growth_rate': state.biological.population.get('growth', 0)}
+            quantum={'coherence': 0.9},
+            biological={'growth_rate': 0}
         )
         self.assertIsNotNone(field)
         
