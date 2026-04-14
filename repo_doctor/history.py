@@ -95,7 +95,7 @@ class HistoryAnalyzer:
         """
         Analyze state vectors for a range of commits.
         """
-        from .invariants import InvariantEngine
+        from .invariants_legacy import InvariantEngine
 
         self.commits = []
 

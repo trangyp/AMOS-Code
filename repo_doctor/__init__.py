@@ -17,17 +17,22 @@ Architectural layer:
 
 from .arch_invariants import (
     ArchInvariantResult,
+    ArchitectureDriftInvariant,
     ArchitectureInvariantEngine,
-    BoundaryInvariant,
     AuthorityInvariant,
+    BoundaryInvariant,
+    FolkloreInvariant,
+    HiddenInterfaceInvariant,
+    PlaneSeparationInvariant,
+    UpgradeGeometryInvariant,
 )
 from .architecture import (
     ArchEdge,
     ArchEdgeType,
+    ArchitectureBuilder,
+    ArchitectureGraph,
     ArchNode,
     ArchNodeType,
-    ArchitectureGraph,
-    ArchitectureBuilder,
     PlaneType,
     build_architecture_graph,
 )
@@ -56,6 +61,11 @@ __all__ = [
     "ArchitectureInvariantEngine",
     "BoundaryInvariant",
     "AuthorityInvariant",
+    "PlaneSeparationInvariant",
+    "HiddenInterfaceInvariant",
+    "FolkloreInvariant",
+    "ArchitectureDriftInvariant",
+    "UpgradeGeometryInvariant",
     "ArchitectureGraph",
     "ArchitectureBuilder",
     "ArchNode",

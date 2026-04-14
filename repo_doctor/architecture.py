@@ -301,9 +301,7 @@ class ArchitectureGraph:
                 claims_by_fact[fact_name].append(claim.claimed_by)
 
         # Find duplicates
-        duplicates = {
-            fact: nodes for fact, nodes in claims_by_fact.items() if len(nodes) > 1
-        }
+        duplicates = {fact: nodes for fact, nodes in claims_by_fact.items() if len(nodes) > 1}
 
         return duplicates
 
@@ -311,7 +309,8 @@ class ArchitectureGraph:
         """
         Find components enforcing policy outside their declared boundary.
 
-        Examples:
+        Examples
+        --------
         - Launcher (execution) deciding policy (control)
         - Persistence layer (data) enforcing business logic (control)
         """
@@ -341,10 +340,7 @@ class ArchitectureGraph:
                         )
 
                 # Data plane nodes should not generate control plane outputs
-                if (
-                    node.plane == PlaneType.DATA
-                    and edge.edge_type == ArchEdgeType.GENERATES
-                ):
+                if node.plane == PlaneType.DATA and edge.edge_type == ArchEdgeType.GENERATES:
                     target = self.get_node(edge.target)
                     if target and target.plane == PlaneType.CONTROL:
                         violations.append(
@@ -378,7 +374,8 @@ class ArchitectureGraph:
         """
         Detect operational folklore - "everyone knows you have to..." dependencies.
 
-        Examples:
+        Examples
+        --------
         - "run migration script before starting app"
         - "export env var or shell mode breaks"
         - "build step must be manual"

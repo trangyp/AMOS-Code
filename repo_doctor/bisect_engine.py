@@ -252,7 +252,7 @@ except Exception as e:
         Quick check if a specific commit passes an invariant.
         Returns (passed, message).
         """
-        from .invariants import InvariantEngine
+        from .invariants_legacy import InvariantEngine
 
         # Checkout commit
         if not self._checkout_commit(commit):

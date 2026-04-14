@@ -106,9 +106,8 @@ class ParseInvariant(HardInvariant):
         if self._substrate is None:
             try:
                 from ..ingest.treesitter_substrate import TreeSitterSubstrate
-                self._substrate = TreeSitterSubstrate(
-                    error_threshold=self.error_threshold
-                )
+
+                self._substrate = TreeSitterSubstrate(error_threshold=self.error_threshold)
             except ImportError:
                 self._substrate = None
         return self._substrate
@@ -198,20 +197,68 @@ class ImportInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.IMPORT, BasisVector.IMPORT)
 
+    def __init__(self):
+        super().__init__(InvariantKind.IMPORT, BasisVector.IMPORT)
+        self._substrate: Any | None = None
+
+    def _get_substrate(self, repo_path: str) -> Any:
+        """Lazy-load Import substrate."""
+        if self._substrate is None:
+            try:
+                from ..ingest.import_substrate import ImportSubstrate
+
+                self._substrate = ImportSubstrate(repo_path)
+            except ImportError:
+                self._substrate = None
+        return self._substrate
+
     def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
         """Check import resolution integrity."""
         violations = []
 
-        # Integration point for import analysis
-        # This would use ast module to find all imports
-        # and verify they resolve
+        substrate = self._get_substrate(repo_path)
+
+        if substrate is None:
+            return InvariantResult(
+                invariant=self.name,
+                passed=True,
+                basis=self.basis,
+                violations=[],
+                metadata={"substrate": "import", "status": "unavailable"},
+            )
+
+        # Analyze all imports in repository
+        pattern = context.get("pattern", "*.py") if context else "*.py"
+        unresolved = substrate.get_unresolved_imports(pattern)
+
+        # Create violations for unresolved imports
+        for resolution in unresolved[:20]:  # Limit to first 20
+            imp = resolution.import_stmt
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message=(
+                        f"Unresolved import '{imp.module}' " f"in {imp.source_file}:{imp.line}"
+                    ),
+                    location=f"{imp.source_file}:{imp.line}",
+                    severity=0.85,
+                    remediation=(
+                        "Check import path, ensure target module exists, "
+                        "or add missing __init__.py"
+                    ),
+                )
+            )
 
         return InvariantResult(
             invariant=self.name,
             passed=len(violations) == 0,
             basis=self.basis,
             violations=violations,
-            metadata={"check": "import_resolution"},
+            metadata={
+                "substrate": "import",
+                "unresolved_count": len(unresolved),
+                "files_checked": len(substrate.analyze_repository(pattern)),
+            },
         )
 
 

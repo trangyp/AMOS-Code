@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 from .architecture import (
-    ArchEdgeType,
     ArchitectureGraph,
     build_architecture_graph,
 )
@@ -57,7 +56,9 @@ class ArchInvariant(ABC):
         """Check the architectural invariant."""
         pass
 
-    def _get_graph(self, repo_path: Path, arch_graph: ArchitectureGraph | None) -> ArchitectureGraph:
+    def _get_graph(
+        self, repo_path: Path, arch_graph: ArchitectureGraph | None
+    ) -> ArchitectureGraph:
         """Get or build architecture graph."""
         if arch_graph is not None:
             return arch_graph
@@ -86,9 +87,7 @@ class BoundaryInvariant(ArchInvariant):
 
         details = []
         for v in violations:
-            details.append(
-                f"Boundary violation: {v.node_id} ({v.violation_type}): {v.description}"
-            )
+            details.append(f"Boundary violation: {v.node_id} ({v.violation_type}): {v.description}")
 
         return ArchInvariantResult(
             passed=len(violations) == 0,
@@ -334,9 +333,7 @@ class FolkloreInvariant(ArchInvariant):
 
             for pattern, meaning in folklore_indicators:
                 if pattern in content:
-                    details.append(
-                        f"README folklore indicator: '{pattern}' suggests {meaning}"
-                    )
+                    details.append(f"README folklore indicator: '{pattern}' suggests {meaning}")
 
         except Exception:
             pass
@@ -457,9 +454,7 @@ class UpgradeGeometryInvariant(ArchInvariant):
         coupling = graph.compute_upgrade_coupling()
         for repo, coupled in coupling.items():
             if coupled:
-                issues.append(
-                    f"Upgrade coupling: {repo} must rollout with {', '.join(coupled)}"
-                )
+                issues.append(f"Upgrade coupling: {repo} must rollout with {', '.join(coupled)}")
 
         return ArchInvariantResult(
             passed=len(issues) == 0,
@@ -532,27 +527,20 @@ class ArchitectureInvariantEngine:
         """
         Get the architectural state as dimension values.
 
-        Returns:
+        Returns
+        -------
             (architecture_score, hidden_state_score, all_results)
         """
         results = self.run_all()
 
         # Architecture dimension: average of arch-related invariants
-        arch_results = [
-            r
-            for r in results
-            if r.dimension == StateDimension.ARCHITECTURE
-        ]
+        arch_results = [r for r in results if r.dimension == StateDimension.ARCHITECTURE]
         arch_score = (
-            sum(1.0 for r in arch_results if r.passed) / len(arch_results)
-            if arch_results
-            else 1.0
+            sum(1.0 for r in arch_results if r.passed) / len(arch_results) if arch_results else 1.0
         )
 
         # Hidden state dimension
-        hidden_results = [
-            r for r in results if r.dimension == StateDimension.HIDDEN_STATE
-        ]
+        hidden_results = [r for r in results if r.dimension == StateDimension.HIDDEN_STATE]
         hidden_score = (
             sum(1.0 for r in hidden_results if r.passed) / len(hidden_results)
             if hidden_results

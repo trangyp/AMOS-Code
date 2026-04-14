@@ -115,7 +115,9 @@ class ImportAnalyzer:
 
         # Tree-sitter query for import statements
         # Matches: import x, from x import y
-        self.import_query = Query(PY_LANGUAGE, """
+        self.import_query = Query(
+            PY_LANGUAGE,
+            """
             (import_statement
               name: (dotted_name) @import.name)
 
@@ -124,7 +126,8 @@ class ImportAnalyzer:
 
             (import_from_statement
               module_name: (relative_import) @from.relative)
-        """)
+        """,
+        )
 
     def _find_python_files(self) -> list[Path]:
         """Find all Python files in the repository."""
@@ -132,13 +135,14 @@ class ImportAnalyzer:
         for root, dirs, files in os.walk(self.repo_path):
             # Skip common non-source directories
             dirs[:] = [
-                d for d in dirs
-                if not d.startswith('.')
-                and d not in ['__pycache__', 'venv', '.venv', 'node_modules']
+                d
+                for d in dirs
+                if not d.startswith(".")
+                and d not in ["__pycache__", "venv", ".venv", "node_modules"]
             ]
 
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith(".py"):
                     py_files.append(Path(root) / file)
 
         return py_files
@@ -148,32 +152,36 @@ class ImportAnalyzer:
         imports = []
 
         try:
-            with open(filepath, encoding='utf-8') as f:
+            with open(filepath, encoding="utf-8") as f:
                 source = f.read()
 
-            tree = self.parser.parse(bytes(source, 'utf8'))
+            tree = self.parser.parse(bytes(source, "utf8"))
             root_node = tree.root_node
 
             # Execute query
             captures = self.import_query.captures(root_node)
 
             for node, capture_name in captures:
-                import_name = source[node.start_byte:node.end_byte]
+                import_name = source[node.start_byte : node.end_byte]
 
-                if capture_name == 'from.relative':
+                if capture_name == "from.relative":
                     is_relative = True
                     # Clean up relative import notation
-                    import_name = import_name.strip('.')
+                    import_name = import_name.strip(".")
                 else:
                     is_relative = False
 
-                imports.append(ImportInfo(
-                    source_file=str(filepath.relative_to(self.repo_path)),
-                    imported_module=import_name,
-                    is_relative=is_relative,
-                    is_from_import=(capture_name == 'from.name' or capture_name == 'from.relative'),
-                    line_number=node.start_point[0] + 1
-                ))
+                imports.append(
+                    ImportInfo(
+                        source_file=str(filepath.relative_to(self.repo_path)),
+                        imported_module=import_name,
+                        is_relative=is_relative,
+                        is_from_import=(
+                            capture_name == "from.name" or capture_name == "from.relative"
+                        ),
+                        line_number=node.start_point[0] + 1,
+                    )
+                )
 
         except Exception as e:
             print(f"Warning: Could not parse {filepath}: {e}", file=sys.stderr)
@@ -190,7 +198,7 @@ class ImportAnalyzer:
         for filepath in py_files:
             # Get module name from file path
             relative_path = filepath.relative_to(self.repo_path)
-            module_name = str(relative_path.with_suffix('')).replace(os.sep, '.')
+            module_name = str(relative_path.with_suffix("")).replace(os.sep, ".")
 
             # Extract imports
             imports = self._extract_imports(filepath)
@@ -202,7 +210,7 @@ class ImportAnalyzer:
                 # Handle relative imports
                 if imp.is_relative:
                     # Resolve relative to importing module
-                    base_module = '.'.join(module_name.split('.')[:-1])
+                    base_module = ".".join(module_name.split(".")[:-1])
                     if imported_module:
                         imported_module = f"{base_module}.{imported_module}"
                     else:
@@ -255,7 +263,9 @@ class ImportAnalyzer:
 
         return unique_cycles
 
-    def calculate_coupling_metrics(self, graph: Optional[DependencyGraph] = None) -> dict[str, CouplingMetrics]:
+    def calculate_coupling_metrics(
+        self, graph: Optional[DependencyGraph] = None
+    ) -> dict[str, CouplingMetrics]:
         """Calculate coupling metrics for all modules."""
         if graph is None:
             graph = self.build_dependency_graph()
@@ -275,7 +285,7 @@ class ImportAnalyzer:
                 module=module,
                 afferent_coupling=aff,
                 efferent_coupling=eff,
-                in_cycle=(module in modules_in_cycles)
+                in_cycle=(module in modules_in_cycles),
             )
             metric.calculate_instability()
             metrics[module] = metric
@@ -297,18 +307,14 @@ class ImportAnalyzer:
         metrics = self.calculate_coupling_metrics(graph)
 
         # Find most unstable modules
-        unstable = sorted(
-            metrics.values(),
-            key=lambda m: m.instability,
-            reverse=True
-        )[:10]
+        unstable = sorted(metrics.values(), key=lambda m: m.instability, reverse=True)[:10]
 
         return {
             "summary": {
                 "total_modules": len(graph.vertices),
                 "total_dependencies": len(graph.edges),
                 "circular_dependencies": len(cycles),
-                "modules_in_cycles": len(set(mod for cycle in cycles for mod in cycle))
+                "modules_in_cycles": len(set(mod for cycle in cycles for mod in cycle)),
             },
             "graph": graph.to_dict(),
             "cycles": cycles,
@@ -317,7 +323,7 @@ class ImportAnalyzer:
                     "afferent": v.afferent_coupling,
                     "efferent": v.efferent_coupling,
                     "instability": round(v.instability, 2),
-                    "in_cycle": v.in_cycle
+                    "in_cycle": v.in_cycle,
                 }
                 for k, v in metrics.items()
             },
@@ -325,14 +331,14 @@ class ImportAnalyzer:
                 {
                     "module": m.module,
                     "instability": round(m.instability, 2),
-                    "efferent": m.efferent_coupling
+                    "efferent": m.efferent_coupling,
                 }
                 for m in unstable
-            ]
+            ],
         }
 
 
-def main():
+def main() -> int:
     """CLI entry point for import analysis."""
     import argparse
     import json
@@ -344,18 +350,10 @@ def main():
         "repo_path",
         nargs="?",
         default=".",
-        help="Path to Python repository (default: current directory)"
+        help="Path to Python repository (default: current directory)",
     )
-    parser.add_argument(
-        "--output",
-        "-o",
-        help="Output file for JSON results"
-    )
-    parser.add_argument(
-        "--cycles",
-        action="store_true",
-        help="Show only circular dependencies"
-    )
+    parser.add_argument("--output", "-o", help="Output file for JSON results")
+    parser.add_argument("--cycles", action="store_true", help="Show only circular dependencies")
 
     args = parser.parse_args()
 
@@ -391,7 +389,7 @@ def main():
         print("\n" + "=" * 70)
 
     if args.output:
-        with open(args.output, 'w') as f:
+        with open(args.output, "w") as f:
             json.dump(results, f, indent=2)
         print(f"\nResults saved to {args.output}")
 

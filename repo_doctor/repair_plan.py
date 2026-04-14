@@ -216,6 +216,173 @@ class RepairPlanner:
 
         return None
 
+    def generate_architecture_plan(
+        self,
+        state: RepoStateVector,
+        arch_results: list[ArchInvariantResult],
+    ) -> RepairPlan:
+        """
+        Generate a repair plan from architectural invariant failures.
+
+        Architecture-aware repair planning considers:
+        - Authority duplication reduction
+        - Boundary integrity preservation
+        - Upgrade admissibility
+        - Rollout safety
+        """
+        actions: list[RepairAction] = []
+
+        for result in arch_results:
+            if not result.passed:
+                action = self._create_arch_action_for_failure(result)
+                if action:
+                    actions.append(action)
+
+        # Sort by priority and architectural severity
+        actions.sort(key=lambda a: (a.priority, not a.preserves_boundary_integrity))
+
+        # Split into automated and manual
+        automated = [a for a in actions if a.auto_fixable]
+        manual = [a for a in actions if not a.auto_fixable]
+
+        # Calculate total risk considering architecture
+        arch_risk_factors = sum(
+            1
+            for a in actions
+            if not a.preserves_boundary_integrity or not a.reduces_authority_duplication
+        )
+        total_risk = "high" if arch_risk_factors > 2 else "medium" if actions else "low"
+
+        return RepairPlan(
+            state=state,
+            total_score=state.score(),
+            actions=actions,
+            total_risk=total_risk,
+            estimated_time=self._estimate_arch_time(actions),
+            automated_fixes=automated,
+            manual_fixes=manual,
+        )
+
+    def _create_arch_action_for_failure(self, result: ArchInvariantResult) -> RepairAction | None:
+        """Create an architecture-aware repair action for an arch invariant failure."""
+        if result.invariant_name == "boundary_integrity":
+            return RepairAction(
+                priority=2,
+                description=f"Fix boundary violation: {result.message}",
+                files_to_modify=["architecture.md", "docs/architecture.rst"],
+                invariant_dimension=StateDimension.ARCHITECTURE,
+                estimated_risk="high",
+                auto_fixable=False,
+                fix_suggestion="Restructure to ensure components enforce policy only within their declared boundary",
+                restores_arch_invariants=True,
+                preserves_boundary_integrity=True,
+                arch_violation_type="boundary_violation",
+                arch_violation_details={"violations": result.violations},
+            )
+
+        elif result.invariant_name == "single_authority":
+            return RepairAction(
+                priority=1,
+                description=f"Consolidate authority: {result.message}",
+                files_to_modify=["pyproject.toml", "__init__.py"],
+                invariant_dimension=StateDimension.ARCHITECTURE,
+                estimated_risk="high",
+                auto_fixable=False,
+                fix_suggestion="Designate exactly one canonical source of truth for each architectural fact",
+                restores_arch_invariants=True,
+                reduces_authority_duplication=True,
+                arch_violation_type="authority_duplication",
+            )
+
+        elif result.invariant_name == "plane_separation":
+            return RepairAction(
+                priority=2,
+                description=f"Fix plane separation: {result.message}",
+                files_to_modify=[],
+                invariant_dimension=StateDimension.ARCHITECTURE,
+                estimated_risk="medium",
+                auto_fixable=False,
+                fix_suggestion="Ensure control/data/execution/observation planes remain distinct",
+                restores_arch_invariants=True,
+                preserves_boundary_integrity=True,
+                arch_violation_type="plane_violation",
+            )
+
+        elif result.invariant_name == "hidden_interfaces":
+            return RepairAction(
+                priority=4,
+                description=f"Document hidden interfaces: {result.message}",
+                files_to_modify=["docs/interfaces.md"],
+                invariant_dimension=StateDimension.HIDDEN_STATE,
+                estimated_risk="low",
+                auto_fixable=False,
+                fix_suggestion="Explicitly declare all operationally significant interfaces",
+                restores_arch_invariants=True,
+                arch_violation_type="hidden_interface",
+            )
+
+        elif result.invariant_name == "folklore_free":
+            return RepairAction(
+                priority=3,
+                description=f"Eliminate folklore: {result.message}",
+                files_to_modify=["README.md", "scripts/"],
+                invariant_dimension=StateDimension.HIDDEN_STATE,
+                estimated_risk="medium",
+                auto_fixable=False,
+                fix_suggestion="Automate or explicitly document correctness-critical operations",
+                restores_arch_invariants=True,
+                preserves_rollout_safety=True,
+                arch_violation_type="folklore_dependency",
+            )
+
+        elif result.invariant_name == "architecture_drift":
+            return RepairAction(
+                priority=1,
+                description=f"Fix architecture drift: {result.message}",
+                files_to_modify=["pyproject.toml", "docs/architecture.md"],
+                invariant_dimension=StateDimension.ARCHITECTURE,
+                estimated_risk="high",
+                auto_fixable=False,
+                fix_suggestion="Align declared architecture with actual implementation",
+                restores_arch_invariants=True,
+                preserves_upgrade_admissibility=True,
+                arch_violation_type="architecture_drift",
+            )
+
+        elif result.invariant_name == "upgrade_geometry":
+            return RepairAction(
+                priority=2,
+                description=f"Fix upgrade geometry: {result.message}",
+                files_to_modify=["migrations/", "docs/upgrades.md"],
+                invariant_dimension=StateDimension.ARCHITECTURE,
+                estimated_risk="high",
+                auto_fixable=False,
+                fix_suggestion="Ensure all upgrade/rollback paths preserve architectural validity",
+                restores_arch_invariants=True,
+                preserves_upgrade_admissibility=True,
+                preserves_rollout_safety=True,
+                arch_violation_type="upgrade_failure",
+            )
+
+        return None
+
+    def _estimate_arch_time(self, actions: list[RepairAction]) -> str:
+        """Estimate time for architecture repairs based on complexity."""
+        if not actions:
+            return "< 1 hour"
+
+        high_risk = sum(1 for a in actions if a.estimated_risk == "high")
+        arch_complex = sum(1 for a in actions if not a.preserves_boundary_integrity)
+
+        total = len(actions) + high_risk * 2 + arch_complex * 3
+
+        if total <= 3:
+            return "1-3 hours"
+        elif total <= 8:
+            return "3-8 hours"
+        else:
+            return "8+ hours (architectural refactoring)"
+
     def get_minimal_patch_set(self, plan: RepairPlan) -> list[RepairAction]:
         """
         Get the minimal set of actions to restore releaseability.
@@ -347,10 +514,14 @@ class AutoFixRunner:
 
         # Run ruff fix if available
         if self._is_available("ruff"):
-            self.results.append(self._run_ruff_fix(dry_run))
-            self.results.append(self._run_ruff_format(dry_run))
+            ruff_fix = self._run_ruff_fix(dry_run)
+            if ruff_fix:
+                self.results.append(ruff_fix)
+            ruff_fmt = self._run_ruff_format(dry_run)
+            if ruff_fmt:
+                self.results.append(ruff_fmt)
 
-        return [r for r in self.results if r is not None]
+        return self.results
 
     def _is_available(self, tool: str) -> bool:
         """Check if a tool is available in PATH."""
