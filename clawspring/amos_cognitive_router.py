@@ -350,6 +350,18 @@ class CognitiveRouter:
             f"Risk: {analysis.risk_level.upper()}",
         ]
 
+        # Analyze and suggest engines
+        engines = self.suggest_engines(analysis)
+
+        # Apply feedback loop enhancement if available
+        try:
+            from amos_brain.feedback_loop import get_enhanced_engines
+            engines = get_enhanced_engines(analysis.primary_domain, engines)
+        except Exception:
+            pass  # Silent fail if feedback not available
+
+        analysis.suggested_engines = engines[:3]
+
         if analysis.suggested_engines:
             lines.append(f"Engines: {', '.join(analysis.suggested_engines[:3])}")
 
