@@ -118,14 +118,10 @@ class CodeReview:
     """
     Recipe: Cognitive Code Review.
     
-    Use for: Reviewing code changes with law compliance,
-             security analysis, best practice validation.
-    
-    Example:
-        result = CodeReview.analyze(code="def transfer_money...")
+    Use for: Code review, quality assessment, refactoring suggestions.
     """
     
-    RECIPE_NAME = "Cognitive Code Review"
+    RECIPE_NAME = "Code Review"
     
     @classmethod
     def analyze(
@@ -181,6 +177,15 @@ Identify:
             law_compliant=response.law_compliant,
             session_id=session_id
         )
+
+    @classmethod
+    def run(
+        cls,
+        code: str,
+        language: str = "python",
+        focus_areas: list[str] | None = None,
+    ) -> CookbookResult:
+        return cls.analyze(code, language=language, focus_areas=focus_areas)
 
 
 class SecurityAudit:
@@ -242,6 +247,16 @@ Check against Global Laws:
             law_compliant=response.law_compliant,
             session_id=session_id
         )
+
+    @classmethod
+    def run(
+        cls,
+        code: str,
+        language: str = "python",
+        threat_model: str = "STRIDE",
+    ) -> CookbookResult:
+        system_description = f"{language} code under review:\n\n{code[:1000]}"
+        return cls.analyze(system_description=system_description, threat_model=threat_model)
 
 
 class DesignPattern:
@@ -312,7 +327,7 @@ class ProblemDiagnosis:
              root cause identification.
     """
     
-    RECIPE_NAME = "Root Cause Analysis"
+    RECIPE_NAME = "Problem Diagnosis & RCA"
     
     @classmethod
     def diagnose(
@@ -377,6 +392,15 @@ Identify:
         problem: str,
         symptoms: list[str],
         context: str = "",
+    ) -> CookbookResult:
+        return cls.diagnose(problem, symptoms, context)
+
+    @classmethod
+    def run(
+        cls,
+        problem: str,
+        symptoms: list[str],
+        context: str = "",
         **extra: Any,
     ) -> CookbookResult:
         """Alias for diagnose() with extra tolerance."""
@@ -387,13 +411,13 @@ Identify:
 
 class ProjectPlanner:
     """
-    Recipe: Project Planning & Estimation.
+    Recipe: Project Planner.
     
-    Use for: Task breakdown, effort estimation, milestone planning,
-             risk assessment for projects.
+    Use for: Project scoping, milestone planning, resource allocation,
+             risk estimation, timeline design.
     """
     
-    RECIPE_NAME = "Project Planner"
+    RECIPE_NAME = "Project Planning & Estimation"
     
     @classmethod
     def plan(
