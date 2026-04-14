@@ -261,6 +261,10 @@ class CognitiveRouter:
                 lines.append(f"- {engine}")
 
         # Execute through engines if requested
+        consensus_score = None
+        exec_time_ms = 0.0
+        recommendation = "Analyze with suggested engines"
+
         if execute and analysis.suggested_engines:
             try:
                 # Use multi-agent orchestration for complex tasks
@@ -270,6 +274,9 @@ class CognitiveRouter:
                         task_description,
                         analysis.suggested_engines[:4]
                     )
+                    consensus_score = consensus.agreement_score
+                    exec_time_ms = consensus.total_execution_time_ms
+                    recommendation = consensus.recommended_action
                     lines.extend([
                         "",
                         "## Multi-Agent Consensus",
@@ -287,6 +294,8 @@ class CognitiveRouter:
                         task_description,
                         analysis.suggested_engines[:3]
                     )
+                    exec_time_ms = result.execution_time_ms
+                    recommendation = f"Executed {len(result.engines_used)} engines"
                     lines.extend([
                         "",
                         "## Pre-execution Analysis",
@@ -297,6 +306,23 @@ class CognitiveRouter:
                         lines.append("⚠️ Law violations detected - review required")
             except Exception:
                 pass  # Silent fail if execution modules not available
+
+        # Record to audit trail
+        try:
+            from amos_brain.cognitive_audit import record_cognitive_decision
+            record_cognitive_decision(
+                task=task_description,
+                domain=analysis.primary_domain,
+                risk_level=analysis.risk_level,
+                engines=analysis.suggested_engines,
+                consensus_score=consensus_score,
+                laws=analysis.law_violations or [],
+                violations=analysis.law_violations or [],
+                exec_time_ms=exec_time_ms,
+                recommendation=recommendation
+            )
+        except Exception:
+            pass  # Silent fail for non-critical audit
 
         if analysis.requires_multi_agent:
             lines.extend([

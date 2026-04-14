@@ -234,6 +234,57 @@ def _amos_code(params: dict[str, Any], config: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _amos_design(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Generate UI/UX design with biological constraints."""
+    from amos_design_engine import get_design_engine
+
+    comp_type = params.get("component_type", "")
+    purpose = params.get("purpose", "")
+    segments = params.get("user_segments", [])
+    accessibility = params.get("accessibility", True)
+
+    if not comp_type or not purpose:
+        return "Error: 'component_type' and 'purpose' are required"
+
+    engine = get_design_engine()
+    result = engine.design_component(comp_type, purpose, segments, accessibility)
+
+    lines = [
+        f"# AMOS Design: {result.component_type}",
+        f"Purpose: {purpose}",
+        "",
+        "## Design System",
+        f"Structure: {result.design_system['structure']['navigation_pattern']}",
+        f"Visual: {result.design_system['visual']['grid_system']}",
+        "",
+        "## Copy Blocks",
+    ]
+    for key, text in result.copy_blocks.items():
+        lines.append(f"{key}: '{text}'")
+
+    lines.extend([
+        "",
+        "## Biological Constraints (L6 UBI Alignment)",
+    ])
+    for constraint in result.biological_constraints:
+        lines.append(f"- {constraint}")
+
+    lines.extend([
+        "",
+        "## Accessibility Notes",
+    ])
+    for note in result.accessibility_notes[:3]:
+        lines.append(f"- {note}")
+
+    lines.extend([
+        "",
+        "## Gap Acknowledgment",
+        result.gap_acknowledgment,
+    ])
+
+    return "\n".join(lines)
+
+
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
 
 AMOS_TOOLS = [
