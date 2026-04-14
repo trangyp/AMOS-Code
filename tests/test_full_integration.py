@@ -221,75 +221,73 @@ class TestLayer15Documentation(unittest.TestCase):
         print("  [L15] Documentation: README and packaging ready")
 
 
-def test_layer_18_organism_bridge():
+class TestLayer18OrganismBridge(unittest.TestCase):
     """Layer 18: Organism OS Bridge."""
-    try:
-        from amos_brain import initialize_organism, execute_organism_task
-        result = initialize_organism()
-        assert result["status"] in ["initialized", "error"]  # May error if organism not present
-        if result["status"] == "initialized":
-            result = execute_organism_task("Test task", domain="software")
-            assert result["status"] in ["completed", "blocked", "error"]
-        print("  [L18] Organism Bridge: brain-guided execution ready")
-        return True
-    except ImportError:
-        print("  [L18] Organism Bridge: module available (organism optional)")
-        return True
-    except Exception as e:
-        print(f"  [L18] FAILED: {e}")
-        return False
+    
+    def test_organism_bridge_available(self):
+        """Organism bridge available or optional."""
+        try:
+            from amos_brain import initialize_organism, execute_organism_task
+            result = initialize_organism()
+            self.assertIn(result["status"], ["initialized", "error"])
+            if result["status"] == "initialized":
+                result = execute_organism_task("Test task", domain="software")
+                self.assertIn(result["status"], ["completed", "blocked", "error"])
+            print("  [L18] Organism Bridge: brain-guided execution ready")
+        except ImportError:
+            self.skipTest("Organism module not available (optional)")
 
 
-def test_end_to_end_workflow():
+class TestEndToEndWorkflow(unittest.TestCase):
     """Test complete end-to-end brain-guided workflow."""
-    from amos_brain import (
-        think, validate, get_state_manager,
-        get_meta_controller, ArchitectureDecision
-    )
-    from clawspring.amos_brain_integration import BrainClawSpringBridge
     
-    print("\n  [E2E] End-to-End Workflow Test:")
-    
-    # Step 1: Brain-guided thinking
-    response = think("Should we implement caching?")
-    assert response.success and response.law_compliant
-    print("    - Brain thinking: OK")
-    
-    # Step 2: Architecture decision
-    result = ArchitectureDecision.analyze("Caching strategy")
-    # Handle both string and numeric confidence
-    if isinstance(result.confidence, str):
-        assert result.confidence in ["high", "medium", "low"]
-    else:
-        # Numeric confidence (0.0-1.0)
-        assert 0.0 <= result.confidence <= 1.0
-    print("    - Architecture decision: OK")
-    
-    # Step 3: Validation
-    is_valid, issues = validate("Implement Redis caching")
-    assert is_valid, f"Validation failed: {issues}"
-    print("    - Action validation: OK")
-    
-    # Step 4: State persistence
-    sm = get_state_manager()
-    session_id = sm.start_session(goal="E2E test", domain="integration")
-    assert session_id
-    print(f"    - State persistence: {session_id[:8]}...")
-    
-    # Step 5: Meta-cognitive orchestration
-    mc = get_meta_controller()
-    plan = mc.orchestrate("Build caching system")
-    assert len(plan.subtasks) > 0
-    print(f"    - Orchestration: {len(plan.subtasks)} tasks")
-    
-    # Step 6: ClawSpring integration
-    cs_bridge = BrainClawSpringBridge()
-    init = cs_bridge.init_agent("E2EAgent", "Test caching")
-    cs_bridge.shutdown_agent()
-    print("    - ClawSpring bridge: OK")
-    
-    print("  [E2E] End-to-End: ALL CHECKS PASSED")
-    return True
+    def test_e2e_workflow(self):
+        """Full workflow integration test."""
+        from amos_brain import (
+            think, validate, get_state_manager,
+            get_meta_controller, ArchitectureDecision
+        )
+        from clawspring.amos_brain_integration import BrainClawSpringBridge
+        
+        print("\n  [E2E] End-to-End Workflow Test:")
+        
+        # Step 1: Brain-guided thinking
+        response = think("Should we implement caching?")
+        self.assertTrue(response.success and response.law_compliant)
+        print("    - Brain thinking: OK")
+        
+        # Step 2: Architecture decision
+        result = ArchitectureDecision.analyze("Caching strategy")
+        if isinstance(result.confidence, str):
+            self.assertIn(result.confidence, ["high", "medium", "low"])
+        else:
+            self.assertTrue(0.0 <= result.confidence <= 1.0)
+        print("    - Architecture decision: OK")
+        
+        # Step 3: Validation
+        is_valid, issues = validate("Implement Redis caching")
+        self.assertTrue(is_valid, f"Validation failed: {issues}")
+        print("    - Action validation: OK")
+        
+        # Step 4: State persistence
+        sm = get_state_manager()
+        session_id = sm.start_session(goal="E2E test", domain="integration")
+        self.assertTrue(session_id)
+        print(f"    - State persistence: {session_id[:8]}...")
+        
+        # Step 5: Meta-cognitive orchestration
+        mc = get_meta_controller()
+        plan = mc.orchestrate("Build caching system")
+        self.assertGreater(len(plan.subtasks), 0)
+        print(f"    - Orchestration: {len(plan.subtasks)} tasks")
+        
+        # Step 6: ClawSpring integration
+        cs_bridge = BrainClawSpringBridge()
+        cs_bridge.init_agent("E2EAgent", "Test caching")
+        cs_bridge.shutdown_agent()
+        print("    - ClawSpring bridge: OK")
+        
+        print("  [E2E] End-to-End: ALL CHECKS PASSED")
 
 
 def main():
