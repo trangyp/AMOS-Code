@@ -138,10 +138,12 @@ Architecture complete: 8 layers, 31 files, ~20,500 lines of code.
 **Decision:** Create single entry point integrating all layers
 
 **Files Created/Updated:**
+
 - `amos_unified.py` (updated to ~600 lines) - Unified launcher with Ω integration
 - `test_amos_unified.py` (~700 lines) - Full stack integration tests
 
 **Integration Features:**
+
 - New modes: "omega", "coherence", "economic"
 - Demo modes: axiomatic, coherence, economic, all
 - Validation flag for post-initialization axiom checking
@@ -193,7 +195,7 @@ Architecture complete: 8 layers, 31 files, ~20,500 lines of code.
 
 ## Final Architecture Summary
 
-```
+```text
 AMOS v∞.Ω.Λ.X — COMPLETE
 ════════════════════════════════════════════════════════════════
 

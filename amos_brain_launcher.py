@@ -78,9 +78,9 @@ def run_tutorial():
 
 def run_cli():
     """Launch brain CLI."""
-    print(clr("\n[Launching Brain CLI...]", "cyan"))
+    print(clr("\n[Launching AMOS interactive shell...]", "cyan"))
     print()
-    subprocess.run([sys.executable, "amos_brain_cli.py"])
+    subprocess.run([sys.executable, os.path.join("clawspring", "clawspring.py"), "--amos"])
     print()
     input(clr("[Press Enter to return to menu...]", "yellow"))
 

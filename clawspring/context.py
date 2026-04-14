@@ -29,7 +29,8 @@ def _get_amos_brain():
             _amos_brain_loader = get_brain()
             _amos_router = get_router()
         except Exception as e:
-            print(f"[AMOS Brain] Initialization warning: {e}")
+            import sys
+            print(f"[AMOS Brain] Initialization warning: {e}", file=sys.stderr)
             _amos_brain_loader = False
             _amos_router = False
     return _amos_brain_loader
@@ -273,6 +274,9 @@ def get_amos_status() -> dict:
         config = brain_loader._config
         if not config:
             return {"enabled": False, "error": "Config not loaded"}
+        loaded_specs = getattr(config, "loaded_specs", None)
+        if isinstance(loaded_specs, list) and not loaded_specs:
+            return {"enabled": False, "error": "No AMOS spec files loaded"}
         laws_count = len(config.global_laws) if isinstance(config.global_laws, dict) else 0
         engines_count = len(config.engines) if isinstance(config.engines, dict) else 0
         return {

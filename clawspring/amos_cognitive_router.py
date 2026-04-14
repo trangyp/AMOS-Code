@@ -263,20 +263,40 @@ class CognitiveRouter:
         # Execute through engines if requested
         if execute and analysis.suggested_engines:
             try:
-                from amos_brain.engine_executor import execute_cognitive_task
-                result = execute_cognitive_task(
-                    task_description,
-                    analysis.suggested_engines[:3]
-                )
-                lines.extend([
-                    "",
-                    "## Pre-execution Analysis",
-                    f"Executed {len(result.engines_used)} engines in {result.execution_time_ms:.1f}ms",
-                ])
-                if result.violations_found:
-                    lines.append("⚠️ Law violations detected - review required")
+                # Use multi-agent orchestration for complex tasks
+                if analysis.requires_multi_agent or len(analysis.suggested_engines) > 1:
+                    from amos_brain.multi_agent_orchestrator import run_cognitive_consensus
+                    consensus = run_cognitive_consensus(
+                        task_description,
+                        analysis.suggested_engines[:4]
+                    )
+                    lines.extend([
+                        "",
+                        "## Multi-Agent Consensus",
+                        f"Agreement: {consensus.agreement_score:.0%} | "
+                        f"Time: {consensus.total_execution_time_ms:.1f}ms | "
+                        f"Perspectives: {len(consensus.perspectives)}",
+                        "",
+                        f"**{consensus.recommended_action}**",
+                    ])
+                    if consensus.dissenting_views:
+                        lines.append("⚠️ Dissent detected - review perspectives")
+                else:
+                    from amos_brain.engine_executor import execute_cognitive_task
+                    result = execute_cognitive_task(
+                        task_description,
+                        analysis.suggested_engines[:3]
+                    )
+                    lines.extend([
+                        "",
+                        "## Pre-execution Analysis",
+                        f"Executed {len(result.engines_used)} engines "
+                        f"in {result.execution_time_ms:.1f}ms",
+                    ])
+                    if result.violations_found:
+                        lines.append("⚠️ Law violations detected - review required")
             except Exception:
-                pass  # Silent fail if executor not available
+                pass  # Silent fail if execution modules not available
 
         if analysis.requires_multi_agent:
             lines.extend([

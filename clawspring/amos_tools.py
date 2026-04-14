@@ -193,6 +193,47 @@ def _amos_workflow(params: dict[str, Any], config: dict[str, Any]) -> str:
     return run_amos_workflow(task, output_type)
 
 
+def _amos_code(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Generate AMOS-compliant code for specified layer."""
+    from amos_coding_engine import get_coding_engine
+
+    layer = params.get("layer", "backend")
+    function_name = params.get("function_name", "")
+    description = params.get("description", "")
+    inputs = params.get("inputs", [])
+    outputs = params.get("outputs", [])
+
+    if not function_name or not description:
+        return "Error: 'function_name' and 'description' are required"
+
+    engine = get_coding_engine()
+    result = engine.generate_code(layer, function_name, description, inputs, outputs)
+
+    lines = [
+        f"# AMOS Code Generation: {result.function_name}",
+        f"Layer: {result.layer}",
+        f"Quality Score: {result.quality_score}",
+        f"Law Compliance: {all(result.law_compliance.values())}",
+        "",
+        "## Generated Code",
+        "```python",
+        result.code,
+        "```",
+        "",
+        "## Explanation",
+        result.explanation,
+        "",
+        "## Gap Acknowledgment",
+        result.gap_acknowledgment,
+        "",
+        "## Assumptions",
+    ]
+    for assumption in result.assumptions:
+        lines.append(f"- {assumption}")
+
+    return "\n".join(lines)
+
+
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
 
 AMOS_TOOLS = [
@@ -348,6 +389,48 @@ AMOS_TOOLS = [
             }
         },
         func=_amos_workflow,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSCode",
+        schema={
+            "name": "AMOSCode",
+            "description": (
+                "Generate AMOS-compliant code for architecture, backend, "
+                "database, or AI layers with embedded gap acknowledgment."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "layer": {
+                        "type": "string",
+                        "enum": ["architecture", "backend", "database", "ai"],
+                        "description": "Coding layer to use"
+                    },
+                    "function_name": {
+                        "type": "string",
+                        "description": "Name of the function/component to generate"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of what the code should do"
+                    },
+                    "inputs": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Input parameters"
+                    },
+                    "outputs": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Expected outputs"
+                    }
+                },
+                "required": ["layer", "function_name", "description"]
+            }
+        },
+        func=_amos_code,
         read_only=True,
         concurrent_safe=True,
     ),

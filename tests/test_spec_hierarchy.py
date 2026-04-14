@@ -16,9 +16,9 @@ import unittest
 from amosl.runtime import RuntimeKernel
 from amosl.prover import TheoremProver
 from amosl.axioms import AxiomChecker
-from amosl.admissibility import GrandAdmissibilityVerifier
+from amosl.admissibility import GrandAdmissibilityVerifier, AdmissibilityResult
 from amosl.field import FieldEvolution, FieldState
-from amosl.modal import ModalLogic
+from amosl.modal import ModalLogic, StratifiedTruth, TruthValue
 from amosl.geometry import InformationGeometry
 
 
@@ -99,7 +99,11 @@ class TestLayer3to4(unittest.TestCase):
         
         # Necessity as universal quantifier (categorical limit)
         domain = [{'valid': True}] * 3
-        result = modal.necessity(lambda x: type('Truth', (), {'is_definitely_true': lambda: True})(), domain)
+        
+        def true_predicate(x):
+            return StratifiedTruth(TruthValue.TRUE)
+        
+        result = modal.necessity(true_predicate, domain)
         
         # Modal structure exists
         self.assertIsNotNone(result)

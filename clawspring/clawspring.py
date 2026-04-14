@@ -2487,6 +2487,8 @@ def cmd_amos(args: str, state, config) -> bool:
             info(f"  Domains: {status.get('domains', 0)}")
             mode = "ON" if config.get("_amos_mode", False) else "OFF"
             info(f"  Cognitive mode: {mode} (use '/amos on' to enable)")
+            env_mode = os.environ.get("AMOS_BRAIN_ENABLED", "").lower() in ("1", "true", "yes", "on")
+            info(f"  Env handoff: {'ON' if env_mode else 'OFF'}")
         else:
             err(f"AMOS Brain not available: {status.get('error', 'Unknown error')}")
         return True
@@ -2603,9 +2605,9 @@ _CMD_META: dict[str, tuple[str, list[str]]] = {
                                                            "disable", "disable-all", "update",
                                                            "recommend", "info"]),
     "tasks":       ("Manage tasks",                       ["create", "delete", "get", "clear",
-                                                           "todo", "in-progress", "done", "blocked"]),
+                                                           "start", "done", "cancel"]),
     "task":        ("Manage tasks (alias)",               ["create", "delete", "get", "clear",
-                                                           "todo", "in-progress", "done", "blocked"]),
+                                                           "start", "done", "cancel"]),
     "proactive":   ("Manage proactive background watcher", ["off"]),
     "cloudsave":   ("Cloud-sync sessions to GitHub Gist", ["setup", "auto", "list", "load", "push"]),
     "voice":       ("Voice input (record → STT)",         ["lang", "status"]),
@@ -3382,7 +3384,8 @@ def main():
         config["verbose"] = True
     if args.thinking:
         config["thinking"] = True
-    if args.amos:
+    amos_env_enabled = os.environ.get("AMOS_BRAIN_ENABLED", "").lower() in ("1", "true", "yes", "on")
+    if args.amos or amos_env_enabled:
         config["_amos_mode"] = True
 
     # Check API key for active provider (warn only, don't block local providers)
