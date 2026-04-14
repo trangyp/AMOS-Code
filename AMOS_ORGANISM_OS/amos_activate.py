@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Master Activator
+"""AMOS Master Activator
 =====================
 
 The main entry point to activate the AMOS Organism.
@@ -16,17 +15,17 @@ Version: 1.0.0
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 
 def print_banner():
     """Display activation banner."""
-    print("""
+    print(
+        """
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
 ║   █████╗ ███╗   ███╗ ██████╗ ███████╗                        ║
@@ -40,7 +39,8 @@ def print_banner():
 ║                   Version 1.0.0                                ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 class AmosActivator:
@@ -68,8 +68,8 @@ class AmosActivator:
         if organism_root is None:
             organism_root = Path(__file__).parent
         self.organism_root = organism_root
-        self.activated: List[str] = []
-        self.failed: List[str] = []
+        self.activated: list[str] = []
+        self.failed: list[str] = []
         self.start_time: Optional[datetime] = None
 
     def activate(self, mode: str = "full", monitor: bool = False) -> bool:
@@ -90,7 +90,7 @@ class AmosActivator:
         # Phase 2: Load subsystems
         print(f"[{self._timestamp()}] PHASE 1: Loading subsystems...")
         print("-" * 60)
-        
+
         for code, name in self.SUBSYSTEMS:
             self._load_subsystem(code, name)
 
@@ -106,7 +106,7 @@ class AmosActivator:
 
         # Final status
         self._print_status()
-        
+
         if monitor:
             self._start_monitoring()
 
@@ -119,15 +119,17 @@ class AmosActivator:
     def _preflight_checks(self) -> bool:
         """Run pre-flight system checks."""
         print(f"[{self._timestamp()}] Running pre-flight checks...")
-        
+
         checks = {
             "organism_root": self.organism_root.exists(),
-            "brain_config": (self.organism_root.parent / "_AMOS_BRAIN" / "AMOS_DESIGNER_OS" / "AMOS.brain").exists(),
+            "brain_config": (
+                self.organism_root.parent / "_AMOS_BRAIN" / "AMOS_DESIGNER_OS" / "AMOS.brain"
+            ).exists(),
             "system_registry": (self.organism_root / "system_registry.json").exists(),
         }
 
         all_passed = all(checks.values())
-        
+
         for check, passed in checks.items():
             status = "✓" if passed else "✗"
             print(f"  {status} {check}")
@@ -167,22 +169,22 @@ class AmosActivator:
     def _initialize_cognition(self):
         """Initialize the cognitive layer."""
         # This would connect to the cognitive runtime
-        print(f"  ✓ Cognitive Runtime initialized")
-        print(f"  ✓ Memory Layer connected")
-        print(f"  ✓ Perception channels active")
-        print(f"  ✓ Decision engine ready")
+        print("  ✓ Cognitive Runtime initialized")
+        print("  ✓ Memory Layer connected")
+        print("  ✓ Perception channels active")
+        print("  ✓ Decision engine ready")
 
     def _start_primary_loop(self):
         """Start the primary organism loop."""
-        print(f"  ✓ Primary loop started")
-        print(f"  ✓ Event bus operational")
-        print(f"  ✓ Subsystem messaging active")
-        print(f"  ✓ Health monitoring enabled")
+        print("  ✓ Primary loop started")
+        print("  ✓ Event bus operational")
+        print("  ✓ Subsystem messaging active")
+        print("  ✓ Health monitoring enabled")
 
     def _print_status(self):
         """Print final activation status."""
         elapsed = (datetime.utcnow() - self.start_time).total_seconds()
-        
+
         print()
         print("=" * 60)
         print("ACTIVATION STATUS")
@@ -199,7 +201,7 @@ class AmosActivator:
         else:
             print("✓ FULL ACTIVATION SUCCESSFUL")
             print("✓ AMOS Organism is now operational")
-        
+
         print("=" * 60)
 
     def _start_monitoring(self):
@@ -208,7 +210,7 @@ class AmosActivator:
         print("Starting live monitoring dashboard...")
         print("(Press Ctrl+C to stop)")
         print()
-        
+
         try:
             while True:
                 self._draw_dashboard()
@@ -220,10 +222,10 @@ class AmosActivator:
         """Draw live status dashboard."""
         # Clear line and redraw
         print("\r" + " " * 80, end="")
-        
+
         status = "🟢 RUNNING" if not self.failed else "🟡 DEGRADED"
         uptime = (datetime.utcnow() - self.start_time).total_seconds()
-        
+
         line = f"\r{status} | Uptime: {int(uptime)}s | Subsystems: {len(self.activated)}/15"
         print(line, end="", flush=True)
 
@@ -238,21 +240,17 @@ Examples:
     python amos_activate.py                    # Standard activation
     python amos_activate.py --monitor          # Activation with monitoring
     python amos_activate.py --mode minimal     # Minimal activation
-        """
+        """,
     )
-    
+
     parser.add_argument(
         "--mode",
         choices=["full", "minimal"],
         default="full",
-        help="Activation mode (default: full)"
+        help="Activation mode (default: full)",
     )
-    
-    parser.add_argument(
-        "--monitor",
-        action="store_true",
-        help="Enable live monitoring dashboard"
-    )
+
+    parser.add_argument("--monitor", action="store_true", help="Enable live monitoring dashboard")
 
     args = parser.parse_args()
 

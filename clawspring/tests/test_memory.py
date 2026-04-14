@@ -1,32 +1,32 @@
 """Tests for the memory package (memory/)."""
-import pytest
 from pathlib import Path
 
+import pytest
+
 import memory.store as _store
-from memory.store import (
-    MemoryEntry,
-    save_memory,
-    load_index,
-    load_entries,
-    delete_memory,
-    search_memory,
-    _slugify,
-    parse_frontmatter,
-    get_index_content,
-)
 from memory.context import get_memory_context, truncate_index_content
 from memory.scan import (
-    scan_memory_dir,
+    MemoryHeader,
     format_memory_manifest,
     memory_age_days,
     memory_age_str,
     memory_freshness_text,
-    MemoryHeader,
+    scan_memory_dir,
+)
+from memory.store import (
+    MemoryEntry,
+    _slugify,
+    delete_memory,
+    load_entries,
+    load_index,
+    parse_frontmatter,
+    save_memory,
+    search_memory,
 )
 from memory.types import MEMORY_TYPES
 
-
 # ── Fixtures ─────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(autouse=True)
 def redirect_memory_dirs(tmp_path, monkeypatch):
@@ -42,15 +42,21 @@ def redirect_memory_dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(_store, "get_project_memory_dir", lambda: proj_mem)
 
 
-def _make_entry(name="test note", description="a test", type_="user",
-                content="hello world", scope="user"):
+def _make_entry(
+    name="test note", description="a test", type_="user", content="hello world", scope="user"
+):
     return MemoryEntry(
-        name=name, description=description, type=type_,
-        content=content, created="2026-04-02", scope=scope,
+        name=name,
+        description=description,
+        type=type_,
+        content=content,
+        created="2026-04-02",
+        scope=scope,
     )
 
 
 # ── Save and Load ─────────────────────────────────────────────────────────
+
 
 class TestSaveAndLoad:
     def test_roundtrip(self):
@@ -99,6 +105,7 @@ class TestSaveAndLoad:
 
 # ── Delete ────────────────────────────────────────────────────────────────
 
+
 class TestDelete:
     def test_delete_removes_file_and_index(self):
         entry = _make_entry()
@@ -117,6 +124,7 @@ class TestDelete:
 
 
 # ── Search ────────────────────────────────────────────────────────────────
+
 
 class TestSearch:
     def test_search_by_keyword(self):
@@ -145,6 +153,7 @@ class TestSearch:
 
 # ── Memory context ────────────────────────────────────────────────────────
 
+
 class TestGetMemoryContext:
     def test_returns_index_text(self):
         save_memory(_make_entry(name="my note", description="desc here"), scope="user")
@@ -164,6 +173,7 @@ class TestGetMemoryContext:
 
 
 # ── Truncation ────────────────────────────────────────────────────────────
+
 
 class TestTruncation:
     def test_no_truncation_within_limits(self):
@@ -186,6 +196,7 @@ class TestTruncation:
 
 # ── Slugify ───────────────────────────────────────────────────────────────
 
+
 class TestSlugify:
     def test_basic(self):
         assert _slugify("Hello World") == "hello_world"
@@ -198,6 +209,7 @@ class TestSlugify:
 
 
 # ── parse_frontmatter ─────────────────────────────────────────────────────
+
 
 class TestParseFrontmatter:
     def test_parse(self):
@@ -215,6 +227,7 @@ class TestParseFrontmatter:
 
 # ── scan / age / freshness ────────────────────────────────────────────────
 
+
 class TestScanAndAge:
     def test_scan_memory_dir(self):
         save_memory(_make_entry(name="note a"), scope="user")
@@ -226,6 +239,7 @@ class TestScanAndAge:
 
     def test_format_manifest(self):
         import time
+
         headers = [
             MemoryHeader(
                 filename="foo.md",
@@ -243,25 +257,30 @@ class TestScanAndAge:
 
     def test_memory_age_days_today(self):
         import time
+
         assert memory_age_days(time.time()) == 0
 
     def test_memory_age_days_old(self):
         import time
+
         old = time.time() - 5 * 86400  # 5 days ago
         assert memory_age_days(old) == 5
 
     def test_memory_age_str(self):
         import time
+
         assert memory_age_str(time.time()) == "today"
         assert memory_age_str(time.time() - 86400) == "yesterday"
         assert memory_age_str(time.time() - 3 * 86400) == "3 days ago"
 
     def test_freshness_text_fresh(self):
         import time
+
         assert memory_freshness_text(time.time()) == ""
 
     def test_freshness_text_stale(self):
         import time
+
         old = time.time() - 10 * 86400
         text = memory_freshness_text(old)
         assert "10 days old" in text
@@ -269,6 +288,7 @@ class TestScanAndAge:
 
 
 # ── Memory types ──────────────────────────────────────────────────────────
+
 
 class TestMemoryTypes:
     def test_types_list(self):

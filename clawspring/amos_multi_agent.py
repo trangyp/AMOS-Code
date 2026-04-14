@@ -7,8 +7,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from amos_runtime import get_runtime
 from amos_execution import full_execute
+
+from amos_runtime import get_runtime
 
 
 @dataclass
@@ -187,16 +188,18 @@ class AMOSMultiAgentCoordinator:
                     result = future.result()
                     results.append(result)
                 except Exception as e:
-                    results.append(AgentResult(
-                        task_id=task.task_id,
-                        agent_type=task.agent_type,
-                        success=False,
-                        content=f"Execution error: {str(e)}",
-                        execution_time=0.0,
-                        law_compliance={},
-                        quality_score=0.0,
-                        gap_acknowledgment="GAP: Task execution failed",
-                    ))
+                    results.append(
+                        AgentResult(
+                            task_id=task.task_id,
+                            agent_type=task.agent_type,
+                            success=False,
+                            content=f"Execution error: {str(e)}",
+                            execution_time=0.0,
+                            law_compliance={},
+                            quality_score=0.0,
+                            gap_acknowledgment="GAP: Task execution failed",
+                        )
+                    )
 
         return sorted(results, key=lambda r: r.task_id)
 
@@ -218,35 +221,41 @@ class AMOSMultiAgentCoordinator:
 
         for result in results:
             status = "✓" if result.success else "✗"
-            lines.extend([
-                f"### {status} {result.agent_type} ({result.task_id})",
-                f"Time: {result.execution_time:.2f}s | Quality: {result.quality_score:.2f}",
-                "",
-                result.content[:500] + "..." if len(result.content) > 500 else result.content,
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {status} {result.agent_type} ({result.task_id})",
+                    f"Time: {result.execution_time:.2f}s | Quality: {result.quality_score:.2f}",
+                    "",
+                    result.content[:500] + "..." if len(result.content) > 500 else result.content,
+                    "",
+                ]
+            )
 
         # Law compliance summary
         all_laws = set()
         for r in results:
             all_laws.update(r.law_compliance.keys())
 
-        lines.extend([
-            "",
-            "## Law Compliance Summary",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance Summary",
+            ]
+        )
         for law in sorted(all_laws):
             passed = sum(1 for r in results if r.law_compliance.get(law, False))
             lines.append(f"- {law}: {passed}/{len(results)} agents compliant")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Multi-agent synthesis combines parallel structural analyses.",
-            "No unified consciousness. No integration of conflicting perspectives.",
-            "Human synthesis and judgment required for final decisions.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Multi-agent synthesis combines parallel structural analyses.",
+                "No unified consciousness. No integration of conflicting perspectives.",
+                "Human synthesis and judgment required for final decisions.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -294,9 +303,7 @@ if __name__ == "__main__":
 
     # Test dual perspective
     print("\n--- Testing Dual Perspective (Rule of 2) ---")
-    result = coord.run_dual_perspective(
-        "Should we migrate our database to a distributed system?"
-    )
+    result = coord.run_dual_perspective("Should we migrate our database to a distributed system?")
     # Just show first part (output is long)
     print(result[:1500])
     print("... [truncated]")

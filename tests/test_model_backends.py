@@ -15,14 +15,14 @@ from unittest.mock import MagicMock, Mock, patch
 
 # Ensure amos_brain is in path  # noqa: E402
 _here = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
-sys.path.insert(0, os.path.join(_here, '..'))  # noqa: E402
+sys.path.insert(0, os.path.join(_here, ".."))  # noqa: E402
 
 import requests  # noqa: E402
 
 from amos_brain.model_backend import (  # noqa: E402
+    LLMResult,
     OllamaBackend,
     OpenAICompatibleLocalBackend,
-    LLMResult,
     with_retry,
 )
 
@@ -42,9 +42,7 @@ class TestWithRetry(unittest.TestCase):
 
     def test_retry_then_success(self):
         """Function that fails then succeeds should retry."""
-        mock_func = Mock(side_effect=[
-            requests.ConnectionError("fail"), "success"
-        ])
+        mock_func = Mock(side_effect=[requests.ConnectionError("fail"), "success"])
         decorated = with_retry(max_retries=3, base_delay=0.01)(mock_func)
 
         result = decorated()
@@ -69,12 +67,9 @@ class TestOllamaBackend(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.backend = OllamaBackend(
-            model="llama3.2:latest",
-            base_url="http://127.0.0.1:11434"
-        )
+        self.backend = OllamaBackend(model="llama3.2:latest", base_url="http://127.0.0.1:11434")
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_generate_success(self, mock_session_class):
         """Test successful generation."""
         mock_session = MagicMock()
@@ -85,23 +80,18 @@ class TestOllamaBackend(unittest.TestCase):
         mock_session_class.return_value = mock_session
 
         backend = OllamaBackend(model="test-model")
-        result = backend.generate(
-            system_prompt="You are helpful",
-            user_prompt="Hi"
-        )
+        result = backend.generate(system_prompt="You are helpful", user_prompt="Hi")
 
         self.assertIsInstance(result, LLMResult)
         self.assertEqual(result.text, "Hello!")
         mock_session.post.assert_called_once()
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_health_check_healthy(self, mock_session_class):
         """Test health check when server is healthy."""
         mock_session = MagicMock()
         mock_response = MagicMock()
-        mock_response.json.return_value = {
-            "models": [{"name": "llama3.2:latest"}]
-        }
+        mock_response.json.return_value = {"models": [{"name": "llama3.2:latest"}]}
         mock_response.raise_for_status.return_value = None
         mock_session.get.return_value = mock_response
         mock_session_class.return_value = mock_session
@@ -113,14 +103,12 @@ class TestOllamaBackend(unittest.TestCase):
         self.assertEqual(health["backend"], "ollama")
         self.assertEqual(health["model"], "llama3.2:latest")
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_health_check_model_not_found(self, mock_session_class):
         """Test health check when model is not available."""
         mock_session = MagicMock()
         mock_response = MagicMock()
-        mock_response.json.return_value = {
-            "models": [{"name": "other-model"}]
-        }
+        mock_response.json.return_value = {"models": [{"name": "other-model"}]}
         mock_response.raise_for_status.return_value = None
         mock_session.get.return_value = mock_response
         mock_session_class.return_value = mock_session
@@ -133,15 +121,13 @@ class TestOllamaBackend(unittest.TestCase):
         self.assertIn("help", health)
         self.assertIn("ollama pull", health["help"])
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_health_check_connection_error(self, mock_session_class):
         """Test health check when server is not running."""
         import requests
 
         mock_session = MagicMock()
-        mock_session.get.side_effect = requests.ConnectionError(
-            "Connection refused"
-        )
+        mock_session.get.side_effect = requests.ConnectionError("Connection refused")
         mock_session_class.return_value = mock_session
 
         backend = OllamaBackend(model="test-model")
@@ -158,36 +144,28 @@ class TestOpenAICompatibleBackend(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.backend = OpenAICompatibleLocalBackend(
-            model="local-model",
-            base_url="http://127.0.0.1:1234/v1",
-            api_key="local"
+            model="local-model", base_url="http://127.0.0.1:1234/v1", api_key="local"
         )
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_generate_success(self, mock_session_class):
         """Test successful generation."""
         mock_session = MagicMock()
         mock_response = MagicMock()
-        mock_response.json.return_value = {
-            "choices": [{"message": {"content": "Response text"}}]
-        }
+        mock_response.json.return_value = {"choices": [{"message": {"content": "Response text"}}]}
         mock_response.raise_for_status.return_value = None
         mock_session.post.return_value = mock_response
         mock_session_class.return_value = mock_session
 
         backend = OpenAICompatibleLocalBackend(
-            model="test-model",
-            base_url="http://localhost:1234/v1"
+            model="test-model", base_url="http://localhost:1234/v1"
         )
-        result = backend.generate(
-            system_prompt="You are helpful",
-            user_prompt="Hi"
-        )
+        result = backend.generate(system_prompt="You are helpful", user_prompt="Hi")
 
         self.assertIsInstance(result, LLMResult)
         self.assertEqual(result.text, "Response text")
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_health_check_lmstudio_port(self, mock_session_class):
         """Test health check provides LM Studio specific help."""
         import requests
@@ -196,17 +174,14 @@ class TestOpenAICompatibleBackend(unittest.TestCase):
         mock_session.get.side_effect = requests.ConnectionError()
         mock_session_class.return_value = mock_session
 
-        backend = OpenAICompatibleLocalBackend(
-            model="test",
-            base_url="http://127.0.0.1:1234/v1"
-        )
+        backend = OpenAICompatibleLocalBackend(model="test", base_url="http://127.0.0.1:1234/v1")
         health = backend.health_check()
 
         self.assertEqual(health["status"], "error")
         self.assertIn("help", health)
         self.assertIn("LM Studio", health["help"])
 
-    @patch('amos_brain.model_backend.requests.Session')
+    @patch("amos_brain.model_backend.requests.Session")
     def test_health_check_vllm_port(self, mock_session_class):
         """Test health check provides vLLM specific help."""
         import requests
@@ -215,10 +190,7 @@ class TestOpenAICompatibleBackend(unittest.TestCase):
         mock_session.get.side_effect = requests.ConnectionError()
         mock_session_class.return_value = mock_session
 
-        backend = OpenAICompatibleLocalBackend(
-            model="test",
-            base_url="http://127.0.0.1:8000/v1"
-        )
+        backend = OpenAICompatibleLocalBackend(model="test", base_url="http://127.0.0.1:8000/v1")
         health = backend.health_check()
 
         self.assertEqual(health["status"], "error")
@@ -235,18 +207,12 @@ class TestBackendConfiguration(unittest.TestCase):
 
     def test_ollama_custom_url(self):
         """Test Ollama backend accepts custom URL."""
-        backend = OllamaBackend(
-            model="test",
-            base_url="http://192.168.1.100:11434"
-        )
+        backend = OllamaBackend(model="test", base_url="http://192.168.1.100:11434")
         self.assertEqual(backend.base_url, "http://192.168.1.100:11434")
 
     def test_openai_backend_trailing_slash(self):
         """Test OpenAI backend strips trailing slash."""
-        backend = OpenAICompatibleLocalBackend(
-            model="test",
-            base_url="http://localhost:1234/v1/"
-        )
+        backend = OpenAICompatibleLocalBackend(model="test", base_url="http://localhost:1234/v1/")
         self.assertEqual(backend.base_url, "http://localhost:1234/v1")
 
 

@@ -6,8 +6,6 @@ quantum_path = Path(__file__).parent.parent / "09_QUANTUM_LAYER"
 if str(quantum_path) not in sys.path:
     sys.path.insert(0, str(quantum_path))
 
-from decision_optimizer import (
-    DecisionOptimizer, Decision, DecisionOutcome, get_decision_optimizer
-)
+from decision_optimizer import Decision, DecisionOptimizer, DecisionOutcome, get_decision_optimizer
 
 __all__ = ["DecisionOptimizer", "Decision", "DecisionOutcome", "get_decision_optimizer"]

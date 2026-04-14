@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Dashboard WebSocket Server
+"""AMOS Dashboard WebSocket Server
 ================================
 
 Real-time dashboard with WebSocket support for live updates.
@@ -16,21 +15,21 @@ import asyncio
 import json
 import sys
 import threading
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 # WebSocket and HTTP support
 try:
     import websockets
     from websockets.server import WebSocketServerProtocol
+
     WEBSOCKET_AVAILABLE = True
 except ImportError:
     WEBSOCKET_AVAILABLE = False
     print("[DASHBOARD] Install websockets: pip install websockets")
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 class AMOSState:
@@ -38,19 +37,20 @@ class AMOSState:
 
     def __init__(self, organism_root: Path) -> None:
         self.root = organism_root
-        self.connected_clients: Set[WebSocketServerProtocol] = set()
+        self.connected_clients: set[WebSocketServerProtocol] = set()
         self.last_update = datetime.utcnow()
         self.subsystems_active = 13
         self.tasks_pending = 0
         self.tasks_running = 0
         self.health_score = 99.8
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current organism status."""
         # Load task queue status if available
         try:
             sys.path.insert(0, str(self.root / "07_METABOLISM"))
             from task_queue import TaskQueue
+
             queue = TaskQueue(self.root)
             task_status = queue.get_status()
             self.tasks_pending = task_status.get("pending", 0)
@@ -66,10 +66,10 @@ class AMOSState:
             "tasks_pending": self.tasks_pending,
             "tasks_running": self.tasks_running,
             "clients_connected": len(self.connected_clients),
-            "status": "operational"
+            "status": "operational",
         }
 
-    async def broadcast(self, message: Dict[str, Any]) -> None:
+    async def broadcast(self, message: dict[str, Any]) -> None:
         """Broadcast message to all connected clients."""
         if not self.connected_clients:
             return
@@ -108,7 +108,7 @@ class DashboardHTTPHandler(BaseHTTPRequestHandler):
         else:
             self._send_404()
 
-    def _send_json(self, data: Dict[str, Any]) -> None:
+    def _send_json(self, data: dict[str, Any]) -> None:
         """Send JSON response."""
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -139,17 +139,52 @@ class DashboardHTTPHandler(BaseHTTPRequestHandler):
         """Serve subsystems data."""
         subsystems = [
             {"code": "01_BRAIN", "name": "Core Cognition", "status": "active", "color": "#4CAF50"},
-            {"code": "02_SENSES", "name": "Input Processing", "status": "active", "color": "#2196F3"},
+            {
+                "code": "02_SENSES",
+                "name": "Input Processing",
+                "status": "active",
+                "color": "#2196F3",
+            },
             {"code": "03_IMMUNE", "name": "Security", "status": "active", "color": "#FF9800"},
-            {"code": "04_BLOOD", "name": "Financial Engine", "status": "active", "color": "#F44336"},
+            {
+                "code": "04_BLOOD",
+                "name": "Financial Engine",
+                "status": "active",
+                "color": "#F44336",
+            },
             {"code": "05_SKELETON", "name": "Structure", "status": "active", "color": "#9C27B0"},
             {"code": "06_MUSCLE", "name": "Execution", "status": "active", "color": "#3F51B5"},
             {"code": "07_METABOLISM", "name": "Task Queue", "status": "active", "color": "#009688"},
-            {"code": "08_WORLD_MODEL", "name": "Environment", "status": "active", "color": "#00BCD4"},
-            {"code": "09_SOCIAL_ENGINE", "name": "Communication", "status": "active", "color": "#8BC34A"},
-            {"code": "10_LIFE_ENGINE", "name": "Life Management", "status": "active", "color": "#FFEB3B"},
-            {"code": "11_LEGAL_BRAIN", "name": "Compliance", "status": "active", "color": "#795548"},
-            {"code": "12_QUANTUM_LAYER", "name": "Probabilistic", "status": "active", "color": "#607D8B"},
+            {
+                "code": "08_WORLD_MODEL",
+                "name": "Environment",
+                "status": "active",
+                "color": "#00BCD4",
+            },
+            {
+                "code": "09_SOCIAL_ENGINE",
+                "name": "Communication",
+                "status": "active",
+                "color": "#8BC34A",
+            },
+            {
+                "code": "10_LIFE_ENGINE",
+                "name": "Life Management",
+                "status": "active",
+                "color": "#FFEB3B",
+            },
+            {
+                "code": "11_LEGAL_BRAIN",
+                "name": "Compliance",
+                "status": "active",
+                "color": "#795548",
+            },
+            {
+                "code": "12_QUANTUM_LAYER",
+                "name": "Probabilistic",
+                "status": "active",
+                "color": "#607D8B",
+            },
             {"code": "13_FACTORY", "name": "Agent Factory", "status": "active", "color": "#E91E63"},
         ]
         self._send_json({"subsystems": subsystems, "total": len(subsystems)})
@@ -159,22 +194,25 @@ class DashboardHTTPHandler(BaseHTTPRequestHandler):
         try:
             sys.path.insert(0, str(self.shared_state.root / "07_METABOLISM"))
             from task_queue import TaskQueue
+
             queue = TaskQueue(self.shared_state.root)
             status = queue.get_status()
             pending = [
                 {"id": t.id, "title": t.title, "priority": t.priority.name}
                 for t in queue.get_pending_tasks()
             ]
-            self._send_json({
-                "status": status,
-                "pending_tasks": pending[:10]  # Top 10
-            })
+            self._send_json(
+                {
+                    "status": status,
+                    "pending_tasks": pending[:10],  # Top 10
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e), "status": {}})
 
     def _serve_dashboard(self) -> None:
         """Serve enhanced dashboard with WebSocket support."""
-        html = '''<!DOCTYPE html>
+        html = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -507,7 +545,7 @@ class DashboardHTTPHandler(BaseHTTPRequestHandler):
         setInterval(loadTasks, 5000);
     </script>
 </body>
-</html>'''
+</html>"""
         self._send_html(html)
 
 
@@ -569,11 +607,7 @@ async def main() -> None:
             pass
 
     # Start HTTP server in a thread
-    http_thread = threading.Thread(
-        target=run_http_server,
-        args=(port, shared_state),
-        daemon=True
-    )
+    http_thread = threading.Thread(target=run_http_server, args=(port, shared_state), daemon=True)
     http_thread.start()
 
     # Start WebSocket server

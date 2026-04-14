@@ -10,9 +10,8 @@ Query across all 20 legacy engines:
 Usage: python amos_knowledge_query.py <query> [--domain <domain>]
 """
 import sys
-import json
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -24,84 +23,84 @@ class AMOSKnowledgeQuery:
         self.legacy_dir = Path(__file__).parent / "_AMOS_BRAIN" / "_LEGACY BRAIN" / "Unipower"
         self.engines = self._load_engine_index()
 
-    def _load_engine_index(self) -> Dict[str, Any]:
+    def _load_engine_index(self) -> dict[str, Any]:
         """Load index of available engines."""
         return {
             "system_operations": {
                 "file": "AMOS_Uni_System_Operations_Engine_v0.json",
                 "size_kb": 3519,
                 "domain": "System Operations",
-                "topics": ["infrastructure", "devops", "automation", "ops"]
+                "topics": ["infrastructure", "devops", "automation", "ops"],
             },
             "ai_intelligence": {
                 "file": "AMOS_Uni_Ai_Intelligence_Engine_v0.json",
                 "size_kb": 2986,
                 "domain": "AI/ML",
-                "topics": ["ai", "ml", "neural", "learning", "intelligence"]
+                "topics": ["ai", "ml", "neural", "learning", "intelligence"],
             },
             "tech": {
                 "file": "AMOS_Tech_Engine_v0.json",
                 "size_kb": 180,
                 "domain": "Technology",
-                "topics": ["tech", "software", "hardware", "innovation"]
+                "topics": ["tech", "software", "hardware", "innovation"],
             },
             "hse": {
                 "file": "HSE_Engine.txt",
                 "size_kb": 391,
                 "domain": "Health/Safety/Environment",
-                "topics": ["health", "safety", "environment", "compliance"]
+                "topics": ["health", "safety", "environment", "compliance"],
             },
             "risk_governance": {
                 "file": "AMOS_Risk_Policy_Governance_Ecosystem_Engine_v0.json",
                 "size_kb": 55,
                 "domain": "Governance",
-                "topics": ["risk", "policy", "governance"]
+                "topics": ["risk", "policy", "governance"],
             },
             "australia_economy": {
                 "file": "AMOS_Australia_Economy_Engine_v0.json",
                 "size_kb": 41,
                 "domain": "Australia Economy",
-                "topics": ["australia", "economy", "regional"]
+                "topics": ["australia", "economy", "regional"],
             },
             "china_legal": {
                 "file": "AMOS_Chinese_Legal_Engine_v0.json",
                 "size_kb": 25,
                 "domain": "China Legal",
-                "topics": ["china", "legal", "law"]
+                "topics": ["china", "legal", "law"],
             },
             "vietnam_legal": {
                 "file": "AMOS_Vn_Legal_Engine_v0.json",
                 "size_kb": 14,
                 "domain": "Vietnam Legal",
-                "topics": ["vietnam", "legal", "law"]
+                "topics": ["vietnam", "legal", "law"],
             },
             "global_legal": {
                 "file": "AMOS_Global_Legal_Engine_v0.json",
                 "size_kb": 7,
                 "domain": "Global Legal",
-                "topics": ["global", "legal", "international"]
+                "topics": ["global", "legal", "international"],
             },
             "scientific": {
                 "file": "AMOS_Scientific_Engine_v0.json",
                 "size_kb": 24,
                 "domain": "Scientific",
-                "topics": ["science", "research", "methodology"]
+                "topics": ["science", "research", "methodology"],
             },
             "market": {
                 "file": "AMOS_Uni_Market_Engine_v0.json",
                 "size_kb": 15,
                 "domain": "Market Analysis",
-                "topics": ["market", "analysis", "economics"]
+                "topics": ["market", "analysis", "economics"],
             },
             "ev": {
                 "file": "AMOS_Ev_Kernel_v0.json",
                 "size_kb": 21,
                 "domain": "Electric Vehicles",
-                "topics": ["ev", "electric", "vehicles", "mobility"]
-            }
+                "topics": ["ev", "electric", "vehicles", "mobility"],
+            },
         }
 
-    def route_query(self, query: str) -> List[str]:
+    def route_query(self, query: str) -> list[str]:
         """Determine which engines to query based on keywords."""
         query_lower = query.lower()
         matched_engines = []
@@ -118,7 +117,7 @@ class AMOSKnowledgeQuery:
         matched_engines.sort(key=lambda x: x[1], reverse=True)
         return [e[0] for e in matched_engines[:5]]  # Top 5
 
-    def query(self, query: str, domain: Optional[str] = None) -> Dict[str, Any]:
+    def query(self, query: str, domain: Optional[str] = None) -> dict[str, Any]:
         """Query the knowledge base."""
         print(f"\n{'='*70}")
         print(f"🔍 KNOWLEDGE QUERY: {query[:60]}")
@@ -130,7 +129,8 @@ class AMOSKnowledgeQuery:
         if domain:
             # Filter by specific domain
             engine_ids = [
-                eid for eid in engine_ids
+                eid
+                for eid in engine_ids
                 if self.engines.get(eid, {}).get("domain", "").lower() == domain.lower()
             ]
 
@@ -148,7 +148,7 @@ class AMOSKnowledgeQuery:
                 "domain": info["domain"],
                 "relevance": 0.85,
                 "knowledge_found": True,
-                "summary": f"Retrieved knowledge from {info['domain']}"
+                "summary": f"Retrieved knowledge from {info['domain']}",
             }
             results.append(result)
 
@@ -158,7 +158,7 @@ class AMOSKnowledgeQuery:
             "query": query,
             "engines_queried": len(engine_ids),
             "results": results,
-            "total_kb_accessed": sum(self.engines[eid]["size_kb"] for eid in engine_ids)
+            "total_kb_accessed": sum(self.engines[eid]["size_kb"] for eid in engine_ids),
         }
 
     def list_domains(self):

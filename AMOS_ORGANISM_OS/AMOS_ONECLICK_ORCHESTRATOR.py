@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS ONE-CLICK ORCHESTRATOR
+"""AMOS ONE-CLICK ORCHESTRATOR
 ==========================
 
 Master entry point for the AMOS 7-System Organism.
@@ -29,17 +28,16 @@ from datetime import datetime
 
 # Import AMOS components
 from AMOS_MASTER_ORCHESTRATOR import (
-    AmosMasterOrchestrator,
-    ORGANISM_ROOT,
     LOGS_DIR,
     MEMORY_DIR,
+    ORGANISM_ROOT,
+    AmosMasterOrchestrator,
 )
 from AMOS_SPEED_ENGINE import AmosSpeedEngine
 
 
 def run_full_pipeline() -> int:
     """Execute the complete AMOS pipeline."""
-
     print("\n" + "=" * 70)
     print("AMOS 7-SYSTEM ORGANISM - ONE CLICK ORCHESTRATOR")
     print("=" * 70)
@@ -102,7 +100,7 @@ def run_full_pipeline() -> int:
     }
 
     state_path = MEMORY_DIR / "pipeline_state.json"
-    with open(state_path, 'w', encoding='utf-8') as f:
+    with open(state_path, "w", encoding="utf-8") as f:
         json.dump(state_record, f, indent=2)
 
     print(f"[OK] State saved to: {state_path}")
@@ -137,6 +135,7 @@ def main() -> int:
     except Exception as e:
         print(f"\n[AMOS] [FATAL ERROR] {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

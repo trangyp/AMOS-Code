@@ -8,7 +8,7 @@ async function loadAnalytics() {
     try {
         const response = await fetch(`${API_BASE}/api/stats?days=7`);
         const data = await response.json();
-        
+
         if (data.success) {
             updateMetrics(data.stats);
             renderCharts(data.stats);
@@ -28,7 +28,7 @@ function updateMetrics(stats) {
 // Render Chart.js charts
 function renderCharts(stats) {
     const ctx = document.getElementById('requests-chart').getContext('2d');
-    
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -66,7 +66,7 @@ async function loadQueryHistory() {
     try {
         const response = await fetch(`${API_BASE}/api/history?limit=50`);
         const data = await response.json();
-        
+
         if (data.success) {
             renderHistoryTable(data.history);
         }
@@ -79,7 +79,7 @@ async function loadQueryHistory() {
 function renderHistoryTable(history) {
     const tbody = document.getElementById('history-table-body');
     tbody.innerHTML = '';
-    
+
     history.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -100,7 +100,7 @@ function renderHistoryTable(history) {
 document.addEventListener('DOMContentLoaded', () => {
     loadAnalytics();
     loadQueryHistory();
-    
+
     // Refresh every 30 seconds
     setInterval(() => {
         loadAnalytics();

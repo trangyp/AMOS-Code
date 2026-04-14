@@ -1,12 +1,11 @@
-"""
-Knowledge Graph — Semantic knowledge representation for AMOS.
+"""Knowledge Graph — Semantic knowledge representation for AMOS.
 """
 
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
 from enum import Enum
-import json
+from typing import Any, Optional
 
 
 class EntityType(Enum):
@@ -33,26 +32,27 @@ class RelationType(Enum):
 @dataclass
 class Entity:
     """A node in the knowledge graph."""
+
     id: str
     name: str
     entity_type: EntityType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 
 @dataclass
 class Relation:
     """An edge in the knowledge graph."""
+
     source_id: str
     target_id: str
     relation_type: RelationType
-    properties: Dict[str, Any] = field(default_factory=dict)
+    properties: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 
 class KnowledgeGraph:
-    """
-    Maintains semantic knowledge about the codebase and world.
+    """Maintains semantic knowledge about the codebase and world.
 
     Responsibilities:
     - Store entities (files, functions, concepts)
@@ -62,10 +62,10 @@ class KnowledgeGraph:
     """
 
     def __init__(self):
-        self._entities: Dict[str, Entity] = {}
-        self._relations: List[Relation] = []
-        self._index_by_type: Dict[EntityType, Set[str]] = {}
-        self._index_by_name: Dict[str, Set[str]] = {}
+        self._entities: dict[str, Entity] = {}
+        self._relations: list[Relation] = []
+        self._index_by_type: dict[EntityType, set[str]] = {}
+        self._index_by_name: dict[str, set[str]] = {}
 
     def add_entity(self, entity: Entity) -> str:
         """Add an entity to the graph."""
@@ -91,7 +91,7 @@ class KnowledgeGraph:
         """Get entity by ID."""
         return self._entities.get(entity_id)
 
-    def find_entities(self, name: str = None, entity_type: EntityType = None) -> List[Entity]:
+    def find_entities(self, name: str = None, entity_type: EntityType = None) -> list[Entity]:
         """Find entities by name and/or type."""
         results = []
 
@@ -118,7 +118,7 @@ class KnowledgeGraph:
 
         return results
 
-    def get_related(self, entity_id: str, relation_type: RelationType = None) -> List[Entity]:
+    def get_related(self, entity_id: str, relation_type: RelationType = None) -> list[Entity]:
         """Get entities related to given entity."""
         related_ids = []
 
@@ -135,21 +135,28 @@ class KnowledgeGraph:
     def build_from_directory(self, path: str = ".") -> int:
         """Build knowledge graph from directory structure."""
         import os
+
         count = 0
 
         for root, dirs, files in os.walk(path):
             # Skip hidden and cache directories
-            dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ["__pycache__", "node_modules"]]
+            dirs[:] = [
+                d
+                for d in dirs
+                if not d.startswith(".") and d not in ["__pycache__", "node_modules"]
+            ]
 
             # Add directory as entity
             dir_id = f"dir:{root}"
             if dir_id not in self._entities:
-                self.add_entity(Entity(
-                    id=dir_id,
-                    name=root,
-                    entity_type=EntityType.MODULE,
-                    properties={"path": root, "type": "directory"},
-                ))
+                self.add_entity(
+                    Entity(
+                        id=dir_id,
+                        name=root,
+                        entity_type=EntityType.MODULE,
+                        properties={"path": root, "type": "directory"},
+                    )
+                )
                 count += 1
 
             # Add files as entities
@@ -166,31 +173,37 @@ class KnowledgeGraph:
                 if ext == "py":
                     entity_type = EntityType.MODULE
 
-                self.add_entity(Entity(
-                    id=file_id,
-                    name=filename,
-                    entity_type=entity_type,
-                    properties={
-                        "path": filepath,
-                        "extension": ext,
-                        "size": os.path.getsize(filepath),
-                    },
-                ))
+                self.add_entity(
+                    Entity(
+                        id=file_id,
+                        name=filename,
+                        entity_type=entity_type,
+                        properties={
+                            "path": filepath,
+                            "extension": ext,
+                            "size": os.path.getsize(filepath),
+                        },
+                    )
+                )
 
                 # Add relation: directory contains file
-                self.add_relation(Relation(
-                    source_id=dir_id,
-                    target_id=file_id,
-                    relation_type=RelationType.CONTAINS,
-                ))
+                self.add_relation(
+                    Relation(
+                        source_id=dir_id,
+                        target_id=file_id,
+                        relation_type=RelationType.CONTAINS,
+                    )
+                )
                 count += 1
 
         return count
 
-    def query(self, entity_type: EntityType = None, limit: int = 100) -> List[Entity]:
+    def query(self, entity_type: EntityType = None, limit: int = 100) -> list[Entity]:
         """Query entities."""
         if entity_type:
-            return [self._entities[eid] for eid in self._index_by_type.get(entity_type, set())][:limit]
+            return [self._entities[eid] for eid in self._index_by_type.get(entity_type, set())][
+                :limit
+            ]
         return list(self._entities.values())[:limit]
 
     def export_json(self) -> str:
@@ -216,12 +229,10 @@ class KnowledgeGraph:
         }
         return json.dumps(data, indent=2)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get graph status."""
         return {
             "total_entities": len(self._entities),
             "total_relations": len(self._relations),
-            "by_type": {
-                t.value: len(ids) for t, ids in self._index_by_type.items()
-            },
+            "by_type": {t.value: len(ids) for t, ids in self._index_by_type.items()},
         }

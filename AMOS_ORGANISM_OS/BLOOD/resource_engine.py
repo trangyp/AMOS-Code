@@ -6,6 +6,6 @@ blood_path = Path(__file__).parent.parent / "04_BLOOD"
 if str(blood_path) not in sys.path:
     sys.path.insert(0, str(blood_path))
 
-from resource_engine import ResourceEngine, ResourcePool, ResourceAllocation
+from resource_engine import ResourceAllocation, ResourceEngine, ResourcePool
 
 __all__ = ["ResourceEngine", "ResourcePool", "ResourceAllocation"]

@@ -1,16 +1,16 @@
-"""
-Compliance Engine — Regulatory and policy compliance.
+"""Compliance Engine — Regulatory and policy compliance.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class ComplianceRule:
     """A compliance rule."""
+
     id: str
     name: str
     description: str
@@ -20,13 +20,11 @@ class ComplianceRule:
 
 
 class ComplianceEngine:
-    """
-    Checks compliance with regulations and policies.
-    """
+    """Checks compliance with regulations and policies."""
 
     def __init__(self):
-        self._rules: List[ComplianceRule] = []
-        self._violations: List[Dict] = []
+        self._rules: list[ComplianceRule] = []
+        self._violations: list[dict] = []
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -58,33 +56,39 @@ class ComplianceEngine:
     def check_compliance(
         self,
         action: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Check if an action complies with rules."""
         violations = []
 
         # Check for secrets in action
         if "api_key" in action.lower() or "password" in action.lower():
-            violations.append({
-                "rule": "no_secrets_in_logs",
-                "severity": "high",
-                "description": "Potential secret detected in action",
-            })
+            violations.append(
+                {
+                    "rule": "no_secrets_in_logs",
+                    "severity": "high",
+                    "description": "Potential secret detected in action",
+                }
+            )
 
         # Check audit log
         if not context.get("audit_logged"):
-            violations.append({
-                "rule": "audit_logging",
-                "severity": "medium",
-                "description": "Action not properly audited",
-            })
+            violations.append(
+                {
+                    "rule": "audit_logging",
+                    "severity": "medium",
+                    "description": "Action not properly audited",
+                }
+            )
 
         if violations:
-            self._violations.append({
-                "action": action,
-                "violations": violations,
-                "timestamp": context.get("timestamp"),
-            })
+            self._violations.append(
+                {
+                    "action": action,
+                    "violations": violations,
+                    "timestamp": context.get("timestamp"),
+                }
+            )
 
         return {
             "compliant": len(violations) == 0,
@@ -96,12 +100,10 @@ class ComplianceEngine:
         """Add a compliance rule."""
         self._rules.append(rule)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get compliance status."""
         return {
             "total_rules": len(self._rules),
             "total_violations": len(self._violations),
-            "compliance_rate": (
-                1.0 - len(self._violations) / max(len(self._rules), 1)
-            ),
+            "compliance_rate": (1.0 - len(self._violations) / max(len(self._rules), 1)),
         }

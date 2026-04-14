@@ -6,23 +6,31 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
 
-from .types import PluginEntry, PluginManifest, PluginScope, parse_plugin_identifier, sanitize_plugin_name
+from .types import (
+    PluginEntry,
+    PluginManifest,
+    PluginScope,
+    parse_plugin_identifier,
+    sanitize_plugin_name,
+)
 
 # ── Config paths ──────────────────────────────────────────────────────────────
 
-USER_PLUGIN_DIR  = Path.home() / ".clawspring" / "plugins"
-USER_PLUGIN_CFG  = Path.home() / ".clawspring" / "plugins.json"
+USER_PLUGIN_DIR = Path.home() / ".clawspring" / "plugins"
+USER_PLUGIN_CFG = Path.home() / ".clawspring" / "plugins.json"
+
 
 def _project_plugin_dir() -> Path:
     return Path.cwd() / ".clawspring" / "plugins"
+
 
 def _project_plugin_cfg() -> Path:
     return Path.cwd() / ".clawspring" / "plugins.json"
 
 
 # ── Config read/write ─────────────────────────────────────────────────────────
+
 
 def _read_cfg(cfg_path: Path) -> dict:
     if cfg_path.exists():
@@ -48,6 +56,7 @@ def _plugin_cfg_for(scope: PluginScope) -> Path:
 
 # ── List ──────────────────────────────────────────────────────────────────────
 
+
 def list_plugins(scope: PluginScope | None = None) -> list[PluginEntry]:
     """Return all installed plugins (optionally filtered by scope)."""
     entries: list[PluginEntry] = []
@@ -70,13 +79,13 @@ def get_plugin(name: str, scope: PluginScope | None = None) -> PluginEntry | Non
 
 # ── Install ───────────────────────────────────────────────────────────────────
 
+
 def install_plugin(
     identifier: str,
     scope: PluginScope = PluginScope.USER,
     force: bool = False,
 ) -> tuple[bool, str]:
-    """
-    Install a plugin. identifier = 'name' | 'name@git_url' | 'name@local_path'.
+    """Install a plugin. identifier = 'name' | 'name@git_url' | 'name@local_path'.
     Returns (success, message).
     """
     name, source = parse_plugin_identifier(identifier)
@@ -85,7 +94,10 @@ def install_plugin(
     # Check if already installed
     existing = get_plugin(safe_name, scope)
     if existing and not force:
-        return False, f"Plugin '{safe_name}' is already installed in {scope.value} scope. Use --force to reinstall."
+        return (
+            False,
+            f"Plugin '{safe_name}' is already installed in {scope.value} scope. Use --force to reinstall.",
+        )
 
     plugin_dir = _plugin_dir_for(scope) / safe_name
 
@@ -155,7 +167,8 @@ def _clone_plugin(url: str, dest: Path) -> tuple[bool, str]:
     dest.parent.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         ["git", "clone", "--depth", "1", url, str(dest)],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         return False, f"git clone failed: {result.stderr.strip()}"
@@ -165,7 +178,8 @@ def _clone_plugin(url: str, dest: Path) -> tuple[bool, str]:
 def _install_dependencies(deps: list[str]) -> tuple[bool, str]:
     result = subprocess.run(
         [sys.executable, "-m", "pip", "install", "--quiet"] + deps,
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         return False, f"pip install failed: {result.stderr.strip()}"
@@ -188,6 +202,7 @@ def _remove_entry(name: str, scope: PluginScope) -> None:
 
 # ── Uninstall ─────────────────────────────────────────────────────────────────
 
+
 def uninstall_plugin(
     name: str,
     scope: PluginScope | None = None,
@@ -203,6 +218,7 @@ def uninstall_plugin(
 
 
 # ── Enable / Disable ──────────────────────────────────────────────────────────
+
 
 def _set_enabled(name: str, scope: PluginScope | None, enabled: bool) -> tuple[bool, str]:
     entry = get_plugin(name, scope)
@@ -234,6 +250,7 @@ def disable_all_plugins(scope: PluginScope | None = None) -> tuple[bool, str]:
 
 # ── Update ────────────────────────────────────────────────────────────────────
 
+
 def update_plugin(name: str, scope: PluginScope | None = None) -> tuple[bool, str]:
     entry = get_plugin(name, scope)
     if entry is None:
@@ -245,7 +262,8 @@ def update_plugin(name: str, scope: PluginScope | None = None) -> tuple[bool, st
     result = subprocess.run(
         ["git", "pull", "--ff-only"],
         cwd=str(entry.install_dir),
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if result.returncode != 0:
         return False, f"git pull failed: {result.stderr.strip()}"

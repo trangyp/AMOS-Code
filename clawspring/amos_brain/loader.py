@@ -1,15 +1,15 @@
 """AMOS Brain Loader - Loads and parses brain configuration files."""
 from __future__ import annotations
 
-import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from dataclasses import dataclass
 
 
 @dataclass
 class KernelConfig:
     """Represents a single kernel configuration."""
+
     id: str
     name: str
     group: str
@@ -24,6 +24,7 @@ class KernelConfig:
 @dataclass
 class GlobalLaw:
     """Represents a global law from AMOS BRAIN ROOT."""
+
     id: str
     name: str
     description: str
@@ -43,7 +44,7 @@ class BrainLoader:
         self.creator: dict[str, Any] = {}
         self._loaded = False
 
-    def load(self) -> "BrainLoader":
+    def load(self) -> BrainLoader:
         """Load all brain configurations."""
         if self._loaded:
             return self

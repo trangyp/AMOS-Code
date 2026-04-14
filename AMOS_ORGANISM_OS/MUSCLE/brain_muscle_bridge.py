@@ -8,8 +8,8 @@ if str(muscle_path) not in sys.path:
 
 from brain_muscle_bridge import (
     BrainMuscleBridge,
-    CognitiveTask,
     CognitiveExecutionResult,
+    CognitiveTask,
     get_brain_muscle_bridge,
 )
 

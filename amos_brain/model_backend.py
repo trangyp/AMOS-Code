@@ -9,12 +9,12 @@ from __future__ import annotations
 import json
 import os
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Callable, Iterator, Protocol, TypeVar
+from typing import Any, Callable, Protocol, TypeVar
 
 import requests
-
 
 T = TypeVar("T")
 
@@ -36,6 +36,7 @@ def with_retry(
     Returns:
         Decorated function with retry logic
     """
+
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @wraps(func)
         def wrapper(*args, **kwargs) -> T:
@@ -44,7 +45,7 @@ def with_retry(
                     return func(*args, **kwargs)
                 except exceptions:
                     if attempt < max_retries:
-                        delay = min(base_delay * (2 ** attempt), max_delay)
+                        delay = min(base_delay * (2**attempt), max_delay)
                         time.sleep(delay)
                     else:
                         raise
@@ -53,12 +54,14 @@ def with_retry(
             raise RuntimeError("Retry logic failed")
 
         return wrapper
+
     return decorator
 
 
 @dataclass
 class LLMResult:
     """Result from a model generation call."""
+
     text: str
     raw: dict[str, Any]
 
@@ -171,13 +174,8 @@ class OllamaBackend:
             if self.model not in model_names:
                 return {
                     "status": "error",
-                    "error": (
-                        f"Model '{self.model}' not found. "
-                        f"Available: {model_names}"
-                    ),
-                    "help": (
-                        f"Run: ollama pull {self.model}"
-                    ),
+                    "error": (f"Model '{self.model}' not found. " f"Available: {model_names}"),
+                    "help": (f"Run: ollama pull {self.model}"),
                     "available_models": model_names,
                 }
 
@@ -191,12 +189,8 @@ class OllamaBackend:
         except requests.ConnectionError:
             return {
                 "status": "error",
-                "error": (
-                    f"Cannot connect to Ollama at {self.base_url}"
-                ),
-                "help": (
-                    "Is Ollama running? Try: ollama serve"
-                ),
+                "error": (f"Cannot connect to Ollama at {self.base_url}"),
+                "help": ("Is Ollama running? Try: ollama serve"),
             }
         except requests.Timeout:
             return {
@@ -306,13 +300,8 @@ class OpenAICompatibleLocalBackend:
                 if model_ids and self.model not in model_ids:
                     return {
                         "status": "warning",
-                        "error": (
-                            f"Model '{self.model}' not in "
-                            f"available models: {model_ids}"
-                        ),
-                        "help": (
-                            "Load the model in your server UI or API"
-                        ),
+                        "error": (f"Model '{self.model}' not in " f"available models: {model_ids}"),
+                        "help": ("Load the model in your server UI or API"),
                         "available_models": model_ids,
                     }
 
@@ -374,13 +363,8 @@ class OpenAICompatibleLocalBackend:
             else:
                 return {
                     "status": "error",
-                    "error": (
-                        f"Test completion failed: {resp.status_code}"
-                    ),
-                    "help": (
-                        f"Server returned {resp.status_code}. "
-                        "Check server logs."
-                    ),
+                    "error": (f"Test completion failed: {resp.status_code}"),
+                    "help": (f"Server returned {resp.status_code}. " "Check server logs."),
                 }
 
         except Exception as e:
@@ -467,9 +451,7 @@ def build_backend_from_env() -> ModelBackend:
             "vllm": "http://127.0.0.1:8000/v1",
             "llamacpp": "http://127.0.0.1:8080/v1",
         }
-        url = base_url or default_urls.get(
-            provider, "http://127.0.0.1:1234/v1"
-        )
+        url = base_url or default_urls.get(provider, "http://127.0.0.1:1234/v1")
         return OpenAICompatibleLocalBackend(
             model=model,
             base_url=url,

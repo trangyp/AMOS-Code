@@ -4,8 +4,8 @@
  */
 
 // Configuration
-const API_BASE = window.location.origin.includes('localhost') 
-    ? 'http://localhost:5000' 
+const API_BASE = window.location.origin.includes('localhost')
+    ? 'http://localhost:5000'
     : 'https://neurosyncai.tech';
 
 // State
@@ -15,7 +15,7 @@ let metricsInterval = null;
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🧠 AMOS Brain Dashboard initialized');
-    
+
     initTabs();
     initApiConsole();
     initMemoryQuery();
@@ -32,7 +32,7 @@ async function fetchRealHistory() {
     try {
         const response = await fetch(`${API_BASE}/api/history?limit=10`);
         const data = await response.json();
-        
+
         if (data.success && data.history) {
             displayHistory(data.history);
         }
@@ -45,7 +45,7 @@ async function fetchRealHistory() {
 function displayHistory(history) {
     const resultsEl = document.getElementById('memory-results');
     resultsEl.innerHTML = '';
-    
+
     history.forEach(item => {
         const div = document.createElement('div');
         div.className = 'memory-item';
@@ -64,7 +64,7 @@ async function fetchStats() {
     try {
         const response = await fetch(`${API_BASE}/api/stats?days=7`);
         const data = await response.json();
-        
+
         if (data.success && data.stats) {
             document.getElementById('sessions').textContent = data.stats.total_requests || 0;
         }
@@ -81,7 +81,7 @@ function initTabs() {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             currentEndpoint = tab.dataset.endpoint;
-            
+
             // Update placeholder
             const textarea = document.getElementById('api-request');
             const placeholders = {
@@ -98,19 +98,19 @@ function initTabs() {
 function initApiConsole() {
     const sendBtn = document.getElementById('api-send');
     const responseEl = document.getElementById('api-response');
-    
+
     sendBtn.addEventListener('click', async () => {
         const requestEl = document.getElementById('api-request');
         const requestBody = requestEl.value.trim();
-        
+
         if (!requestBody) {
             responseEl.textContent = 'Error: Empty request body';
             return;
         }
-        
+
         sendBtn.textContent = 'Sending...';
         sendBtn.disabled = true;
-        
+
         try {
             const endpoint = `/api/${currentEndpoint}`;
             const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -118,10 +118,10 @@ function initApiConsole() {
                 headers: { 'Content-Type': 'application/json' },
                 body: requestBody
             });
-            
+
             const data = await response.json();
             responseEl.textContent = JSON.stringify(data, null, 2);
-            
+
             // Add to memory if successful
             if (data.success !== false) {
                 addToMemory(currentEndpoint, requestBody.substring(0, 50));
@@ -141,11 +141,11 @@ function initMemoryQuery() {
     const queryBtn = document.getElementById('query-btn');
     const queryInput = document.getElementById('memory-query');
     const resultsEl = document.getElementById('memory-results');
-    
+
     queryBtn.addEventListener('click', () => {
         const query = queryInput.value.trim().toLowerCase();
         if (!query) return;
-        
+
         // Filter memory items
         const items = resultsEl.querySelectorAll('.memory-item');
         items.forEach(item => {
@@ -153,7 +153,7 @@ function initMemoryQuery() {
             item.style.display = content.includes(query) ? 'block' : 'none';
         });
     });
-    
+
     queryInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') queryBtn.click();
     });
@@ -163,7 +163,7 @@ function initMemoryQuery() {
 function addToMemory(type, content) {
     const resultsEl = document.getElementById('memory-results');
     const id = Math.random().toString(36).substring(2, 8);
-    
+
     const item = document.createElement('div');
     item.className = 'memory-item';
     item.innerHTML = `
@@ -172,9 +172,9 @@ function addToMemory(type, content) {
         <span class="memory-time">Just now</span>
         <p class="memory-content">${content}...</p>
     `;
-    
+
     resultsEl.insertBefore(item, resultsEl.firstChild);
-    
+
     // Keep only last 10 items
     while (resultsEl.children.length > 10) {
         resultsEl.removeChild(resultsEl.lastChild);
@@ -188,10 +188,10 @@ function initDomainClick() {
         domain.addEventListener('click', () => {
             domains.forEach(d => d.classList.remove('active'));
             domain.classList.add('active');
-            
+
             const domainName = domain.dataset.domain;
             console.log(`Domain selected: ${domainName}`);
-            
+
             // Update API console with domain context
             const textarea = document.getElementById('api-request');
             if (currentEndpoint === 'think') {
@@ -212,16 +212,16 @@ function startMetricsUpdate() {
         sessions: document.getElementById('sessions'),
         rate: document.getElementById('rate')
     };
-    
+
     // Update every 3 seconds
     metricsInterval = setInterval(() => {
         // Simulate live metric changes
         const confidence = 90 + Math.floor(Math.random() * 10);
         const rate = 120 + Math.floor(Math.random() * 20);
-        
+
         if (metrics.confidence) metrics.confidence.textContent = `${confidence}%`;
         if (metrics.rate) metrics.rate.textContent = `${rate}/s`;
-        
+
         // Update sparklines
         updateSparklines();
     }, 3000);
@@ -239,7 +239,7 @@ function updateSparklines() {
 // Animate L1-L6 levels
 function animateLevels() {
     const levels = document.querySelectorAll('.level-fill');
-    
+
     setInterval(() => {
         levels.forEach(level => {
             const currentHeight = parseInt(level.style.height);
@@ -252,20 +252,20 @@ function animateLevels() {
 
 // Initialize WebSocket connection
 function initWebSocket() {
-    const wsUrl = window.location.protocol === 'https:' 
+    const wsUrl = window.location.protocol === 'https:'
         ? `wss://${window.location.host}/ws`
         : `ws://${window.location.host}:8765`;
-    
+
     const ws = new WebSocket(wsUrl);
-    
+
     ws.onopen = () => {
         console.log('WebSocket connected');
         document.querySelector('.status-indicator').classList.add('online');
     };
-    
+
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
+
         switch(data.type) {
             case 'step':
                 addToMemory('think', `Step ${data.number}: ${data.content.substring(0, 40)}`);
@@ -281,19 +281,19 @@ function initWebSocket() {
                 break;
         }
     };
-    
+
     ws.onerror = (error) => {
         console.error('WebSocket error:', error);
         document.querySelector('.status-indicator').classList.remove('online');
     };
-    
+
     ws.onclose = () => {
         console.log('WebSocket disconnected');
         document.querySelector('.status-indicator').classList.remove('online');
         // Reconnect after 5 seconds
         setTimeout(initWebSocket, 5000);
     };
-    
+
     // Store for global access
     window.amosWebSocket = ws;
 }
@@ -323,7 +323,7 @@ async function fetchBrainStatus() {
     try {
         const response = await fetch(`${API_BASE}/api/status`);
         const data = await response.json();
-        
+
         if (data.success) {
             updateDashboardFromStatus(data.status);
         }
@@ -341,7 +341,7 @@ function updateDashboardFromStatus(status) {
             if (bar) bar.style.height = `${value}%`;
         });
     }
-    
+
     // Update metrics
     if (status.confidence) {
         document.getElementById('confidence').textContent = `${status.confidence}%`;

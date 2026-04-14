@@ -17,7 +17,8 @@ print("=" * 70)
 print("  AMOS BRAIN: Phase 30 - Build Complete")
 print("=" * 70)
 
-print("""
+print(
+    """
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║           AMOS Brain v14.0.0 - Phase 30 Build Summary                 ║
 ╠═══════════════════════════════════════════════════════════════════════╣
@@ -55,29 +56,32 @@ print("""
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BUILD COMPLETE: Phase 30")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 BRAIN DECISION:
 
    Phase 30 build objectives achieved:
-   
+
    ✓ API-Organism integration functional
    ✓ Orchestrator CLI command built
    ✓ Full 14-layer CLI complete
-   
+
    NEXT LOGICAL STEPS:
-   
+
    1. DEPLOY: Create deployment configuration
    2. TEST: End-to-end integration testing
    3. DOCUMENT: Deployment guide
    4. SHIP: Release v14.0.0
-   
+
    AMOS Brain v14.0.0 - Cognitive OS vInfinity
    "The deterministic cognitive architecture era has begun."
-   
+
    ✅ PHASE 30 COMPLETE - READY FOR DEPLOYMENT
-""")
+"""
+)

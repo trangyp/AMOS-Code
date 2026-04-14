@@ -1,12 +1,12 @@
 """AMOS Brain Dashboard - Analytics and reporting for reasoning patterns."""
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any
-from collections import defaultdict
 
-from amos_brain.memory import get_brain_memory, BrainMemory
 from amos_brain import get_amos_integration
+from amos_brain.memory import BrainMemory, get_brain_memory
 
 
 def _coerce_confidence(value: object) -> float:
@@ -18,8 +18,7 @@ def _coerce_confidence(value: object) -> float:
 
 
 class BrainDashboard:
-    """
-    Generates analytics and reports on brain reasoning patterns.
+    """Generates analytics and reports on brain reasoning patterns.
 
     Provides:
     - Decision trend analysis
@@ -40,13 +39,8 @@ class BrainDashboard:
             self._amos = get_amos_integration()
         return self._amos
 
-    def generate_report(
-        self,
-        days: int = 30,
-        include_charts: bool = True
-    ) -> dict[str, Any]:
-        """
-        Generate comprehensive reasoning analytics report.
+    def generate_report(self, days: int = 30, include_charts: bool = True) -> dict[str, Any]:
+        """Generate comprehensive reasoning analytics report.
 
         Args:
             days: Number of days to analyze
@@ -89,17 +83,20 @@ class BrainDashboard:
         if total == 0:
             return {"total_decisions": 0, "message": "No reasoning data available"}
 
-        with_rule2 = sum(1 for h in history if h.get('rule_of_two_applied'))
-        with_rule4 = sum(1 for h in history if h.get('rule_of_four_applied'))
-        avg_confidence = sum(
-            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
-            for h in history
-        ) / total
+        with_rule2 = sum(1 for h in history if h.get("rule_of_two_applied"))
+        with_rule4 = sum(1 for h in history if h.get("rule_of_four_applied"))
+        avg_confidence = (
+            sum(
+                _coerce_confidence(h.get("confidence_score", h.get("confidence", 0)))
+                for h in history
+            )
+            / total
+        )
 
         # Find most common tags
         tag_counts: dict[str, int] = defaultdict(int)
         for h in history:
-            for tag in h.get('tags', []):
+            for tag in h.get("tags", []):
                 tag_counts[tag] += 1
 
         top_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:5]
@@ -123,7 +120,7 @@ class BrainDashboard:
         weekly: dict[str, dict] = defaultdict(lambda: {"total": 0, "r2": 0, "r4": 0})
 
         for h in history:
-            ts = h.get('timestamp', '')
+            ts = h.get("timestamp", "")
             if ts:
                 try:
                     dt = datetime.fromisoformat(ts)
@@ -132,9 +129,9 @@ class BrainDashboard:
                 iso_year, iso_week, _ = dt.isocalendar()
                 week = f"{iso_year}-W{iso_week:02d}"
                 weekly[week]["total"] += 1
-                if h.get('rule_of_two_applied'):
+                if h.get("rule_of_two_applied"):
                     weekly[week]["r2"] += 1
-                if h.get('rule_of_four_applied'):
+                if h.get("rule_of_four_applied"):
                     weekly[week]["r4"] += 1
 
         # Calculate trends
@@ -144,26 +141,42 @@ class BrainDashboard:
 
         for week in sorted_weeks:
             data = weekly[week]
-            l2_trend.append({
-                "period": week,
-                "rate": data["r2"] / data["total"] if data["total"] > 0 else 0,
-                "count": data["total"]
-            })
-            l3_trend.append({
-                "period": week,
-                "rate": data["r4"] / data["total"] if data["total"] > 0 else 0,
-                "count": data["total"]
-            })
+            l2_trend.append(
+                {
+                    "period": week,
+                    "rate": data["r2"] / data["total"] if data["total"] > 0 else 0,
+                    "count": data["total"],
+                }
+            )
+            l3_trend.append(
+                {
+                    "period": week,
+                    "rate": data["r4"] / data["total"] if data["total"] > 0 else 0,
+                    "count": data["total"],
+                }
+            )
 
         # Determine trend direction
         if len(sorted_weeks) >= 2:
             recent_l2 = l2_trend[-1]["rate"] if l2_trend else 0
             older_l2 = l2_trend[0]["rate"] if l2_trend else 0
-            l2_direction = "improving" if recent_l2 > older_l2 else "declining" if recent_l2 < older_l2 else "stable"
+            l2_direction = (
+                "improving"
+                if recent_l2 > older_l2
+                else "declining"
+                if recent_l2 < older_l2
+                else "stable"
+            )
 
             recent_l3 = l3_trend[-1]["rate"] if l3_trend else 0
             older_l3 = l3_trend[0]["rate"] if l3_trend else 0
-            l3_direction = "improving" if recent_l3 > older_l3 else "declining" if recent_l3 < older_l3 else "stable"
+            l3_direction = (
+                "improving"
+                if recent_l3 > older_l3
+                else "declining"
+                if recent_l3 < older_l3
+                else "stable"
+            )
         else:
             l2_direction = "insufficient_data"
             l3_direction = "insufficient_data"
@@ -173,8 +186,12 @@ class BrainDashboard:
             "l2_weekly": l2_trend,
             "l3_trend": l3_direction,
             "l3_weekly": l3_trend,
-            "overall_l2": sum(h.get('rule_of_two_applied', 0) for h in history) / len(history) if history else 0,
-            "overall_l3": sum(h.get('rule_of_four_applied', 0) for h in history) / len(history) if history else 0,
+            "overall_l2": sum(h.get("rule_of_two_applied", 0) for h in history) / len(history)
+            if history
+            else 0,
+            "overall_l3": sum(h.get("rule_of_four_applied", 0) for h in history) / len(history)
+            if history
+            else 0,
         }
 
     def _analyze_confidence(self, history: list[dict]) -> dict[str, Any]:
@@ -183,14 +200,17 @@ class BrainDashboard:
             return {"trend": "insufficient_data"}
 
         scores = [
-            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
-            for h in history
+            _coerce_confidence(h.get("confidence_score", h.get("confidence", 0))) for h in history
         ]
         sorted_scores = sorted(scores)
 
         n = len(sorted_scores)
         mean = sum(scores) / n
-        median = sorted_scores[n // 2] if n % 2 == 1 else (sorted_scores[n // 2 - 1] + sorted_scores[n // 2]) / 2
+        median = (
+            sorted_scores[n // 2]
+            if n % 2 == 1
+            else (sorted_scores[n // 2 - 1] + sorted_scores[n // 2]) / 2
+        )
 
         if n < 2:
             return {
@@ -241,7 +261,7 @@ class BrainDashboard:
         }
 
         for h in history:
-            for tag in h.get('tags', []):
+            for tag in h.get("tags", []):
                 for domain, keywords in domain_keywords.items():
                     if any(kw in tag.lower() for kw in keywords):
                         tag_domains[domain] += 1
@@ -262,7 +282,7 @@ class BrainDashboard:
         # Group by day
         daily: dict[str, int] = defaultdict(int)
         for h in history:
-            ts = h.get('timestamp', '')
+            ts = h.get("timestamp", "")
             if ts:
                 day = ts[:10]  # YYYY-MM-DD
                 daily[day] += 1
@@ -271,7 +291,12 @@ class BrainDashboard:
             return {"velocity": 0}
 
         sorted_days = sorted(daily.keys())
-        total_days = (datetime.fromisoformat(sorted_days[-1]) - datetime.fromisoformat(sorted_days[0])).days + 1 if len(sorted_days) >= 2 else 1
+        total_days = (
+            (datetime.fromisoformat(sorted_days[-1]) - datetime.fromisoformat(sorted_days[0])).days
+            + 1
+            if len(sorted_days) >= 2
+            else 1
+        )
 
         return {
             "total_decisions": len(history),
@@ -289,7 +314,7 @@ class BrainDashboard:
         # Confidence histogram (10 buckets)
         buckets = [0] * 10
         for h in history:
-            score = _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
+            score = _coerce_confidence(h.get("confidence_score", h.get("confidence", 0)))
             bucket = min(int(score * 10), 9)
             buckets[bucket] += 1
 
@@ -312,48 +337,63 @@ class BrainDashboard:
         insights = []
 
         if not history:
-            insights.append("No reasoning data available yet. Start using /decide to build history.")
+            insights.append(
+                "No reasoning data available yet. Start using /decide to build history."
+            )
             return insights
 
         # Compliance insights
         total = len(history)
-        r2_rate = sum(h.get('rule_of_two_applied', 0) for h in history) / total
-        r4_rate = sum(h.get('rule_of_four_applied', 0) for h in history) / total
+        r2_rate = sum(h.get("rule_of_two_applied", 0) for h in history) / total
+        r4_rate = sum(h.get("rule_of_four_applied", 0) for h in history) / total
 
         if r2_rate < 0.5:
-            insights.append(f"⚠️ L2 (Rule of 2) compliance is {r2_rate:.0%} - consider using dual perspective analysis more often")
+            insights.append(
+                f"⚠️ L2 (Rule of 2) compliance is {r2_rate:.0%} - consider using dual perspective analysis more often"
+            )
         elif r2_rate > 0.9:
-            insights.append(f"✓ Excellent L2 compliance at {r2_rate:.0%} - consistent dual perspective usage")
+            insights.append(
+                f"✓ Excellent L2 compliance at {r2_rate:.0%} - consistent dual perspective usage"
+            )
 
         if r4_rate < 0.5:
-            insights.append(f"⚠️ L3 (Rule of 4) compliance is {r4_rate:.0%} - four quadrant analysis underutilized")
+            insights.append(
+                f"⚠️ L3 (Rule of 4) compliance is {r4_rate:.0%} - four quadrant analysis underutilized"
+            )
         elif r4_rate > 0.9:
-            insights.append(f"✓ Strong L3 compliance at {r4_rate:.0%} - comprehensive quadrant coverage")
+            insights.append(
+                f"✓ Strong L3 compliance at {r4_rate:.0%} - comprehensive quadrant coverage"
+            )
 
         # Confidence insights
         scores = [
-            _coerce_confidence(h.get('confidence_score', h.get('confidence', 0)))
-            for h in history
+            _coerce_confidence(h.get("confidence_score", h.get("confidence", 0))) for h in history
         ]
         avg_conf = sum(scores) / len(scores)
         if avg_conf < 0.5:
-            insights.append(f"📉 Average confidence is {avg_conf:.0%} - decisions may need more information")
+            insights.append(
+                f"📉 Average confidence is {avg_conf:.0%} - decisions may need more information"
+            )
         elif avg_conf > 0.8:
             insights.append(f"📈 High average confidence at {avg_conf:.0%} - good data quality")
 
         # Velocity insights
         if total > 10:
-            insights.append(f"📊 {total} decisions analyzed - sufficient data for pattern recognition")
+            insights.append(
+                f"📊 {total} decisions analyzed - sufficient data for pattern recognition"
+            )
 
         # Domain insights
         tag_counts: dict[str, int] = defaultdict(int)
         for h in history:
-            for tag in h.get('tags', []):
+            for tag in h.get("tags", []):
                 tag_counts[tag] += 1
 
         if tag_counts:
             top_tag = max(tag_counts.items(), key=lambda x: x[1])
-            insights.append(f"🏷️ Most frequent tag: '{top_tag[0]}' ({top_tag[1]} uses) - primary decision domain")
+            insights.append(
+                f"🏷️ Most frequent tag: '{top_tag[0]}' ({top_tag[1]} uses) - primary decision domain"
+            )
 
         return insights
 

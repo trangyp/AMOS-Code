@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable
-import json
+from typing import Any
 
 
 @dataclass
 class DomainEngine:
     """A domain-specific cognitive engine."""
+
     name: str
     domain: str
     version: str
@@ -26,7 +26,7 @@ class DomainEngine:
                 return {
                     "error": f"Safety constraint violated: {constraint}",
                     "engine": self.name,
-                    "status": "blocked"
+                    "status": "blocked",
                 }
 
         # Apply processing pipeline
@@ -39,7 +39,7 @@ class DomainEngine:
             "domain": self.domain,
             "status": "success",
             "output": result,
-            "principles_applied": list(self.core_principles.keys())
+            "principles_applied": list(self.core_principles.keys()),
         }
 
     def _check_constraint(self, constraint: str, data: dict[str, Any]) -> bool:
@@ -55,8 +55,7 @@ class DomainEngine:
 
 
 class CognitiveStack:
-    """
-    Manages and orchestrates domain-specific cognitive engines.
+    """Manages and orchestrates domain-specific cognitive engines.
 
     Loads engines from:
     - 7_Intelligents (domain engines)
@@ -75,7 +74,7 @@ class CognitiveStack:
         "AMOS_Physics_Cosmos_Engine",
         "AMOS_Signal_Processing_Engine",
         "AMOS_Society_Culture_Engine",
-        "AMOS_Strategy_Game_Engine"
+        "AMOS_Strategy_Game_Engine",
     ]
 
     def __init__(self, core_path: str | None = None):
@@ -96,13 +95,10 @@ class CognitiveStack:
                 description=f"Engine for {domain} domain",
                 core_principles={
                     "rule_of_2": "Compare complementary views",
-                    "rule_of_4": "Map across four quadrants"
+                    "rule_of_4": "Map across four quadrants",
                 },
                 processing_pipeline=["interpret", "analyze", "synthesize", "validate"],
-                safety_constraints={
-                    "no_harm": True,
-                    "verify_constraints": True
-                }
+                safety_constraints={"no_harm": True, "verify_constraints": True},
             )
             self.engines[intel_name] = engine
 
@@ -127,7 +123,10 @@ class CognitiveStack:
             "finance": ["AMOS_Econ_Finance_Engine"],
             "electrical": ["AMOS_Electrical_Power_Engine"],
             "power": ["AMOS_Electrical_Power_Engine"],
-            "engineering": ["AMOS_Engineering_And_Mathematics_Engine", "AMOS_Mechanical_Structural_Engine"],
+            "engineering": [
+                "AMOS_Engineering_And_Mathematics_Engine",
+                "AMOS_Mechanical_Structural_Engine",
+            ],
             "math": ["AMOS_Engineering_And_Mathematics_Engine", "AMOS_Numerical_Methods_Engine"],
             "mechanical": ["AMOS_Mechanical_Structural_Engine"],
             "physics": ["AMOS_Physics_Cosmos_Engine"],
@@ -136,7 +135,7 @@ class CognitiveStack:
             "society": ["AMOS_Society_Culture_Engine"],
             "culture": ["AMOS_Society_Culture_Engine"],
             "strategy": ["AMOS_Strategy_Game_Engine"],
-            "game": ["AMOS_Strategy_Game_Engine"]
+            "game": ["AMOS_Strategy_Game_Engine"],
         }
         self._routing_table = keywords
 
@@ -168,17 +167,14 @@ class CognitiveStack:
         for engine_name in engines_to_use:
             engine = self.engines.get(engine_name)
             if engine and engine.active:
-                result = engine.process({
-                    "query": query,
-                    "context": context or {}
-                })
+                result = engine.process({"query": query, "context": context or {}})
                 results.append(result)
 
         return {
             "query": query,
             "engines_used": engines_to_use,
             "results": results,
-            "coverage": len(results) / len(engines_to_use) if engines_to_use else 0
+            "coverage": len(results) / len(engines_to_use) if engines_to_use else 0,
         }
 
     def get_engine(self, name: str) -> DomainEngine | None:

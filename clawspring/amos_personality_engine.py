@@ -1,7 +1,7 @@
 """AMOS Personality Engine - Character modeling and behavioral analysis."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -40,11 +40,13 @@ class TraitsKernel:
         for category, terms in trait_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "trait_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "trait_primitives": self._get_primitives(category),
+                    }
+                )
 
         return PersonalityAnalysis(
             domain="traits",
@@ -95,11 +97,13 @@ class IdentityKernel:
         for category, terms in identity_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "identity_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "identity_primitives": self._get_primitives(category),
+                    }
+                )
 
         return PersonalityAnalysis(
             domain="identity",
@@ -148,11 +152,13 @@ class BehavioralPatternsKernel:
         for category, terms in behavioral_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "behavioral_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "behavioral_primitives": self._get_primitives(category),
+                    }
+                )
 
         return PersonalityAnalysis(
             domain="behavioral_patterns",
@@ -201,11 +207,13 @@ class CognitiveStyleKernel:
         for category, terms in cognitive_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "cognitive_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "cognitive_primitives": self._get_primitives(category),
+                    }
+                )
 
         return PersonalityAnalysis(
             domain="cognitive_style",
@@ -315,39 +323,50 @@ class AMOSPersonalityEngine:
             "**Core Values**:",
         ]
 
-        for value in self.AMOS_IDENTITY['core_values']:
+        for value in self.AMOS_IDENTITY["core_values"]:
             lines.append(f"- {value}")
 
-        lines.extend([
-            "",
-            "**Character**:",
-            f"{self.AMOS_IDENTITY['character']}",
-            "",
-            "## Findings by Domain",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "**Character**:",
+                f"{self.AMOS_IDENTITY['character']}",
+                "",
+                "## Findings by Domain",
+                "",
+            ]
+        )
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len(analysis.findings)}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len(analysis.findings)}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 cat = finding.get("category", "general")
                 lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                primitives = finding.get("trait_primitives") or finding.get("identity_primitives") or finding.get("behavioral_primitives") or finding.get("cognitive_primitives")
+                primitives = (
+                    finding.get("trait_primitives")
+                    or finding.get("identity_primitives")
+                    or finding.get("behavioral_primitives")
+                    or finding.get("cognitive_primitives")
+                )
                 if primitives:
                     lines.append(f"  Primitives: {', '.join(primitives[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -355,24 +374,28 @@ class AMOSPersonalityEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Personality analysis is structural pattern matching, not psychology.",
-            "No validated assessment. No predictive validity. Not personality science.",
-            "Human psychological expertise required for all character judgments.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Personality analysis is structural pattern matching, not psychology.",
+                "No validated assessment. No predictive validity. Not personality science.",
+                "Human psychological expertise required for all character judgments.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -432,8 +455,10 @@ if __name__ == "__main__":
 
     print(f"\nAnalyzed {len(results)} personality domains:")
     for domain, analysis in results.items():
-        print(f"  - {domain}: {len(analysis.findings)} findings, "
-              f"confidence={analysis.confidence:.2f}")
+        print(
+            f"  - {domain}: {len(analysis.findings)} findings, "
+            f"confidence={analysis.confidence:.2f}"
+        )
 
     # Full summary
     print("\n" + "=" * 60)

@@ -1,5 +1,4 @@
-"""
-Health Monitor — System health and wellness tracking
+"""Health Monitor — System health and wellness tracking
 
 Monitors health metrics, stress levels, and overall
 wellness indicators for the organism.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class HealthStatus(Enum):
     """Overall health status levels."""
+
     EXCELLENT = "excellent"
     GOOD = "good"
     FAIR = "fair"
@@ -27,6 +27,7 @@ class HealthStatus(Enum):
 
 class MetricType(Enum):
     """Types of health metrics."""
+
     STRESS = "stress"
     RECOVERY = "recovery"
     COGNITIVE_LOAD = "cognitive_load"
@@ -38,6 +39,7 @@ class MetricType(Enum):
 @dataclass
 class HealthMetric:
     """A health metric reading."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     metric_type: MetricType = MetricType.STRESS
     value: float = 0.0  # Normalized 0-1 or 0-100 depending on metric
@@ -46,7 +48,7 @@ class HealthMetric:
     source: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "metric_type": self.metric_type.value,
@@ -56,6 +58,7 @@ class HealthMetric:
 @dataclass
 class HealthAlert:
     """A health alert or warning."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     alert_type: str = ""  # stress_high, recovery_low, etc.
     severity: int = 1  # 1-5
@@ -64,13 +67,12 @@ class HealthAlert:
     acknowledged: bool = False
     resolved: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class HealthMonitor:
-    """
-    Monitors health and wellness metrics.
+    """Monitors health and wellness metrics.
 
     Tracks stress, recovery, cognitive load, and
     generates health alerts when needed.
@@ -82,8 +84,8 @@ class HealthMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.metrics: List[HealthMetric] = []
-        self.alerts: List[HealthAlert] = []
+        self.metrics: list[HealthMetric] = []
+        self.alerts: list[HealthAlert] = []
 
         self._load_data()
 
@@ -136,10 +138,10 @@ class HealthMonitor:
             source=source,
         )
         self.metrics.append(metric)
-        
+
         # Check for alerts
         self._check_alerts(metric)
-        
+
         self.save()
         return metric
 
@@ -153,7 +155,7 @@ class HealthMonitor:
                 message=f"High stress level detected: {metric.value}",
             )
             self.alerts.append(alert)
-        
+
         # Low recovery alert
         if metric.metric_type == MetricType.RECOVERY and metric.value < 30:
             alert = HealthAlert(
@@ -162,7 +164,7 @@ class HealthMonitor:
                 message=f"Low recovery rate: {metric.value}",
             )
             self.alerts.append(alert)
-        
+
         # High cognitive load
         if metric.metric_type == MetricType.COGNITIVE_LOAD and metric.value > 80:
             alert = HealthAlert(
@@ -176,27 +178,27 @@ class HealthMonitor:
         self,
         metric_type: Optional[MetricType] = None,
         hours: int = 24,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get recent metrics."""
         cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
-        
+
         metrics = [m for m in self.metrics if m.timestamp > cutoff]
         if metric_type:
             metrics = [m for m in metrics if m.metric_type == metric_type]
-        
+
         return [m.to_dict() for m in metrics]
 
-    def get_health_summary(self, hours: int = 24) -> Dict[str, Any]:
+    def get_health_summary(self, hours: int = 24) -> dict[str, Any]:
         """Get health summary for a period."""
         recent = self.get_recent_metrics(hours=hours)
-        
+
         by_type = {}
         for m in recent:
             t = m["metric_type"]
             if t not in by_type:
                 by_type[t] = []
             by_type[t].append(m["value"])
-        
+
         # Calculate averages
         summary = {}
         for t, values in by_type.items():
@@ -206,7 +208,7 @@ class HealthMonitor:
                 "max": max(values),
                 "samples": len(values),
             }
-        
+
         return {
             "period_hours": hours,
             "metrics": summary,
@@ -214,11 +216,11 @@ class HealthMonitor:
             "overall_status": self._calculate_overall_status(summary),
         }
 
-    def _calculate_overall_status(self, summary: Dict) -> str:
+    def _calculate_overall_status(self, summary: dict) -> str:
         """Calculate overall health status."""
         stress_avg = summary.get("stress", {}).get("average", 50)
         recovery_avg = summary.get("recovery", {}).get("average", 50)
-        
+
         # Simple scoring
         if stress_avg > 70 and recovery_avg < 30:
             return HealthStatus.POOR.value
@@ -229,7 +231,7 @@ class HealthMonitor:
         else:
             return HealthStatus.GOOD.value
 
-    def get_active_alerts(self) -> List[Dict[str, Any]]:
+    def get_active_alerts(self) -> list[dict[str, Any]]:
         """Get active (unresolved) alerts."""
         active = [a for a in self.alerts if not a.resolved]
         return sorted(
@@ -256,23 +258,23 @@ class HealthMonitor:
                 return True
         return False
 
-    def get_recommendations(self) -> List[str]:
+    def get_recommendations(self) -> list[str]:
         """Get health recommendations based on current state."""
         recs = []
         summary = self.get_health_summary()
-        
+
         stress = summary["metrics"].get("stress", {}).get("average", 50)
         recovery = summary["metrics"].get("recovery", {}).get("average", 50)
-        
+
         if stress > 60:
             recs.append("Consider stress reduction techniques: breaks, meditation")
-        
+
         if recovery < 40:
             recs.append("Prioritize rest and recovery. Ensure adequate sleep.")
-        
+
         if not recs:
             recs.append("Health metrics within normal ranges. Maintain current habits.")
-        
+
         return recs
 
 

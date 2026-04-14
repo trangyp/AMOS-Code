@@ -1,5 +1,4 @@
-"""
-AMOS Feature Registry & Knowledge Integration
+"""AMOS Feature Registry & Knowledge Integration
 ===============================================
 
 Comprehensive registry of all AMOS capabilities, engines,
@@ -11,27 +10,26 @@ Version: 1.0.0
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
 class FeatureModule:
     """A feature module in the AMOS ecosystem."""
+
     name: str
     category: str
     path: str
     status: str = "active"
-    capabilities: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    capabilities: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
 
 
 class FeatureRegistry:
-    """
-    Central registry for all AMOS features and capabilities.
-    
+    """Central registry for all AMOS features and capabilities.
+
     Discovers and catalogs:
     - 14 Core Subsystems
     - 10+ Cognitive Engines
@@ -45,7 +43,7 @@ class FeatureRegistry:
         if root_path is None:
             root_path = Path(__file__).parent.parent.parent
         self.root = root_path
-        self.features: List[FeatureModule] = []
+        self.features: list[FeatureModule] = []
         self._discover_all()
 
     def _discover_all(self):
@@ -76,14 +74,16 @@ class FeatureRegistry:
             ("13_FACTORY", "Factory", ["agent_creation", "code_gen", "building"]),
             ("14_INTERFACES", "Interfaces", ["cli", "api", "dashboard"]),
         ]
-        
+
         for code, name, caps in subsystems:
-            self.features.append(FeatureModule(
-                name=name,
-                category="core_subsystem",
-                path=f"AMOS_ORGANISM_OS/{code}",
-                capabilities=caps,
-            ))
+            self.features.append(
+                FeatureModule(
+                    name=name,
+                    category="core_subsystem",
+                    path=f"AMOS_ORGANISM_OS/{code}",
+                    capabilities=caps,
+                )
+            )
 
     def _discover_cognitive_engines(self):
         """Discover cognitive domain engines."""
@@ -104,14 +104,16 @@ class FeatureRegistry:
                 ("AMOS_Society_Culture_Engine", "Society & Culture"),
                 ("AMOS_Strategy_Game_Engine", "Strategy & Game"),
             ]
-            
+
             for engine_id, name in engines:
-                self.features.append(FeatureModule(
-                    name=name,
-                    category="cognitive_engine",
-                    path=f"_AMOS_BRAIN/Cognitive/{engine_id}_v0.json",
-                    capabilities=["domain_expertise", "specialized_reasoning"],
-                ))
+                self.features.append(
+                    FeatureModule(
+                        name=name,
+                        category="cognitive_engine",
+                        path=f"_AMOS_BRAIN/Cognitive/{engine_id}_v0.json",
+                        capabilities=["domain_expertise", "specialized_reasoning"],
+                    )
+                )
 
     def _discover_core_engines(self):
         """Discover core brain engines."""
@@ -124,14 +126,16 @@ class FeatureRegistry:
             ("AMOS_Personality_Engine", "Personality"),
             ("AMOS_Brain_Master_Os", "Brain Master OS"),
         ]
-        
+
         for engine_id, name in core_engines:
-            self.features.append(FeatureModule(
-                name=name,
-                category="core_brain_engine",
-                path=f"_AMOS_BRAIN/Core/{engine_id}_v0.json",
-                capabilities=["cognitive_layer", "brain_function"],
-            ))
+            self.features.append(
+                FeatureModule(
+                    name=name,
+                    category="core_brain_engine",
+                    path=f"_AMOS_BRAIN/Core/{engine_id}_v0.json",
+                    capabilities=["cognitive_layer", "brain_function"],
+                )
+            )
 
     def _discover_universe_engines(self):
         """Discover AMOS Universe engines."""
@@ -141,14 +145,16 @@ class FeatureRegistry:
             ("AMOS_Vietnamese_Writing_Engine", "Vietnamese Writing"),
             ("AMOS_Fabrication_Engine", "Fabrication"),
         ]
-        
+
         for engine_id, name in universe_engines:
-            self.features.append(FeatureModule(
-                name=name,
-                category="universe_engine",
-                path=f"_AMOS_BRAIN/_AMOS_UNIVERSE/Engines/{engine_id}_v0.json",
-                capabilities=["specialized_agent", "language_expertise"],
-            ))
+            self.features.append(
+                FeatureModule(
+                    name=name,
+                    category="universe_engine",
+                    path=f"_AMOS_BRAIN/_AMOS_UNIVERSE/Engines/{engine_id}_v0.json",
+                    capabilities=["specialized_agent", "language_expertise"],
+                )
+            )
 
     def _discover_packs(self):
         """Discover knowledge packs."""
@@ -161,14 +167,16 @@ class FeatureRegistry:
                 ("Scenario_Packs", "Scenario Knowledge", 1),
                 ("Universe_Packs", "Universe Knowledge", 1),
             ]
-            
+
             for folder, name, count in pack_types:
-                self.features.append(FeatureModule(
-                    name=name,
-                    category="knowledge_pack",
-                    path=f"_AMOS_BRAIN/Packs/{folder}",
-                    capabilities=[f"{count}_packs", "domain_knowledge", "reference_data"],
-                ))
+                self.features.append(
+                    FeatureModule(
+                        name=name,
+                        category="knowledge_pack",
+                        path=f"_AMOS_BRAIN/Packs/{folder}",
+                        capabilities=[f"{count}_packs", "domain_knowledge", "reference_data"],
+                    )
+                )
 
     def _discover_domains(self):
         """Discover AMOS Universe domains."""
@@ -180,16 +188,18 @@ class FeatureRegistry:
                 ("Science_Health", "Science & Health", 2),
                 ("Tech_Systems", "Technology & Systems", 6),
             ]
-            
-            for folder, name, items in domain_areas:
-                self.features.append(FeatureModule(
-                    name=name,
-                    category="knowledge_domain",
-                    path=f"_AMOS_BRAIN/_AMOS_UNIVERSE/Domains/{folder}",
-                    capabilities=[f"{items}_knowledge_bases", "domain_expertise"],
-                ))
 
-    def get_summary(self) -> Dict[str, Any]:
+            for folder, name, items in domain_areas:
+                self.features.append(
+                    FeatureModule(
+                        name=name,
+                        category="knowledge_domain",
+                        path=f"_AMOS_BRAIN/_AMOS_UNIVERSE/Domains/{folder}",
+                        capabilities=[f"{items}_knowledge_bases", "domain_expertise"],
+                    )
+                )
+
+    def get_summary(self) -> dict[str, Any]:
         """Get feature registry summary."""
         by_category = {}
         for f in self.features:
@@ -197,14 +207,14 @@ class FeatureRegistry:
             if cat not in by_category:
                 by_category[cat] = []
             by_category[cat].append(f.name)
-        
+
         return {
             "total_features": len(self.features),
             "by_category": {k: len(v) for k, v in by_category.items()},
             "categories": list(by_category.keys()),
         }
 
-    def list_by_category(self, category: str) -> List[FeatureModule]:
+    def list_by_category(self, category: str) -> list[FeatureModule]:
         """List features by category."""
         return [f for f in self.features if f.category == category]
 
@@ -213,15 +223,15 @@ if __name__ == "__main__":
     print("=" * 70)
     print("AMOS FEATURE REGISTRY - DEEP KNOWLEDGE SCAN")
     print("=" * 70)
-    
+
     registry = FeatureRegistry()
     summary = registry.get_summary()
-    
+
     print(f"\nTotal Features Discovered: {summary['total_features']}")
     print("\nBy Category:")
-    for cat, count in summary['by_category'].items():
+    for cat, count in summary["by_category"].items():
         print(f"  • {cat}: {count}")
-    
+
     print("\n" + "=" * 70)
     print("Feature Registry Complete")
     print("=" * 70)

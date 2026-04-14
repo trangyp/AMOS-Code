@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Unified CLI (14_INTERFACES)
+"""AMOS Unified CLI (14_INTERFACES)
 ===============================
 
 Command-line interface for the complete AMOS system:
@@ -18,7 +17,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 # Add paths for standalone brain
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -40,7 +39,7 @@ def cmd_status(args) -> int:
     # Load world state
     state_path = root / "world_state.json"
     if state_path.exists():
-        with open(state_path, 'r', encoding='utf-8') as f:
+        with open(state_path, encoding="utf-8") as f:
             state = json.load(f)
 
         health = state.get("system_health", {})
@@ -55,7 +54,7 @@ def cmd_status(args) -> int:
     # Load pipeline state
     pipeline_path = root / "memory" / "pipeline_state.json"
     if pipeline_path.exists():
-        with open(pipeline_path, 'r', encoding='utf-8') as f:
+        with open(pipeline_path, encoding="utf-8") as f:
             pipeline = json.load(f)
 
         print("\nPipeline:")
@@ -75,6 +74,7 @@ def cmd_run(args) -> int:
         return 1
 
     import subprocess
+
     result = subprocess.run([sys.executable, str(orchestrator)])
     return result.returncode
 
@@ -92,7 +92,7 @@ def cmd_agents(args) -> int:
 
         registry = agents_dir / "registry.json"
         if registry.exists():
-            with open(registry, 'r', encoding='utf-8') as f:
+            with open(registry, encoding="utf-8") as f:
                 data = json.load(f)
 
             print(f"Agents ({data.get('agent_count', 0)} total):")
@@ -125,13 +125,7 @@ def cmd_workers(args) -> int:
 
     if args.task == "write":
         plan = {
-            "steps": [
-                {
-                    "action": "write_file",
-                    "content": args.content,
-                    "target_file": args.file
-                }
-            ]
+            "steps": [{"action": "write_file", "content": args.content, "target_file": args.file}]
         }
         result = engine.execute_plan(plan)
         print(f"Success: {result.success}")
@@ -139,14 +133,7 @@ def cmd_workers(args) -> int:
             print(f"Created: {result.artifacts}")
 
     elif args.task == "analyze":
-        plan = {
-            "steps": [
-                {
-                    "action": "analyze",
-                    "topic": args.topic
-                }
-            ]
-        }
+        plan = {"steps": [{"action": "analyze", "topic": args.topic}]}
         result = engine.execute_plan(plan)
         print(result.output)
 
@@ -157,9 +144,8 @@ def cmd_brain(args) -> int:
     """Interact with standalone AMOS brain package."""
     try:
         from amos_brain import get_amos_integration
-        from amos_brain.memory import get_brain_memory
         from amos_brain.dashboard import print_dashboard
-        from amos_brain.cookbook import ArchitectureDecision
+        from amos_brain.memory import get_brain_memory
 
         amos = get_amos_integration()
 
@@ -171,7 +157,7 @@ def cmd_brain(args) -> int:
             print(f"Engines: {status.get('engines_count')} domain engines")
             print(f"Laws: {len(status.get('laws_active', []))} global laws")
             print("\nActive Laws:")
-            for law in status.get('laws_active', []):
+            for law in status.get("laws_active", []):
                 print(f"  • {law}")
 
         elif args.action == "think":
@@ -181,20 +167,24 @@ def cmd_brain(args) -> int:
             print(f"Analyzing: {args.question}")
             print("-" * 50)
             analysis = amos.analyze_with_rules(args.question)
-            print(f"\nRule of 2 Confidence: {analysis.get('rule_of_two', {}).get('confidence', 0):.0%}")
-            print(f"Rule of 4 Coverage: {analysis.get('rule_of_four', {}).get('completeness_score', 0):.0%}")
+            print(
+                f"\nRule of 2 Confidence: {analysis.get('rule_of_two', {}).get('confidence', 0):.0%}"
+            )
+            print(
+                f"Rule of 4 Coverage: {analysis.get('rule_of_four', {}).get('completeness_score', 0):.0%}"
+            )
             print("\nRecommendations:")
-            for rec in analysis.get('recommendations', []):
+            for rec in analysis.get("recommendations", []):
                 print(f"  • {rec}")
 
         elif args.action == "engines":
             status = amos.get_status()
             print(f"Domain Engines ({status.get('engines_count', 0)}):")
-            for domain in status.get('domains_covered', []):
+            for domain in status.get("domains_covered", []):
                 print(f"  • {domain}")
 
         elif args.action == "dashboard":
-            days = int(args.days) if hasattr(args, 'days') else 30
+            days = int(args.days) if hasattr(args, "days") else 30
             print_dashboard(days)
 
         elif args.action == "memory":
@@ -203,7 +193,9 @@ def cmd_brain(args) -> int:
                 history = memory.get_reasoning_history(limit=args.limit or 5)
                 print(f"Reasoning History (last {len(history)}):")
                 for entry in history:
-                    print(f"  [{entry.get('timestamp', 'unknown')[:10]}] {entry.get('problem_preview', 'N/A')[:50]}...")
+                    print(
+                        f"  [{entry.get('timestamp', 'unknown')[:10]}] {entry.get('problem_preview', 'N/A')[:50]}..."
+                    )
             elif args.subaction == "recall":
                 if not args.query:
                     print("[ERROR] --query required for recall")
@@ -217,6 +209,7 @@ def cmd_brain(args) -> int:
     except Exception as e:
         print(f"[ERROR] Brain error: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -260,6 +253,7 @@ def cmd_bridge(args) -> int:
     except Exception as e:
         print(f"[ERROR] Bridge error: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
@@ -286,7 +280,7 @@ def cmd_blood(args) -> int:
         print(f"Total transactions: {status['total_transactions']}")
 
         print("\nBudget Status:")
-        for cat, budget in status['budget_status'].items():
+        for cat, budget in status["budget_status"].items():
             if budget:
                 print(f"  {cat}: ${budget['remaining']:.2f} remaining")
 
@@ -318,7 +312,7 @@ def cmd_knowledge(args) -> int:
         print(f"Total size: {status['total_size_mb']} MB")
         print(f"Loader ready: {status['loaded']}")
         print("\nPack Distribution:")
-        for pack_type, count in status['stats'].items():
+        for pack_type, count in status["stats"].items():
             if count > 0:
                 print(f"  - {pack_type}: {count}")
 
@@ -326,7 +320,7 @@ def cmd_knowledge(args) -> int:
         status = loader.get_status()
         print("Knowledge Packs")
         print("=" * 50)
-        for name in status['pack_names']:
+        for name in status["pack_names"]:
             pack = loader.get_pack(name)
             if pack:
                 size_kb = round(pack.size_bytes / 1024, 1)
@@ -351,8 +345,8 @@ def cmd_knowledge(args) -> int:
 
 def cmd_api(args) -> int:
     """Manage API server."""
-    import subprocess
     import signal
+    import subprocess
     import time
 
     root = get_organism_root()
@@ -369,21 +363,16 @@ def cmd_api(args) -> int:
 
         # Start server in background
         env = os.environ.copy()
-        env['FLASK_APP'] = str(repo_root / 'amos_api_server.py')
-        env['AMOS_ROOT'] = str(root)
+        env["FLASK_APP"] = str(repo_root / "amos_api_server.py")
+        env["AMOS_ROOT"] = str(root)
 
-        cmd = [
-            sys.executable, "-m", "flask", "run",
-            "--host", args.host,
-            "--port", str(args.port)
-        ]
+        cmd = [sys.executable, "-m", "flask", "run", "--host", args.host, "--port", str(args.port)]
         if args.debug:
             cmd.append("--debug")
 
         try:
             proc = subprocess.Popen(
-                cmd, cwd=str(repo_root), env=env,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                cmd, cwd=str(repo_root), env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
             pid_file.write_text(str(proc.pid))
             time.sleep(2)  # Wait for startup
@@ -420,17 +409,18 @@ def cmd_api(args) -> int:
             print(f"  PID file: {pid_file}")
         else:
             print("API server: not running")
-        print(f"  Default URL: http://127.0.0.1:5000")
-        print(f"  API endpoints:")
-        print(f"    GET  /api/workflows      - List workflows")
-        print(f"    POST /api/workflows/<id>/run - Run workflow")
-        print(f"    GET  /api/pipelines      - List pipelines")
-        print(f"    POST /api/pipelines/<id>/run - Run pipeline")
-        print(f"    GET  /api/alerts/active  - Active alerts")
-        print(f"    POST /api/alerts/evaluate - Evaluate metrics")
-        print(f"    POST /api/orchestrator/cycle - Trigger cycle")
+        print("  Default URL: http://127.0.0.1:5000")
+        print("  API endpoints:")
+        print("    GET  /api/workflows      - List workflows")
+        print("    POST /api/workflows/<id>/run - Run workflow")
+        print("    GET  /api/pipelines      - List pipelines")
+        print("    POST /api/pipelines/<id>/run - Run pipeline")
+        print("    GET  /api/alerts/active  - Active alerts")
+        print("    POST /api/alerts/evaluate - Evaluate metrics")
+        print("    POST /api/orchestrator/cycle - Trigger cycle")
 
     return 0
+
 
 def cmd_cognitive(args) -> int:
     """Manage cognitive engines (01_BRAIN)."""
@@ -450,14 +440,14 @@ def cmd_cognitive(args) -> int:
         print(f"Total size: {status['total_size_mb']} MB")
         print(f"Domains covered: {len(status['domains'])}")
         print("\nDomain Distribution:")
-        for domain, count in sorted(status['domains'].items()):
+        for domain, count in sorted(status["domains"].items()):
             print(f"  - {domain}: {count} engines")
 
     elif args.action == "list":
         status = activator.get_status()
         print("Active Cognitive Engines")
         print("=" * 50)
-        for name in status['engine_names']:
+        for name in status["engine_names"]:
             engine = activator.get_engine(name)
             if engine:
                 size_kb = round(engine.size_bytes / 1024, 1)
@@ -473,7 +463,7 @@ def cmd_cognitive(args) -> int:
         print(f"Query: '{query}' in domain '{domain}'")
         print("=" * 50)
         print(f"Matching engines: {result['matching_engines']}")
-        for eng in result['engines']:
+        for eng in result["engines"]:
             print(f"  - {eng['engine']}")
             print(f"    {eng['description']}")
 
@@ -506,7 +496,13 @@ def cmd_alert(args) -> int:
         print("=" * 40)
         if active:
             for alert in active:
-                icon = "🔴" if alert['severity'] == "critical" else "⚠️" if alert['severity'] == "warning" else "ℹ️"
+                icon = (
+                    "🔴"
+                    if alert["severity"] == "critical"
+                    else "⚠️"
+                    if alert["severity"] == "warning"
+                    else "ℹ️"
+                )
                 print(f"{icon} {alert['id']}: {alert['rule_name']}")
                 print(f"   {alert['message']}")
         else:
@@ -546,7 +542,7 @@ def cmd_pipeline(args) -> int:
     metabolism_dir = root / "07_METABOLISM"
 
     sys.path.insert(0, str(metabolism_dir))
-    from pipeline_engine import PipelineEngine, Pipeline, PipelineStage
+    from pipeline_engine import PipelineEngine, PipelineStage
 
     engine = PipelineEngine()
 
@@ -565,9 +561,19 @@ def cmd_pipeline(args) -> int:
         name = args.name or "New Pipeline"
         pipe = engine.create_pipeline(name, "Created via CLI")
         # Add demo stages
-        pipe.add_stage(PipelineStage(name="Transform", stage_type="transform", config={"transform": "uppercase"}))
-        pipe.add_stage(PipelineStage(name="Validate", stage_type="validate", config={"required_fields": ["data"]}))
-        pipe.add_stage(PipelineStage(name="Log", stage_type="log", config={"message": "Pipeline complete"}))
+        pipe.add_stage(
+            PipelineStage(
+                name="Transform", stage_type="transform", config={"transform": "uppercase"}
+            )
+        )
+        pipe.add_stage(
+            PipelineStage(
+                name="Validate", stage_type="validate", config={"required_fields": ["data"]}
+            )
+        )
+        pipe.add_stage(
+            PipelineStage(name="Log", stage_type="log", config={"message": "Pipeline complete"})
+        )
         engine.save()
         print(f"Created pipeline: {pipe.id}")
         print(f"Name: {pipe.name}")
@@ -585,8 +591,8 @@ def cmd_pipeline(args) -> int:
         result = engine.execute_pipeline(args.pipeline_id, initial_data="Hello World")
         print(f"Success: {result['success']}")
         print(f"Stages executed: {len(result['results'])}")
-        for stage_id, res in result['results'].items():
-            status = res.get('status', 'unknown')
+        for stage_id, res in result["results"].items():
+            status = res.get("status", "unknown")
             icon = "✓" if status == "completed" else "✗" if status == "failed" else "○"
             print(f"  {icon} {stage_id}: {status}")
 
@@ -609,7 +615,7 @@ def cmd_workflow(args) -> int:
     muscle_dir = root / "06_MUSCLE"
 
     sys.path.insert(0, str(muscle_dir))
-    from workflow_engine import WorkflowEngine, Workflow, WorkflowStep
+    from workflow_engine import WorkflowEngine
 
     engine = WorkflowEngine()
 
@@ -650,7 +656,13 @@ def cmd_workflow(args) -> int:
         print(f"Status: {result.status}")
         print(f"Steps: {len(result.steps)}")
         for step in result.steps:
-            status_icon = "✓" if step.status.value == "success" else "✗" if step.status.value == "failed" else "○"
+            status_icon = (
+                "✓"
+                if step.status.value == "success"
+                else "✗"
+                if step.status.value == "failed"
+                else "○"
+            )
             print(f"  {status_icon} {step.name}: {step.status.value}")
 
     elif args.action == "status":
@@ -684,6 +696,7 @@ def cmd_predict(args) -> int:
         try:
             sys.path.insert(0, str(root / "07_METABOLISM"))
             from task_queue import TaskQueue
+
             queue = TaskQueue(root)
             status = queue.get_status()
             pred = engine.predict_queue_clearance(status.get("pending", 0))
@@ -738,7 +751,7 @@ def cmd_task(args) -> int:
     metabolism_dir = root / "07_METABOLISM"
 
     sys.path.insert(0, str(metabolism_dir))
-    from task_queue import TaskQueue, TaskPriority
+    from task_queue import TaskPriority, TaskQueue
 
     queue = TaskQueue(root)
 
@@ -765,7 +778,7 @@ def cmd_task(args) -> int:
                 description=args.description or "",
                 task_type=args.type,
                 source_subsystem="CLI",
-                priority=priority
+                priority=priority,
             )
             print(f"Task submitted: {args.title}")
         else:
@@ -810,8 +823,10 @@ def cmd_life(args) -> int:
         print("LIFE Engine Status")
         print("=" * 40)
         print(f"Status: {status['status']}")
-        print(f"Routines: {status['routines']['completed_today']}/"
-              f"{status['routines']['total']} completed")
+        print(
+            f"Routines: {status['routines']['completed_today']}/"
+            f"{status['routines']['total']} completed"
+        )
         print(f"Habits tracked: {status['habits']['total']}")
         print(f"Active goals: {status['goals']['active']}")
 
@@ -831,7 +846,7 @@ def cmd_immune(args) -> int:
     immune_dir = root / "03_IMMUNE"
 
     sys.path.insert(0, str(immune_dir))
-    from immune_system import ImmuneSystem, ActionType
+    from immune_system import ActionType, ImmuneSystem
 
     immune = ImmuneSystem()
 
@@ -846,11 +861,9 @@ def cmd_immune(args) -> int:
     elif args.action == "validate" and args.action_type:
         action_type = getattr(ActionType, args.action_type.upper(), ActionType.READ)
         result = immune.validate(
-            action="cli_test",
-            action_type=action_type,
-            target=args.target or "test_target"
+            action="cli_test", action_type=action_type, target=args.target or "test_target"
         )
-        print(f"Validation Result:")
+        print("Validation Result:")
         print(f"  Approved: {result.approved}")
         print(f"  Risk Level: {result.risk_level.value}")
         print(f"  Reason: {result.reason}")
@@ -879,7 +892,7 @@ def cmd_legal(args) -> int:
 
     elif args.action == "check" and args.content:
         results = engine.check_compliance(args.content, "cli_check")
-        print(f"\nCompliance Check Results:")
+        print("\nCompliance Check Results:")
         for r in results:
             status = "✓" if r.passed else "✗"
             print(f"  {status} [{r.rule_id}] {r.message}")
@@ -927,6 +940,7 @@ def cmd_orchestrator(args) -> int:
         sys.path.insert(0, str(organism_root))
         try:
             from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+
             orch = AmosMasterOrchestrator()
             if not orch.initialize():
                 print("✗ Orchestrator initialization failed")
@@ -945,6 +959,7 @@ def cmd_orchestrator(args) -> int:
         sys.path.insert(0, str(organism_root))
         try:
             from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+
             orch = AmosMasterOrchestrator()
             status = orch.get_status()
             print("Orchestrator Status")
@@ -952,7 +967,11 @@ def cmd_orchestrator(args) -> int:
             print(f"Cycle count: {status['cycle_count']}")
             print(f"Current position: {status['current_position']}")
             print(f"Active subsystems: {len(status['active_subsystems'])}")
-            print(f"Last cycle time: {status['last_cycle_time']:.3f}s" if status['last_cycle_time'] else "N/A")
+            print(
+                f"Last cycle time: {status['last_cycle_time']:.3f}s"
+                if status["last_cycle_time"]
+                else "N/A"
+            )
             print(f"Error count: {status['error_count']}")
         except Exception as e:
             print(f"✗ Status check failed: {e}")
@@ -961,12 +980,9 @@ def cmd_orchestrator(args) -> int:
     return 0
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
     """Main CLI entry point."""
-    parser = argparse.ArgumentParser(
-        prog="amos",
-        description="AMOS 7-System Organism CLI"
-    )
+    parser = argparse.ArgumentParser(prog="amos", description="AMOS 7-System Organism CLI")
 
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 
@@ -980,8 +996,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # Agents command
     agent_parser = subparsers.add_parser("agents", help="Manage agents")
-    agent_parser.add_argument("action", choices=["list", "create"], nargs="?",
-                              default="list")
+    agent_parser.add_argument("action", choices=["list", "create"], nargs="?", default="list")
     agent_parser.set_defaults(func=cmd_agents)
 
     # Workers command
@@ -994,7 +1009,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # Brain command (standalone package)
     brain_parser = subparsers.add_parser("brain", help="AMOS brain (standalone)")
-    brain_parser.add_argument("action", choices=["status", "think", "engines", "dashboard", "memory"])
+    brain_parser.add_argument(
+        "action", choices=["status", "think", "engines", "dashboard", "memory"]
+    )
     brain_parser.add_argument("--question", "-q", help="Question for think")
     brain_parser.add_argument("--days", "-d", type=int, default=30, help="Dashboard days")
     brain_parser.add_argument("--subaction", choices=["history", "recall"], help="Memory subaction")
@@ -1010,177 +1027,121 @@ def main(argv: Optional[List[str]] = None) -> int:
     bridge_parser.set_defaults(func=cmd_bridge)
 
     # Blood command
-    blood_parser = subparsers.add_parser(
-        "blood", help="Financial engine (BLOOD)"
-    )
-    blood_parser.add_argument(
-        "action", choices=["status", "budget"], nargs="?",
-        default="status"
-    )
-    blood_parser.add_argument(
-        "--category", "-c", help="Budget category"
-    )
-    blood_parser.add_argument(
-        "--amount", "-a", type=float, help="Budget amount"
-    )
-    blood_parser.add_argument(
-        "--period", "-p", default="monthly",
-        help="Budget period"
-    )
+    blood_parser = subparsers.add_parser("blood", help="Financial engine (BLOOD)")
+    blood_parser.add_argument("action", choices=["status", "budget"], nargs="?", default="status")
+    blood_parser.add_argument("--category", "-c", help="Budget category")
+    blood_parser.add_argument("--amount", "-a", type=float, help="Budget amount")
+    blood_parser.add_argument("--period", "-p", default="monthly", help="Budget period")
     blood_parser.set_defaults(func=cmd_blood)
 
     # Social command
-    social_parser = subparsers.add_parser(
-        "social", help="Agent communication (SOCIAL)"
-    )
-    social_parser.add_argument(
-        "action", choices=["status", "graph"], nargs="?",
-        default="status"
-    )
-    social_parser.add_argument(
-        "--agent", "-a", help="Agent ID for graph view"
-    )
+    social_parser = subparsers.add_parser("social", help="Agent communication (SOCIAL)")
+    social_parser.add_argument("action", choices=["status", "graph"], nargs="?", default="status")
+    social_parser.add_argument("--agent", "-a", help="Agent ID for graph view")
     social_parser.set_defaults(func=cmd_social)
 
     # Legal command
-    legal_parser = subparsers.add_parser(
-        "legal", help="Legal compliance (LEGAL)"
-    )
-    legal_parser.add_argument(
-        "action", choices=["status", "check"], nargs="?",
-        default="status"
-    )
-    legal_parser.add_argument(
-        "--content", "-c", help="Content to check"
-    )
+    legal_parser = subparsers.add_parser("legal", help="Legal compliance (LEGAL)")
+    legal_parser.add_argument("action", choices=["status", "check"], nargs="?", default="status")
+    legal_parser.add_argument("--content", "-c", help="Content to check")
     legal_parser.set_defaults(func=cmd_legal)
 
     # Immune command
-    immune_parser = subparsers.add_parser(
-        "immune", help="Security system (IMMUNE)"
-    )
+    immune_parser = subparsers.add_parser("immune", help="Security system (IMMUNE)")
     immune_parser.add_argument(
-        "action", choices=["status", "validate"], nargs="?",
-        default="status"
+        "action", choices=["status", "validate"], nargs="?", default="status"
     )
-    immune_parser.add_argument(
-        "--action-type", "-t", help="Action type to validate"
-    )
-    immune_parser.add_argument(
-        "--target", "-g", help="Target for validation"
-    )
+    immune_parser.add_argument("--action-type", "-t", help="Action type to validate")
+    immune_parser.add_argument("--target", "-g", help="Target for validation")
     immune_parser.set_defaults(func=cmd_immune)
 
     # Life command
-    life_parser = subparsers.add_parser(
-        "life", help="Personal life management (LIFE)"
-    )
-    life_parser.add_argument(
-        "action", choices=["status", "schedule"], nargs="?",
-        default="status"
-    )
+    life_parser = subparsers.add_parser("life", help="Personal life management (LIFE)")
+    life_parser.add_argument("action", choices=["status", "schedule"], nargs="?", default="status")
     life_parser.set_defaults(func=cmd_life)
 
     # Factory command
-    factory_parser = subparsers.add_parser(
-        "factory", help="Agent factory (FACTORY)"
-    )
-    factory_parser.add_argument(
-        "action", choices=["status", "create"], nargs="?",
-        default="status"
-    )
+    factory_parser = subparsers.add_parser("factory", help="Agent factory (FACTORY)")
+    factory_parser.add_argument("action", choices=["status", "create"], nargs="?", default="status")
     factory_parser.set_defaults(func=cmd_factory)
 
     # Task command
-    task_parser = subparsers.add_parser(
-        "task", help="Task queue (METABOLISM)"
+    task_parser = subparsers.add_parser("task", help="Task queue (METABOLISM)")
+    task_parser.add_argument(
+        "action", choices=["status", "submit", "list"], nargs="?", default="status"
+    )
+    task_parser.add_argument("--title", "-t", help="Task title")
+    task_parser.add_argument("--description", "-d", help="Task description")
+    task_parser.add_argument(
+        "--type",
+        choices=["analysis", "code", "documentation", "security"],
+        default="analysis",
+        help="Task type",
     )
     task_parser.add_argument(
-        "action", choices=["status", "submit", "list"], nargs="?",
-        default="status"
-    )
-    task_parser.add_argument(
-        "--title", "-t", help="Task title"
-    )
-    task_parser.add_argument(
-        "--description", "-d", help="Task description"
-    )
-    task_parser.add_argument(
-        "--type", choices=["analysis", "code", "documentation", "security"],
-        default="analysis", help="Task type"
-    )
-    task_parser.add_argument(
-        "--priority", "-p", choices=["low", "medium", "high", "critical"],
-        default="medium", help="Task priority"
+        "--priority",
+        "-p",
+        choices=["low", "medium", "high", "critical"],
+        default="medium",
+        help="Task priority",
     )
     task_parser.set_defaults(func=cmd_task)
 
     # Execute command
-    execute_parser = subparsers.add_parser(
-        "execute", help="Execute pending tasks (MUSCLE)"
-    )
+    execute_parser = subparsers.add_parser("execute", help="Execute pending tasks (MUSCLE)")
     execute_parser.add_argument(
-        "--count", "-c", type=int, default=5,
-        help="Maximum tasks to execute"
+        "--count", "-c", type=int, default=5, help="Maximum tasks to execute"
     )
     execute_parser.set_defaults(func=cmd_execute)
 
     # Predict command
-    predict_parser = subparsers.add_parser(
-        "predict", help="Predictive analytics (QUANTUM_LAYER)"
-    )
+    predict_parser = subparsers.add_parser("predict", help="Predictive analytics (QUANTUM_LAYER)")
     predict_parser.add_argument(
-        "target", choices=["all", "queue", "resources"], nargs="?",
-        default="all", help="What to predict"
+        "target",
+        choices=["all", "queue", "resources"],
+        nargs="?",
+        default="all",
+        help="What to predict",
     )
     predict_parser.set_defaults(func=cmd_predict)
 
     # Workflow command
-    workflow_parser = subparsers.add_parser(
-        "workflow", help="Workflow management (MUSCLE)"
-    )
+    workflow_parser = subparsers.add_parser("workflow", help="Workflow management (MUSCLE)")
     workflow_parser.add_argument(
-        "action", choices=["list", "create", "run", "status"], nargs="?",
-        default="list", help="Workflow action"
+        "action",
+        choices=["list", "create", "run", "status"],
+        nargs="?",
+        default="list",
+        help="Workflow action",
     )
-    workflow_parser.add_argument(
-        "--name", "-n", help="Workflow name"
-    )
-    workflow_parser.add_argument(
-        "--workflow-id", "-w", help="Workflow ID for run/status"
-    )
+    workflow_parser.add_argument("--name", "-n", help="Workflow name")
+    workflow_parser.add_argument("--workflow-id", "-w", help="Workflow ID for run/status")
     workflow_parser.set_defaults(func=cmd_workflow)
 
     # Pipeline command
-    pipeline_parser = subparsers.add_parser(
-        "pipeline", help="Pipeline management (METABOLISM)"
-    )
+    pipeline_parser = subparsers.add_parser("pipeline", help="Pipeline management (METABOLISM)")
     pipeline_parser.add_argument(
-        "action", choices=["list", "create", "run", "status"], nargs="?",
-        default="list", help="Pipeline action"
+        "action",
+        choices=["list", "create", "run", "status"],
+        nargs="?",
+        default="list",
+        help="Pipeline action",
     )
-    pipeline_parser.add_argument(
-        "--name", "-n", help="Pipeline name"
-    )
-    pipeline_parser.add_argument(
-        "--pipeline-id", "-p", help="Pipeline ID for run/status"
-    )
+    pipeline_parser.add_argument("--name", "-n", help="Pipeline name")
+    pipeline_parser.add_argument("--pipeline-id", "-p", help="Pipeline ID for run/status")
     pipeline_parser.set_defaults(func=cmd_pipeline)
 
     # Alert command
-    alert_parser = subparsers.add_parser(
-        "alert", help="Alert management (IMMUNE)"
-    )
+    alert_parser = subparsers.add_parser("alert", help="Alert management (IMMUNE)")
     alert_parser.add_argument(
-        "action", choices=["status", "list", "test"], nargs="?",
-        default="status", help="Alert action"
+        "action",
+        choices=["status", "list", "test"],
+        nargs="?",
+        default="status",
+        help="Alert action",
     )
-    alert_parser.add_argument(
-        "--metric", "-m", help="Metric to test (for test action)"
-    )
-    alert_parser.add_argument(
-        "--value", "-v", type=float, default=85.0, help="Metric value"
-    )
+    alert_parser.add_argument("--metric", "-m", help="Metric to test (for test action)")
+    alert_parser.add_argument("--value", "-v", type=float, default=85.0, help="Metric value")
     alert_parser.set_defaults(func=cmd_alert)
 
     # Orchestrator command
@@ -1188,8 +1149,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         "orchestrator", help="Orchestrator control (00_ROOT)"
     )
     orchestrator_parser.add_argument(
-        "action", choices=["cycle", "status"], nargs="?",
-        default="status", help="Orchestrator action"
+        "action",
+        choices=["cycle", "status"],
+        nargs="?",
+        default="status",
+        help="Orchestrator action",
     )
     orchestrator_parser.set_defaults(func=cmd_orchestrator)
 
@@ -1198,34 +1162,28 @@ def main(argv: Optional[List[str]] = None) -> int:
         "cognitive", help="Cognitive engine management (01_BRAIN)"
     )
     cognitive_parser.add_argument(
-        "action", choices=["list", "status", "query"], nargs="?",
-        default="status", help="Cognitive engine action"
+        "action",
+        choices=["list", "status", "query"],
+        nargs="?",
+        default="status",
+        help="Cognitive engine action",
     )
-    cognitive_parser.add_argument(
-        "--domain", "-d", help="Domain to query (for query action)"
-    )
-    cognitive_parser.add_argument(
-        "--engine", "-e", help="Specific engine name"
-    )
+    cognitive_parser.add_argument("--domain", "-d", help="Domain to query (for query action)")
+    cognitive_parser.add_argument("--engine", "-e", help="Specific engine name")
     cognitive_parser.set_defaults(func=cmd_cognitive)
 
     # API server command
-    api_parser = subparsers.add_parser(
-        "api", help="API server management (14_INTERFACES)"
-    )
+    api_parser = subparsers.add_parser("api", help="API server management (14_INTERFACES)")
     api_parser.add_argument(
-        "action", choices=["start", "stop", "status"], nargs="?",
-        default="status", help="API server action"
+        "action",
+        choices=["start", "stop", "status"],
+        nargs="?",
+        default="status",
+        help="API server action",
     )
-    api_parser.add_argument(
-        "--port", "-p", type=int, default=5000, help="Server port"
-    )
-    api_parser.add_argument(
-        "--host", default="127.0.0.1", help="Server host"
-    )
-    api_parser.add_argument(
-        "--debug", action="store_true", help="Enable debug mode"
-    )
+    api_parser.add_argument("--port", "-p", type=int, default=5000, help="Server port")
+    api_parser.add_argument("--host", default="127.0.0.1", help="Server host")
+    api_parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     api_parser.set_defaults(func=cmd_api)
 
     args = parser.parse_args(argv)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Dashboard Server
+"""AMOS Dashboard Server
 ======================
 
 Web-based monitoring dashboard for the AMOS 13-System Organism.
@@ -15,11 +14,11 @@ from __future__ import annotations
 import json
 import sys
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List
 
 # Simple HTTP server for dashboard
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+from typing import Any
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
@@ -42,7 +41,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         else:
             self._send_404()
 
-    def _send_json(self, data: Dict[str, Any]) -> None:
+    def _send_json(self, data: dict[str, Any]) -> None:
         """Send JSON response."""
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -77,7 +76,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         data = self._collect_subsystem_data()
         self._send_json(data)
 
-    def _collect_organism_status(self) -> Dict[str, Any]:
+    def _collect_organism_status(self) -> dict[str, Any]:
         """Collect overall organism status."""
         return {
             "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -85,10 +84,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             "total_subsystems": 13,
             "active_subsystems": 13,
             "status": "operational",
-            "health_score": 99.8
+            "health_score": 99.8,
         }
 
-    def _collect_subsystem_data(self) -> Dict[str, Any]:
+    def _collect_subsystem_data(self) -> dict[str, Any]:
         """Collect data from all subsystems."""
         subsystems = []
 
@@ -110,22 +109,18 @@ class DashboardHandler(BaseHTTPRequestHandler):
         ]
 
         for code, name, status, color in subsystem_info:
-            subsystems.append({
-                "code": code,
-                "name": name,
-                "status": status,
-                "color": color,
-                "uptime": "99.9%"
-            })
+            subsystems.append(
+                {"code": code, "name": name, "status": status, "color": color, "uptime": "99.9%"}
+            )
 
         return {
             "subsystems": subsystems,
-            "primary_loop": "01_BRAIN → 02_SENSES → 03_IMMUNE → 04_BLOOD → 05_SKELETON → 08_WORLD_MODEL → 09_SOCIAL_ENGINE → 10_LIFE_ENGINE → 11_LEGAL_BRAIN → 12_QUANTUM_LAYER → 13_FACTORY → 06_MUSCLE → 07_METABOLISM"
+            "primary_loop": "01_BRAIN → 02_SENSES → 03_IMMUNE → 04_BLOOD → 05_SKELETON → 08_WORLD_MODEL → 09_SOCIAL_ENGINE → 10_LIFE_ENGINE → 11_LEGAL_BRAIN → 12_QUANTUM_LAYER → 13_FACTORY → 06_MUSCLE → 07_METABOLISM",
         }
 
     def _generate_dashboard_html(self) -> str:
         """Generate the dashboard HTML."""
-        return '''<!DOCTYPE html>
+        return """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -392,7 +387,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         }, 5000);
     </script>
 </body>
-</html>'''
+</html>"""
 
 
 def run_server(port: int = 8080) -> None:

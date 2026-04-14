@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain: Final Integration Test (Layer 16)
+"""AMOS Brain: Final Integration Test (Layer 16)
 ===============================================
 
 Comprehensive end-to-end validation of all 15 layers.
@@ -19,8 +18,8 @@ This test validates:
 - State persistence functions
 - Complete system sanity
 """
-import sys
 import os
+import sys
 import unittest
 
 # Add project root to path
@@ -36,9 +35,7 @@ class TestLayer1BrainLoader(unittest.TestCase):
 
         brain = get_brain()
         engines = brain.list_engines()
-        self.assertGreaterEqual(
-            len(engines), 26, f"Expected 26+ engines, got {len(engines)}"
-        )
+        self.assertGreaterEqual(len(engines), 26, f"Expected 26+ engines, got {len(engines)}")
         print("  [L1] Brain Loader: 26 engines loaded")
 
 
@@ -243,7 +240,7 @@ class TestLayer18OrganismBridge(unittest.TestCase):
     def test_organism_bridge_available(self):
         """Organism bridge available or optional."""
         try:
-            from amos_brain import initialize_organism, execute_organism_task
+            from amos_brain import execute_organism_task, initialize_organism
 
             result = initialize_organism()
             self.assertIn(result["status"], ["initialized", "error"])
@@ -261,11 +258,11 @@ class TestEndToEndWorkflow(unittest.TestCase):
     def test_e2e_workflow(self):
         """Full workflow integration test."""
         from amos_brain import (
+            ArchitectureDecision,
+            get_meta_controller,
+            get_state_manager,
             think,
             validate,
-            get_state_manager,
-            get_meta_controller,
-            ArchitectureDecision,
         )
         from clawspring.amos_brain_integration import BrainClawSpringBridge
 

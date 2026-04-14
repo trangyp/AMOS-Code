@@ -7,14 +7,14 @@ if str(skeleton_path) not in sys.path:
     sys.path.insert(0, str(skeleton_path))
 
 from constraint_engine import (
-    ConstraintEngine,
     Constraint,
+    ConstraintEngine,
+    ConstraintOp,
     ConstraintResult,
     ConstraintType,
-    ConstraintOp,
 )
-from rule_validator import RuleValidator, Rule, ValidationOutcome
-from structural_integrity import StructuralIntegrity, IntegrityCheck
+from rule_validator import Rule, RuleValidator, ValidationOutcome
+from structural_integrity import IntegrityCheck, StructuralIntegrity
 
 __all__ = [
     "ConstraintEngine",

@@ -10,8 +10,8 @@ if str(brain_path) not in sys.path:
 from brain_os import (
     BrainOS,
     BrainState,
-    Thought,
     Plan,
+    Thought,
     ThoughtType,
 )
 

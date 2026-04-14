@@ -2,7 +2,7 @@ Français | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/do
 
 <div align="center">
   <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="Logo" width="280">
   </a>
 
 <h1 align="center" style="font-size: 30px;"><strong><em>ClawSpring</em></strong> : une réimplémentation Python rapide et facile à utiliser de Claude Code, compatible avec n’importe quel modèle</h1>
@@ -16,7 +16,7 @@ Français | [中文](https://github.com/SafeRL-Lab/nano-claude-code/blob/main/do
 </div>
 
 <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/>
 </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>
@@ -415,7 +415,7 @@ Le nom du modèle doit correspondre à celui affiché par LM Studio dans la barr
 
 Pour les serveurs d’inférence auto-hébergés (vLLM, TGI, serveur llama.cpp, etc.) exposant une API compatible OpenAI :
 
-Démarrage rapide pour l’option C :  
+Démarrage rapide pour l’option C :
 Étape 1 : démarrer vllm :
 ```bash
 CUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server \
@@ -666,7 +666,7 @@ Les clés sont enregistrées dans `~/.nano_claude/config.json` et chargées auto
 - `n` ou Entrée — refuser
 - `a` — approuver et passer en `accept-all` pour le reste de la session
 
-**Commandes toujours auto-approuvées en mode `auto` :**  
+**Commandes toujours auto-approuvées en mode `auto` :**
 `ls`, `cat`, `head`, `tail`, `wc`, `pwd`, `echo`, `git status`, `git log`, `git diff`, `git show`, `find`, `grep`, `rg`, `python`, `node`, `pip show`, `npm list`, ainsi que les autres commandes shell en lecture seule.
 
 ---

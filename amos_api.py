@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain REST API - FastAPI-based HTTP interface.
+"""AMOS Brain REST API - FastAPI-based HTTP interface.
 
 Provides endpoints:
   GET  /          - API info and links
@@ -15,40 +14,39 @@ Provides endpoints:
 
 Usage:
   uvicorn amos_api:app --reload
-  
+
 Interactive docs:
   http://localhost:8000/docs (Swagger UI)
   http://localhost:8000/redoc (ReDoc)
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from typing import Any
-from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # AMOS brain imports
-from amos_brain import get_amos_integration, GlobalLaws
+from amos_brain import GlobalLaws, get_amos_integration
 from amos_brain.cookbook import (
     ArchitectureDecision,
-    ProjectPlanner,
     ProblemDiagnosis,
-    TechnologySelection,
+    ProjectPlanner,
     RiskAssessment,
+    TechnologySelection,
 )
 from amos_brain.memory import get_brain_memory
 
-
 # ── Pydantic Models ─────────────────────────────────────────────────────────
+
 
 class DecideRequest(BaseModel):
     problem: str = Field(..., description="The decision or problem to analyze")
@@ -115,6 +113,7 @@ def get_amos():
 
 # ── Endpoints ───────────────────────────────────────────────────────────────
 
+
 @app.get("/")
 async def root():
     """API information."""
@@ -128,7 +127,7 @@ async def root():
             "health": "/health",
             "status": "/status",
             "laws": "/laws",
-        }
+        },
     }
 
 
@@ -139,9 +138,9 @@ async def health():
         amos = get_amos()
         status = amos.get_status()
         return {
-            "status": "healthy" if status['initialized'] else "unhealthy",
-            "brain_loaded": status['brain_loaded'],
-            "engines": status['engines_count'],
+            "status": "healthy" if status["initialized"] else "unhealthy",
+            "brain_loaded": status["brain_loaded"],
+            "engines": status["engines_count"],
             "timestamp": datetime.utcnow().isoformat(),
         }
     except Exception as e:
@@ -154,47 +153,44 @@ async def status():
     amos = get_amos()
     s = amos.get_status()
     return {
-        "initialized": s['initialized'],
-        "brain_loaded": s['brain_loaded'],
-        "engines_count": s['engines_count'],
-        "laws_active": s['laws_active'],
-        "domains_covered": s['domains_covered'],
+        "initialized": s["initialized"],
+        "brain_loaded": s["brain_loaded"],
+        "engines_count": s["engines_count"],
+        "laws_active": s["laws_active"],
+        "domains_covered": s["domains_covered"],
         "laws_summary": amos.get_laws_summary(),
     }
 
 
 @app.post("/decide", response_model=DecideResponse)
 async def decide(request: DecideRequest):
-    """
-    Analyze a decision using AMOS Rule of 2 (dual perspectives) 
+    """Analyze a decision using AMOS Rule of 2 (dual perspectives)
     and Rule of 4 (four quadrants).
     """
     amos = get_amos()
-    
+
     result = amos.analyze_with_rules(request.problem, request.context)
-    
+
     return DecideResponse(
         problem=request.problem,
         rule_of_two={
-            "confidence": result['rule_of_two']['confidence'],
-            "recommendation": result['rule_of_two']['recommendation'],
+            "confidence": result["rule_of_two"]["confidence"],
+            "recommendation": result["rule_of_two"]["recommendation"],
         },
         rule_of_four={
-            "quadrants": result['rule_of_four']['quadrants_analyzed'],
-            "completeness": result['rule_of_four']['completeness_score'],
+            "quadrants": result["rule_of_four"]["quadrants_analyzed"],
+            "completeness": result["rule_of_four"]["completeness_score"],
         },
-        recommendations=result.get('recommendations', []),
-        assumptions=result.get('assumptions', []),
-        uncertainties=result.get('uncertainty_flags', []),
+        recommendations=result.get("recommendations", []),
+        assumptions=result.get("assumptions", []),
+        uncertainties=result.get("uncertainty_flags", []),
         processed_at=datetime.utcnow().isoformat(),
     )
 
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest):
-    """
-    Perform deep systems analysis using cookbook workflows.
-    """
+    """Perform deep systems analysis using cookbook workflows."""
     workflows = {
         "architecture": ArchitectureDecision,
         "project": ProjectPlanner,
@@ -203,10 +199,10 @@ async def analyze(request: AnalyzeRequest):
         "risk": RiskAssessment,
         "root_cause": ProblemDiagnosis,
     }
-    
+
     workflow_class = workflows.get(request.workflow, ProblemDiagnosis)
     result = workflow_class.run(request.topic)
-    
+
     return {
         "workflow": request.workflow,
         "topic": request.topic,
@@ -230,23 +226,26 @@ async def laws_check(request: LawsCheckRequest):
     """Check text compliance with Global Laws."""
     laws = GlobalLaws()
     issues = []
-    
+
     if request.check_l4:
         statements = [s.strip() for s in request.text.split(".") if s.strip()]
         consistent, contradictions = laws.check_l4_integrity(statements)
         if not consistent:
             issues.extend(contradictions)
-    
+
     if request.check_l5:
         ok, violations = laws.l5_communication_check(request.text)
         if not ok:
             issues.extend(violations)
-    
+
     return {
         "text_preview": request.text[:100] + "..." if len(request.text) > 100 else request.text,
         "compliant": len(issues) == 0,
         "issues": issues,
-        "checks_performed": ["L4" if request.check_l4 else None, "L5" if request.check_l5 else None],
+        "checks_performed": [
+            "L4" if request.check_l4 else None,
+            "L5" if request.check_l5 else None,
+        ],
     }
 
 
@@ -255,14 +254,14 @@ async def memory(limit: int = Query(10, ge=1, le=100)):
     """Get recent reasoning history."""
     mem = get_brain_memory()
     history = mem.get_reasoning_history(limit=limit)
-    
+
     return {
         "count": len(history),
         "items": [
             {
-                "problem": h.get('problem', 'Unknown')[:50],
-                "timestamp": h.get('timestamp'),
-                "tags": h.get('tags', []),
+                "problem": h.get("problem", "Unknown")[:50],
+                "timestamp": h.get("timestamp"),
+                "tags": h.get("tags", []),
             }
             for h in history
         ],
@@ -274,7 +273,7 @@ async def memory_search(request: MemorySearchRequest):
     """Search reasoning memory."""
     mem = get_brain_memory()
     results = mem.query_reasoning(request.query, limit=request.limit)
-    
+
     return {
         "query": request.query,
         "count": len(results),
@@ -284,4 +283,5 @@ async def memory_search(request: MemorySearchRequest):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

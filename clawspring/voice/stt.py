@@ -18,11 +18,9 @@ from __future__ import annotations
 import io
 import os
 import struct
-import tempfile
-from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
-from .recorder import SAMPLE_RATE, CHANNELS, BYTES_PER_SAMPLE
+from .recorder import BYTES_PER_SAMPLE, CHANNELS, SAMPLE_RATE
 
 # ── Cached model handles ──────────────────────────────────────────────────
 
@@ -37,6 +35,7 @@ DEFAULT_MODEL_SIZE = os.environ.get("NANO_CLAUDE_WHISPER_MODEL", "base")
 
 # ── WAV helper ────────────────────────────────────────────────────────────
 
+
 def _pcm_to_wav(pcm_bytes: bytes) -> bytes:
     """Wrap raw int16 PCM in a minimal WAV container."""
     num_samples = len(pcm_bytes) // BYTES_PER_SAMPLE
@@ -49,13 +48,13 @@ def _pcm_to_wav(pcm_bytes: bytes) -> bytes:
         36 + data_size,
         b"WAVE",
         b"fmt ",
-        16,          # chunk size
-        1,           # PCM format
+        16,  # chunk size
+        1,  # PCM format
         CHANNELS,
         SAMPLE_RATE,
         byte_rate,
         block_align,
-        16,          # bits per sample
+        16,  # bits per sample
         b"data",
         data_size,
     )
@@ -64,15 +63,18 @@ def _pcm_to_wav(pcm_bytes: bytes) -> bytes:
 
 # ── Availability ──────────────────────────────────────────────────────────
 
+
 def check_stt_availability() -> tuple[bool, str | None]:
     """Return (available, reason_if_not)."""
     try:
         import faster_whisper  # noqa: F401
+
         return True, None
     except ImportError:
         pass
     try:
         import whisper  # noqa: F401
+
         return True, None
     except ImportError:
         pass
@@ -92,11 +94,13 @@ def get_stt_backend_name() -> str:
     """Return a human-readable name of the backend that will be used."""
     try:
         import faster_whisper  # noqa: F401
+
         return f"faster-whisper ({DEFAULT_MODEL_SIZE})"
     except ImportError:
         pass
     try:
         import whisper  # noqa: F401
+
         return f"openai-whisper ({DEFAULT_MODEL_SIZE})"
     except ImportError:
         pass
@@ -107,10 +111,12 @@ def get_stt_backend_name() -> str:
 
 # ── faster-whisper ────────────────────────────────────────────────────────
 
+
 def _get_faster_whisper_model():
     global _faster_whisper_model
     if _faster_whisper_model is None:
         from faster_whisper import WhisperModel
+
         # Use CPU by default; set device="cuda" if GPU available.
         device = "cuda" if _has_cuda() else "cpu"
         compute = "float16" if device == "cuda" else "int8"
@@ -125,11 +131,13 @@ def _get_faster_whisper_model():
 def _has_cuda() -> bool:
     try:
         import torch
+
         return torch.cuda.is_available()
     except ImportError:
         pass
     try:
         import ctranslate2
+
         return "cuda" in ctranslate2.get_supported_compute_types("cuda")
     except Exception:
         return False
@@ -137,7 +145,7 @@ def _has_cuda() -> bool:
 
 def _transcribe_faster_whisper(
     pcm_bytes: bytes,
-    keyterms: List[str],
+    keyterms: list[str],
     language: Optional[str],
 ) -> str:
     import numpy as np
@@ -154,7 +162,7 @@ def _transcribe_faster_whisper(
         audio,
         language=lang,
         initial_prompt=initial_prompt,
-        vad_filter=True,          # skip silent regions
+        vad_filter=True,  # skip silent regions
         vad_parameters=dict(
             min_silence_duration_ms=300,
         ),
@@ -164,17 +172,19 @@ def _transcribe_faster_whisper(
 
 # ── openai-whisper ────────────────────────────────────────────────────────
 
+
 def _get_openai_whisper_model():
     global _openai_whisper_model
     if _openai_whisper_model is None:
         import whisper
+
         _openai_whisper_model = whisper.load_model(DEFAULT_MODEL_SIZE)
     return _openai_whisper_model
 
 
 def _transcribe_openai_whisper(
     pcm_bytes: bytes,
-    keyterms: List[str],
+    keyterms: list[str],
     language: Optional[str],
 ) -> str:
     import numpy as np
@@ -192,6 +202,7 @@ def _transcribe_openai_whisper(
 
 
 # ── OpenAI Whisper API ────────────────────────────────────────────────────
+
 
 def _transcribe_openai_api(
     pcm_bytes: bytes,
@@ -212,7 +223,8 @@ def _transcribe_openai_api(
 
 # ── Keyterms → prompt ─────────────────────────────────────────────────────
 
-def _keyterms_to_prompt(keyterms: List[str]) -> str:
+
+def _keyterms_to_prompt(keyterms: list[str]) -> str:
     """Convert a list of keywords into a Whisper initial_prompt string.
 
     Whisper treats the initial_prompt as preceding context; sprinkling the
@@ -226,9 +238,10 @@ def _keyterms_to_prompt(keyterms: List[str]) -> str:
 
 # ── Public entry point ────────────────────────────────────────────────────
 
+
 def transcribe(
     pcm_bytes: bytes,
-    keyterms: Optional[List[str]] = None,
+    keyterms: Optional[list[str]] = None,
     language: str = "auto",
 ) -> str:
     """Transcribe raw PCM audio to text.
@@ -250,6 +263,7 @@ def transcribe(
     # faster-whisper (local, preferred)
     try:
         import faster_whisper  # noqa: F401
+
         return _transcribe_faster_whisper(pcm_bytes, terms, lang)
     except ImportError:
         pass
@@ -257,6 +271,7 @@ def transcribe(
     # openai-whisper (local, fallback)
     try:
         import whisper  # noqa: F401
+
         return _transcribe_openai_whisper(pcm_bytes, terms, lang)
     except ImportError:
         pass

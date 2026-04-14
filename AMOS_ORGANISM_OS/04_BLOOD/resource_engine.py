@@ -1,5 +1,4 @@
-"""
-Resource Engine — Core resource tracking and allocation
+"""Resource Engine — Core resource tracking and allocation
 
 Manages the "blood" of the organism - computational resources, tokens,
 time budgets, and financial allocations.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ResourceType(Enum):
     """Types of resources in the system."""
+
     COMPUTATIONAL = "computational"  # CPU, memory, storage
     FINANCIAL = "financial"  # Money, credits
     TEMPORAL = "temporal"  # Time, cycles
@@ -28,6 +28,7 @@ class ResourceType(Enum):
 @dataclass
 class ResourceAllocation:
     """A single resource allocation record."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     resource_type: ResourceType = ResourceType.COMPUTATIONAL
     amount: float = 0.0
@@ -39,7 +40,7 @@ class ResourceAllocation:
     returned: bool = False
     returned_at: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "resource_type": self.resource_type.value,
@@ -49,6 +50,7 @@ class ResourceAllocation:
 @dataclass
 class ResourcePool:
     """A pool of available resources."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     resource_type: ResourceType = ResourceType.COMPUTATIONAL
@@ -56,7 +58,7 @@ class ResourcePool:
     allocated: float = 0.0
     unit: str = "units"
     min_reserve: float = 0.1  # 10% minimum reserve
-    allocations: List[ResourceAllocation] = field(default_factory=list)
+    allocations: list[ResourceAllocation] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
     @property
@@ -117,17 +119,13 @@ class ResourcePool:
         cleaned = 0
 
         for alloc in self.allocations:
-            if (
-                not alloc.returned
-                and alloc.expires_at
-                and alloc.expires_at < now
-            ):
+            if not alloc.returned and alloc.expires_at and alloc.expires_at < now:
                 self.release(alloc.id)
                 cleaned += 1
 
         return cleaned
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "resource_type": self.resource_type.value,
@@ -137,8 +135,7 @@ class ResourcePool:
 
 
 class ResourceEngine:
-    """
-    Central resource management for the AMOS organism.
+    """Central resource management for the AMOS organism.
 
     Tracks all resource pools, handles allocation requests,
     monitors utilization, and enforces limits.
@@ -150,7 +147,7 @@ class ResourceEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.pools: Dict[str, ResourcePool] = {}
+        self.pools: dict[str, ResourcePool] = {}
         self._load_pools()
 
         # Initialize default pools if none exist
@@ -262,7 +259,7 @@ class ResourceEngine:
             self.save()
         return result
 
-    def cleanup(self) -> Dict[str, int]:
+    def cleanup(self) -> dict[str, int]:
         """Cleanup expired allocations across all pools."""
         results = {}
         for name, pool in self.pools.items():
@@ -273,7 +270,7 @@ class ResourceEngine:
             self.save()
         return results
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get overall resource status."""
         return {
             "pools_count": len(self.pools),

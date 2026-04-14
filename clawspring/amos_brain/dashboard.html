@@ -289,18 +289,18 @@
         function updateDashboard(data) {
             // Stats
             document.getElementById('total-decisions').textContent = data.stats.total_entries;
-            document.getElementById('violation-rate').textContent = 
+            document.getElementById('violation-rate').textContent =
                 (data.stats.violation_rate * 100).toFixed(1) + '%';
-            document.getElementById('avg-execution').textContent = 
+            document.getElementById('avg-execution').textContent =
                 data.stats.avg_execution_time_ms.toFixed(1) + 'ms';
-            document.getElementById('domain-count').textContent = 
+            document.getElementById('domain-count').textContent =
                 Object.keys(data.stats.domains).length;
 
             // Domains
             const domainsContainer = document.getElementById('domains');
             if (Object.keys(data.stats.domains).length > 0) {
                 domainsContainer.innerHTML = Object.entries(data.stats.domains)
-                    .map(([domain, count]) => 
+                    .map(([domain, count]) =>
                         `<span class="domain-badge">${domain}: ${count}</span>`
                     ).join('');
             }
@@ -313,7 +313,7 @@
                         <h4>${insight.pattern}</h4>
                         <p>Confidence: ${(insight.confidence * 100).toFixed(0)}%</p>
                         <div class="engine-list">
-                            ${insight.recommended_engines.map(e => 
+                            ${insight.recommended_engines.map(e =>
                                 `<span class="engine-tag">${e}</span>`
                             ).join('')}
                         </div>
@@ -344,7 +344,7 @@
 
         // Load on startup
         loadData();
-        
+
         // Auto-refresh every 30 seconds
         setInterval(loadData, 30000);
     </script>

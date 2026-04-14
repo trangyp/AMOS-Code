@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from tool_registry import (
     ToolDef,
     clear_registry,
@@ -51,6 +50,7 @@ def _make_echo_tool(name: str = "echo", read_only: bool = False) -> ToolDef:
 # register and get
 # ------------------------------------------------------------------
 
+
 def test_register_and_get():
     tool = _make_echo_tool()
     register_tool(tool)
@@ -67,6 +67,7 @@ def test_get_unknown_returns_none():
 # get_all_tools
 # ------------------------------------------------------------------
 
+
 def test_get_all_tools_empty():
     assert get_all_tools() == []
 
@@ -82,6 +83,7 @@ def test_get_all_tools():
 # get_tool_schemas
 # ------------------------------------------------------------------
 
+
 def test_get_tool_schemas():
     register_tool(_make_echo_tool("echo"))
     schemas = get_tool_schemas()
@@ -92,6 +94,7 @@ def test_get_tool_schemas():
 # ------------------------------------------------------------------
 # execute_tool
 # ------------------------------------------------------------------
+
 
 def test_execute_tool():
     register_tool(_make_echo_tool())
@@ -108,13 +111,18 @@ def test_execute_unknown_tool():
 # output truncation
 # ------------------------------------------------------------------
 
+
 def test_output_truncation():
     def big_func(params: dict, config: dict) -> str:
         return "x" * 100
 
     tool = ToolDef(
         name="big",
-        schema={"name": "big", "description": "big", "input_schema": {"type": "object", "properties": {}}},
+        schema={
+            "name": "big",
+            "description": "big",
+            "input_schema": {"type": "object", "properties": {}},
+        },
         func=big_func,
         read_only=True,
         concurrent_safe=True,
@@ -140,6 +148,7 @@ def test_no_truncation_when_within_limit():
 # duplicate register overwrites
 # ------------------------------------------------------------------
 
+
 def test_duplicate_register_overwrites():
     register_tool(_make_echo_tool("dup"))
 
@@ -148,7 +157,11 @@ def test_duplicate_register_overwrites():
 
     replacement = ToolDef(
         name="dup",
-        schema={"name": "dup", "description": "new", "input_schema": {"type": "object", "properties": {}}},
+        schema={
+            "name": "dup",
+            "description": "new",
+            "input_schema": {"type": "object", "properties": {}},
+        },
         func=new_func,
         read_only=False,
         concurrent_safe=False,

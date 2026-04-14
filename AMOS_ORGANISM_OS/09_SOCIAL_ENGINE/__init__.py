@@ -1,5 +1,4 @@
-"""
-09_SOCIAL_ENGINE — Social Interaction & Knowledge Sharing
+"""09_SOCIAL_ENGINE — Social Interaction & Knowledge Sharing
 
 The social nervous system of AMOS.
 Handles messaging, collaboration, and knowledge exchange.
@@ -12,7 +11,10 @@ Version: 1.0.0
 """
 
 from .social_engine import (
-    SocialEngine, Message, SocialConnection, KnowledgeShare,
+    KnowledgeShare,
+    Message,
+    SocialConnection,
+    SocialEngine,
     get_social_engine,
 )
 

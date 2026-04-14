@@ -1,5 +1,4 @@
-"""
-AMOS Organism — The 14-Subsystem Digital Organism
+"""AMOS Organism — The 14-Subsystem Digital Organism
 
 This is the main orchestrator that wires together all subsystems
 according to the primary loop defined in the AMOS blueprint.
@@ -17,7 +16,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 # Add parent to path for imports
 _PARENT = Path(__file__).parent
@@ -27,65 +26,64 @@ if str(_PARENT.parent) not in sys.path:
     sys.path.insert(0, str(_PARENT.parent))
 
 # Import subsystems
+from BLOOD.budget_manager import BudgetManager
+from BLOOD.cashflow_tracker import CashflowTracker
+from BLOOD.resource_engine import ResourceEngine
 from BRAIN.brain_os import BrainOS
-from BRAIN.router import SystemRouter, RoutingDecision
 from BRAIN.memory_layer import MemoryLayer
-from SENSES.environment_scanner import EnvironmentScanner
+from BRAIN.router import RoutingDecision, SystemRouter
+from FACTORY.agent_factory import AgentFactory
+from FACTORY.builder_engine import BuilderEngine
+from FACTORY.code_generator import CodeGenerator
+from FACTORY.quality_checker import QualityChecker
+from IMMUNE.compliance_engine import ComplianceEngine
+from IMMUNE.immune_system import ActionType, ImmuneSystem
+from IMMUNE.threat_detector import ThreatDetector
+from LEGAL_BRAIN.compliance_auditor import ComplianceAuditor
+from LEGAL_BRAIN.contract_manager import ContractManager
+from LEGAL_BRAIN.policy_engine import PolicyEngine
+from LEGAL_BRAIN.risk_governor import RiskGovernor
+from LIFE_ENGINE.adaptation_system import AdaptationSystem
+from LIFE_ENGINE.growth_engine import GrowthEngine
+from LIFE_ENGINE.health_monitor import HealthMonitor
+from LIFE_ENGINE.lifecycle_manager import LifecycleManager
+from METABOLISM.io_router import IORouter
+from METABOLISM.pipeline_engine import PipelineEngine
+from METABOLISM.transform_engine import TransformEngine
+from MUSCLE.code_runner import CodeRunner
+from MUSCLE.executor import MuscleExecutor
+from MUSCLE.workflow_engine import WorkflowEngine
+from QUANTUM_LAYER.decision_optimizer import DecisionOptimizer
+from QUANTUM_LAYER.monte_carlo import MonteCarloSimulator
+from QUANTUM_LAYER.scenario_engine import ScenarioEngine
 from SENSES.context_gatherer import ContextGatherer
+from SENSES.environment_scanner import EnvironmentScanner
 from SENSES.signal_detector import SignalDetector
 from SKELETON.constraint_engine import ConstraintEngine
 from SKELETON.rule_validator import RuleValidator
 from SKELETON.structural_integrity import StructuralIntegrity
-from WORLD_MODEL.knowledge_graph import KnowledgeGraph
-from WORLD_MODEL.context_mapper import ContextMapper
-from WORLD_MODEL.semantic_index import SemanticIndex
-from QUANTUM_LAYER.scenario_engine import ScenarioEngine
-from QUANTUM_LAYER.monte_carlo import MonteCarloSimulator
-from QUANTUM_LAYER.decision_optimizer import DecisionOptimizer
-from BLOOD.resource_engine import ResourceEngine
-from BLOOD.budget_manager import BudgetManager
-from BLOOD.cashflow_tracker import CashflowTracker
-from METABOLISM.pipeline_engine import PipelineEngine
-from METABOLISM.transform_engine import TransformEngine
-from METABOLISM.io_router import IORouter
-from IMMUNE.immune_system import ImmuneSystem, ActionType
-from IMMUNE.threat_detector import ThreatDetector
-from IMMUNE.compliance_engine import ComplianceEngine
-from MUSCLE.executor import MuscleExecutor
-from MUSCLE.code_runner import CodeRunner
-from MUSCLE.workflow_engine import WorkflowEngine
-from MUSCLE.brain_muscle_bridge import BrainMuscleBridge, get_brain_muscle_bridge
-from FACTORY.agent_factory import AgentFactory
-from FACTORY.code_generator import CodeGenerator
-from FACTORY.builder_engine import BuilderEngine
-from FACTORY.quality_checker import QualityChecker
-from LEGAL_BRAIN.policy_engine import PolicyEngine
-from LEGAL_BRAIN.compliance_auditor import ComplianceAuditor
-from LEGAL_BRAIN.contract_manager import ContractManager
-from LEGAL_BRAIN.risk_governor import RiskGovernor
 from SOCIAL_ENGINE.agent_coordinator import AgentCoordinator
 from SOCIAL_ENGINE.communication_bridge import CommunicationBridge
 from SOCIAL_ENGINE.human_interface import HumanInterface
 from SOCIAL_ENGINE.negotiation_engine import NegotiationEngine
-from LIFE_ENGINE.growth_engine import GrowthEngine
-from LIFE_ENGINE.adaptation_system import AdaptationSystem
-from LIFE_ENGINE.health_monitor import HealthMonitor
-from LIFE_ENGINE.lifecycle_manager import LifecycleManager
+from WORLD_MODEL.context_mapper import ContextMapper
+from WORLD_MODEL.knowledge_graph import KnowledgeGraph
+from WORLD_MODEL.semantic_index import SemanticIndex
 
 
 @dataclass
 class OrganismState:
     """Global state of the AMOS organism."""
+
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
     started_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     cycle_count: int = 0
     current_subsystem: str = "00_ROOT"
-    global_context: Dict[str, Any] = field(default_factory=dict)
+    global_context: dict[str, Any] = field(default_factory=dict)
 
 
 class AmosOrganism:
-    """
-    The AMOS Digital Organism — 14 subsystems working as one.
+    """The AMOS Digital Organism — 14 subsystems working as one.
 
     Subsystems (from system_registry.json):
     - 00_ROOT: Identity, goals, global config
@@ -184,7 +182,7 @@ class AmosOrganism:
         # Load system registry
         self.registry = self._load_registry()
 
-    def _load_registry(self) -> Dict:
+    def _load_registry(self) -> dict:
         """Load system registry."""
         registry_path = Path(__file__).parent / "system_registry.json"
         if registry_path.exists():
@@ -193,17 +191,19 @@ class AmosOrganism:
 
     def _register_workflow_handlers(self):
         """Register handlers for workflow actions."""
-        def handle_execute(params: Dict, context: Dict) -> Any:
+
+        def handle_execute(params: dict, context: dict) -> Any:
             cmd = params.get("command", "")
             if cmd:
                 result = self.muscle.execute(cmd)
                 return result.to_dict()
             return None
 
-        def handle_code(params: Dict, context: Dict) -> Any:
+        def handle_code(params: dict, context: dict) -> Any:
             code = params.get("code", "")
             lang = params.get("language", "python")
             from AMOS_ORGANISM_OS.MUSCLE.code_runner import Language
+
             language = Language.PYTHON if lang == "python" else Language.BASH
             result = self.code_runner.run(code, language)
             return {
@@ -212,7 +212,7 @@ class AmosOrganism:
                 "stderr": result.stderr,
             }
 
-        def handle_think(params: Dict, context: Dict) -> Any:
+        def handle_think(params: dict, context: dict) -> Any:
             content = params.get("content", "")
             thought = self.brain.perceive(content)
             return {"thought_id": thought.id, "content": thought.content}
@@ -234,7 +234,7 @@ class AmosOrganism:
         """Create a plan for a goal."""
         return self.brain.create_plan(goal, horizon)
 
-    def decide(self, action: str, params: Dict = None) -> RoutingDecision:
+    def decide(self, action: str, params: dict = None) -> RoutingDecision:
         """Route an action to the appropriate subsystem."""
         return self.router.route(action, params or {})
 
@@ -252,6 +252,7 @@ class AmosOrganism:
 
         if not validation.approved:
             from MUSCLE.executor import ExecutionResult, ExecutionStatus
+
             result = ExecutionResult(
                 command=command,
                 status=ExecutionStatus.CANCELLED,
@@ -263,7 +264,7 @@ class AmosOrganism:
         ctx = context or ExecutionContext()
         return self.muscle.execute(command, ctx)
 
-    def cycle(self) -> Dict[str, Any]:
+    def cycle(self) -> dict[str, Any]:
         """Run one primary loop cycle."""
         results = {}
 
@@ -324,7 +325,7 @@ class AmosOrganism:
         """Search memory."""
         return self.memory.search(query, limit=limit)
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get complete organism status."""
         return {
             "session_id": self.state.session_id,
@@ -332,10 +333,20 @@ class AmosOrganism:
             "cycle_count": self.state.cycle_count,
             "current_subsystem": self.state.current_subsystem,
             "active_subsystems": [
-                "01_BRAIN", "02_SENSES", "05_SKELETON", "08_WORLD_MODEL",
-                "09_QUANTUM_LAYER", "04_BLOOD", "07_METABOLISM", "03_IMMUNE",
-                "06_MUSCLE", "13_FACTORY", "12_LEGAL_BRAIN", "10_SOCIAL_ENGINE",
-                "11_LIFE_ENGINE", "14_INTERFACES"
+                "01_BRAIN",
+                "02_SENSES",
+                "05_SKELETON",
+                "08_WORLD_MODEL",
+                "09_QUANTUM_LAYER",
+                "04_BLOOD",
+                "07_METABOLISM",
+                "03_IMMUNE",
+                "06_MUSCLE",
+                "13_FACTORY",
+                "12_LEGAL_BRAIN",
+                "10_SOCIAL_ENGINE",
+                "11_LIFE_ENGINE",
+                "14_INTERFACES",
             ],
             "subsystems": {
                 "brain": self.brain.status(),
@@ -380,7 +391,9 @@ class AmosOrganism:
                     "total_adaptations": len(self.adaptation_system.adaptations),
                     "total_healing_actions": len(self.health_monitor.healing_actions),
                     "lifecycle_stage": self.lifecycle_manager.current_stage.value,
-                    "milestones_achieved": sum(1 for m in self.lifecycle_manager.milestones.values() if m.achieved),
+                    "milestones_achieved": sum(
+                        1 for m in self.lifecycle_manager.milestones.values() if m.achieved
+                    ),
                 },
                 "memory": self.memory.stats(),
                 "workflow": {
@@ -397,7 +410,7 @@ class AmosOrganism:
         """Scan environment via SENSES."""
         return self.senses.scan(path)
 
-    def gather_context(self) -> Dict[str, Any]:
+    def gather_context(self) -> dict[str, Any]:
         """Gather environment context."""
         return self.context.gather()
 

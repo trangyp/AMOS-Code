@@ -4,8 +4,9 @@
 Current state: Core, AMOSL, CI/CD, API, Dashboard, WebSocket all built
 Next: Production hardening and ecosystem features
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision, ProjectPlanner
@@ -32,8 +33,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must be production-ready for public use. Must protect user data. Must scale to multiple users. Must provide observability.",
-        "goals": "Launch AMOS Brain on neurosyncai.tech. Enable real users. Build trust. Ensure reliability."
-    }
+        "goals": "Launch AMOS Brain on neurosyncai.tech. Enable real users. Build trust. Ensure reliability.",
+    },
 )
 
 print("\n📊 Analysis Complete")
@@ -50,8 +51,8 @@ plan = ProjectPlanner.plan(
     constraints={
         "timeline": "1 week",
         "team": "1 backend developer",
-        "requirements": "SQLite/PostgreSQL for query history. User sessions. Memory persistence. Analytics."
-    }
+        "requirements": "SQLite/PostgreSQL for query history. User sessions. Memory persistence. Analytics.",
+    },
 )
 
 print(f"\n📋 Plan Confidence: {plan.confidence}")
@@ -62,7 +63,8 @@ for i, rec in enumerate(plan.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Database Persistence + Query History
 
    WHY:
@@ -84,6 +86,7 @@ print("""
    • amos_brain/history.py - Query history manager
    • migrate.py - Database migrations
    • tests/test_database.py - Unit tests
-""")
+"""
+)
 
 print("\n✅ Decision: Build database persistence layer")

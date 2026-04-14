@@ -1,5 +1,4 @@
-"""
-13_FACTORY — Code Generation & Agent Factory
+"""13_FACTORY — Code Generation & Agent Factory
 =============================================
 
 The manufacturing layer of AMOS.
@@ -12,9 +11,9 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .agent_factory import AgentFactory, AgentSpec, AgentInstance
+from .agent_factory import AgentFactory, AgentInstance, AgentSpec
+from .builder_engine import BuilderEngine, BuildResult, BuildTask
 from .code_generator import CodeGenerator, CodeTemplate, GeneratedCode
-from .builder_engine import BuilderEngine, BuildTask, BuildResult
 from .quality_checker import QualityChecker, QualityReport
 
 __all__ = [

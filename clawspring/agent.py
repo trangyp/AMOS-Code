@@ -1,60 +1,66 @@
 """Core agent loop: neutral message format, multi-provider streaming."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Generator
-
-from tool_registry import get_tool_schemas
-from tools import execute_tool
-import tools as _tools_init  # ensure built-in tools are registered on import
-from providers import stream, AssistantTurn, TextChunk, ThinkingChunk
-from compaction import maybe_compact
+import os
 
 # AMOS Brain integration (standalone package)
 import sys
-import os
+from collections.abc import Generator
+from dataclasses import dataclass, field
+
+from compaction import maybe_compact
+from providers import AssistantTurn, TextChunk, ThinkingChunk, stream
+from tool_registry import get_tool_schemas
+from tools import execute_tool
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    from amos_brain import get_amos_integration
-    from amos_brain.cookbook import ArchitectureDecision
     _amos_available = True
 except Exception:
     _amos_available = False
 
 # ── Re-export event types (used by clawspring.py) ────────────────────────
 __all__ = [
-    "AgentState", "run",
-    "TextChunk", "ThinkingChunk",
-    "ToolStart", "ToolEnd", "TurnDone", "PermissionRequest",
+    "AgentState",
+    "run",
+    "TextChunk",
+    "ThinkingChunk",
+    "ToolStart",
+    "ToolEnd",
+    "TurnDone",
+    "PermissionRequest",
 ]
 
 
 @dataclass
 class AgentState:
     """Mutable session state. messages use the neutral provider-independent format."""
+
     messages: list = field(default_factory=list)
-    total_input_tokens:  int = 0
+    total_input_tokens: int = 0
     total_output_tokens: int = 0
     turn_count: int = 0
 
 
 @dataclass
 class ToolStart:
-    name:   str
+    name: str
     inputs: dict
+
 
 @dataclass
 class ToolEnd:
-    name:      str
-    result:    str
+    name: str
+    result: str
     permitted: bool = True
+
 
 @dataclass
 class TurnDone:
-    input_tokens:  int
+    input_tokens: int
     output_tokens: int
+
 
 @dataclass
 class PermissionRequest:
@@ -64,12 +70,14 @@ class PermissionRequest:
 
 # ── Agent loop ─────────────────────────────────────────────────────────────
 
+
 def _get_enhanced_system_prompt(base_prompt: str, use_amos: bool = True) -> str:
     """Enhance system prompt with AMOS brain context if available."""
     if not use_amos or not _amos_available:
         return base_prompt
     try:
         from amos_runtime import get_runtime
+
         runtime = get_runtime()
         identity = runtime.get_identity()
         laws = runtime.get_law_summary()
@@ -93,8 +101,7 @@ def run(
     cancel_check=None,
     use_amos_brain: bool = True,
 ) -> Generator:
-    """
-    Multi-turn agent loop (generator).
+    """Multi-turn agent loop (generator).
     Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
             PermissionRequest | TurnDone
 
@@ -110,6 +117,7 @@ def run(
     if _amos_available and use_amos_brain:
         try:
             from amos_runtime import analyze_task
+
             amos_result = analyze_task(user_message)
             # Store AMOS analysis in config for potential tool use
             config["_amos_analysis"] = amos_result
@@ -153,18 +161,20 @@ def run(
             break
 
         # Record assistant turn in neutral format
-        state.messages.append({
-            "role":       "assistant",
-            "content":    assistant_turn.text,
-            "tool_calls": assistant_turn.tool_calls,
-        })
+        state.messages.append(
+            {
+                "role": "assistant",
+                "content": assistant_turn.text,
+                "tool_calls": assistant_turn.tool_calls,
+            }
+        )
 
-        state.total_input_tokens  += assistant_turn.in_tokens
+        state.total_input_tokens += assistant_turn.in_tokens
         state.total_output_tokens += assistant_turn.out_tokens
         yield TurnDone(assistant_turn.in_tokens, assistant_turn.out_tokens)
 
         if not assistant_turn.tool_calls:
-            break   # No tools → conversation turn complete
+            break  # No tools → conversation turn complete
 
         # ── Execute tools ────────────────────────────────────────────────
         for tc in assistant_turn.tool_calls:
@@ -181,7 +191,8 @@ def run(
                 result = "Denied: user rejected this operation"
             else:
                 result = execute_tool(
-                    tc["name"], tc["input"],
+                    tc["name"],
+                    tc["input"],
                     permission_mode="accept-all",  # already gate-checked above
                     config=config,
                 )
@@ -189,15 +200,18 @@ def run(
             yield ToolEnd(tc["name"], result, permitted)
 
             # Append tool result in neutral format
-            state.messages.append({
-                "role":         "tool",
-                "tool_call_id": tc["id"],
-                "name":         tc["name"],
-                "content":      result,
-            })
+            state.messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tc["id"],
+                    "name": tc["name"],
+                    "content": result,
+                }
+            )
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────
+
 
 def _check_permission(tc: dict, config: dict) -> bool:
     """Return True if operation is auto-approved (no need to ask user)."""
@@ -205,7 +219,7 @@ def _check_permission(tc: dict, config: dict) -> bool:
     if perm_mode == "accept-all":
         return True
     if perm_mode == "manual":
-        return False   # always ask
+        return False  # always ask
 
     # "auto" mode: only ask for writes and non-safe bash
     name = tc["name"]
@@ -213,14 +227,18 @@ def _check_permission(tc: dict, config: dict) -> bool:
         return True
     if name == "Bash":
         from tools import _is_safe_bash
+
         return _is_safe_bash(tc["input"].get("command", ""))
-    return False   # Write, Edit → ask
+    return False  # Write, Edit → ask
 
 
 def _permission_desc(tc: dict) -> str:
     name = tc["name"]
-    inp  = tc["input"]
-    if name == "Bash":   return f"Run: {inp.get('command', '')}"
-    if name == "Write":  return f"Write to: {inp.get('file_path', '')}"
-    if name == "Edit":   return f"Edit: {inp.get('file_path', '')}"
+    inp = tc["input"]
+    if name == "Bash":
+        return f"Run: {inp.get('command', '')}"
+    if name == "Write":
+        return f"Write to: {inp.get('file_path', '')}"
+    if name == "Edit":
+        return f"Edit: {inp.get('file_path', '')}"
     return f"{name}({list(inp.values())[:1]})"

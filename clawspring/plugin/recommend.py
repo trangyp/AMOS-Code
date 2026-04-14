@@ -4,11 +4,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
-from .types import PluginManifest, PluginScope
-from .store import list_plugins, USER_PLUGIN_DIR
-
+from .store import list_plugins
 
 # ── Marketplace ───────────────────────────────────────────────────────────────
 
@@ -107,7 +104,18 @@ def _score_against_context(
         reasons.append(f"name match: {', '.join(sorted(name_hits))}")
 
     # Description match
-    desc_hits = desc_tokens & context_tokens - {"the", "a", "an", "and", "or", "of", "to", "in", "for", "with"}
+    desc_hits = desc_tokens & context_tokens - {
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "of",
+        "to",
+        "in",
+        "for",
+        "with",
+    }
     if desc_hits:
         score += len(desc_hits) * 0.5
 
@@ -119,8 +127,7 @@ def recommend_plugins(
     top_n: int = 5,
     include_installed: bool = False,
 ) -> list[PluginRecommendation]:
-    """
-    Given a natural-language context string (e.g. current task description or
+    """Given a natural-language context string (e.g. current task description or
     user message), return up to top_n plugin recommendations sorted by relevance.
 
     Args:
@@ -155,15 +162,17 @@ def recommend_plugins(
 
         score, reasons = _score_against_context(mp_entry, context_tokens)
         if score > 0:
-            results.append(PluginRecommendation(
-                name=name,
-                description=mp_entry.get("description", ""),
-                source=mp_entry.get("source", ""),
-                score=score,
-                reasons=reasons,
-                installed=is_installed,
-                enabled=is_enabled,
-            ))
+            results.append(
+                PluginRecommendation(
+                    name=name,
+                    description=mp_entry.get("description", ""),
+                    source=mp_entry.get("source", ""),
+                    score=score,
+                    reasons=reasons,
+                    installed=is_installed,
+                    enabled=is_enabled,
+                )
+            )
 
     results.sort(key=lambda r: r.score, reverse=True)
     return results[:top_n]

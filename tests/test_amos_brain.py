@@ -1,5 +1,4 @@
-"""
-AMOS Brain Integration Test Suite
+"""AMOS Brain Integration Test Suite
 
 Tests all brain components:
   - Core (loader, laws, reasoning, cognitive_stack, integration)
@@ -12,28 +11,26 @@ Run: python -m pytest tests/test_amos_brain.py -v
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 import unittest
-from typing import Any
 
 # Add parent to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from amos_brain import get_amos_integration
-from amos_brain.loader import BrainLoader
-from amos_brain.laws import GlobalLaws
-from amos_brain.reasoning import RuleOfTwo, RuleOfFour
 from amos_brain.cognitive_stack import CognitiveStack
-from amos_brain.memory import get_brain_memory, BrainMemory
-from amos_brain.dashboard import BrainDashboard
 from amos_brain.cookbook import (
     ArchitectureDecision,
-    ProjectPlanner,
-    ProblemDiagnosis,
     CodeReview,
+    ProblemDiagnosis,
+    ProjectPlanner,
     SecurityAudit,
 )
+from amos_brain.dashboard import BrainDashboard
+from amos_brain.laws import GlobalLaws
+from amos_brain.memory import BrainMemory, get_brain_memory
+from amos_brain.reasoning import RuleOfFour, RuleOfTwo
 
 
 class TestCoreBrain(unittest.TestCase):
@@ -78,9 +75,7 @@ class TestCoreBrain(unittest.TestCase):
 
     def test_analyze_with_rules(self):
         """Test Rule of 2 and Rule of 4 analysis."""
-        analysis = self.amos.analyze_with_rules(
-            "Should we adopt cloud infrastructure?"
-        )
+        analysis = self.amos.analyze_with_rules("Should we adopt cloud infrastructure?")
 
         # Should have reasoning results
         self.assertIsInstance(analysis, dict)
@@ -210,14 +205,13 @@ class TestBrainMemory(unittest.TestCase):
             "recommendations": ["Test rec"],
             "structural_integrity_score": 0.8,
             "rule_of_two": {"confidence": 0.7},
-            "rule_of_four": {"completeness_score": 1.0, "quadrants_analyzed": ["q1", "q2", "q3", "q4"]}
+            "rule_of_four": {
+                "completeness_score": 1.0,
+                "quadrants_analyzed": ["q1", "q2", "q3", "q4"],
+            },
         }
 
-        entry_id = self.memory.save_reasoning(
-            "Should we use Redis?",
-            analysis,
-            tags=["test"]
-        )
+        entry_id = self.memory.save_reasoning("Should we use Redis?", analysis, tags=["test"])
 
         self.assertIsInstance(entry_id, str)
         self.assertGreater(len(entry_id), 0)
@@ -229,14 +223,13 @@ class TestBrainMemory(unittest.TestCase):
             "recommendations": ["Use Redis"],
             "structural_integrity_score": 0.8,
             "rule_of_two": {},
-            "rule_of_four": {}
+            "rule_of_four": {},
         }
         self.memory.save_reasoning("Should we use Redis?", analysis)
 
         # Then search
         similar = self.memory.find_similar_reasoning(
-            "Should we adopt Redis caching?",
-            threshold=0.3
+            "Should we adopt Redis caching?", threshold=0.3
         )
 
         self.assertIsInstance(similar, list)
@@ -262,7 +255,7 @@ class TestBrainMemory(unittest.TestCase):
             "recommendations": [],
             "structural_integrity_score": 0.8,
             "rule_of_two": {},
-            "rule_of_four": {}
+            "rule_of_four": {},
         }
         self.memory.save_reasoning("Test problem", analysis)
 
@@ -294,7 +287,12 @@ class TestBrainDashboard(unittest.TestCase):
     def test_generate_report(self):
         """Test report generation."""
         # Add test data first
-        analysis = {"recommendations": [], "structural_integrity_score": 0.8, "rule_of_two": {}, "rule_of_four": {}}
+        analysis = {
+            "recommendations": [],
+            "structural_integrity_score": 0.8,
+            "rule_of_two": {},
+            "rule_of_four": {},
+        }
         self.dashboard.memory.save_reasoning("Test", analysis)
 
         report = self.dashboard.generate_report(days=30)
@@ -305,7 +303,12 @@ class TestBrainDashboard(unittest.TestCase):
 
     def test_report_summary(self):
         """Test report summary contains key metrics."""
-        analysis = {"recommendations": [], "structural_integrity_score": 0.8, "rule_of_two": {}, "rule_of_four": {}}
+        analysis = {
+            "recommendations": [],
+            "structural_integrity_score": 0.8,
+            "rule_of_two": {},
+            "rule_of_four": {},
+        }
         self.dashboard.memory.save_reasoning("Test", analysis)
 
         report = self.dashboard.generate_report(days=30)
@@ -324,8 +327,7 @@ class TestCookbookWorkflows(unittest.TestCase):
     def test_architecture_decision(self):
         """Test ArchitectureDecision workflow."""
         result = ArchitectureDecision.run(
-            "Should we use microservices?",
-            context={"current_stack": "monolith"}
+            "Should we use microservices?", context={"current_stack": "monolith"}
         )
 
         self.assertEqual(result.workflow_name, "Architecture Decision Record (ADR)")
@@ -339,7 +341,7 @@ class TestCookbookWorkflows(unittest.TestCase):
         result = ProjectPlanner.run(
             project_description="Test Project - A test project",
             timeline="3 months",
-            constraints={"budget": "limited", "timeline": "strict"}
+            constraints={"budget": "limited", "timeline": "strict"},
         )
 
         self.assertEqual(result.recipe_name, "Project Planning & Estimation")
@@ -347,30 +349,21 @@ class TestCookbookWorkflows(unittest.TestCase):
 
     def test_problem_diagnosis(self):
         """Test ProblemDiagnosis workflow."""
-        result = ProblemDiagnosis.run(
-            "API latency spikes",
-            symptoms=["500ms+ response times"]
-        )
+        result = ProblemDiagnosis.run("API latency spikes", symptoms=["500ms+ response times"])
 
         self.assertEqual(result.workflow_name, "Problem Diagnosis & RCA")
         self.assertIsInstance(result.recommendations, list)
 
     def test_code_review(self):
         """Test CodeReview workflow."""
-        result = CodeReview.run(
-            code="def example(): pass",
-            language="python"
-        )
+        result = CodeReview.run(code="def example(): pass", language="python")
 
         self.assertEqual(result.workflow_name, "Code Review")
         self.assertIsInstance(result.recommendations, list)
 
     def test_security_audit(self):
         """Test SecurityAudit workflow."""
-        result = SecurityAudit.run(
-            code="def example(): pass",
-            language="python"
-        )
+        result = SecurityAudit.run(code="def example(): pass", language="python")
 
         self.assertEqual(result.workflow_name, "Security Audit")
         self.assertIsInstance(result.recommendations, list)
@@ -411,7 +404,7 @@ class TestIntegration(unittest.TestCase):
                 "recommendations": [f"Rec {i}"],
                 "structural_integrity_score": 0.7 + (i * 0.05),
                 "rule_of_two": {},
-                "rule_of_four": {}
+                "rule_of_four": {},
             }
             memory.save_reasoning(f"Test problem {i}", analysis, tags=["test"])
 

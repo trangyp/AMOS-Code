@@ -70,13 +70,13 @@ SECTION 2 — ABSOLUTE 19×19 LOGIC MATRIX (RULE-BASED)
 
 ROW CATEGORY → COLUMN CATEGORY → RULE
 
-Pattern × Pattern → pattern_interaction  
-Pattern × MetaPattern → apply_meta_pattern  
-Pattern × Logic → logic_on_pattern  
-Pattern × MetaLogic → meta_logic_on_pattern  
+Pattern × Pattern → pattern_interaction
+Pattern × MetaPattern → apply_meta_pattern
+Pattern × Logic → logic_on_pattern
+Pattern × MetaLogic → meta_logic_on_pattern
 
-MetaPattern × * → meta_pattern_effect  
-Logic × * → logic_relation  
+MetaPattern × * → meta_pattern_effect
+Logic × * → logic_relation
 MetaLogic × * → meta_logic_transform
 
 (All 361 interactions defined through rule families above.)
@@ -146,9 +146,9 @@ STAGE 4 — MAX OUT FOR VN → 1E∞
 SECTION 6 — ABSOLUTE-VN (SINGLE LAYER)
 ============================================================
 
-LOGIC_LAYER = ABSOLUTE_VN_LAYER  
-CARDINALITY = 1E∞  
-STRUCTURE = merged  
+LOGIC_LAYER = ABSOLUTE_VN_LAYER
+CARDINALITY = 1E∞
+STRUCTURE = merged
 DISTINCTIONS = carried via tags (layer, timeline, resolution)
 
 STATE_SCHEMA:

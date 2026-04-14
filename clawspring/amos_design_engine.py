@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+
+from amos_execution import get_execution_kernel
 
 from amos_runtime import get_runtime
-from amos_execution import get_execution_kernel
 
 
 @dataclass
@@ -296,7 +296,7 @@ if __name__ == "__main__":
     # Test designs
     test_cases = [
         ("form", "User registration", ["new_users", "mobile"]),
-       ("dialog", "Confirm deletion", ["all_users"]),
+        ("dialog", "Confirm deletion", ["all_users"]),
         ("card", "Product display", ["shoppers", "mobile", "desktop"]),
     ]
 
@@ -308,15 +308,15 @@ if __name__ == "__main__":
 
         result = engine.design_component(comp_type, purpose, segments)
 
-        print(f"\nDesign System:")
+        print("\nDesign System:")
         print(f"  Structure: {result.design_system['structure']['navigation_pattern']}")
         print(f"  Visual: {result.design_system['visual']['grid_system']}")
 
-        print(f"\nCopy Blocks:")
+        print("\nCopy Blocks:")
         for key, text in result.copy_blocks.items():
             print(f"  {key}: '{text}'")
 
-        print(f"\nBiological Constraints:")
+        print("\nBiological Constraints:")
         for constraint in result.biological_constraints[:3]:
             print(f"  {constraint}")
 

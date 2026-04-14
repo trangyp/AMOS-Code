@@ -7,10 +7,10 @@ if str(muscle_path) not in sys.path:
     sys.path.insert(0, str(muscle_path))
 
 from workflow_engine import (
-    WorkflowEngine,
-    Workflow,
-    WorkflowStep,
     StepStatus,
+    Workflow,
+    WorkflowEngine,
+    WorkflowStep,
 )
 
 __all__ = ["WorkflowEngine", "Workflow", "WorkflowStep", "StepStatus"]

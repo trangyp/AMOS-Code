@@ -1,5 +1,4 @@
-"""
-Transform Engine — Data transformation operations
+"""Transform Engine — Data transformation operations
 
 Handles data transformations, conversions, and mappings
 between different formats and structures.
@@ -9,39 +8,40 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Optional
 
 
 @dataclass
 class TransformContext:
     """Context for transform operations."""
+
     source_format: str = ""
     target_format: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    options: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    options: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class Transform:
     """A data transformation definition."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     transform_type: str = ""  # map, filter, aggregate, convert
     input_schema: str = ""
     output_schema: str = ""
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class TransformEngine:
-    """
-    Manages and executes data transformations.
+    """Manages and executes data transformations.
 
     Provides a registry of transforms and handles
     conversion between different data formats.
@@ -53,8 +53,8 @@ class TransformEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.transforms: Dict[str, Transform] = {}
-        self.transformers: Dict[str, Callable] = {}
+        self.transforms: dict[str, Transform] = {}
+        self.transformers: dict[str, Callable] = {}
 
         self._load_transforms()
         self._register_default_transformers()
@@ -106,7 +106,7 @@ class TransformEngine:
         transform_type: str,
         input_schema: str = "",
         output_schema: str = "",
-        config: Optional[Dict] = None,
+        config: Optional[dict] = None,
     ) -> Transform:
         """Create a new transform definition."""
         transform = Transform(
@@ -125,7 +125,7 @@ class TransformEngine:
         transform_id: str,
         data: Any,
         context: Optional[TransformContext] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Execute a transform on data."""
         transform = self.transforms.get(transform_id)
         if not transform:
@@ -158,9 +158,9 @@ class TransformEngine:
     def apply_transforms(
         self,
         data: Any,
-        transform_ids: List[str],
+        transform_ids: list[str],
         context: Optional[TransformContext] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Apply multiple transforms in sequence."""
         current_data = data
         applied = []
@@ -183,33 +183,33 @@ class TransformEngine:
         }
 
     # Default transformer functions
-    def _json_to_dict(self, data: Any, config: Dict, context: TransformContext) -> Any:
+    def _json_to_dict(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Convert JSON string to dict."""
         if isinstance(data, str):
             return json.loads(data)
         return data
 
-    def _dict_to_json(self, data: Any, config: Dict, context: TransformContext) -> Any:
+    def _dict_to_json(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Convert dict to JSON string."""
         if isinstance(data, dict):
             return json.dumps(data, indent=config.get("indent", 2))
         return data
 
-    def _extract_field(self, data: Any, config: Dict, context: TransformContext) -> Any:
+    def _extract_field(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Extract a field from data."""
         field = config.get("field", "")
         if isinstance(data, dict) and field:
             return data.get(field)
         return data
 
-    def _add_timestamp(self, data: Any, config: Dict, context: TransformContext) -> Any:
+    def _add_timestamp(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Add timestamp to data."""
         if isinstance(data, dict):
             data["_timestamp"] = datetime.utcnow().isoformat()
             return data
         return {"data": data, "_timestamp": datetime.utcnow().isoformat()}
 
-    def _flatten(self, data: Any, config: Dict, context: TransformContext) -> Any:
+    def _flatten(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Flatten nested structure."""
         if not isinstance(data, dict):
             return data
@@ -228,7 +228,7 @@ class TransformEngine:
         _flatten_recursive(data)
         return result
 
-    def list_transforms(self) -> List[Dict]:
+    def list_transforms(self) -> list[dict]:
         """List all transforms."""
         return [
             {

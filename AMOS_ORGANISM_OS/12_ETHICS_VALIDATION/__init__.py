@@ -1,5 +1,4 @@
-"""
-12_ETHICS_VALIDATION — Ethics Validation & Moral Reasoning
+"""12_ETHICS_VALIDATION — Ethics Validation & Moral Reasoning
 
 Ensures AMOS operates within ethical boundaries, validates decisions
 against moral frameworks, and maintains ethical compliance.
@@ -14,10 +13,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .ethics_engine import EthicsEngine, EthicalDecision, EthicsRule
-from .moral_framework import MoralFramework, ValueSystem, MoralPrinciple
 from .bias_detector import BiasDetector, BiasReport, BiasType
-from .ethics_auditor import EthicsAuditor, AuditReport, EthicsCompliance
+from .ethics_auditor import AuditReport, EthicsAuditor, EthicsCompliance
+from .ethics_engine import EthicalDecision, EthicsEngine, EthicsRule
+from .moral_framework import MoralFramework, MoralPrinciple, ValueSystem
 
 __all__ = [
     "EthicsEngine",

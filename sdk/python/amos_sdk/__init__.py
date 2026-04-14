@@ -4,7 +4,7 @@ Official Python SDK for interacting with the AMOS Brain API at neurosyncai.tech
 
 Usage:
     import amos_sdk
-    
+
     client = amos_sdk.Client(api_key="your_key")
     result = client.think("What is the next logical step?")
     print(result.content)
@@ -14,7 +14,7 @@ from __future__ import annotations
 __version__ = "1.0.0"
 __author__ = "Trang Phan"
 
-from .client import Client, AsyncClient
+from .client import AsyncClient, Client
 from .exceptions import (
     AmosError,
     AuthenticationError,
@@ -23,11 +23,11 @@ from .exceptions import (
     ValidationError,
 )
 from .models import (
-    ThinkResult,
-    DecideResult,
     AmoslResult,
+    DecideResult,
     QueryRecord,
     Stats,
+    ThinkResult,
 )
 
 __all__ = [

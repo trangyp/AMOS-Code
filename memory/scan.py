@@ -13,12 +13,13 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .store import get_memory_dir, parse_frontmatter, INDEX_FILENAME
+from .store import INDEX_FILENAME, get_memory_dir, parse_frontmatter
 
 MAX_MEMORY_FILES = 200
 
 
 # ── Data model ─────────────────────────────────────────────────────────────
+
 
 @dataclass
 class MemoryHeader:
@@ -32,6 +33,7 @@ class MemoryHeader:
         type:        value from frontmatter `type:` field
         scope:       "user" or "project"
     """
+
     filename: str
     file_path: str
     mtime_s: float
@@ -41,6 +43,7 @@ class MemoryHeader:
 
 
 # ── Scanning ───────────────────────────────────────────────────────────────
+
 
 def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
     """Scan a single memory directory and return headers sorted newest-first.
@@ -61,14 +64,16 @@ def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
             lines = fp.read_text(errors="replace").splitlines()[:30]
             snippet = "\n".join(lines)
             meta, _ = parse_frontmatter(snippet)
-            headers.append(MemoryHeader(
-                filename=fp.name,
-                file_path=str(fp),
-                mtime_s=stat.st_mtime,
-                description=meta.get("description", ""),
-                type=meta.get("type", ""),
-                scope=scope,
-            ))
+            headers.append(
+                MemoryHeader(
+                    filename=fp.name,
+                    file_path=str(fp),
+                    mtime_s=stat.st_mtime,
+                    description=meta.get("description", ""),
+                    type=meta.get("type", ""),
+                    scope=scope,
+                )
+            )
         except Exception:
             continue
 
@@ -90,6 +95,7 @@ def scan_all_memories() -> list[MemoryHeader]:
 
 
 # ── Age / freshness ────────────────────────────────────────────────────────
+
 
 def memory_age_days(mtime_s: float) -> int:
     """Days since mtime_s (floor-rounded, clamped to 0 for future times)."""
@@ -124,6 +130,7 @@ def memory_freshness_text(mtime_s: float) -> str:
 
 
 # ── Manifest formatting ────────────────────────────────────────────────────
+
 
 def format_memory_manifest(headers: list[MemoryHeader]) -> str:
     """Format a list of MemoryHeader as a text manifest.

@@ -1,10 +1,9 @@
 """AMOS Knowledge Graph Connector - External data and knowledge integration."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
-import json
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 from amos_runtime import get_runtime
 
@@ -36,11 +35,13 @@ class KnowledgeGraphKernel:
         relations = self._extract_relations(query_text)
 
         for entity in entities:
-            results.append({
-                "entity": entity,
-                "type": self._classify_entity(entity),
-                "relations": [r for r in relations if entity in r],
-            })
+            results.append(
+                {
+                    "entity": entity,
+                    "type": self._classify_entity(entity),
+                    "relations": [r for r in relations if entity in r],
+                }
+            )
 
         return KnowledgeQuery(
             query=query_text,
@@ -66,8 +67,18 @@ class KnowledgeGraphKernel:
         words = text.lower().split()
         entities = []
 
-        entity_indicators = ["system", "engine", "kernel", "module", "component",
-                            "process", "function", "tool", "analysis", "design"]
+        entity_indicators = [
+            "system",
+            "engine",
+            "kernel",
+            "module",
+            "component",
+            "process",
+            "function",
+            "tool",
+            "analysis",
+            "design",
+        ]
 
         for word in words:
             if word in entity_indicators:
@@ -77,8 +88,16 @@ class KnowledgeGraphKernel:
 
     def _extract_relations(self, text: str) -> list[str]:
         """Extract potential relations from text."""
-        relation_indicators = ["analyzes", "processes", "generates", "creates",
-                              "connects", "integrates", "uses", "implements"]
+        relation_indicators = [
+            "analyzes",
+            "processes",
+            "generates",
+            "creates",
+            "connects",
+            "integrates",
+            "uses",
+            "implements",
+        ]
 
         words = text.lower().split()
         relations = [w for w in words if w in relation_indicators]
@@ -158,11 +177,13 @@ class SemanticSearchKernel:
             for i, doc in enumerate(corpus[:5]):  # Limit to first 5
                 score = sum(1 for term in query_terms if term in doc.lower())
                 if score > 0:
-                    results.append({
-                        "document_id": i,
-                        "score": score / len(query_terms),
-                        "excerpt": doc[:100] + "..." if len(doc) > 100 else doc,
-                    })
+                    results.append(
+                        {
+                            "document_id": i,
+                            "score": score / len(query_terms),
+                            "excerpt": doc[:100] + "..." if len(doc) > 100 else doc,
+                        }
+                    )
 
         results.sort(key=lambda x: x["score"], reverse=True)
 
@@ -292,22 +313,26 @@ class AMOSKnowledgeConnector:
         for i, result in enumerate(query_result.results[:5], 1):
             lines.append(f"{i}. Entity: {result.get('entity', 'unknown')}")
             lines.append(f"   Type: {result.get('type', 'unknown')}")
-            if result.get('relations'):
+            if result.get("relations"):
                 lines.append(f"   Relations: {', '.join(result['relations'][:3])}")
             lines.append("")
 
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         for limitation in query_result.limitations:
             lines.append(f"- {limitation}")
 
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            query_result.gap_acknowledgment,
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                query_result.gap_acknowledgment,
+            ]
+        )
 
         return "\n".join(lines)
 

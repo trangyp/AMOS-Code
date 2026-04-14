@@ -1,5 +1,4 @@
-"""
-Cognitive Cycle Manager — Focus and attention management
+"""Cognitive Cycle Manager — Focus and attention management
 
 Manages cognitive cycles, attention periods, and
 optimal work-rest rhythms for peak performance.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class CyclePhase(Enum):
     """Phases of a cognitive cycle."""
+
     FOCUS = "focus"
     DIFFUSE = "diffuse"
     REST = "rest"
@@ -26,6 +26,7 @@ class CyclePhase(Enum):
 
 class FocusState(Enum):
     """States of focus."""
+
     DEEP_FOCUS = "deep_focus"
     FOCUSED = "focused"
     SCATTERED = "scattered"
@@ -35,6 +36,7 @@ class FocusState(Enum):
 @dataclass
 class FocusSession:
     """A focused work session."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     start_time: str = ""
     end_time: Optional[str] = None
@@ -45,7 +47,7 @@ class FocusSession:
     task_type: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "focus_state": self.focus_state.value,
@@ -55,12 +57,13 @@ class FocusSession:
 @dataclass
 class CycleRecommendation:
     """A recommendation for cognitive cycles."""
+
     phase: CyclePhase
     duration_minutes: int
     activity: str
     rationale: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "phase": self.phase.value,
@@ -68,8 +71,7 @@ class CycleRecommendation:
 
 
 class CognitiveCycleManager:
-    """
-    Manages cognitive cycles and focus periods.
+    """Manages cognitive cycles and focus periods.
 
     Implements focus-rest cycles (Pomodoro-style) and
     provides recommendations for optimal work patterns.
@@ -81,11 +83,11 @@ class CognitiveCycleManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.sessions: List[FocusSession] = []
+        self.sessions: list[FocusSession] = []
         self.current_session: Optional[FocusSession] = None
         self.default_focus_duration = 25  # minutes
-        self.default_break_duration = 5   # minutes
-        self.long_break_duration = 15     # minutes
+        self.default_break_duration = 5  # minutes
+        self.long_break_duration = 15  # minutes
         self.sessions_before_long_break = 4
 
         self._load_data()
@@ -121,17 +123,19 @@ class CognitiveCycleManager:
         }
         data_file.write_text(json.dumps(data, indent=2))
 
-    def start_focus_session(self, task_type: str = "", duration: Optional[int] = None) -> FocusSession:
+    def start_focus_session(
+        self, task_type: str = "", duration: Optional[int] = None
+    ) -> FocusSession:
         """Start a focused work session."""
         duration = duration or self.default_focus_duration
-        
+
         session = FocusSession(
             start_time=datetime.utcnow().isoformat(),
             duration_minutes=duration,
             task_type=task_type,
             focus_state=FocusState.FOCUSED,
         )
-        
+
         self.current_session = session
         self.sessions.append(session)
         self.save()
@@ -141,17 +145,17 @@ class CognitiveCycleManager:
         """End the current focus session."""
         if not self.current_session:
             return None
-        
+
         session = self.current_session
         session.end_time = datetime.utcnow().isoformat()
         session.productivity_score = productivity
-        
+
         # Calculate actual duration
         start = datetime.fromisoformat(session.start_time)
         end = datetime.fromisoformat(session.end_time)
         actual_duration = int((end - start).total_seconds() / 60)
         session.duration_minutes = actual_duration
-        
+
         self.current_session = None
         self.save()
         return session
@@ -164,15 +168,12 @@ class CognitiveCycleManager:
                 self.current_session.notes += f"[Interruption: {note}] "
             self.save()
 
-    def get_today_stats(self) -> Dict[str, Any]:
+    def get_today_stats(self) -> dict[str, Any]:
         """Get today's focus session statistics."""
         today = datetime.utcnow().strftime("%Y-%m-%d")
-        
-        today_sessions = [
-            s for s in self.sessions
-            if s.start_time.startswith(today) and s.end_time
-        ]
-        
+
+        today_sessions = [s for s in self.sessions if s.start_time.startswith(today) and s.end_time]
+
         if not today_sessions:
             return {
                 "date": today,
@@ -181,11 +182,11 @@ class CognitiveCycleManager:
                 "average_productivity": 0,
                 "interruptions": 0,
             }
-        
+
         total_minutes = sum(s.duration_minutes for s in today_sessions)
         avg_productivity = sum(s.productivity_score for s in today_sessions) / len(today_sessions)
         total_interruptions = sum(s.interruptions for s in today_sessions)
-        
+
         return {
             "date": today,
             "sessions": len(today_sessions),
@@ -198,12 +199,12 @@ class CognitiveCycleManager:
         """Get next cycle recommendation."""
         today_stats = self.get_today_stats()
         sessions_today = today_stats["sessions"]
-        
+
         # If currently in a session, recommend completing it
         if self.current_session:
             elapsed = self._get_elapsed_minutes(self.current_session.start_time)
             remaining = self.current_session.duration_minutes - elapsed
-            
+
             if remaining > 0:
                 return CycleRecommendation(
                     phase=CyclePhase.FOCUS,
@@ -218,7 +219,7 @@ class CognitiveCycleManager:
                     activity="Take a break - stretch, hydrate, rest eyes",
                     rationale="Focus session complete",
                 )
-        
+
         # Recommend starting a new session or taking a longer break
         if sessions_today > 0 and sessions_today % self.sessions_before_long_break == 0:
             return CycleRecommendation(
@@ -232,7 +233,9 @@ class CognitiveCycleManager:
                 phase=CyclePhase.FOCUS,
                 duration_minutes=self.default_focus_duration,
                 activity="Start focused work session",
-                rationale="Begin next focus block" if sessions_today > 0 else "Start first focus block of day",
+                rationale="Begin next focus block"
+                if sessions_today > 0
+                else "Start first focus block of day",
             )
 
     def _get_elapsed_minutes(self, start_time: str) -> int:
@@ -247,14 +250,14 @@ class CognitiveCycleManager:
             return self.long_break_duration
         return self.default_break_duration
 
-    def get_focus_patterns(self, days: int = 7) -> Dict[str, Any]:
+    def get_focus_patterns(self, days: int = 7) -> dict[str, Any]:
         """Analyze focus patterns over time."""
         cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
         recent = [s for s in self.sessions if s.end_time and s.start_time > cutoff]
-        
+
         if not recent:
             return {"patterns": "insufficient_data"}
-        
+
         # Group by hour of day
         by_hour = {}
         for s in recent:
@@ -262,14 +265,11 @@ class CognitiveCycleManager:
             if hour not in by_hour:
                 by_hour[hour] = []
             by_hour[hour].append(s.productivity_score)
-        
+
         # Find most productive hours
-        hour_productivity = {
-            h: sum(scores) / len(scores) 
-            for h, scores in by_hour.items()
-        }
+        hour_productivity = {h: sum(scores) / len(scores) for h, scores in by_hour.items()}
         best_hours = sorted(hour_productivity.items(), key=lambda x: x[1], reverse=True)[:3]
-        
+
         return {
             "total_sessions": len(recent),
             "most_productive_hours": [h[0] for h in best_hours],
@@ -277,7 +277,7 @@ class CognitiveCycleManager:
             "average_productivity": sum(s.productivity_score for s in recent) / len(recent),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current cognitive cycle status."""
         return {
             "current_session_active": self.current_session is not None,

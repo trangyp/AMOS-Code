@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
-"""
-Generate animated GIF demo of clawspring SSJ Developer Mode.
+"""Generate animated GIF demo of clawspring SSJ Developer Mode.
 Shows: /ssj menu → Brainstorm → TODO viewer → Worker → Exit
 """
-from PIL import Image, ImageDraw, ImageFont
 import os
 
+from PIL import Image, ImageDraw, ImageFont
+
 # ── Catppuccin Mocha palette ─────────────────────────────────────────────
-BG      = (30,  30,  46)
-SURFACE = (49,  50,  68)
-TEXT    = (205, 214, 244)
+BG = (30, 30, 46)
+SURFACE = (49, 50, 68)
+TEXT = (205, 214, 244)
 SUBTEXT = (108, 112, 134)
-CYAN    = (137, 220, 235)
-GREEN   = (166, 227, 161)
-YELLOW  = (249, 226, 175)
-RED     = (243, 139, 168)
-MAUVE   = (203, 166, 247)
-BLUE    = (137, 180, 250)
-PEACH   = (250, 179, 135)
-ORANGE  = (254, 100,  11)
+CYAN = (137, 220, 235)
+GREEN = (166, 227, 161)
+YELLOW = (249, 226, 175)
+RED = (243, 139, 168)
+MAUVE = (203, 166, 247)
+BLUE = (137, 180, 250)
+PEACH = (250, 179, 135)
+ORANGE = (254, 100, 11)
 
 W, H = 960, 720
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 FONT_SIZE = 14
-LINE_H    = 20
-PAD_X     = 18
-PAD_Y     = 16
+LINE_H = 20
+PAD_X = 18
+PAD_Y = 16
 
 
 def make_font(size=FONT_SIZE, bold=False):
@@ -37,7 +37,7 @@ def make_font(size=FONT_SIZE, bold=False):
         return ImageFont.load_default()
 
 
-FONT   = make_font()
+FONT = make_font()
 FONT_B = make_font(bold=True)
 
 
@@ -56,8 +56,8 @@ def render_line(draw, y, segments, x_start=PAD_X):
 
 def draw_frame(lines_segments):
     img = Image.new("RGB", (W, H), BG)
-    d   = ImageDraw.Draw(img)
-    y   = PAD_Y
+    d = ImageDraw.Draw(img)
+    y = PAD_Y
     for item in lines_segments:
         if item is None:
             y += LINE_H
@@ -79,6 +79,7 @@ BANNER = [
     None,
 ]
 
+
 def prompt_line(text="", cursor=False):
     cur = "█" if cursor else ""
     return [
@@ -87,6 +88,7 @@ def prompt_line(text="", cursor=False):
         seg(text + cur, TEXT),
     ]
 
+
 def ssj_prompt(text="", cursor=False):
     cur = "█" if cursor else ""
     return [
@@ -94,11 +96,18 @@ def ssj_prompt(text="", cursor=False):
         seg(text + cur, TEXT),
     ]
 
+
 def claude_header():
-    return [seg("╭─ Claude ", SUBTEXT), seg("●", GREEN), seg(" ─────────────────────────────────────────────", SUBTEXT)]
+    return [
+        seg("╭─ Claude ", SUBTEXT),
+        seg("●", GREEN),
+        seg(" ─────────────────────────────────────────────", SUBTEXT),
+    ]
+
 
 def claude_sep():
     return [seg("╰──────────────────────────────────────────────────────────", SUBTEXT)]
+
 
 def tool_line(icon, name, arg, color=CYAN):
     return [
@@ -109,20 +118,26 @@ def tool_line(icon, name, arg, color=CYAN):
         seg(")", SUBTEXT),
     ]
 
+
 def tool_ok(msg):
     return [seg("  ✓ ", GREEN), seg(msg, SUBTEXT)]
+
 
 def text_line(t, indent=2):
     return [seg(" " * indent + t, TEXT)]
 
+
 def dim_line(t, indent=4):
     return [seg(" " * indent + t, SUBTEXT)]
+
 
 def ok_line(t):
     return [seg("  ✓ ", GREEN, True), seg(t, TEXT)]
 
+
 def info_line(t):
     return [seg("  ℹ ", CYAN), seg(t, SUBTEXT)]
+
 
 def err_line(t):
     return [seg("  ✗ ", RED), seg(t, SUBTEXT)]
@@ -132,25 +147,79 @@ def err_line(t):
 
 SSJ_MENU = [
     None,
-    [seg("╭─ SSJ Developer Mode ", SUBTEXT), seg("⚡", YELLOW, True), seg(" ─────────────────────────", SUBTEXT)],
+    [
+        seg("╭─ SSJ Developer Mode ", SUBTEXT),
+        seg("⚡", YELLOW, True),
+        seg(" ─────────────────────────", SUBTEXT),
+    ],
     [seg("│", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 1.", TEXT, True), seg("  💡  Brainstorm ", TEXT), seg("— Multi-persona AI debate", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 2.", TEXT, True), seg("  📋  Show TODO  ", TEXT), seg("— View todo_list.txt", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 3.", TEXT, True), seg("  👷  Worker     ", TEXT), seg("— Auto-implement pending tasks", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 4.", TEXT, True), seg("  🧠  Debate     ", TEXT), seg("— Expert debate on a file", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 5.", TEXT, True), seg("  ✨  Propose    ", TEXT), seg("— AI improvement for a file", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 6.", TEXT, True), seg("  🔎  Review     ", TEXT), seg("— Quick file analysis", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 7.", TEXT, True), seg("  📘  Readme     ", TEXT), seg("— Auto-generate README.md", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 8.", TEXT, True), seg("  💬  Commit     ", TEXT), seg("— AI-suggested commit message", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg(" 9.", TEXT, True), seg("  🧪  Scan       ", TEXT), seg("— Analyze git diff", SUBTEXT)],
-    [seg("│  ", SUBTEXT), seg("10.", TEXT, True), seg("  📝  Promote    ", TEXT), seg("— Idea to tasks", SUBTEXT)],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 1.", TEXT, True),
+        seg("  💡  Brainstorm ", TEXT),
+        seg("— Multi-persona AI debate", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 2.", TEXT, True),
+        seg("  📋  Show TODO  ", TEXT),
+        seg("— View todo_list.txt", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 3.", TEXT, True),
+        seg("  👷  Worker     ", TEXT),
+        seg("— Auto-implement pending tasks", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 4.", TEXT, True),
+        seg("  🧠  Debate     ", TEXT),
+        seg("— Expert debate on a file", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 5.", TEXT, True),
+        seg("  ✨  Propose    ", TEXT),
+        seg("— AI improvement for a file", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 6.", TEXT, True),
+        seg("  🔎  Review     ", TEXT),
+        seg("— Quick file analysis", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 7.", TEXT, True),
+        seg("  📘  Readme     ", TEXT),
+        seg("— Auto-generate README.md", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 8.", TEXT, True),
+        seg("  💬  Commit     ", TEXT),
+        seg("— AI-suggested commit message", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg(" 9.", TEXT, True),
+        seg("  🧪  Scan       ", TEXT),
+        seg("— Analyze git diff", SUBTEXT),
+    ],
+    [
+        seg("│  ", SUBTEXT),
+        seg("10.", TEXT, True),
+        seg("  📝  Promote    ", TEXT),
+        seg("— Idea to tasks", SUBTEXT),
+    ],
     [seg("│  ", SUBTEXT), seg(" 0.", TEXT, True), seg("  🚪  Exit SSJ Mode", SUBTEXT)],
     [seg("│", SUBTEXT)],
     [seg("╰──────────────────────────────────────────────", SUBTEXT)],
 ]
 
 SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-THINK_PHRASES  = [
+THINK_PHRASES = [
     "agents thinking",
     "agents thinking.",
     "agents thinking..",
@@ -194,49 +263,110 @@ def build_scenes():
 
     topic = "clawspring SSJ features"
     for i in range(0, len(topic) + 1, 3):
-        add(base_menu + [ssj_prompt("1")] + [
-            [seg("  Topic (Enter for general): ", CYAN), seg(topic[:i] + ("█" if i < len(topic) else ""), TEXT)],
-        ], 60)
-    add(base_menu + [ssj_prompt("1")] + [
-        [seg("  Topic (Enter for general): ", CYAN), seg(topic, TEXT)],
-    ], 400)
+        add(
+            base_menu
+            + [ssj_prompt("1")]
+            + [
+                [
+                    seg("  Topic (Enter for general): ", CYAN),
+                    seg(topic[:i] + ("█" if i < len(topic) else ""), TEXT),
+                ],
+            ],
+            60,
+        )
+    add(
+        base_menu
+        + [ssj_prompt("1")]
+        + [
+            [seg("  Topic (Enter for general): ", CYAN), seg(topic, TEXT)],
+        ],
+        400,
+    )
 
     # ── 4. Brainstorm spinner ─────────────────────────────────────────────
-    add(base_menu + [ssj_prompt("1")] + [
-        None,
-        [seg("  ── Brainstorm: ", SUBTEXT), seg("clawspring SSJ features", CYAN), seg(" ──", SUBTEXT)],
-        None,
-        ok_line("Generating 4 topic-appropriate expert personas..."),
-        None,
-    ], 700)
+    add(
+        base_menu
+        + [ssj_prompt("1")]
+        + [
+            None,
+            [
+                seg("  ── Brainstorm: ", SUBTEXT),
+                seg("clawspring SSJ features", CYAN),
+                seg(" ──", SUBTEXT),
+            ],
+            None,
+            ok_line("Generating 4 topic-appropriate expert personas..."),
+            None,
+        ],
+        700,
+    )
 
     personas = [
-        ("A", "Alex Rivera",   "UX Design Lead"),
-        ("B", "Sam Chen",      "Backend Engineer"),
+        ("A", "Alex Rivera", "UX Design Lead"),
+        ("B", "Sam Chen", "Backend Engineer"),
         ("C", "Taylor Morgan", "DevOps / Infra"),
-        ("D", "Jordan Lee",    "Product Manager"),
+        ("D", "Jordan Lee", "Product Manager"),
     ]
     persona_lines = []
     for letter, name, role in personas:
         persona_lines.append(
-            [seg(f"    [{letter}] ", CYAN, True), seg(f"{name}", TEXT, True), seg(f"  ({role})", SUBTEXT)]
+            [
+                seg(f"    [{letter}] ", CYAN, True),
+                seg(f"{name}", TEXT, True),
+                seg(f"  ({role})", SUBTEXT),
+            ]
         )
 
-    spinner_base = base_menu + [ssj_prompt("1"), None,
-        [seg("  ── Brainstorm: ", SUBTEXT), seg("clawspring SSJ features", CYAN), seg(" ──", SUBTEXT)],
-        None,
-        ok_line("Generating 4 topic-appropriate expert personas..."),
-        None,
-    ] + persona_lines + [None]
+    spinner_base = (
+        base_menu
+        + [
+            ssj_prompt("1"),
+            None,
+            [
+                seg("  ── Brainstorm: ", SUBTEXT),
+                seg("clawspring SSJ features", CYAN),
+                seg(" ──", SUBTEXT),
+            ],
+            None,
+            ok_line("Generating 4 topic-appropriate expert personas..."),
+            None,
+        ]
+        + persona_lines
+        + [None]
+    )
 
     # Spinning debate rounds
     debate_rounds = [
-        ("A", "Alex Rivera",   "The SSJ menu drastically reduces cognitive overhead — no need to remember command names"),
-        ("B", "Sam Chen",      "Worker auto-implementation is huge. One command to turn a TODO list into working code"),
-        ("C", "Taylor Morgan", "Force-quit (3x Ctrl+C) is a must-have. Blocking I/O during brainstorm used to trap users"),
-        ("D", "Jordan Lee",    "Brainstorm → TODO pipeline is the killer feature. Ideas become tasks automatically"),
-        ("A", "Alex Rivera",   "Telegram integration means you can trigger the agent from your phone while on the go"),
-        ("B", "Sam Chen",      "The /ssj passthrough lets you use any slash command without leaving the power menu"),
+        (
+            "A",
+            "Alex Rivera",
+            "The SSJ menu drastically reduces cognitive overhead — no need to remember command names",
+        ),
+        (
+            "B",
+            "Sam Chen",
+            "Worker auto-implementation is huge. One command to turn a TODO list into working code",
+        ),
+        (
+            "C",
+            "Taylor Morgan",
+            "Force-quit (3x Ctrl+C) is a must-have. Blocking I/O during brainstorm used to trap users",
+        ),
+        (
+            "D",
+            "Jordan Lee",
+            "Brainstorm → TODO pipeline is the killer feature. Ideas become tasks automatically",
+        ),
+        (
+            "A",
+            "Alex Rivera",
+            "Telegram integration means you can trigger the agent from your phone while on the go",
+        ),
+        (
+            "B",
+            "Sam Chen",
+            "The /ssj passthrough lets you use any slash command without leaving the power menu",
+        ),
     ]
 
     debate_shown = []
@@ -245,9 +375,18 @@ def build_scenes():
         for si in range(4):
             spin = SPINNER_FRAMES[(idx * 4 + si) % len(SPINNER_FRAMES)]
             phrase = THINK_PHRASES[si % len(THINK_PHRASES)]
-            add(spinner_base + debate_shown + [
-                [seg(f"  {spin} ", CYAN), seg(f"[{letter}] {name}: ", YELLOW), seg(phrase, SUBTEXT)],
-            ], 180)
+            add(
+                spinner_base
+                + debate_shown
+                + [
+                    [
+                        seg(f"  {spin} ", CYAN),
+                        seg(f"[{letter}] {name}: ", YELLOW),
+                        seg(phrase, SUBTEXT),
+                    ],
+                ],
+                180,
+            )
 
         # Reveal the thought
         words = thought.split()
@@ -255,9 +394,14 @@ def build_scenes():
         shown_words = []
         for wi, w in enumerate(words):
             shown_words.append(w)
-            add(spinner_base + debate_shown + [
-                thought_segs + [seg(" ".join(shown_words), TEXT)],
-            ], 40 if wi < len(words) - 1 else 100)
+            add(
+                spinner_base
+                + debate_shown
+                + [
+                    thought_segs + [seg(" ".join(shown_words), TEXT)],
+                ],
+                40 if wi < len(words) - 1 else 100,
+            )
 
         debate_shown.append(
             [seg(f"  [{letter}] ", CYAN, True), seg(f"{name}: ", YELLOW, True), seg(thought, TEXT)]
@@ -265,10 +409,15 @@ def build_scenes():
         add(spinner_base + debate_shown, 200)
 
     # ── 5. Synthesis ─────────────────────────────────────────────────────
-    add(spinner_base + debate_shown + [
-        None,
-        [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
-    ], 800)
+    add(
+        spinner_base
+        + debate_shown
+        + [
+            None,
+            [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
+        ],
+        800,
+    )
 
     synthesis_lines = [
         "SSJ Developer Mode represents a paradigm shift in AI-assisted development.",
@@ -282,20 +431,29 @@ def build_scenes():
         "Recommended next steps saved to brainstorm_outputs/todo_list.txt",
     ]
 
-    synth_base = spinner_base + debate_shown + [
-        None,
-        [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
-        None,
-    ]
+    synth_base = (
+        spinner_base
+        + debate_shown
+        + [
+            None,
+            [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
+            None,
+        ]
+    )
     streamed = []
     for i, line in enumerate(synthesis_lines):
         streamed.append(text_line(line, 2) if line else None)
         add(synth_base + [x for x in streamed if x is not None], 70 if line else 20)
 
-    add(synth_base + [text_line(l, 2) if l else None for l in synthesis_lines] + [
-        None,
-        ok_line("TODO list saved to brainstorm_outputs/todo_list.txt"),
-    ], 1200)
+    add(
+        synth_base
+        + [text_line(l, 2) if l else None for l in synthesis_lines]
+        + [
+            None,
+            ok_line("TODO list saved to brainstorm_outputs/todo_list.txt"),
+        ],
+        1200,
+    )
 
     # ── 6. Back to SSJ menu ───────────────────────────────────────────────
     add(BANNER + [prompt_line(cmd)] + SSJ_MENU + [None, ssj_prompt(cursor=True)], 1000)
@@ -305,7 +463,13 @@ def build_scenes():
 
     todo_display = [
         None,
-        [seg("  📋 TODO List (", CYAN), seg("1 done", GREEN, True), seg(" / ", CYAN), seg("4 pending", YELLOW, True), seg("):", CYAN)],
+        [
+            seg("  📋 TODO List (", CYAN),
+            seg("1 done", GREEN, True),
+            seg(" / ", CYAN),
+            seg("4 pending", YELLOW, True),
+            seg("):", CYAN),
+        ],
         [seg("  " + "─" * 46, SUBTEXT)],
         [seg("       ✓ ", GREEN), seg("Research existing SSJ menu UX patterns", SUBTEXT)],
         [seg("    1. ○ ", TEXT), seg("Add animated brainstorm spinner with phrases")],
@@ -330,92 +494,135 @@ def build_scenes():
     add(BANNER + [prompt_line(cmd)] + SSJ_MENU + [None, ssj_prompt("3")] + worker_select, 600)
 
     # Worker starts
-    worker_base = BANNER + [prompt_line(cmd)] + SSJ_MENU + [None, ssj_prompt("3")] + worker_select + [None]
+    worker_base = (
+        BANNER + [prompt_line(cmd)] + SSJ_MENU + [None, ssj_prompt("3")] + worker_select + [None]
+    )
 
-    add(worker_base + [
-        ok_line("Worker starting — 1 task(s) to implement"),
-        dim_line("Pending tasks:"),
-        [seg("    1. ", SUBTEXT), seg("○ Write SSJ demo GIF for README", TEXT)],
-        None,
-        [seg("  ── Worker (1/1): ", YELLOW), seg("Write SSJ demo GIF for README", TEXT), seg(" ──", YELLOW)],
-        None,
-    ], 800)
+    add(
+        worker_base
+        + [
+            ok_line("Worker starting — 1 task(s) to implement"),
+            dim_line("Pending tasks:"),
+            [seg("    1. ", SUBTEXT), seg("○ Write SSJ demo GIF for README", TEXT)],
+            None,
+            [
+                seg("  ── Worker (1/1): ", YELLOW),
+                seg("Write SSJ demo GIF for README", TEXT),
+                seg(" ──", YELLOW),
+            ],
+            None,
+        ],
+        800,
+    )
 
     tool_section_worker = [
         ok_line("Worker starting — 1 task(s) to implement"),
         dim_line("Pending tasks:"),
         [seg("    1. ", SUBTEXT), seg("○ Write SSJ demo GIF for README", TEXT)],
         None,
-        [seg("  ── Worker (1/1): ", YELLOW), seg("Write SSJ demo GIF for README", TEXT), seg(" ──", YELLOW)],
+        [
+            seg("  ── Worker (1/1): ", YELLOW),
+            seg("Write SSJ demo GIF for README", TEXT),
+            seg(" ──", YELLOW),
+        ],
         None,
         claude_header(),
     ]
 
-    add(worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-    ], 500)
-    add(worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-        tool_ok("728 lines read"),
-        None,
-        tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
-    ], 600)
-    add(worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-        tool_ok("728 lines read"),
-        None,
-        tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
-        tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
-        None,
-        tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
-    ], 700)
-    add(worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-        tool_ok("728 lines read"),
-        None,
-        tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
-        tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
-        None,
-        tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
-        tool_ok("→ ssj_demo.gif  (847 KB)"),
-        None,
-        tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
-    ], 600)
-    add(worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-        tool_ok("728 lines read"),
-        None,
-        tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
-        tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
-        None,
-        tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
-        tool_ok("→ ssj_demo.gif  (847 KB)"),
-        None,
-        tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
-        tool_ok("Marked task as done: - [x] Write SSJ demo GIF for README"),
-        None,
-        claude_sep(),
-    ], 900)
+    add(
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+        ],
+        500,
+    )
+    add(
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+            tool_ok("728 lines read"),
+            None,
+            tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
+        ],
+        600,
+    )
+    add(
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+            tool_ok("728 lines read"),
+            None,
+            tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
+            tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
+            None,
+            tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
+        ],
+        700,
+    )
+    add(
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+            tool_ok("728 lines read"),
+            None,
+            tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
+            tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
+            None,
+            tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
+            tool_ok("→ ssj_demo.gif  (847 KB)"),
+            None,
+            tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
+        ],
+        600,
+    )
+    add(
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+            tool_ok("728 lines read"),
+            None,
+            tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
+            tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
+            None,
+            tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
+            tool_ok("→ ssj_demo.gif  (847 KB)"),
+            None,
+            tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
+            tool_ok("Marked task as done: - [x] Write SSJ demo GIF for README"),
+            None,
+            claude_sep(),
+        ],
+        900,
+    )
 
     # ── 9. Worker done, back to SSJ ───────────────────────────────────────
-    after_worker = worker_base + tool_section_worker + [
-        tool_line("⚙", "Read", "demos/make_demo.py"),
-        tool_ok("728 lines read"),
-        None,
-        tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
-        tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
-        None,
-        tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
-        tool_ok("→ ssj_demo.gif  (847 KB)"),
-        None,
-        tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
-        tool_ok("Marked task as done: - [x] Write SSJ demo GIF for README"),
-        None,
-        claude_sep(),
-        None,
-        ok_line("Worker finished. Run /worker to check remaining tasks."),
-        None,
-    ]
+    after_worker = (
+        worker_base
+        + tool_section_worker
+        + [
+            tool_line("⚙", "Read", "demos/make_demo.py"),
+            tool_ok("728 lines read"),
+            None,
+            tool_line("⚙", "Write", "demos/make_ssj_demo.py", MAUVE),
+            tool_ok("Wrote 312 lines to demos/make_ssj_demo.py"),
+            None,
+            tool_line("⚙", "Bash", "python3 demos/make_ssj_demo.py"),
+            tool_ok("→ ssj_demo.gif  (847 KB)"),
+            None,
+            tool_line("⚙", "Edit", "brainstorm_outputs/todo_list.txt", GREEN),
+            tool_ok("Marked task as done: - [x] Write SSJ demo GIF for README"),
+            None,
+            claude_sep(),
+            None,
+            ok_line("Worker finished. Run /worker to check remaining tasks."),
+            None,
+        ]
+    )
     add(after_worker, 1200)
 
     # ── 10. SSJ menu re-shown ─────────────────────────────────────────────
@@ -424,24 +631,44 @@ def build_scenes():
     # ── 11. Type "0" → Exit ───────────────────────────────────────────────
     add(BANNER + [prompt_line(cmd)] + SSJ_MENU + [None, ssj_prompt("0")], 400)
 
-    add(BANNER + [prompt_line(cmd)] + SSJ_MENU + [
-        None,
-        ok_line("Exiting SSJ Mode."),
-        None,
-        prompt_line(cursor=True),
-    ], 2000)
+    add(
+        BANNER
+        + [prompt_line(cmd)]
+        + SSJ_MENU
+        + [
+            None,
+            ok_line("Exiting SSJ Mode."),
+            None,
+            prompt_line(cursor=True),
+        ],
+        2000,
+    )
 
     return scenes
 
 
 # ── Render ─────────────────────────────────────────────────────────────────
 
+
 def _build_palette():
     theme = [
-        BG, SURFACE, TEXT, SUBTEXT,
-        CYAN, GREEN, YELLOW, RED, MAUVE, BLUE, PEACH, ORANGE,
-        (255, 255, 255), (0, 0, 0),
-        (50, 55, 80), (90, 95, 120), (160, 166, 200),
+        BG,
+        SURFACE,
+        TEXT,
+        SUBTEXT,
+        CYAN,
+        GREEN,
+        YELLOW,
+        RED,
+        MAUVE,
+        BLUE,
+        PEACH,
+        ORANGE,
+        (255, 255, 255),
+        (0, 0, 0),
+        (50, 55, 80),
+        (90, 95, 120),
+        (160, 166, 200),
     ]
     flat = []
     for c in theme:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Interactive UI
+"""AMOS Brain Interactive UI
 ===========================
 
 Web-based interactive interface for the AMOS Brain system.
@@ -18,13 +17,12 @@ import sys
 import threading
 import webbrowser
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
 from urllib.parse import urlparse
 
 # Import AMOS Brain
-from amos_brain import think, validate, decide
+from amos_brain import decide, think, validate
 
 
 class BrainUIHandler(BaseHTTPRequestHandler):
@@ -59,8 +57,8 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
-        content_len = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(content_len).decode('utf-8')
+        content_len = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_len).decode("utf-8")
         try:
             data = json.loads(body) if body else {}
         except json.JSONDecodeError:
@@ -82,7 +80,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         else:
             self._send_json({"error": "Not found"}, 404)
 
-    def _send_json(self, data: Dict, status: int = 200) -> None:
+    def _send_json(self, data: dict, status: int = 200) -> None:
         """Send JSON response."""
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
@@ -110,11 +108,9 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             return
 
         status = self.brain.status()
-        self._send_json({
-            "status": "active",
-            "brain": status,
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        self._send_json(
+            {"status": "active", "brain": status, "timestamp": datetime.utcnow().isoformat()}
+        )
 
     def _serve_thoughts(self) -> None:
         """Get recent thoughts."""
@@ -130,7 +126,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                 "source": t.source,
                 "timestamp": t.timestamp,
                 "confidence": t.confidence,
-                "tags": t.tags
+                "tags": t.tags,
             }
             for t in self.brain.state.get_recent_thoughts(20)
         ]
@@ -149,7 +145,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                 "status": p.status,
                 "horizon": p.horizon,
                 "steps": len(p.steps),
-                "created_at": p.created_at
+                "created_at": p.created_at,
             }
             for p in self.brain.state.active_plans
         ]
@@ -160,6 +156,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         # Try to get from memory if available
         try:
             from amos_brain.memory import get_brain_memory
+
             memory = get_brain_memory()
             history = memory.get_reasoning_history(limit=50)
             self._send_json({"reasoning": history})
@@ -170,23 +167,63 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         """Get all subsystems info."""
         subsystems = [
             {"code": "01_BRAIN", "name": "Core Cognition", "status": "active", "color": "#4CAF50"},
-            {"code": "02_SENSES", "name": "Input Processing", "status": "active", "color": "#2196F3"},
+            {
+                "code": "02_SENSES",
+                "name": "Input Processing",
+                "status": "active",
+                "color": "#2196F3",
+            },
             {"code": "03_IMMUNE", "name": "Security", "status": "active", "color": "#FF9800"},
-            {"code": "04_BLOOD", "name": "Financial Engine", "status": "active", "color": "#F44336"},
-            {"code": "05_SKELETON", "name": "Structure & Rules", "status": "active", "color": "#9C27B0"},
+            {
+                "code": "04_BLOOD",
+                "name": "Financial Engine",
+                "status": "active",
+                "color": "#F44336",
+            },
+            {
+                "code": "05_SKELETON",
+                "name": "Structure & Rules",
+                "status": "active",
+                "color": "#9C27B0",
+            },
             {"code": "06_MUSCLE", "name": "Execution", "status": "active", "color": "#3F51B5"},
             {"code": "07_METABOLISM", "name": "Pipelines", "status": "active", "color": "#009688"},
-            {"code": "08_WORLD_MODEL", "name": "Environment", "status": "active", "color": "#00BCD4"},
-            {"code": "09_SOCIAL_ENGINE", "name": "Agent Communication", "status": "active", "color": "#8BC34A"},
-            {"code": "10_LIFE_ENGINE", "name": "Life Management", "status": "active", "color": "#FFEB3B"},
-            {"code": "11_LEGAL_BRAIN", "name": "Compliance", "status": "active", "color": "#795548"},
-            {"code": "12_QUANTUM_LAYER", "name": "Probabilistic", "status": "active", "color": "#607D8B"},
+            {
+                "code": "08_WORLD_MODEL",
+                "name": "Environment",
+                "status": "active",
+                "color": "#00BCD4",
+            },
+            {
+                "code": "09_SOCIAL_ENGINE",
+                "name": "Agent Communication",
+                "status": "active",
+                "color": "#8BC34A",
+            },
+            {
+                "code": "10_LIFE_ENGINE",
+                "name": "Life Management",
+                "status": "active",
+                "color": "#FFEB3B",
+            },
+            {
+                "code": "11_LEGAL_BRAIN",
+                "name": "Compliance",
+                "status": "active",
+                "color": "#795548",
+            },
+            {
+                "code": "12_QUANTUM_LAYER",
+                "name": "Probabilistic",
+                "status": "active",
+                "color": "#607D8B",
+            },
             {"code": "13_FACTORY", "name": "Agent Factory", "status": "active", "color": "#E91E63"},
         ]
         self._send_json({"subsystems": subsystems})
 
     # Action Handlers
-    def _handle_think(self, data: Dict) -> None:
+    def _handle_think(self, data: dict) -> None:
         """Process a thinking request."""
         query = data.get("query", "")
         if not query:
@@ -201,16 +238,18 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             if self.brain:
                 self.brain.perceive(query, "user_ui")
 
-            self._send_json({
-                "success": True,
-                "query": query,
-                "result": result.to_dict() if hasattr(result, 'to_dict') else str(result),
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "query": query,
+                    "result": result.to_dict() if hasattr(result, "to_dict") else str(result),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_decide(self, data: Dict) -> None:
+    def _handle_decide(self, data: dict) -> None:
         """Process a decision request."""
         scenario = data.get("scenario", "")
         options = data.get("options", [])
@@ -226,16 +265,18 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             else:
                 result = decide(scenario)
 
-            self._send_json({
-                "success": True,
-                "scenario": scenario,
-                "decision": result.to_dict() if hasattr(result, 'to_dict') else str(result),
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "scenario": scenario,
+                    "decision": result.to_dict() if hasattr(result, "to_dict") else str(result),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_validate(self, data: Dict) -> None:
+    def _handle_validate(self, data: dict) -> None:
         """Process a validation request."""
         proposition = data.get("proposition", "")
         if not proposition:
@@ -244,16 +285,18 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
         try:
             result = validate(proposition)
-            self._send_json({
-                "success": True,
-                "proposition": proposition,
-                "validation": result.to_dict() if hasattr(result, 'to_dict') else str(result),
-                "timestamp": datetime.utcnow().isoformat()
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "proposition": proposition,
+                    "validation": result.to_dict() if hasattr(result, "to_dict") else str(result),
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_perceive(self, data: Dict) -> None:
+    def _handle_perceive(self, data: dict) -> None:
         """Process a perception."""
         content = data.get("content", "")
         source = data.get("source", "user_ui")
@@ -264,17 +307,19 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
         try:
             thought = self.brain.perceive(content, source)
-            self._send_json({
-                "success": True,
-                "thought_id": thought.id,
-                "content": thought.content,
-                "type": thought.type.value,
-                "timestamp": thought.timestamp
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "thought_id": thought.id,
+                    "content": thought.content,
+                    "type": thought.type.value,
+                    "timestamp": thought.timestamp,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_plan(self, data: Dict) -> None:
+    def _handle_plan(self, data: dict) -> None:
         """Create a plan."""
         goal = data.get("goal", "")
         horizon = data.get("horizon", "medium-term")
@@ -285,18 +330,20 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
         try:
             plan = self.brain.create_plan(goal, horizon)
-            self._send_json({
-                "success": True,
-                "plan_id": plan.id,
-                "goal": plan.goal,
-                "horizon": plan.horizon,
-                "status": plan.status,
-                "created_at": plan.created_at
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "plan_id": plan.id,
+                    "goal": plan.goal,
+                    "horizon": plan.horizon,
+                    "status": plan.status,
+                    "created_at": plan.created_at,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_query(self, data: Dict) -> None:
+    def _handle_query(self, data: dict) -> None:
         """Handle orchestrator query."""
         query = data.get("query", "")
         if not query:
@@ -306,21 +353,25 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         try:
             if self.orchestrator:
                 result = self.orchestrator.process(query)
-                self._send_json({
-                    "success": True,
-                    "query": query,
-                    "result": result,
-                    "timestamp": datetime.utcnow().isoformat()
-                })
+                self._send_json(
+                    {
+                        "success": True,
+                        "query": query,
+                        "result": result,
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
             else:
                 # Fallback to simple think
                 result = think(query)
-                self._send_json({
-                    "success": True,
-                    "query": query,
-                    "result": result.to_dict() if hasattr(result, 'to_dict') else str(result),
-                    "timestamp": datetime.utcnow().isoformat()
-                })
+                self._send_json(
+                    {
+                        "success": True,
+                        "query": query,
+                        "result": result.to_dict() if hasattr(result, "to_dict") else str(result),
+                        "timestamp": datetime.utcnow().isoformat(),
+                    }
+                )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
@@ -331,7 +382,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
     def _generate_ui_html(self) -> str:
         """Generate the interactive UI HTML with embedded CSS and JS."""
-        return '''<!DOCTYPE html>
+        return """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -339,7 +390,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
     <title>AMOS Brain Interactive</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         :root {
             --bg-primary: #0a0a1a;
             --bg-secondary: #151528;
@@ -353,7 +404,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             --text-secondary: #8888a0;
             --border: rgba(255,255,255,0.1);
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: var(--bg-primary);
@@ -361,7 +412,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             min-height: 100vh;
             line-height: 1.6;
         }
-        
+
         /* Header */
         .header {
             background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
@@ -374,13 +425,13 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             top: 0;
             z-index: 100;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .logo-icon {
             width: 45px;
             height: 45px;
@@ -392,7 +443,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             font-size: 20px;
             font-weight: bold;
         }
-        
+
         .logo-text h1 {
             font-size: 22px;
             font-weight: 700;
@@ -400,12 +451,12 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .logo-text span {
             font-size: 12px;
             color: var(--text-secondary);
         }
-        
+
         .status-badge {
             display: flex;
             align-items: center;
@@ -416,7 +467,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             border-radius: 20px;
             font-size: 13px;
         }
-        
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -424,12 +475,12 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
         }
-        
+
         /* Main Layout */
         .container {
             max-width: 1400px;
@@ -439,21 +490,21 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             grid-template-columns: 280px 1fr 320px;
             gap: 25px;
         }
-        
+
         /* Sidebar */
         .sidebar {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .nav-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
         }
-        
+
         .nav-card h3 {
             font-size: 13px;
             text-transform: uppercase;
@@ -461,7 +512,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             color: var(--text-secondary);
             margin-bottom: 15px;
         }
-        
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -472,15 +523,15 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             transition: all 0.2s;
             margin-bottom: 5px;
         }
-        
+
         .nav-item:hover, .nav-item.active {
             background: rgba(0, 212, 255, 0.1);
         }
-        
+
         .nav-item.active {
             border-left: 3px solid var(--accent-primary);
         }
-        
+
         .nav-item-icon {
             width: 36px;
             height: 36px;
@@ -490,13 +541,13 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             justify-content: center;
             font-size: 16px;
         }
-        
+
         .subsystem-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .subsystem-item {
             display: flex;
             align-items: center;
@@ -506,31 +557,31 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             font-size: 12px;
             transition: all 0.2s;
         }
-        
+
         .subsystem-item:hover {
             background: rgba(255,255,255,0.05);
         }
-        
+
         .subsystem-indicator {
             width: 4px;
             height: 30px;
             border-radius: 2px;
         }
-        
+
         /* Main Content */
         .main-content {
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
-        
+
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
         }
-        
+
         .card-header {
             padding: 20px 25px;
             border-bottom: 1px solid var(--border);
@@ -538,7 +589,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .card-header h2 {
             font-size: 16px;
             font-weight: 600;
@@ -546,24 +597,24 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             align-items: center;
             gap: 10px;
         }
-        
+
         .card-body {
             padding: 25px;
         }
-        
+
         /* Input Area */
         .input-area {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-        
+
         .input-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
         }
-        
+
         .tab-btn {
             padding: 10px 20px;
             background: transparent;
@@ -574,13 +625,13 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             transition: all 0.2s;
             font-size: 13px;
         }
-        
+
         .tab-btn.active, .tab-btn:hover {
             background: rgba(0, 212, 255, 0.1);
             border-color: var(--accent-primary);
             color: var(--accent-primary);
         }
-        
+
         .input-field {
             width: 100%;
             min-height: 120px;
@@ -593,24 +644,24 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             resize: vertical;
             font-family: inherit;
         }
-        
+
         .input-field:focus {
             outline: none;
             border-color: var(--accent-primary);
         }
-        
+
         .options-input {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .option-row {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .option-input {
             flex: 1;
             padding: 12px 15px;
@@ -620,7 +671,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             color: var(--text-primary);
             font-size: 14px;
         }
-        
+
         .btn {
             padding: 12px 24px;
             border-radius: 10px;
@@ -633,32 +684,32 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             align-items: center;
             gap: 8px;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             color: white;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
         }
-        
+
         .btn-secondary {
             background: rgba(255,255,255,0.1);
             color: var(--text-primary);
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255,255,255,0.15);
         }
-        
+
         /* Results Area */
         .results-area {
             margin-top: 25px;
             min-height: 200px;
         }
-        
+
         .result-card {
             background: rgba(0,0,0,0.2);
             border: 1px solid var(--border);
@@ -666,14 +717,14 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             padding: 20px;
             margin-bottom: 15px;
         }
-        
+
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-        
+
         .result-type {
             display: flex;
             align-items: center;
@@ -681,18 +732,18 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             font-size: 13px;
             color: var(--accent-primary);
         }
-        
+
         .result-time {
             font-size: 12px;
             color: var(--text-secondary);
         }
-        
+
         .result-content {
             font-size: 15px;
             line-height: 1.8;
             white-space: pre-wrap;
         }
-        
+
         .result-meta {
             margin-top: 15px;
             padding-top: 15px;
@@ -702,21 +753,21 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             font-size: 12px;
             color: var(--text-secondary);
         }
-        
+
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
         }
-        
+
         .stat-card {
             background: rgba(0,0,0,0.2);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
         }
-        
+
         .stat-value {
             font-size: 32px;
             font-weight: 700;
@@ -724,20 +775,20 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .stat-label {
             font-size: 12px;
             color: var(--text-secondary);
             margin-top: 5px;
         }
-        
+
         /* Right Panel */
         .right-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .thought-list {
             display: flex;
             flex-direction: column;
@@ -745,14 +796,14 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             max-height: 400px;
             overflow-y: auto;
         }
-        
+
         .thought-item {
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
             padding: 15px;
             border-left: 3px solid var(--accent-primary);
         }
-        
+
         .thought-type {
             font-size: 11px;
             text-transform: uppercase;
@@ -760,19 +811,19 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             color: var(--accent-primary);
             margin-bottom: 8px;
         }
-        
+
         .thought-content {
             font-size: 13px;
             line-height: 1.6;
             color: var(--text-primary);
         }
-        
+
         .thought-meta {
             font-size: 11px;
             color: var(--text-secondary);
             margin-top: 8px;
         }
-        
+
         /* Loading State */
         .loading {
             display: flex;
@@ -782,7 +833,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             padding: 40px;
             color: var(--text-secondary);
         }
-        
+
         .spinner {
             width: 24px;
             height: 24px;
@@ -791,11 +842,11 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         /* Responsive */
         @media (max-width: 1200px) {
             .container {
@@ -808,22 +859,22 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                 order: 1;
             }
         }
-        
+
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: var(--bg-primary);
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-secondary);
         }
@@ -921,13 +972,13 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                             <button class="tab-btn" onclick="switchMode('validate')">Validate</button>
                             <button class="tab-btn" onclick="switchMode('plan')">Plan</button>
                         </div>
-                        
-                        <textarea 
-                            id="main-input" 
-                            class="input-field" 
+
+                        <textarea
+                            id="main-input"
+                            class="input-field"
                             placeholder="Enter your query or problem to think about..."
                         ></textarea>
-                        
+
                         <!-- Options for Decide mode -->
                         <div id="options-area" class="options-input" style="display: none;">
                             <div class="option-row">
@@ -939,7 +990,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                                 <input type="text" class="option-input" id="option-2" placeholder="Second option...">
                             </div>
                         </div>
-                        
+
                         <div style="display: flex; gap: 10px;">
                             <button class="btn btn-primary" onclick="submitAction()">
                                 <span id="action-icon">🚀</span>
@@ -1012,7 +1063,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             loadStatus();
             loadThoughts();
             loadSubsystems();
-            
+
             // Auto-refresh every 5 seconds
             setInterval(() => {
                 loadStatus();
@@ -1023,15 +1074,15 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         // Mode switching
         function switchMode(mode) {
             currentMode = mode;
-            
+
             // Update tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             // Update sidebar
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.target.closest('.nav-item')?.classList.add('active');
-            
+
             // Update UI
             const icons = { think: '💭', decide: '⚖️', validate: '✓', plan: '📋' };
             const titles = { think: 'Think', decide: 'Decide', validate: 'Validate', plan: 'Plan' };
@@ -1041,12 +1092,12 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                 validate: "Enter the proposition to validate...",
                 plan: "Enter your goal or objective..."
             };
-            
+
             document.getElementById('current-mode-icon').textContent = icons[mode];
             document.getElementById('current-mode-title').textContent = titles[mode];
             document.getElementById('main-input').placeholder = placeholders[mode];
             document.getElementById('action-text').textContent = mode === 'think' ? 'Process' : mode.charAt(0).toUpperCase() + mode.slice(1);
-            
+
             // Show/hide options for decide mode
             document.getElementById('options-area').style.display = mode === 'decide' ? 'flex' : 'none';
         }
@@ -1061,7 +1112,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
             const resultsArea = document.getElementById('results-area');
             const resultsCard = document.getElementById('results-card');
-            
+
             resultsCard.style.display = 'block';
             resultsArea.innerHTML = `
                 <div class="loading">
@@ -1072,7 +1123,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
             try {
                 let endpoint, body;
-                
+
                 switch(currentMode) {
                     case 'think':
                         endpoint = '/api/think';
@@ -1082,7 +1133,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                         endpoint = '/api/decide';
                         const opt1 = document.getElementById('option-1').value.trim();
                         const opt2 = document.getElementById('option-2').value.trim();
-                        body = { 
+                        body = {
                             scenario: input,
                             options: opt1 && opt2 ? [opt1, opt2] : []
                         };
@@ -1105,11 +1156,11 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
                 const result = await response.json();
                 displayResult(result);
-                
+
                 // Refresh thoughts
                 loadThoughts();
                 loadStatus();
-                
+
             } catch (error) {
                 resultsArea.innerHTML = `
                     <div class="result-card" style="border-color: var(--accent-error);">
@@ -1125,7 +1176,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         function displayResult(result) {
             const resultsArea = document.getElementById('results-area');
             const time = new Date().toLocaleTimeString();
-            
+
             let content = '';
             if (result.result) {
                 const r = result.result;
@@ -1148,7 +1199,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             } else {
                 content = JSON.stringify(result, null, 2);
             }
-            
+
             resultsArea.innerHTML = `
                 <div class="result-card">
                     <div class="result-header">
@@ -1173,7 +1224,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             try {
                 const response = await fetch('/api/status');
                 const data = await response.json();
-                
+
                 if (data.brain) {
                     document.getElementById('thought-count').textContent = data.brain.thought_count || 0;
                     document.getElementById('cycle-count').textContent = data.brain.cycle_count || 0;
@@ -1188,7 +1239,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             try {
                 const response = await fetch('/api/thoughts');
                 const data = await response.json();
-                
+
                 const list = document.getElementById('thought-list');
                 if (data.thoughts && data.thoughts.length > 0) {
                     list.innerHTML = data.thoughts.slice(0, 5).map(t => `
@@ -1210,7 +1261,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
             try {
                 const response = await fetch('/api/subsystems');
                 const data = await response.json();
-                
+
                 const list = document.getElementById('subsystem-list');
                 if (data.subsystems) {
                     list.innerHTML = data.subsystems.map(s => `
@@ -1260,7 +1311,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
         });
     </script>
 </body>
-</html>'''
+</html>"""
 
 
 def run_ui_server(port: int = 8888, open_browser: bool = True) -> None:
@@ -1269,6 +1320,7 @@ def run_ui_server(port: int = 8888, open_browser: bool = True) -> None:
     print("🧠 Initializing AMOS Brain...")
     try:
         from AMOS_ORGANISM_OS.organism import AmosOrganism
+
         organism = AmosOrganism()
         BrainUIHandler.orchestrator = organism
         BrainUIHandler.brain = organism.brain
@@ -1277,6 +1329,7 @@ def run_ui_server(port: int = 8888, open_browser: bool = True) -> None:
         print(f"   ⚠ Brain init warning: {e}")
         # Fallback to BrainOS directly
         from AMOS_ORGANISM_OS.AMOS_MASTER_ORCHESTRATOR import BrainOS
+
         brain = BrainOS()
         BrainUIHandler.brain = brain
         print(f"   ✓ Brain loaded (fallback): {brain.state.session_id}")
@@ -1284,7 +1337,7 @@ def run_ui_server(port: int = 8888, open_browser: bool = True) -> None:
     # Start server
     server = HTTPServer(("", port), BrainUIHandler)
     url = f"http://localhost:{port}"
-    
+
     print("=" * 50)
     print("🌐 AMOS Brain Interactive UI")
     print("=" * 50)

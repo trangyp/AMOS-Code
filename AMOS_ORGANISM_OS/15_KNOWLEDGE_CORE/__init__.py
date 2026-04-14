@@ -1,5 +1,4 @@
-"""
-15_KNOWLEDGE_CORE — Deep Knowledge Integration & Feature Discovery
+"""15_KNOWLEDGE_CORE — Deep Knowledge Integration & Feature Discovery
 
 The knowledge integration layer of AMOS.
 Discovers, catalogs, and integrates all features, engines,
@@ -12,7 +11,7 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .feature_registry import FeatureRegistry, FeatureModule
+from .feature_registry import FeatureModule, FeatureRegistry
 
 __all__ = [
     "FeatureRegistry",

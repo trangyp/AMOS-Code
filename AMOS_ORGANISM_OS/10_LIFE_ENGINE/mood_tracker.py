@@ -1,5 +1,4 @@
-"""
-Mood Tracker — Emotional state and sentiment monitoring
+"""Mood Tracker — Emotional state and sentiment monitoring
 
 Tracks mood states, emotional patterns, and provides
 insights into psychological well-being.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class MoodState(Enum):
     """Primary mood states."""
+
     EXCITED = "excited"
     HAPPY = "happy"
     CONTENT = "content"
@@ -32,6 +32,7 @@ class MoodState(Enum):
 @dataclass
 class MoodEntry:
     """A mood entry at a specific time."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     mood: MoodState = MoodState.NEUTRAL
     intensity: int = 5  # 1-10
@@ -40,9 +41,9 @@ class MoodEntry:
     context: str = ""  # what was happening
     notes: str = ""
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "mood": self.mood.value,
@@ -50,8 +51,7 @@ class MoodEntry:
 
 
 class MoodTracker:
-    """
-    Tracks mood patterns and emotional states.
+    """Tracks mood patterns and emotional states.
 
     Logs mood entries, analyzes patterns, and provides
     insights into emotional well-being.
@@ -63,7 +63,7 @@ class MoodTracker:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.entries: List[MoodEntry] = []
+        self.entries: list[MoodEntry] = []
 
         self._load_data()
 
@@ -137,7 +137,7 @@ class MoodTracker:
         }
 
         base_valence, base_arousal = mood_map.get(mood, (0.0, 0.0))
-        
+
         # Scale by intensity (1-10)
         intensity_scale = intensity / 5.0
         valence = base_valence * intensity_scale
@@ -145,13 +145,13 @@ class MoodTracker:
 
         return (round(valence, 2), round(arousal, 2))
 
-    def get_recent_moods(self, hours: int = 24) -> List[Dict[str, Any]]:
+    def get_recent_moods(self, hours: int = 24) -> list[dict[str, Any]]:
         """Get recent mood entries."""
         cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
         return [e.to_dict() for e in recent]
 
-    def get_mood_summary(self, days: int = 7) -> Dict[str, Any]:
+    def get_mood_summary(self, days: int = 7) -> dict[str, Any]:
         """Get mood summary for a period."""
         cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
@@ -179,7 +179,9 @@ class MoodTracker:
             "average_arousal": round(sum(arousals) / len(arousals), 2),
             "dominant_mood": most_common,
             "mood_distribution": mood_counts,
-            "positive_ratio": len([v for v in valences if v > 0]) / len(valences) if valences else 0,
+            "positive_ratio": len([v for v in valences if v > 0]) / len(valences)
+            if valences
+            else 0,
         }
 
     def get_mood_trend(self, days: int = 7) -> str:
@@ -196,7 +198,9 @@ class MoodTracker:
         # Compare first half vs second half
         mid = len(recent) // 2
         first_valence = sum(e.valence for e in recent[:mid]) / mid if mid > 0 else 0
-        second_valence = sum(e.valence for e in recent[mid:]) / (len(recent) - mid) if len(recent) > mid else 0
+        second_valence = (
+            sum(e.valence for e in recent[mid:]) / (len(recent) - mid) if len(recent) > mid else 0
+        )
 
         diff = second_valence - first_valence
 
@@ -207,7 +211,7 @@ class MoodTracker:
         else:
             return "stable"
 
-    def get_recommendations(self) -> List[str]:
+    def get_recommendations(self) -> list[str]:
         """Get mood-based recommendations."""
         recs = []
         summary = self.get_mood_summary(7)

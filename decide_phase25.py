@@ -10,15 +10,17 @@ Current Status Check:
 
 Gap Analysis: Looking for what needs fixing...
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 25 - System Health Check")
 print("=" * 70)
 
-print("""
+print(
+    """
 HEALTH CHECK RESULTS:
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -53,29 +55,31 @@ All imports working.
 All tests passing.
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: System Healthy - Minor Polish Items")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 ANALYSIS: All core functionality working. System is healthy.
 
    Minor polish items identified (non-critical):
-   
+
    1. TYPO IN CLI (amosl/cli.py line 172)
       'satistfied' → 'satisfied'
-      
+
    2. UNUSED IMPORTS (cleanup)
       amosl/axioms.py: Optional, Callable not used
       amosl/cli.py: Dict, Any not used
-      
+
    3. DOCUMENTATION FORMATTING
       Markdown table formatting warnings
-      
+
    4. WHITESPACE IN FILES
       Trailing whitespace in ~20 files
-      
+
    These are cosmetic fixes, not functional issues.
    The system is production-ready as-is.
 
@@ -88,7 +92,8 @@ print("""
 
    ESTIMATED TIME: 10 minutes
    IMPACT: Code quality improvement
-""")
+"""
+)
 
 print("\n✅ Decision: Apply minor polish fixes")
 print("=" * 70)

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Verify AMOS Brain deployment to neurosyncai.tech"""
 
-import requests
 import sys
 
+import requests
+
 BASE_URL = "https://neurosyncai.tech"
+
 
 def test_endpoint(path, method="GET", data=None):
     try:
@@ -16,6 +18,7 @@ def test_endpoint(path, method="GET", data=None):
         return r.status_code == 200, r.json() if r.status_code == 200 else r.text
     except Exception as e:
         return False, str(e)
+
 
 def main():
     print("=" * 50)
@@ -48,6 +51,7 @@ def main():
     print("=" * 50)
 
     return 0 if all_pass else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

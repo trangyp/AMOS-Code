@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Workflow Engine Demo with Handlers
+"""Workflow Engine Demo with Handlers
 =====================================
 
 Demonstrates workflow execution with registered action handlers.
@@ -15,7 +14,7 @@ from pathlib import Path
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from workflow_engine import WorkflowEngine, Workflow, StepStatus
+from workflow_engine import StepStatus, WorkflowEngine
 
 
 def demo_analyze(params: dict, context: dict) -> dict:
@@ -58,13 +57,14 @@ def main():
     # Create a sample workflow
     print("\n1. Creating workflow...")
     workflow = engine.create_workflow(
-        "Code Quality Workflow",
-        "Analyze, transform, and validate code"
+        "Code Quality Workflow", "Analyze, transform, and validate code"
     )
 
     # Add steps with dependencies
     step1 = workflow.add_step("Analyze Code", "analyze", {"target": "python"})
-    step2 = workflow.add_step("Auto-fix Issues", "transform", {"type": "refactor"}, depends_on=[step1.id])
+    step2 = workflow.add_step(
+        "Auto-fix Issues", "transform", {"type": "refactor"}, depends_on=[step1.id]
+    )
     step3 = workflow.add_step("Validate Changes", "validate", {}, depends_on=[step2.id])
     step4 = workflow.add_step("Generate Report", "generate", {}, depends_on=[step3.id])
 
@@ -78,9 +78,15 @@ def main():
     # Show results
     print("\n3. Results:")
     print(f"   Status: {result.status}")
-    print(f"   Steps completed:")
+    print("   Steps completed:")
     for step in result.steps:
-        icon = "✓" if step.status == StepStatus.SUCCESS else "✗" if step.status == StepStatus.FAILED else "○"
+        icon = (
+            "✓"
+            if step.status == StepStatus.SUCCESS
+            else "✗"
+            if step.status == StepStatus.FAILED
+            else "○"
+        )
         print(f"     {icon} {step.name}: {step.status.value}")
         if step.result:
             print(f"       Result: {step.result}")

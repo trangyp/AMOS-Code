@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Unified CLI - Central Command Interface
+"""AMOS Unified CLI - Central Command Interface
 ==============================================
 
 Single entry point to interact with all 15 AMOS subsystems.
@@ -29,18 +28,20 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from amos_brain import think, decide, validate
+from amos_brain import decide, think, validate
 
 
 def print_banner():
-    print("""
+    print(
+        """
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
 ║              AMOS UNIFIED COMMAND INTERFACE                   ║
 ║                      Version 1.0.0                            ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 def cmd_status():
@@ -82,9 +83,7 @@ def cmd_deploy(args):
 def cmd_health():
     """Run health check."""
     print("\n🏥 Running Health Check...")
-    script = (
-        Path(__file__).parent / "AMOS_ORGANISM_OS" / "system_health_monitor.py"
-    )
+    script = Path(__file__).parent / "AMOS_ORGANISM_OS" / "system_health_monitor.py"
     if script.exists():
         subprocess.run([sys.executable, str(script)])
     else:
@@ -105,36 +104,61 @@ def cmd_features():
     """List features."""
     print("\n📋 AMOS Features")
     print("=" * 60)
-    
+
     features = {
         "Core Subsystems": [
-            "00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE",
-            "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM",
-            "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE",
-            "11_LEGAL_BRAIN", "12_QUANTUM_LAYER", "13_FACTORY",
-            "14_INTERFACES", "15_KNOWLEDGE_CORE"
+            "00_ROOT",
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "04_BLOOD",
+            "05_SKELETON",
+            "06_MUSCLE",
+            "07_METABOLISM",
+            "08_WORLD_MODEL",
+            "09_SOCIAL_ENGINE",
+            "10_LIFE_ENGINE",
+            "11_LEGAL_BRAIN",
+            "12_QUANTUM_LAYER",
+            "13_FACTORY",
+            "14_INTERFACES",
+            "15_KNOWLEDGE_CORE",
         ],
         "Cognitive Engines": [
-            "Biology", "Design", "Economics", "Engineering",
-            "Physics", "Signal Processing", "Society & Culture",
-            "Strategy & Game"
+            "Biology",
+            "Design",
+            "Economics",
+            "Engineering",
+            "Physics",
+            "Signal Processing",
+            "Society & Culture",
+            "Strategy & Game",
         ],
         "Core Brain": [
-            "Cognition", "Consciousness", "Emotion", "Intelligence",
-            "Mind OS", "Personality"
+            "Cognition",
+            "Consciousness",
+            "Emotion",
+            "Intelligence",
+            "Mind OS",
+            "Personality",
         ],
         "Tech Kernels": [
-            "Automation", "Coding", "Data Science", "ML Engineering",
-            "Security", "Cloud", "DevOps"
+            "Automation",
+            "Coding",
+            "Data Science",
+            "ML Engineering",
+            "Security",
+            "Cloud",
+            "DevOps",
         ],
         "Knowledge Packs": ["55 Countries", "19 Sectors", "7 States"],
     }
-    
+
     for category, items in features.items():
         print(f"\n{category}:")
         for item in items:
             print(f"  • {item}")
-    
+
     print(f"\n{'='*60}")
     print("Total: 15 Subsystems + 100+ Engines + 83 Knowledge Packs")
 
@@ -169,9 +193,9 @@ def cmd_brain(args):
     try:
         if mode == "think":
             result = think(query)
-            if hasattr(result, 'content'):
+            if hasattr(result, "content"):
                 print(f"\n💭 Result:\n{result.content[:500]}")
-                if hasattr(result, 'reasoning') and result.reasoning:
+                if hasattr(result, "reasoning") and result.reasoning:
                     print("\n📝 Reasoning:")
                     for i, r in enumerate(result.reasoning[:3], 1):
                         print(f"  {i}. {r[:80]}")
@@ -180,10 +204,10 @@ def cmd_brain(args):
 
         elif mode == "decide":
             result = decide(query)
-            if hasattr(result, 'approved'):
+            if hasattr(result, "approved"):
                 status = "✅ APPROVED" if result.approved else "❌ REJECTED"
                 print(f"\n⚖️ Decision: {status}")
-                if hasattr(result, 'reasoning'):
+                if hasattr(result, "reasoning"):
                     print(f"\nReasoning: {result.reasoning[:200]}")
             else:
                 print(f"\nResult: {result}")
@@ -214,28 +238,30 @@ Examples:
     python amos_cli.py features         # List all features
     python amos_cli.py brain think "What is the next step?"
     python amos_cli.py brain decide "Should we proceed?" --options yes,no
-        """
+        """,
     )
-    
+
     parser.add_argument(
         "command",
         choices=[
-            "status", "activate", "deploy", "health",
-            "dashboard", "features", "brain", "help"
+            "status",
+            "activate",
+            "deploy",
+            "health",
+            "dashboard",
+            "features",
+            "brain",
+            "help",
         ],
-        help="Command to execute"
+        help="Command to execute",
     )
-    
-    parser.add_argument(
-        "args",
-        nargs="*",
-        help="Additional arguments for the command"
-    )
-    
+
+    parser.add_argument("args", nargs="*", help="Additional arguments for the command")
+
     args = parser.parse_args()
-    
+
     print_banner()
-    
+
     if args.command == "status":
         cmd_status()
     elif args.command == "activate":
@@ -252,7 +278,7 @@ Examples:
         cmd_brain(args.args)
     elif args.command == "help":
         parser.print_help()
-    
+
     print()
 
 

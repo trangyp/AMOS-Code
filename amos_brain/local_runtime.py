@@ -12,7 +12,7 @@ from typing import Any
 
 from .config_validator import validate_config
 from .integration import AMOSBrainIntegration, get_amos_integration
-from .metrics import get_metrics, MetricsCollector
+from .metrics import get_metrics
 from .model_backend import ModelBackend, build_backend_from_env
 
 
@@ -121,8 +121,8 @@ class AMOSLocalRuntime:
         # Start metrics tracking
         metrics = get_metrics()
         req_metrics = metrics.start_request(
-            backend=getattr(self.backend, 'base_url', 'unknown'),
-            model=getattr(self.backend, 'model', 'unknown'),
+            backend=getattr(self.backend, "base_url", "unknown"),
+            model=getattr(self.backend, "model", "unknown"),
         )
 
         # Call local LLM backend
@@ -135,9 +135,7 @@ class AMOSLocalRuntime:
             )
             metrics.end_request(req_metrics, success=True)
         except Exception as e:
-            metrics.end_request(
-                req_metrics, success=False, error_type=type(e).__name__
-            )
+            metrics.end_request(req_metrics, success=False, error_type=type(e).__name__)
             return {
                 "ok": False,
                 "error": f"Model generation failed: {e}",
@@ -154,9 +152,7 @@ class AMOSLocalRuntime:
             "raw": result.raw,
         }
 
-    def reply_stream(
-        self, user_message: str, context: dict | None = None
-    ):
+    def reply_stream(self, user_message: str, context: dict | None = None):
         """Stream response from AMOS + local LLM pipeline.
 
         Args:
@@ -194,8 +190,8 @@ class AMOSLocalRuntime:
         # Start metrics tracking
         metrics = get_metrics()
         req_metrics = metrics.start_request(
-            backend=getattr(self.backend, 'base_url', 'unknown'),
-            model=getattr(self.backend, 'model', 'unknown'),
+            backend=getattr(self.backend, "base_url", "unknown"),
+            model=getattr(self.backend, "model", "unknown"),
         )
 
         # Stream from local LLM backend
@@ -214,9 +210,7 @@ class AMOSLocalRuntime:
             yield {"type": "done", "full_text": full_text}
 
         except Exception as e:
-            metrics.end_request(
-                req_metrics, success=False, error_type=type(e).__name__
-            )
+            metrics.end_request(req_metrics, success=False, error_type=type(e).__name__)
             yield {"type": "error", "error": f"Model generation failed: {e}"}
 
     def chat_loop(self) -> None:
@@ -224,7 +218,7 @@ class AMOSLocalRuntime:
         print("\n" + "=" * 60)
         print("AMOS Local Runtime - Interactive Mode")
         print("=" * 60)
-        backend_status = self._status.get('backend', {})
+        backend_status = self._status.get("backend", {})
         print(f"Backend: {backend_status.get('backend', 'unknown')}")
         print(f"Model: {backend_status.get('model', 'unknown')}")
         print("Type 'quit', 'exit', or Ctrl+C to exit")
@@ -295,7 +289,7 @@ class AMOSLocalRuntime:
             print(f"Success rate: {metrics_summary.get('success_rate', 0):.1%}")
             print(f"Avg latency: {metrics_summary.get('avg_latency_ms', 0):.0f}ms")
             print(f"P95 latency: {metrics_summary.get('p95_latency_ms', 0):.0f}ms")
-            if metrics_summary.get('failed', 0) > 0:
+            if metrics_summary.get("failed", 0) > 0:
                 print(f"Failed requests: {metrics_summary.get('failed', 0)}")
         else:
             print("No metrics data collected.")
@@ -348,7 +342,8 @@ def create_local_runtime(
 
 def main() -> int:
     """Main entry point for AMOS local runtime."""
-    print(r"""
+    print(
+        r"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║   █████╗ ███╗   ███╗ ██████╗ ███████╗                            ║
@@ -362,7 +357,8 @@ def main() -> int:
 ║   Local models as execution engine, AMOS as governance layer     ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
     # Validate configuration first
     validation = validate_config()

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Integration Demo
+"""AMOS Brain Integration Demo
 
 Demonstrates:
 1. Brain initialization and status
@@ -15,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from amos_brain import GlobalLaws, RuleOfTwo, RuleOfFour
+from amos_brain import GlobalLaws, RuleOfFour, RuleOfTwo
 from amos_brain.cognitive_stack import CognitiveStack
 from amos_brain.integration import get_amos_integration
 
@@ -99,7 +98,7 @@ def demo_rule_of_two():
     print(f"Problem: {result['problem']}")
     print()
 
-    for i, p in enumerate(result['perspectives'], 1):
+    for i, p in enumerate(result["perspectives"], 1):
         print(f"Perspective {i}: {p.name}")
         print(f"  Viewpoint: {p.viewpoint}")
         print(f"  Evidence: {p.supporting_evidence}")
@@ -125,14 +124,14 @@ def demo_rule_of_four():
     print(f"Completeness: {result['completeness_score']:.0%}")
     print()
 
-    for q_key, q_data in result['quadrant_details'].items():
+    for q_key, q_data in result["quadrant_details"].items():
         print(f"Quadrant: {q_data['name']}")
         print(f"  Priority: {q_data['priority']}")
         print(f"  Relevant Factors: {q_data['relevant_factors']}")
         print(f"  Risks: {q_data['applicable_risks']}")
         print()
 
-    integration = result['integration']
+    integration = result["integration"]
     print(f"Key Quadrants: {integration['key_quadrants']}")
     print(f"Recommendation: {integration['integrated_recommendation']}")
     print()
@@ -153,7 +152,7 @@ def demo_cognitive_stack():
         "Design a new user interface for mobile banking",
         "Calculate stress forces on a bridge support beam",
         "Model the economic impact of climate policy",
-        "Analyze biological signals from wearable sensors"
+        "Analyze biological signals from wearable sensors",
     ]
 
     for query in queries:
@@ -173,7 +172,7 @@ def demo_system_prompt():
     base = "You are an AI assistant."
     enhanced = amos.enhance_system_prompt(base)
 
-    lines = enhanced.split('\n')
+    lines = enhanced.split("\n")
     for line in lines[:30]:
         print(line)
     print("...")
@@ -192,11 +191,11 @@ def demo_pre_post_processing():
     print("Pre-processing checks:")
     messages = [
         "Analyze the benefits of renewable energy adoption",
-        "Design a system for sustainable urban development"
+        "Design a system for sustainable urban development",
     ]
     for msg in messages:
         result = amos.pre_process(msg)
-        status = "BLOCKED" if result.get('blocked') else "OK"
+        status = "BLOCKED" if result.get("blocked") else "OK"
         print(f"  '{msg[:40]}...' -> {status}")
     print()
 
@@ -204,13 +203,13 @@ def demo_pre_post_processing():
     print("Post-processing validation:")
     responses = [
         "I think the solution is promising but uncertain.",
-        "This is definitely the best approach without question."
+        "This is definitely the best approach without question.",
     ]
     for resp in responses:
         result = amos.post_process(resp, "test")
         print(f"  Text: '{resp[:50]}...'")
         print(f"    Validation: {'PASS' if result['passed_validation'] else 'ISSUES'}")
-        if result['structural_issues']:
+        if result["structural_issues"]:
             print(f"    Issues: {result['structural_issues']}")
     print()
 

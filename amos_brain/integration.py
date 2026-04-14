@@ -3,15 +3,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from .loader import get_brain
-from .laws import GlobalLaws, UBILaws
-from .reasoning import ReasoningEngine
 from .cognitive_stack import CognitiveStack
+from .laws import GlobalLaws, UBILaws
+from .loader import get_brain
+from .reasoning import ReasoningEngine
 
 
 class AMOSBrainIntegration:
-    """
-    Main integration class connecting AMOS cognitive architecture to agent runtime.
+    """Main integration class connecting AMOS cognitive architecture to agent runtime.
 
     Provides:
     - Brain initialization and configuration loading
@@ -54,32 +53,25 @@ class AMOSBrainIntegration:
             "ubi_domains": config.ubi_domains,
             "laws_loaded": list(self.laws.LAWS.keys()),
             "engines_available": self.cognitive_stack.list_engines(),
-            "gap_rules": self.brain.get_gap_rules()
+            "gap_rules": self.brain.get_gap_rules(),
         }
 
-    def pre_process(self, user_message: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        """
-        Pre-process user message through AMOS brain.
+    def pre_process(
+        self, user_message: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """Pre-process user message through AMOS brain.
 
         Enforces L1 (Law of Law) and checks operational scope.
         """
         # L1: Check operational scope
         is_permitted, reason = self.laws.check_l1_constraint("analysis")
         if not is_permitted:
-            return {
-                "blocked": True,
-                "reason": reason,
-                "law": "L1"
-            }
+            return {"blocked": True, "reason": reason, "law": "L1"}
 
         # UBI safety check
         bio_safe, bio_reason = self.ubi.check_biological_safety(user_message)
         if not bio_safe:
-            return {
-                "blocked": True,
-                "reason": bio_reason,
-                "law": "UBI"
-            }
+            return {"blocked": True, "reason": bio_reason, "law": "UBI"}
 
         # Route to appropriate engines
         routing = self.cognitive_stack.route_query(user_message)
@@ -87,12 +79,11 @@ class AMOSBrainIntegration:
         return {
             "blocked": False,
             "routing": routing,
-            "pre_analysis": self.reasoning.full_analysis(user_message, context)
+            "pre_analysis": self.reasoning.full_analysis(user_message, context),
         }
 
     def enhance_system_prompt(self, base_prompt: str) -> str:
-        """
-        Enhance system prompt with AMOS brain context.
+        """Enhance system prompt with AMOS brain context.
 
         Adds global laws, reasoning constraints, and brain identity.
         """
@@ -143,15 +134,14 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
         return brain_context
 
     def post_process(self, response: str, user_message: str) -> dict[str, Any]:
-        """
-        Post-process assistant response through AMOS brain.
+        """Post-process assistant response through AMOS brain.
 
         Enforces L4 (Structural Integrity) and L5 (Communication).
         """
         issues = []
 
         # L4: Check for structural integrity
-        statements = [s.strip() for s in response.split('.') if s.strip()]
+        statements = [s.strip() for s in response.split(".") if s.strip()]
         consistent, contradictions = self.laws.check_l4_integrity(statements)
         if not consistent:
             issues.extend(contradictions)
@@ -168,15 +158,26 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
             "response": response,
             "structural_issues": issues,
             "uncertainty_check": uncertainty_check,
-            "passed_validation": len(issues) == 0 and uncertainty_check["passed"]
+            "passed_validation": len(issues) == 0 and uncertainty_check["passed"],
         }
 
     def _check_uncertainty_labels(self, text: str) -> dict[str, Any]:
         """Check if uncertainty is properly labeled."""
         uncertainty_markers = [
-            "uncertain", "unclear", "unknown", "may", "might", "could",
-            "possibly", "probably", "likely", "uncertain", "assumption",
-            "estimated", "approximate", "speculative"
+            "uncertain",
+            "unclear",
+            "unknown",
+            "may",
+            "might",
+            "could",
+            "possibly",
+            "probably",
+            "likely",
+            "uncertain",
+            "assumption",
+            "estimated",
+            "approximate",
+            "speculative",
         ]
 
         found_markers = [m for m in uncertainty_markers if m in text.lower()]
@@ -187,7 +188,9 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
         return {
             "passed": len(found_markers) > 0 or len(text) < 200,
             "uncertainty_markers_found": found_markers,
-            "recommendation": "Add uncertainty labels if making speculative claims" if not found_markers else None
+            "recommendation": "Add uncertainty labels if making speculative claims"
+            if not found_markers
+            else None,
         }
 
     def get_laws_summary(self) -> str:
@@ -205,15 +208,14 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
     def get_status(self) -> dict[str, Any]:
         """Get current brain integration status."""
         brain_loaded = bool(
-            self.brain._config is not None and
-            getattr(self.brain._config, "loaded_specs", [])
+            self.brain._config is not None and getattr(self.brain._config, "loaded_specs", [])
         )
         return {
             "initialized": self._initialized,
             "brain_loaded": brain_loaded,
             "engines_count": len(self.cognitive_stack.engines),
             "laws_active": list(self.laws.LAWS.keys()),
-            "domains_covered": self.brain._config.domains if self.brain._config else []
+            "domains_covered": self.brain._config.domains if self.brain._config else [],
         }
 
 

@@ -3,16 +3,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
-
+from typing import Any, Optional
 
 # ── Server config ─────────────────────────────────────────────────────────────
 
+
 class MCPTransport(str, Enum):
     STDIO = "stdio"
-    SSE   = "sse"
-    HTTP  = "http"
-    WS    = "ws"
+    SSE = "sse"
+    HTTP = "http"
+    WS = "ws"
 
 
 @dataclass
@@ -28,21 +28,22 @@ class MCPServerConfig:
         {"type": "sse", "url": "http://localhost:8080/sse",
          "headers": {"Authorization": "Bearer token"}}
     """
-    name: str                                     # logical name in mcpServers dict
+
+    name: str  # logical name in mcpServers dict
     transport: MCPTransport = MCPTransport.STDIO
     # stdio fields
     command: str = ""
-    args: List[str] = field(default_factory=list)
-    env: Dict[str, str] = field(default_factory=dict)
+    args: list[str] = field(default_factory=list)
+    env: dict[str, str] = field(default_factory=dict)
     # sse / http / ws fields
     url: str = ""
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
     # optional
-    timeout: int = 30                             # seconds per request
+    timeout: int = 30  # seconds per request
     disabled: bool = False
 
     @classmethod
-    def from_dict(cls, name: str, d: dict) -> "MCPServerConfig":
+    def from_dict(cls, name: str, d: dict) -> MCPServerConfig:
         transport_str = d.get("type", "stdio").lower()
         try:
             transport = MCPTransport(transport_str)
@@ -63,24 +64,27 @@ class MCPServerConfig:
 
 # ── Connection state ──────────────────────────────────────────────────────────
 
+
 class MCPServerState(str, Enum):
     DISCONNECTED = "disconnected"
-    CONNECTING   = "connecting"
-    CONNECTED    = "connected"
-    ERROR        = "error"
+    CONNECTING = "connecting"
+    CONNECTED = "connected"
+    ERROR = "error"
 
 
 # ── Tool descriptor ───────────────────────────────────────────────────────────
 
+
 @dataclass
 class MCPTool:
     """A tool provided by an MCP server, ready to register in tool_registry."""
+
     server_name: str
-    tool_name: str                  # original name from server
-    qualified_name: str             # mcp__<server>__<tool>
+    tool_name: str  # original name from server
+    qualified_name: str  # mcp__<server>__<tool>
     description: str
-    input_schema: Dict[str, Any]    # JSON Schema object
-    read_only: bool = False         # from annotations.readOnlyHint
+    input_schema: dict[str, Any]  # JSON Schema object
+    read_only: bool = False  # from annotations.readOnlyHint
 
     def to_tool_schema(self) -> dict:
         """Convert to the schema format expected by the Claude API."""
@@ -92,6 +96,7 @@ class MCPTool:
 
 
 # ── JSON-RPC helpers ──────────────────────────────────────────────────────────
+
 
 def make_request(method: str, params: Optional[dict], req_id: int) -> dict:
     msg: dict = {"jsonrpc": "2.0", "id": req_id, "method": method}

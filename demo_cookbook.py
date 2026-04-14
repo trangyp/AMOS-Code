@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Cookbook Demo - Showcase real-world workflows.
+"""AMOS Brain Cookbook Demo - Showcase real-world workflows.
 
 Demonstrates:
   - Architecture Decision workflow
@@ -14,19 +13,18 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import (
     ArchitectureDecision,
-    ProjectPlanner,
     ProblemDiagnosis,
-    TechnologySelection,
+    ProjectPlanner,
     RiskAssessment,
+    TechnologySelection,
 )
-
 
 C = {
     "cyan": "\033[36m",
@@ -48,7 +46,7 @@ def print_result(result):
     print(clr(f"Workflow: {result.workflow_name}", "cyan", "bold"))
     print(clr(f"Problem: {result.input_data}", "bold"))
     print(f"Confidence: {clr(f'{result.confidence:.0%}', 'green')}")
-    mid = result.memory_id[:8] if result.memory_id else 'n/a'
+    mid = result.memory_id[:8] if result.memory_id else "n/a"
     print(f"Memory ID: {mid}...")
     print()
 
@@ -79,8 +77,8 @@ def main():
         context={
             "current_stack": "REST APIs with 50+ endpoints",
             "constraints": "Mobile app requires efficient data fetching",
-            "scale": "1M requests/day"
-        }
+            "scale": "1M requests/day",
+        },
     )
     print_result(result)
 
@@ -96,7 +94,7 @@ def main():
         constraints={
             "team": "2 backend engineers, 1 DevOps",
             "constraints": ["must handle 10k concurrent", "99.9% uptime SLA"],
-        }
+        },
     )
     print_result(result)
 
@@ -109,7 +107,7 @@ def main():
     result = ProblemDiagnosis.run(
         "Database connection pool exhaustion",
         symptoms=["500 errors after 2 hours", "gradual increase in latency"],
-        context="Checked: query performance, indexes. Timeline: Started 3 days ago, daily occurrence."
+        context="Checked: query performance, indexes. Timeline: Started 3 days ago, daily occurrence.",
     )
     print_result(result)
 
@@ -122,7 +120,13 @@ def main():
     result = TechnologySelection.run(
         "Message Queue",
         options=["RabbitMQ", "Apache Kafka", "AWS SQS"],
-        criteria=["scalability", "operational-complexity", "cost", "persistent messages", "high-throughput"]
+        criteria=[
+            "scalability",
+            "operational-complexity",
+            "cost",
+            "persistent messages",
+            "high-throughput",
+        ],
     )
     print_result(result)
 
@@ -142,7 +146,7 @@ def main():
             "automated-rollback",
             "dry-run-testing",
             "high-severity migration",
-        ]
+        ],
     )
     print_result(result)
 

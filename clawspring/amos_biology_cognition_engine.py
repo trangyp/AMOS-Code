@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
 
 class BiologicalLevel(Enum):
     """Biological organization levels."""
+
     MOLECULAR = "molecular"
     CELLULAR = "cellular"
     TISSUE = "tissue"
@@ -30,14 +31,26 @@ class MolecularGeneticKernel:
     """Kernel for molecular and genetic biology."""
 
     ENTITIES = [
-        "DNA", "RNA", "Proteins", "Lipids", "Carbohydrates",
-        "Ions", "Signalling_Molecules", "Hormones", "Neurotransmitters"
+        "DNA",
+        "RNA",
+        "Proteins",
+        "Lipids",
+        "Carbohydrates",
+        "Ions",
+        "Signalling_Molecules",
+        "Hormones",
+        "Neurotransmitters",
     ]
 
     MECHANISMS = [
-        "Gene_Expression", "Epigenetic_Modification", "Transcription",
-        "Translation", "Protein_Folding", "Post_Translational_Modification",
-        "DNA_Repair", "Cell_Cycle_Regulation"
+        "Gene_Expression",
+        "Epigenetic_Modification",
+        "Transcription",
+        "Translation",
+        "Protein_Folding",
+        "Post_Translational_Modification",
+        "DNA_Repair",
+        "Cell_Cycle_Regulation",
     ]
 
     def __init__(self):
@@ -101,14 +114,23 @@ class CellularTissueKernel:
     """Kernel for cellular and tissue biology."""
 
     CELL_TYPES = [
-        "Neurons", "Astrocytes", "Oligodendrocytes", "Microglia",
-        "Muscle_Cells", "Endocrine_Cells", "Immune_Cells"
+        "Neurons",
+        "Astrocytes",
+        "Oligodendrocytes",
+        "Microglia",
+        "Muscle_Cells",
+        "Endocrine_Cells",
+        "Immune_Cells",
     ]
 
     PROCESSES = [
-        "Membrane_Potential_Dynamics", "Ion_Channel_Regulation",
-        "Synaptic_Transmission", "Myelination", "Neuroinflammation",
-        "Metabolic_Support", "Cellular_Stress_Response"
+        "Membrane_Potential_Dynamics",
+        "Ion_Channel_Regulation",
+        "Synaptic_Transmission",
+        "Myelination",
+        "Neuroinflammation",
+        "Metabolic_Support",
+        "Cellular_Stress_Response",
     ]
 
     def __init__(self):
@@ -169,13 +191,26 @@ class OrganSystemKernel:
     """Kernel for organ and system-level biology."""
 
     ORGANS = [
-        "Brain", "Spinal_Cord", "Heart", "Lungs", "Liver",
-        "Kidneys", "Gut", "Endocrine_Glands", "Skin"
+        "Brain",
+        "Spinal_Cord",
+        "Heart",
+        "Lungs",
+        "Liver",
+        "Kidneys",
+        "Gut",
+        "Endocrine_Glands",
+        "Skin",
     ]
 
     BRAIN_SUBSYSTEMS = [
-        "Cortex", "Hippocampus", "Amygdala", "Basal_Ganglia",
-        "Thalamus", "Hypothalamus", "Cerebellum", "Brainstem"
+        "Cortex",
+        "Hippocampus",
+        "Amygdala",
+        "Basal_Ganglia",
+        "Thalamus",
+        "Hypothalamus",
+        "Cerebellum",
+        "Brainstem",
     ]
 
     def __init__(self):
@@ -371,9 +406,7 @@ class BiologyCognitionEngine:
         domains: list[str] | None = None,
     ) -> dict[str, Any]:
         """Run biology/cognition analysis across specified domains."""
-        domains = domains or [
-            "molecular", "cellular", "organ", "cognition", "pathology"
-        ]
+        domains = domains or ["molecular", "cellular", "organ", "cognition", "pathology"]
         results: dict[str, Any] = {}
 
         if "molecular" in domains:
@@ -457,53 +490,57 @@ class BiologyCognitionEngine:
 
         for domain, data in results.items():
             display_name = domain_names.get(domain, domain.title())
-            lines.extend([
-                f"",
-                f"### {display_name}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### {display_name}",
+                ]
+            )
             if isinstance(data, dict):
                 for key, value in data.items():
                     if key not in ["principles", "query"]:
                         lines.append(f"- {key}: {value}")
 
-        lines.extend([
-            "",
-            "## Safety & Compliance",
-            "",
-            "### Safety Constraints",
-            "- NOT medical advice - informational only",
-            "- NO diagnostic or treatment recommendations",
-            "- NO medical decisions based on these outputs",
-            "- ALWAYS consult qualified healthcare professionals",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Biological hierarchy preserved",
-            "- L2 (Temporal): Development and aging considered",
-            "- L3 (Semantic): Clear biological reasoning",
-            "- L4 (Cognitive): Multi-level integration",
-            "- L5 (Safety): No harmful medical guidance",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT a biological simulator. "
-            "All outputs are CONCEPTUAL and SIMPLIFIED only.",
-            "",
-            "Specific Gaps:",
-            "- No biochemical pathway simulation",
-            "- No genetic sequence analysis",
-            "- No clinical data processing",
-            "- No medical imaging analysis",
-            "- No wet lab experimental design",
-            "- Pattern-based analysis only, not computational biology",
-            "",
-            "### Biology-First Modelling",
-            "Nervous system anchored.",
-            "Layered from molecule → organism.",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Compliance",
+                "",
+                "### Safety Constraints",
+                "- NOT medical advice - informational only",
+                "- NO diagnostic or treatment recommendations",
+                "- NO medical decisions based on these outputs",
+                "- ALWAYS consult qualified healthcare professionals",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Biological hierarchy preserved",
+                "- L2 (Temporal): Development and aging considered",
+                "- L3 (Semantic): Clear biological reasoning",
+                "- L4 (Cognitive): Multi-level integration",
+                "- L5 (Safety): No harmful medical guidance",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT a biological simulator. "
+                "All outputs are CONCEPTUAL and SIMPLIFIED only.",
+                "",
+                "Specific Gaps:",
+                "- No biochemical pathway simulation",
+                "- No genetic sequence analysis",
+                "- No clinical data processing",
+                "- No medical imaging analysis",
+                "- No wet lab experimental design",
+                "- Pattern-based analysis only, not computational biology",
+                "",
+                "### Biology-First Modelling",
+                "Nervous system anchored.",
+                "Layered from molecule → organism.",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 

@@ -6,8 +6,6 @@ quantum_path = Path(__file__).parent.parent / "09_QUANTUM_LAYER"
 if str(quantum_path) not in sys.path:
     sys.path.insert(0, str(quantum_path))
 
-from scenario_engine import (
-    ScenarioEngine, Scenario, ScenarioResult, get_scenario_engine
-)
+from scenario_engine import Scenario, ScenarioEngine, ScenarioResult, get_scenario_engine
 
 __all__ = ["ScenarioEngine", "Scenario", "ScenarioResult", "get_scenario_engine"]

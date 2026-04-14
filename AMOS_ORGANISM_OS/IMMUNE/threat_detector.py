@@ -6,6 +6,6 @@ immune_path = Path(__file__).parent.parent / "03_IMMUNE"
 if str(immune_path) not in sys.path:
     sys.path.insert(0, str(immune_path))
 
-from threat_detector import ThreatDetector, Threat
+from threat_detector import Threat, ThreatDetector
 
 __all__ = ["ThreatDetector", "Threat"]

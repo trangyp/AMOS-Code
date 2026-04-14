@@ -12,21 +12,21 @@ export function useAMOSBrain(apiKey = null) {
     const request = useCallback(async (endpoint, method = 'GET', body = null) => {
         setLoading(true);
         setError(null);
-        
+
         try {
             const headers = { 'Content-Type': 'application/json' };
             if (apiKey) headers['X-API-Key'] = apiKey;
-            
+
             const response = await fetch(`${API_URL}${endpoint}`, {
                 method,
                 headers,
                 body: body ? JSON.stringify(body) : null
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            
+
             const data = await response.json();
             setLoading(false);
             return data;

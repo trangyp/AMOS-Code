@@ -14,31 +14,34 @@ This matches the Claude Code convention (mcp__serverName__toolName).
 from __future__ import annotations
 
 import threading
-from typing import Dict, List, Optional
+from typing import Optional
 
 from tool_registry import ToolDef, register_tool
-from .client import MCPClient, MCPManager, get_mcp_manager
-from .config import load_mcp_configs
-from .types import MCPServerConfig, MCPTool
 
+from .client import get_mcp_manager
+from .config import load_mcp_configs
+from .types import MCPTool
 
 # ── Global state ──────────────────────────────────────────────────────────────
 
 _initialized = False
 _init_lock = threading.Lock()
-_connect_errors: Dict[str, Optional[str]] = {}   # server → error or None
+_connect_errors: dict[str, Optional[str]] = {}  # server → error or None
 
 
 # ── Tool wrapper ──────────────────────────────────────────────────────────────
 
+
 def _make_mcp_func(qualified_name: str):
     """Return a tool func that calls the MCP server for a given qualified name."""
+
     def _mcp_tool(params: dict, config: dict) -> str:
         mgr = get_mcp_manager()
         try:
             return mgr.call_tool(qualified_name, params)
         except Exception as e:
             return f"Error calling MCP tool '{qualified_name}': {e}"
+
     return _mcp_tool
 
 
@@ -55,7 +58,8 @@ def _register_tool(tool: MCPTool) -> None:
 
 # ── Initialization ────────────────────────────────────────────────────────────
 
-def initialize_mcp(verbose: bool = False) -> Dict[str, Optional[str]]:
+
+def initialize_mcp(verbose: bool = False) -> dict[str, Optional[str]]:
     """Load configs, connect servers, register tools. Idempotent.
 
     Returns a dict of {server_name: error_message_or_None}.
@@ -90,7 +94,7 @@ def initialize_mcp(verbose: bool = False) -> Dict[str, Optional[str]]:
         return errors
 
 
-def reload_mcp() -> Dict[str, Optional[str]]:
+def reload_mcp() -> dict[str, Optional[str]]:
     """Force a full reload: re-read configs, reconnect, re-register all tools."""
     global _initialized
     with _init_lock:
@@ -113,12 +117,13 @@ def refresh_server(server_name: str) -> Optional[str]:
         return str(e)
 
 
-def get_connect_errors() -> Dict[str, Optional[str]]:
+def get_connect_errors() -> dict[str, Optional[str]]:
     return dict(_connect_errors)
 
 
 # ── Auto-initialize on import ─────────────────────────────────────────────────
 # Connect in a background thread so startup is not blocked.
+
 
 def _background_init():
     try:

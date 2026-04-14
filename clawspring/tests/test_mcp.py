@@ -2,28 +2,31 @@
 from __future__ import annotations
 
 import json
-import threading
-import time
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
-
-from mcp.types import (
-    MCPServerConfig, MCPTool, MCPServerState, MCPTransport,
-    make_request, make_notification, INIT_PARAMS,
-)
-from mcp.config import load_mcp_configs, add_server_to_user_config, remove_server_from_user_config
-from mcp.client import MCPManager, MCPClient, StdioTransport, get_mcp_manager
 import mcp.config as _mcp_config
-
+import pytest
+from mcp.client import MCPClient, MCPManager, get_mcp_manager
+from mcp.config import add_server_to_user_config, load_mcp_configs, remove_server_from_user_config
+from mcp.types import (
+    INIT_PARAMS,
+    MCPServerConfig,
+    MCPServerState,
+    MCPTool,
+    MCPTransport,
+    make_notification,
+    make_request,
+)
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(autouse=True)
 def reset_manager(monkeypatch):
     """Each test gets a fresh MCPManager singleton."""
     import mcp.client as _client_mod
+
     monkeypatch.setattr(_client_mod, "_manager", None)
 
 
@@ -38,28 +41,38 @@ def tmp_config(tmp_path, monkeypatch):
 
 # ── types ─────────────────────────────────────────────────────────────────────
 
+
 class TestTypes:
     def test_server_config_from_dict_stdio(self):
-        cfg = MCPServerConfig.from_dict("git", {
-            "type": "stdio", "command": "uvx", "args": ["mcp-server-git"],
-        })
+        cfg = MCPServerConfig.from_dict(
+            "git",
+            {
+                "type": "stdio",
+                "command": "uvx",
+                "args": ["mcp-server-git"],
+            },
+        )
         assert cfg.name == "git"
         assert cfg.transport == MCPTransport.STDIO
         assert cfg.command == "uvx"
         assert cfg.args == ["mcp-server-git"]
 
     def test_server_config_from_dict_sse(self):
-        cfg = MCPServerConfig.from_dict("remote", {
-            "type": "sse", "url": "http://localhost:8080/sse",
-            "headers": {"Authorization": "Bearer tok"},
-        })
+        cfg = MCPServerConfig.from_dict(
+            "remote",
+            {
+                "type": "sse",
+                "url": "http://localhost:8080/sse",
+                "headers": {"Authorization": "Bearer tok"},
+            },
+        )
         assert cfg.transport == MCPTransport.SSE
         assert cfg.url == "http://localhost:8080/sse"
         assert cfg.headers["Authorization"] == "Bearer tok"
 
     def test_server_config_defaults(self):
         cfg = MCPServerConfig.from_dict("x", {"command": "mybin"})
-        assert cfg.transport == MCPTransport.STDIO   # default
+        assert cfg.transport == MCPTransport.STDIO  # default
         assert cfg.timeout == 30
         assert not cfg.disabled
 
@@ -106,6 +119,7 @@ class TestTypes:
 
 # ── config ────────────────────────────────────────────────────────────────────
 
+
 class TestConfig:
     def test_load_empty(self, tmp_config):
         configs = load_mcp_configs()
@@ -113,25 +127,25 @@ class TestConfig:
 
     def test_load_user_config(self, tmp_config):
         user_cfg = tmp_config / "mcp.json"
-        user_cfg.write_text(json.dumps({
-            "mcpServers": {
-                "git": {"type": "stdio", "command": "uvx", "args": ["mcp-server-git"]}
-            }
-        }))
+        user_cfg.write_text(
+            json.dumps(
+                {
+                    "mcpServers": {
+                        "git": {"type": "stdio", "command": "uvx", "args": ["mcp-server-git"]}
+                    }
+                }
+            )
+        )
         configs = load_mcp_configs()
         assert "git" in configs
         assert configs["git"].command == "uvx"
 
     def test_load_project_config_overrides_user(self, tmp_config, monkeypatch):
         user_cfg = tmp_config / "mcp.json"
-        user_cfg.write_text(json.dumps({
-            "mcpServers": {"git": {"command": "old-cmd"}}
-        }))
+        user_cfg.write_text(json.dumps({"mcpServers": {"git": {"command": "old-cmd"}}}))
         # Write project config in cwd
         project_cfg = Path.cwd() / ".mcp_test.json"
-        project_cfg.write_text(json.dumps({
-            "mcpServers": {"git": {"command": "new-cmd"}}
-        }))
+        project_cfg.write_text(json.dumps({"mcpServers": {"git": {"command": "new-cmd"}}}))
         try:
             configs = load_mcp_configs()
             assert configs["git"].command == "new-cmd"
@@ -157,18 +171,23 @@ class TestConfig:
         assert remove_server_from_user_config("nonexistent") is False
 
     def test_multiple_servers(self, tmp_config):
-        (tmp_config / "mcp.json").write_text(json.dumps({
-            "mcpServers": {
-                "a": {"command": "cmd_a"},
-                "b": {"type": "sse", "url": "http://localhost/sse"},
-            }
-        }))
+        (tmp_config / "mcp.json").write_text(
+            json.dumps(
+                {
+                    "mcpServers": {
+                        "a": {"command": "cmd_a"},
+                        "b": {"type": "sse", "url": "http://localhost/sse"},
+                    }
+                }
+            )
+        )
         configs = load_mcp_configs()
         assert len(configs) == 2
         assert configs["b"].transport == MCPTransport.SSE
 
 
 # ── MCPClient (unit tests with mocked transport) ──────────────────────────────
+
 
 class TestMCPClient:
     def _make_client(self, transport_mock):
@@ -189,11 +208,15 @@ class TestMCPClient:
 
     def test_list_tools_parses_tool(self):
         t = MagicMock()
-        t.request.return_value = {"tools": [{
-            "name": "git_status",
-            "description": "Show git status",
-            "inputSchema": {"type": "object", "properties": {}},
-        }]}
+        t.request.return_value = {
+            "tools": [
+                {
+                    "name": "git_status",
+                    "description": "Show git status",
+                    "inputSchema": {"type": "object", "properties": {}},
+                }
+            ]
+        }
         client = self._make_client(t)
         tools = client.list_tools()
         assert len(tools) == 1
@@ -203,12 +226,16 @@ class TestMCPClient:
 
     def test_list_tools_read_only_hint(self):
         t = MagicMock()
-        t.request.return_value = {"tools": [{
-            "name": "read_file",
-            "description": "Read a file",
-            "inputSchema": {},
-            "annotations": {"readOnlyHint": True},
-        }]}
+        t.request.return_value = {
+            "tools": [
+                {
+                    "name": "read_file",
+                    "description": "Read a file",
+                    "inputSchema": {},
+                    "annotations": {"readOnlyHint": True},
+                }
+            ]
+        }
         client = self._make_client(t)
         tools = client.list_tools()
         assert tools[0].read_only is True
@@ -219,7 +246,7 @@ class TestMCPClient:
         client = MCPClient(cfg)
         client._transport = t
         client.state = MCPServerState.CONNECTED
-        client._capabilities = {}   # no "tools" key
+        client._capabilities = {}  # no "tools" key
         tools = client.list_tools()
         assert tools == []
         t.request.assert_not_called()
@@ -264,11 +291,15 @@ class TestMCPClient:
 
     def test_qualified_name_sanitized(self):
         t = MagicMock()
-        t.request.return_value = {"tools": [{
-            "name": "my-tool.v2",
-            "description": "A tool with special chars",
-            "inputSchema": {},
-        }]}
+        t.request.return_value = {
+            "tools": [
+                {
+                    "name": "my-tool.v2",
+                    "description": "A tool with special chars",
+                    "inputSchema": {},
+                }
+            ]
+        }
         client = self._make_client(t)
         tools = client.list_tools()
         # Dashes and dots should be replaced with underscores
@@ -300,6 +331,7 @@ class TestMCPClient:
 
 
 # ── MCPManager ────────────────────────────────────────────────────────────────
+
 
 class TestMCPManager:
     def test_add_server(self):
@@ -344,6 +376,7 @@ class TestMCPManager:
 
 # ── StdioTransport (integration-style with echo) ──────────────────────────────
 
+
 class TestStdioTransportEcho:
     """Use Python's own interpreter as a trivial echo MCP server."""
 
@@ -374,12 +407,15 @@ sys.stdout.flush()
         script = tmp_path / "echo_server.py"
         script.write_text(self.ECHO_SERVER)
 
-        cfg = MCPServerConfig.from_dict("echo", {
-            "type": "stdio",
-            "command": "python3",
-            "args": [str(script)],
-            "timeout": 5,
-        })
+        cfg = MCPServerConfig.from_dict(
+            "echo",
+            {
+                "type": "stdio",
+                "command": "python3",
+                "args": [str(script)],
+                "timeout": 5,
+            },
+        )
         client = MCPClient(cfg)
         client.connect()
         assert client.state == MCPServerState.CONNECTED

@@ -7,11 +7,11 @@ if str(skeleton_path) not in sys.path:
     sys.path.insert(0, str(skeleton_path))
 
 from constraint_engine import (
-    ConstraintEngine,
     Constraint,
+    ConstraintEngine,
+    ConstraintOp,
     ConstraintResult,
     ConstraintType,
-    ConstraintOp,
 )
 
 __all__ = [

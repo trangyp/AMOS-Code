@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Launcher - Simple entry point
+"""AMOS Launcher - Simple entry point
 
 Usage:
     ./run_amos.py              # Run operational AMOS (default)
@@ -11,22 +10,22 @@ Usage:
 This is the simplest way to run AMOS.
 """
 
-import sys
 import subprocess
+import sys
 from pathlib import Path
+
 
 def main():
     """Simple launcher that delegates to master controller."""
-    
     # Get script directory
     script_dir = Path(__file__).parent.absolute()
-    
+
     # Build command
     cmd = [sys.executable, str(script_dir / "amos_master_controller.py")]
-    
+
     # Parse simple args
     args = sys.argv[1:]
-    
+
     if not args:
         # Default: run operational
         cmd.extend(["--operational", "--demo"])
@@ -44,7 +43,7 @@ def main():
     else:
         # Pass through all args
         cmd.extend(args)
-    
+
     # Run
     try:
         result = subprocess.run(cmd, cwd=str(script_dir))
@@ -55,6 +54,7 @@ def main():
     except Exception as e:
         print(f"Error running AMOS: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

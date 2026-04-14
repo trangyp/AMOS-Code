@@ -1,25 +1,24 @@
-"""
-06_MUSCLE — Run commands, write code, deploy and automate workflows.
+"""06_MUSCLE — Run commands, write code, deploy and automate workflows.
 
 The execution engine of AMOS. Takes plans from BRAIN and executes them.
 """
 
-from .executor import MuscleExecutor, ExecutionResult, ExecutionContext
-from .code_runner import CodeRunner
-from .workflow_engine import WorkflowEngine
 from .amos_worker_engine import (
     AmosWorkerEngine,
-    WorkerResult,
     CodeWorker,
     FileWorker,
+    WorkerResult,
     get_worker_engine,
 )
 from .brain_muscle_bridge import (
     BrainMuscleBridge,
-    CognitiveTask,
     CognitiveExecutionResult,
+    CognitiveTask,
     get_brain_muscle_bridge,
 )
+from .code_runner import CodeRunner
+from .executor import ExecutionContext, ExecutionResult, MuscleExecutor
+from .workflow_engine import WorkflowEngine
 
 __all__ = [
     # Base execution

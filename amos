@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain CLI - Human interface to the cognitive architecture.
+"""AMOS Brain CLI - Human interface to the cognitive architecture.
 
 Commands:
   amos status          Check brain status and configuration
@@ -16,39 +15,37 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import argparse
-import json
-from typing import Any
 
 
 def cmd_status(args: argparse.Namespace) -> int:
     """Show brain status."""
     from amos_brain import get_amos_integration
-    
+
     print("AMOS Brain Status")
     print("=" * 50)
-    
+
     amos = get_amos_integration()
     status = amos.get_status()
-    
+
     print(f"Initialized:     {'✓' if status['initialized'] else '✗'}")
     print(f"Brain Loaded:    {'✓' if status['brain_loaded'] else '✗'}")
     print(f"Engines:         {status['engines_count']}")
     print(f"Laws Active:     {', '.join(status['laws_active'])}")
     print(f"Domains:         {len(status['domains_covered'])}")
     print()
-    
+
     if args.verbose:
         print("Domain Coverage:")
-        for domain in status['domains_covered']:
+        for domain in status["domains_covered"]:
             print(f"  • {domain}")
-    
+
     return 0
 
 
@@ -56,80 +53,80 @@ def cmd_decide(args: argparse.Namespace) -> int:
     """Analyze a decision."""
     from amos_brain import get_amos_integration
     from amos_brain.memory import get_brain_memory
-    
-    problem = ' '.join(args.problem)
+
+    problem = " ".join(args.problem)
     if not problem:
         print("Error: No problem specified")
         return 1
-    
+
     print(f"Analyzing: {problem[:60]}...")
     print("=" * 60)
-    
+
     amos = get_amos_integration()
     analysis = amos.analyze_with_rules(problem)
-    
+
     # Rule of 2
     print("\n📊 Rule of 2 (Dual Perspective)")
     print(f"   Confidence: {analysis['rule_of_two']['confidence']:.0%}")
     print(f"   Rec: {analysis['rule_of_two']['recommendation']}")
-    
+
     # Rule of 4
     print("\n📊 Rule of 4 (Four Quadrants)")
-    r4 = analysis['rule_of_four']
+    r4 = analysis["rule_of_four"]
     print(f"   Completeness: {r4['completeness_score']:.0%}")
     print(f"   Quadrants: {', '.join(r4['quadrants_analyzed'])}")
-    
+
     # Recommendations
     print("\n📋 Recommendations")
-    for rec in analysis['recommendations'][:3]:
+    for rec in analysis["recommendations"][:3]:
         print(f"   → {rec}")
-    
+
     # Save to memory if requested
     if args.save:
         memory = get_brain_memory()
         mid = memory.save_reasoning(problem, analysis, tags=["cli_decide"])
         print(f"\n💾 Saved to memory: {mid[:8]}...")
-    
+
     return 0
 
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     """Deep systems analysis."""
     from amos_brain.cookbook import RootCauseAnalysis
-    
-    topic = ' '.join(args.topic)
+
+    topic = " ".join(args.topic)
     if not topic:
         print("Error: No topic specified")
         return 1
-    
+
     print(f"Deep Analysis: {topic[:60]}...")
     print("=" * 60)
-    
+
     result = RootCauseAnalysis.run(topic)
-    
-    print(f"\n📊 Analysis Complete")
+
+    print("\n📊 Analysis Complete")
     print(f"   Confidence: {result.confidence:.0%}")
     print(f"   Memory ID: {result.memory_id[:8]}...")
-    
+
     print("\n📋 Key Findings")
     for rec in result.recommendations[:5]:
         print(f"   → {rec}")
-    
+
     return 0
 
 
 def cmd_memory(args: argparse.Namespace) -> int:
     """Query reasoning memory."""
     from amos_brain.memory import get_brain_memory
-    
+
     memory = get_brain_memory()
-    
+
     if args.query:
         results = memory.query_reasoning(args.query, limit=args.limit)
         print(f"Query: '{args.query}'")
         print(f"Results: {len(results)}")
         print("=" * 50)
-        
+
         for r in results:
             print(f"\n📝 {r['problem'][:50]}...")
             print(f"   Tags: {', '.join(r.get('tags', []))}")
@@ -138,46 +135,46 @@ def cmd_memory(args: argparse.Namespace) -> int:
         history = memory.get_reasoning_history(limit=args.limit)
         print(f"Recent Reasoning ({len(history)} items)")
         print("=" * 50)
-        
-        for h in history[:args.limit]:
-            prob = h.get('problem', 'Unknown')[:40]
+
+        for h in history[: args.limit]:
+            prob = h.get("problem", "Unknown")[:40]
             print(f"• {prob}... ({h.get('timestamp', 'unknown')[:10]})")
-    
+
     return 0
 
 
 def cmd_dashboard(args: argparse.Namespace) -> int:
     """Show reasoning dashboard."""
     from amos_brain.dashboard import BrainDashboard
-    
+
     dash = BrainDashboard()
     report = dash.generate_report(days=args.days, include_charts=True)
-    
+
     print(f"AMOS Brain Dashboard (Last {args.days} days)")
     print("=" * 50)
-    
-    summary = report['summary']
-    print(f"\n📊 Summary")
+
+    summary = report["summary"]
+    print("\n📊 Summary")
     print(f"   Total Decisions: {summary.get('total_decisions', 0)}")
     print(f"   Avg Confidence: {summary.get('avg_confidence', 0):.0%}")
-    
-    print(f"\n📈 Compliance")
-    compliance = report['compliance_trends']
+
+    print("\n📈 Compliance")
+    compliance = report["compliance_trends"]
     print(f"   L2 (Rule of 2): {compliance.get('l2_compliance_rate', 0):.0%}")
     print(f"   L3 (Rule of 4): {compliance.get('l3_compliance_rate', 0):.0%}")
-    
-    print(f"\n🎯 Top Domains")
-    domains = report['domain_patterns'].get('top_domains', [])
+
+    print("\n🎯 Top Domains")
+    domains = report["domain_patterns"].get("top_domains", [])
     for domain, count in domains[:5]:
         print(f"   • {domain}: {count}")
-    
+
     return 0
 
 
 def cmd_laws(args: argparse.Namespace) -> int:
     """List Global Laws."""
     from amos_brain import get_amos_integration
-    
+
     amos = get_amos_integration()
     print(amos.get_laws_summary())
     return 0
@@ -186,10 +183,8 @@ def cmd_laws(args: argparse.Namespace) -> int:
 def cmd_demo(args: argparse.Namespace) -> int:
     """Run interactive demo."""
     import subprocess
-    demo_path = os.path.join(
-        os.path.dirname(__file__), 
-        'demo_amos_brain.py'
-    )
+
+    demo_path = os.path.join(os.path.dirname(__file__), "demo_amos_brain.py")
     result = subprocess.run([sys.executable, demo_path])
     return result.returncode
 
@@ -197,56 +192,56 @@ def cmd_demo(args: argparse.Namespace) -> int:
 def cmd_orchestrator(args: argparse.Namespace) -> int:
     """Control the unified orchestrator."""
     from amos_unified_orchestrator import AMOSUnifiedOrchestrator
-    
+
     orch = AMOSUnifiedOrchestrator()
-    
+
     if args.action == "status":
         status = orch.get_status()
         print("AMOS Orchestrator Status")
         print("=" * 50)
-        orch_status = status['orchestrator']
+        orch_status = status["orchestrator"]
         print(f"Initialized:     {'✓' if orch_status['initialized'] else '✗'}")
         print(f"Brain Connected: {'✓' if orch_status['brain_connected'] else '✗'}")
-        print(f"Subsystems:      {orch_status['subsystems_online']}/{orch_status['subsystems_total']}")
+        print(
+            f"Subsystems:      {orch_status['subsystems_online']}/{orch_status['subsystems_total']}"
+        )
         print(f"Health:          {orch_status['health_percentage']:.0f}%")
-        
+
     elif args.action == "init":
         print("Initializing AMOS Orchestrator...")
         result = orch.initialize()
-        if result['operational']:
+        if result["operational"]:
             print("✓ Orchestrator operational")
         else:
             print("⚠ Orchestrator degraded")
-            
+
     elif args.action == "task":
         if not args.task:
             print("Error: No task specified. Use --task 'your task'")
             return 1
-        
+
         print(f"Orchestrating task: {args.task}")
         print("=" * 60)
-        
+
         # Ensure initialized
         if not orch.state.initialized:
             orch.initialize()
-        
+
         result = orch.orchestrate_task(args.task)
-        
+
         print(f"\n✓ Task routed through: {', '.join(result['routing']['subsystems'])}")
         print(f"✓ Execution: {'Success' if result['completed'] else 'Failed'}")
-        if result.get('execution', {}).get('result'):
+        if result.get("execution", {}).get("result"):
             print(f"Result: {result['execution']['result'][:80]}...")
-    
+
     return 0
 
 
 def cmd_ecosystem(args: argparse.Namespace) -> int:
     """Run complete ecosystem demonstration."""
     import subprocess
-    demo_path = os.path.join(
-        os.path.dirname(__file__),
-        'demo_amos_ecosystem.py'
-    )
+
+    demo_path = os.path.join(os.path.dirname(__file__), "demo_amos_ecosystem.py")
     result = subprocess.run([sys.executable, demo_path])
     return result.returncode
 
@@ -254,26 +249,26 @@ def cmd_ecosystem(args: argparse.Namespace) -> int:
 def cmd_muscle(args: argparse.Namespace) -> int:
     """Execute tasks through MUSCLE subsystem."""
     from amos_muscle_executor import AMOSMuscleExecutor, ExecutionType
-    
+
     executor = AMOSMuscleExecutor()
-    
+
     if args.action == "status":
         stats = executor.get_stats()
         print("AMOS MUSCLE Executor Status")
         print("=" * 50)
         for key, value in stats.items():
             print(f"  {key}: {value}")
-            
+
     elif args.action == "exec":
         if not args.command:
             print("Error: No command specified")
             return 1
-        
+
         task_type = ExecutionType.PYTHON if args.type == "python" else ExecutionType.SHELL
-        
+
         print(f"Executing {args.type} command...")
         result = executor.execute(args.command, task_type)
-        
+
         print(f"\n{'='*50}")
         print(f"Result: {'✓ Success' if result.success else '✗ Failed'}")
         print(f"Duration: {result.duration_ms}ms")
@@ -281,87 +276,88 @@ def cmd_muscle(args: argparse.Namespace) -> int:
             print(f"\nOutput:\n{result.output}")
         if result.error:
             print(f"\nError: {result.error}")
-    
+
     return 0
 
 
 def main() -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        prog='amos',
-        description='AMOS Brain CLI - Human interface to cognitive architecture'
+        prog="amos", description="AMOS Brain CLI - Human interface to cognitive architecture"
     )
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
     # Status command
-    status_p = subparsers.add_parser('status', help='Check brain status')
-    status_p.add_argument('-v', '--verbose', action='store_true', help='Show details')
-    
+    status_p = subparsers.add_parser("status", help="Check brain status")
+    status_p.add_argument("-v", "--verbose", action="store_true", help="Show details")
+
     # Decide command
-    decide_p = subparsers.add_parser('decide', help='Analyze a decision')
-    decide_p.add_argument('problem', nargs='+', help='Decision/problem to analyze')
-    decide_p.add_argument('-s', '--save', action='store_true', help='Save to memory')
-    
+    decide_p = subparsers.add_parser("decide", help="Analyze a decision")
+    decide_p.add_argument("problem", nargs="+", help="Decision/problem to analyze")
+    decide_p.add_argument("-s", "--save", action="store_true", help="Save to memory")
+
     # Analyze command
-    analyze_p = subparsers.add_parser('analyze', help='Deep systems analysis')
-    analyze_p.add_argument('topic', nargs='+', help='Topic to analyze')
-    
+    analyze_p = subparsers.add_parser("analyze", help="Deep systems analysis")
+    analyze_p.add_argument("topic", nargs="+", help="Topic to analyze")
+
     # Memory command
-    memory_p = subparsers.add_parser('memory', help='Query reasoning memory')
-    memory_p.add_argument('-q', '--query', help='Search query')
-    memory_p.add_argument('-l', '--limit', type=int, default=10, help='Result limit')
-    
+    memory_p = subparsers.add_parser("memory", help="Query reasoning memory")
+    memory_p.add_argument("-q", "--query", help="Search query")
+    memory_p.add_argument("-l", "--limit", type=int, default=10, help="Result limit")
+
     # Dashboard command
-    dash_p = subparsers.add_parser('dashboard', help='View reasoning analytics')
-    dash_p.add_argument('-d', '--days', type=int, default=30, help='Days to analyze')
-    
+    dash_p = subparsers.add_parser("dashboard", help="View reasoning analytics")
+    dash_p.add_argument("-d", "--days", type=int, default=30, help="Days to analyze")
+
     # Laws command
-    subparsers.add_parser('laws', help='List Global Laws L1-L6')
-    
+    subparsers.add_parser("laws", help="List Global Laws L1-L6")
+
     # Demo command
-    subparsers.add_parser('demo', help='Run interactive demo')
-    
+    subparsers.add_parser("demo", help="Run interactive demo")
+
     # Orchestrator command
-    orch_p = subparsers.add_parser('orchestrator', help='Control unified orchestrator')
-    orch_p.add_argument('action', choices=['status', 'init', 'task'], help='Orchestrator action')
-    orch_p.add_argument('--task', help='Task to orchestrate (for task action)')
-    
+    orch_p = subparsers.add_parser("orchestrator", help="Control unified orchestrator")
+    orch_p.add_argument("action", choices=["status", "init", "task"], help="Orchestrator action")
+    orch_p.add_argument("--task", help="Task to orchestrate (for task action)")
+
     # Ecosystem command
-    subparsers.add_parser('ecosystem', help='Run complete ecosystem demo')
-    
+    subparsers.add_parser("ecosystem", help="Run complete ecosystem demo")
+
     # Muscle command
-    muscle_p = subparsers.add_parser('muscle', help='Execute through MUSCLE subsystem')
-    muscle_p.add_argument('action', choices=['status', 'exec'], help='Muscle action')
-    muscle_p.add_argument('--command', help='Command to execute')
-    muscle_p.add_argument('--type', choices=['python', 'shell'], default='python', help='Execution type')
-    
+    muscle_p = subparsers.add_parser("muscle", help="Execute through MUSCLE subsystem")
+    muscle_p.add_argument("action", choices=["status", "exec"], help="Muscle action")
+    muscle_p.add_argument("--command", help="Command to execute")
+    muscle_p.add_argument(
+        "--type", choices=["python", "shell"], default="python", help="Execution type"
+    )
+
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         return 0
-    
+
     # Route to command handler
     commands = {
-        'status': cmd_status,
-        'decide': cmd_decide,
-        'analyze': cmd_analyze,
-        'memory': cmd_memory,
-        'dashboard': cmd_dashboard,
-        'laws': cmd_laws,
-        'demo': cmd_demo,
-        'orchestrator': cmd_orchestrator,
-        'ecosystem': cmd_ecosystem,
-        'muscle': cmd_muscle,
+        "status": cmd_status,
+        "decide": cmd_decide,
+        "analyze": cmd_analyze,
+        "memory": cmd_memory,
+        "dashboard": cmd_dashboard,
+        "laws": cmd_laws,
+        "demo": cmd_demo,
+        "orchestrator": cmd_orchestrator,
+        "ecosystem": cmd_ecosystem,
+        "muscle": cmd_muscle,
     }
-    
+
     handler = commands.get(args.command)
     if handler:
         return handler(args)
-    
+
     parser.print_help()
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -1,23 +1,23 @@
 """AMOS Multi-Agent Cognitive Orchestrator - Parallel engine execution."""
 
-import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 try:
-    from .engine_executor import execute_cognitive_task, ExecutionResult
+    from .engine_executor import ExecutionResult, execute_cognitive_task
 except ImportError:
-    from engine_executor import execute_cognitive_task, ExecutionResult
+    from engine_executor import execute_cognitive_task
 
 
 @dataclass
 class AgentPerspective:
     """A single cognitive agent's perspective on a task."""
+
     agent_id: str
     engine_name: str
-    reasoning: Dict[str, Any]
+    reasoning: dict[str, Any]
     confidence: float
     execution_time_ms: float
 
@@ -25,14 +25,15 @@ class AgentPerspective:
 @dataclass
 class ConsensusResult:
     """Synthesized result from multiple cognitive agents."""
+
     task: str
-    perspectives: List[AgentPerspective]
+    perspectives: list[AgentPerspective]
     agreement_score: float
     consensus_view: str
-    dissenting_views: List[str]
+    dissenting_views: list[str]
     recommended_action: str
-    laws_checked: List[str]
-    violations_found: List[str]
+    laws_checked: list[str]
+    violations_found: list[str]
     total_execution_time_ms: float
 
 
@@ -44,13 +45,10 @@ class MultiAgentOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self._consensus_history: List[ConsensusResult] = []
+        self._consensus_history: list[ConsensusResult] = []
 
     def execute_parallel(
-        self,
-        task: str,
-        engines: List[str],
-        require_consensus: bool = True
+        self, task: str, engines: list[str], require_consensus: bool = True
     ) -> ConsensusResult:
         """Execute task through multiple engines in parallel.
 
@@ -67,10 +65,7 @@ class MultiAgentOrchestrator:
 
         # Execute engines in parallel
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = {
-                executor.submit(self._run_single_engine, task, eng): eng
-                for eng in engines
-            }
+            futures = {executor.submit(self._run_single_engine, task, eng): eng for eng in engines}
 
             for future in as_completed(futures):
                 engine = futures[future]
@@ -78,13 +73,15 @@ class MultiAgentOrchestrator:
                     perspective = future.result()
                     perspectives.append(perspective)
                 except Exception as e:
-                    perspectives.append(AgentPerspective(
-                        agent_id=f"agent_{engine}",
-                        engine_name=engine,
-                        reasoning={"error": str(e)},
-                        confidence=0.0,
-                        execution_time_ms=0.0
-                    ))
+                    perspectives.append(
+                        AgentPerspective(
+                            agent_id=f"agent_{engine}",
+                            engine_name=engine,
+                            reasoning={"error": str(e)},
+                            confidence=0.0,
+                            execution_time_ms=0.0,
+                        )
+                    )
 
         # Synthesize consensus
         result = self._synthesize_consensus(task, perspectives, start)
@@ -105,14 +102,11 @@ class MultiAgentOrchestrator:
             engine_name=engine,
             reasoning=reasoning_data.get("result", {}),
             confidence=confidence,
-            execution_time_ms=elapsed
+            execution_time_ms=elapsed,
         )
 
     def _synthesize_consensus(
-        self,
-        task: str,
-        perspectives: List[AgentPerspective],
-        start_time: float
+        self, task: str, perspectives: list[AgentPerspective], start_time: float
     ) -> ConsensusResult:
         """Synthesize consensus from multiple perspectives."""
         if not perspectives:
@@ -125,7 +119,7 @@ class MultiAgentOrchestrator:
                 recommended_action="Retry with different engines",
                 laws_checked=[],
                 violations_found=["No agents executed"],
-                total_execution_time_ms=(time.time() - start_time) * 1000
+                total_execution_time_ms=(time.time() - start_time) * 1000,
             )
 
         # Calculate agreement based on confidence alignment
@@ -181,10 +175,10 @@ class MultiAgentOrchestrator:
             recommended_action=recommended_action,
             laws_checked=laws,
             violations_found=violations,
-            total_execution_time_ms=(time.time() - start_time) * 1000
+            total_execution_time_ms=(time.time() - start_time) * 1000,
         )
 
-    def _check_consensus_laws(self, perspectives: List[AgentPerspective]) -> List[str]:
+    def _check_consensus_laws(self, perspectives: list[AgentPerspective]) -> list[str]:
         """Check global laws against the consensus result."""
         violations = []
 
@@ -201,7 +195,7 @@ class MultiAgentOrchestrator:
 
         return violations
 
-    def get_consensus_history(self) -> List[ConsensusResult]:
+    def get_consensus_history(self) -> list[ConsensusResult]:
         """Get history of all consensus executions."""
         return self._consensus_history.copy()
 
@@ -233,13 +227,15 @@ class MultiAgentOrchestrator:
             for d in result.dissenting_views:
                 lines.append(f"- ⚠️ {d}")
 
-        lines.extend([
-            "",
-            "## Recommendation",
-            f"**{result.recommended_action}**",
-            "",
-            f"Laws checked: {', '.join(result.laws_checked)}",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Recommendation",
+                f"**{result.recommended_action}**",
+                "",
+                f"Laws checked: {', '.join(result.laws_checked)}",
+            ]
+        )
 
         if result.violations_found:
             lines.extend(["", "⚠️ Violations:", ""])
@@ -263,10 +259,7 @@ def get_orchestrator() -> MultiAgentOrchestrator:
     return _orchestrator
 
 
-def run_cognitive_consensus(
-    task: str,
-    engines: Optional[List[str]] = None
-) -> ConsensusResult:
+def run_cognitive_consensus(task: str, engines: Optional[list[str]] = None) -> ConsensusResult:
     """Convenience function to run multi-agent consensus."""
     orchestrator = get_orchestrator()
     if engines is None:
@@ -274,7 +267,7 @@ def run_cognitive_consensus(
         engines = [
             "AMOS_Deterministic_Logic_And_Law_Engine",
             "AMOS_Engineering_And_Mathematics_Engine",
-            "AMOS_Strategy_Game_Engine"
+            "AMOS_Strategy_Game_Engine",
         ]
     return orchestrator.execute_parallel(task, engines)
 

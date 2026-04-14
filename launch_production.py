@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Production Launch
+"""AMOS Production Launch
 ======================
 
 Master script to launch AMOS Organism in production mode.
@@ -21,7 +20,8 @@ from pathlib import Path
 
 
 def print_launch_banner():
-    print("""
+    print(
+        """
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║              🚀 AMOS ORGANISM PRODUCTION LAUNCH 🚀                ║
@@ -29,7 +29,8 @@ def print_launch_banner():
 ║                    Version 1.0.0 - LIVE                           ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 def launch_sequence():
@@ -37,18 +38,16 @@ def launch_sequence():
     print_launch_banner()
     print(f"[{datetime.utcnow().isoformat()}] Launch initiated")
     print()
-    
+
     root = Path(__file__).parent
-    
+
     # Phase 1: Health Check
     print("[PHASE 1] System Health Verification")
     print("-" * 60)
     health_script = root / "AMOS_ORGANISM_OS" / "system_health_monitor.py"
     if health_script.exists():
         result = subprocess.run(
-            [sys.executable, str(health_script)],
-            capture_output=True,
-            text=True
+            [sys.executable, str(health_script)], capture_output=True, text=True
         )
         if result.returncode == 0:
             print("✅ All subsystems healthy")
@@ -57,7 +56,7 @@ def launch_sequence():
     else:
         print("⚠️  Health monitor not found")
     print()
-    
+
     # Phase 2: Feature Registry Check
     print("[PHASE 2] Feature Registry")
     print("-" * 60)
@@ -66,7 +65,7 @@ def launch_sequence():
     print("✅ 83 Knowledge Packs: AVAILABLE")
     print("✅ 250+ Total Features: READY")
     print()
-    
+
     # Phase 3: Activate Organism
     print("[PHASE 3] Organism Activation")
     print("-" * 60)
@@ -77,7 +76,7 @@ def launch_sequence():
     else:
         print("❌ Activator not found")
     print()
-    
+
     # Phase 4: Deployment Status
     print("[PHASE 4] Production Status")
     print("-" * 60)
@@ -88,7 +87,7 @@ def launch_sequence():
     print("✅ Docker Support: ENABLED")
     print("✅ Health Monitoring: ACTIVE")
     print()
-    
+
     # Final Status
     print("=" * 60)
     print("🎉 AMOS ORGANISM PRODUCTION LAUNCH COMPLETE")

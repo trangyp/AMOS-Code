@@ -3,10 +3,9 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 
 @dataclass
@@ -352,11 +351,13 @@ if __name__ == "__main__":
     print("\nRecalling recent memories...")
     recent = recall(limit=5)
     for mem in recent:
-        print(f"  - {mem.memory_type}: {mem.id[:30]}... ({datetime.fromtimestamp(mem.timestamp).strftime('%H:%M:%S')})")
+        print(
+            f"  - {mem.memory_type}: {mem.id[:30]}... ({datetime.fromtimestamp(mem.timestamp).strftime('%H:%M:%S')})"
+        )
 
     # Stats
     stats = bridge.store.get_memory_stats()
-    print(f"\nMemory Stats:")
+    print("\nMemory Stats:")
     print(f"  Total: {stats['total_memories']}")
     print(f"  By type: {stats['by_type']}")
 

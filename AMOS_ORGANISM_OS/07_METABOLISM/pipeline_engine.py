@@ -1,5 +1,4 @@
-"""
-Pipeline Engine — Multi-stage data processing pipelines
+"""Pipeline Engine — Multi-stage data processing pipelines
 
 Defines and executes multi-stage pipelines for data transformation,
 processing, and routing through the organism.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Optional
 
 
 class StageStatus(Enum):
     """Status of a pipeline stage."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -28,20 +28,21 @@ class StageStatus(Enum):
 @dataclass
 class PipelineStage:
     """A single stage in a pipeline."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     stage_type: str = ""  # transform, filter, route, validate
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: dict[str, Any] = field(default_factory=dict)
     status: StageStatus = StageStatus.PENDING
     input_data: Any = None
     output_data: Any = None
     error: str = ""
     start_time: Optional[str] = None
     end_time: Optional[str] = None
-    depends_on: List[str] = field(default_factory=list)
-    next_stages: List[str] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
+    next_stages: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -51,13 +52,14 @@ class PipelineStage:
 @dataclass
 class Pipeline:
     """A multi-stage pipeline definition."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    stages: List[PipelineStage] = field(default_factory=list)
+    stages: list[PipelineStage] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     status: str = "draft"  # draft, running, completed, failed
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_stage(self, stage: PipelineStage) -> PipelineStage:
         """Add a stage to the pipeline."""
@@ -71,7 +73,7 @@ class Pipeline:
                 return stage
         return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "stages": [s.to_dict() for s in self.stages],
@@ -79,8 +81,7 @@ class Pipeline:
 
 
 class PipelineEngine:
-    """
-    Executes multi-stage pipelines.
+    """Executes multi-stage pipelines.
 
     Manages pipeline definitions, executes stages in order,
     handles dependencies, and routes data between stages.
@@ -92,8 +93,8 @@ class PipelineEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.pipelines: Dict[str, Pipeline] = {}
-        self.stage_handlers: Dict[str, Callable] = {}
+        self.pipelines: dict[str, Pipeline] = {}
+        self.stage_handlers: dict[str, Callable] = {}
 
         self._load_pipelines()
         self._register_default_handlers()
@@ -160,8 +161,8 @@ class PipelineEngine:
         self,
         pipeline_id: str,
         initial_data: Any = None,
-        context: Optional[Dict] = None,
-    ) -> Dict[str, Any]:
+        context: Optional[dict] = None,
+    ) -> dict[str, Any]:
         """Execute a pipeline with data."""
         pipeline = self.pipelines.get(pipeline_id)
         if not pipeline:
@@ -229,7 +230,7 @@ class PipelineEngine:
         }
 
     # Default handlers
-    def _handle_transform(self, stage: PipelineStage, context: Dict) -> Any:
+    def _handle_transform(self, stage: PipelineStage, context: dict) -> Any:
         """Transform data using config."""
         transform_type = stage.config.get("transform", "identity")
         if transform_type == "uppercase" and isinstance(stage.input_data, str):
@@ -238,14 +239,14 @@ class PipelineEngine:
             return stage.input_data.lower()
         return stage.input_data
 
-    def _handle_filter(self, stage: PipelineStage, context: Dict) -> Any:
+    def _handle_filter(self, stage: PipelineStage, context: dict) -> Any:
         """Filter data."""
         condition = stage.config.get("condition", "always")
         if condition == "not_empty":
             return stage.input_data if stage.input_data else None
         return stage.input_data
 
-    def _handle_validate(self, stage: PipelineStage, context: Dict) -> Any:
+    def _handle_validate(self, stage: PipelineStage, context: dict) -> Any:
         """Validate data."""
         required = stage.config.get("required_fields", [])
         if isinstance(stage.input_data, dict):
@@ -254,19 +255,19 @@ class PipelineEngine:
                 raise ValueError(f"Missing required fields: {missing}")
         return stage.input_data
 
-    def _handle_route(self, stage: PipelineStage, context: Dict) -> Any:
+    def _handle_route(self, stage: PipelineStage, context: dict) -> Any:
         """Route data to destination."""
         destination = stage.config.get("destination", "default")
         # Routing logic would go here
         return {"routed_to": destination, "data": stage.input_data}
 
-    def _handle_log(self, stage: PipelineStage, context: Dict) -> Any:
+    def _handle_log(self, stage: PipelineStage, context: dict) -> Any:
         """Log data."""
         message = stage.config.get("message", "Pipeline stage executed")
         print(f"[PIPELINE] {stage.name}: {message}")
         return stage.input_data
 
-    def get_pipeline_status(self, pipeline_id: str) -> Optional[Dict]:
+    def get_pipeline_status(self, pipeline_id: str) -> Optional[dict]:
         """Get status of a pipeline."""
         pipeline = self.pipelines.get(pipeline_id)
         if not pipeline:
@@ -288,7 +289,7 @@ class PipelineEngine:
             ],
         }
 
-    def list_pipelines(self) -> List[Dict]:
+    def list_pipelines(self) -> list[dict]:
         """List all pipelines."""
         return [
             {

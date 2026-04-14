@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Integration Test Suite
+"""AMOS Brain Integration Test Suite
 ====================================
 Comprehensive validation of all AMOS Brain integrations.
 
@@ -18,8 +17,8 @@ Tests:
 """
 from __future__ import annotations
 
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 # Add paths
@@ -83,9 +82,8 @@ class TestRunner:
         print("\n[Core Brain]")
 
         def test():
-            from amos_brain import (
-                BrainLoader, get_brain, get_amos_integration
-            )
+            from amos_brain import get_amos_integration
+
             # Try to get integration
             amos = get_amos_integration()
             status = amos.get_status()
@@ -96,6 +94,7 @@ class TestRunner:
 
         def test_status():
             from amos_brain import get_amos_integration
+
             amos = get_amos_integration()
             status = amos.get_status()
             assert status["initialized"]
@@ -110,10 +109,16 @@ class TestRunner:
         print("\n[Tools]")
 
         def test():
-            import amos_tools  # Registers tools
             from tool_registry import _registry
+
             amos_tools_list = [k for k in _registry.keys() if "AMOS" in k]
-            expected = ["AMOSReasoning", "AMOSLaws", "AMOSEngines", "AMOSStatus", "AMOSEnhancePrompt"]
+            expected = [
+                "AMOSReasoning",
+                "AMOSLaws",
+                "AMOSEngines",
+                "AMOSStatus",
+                "AMOSEnhancePrompt",
+            ]
             for tool in expected:
                 assert tool in amos_tools_list, f"Missing {tool}"
             if self.verbose:
@@ -123,14 +128,15 @@ class TestRunner:
 
         def test_reasoning():
             from tool_registry import execute_tool
+
             result = execute_tool("AMOSReasoning", {"problem": "Test"}, {})
             assert "Rule of 2" in result or "dual" in result.lower()
 
         self._test("AMOSReasoning", test_reasoning)
 
         def test_status():
-            import amos_tools  # Registers tools
             from tool_registry import execute_tool
+
             result = execute_tool("AMOSStatus", {}, {})
             assert "AMOS" in result or "System" in result or "Status" in result
 
@@ -142,6 +148,7 @@ class TestRunner:
 
         def test():
             from skill import load_skills
+
             skills = load_skills()
             names = [s.name for s in skills]
             # Check both AMOS skill sources
@@ -155,6 +162,7 @@ class TestRunner:
 
         def test_find():
             from skill import find_skill
+
             skill = find_skill("/amos test")
             assert skill is not None, "Skill not found"
             assert skill.name == "amos-analyze"
@@ -167,6 +175,7 @@ class TestRunner:
 
         def test():
             from multi_agent import load_agent_definitions
+
             defs = load_agent_definitions()
             assert "amos" in defs, "AMOS agent type not found"
             amos_def = defs["amos"]
@@ -183,6 +192,7 @@ class TestRunner:
         def test():
             import sys
             from pathlib import Path
+
             # Ensure paths are set up for agent import
             clawspring_path = Path(__file__).parent / "clawspring"
             if str(clawspring_path) not in sys.path:
@@ -192,6 +202,7 @@ class TestRunner:
                 sys.path.insert(0, str(root_path))
 
             from agent import _amos_available, _get_enhanced_system_prompt
+
             assert _amos_available, "AMOS not available in agent"
             enhanced = _get_enhanced_system_prompt("Test prompt", use_amos=True)
             assert len(enhanced) > len("Test prompt")
@@ -205,10 +216,13 @@ class TestRunner:
 
         def test():
             from context import get_amos_status
+
             # Just verify the function works and returns a dict
             status = get_amos_status()
             assert isinstance(status, dict), "Status should be a dict"
-            assert "enabled" in status or "error" in status, "Status should have enabled or error key"
+            assert (
+                "enabled" in status or "error" in status
+            ), "Status should have enabled or error key"
 
         self._test("Status", test)
 
@@ -218,6 +232,7 @@ class TestRunner:
 
         def test():
             from amos_cognitive_router import CognitiveRouter
+
             router = CognitiveRouter()
             assert router is not None, "Router not available"
             # Test routing

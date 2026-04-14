@@ -6,73 +6,66 @@ Usage:
     python websocket_example.py decide "Which database?" --options SQL NoSQL
 """
 
+import argparse
 import asyncio
 import json
-import sys
-import argparse
 
 import websockets
 
 
 class AMOSWebSocketClient:
     """Python WebSocket client for AMOS Brain."""
-    
+
     def __init__(self, url="ws://neurosyncai.tech:8765"):
         self.url = url
-    
+
     async def think(self, query, domain="general"):
         """Stream thinking process."""
         async with websockets.connect(self.url) as ws:
             # Send request
-            await ws.send(json.dumps({
-                "action": "think",
-                "query": query,
-                "domain": domain
-            }))
-            
+            await ws.send(json.dumps({"action": "think", "query": query, "domain": domain}))
+
             print(f"\n🤔 Thinking about: {query}\n")
-            
+
             # Stream responses
             async for message in ws:
                 data = json.loads(message)
-                
+
                 if data["type"] == "step":
                     print(f"  Step {data['number']}: {data['content'][:60]}...")
-                
+
                 elif data["type"] == "complete":
-                    print(f"\n✅ Complete!")
+                    print("\n✅ Complete!")
                     print(f"   Confidence: {data['confidence']}")
                     print(f"   Law Compliant: {data['law_compliant']}")
                     break
-                
+
                 elif data["type"] == "error":
                     print(f"\n❌ Error: {data['message']}")
                     break
-    
+
     async def decide(self, question, options=None):
         """Stream decision process."""
         async with websockets.connect(self.url) as ws:
-            await ws.send(json.dumps({
-                "action": "decide",
-                "question": question,
-                "options": options or []
-            }))
-            
+            await ws.send(
+                json.dumps({"action": "decide", "question": question, "options": options or []})
+            )
+
             print(f"\n🎯 Deciding: {question}\n")
-            
+
             async for message in ws:
                 data = json.loads(message)
-                
+
                 if data["type"] == "analysis":
                     print(f"  📊 {data['step']}")
-                
+
                 elif data["type"] == "complete":
-                    print(f"\n✅ Decision:")
+                    print("\n✅ Decision:")
                     print(f"   Approved: {data['approved']}")
                     print(f"   Risk: {data['risk_level']}")
                     print(f"   Reasoning: {data['reasoning'][:100]}...")
                     break
-                
+
                 elif data["type"] == "error":
                     print(f"\n❌ Error: {data['message']}")
                     break
@@ -85,11 +78,11 @@ def main():
     parser.add_argument("--domain", default="general", help="Domain for think")
     parser.add_argument("--options", nargs="+", help="Options for decide")
     parser.add_argument("--url", default="ws://neurosyncai.tech:8765", help="WebSocket URL")
-    
+
     args = parser.parse_args()
-    
+
     client = AMOSWebSocketClient(args.url)
-    
+
     if args.action == "think":
         asyncio.run(client.think(args.input, args.domain))
     elif args.action == "decide":

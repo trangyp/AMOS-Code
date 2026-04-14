@@ -16,11 +16,13 @@ def _get_runtime():
     global _amos_runtime
     if _amos_runtime is None:
         from amos_runtime import get_runtime
+
         _amos_runtime = get_runtime()
     return _amos_runtime
 
 
 # ── Tool Implementations ────────────────────────────────────────────────────
+
 
 def _amos_reasoning(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Execute AMOS Rule of 2 and Rule of 4 reasoning on a problem."""
@@ -40,27 +42,29 @@ def _amos_reasoning(params: dict[str, Any], config: dict[str, Any]) -> str:
         "## Rule of 2 (Dual Perspective Analysis)",
     ]
 
-    for p in result.get('perspectives', []):
+    for p in result.get("perspectives", []):
         lines.append(f"\n### {p['id']}: {p['stance']}")
         lines.append(f"Framing: {p['framing']}")
         lines.append(f"Questions: {', '.join(p['questions'])}")
 
     lines.extend(["", "## Rule of 4 (Four-Quadrant Analysis)"])
-    for q_name, q_data in result.get('quadrant_analysis', {}).items():
+    for q_name, q_data in result.get("quadrant_analysis", {}).items():
         lines.append(f"\n### {q_name}")
         lines.append(f"Focus: {q_data['focus']}")
 
-    lines.extend([
-        "",
-        "## Assumptions",
-        "\n".join(f"- {a}" for a in result.get('assumptions', [])),
-        "",
-        "## Gap Acknowledgment",
-        result.get('gap_statement', ''),
-        "",
-        "## Recommendation",
-        result.get('recommendation', ''),
-    ])
+    lines.extend(
+        [
+            "",
+            "## Assumptions",
+            "\n".join(f"- {a}" for a in result.get("assumptions", [])),
+            "",
+            "## Gap Acknowledgment",
+            result.get("gap_statement", ""),
+            "",
+            "## Recommendation",
+            result.get("recommendation", ""),
+        ]
+    )
 
     return "\n".join(lines)
 
@@ -104,6 +108,7 @@ def _amos_engines(params: dict[str, Any], config: dict[str, Any]) -> str:
 
     if action == "list":
         from amos_brain import BrainLoader
+
         loader = BrainLoader()
         loader.load()
         lines = ["# AMOS Cognitive Engines", ""]
@@ -117,6 +122,7 @@ def _amos_engines(params: dict[str, Any], config: dict[str, Any]) -> str:
         if not query:
             return "Error: 'query' parameter required"
         from amos_brain import BrainLoader, KernelRouter
+
         loader = BrainLoader()
         loader.load()
         router = KernelRouter(loader)
@@ -262,25 +268,31 @@ def _amos_design(params: dict[str, Any], config: dict[str, Any]) -> str:
     for key, text in result.copy_blocks.items():
         lines.append(f"{key}: '{text}'")
 
-    lines.extend([
-        "",
-        "## Biological Constraints (L6 UBI Alignment)",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Biological Constraints (L6 UBI Alignment)",
+        ]
+    )
     for constraint in result.biological_constraints:
         lines.append(f"- {constraint}")
 
-    lines.extend([
-        "",
-        "## Accessibility Notes",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Accessibility Notes",
+        ]
+    )
     for note in result.accessibility_notes[:3]:
         lines.append(f"- {note}")
 
-    lines.extend([
-        "",
-        "## Gap Acknowledgment",
-        result.gap_acknowledgment,
-    ])
+    lines.extend(
+        [
+            "",
+            "## Gap Acknowledgment",
+            result.gap_acknowledgment,
+        ]
+    )
 
     return "\n".join(lines)
 
@@ -322,10 +334,12 @@ def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
     ]
 
     for domain, result in results.items():
-        lines.extend([
-            f"\n### {domain}",
-            f"Key Analysis: {list(result.analysis.keys())[:3]}",
-        ])
+        lines.extend(
+            [
+                f"\n### {domain}",
+                f"Key Analysis: {list(result.analysis.keys())[:3]}",
+            ]
+        )
         if result.risk_flags:
             lines.append(f"Risk Flags: {', '.join(result.risk_flags)}")
         lines.append(f"Design Levers: {', '.join(result.design_levers[:3])}")
@@ -471,7 +485,9 @@ def _amos_personality(params: dict[str, Any], config: dict[str, Any]) -> str:
     from amos_personality_engine import get_personality_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", ["traits", "identity", "behavioral_patterns", "cognitive_style"])
+    domains = params.get(
+        "domains", ["traits", "identity", "behavioral_patterns", "cognitive_style"]
+    )
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -551,7 +567,9 @@ def _amos_engineering_math(params: dict[str, Any], config: dict[str, Any]) -> st
     from amos_engineering_math_engine import get_engineering_math_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", ["pure_math", "applied_math", "numerical", "mechanical", "electrical", "control"])
+    domains = params.get(
+        "domains", ["pure_math", "applied_math", "numerical", "mechanical", "electrical", "control"]
+    )
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -567,7 +585,9 @@ def _amos_physics(params: dict[str, Any], config: dict[str, Any]) -> str:
     from amos_physics_engine import get_physics_engine
 
     description = params.get("description", "")
-    domains = params.get("domains", ["classical", "electromagnetism", "quantum", "statistical", "cosmology"])
+    domains = params.get(
+        "domains", ["classical", "electromagnetism", "quantum", "statistical", "cosmology"]
+    )
 
     if not description:
         return "Error: 'description' parameter is required"
@@ -641,23 +661,23 @@ AMOS_TOOLS = [
         schema={
             "name": "AMOSReasoning",
             "description": (
-            "Apply AMOS Rule of 2 and Rule of 4 to analyze a problem. "
-            "Returns confidence, recommendations, and assumptions."
-        ),
+                "Apply AMOS Rule of 2 and Rule of 4 to analyze a problem. "
+                "Returns confidence, recommendations, and assumptions."
+            ),
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "problem": {
                         "type": "string",
-                        "description": "The problem or question to analyze"
+                        "description": "The problem or question to analyze",
                     },
                     "context": {
                         "type": "object",
-                        "description": "Optional context dictionary for the analysis"
-                    }
+                        "description": "Optional context dictionary for the analysis",
+                    },
                 },
-                "required": ["problem"]
-            }
+                "required": ["problem"],
+            },
         },
         func=_amos_reasoning,
         read_only=True,
@@ -668,28 +688,28 @@ AMOS_TOOLS = [
         schema={
             "name": "AMOSLaws",
             "description": (
-            "Access AMOS Global Laws (L1-L6). "
-            "Can list laws, check compliance, validate text."
-        ),
+                "Access AMOS Global Laws (L1-L6). "
+                "Can list laws, check compliance, validate text."
+            ),
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "action": {
                         "type": "string",
                         "enum": ["list", "check", "validate"],
-                        "description": "Action to perform: list laws, check L1 compliance, or validate L4 integrity"
+                        "description": "Action to perform: list laws, check L1 compliance, or validate L4 integrity",
                     },
                     "check_type": {
                         "type": "string",
-                        "description": "For 'check' action: type of action to validate (e.g., 'analysis', 'design')"
+                        "description": "For 'check' action: type of action to validate (e.g., 'analysis', 'design')",
                     },
                     "text": {
                         "type": "string",
-                        "description": "For 'validate' action: text to check for contradictions"
-                    }
+                        "description": "For 'validate' action: text to check for contradictions",
+                    },
                 },
-                "required": ["action"]
-            }
+                "required": ["action"],
+            },
         },
         func=_amos_laws,
         read_only=True,
@@ -699,28 +719,26 @@ AMOS_TOOLS = [
         name="AMOSEngines",
         schema={
             "name": "AMOSEngines",
-            "description": (
-            "Query AMOS cognitive engines. List, route, or execute queries."
-        ),
+            "description": ("Query AMOS cognitive engines. List, route, or execute queries."),
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "action": {
                         "type": "string",
                         "enum": ["list", "route", "execute"],
-                        "description": "Action: list engines, route query, or execute through engines"
+                        "description": "Action: list engines, route query, or execute through engines",
                     },
                     "query": {
                         "type": "string",
-                        "description": "For 'route' or 'execute' actions: the query to process"
+                        "description": "For 'route' or 'execute' actions: the query to process",
                     },
                     "context": {
                         "type": "object",
-                        "description": "Optional context for execute action"
-                    }
+                        "description": "Optional context for execute action",
+                    },
                 },
-                "required": ["action"]
-            }
+                "required": ["action"],
+            },
         },
         func=_amos_engines,
         read_only=True,
@@ -734,7 +752,7 @@ AMOS_TOOLS = [
             "input_schema": {
                 "type": "object",
                 "properties": {},
-            }
+            },
         },
         func=_amos_status,
         read_only=True,
@@ -744,19 +762,14 @@ AMOS_TOOLS = [
         name="AMOSEnhancePrompt",
         schema={
             "name": "AMOSEnhancePrompt",
-            "description": (
-            "Enhance a system prompt with AMOS brain context."
-        ),
+            "description": ("Enhance a system prompt with AMOS brain context."),
             "input_schema": {
                 "type": "object",
                 "properties": {
-                    "prompt": {
-                        "type": "string",
-                        "description": "Base system prompt to enhance"
-                    }
+                    "prompt": {"type": "string", "description": "Base system prompt to enhance"}
                 },
-                "required": ["prompt"]
-            }
+                "required": ["prompt"],
+            },
         },
         func=_amos_enhance_prompt,
         read_only=True,
@@ -767,25 +780,30 @@ AMOS_TOOLS = [
         schema={
             "name": "AMOSWorkflow",
             "description": (
-            "Run full AMOS 4-step workflow: cognitive analysis → execution → "
-            "law validation → final output. Most comprehensive AMOS tool."
-        ),
+                "Run full AMOS 4-step workflow: cognitive analysis → execution → "
+                "law validation → final output. Most comprehensive AMOS tool."
+            ),
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "task": {
                         "type": "string",
-                        "description": "The task or question to process through full AMOS workflow"
+                        "description": "The task or question to process through full AMOS workflow",
                     },
                     "output_type": {
                         "type": "string",
-                        "enum": ["structured_explanation", "decision_recommendation",
-                                 "framework_design", "research_analysis", "diagnostic"],
-                        "description": "Type of output to produce"
-                    }
+                        "enum": [
+                            "structured_explanation",
+                            "decision_recommendation",
+                            "framework_design",
+                            "research_analysis",
+                            "diagnostic",
+                        ],
+                        "description": "Type of output to produce",
+                    },
                 },
-                "required": ["task"]
-            }
+                "required": ["task"],
+            },
         },
         func=_amos_workflow,
         read_only=True,
@@ -805,29 +823,29 @@ AMOS_TOOLS = [
                     "layer": {
                         "type": "string",
                         "enum": ["architecture", "backend", "database", "ai"],
-                        "description": "Coding layer to use"
+                        "description": "Coding layer to use",
                     },
                     "function_name": {
                         "type": "string",
-                        "description": "Name of the function/component to generate"
+                        "description": "Name of the function/component to generate",
                     },
                     "description": {
                         "type": "string",
-                        "description": "Description of what the code should do"
+                        "description": "Description of what the code should do",
                     },
                     "inputs": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Input parameters"
+                        "description": "Input parameters",
                     },
                     "outputs": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Expected outputs"
-                    }
+                        "description": "Expected outputs",
+                    },
                 },
-                "required": ["layer", "function_name", "description"]
-            }
+                "required": ["layer", "function_name", "description"],
+            },
         },
         func=_amos_code,
         read_only=True,
@@ -848,25 +866,25 @@ AMOS_TOOLS = [
                     "component_type": {
                         "type": "string",
                         "enum": ["form", "dialog", "card", "navigation", "dashboard"],
-                        "description": "Type of UI component to design"
+                        "description": "Type of UI component to design",
                     },
                     "purpose": {
                         "type": "string",
-                        "description": "What the component helps the user accomplish"
+                        "description": "What the component helps the user accomplish",
                     },
                     "user_segments": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Target user segments"
+                        "description": "Target user segments",
                     },
                     "accessibility": {
                         "type": "boolean",
                         "default": True,
-                        "description": "Enable accessibility requirements (WCAG AA)"
-                    }
+                        "description": "Enable accessibility requirements (WCAG AA)",
+                    },
                 },
-                "required": ["component_type", "purpose"]
-            }
+                "required": ["component_type", "purpose"],
+            },
         },
         func=_amos_design,
         read_only=True,
@@ -886,17 +904,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Signal processing scenario to analyze"
+                        "description": "Signal processing scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["time_frequency", "biological", "control", "communication"],
-                        "description": "Signal domains to analyze"
-                    }
+                        "description": "Signal domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_signal,
         read_only=True,
@@ -916,17 +934,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Description of scenario to analyze"
+                        "description": "Description of scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["NBI", "NEI", "SI", "BEI"],
-                        "description": "UBI domains to analyze"
-                    }
+                        "description": "UBI domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_ubi,
         read_only=True,
@@ -946,17 +964,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Strategic scenario to analyze"
+                        "description": "Strategic scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["game_normal", "game_dynamical", "negotiation"],
-                        "description": "Strategy domains to analyze"
-                    }
+                        "description": "Strategy domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_strategy,
         read_only=True,
@@ -976,17 +994,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Social/cultural scenario to analyze"
+                        "description": "Social/cultural scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["institutional", "cultural", "demographic", "media"],
-                        "description": "Society/culture domains to analyze"
-                    }
+                        "description": "Society/culture domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_society,
         read_only=True,
@@ -1006,17 +1024,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Economic/financial scenario to analyze"
+                        "description": "Economic/financial scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["micro", "macro", "public_finance", "finance"],
-                        "description": "Economic domains to analyze"
-                    }
+                        "description": "Economic domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_econ,
         read_only=True,
@@ -1036,17 +1054,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Description or problem to analyze scientifically"
+                        "description": "Description or problem to analyze scientifically",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["biology", "physics", "mathematics", "engineering"],
-                        "description": "Scientific domains to analyze"
-                    }
+                        "description": "Scientific domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_scientific,
         read_only=True,
@@ -1067,17 +1085,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Biological or cognitive system to analyze"
+                        "description": "Biological or cognitive system to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["molecular", "cellular", "organ", "cognition", "pathology"],
-                        "description": "Biology/cognition domains to include"
-                    }
+                        "description": "Biology/cognition domains to include",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_biology_cognition,
         read_only=True,
@@ -1098,20 +1116,20 @@ AMOS_TOOLS = [
                         "type": "string",
                         "enum": ["stats", "recall"],
                         "default": "stats",
-                        "description": "Action: view stats or recall memories"
+                        "description": "Action: view stats or recall memories",
                     },
                     "memory_type": {
                         "type": "string",
                         "enum": ["reasoning", "code", "design", "ubi"],
-                        "description": "Type of memory to recall"
+                        "description": "Type of memory to recall",
                     },
                     "limit": {
                         "type": "integer",
                         "default": 5,
-                        "description": "Number of memories to recall"
-                    }
-                }
-            }
+                        "description": "Number of memories to recall",
+                    },
+                },
+            },
         },
         func=_amos_memory,
         read_only=True,
@@ -1133,15 +1151,12 @@ AMOS_TOOLS = [
                         "type": "string",
                         "enum": ["quadrant", "dual"],
                         "default": "quadrant",
-                        "description": "Type of parallel analysis"
+                        "description": "Type of parallel analysis",
                     },
-                    "problem": {
-                        "type": "string",
-                        "description": "Problem or question to analyze"
-                    }
+                    "problem": {"type": "string", "description": "Problem or question to analyze"},
                 },
-                "required": ["problem"]
-            }
+                "required": ["problem"],
+            },
         },
         func=_amos_multi_agent,
         read_only=True,
@@ -1159,18 +1174,15 @@ AMOS_TOOLS = [
             "input_schema": {
                 "type": "object",
                 "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "Knowledge query to execute"
-                    },
+                    "query": {"type": "string", "description": "Knowledge query to execute"},
                     "domain": {
                         "type": "string",
                         "default": "general",
-                        "description": "Knowledge domain to query"
-                    }
+                        "description": "Knowledge domain to query",
+                    },
                 },
-                "required": ["query"]
-            }
+                "required": ["query"],
+            },
         },
         func=_amos_knowledge,
         read_only=True,
@@ -1191,17 +1203,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Personality/character scenario to analyze"
+                        "description": "Personality/character scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["traits", "identity", "behavioral_patterns", "cognitive_style"],
-                        "description": "Personality domains to analyze"
-                    }
+                        "description": "Personality domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_personality,
         read_only=True,
@@ -1221,17 +1233,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Emotion-related scenario to analyze"
+                        "description": "Emotion-related scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["affective", "somatic", "motivation", "empathy"],
-                        "description": "Emotion domains to analyze"
-                    }
+                        "description": "Emotion domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_emotion,
         read_only=True,
@@ -1251,17 +1263,17 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Consciousness-related scenario to analyze"
+                        "description": "Consciousness-related scenario to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["self_modeling", "attention", "narrative", "embodiment"],
-                        "description": "Consciousness domains to analyze"
-                    }
+                        "description": "Consciousness domains to analyze",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_consciousness,
         read_only=True,
@@ -1280,19 +1292,16 @@ AMOS_TOOLS = [
             "input_schema": {
                 "type": "object",
                 "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "Logic or legal query to analyze"
-                    },
+                    "query": {"type": "string", "description": "Logic or legal query to analyze"},
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
                         "default": ["logic", "legal", "argumentation", "policy"],
-                        "description": "Analysis domains to include"
-                    }
+                        "description": "Analysis domains to include",
+                    },
                 },
-                "required": ["query"]
-            }
+                "required": ["query"],
+            },
         },
         func=_amos_logic_law,
         read_only=True,
@@ -1312,17 +1321,23 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Physical system or phenomenon to analyze"
+                        "description": "Physical system or phenomenon to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "default": ["classical", "electromagnetism", "quantum", "statistical", "cosmology"],
-                        "description": "Physics domains to include"
-                    }
+                        "default": [
+                            "classical",
+                            "electromagnetism",
+                            "quantum",
+                            "statistical",
+                            "cosmology",
+                        ],
+                        "description": "Physics domains to include",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_physics,
         read_only=True,
@@ -1342,17 +1357,24 @@ AMOS_TOOLS = [
                 "properties": {
                     "description": {
                         "type": "string",
-                        "description": "Engineering or mathematical system to analyze"
+                        "description": "Engineering or mathematical system to analyze",
                     },
                     "domains": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "default": ["pure_math", "applied_math", "numerical", "mechanical", "electrical", "control"],
-                        "description": "Engineering/math domains to include"
-                    }
+                        "default": [
+                            "pure_math",
+                            "applied_math",
+                            "numerical",
+                            "mechanical",
+                            "electrical",
+                            "control",
+                        ],
+                        "description": "Engineering/math domains to include",
+                    },
                 },
-                "required": ["description"]
-            }
+                "required": ["description"],
+            },
         },
         func=_amos_engineering_math,
         read_only=True,
@@ -1373,10 +1395,10 @@ AMOS_TOOLS = [
                         "type": "string",
                         "enum": ["status", "health"],
                         "default": "status",
-                        "description": "Monitoring action to perform"
+                        "description": "Monitoring action to perform",
                     }
-                }
-            }
+                },
+            },
         },
         func=_amos_monitoring,
         read_only=True,
@@ -1393,19 +1415,16 @@ AMOS_TOOLS = [
             "input_schema": {
                 "type": "object",
                 "properties": {
-                    "content": {
-                        "type": "string",
-                        "description": "Content to audit"
-                    },
+                    "content": {"type": "string", "description": "Content to audit"},
                     "content_type": {
                         "type": "string",
                         "enum": ["general", "code", "design"],
                         "default": "general",
-                        "description": "Type of content for specialized auditing"
-                    }
+                        "description": "Type of content for specialized auditing",
+                    },
                 },
-                "required": ["content"]
-            }
+                "required": ["content"],
+            },
         },
         func=_amos_audit,
         read_only=True,
@@ -1416,11 +1435,11 @@ AMOS_TOOLS = [
 
 # ── Registration ──────────────────────────────────────────────────────────────
 
+
 def _ensure_amos() -> None:
     """Lightweight AMOS check - doesn't load heavy resources."""
     # Just verify the runtime module is available
     # Actual runtime loading is deferred until tool is used
-    from amos_runtime import AMOSRuntime
     return
 
 

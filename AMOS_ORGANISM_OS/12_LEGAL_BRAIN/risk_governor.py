@@ -1,5 +1,4 @@
-"""
-Risk Governor — Risk Assessment & Governance
+"""Risk Governor — Risk Assessment & Governance
 
 Assesses and governs risk for all organism activities.
 Provides risk scoring, mitigation recommendations, and governance.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class RiskLevel(Enum):
     """Level of risk."""
+
     CRITICAL = 5
     HIGH = 4
     MEDIUM = 3
@@ -28,6 +28,7 @@ class RiskLevel(Enum):
 
 class RiskCategory(Enum):
     """Category of risk."""
+
     SECURITY = "security"
     FINANCIAL = "financial"
     OPERATIONAL = "operational"
@@ -39,6 +40,7 @@ class RiskCategory(Enum):
 @dataclass
 class RiskAssessment:
     """Risk assessment for an activity or system."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     target: str = ""
     category: RiskCategory = RiskCategory.OPERATIONAL
@@ -46,12 +48,12 @@ class RiskAssessment:
     probability: float = 0.0  # 0-1
     impact: float = 0.0  # 0-1
     score: float = 0.0  # calculated: probability * impact * 100
-    mitigations: List[str] = field(default_factory=list)
+    mitigations: list[str] = field(default_factory=list)
     residual_risk: RiskLevel = RiskLevel.UNKNOWN
     assessed_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     assessor: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -61,8 +63,7 @@ class RiskAssessment:
 
 
 class RiskGovernor:
-    """
-    Governs risk assessment and management.
+    """Governs risk assessment and management.
 
     Provides risk scoring, assessment tracking, and governance
     recommendations for all organism activities.
@@ -74,8 +75,8 @@ class RiskGovernor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.assessments: Dict[str, RiskAssessment] = {}
-        self.risk_thresholds: Dict[RiskLevel, float] = {
+        self.assessments: dict[str, RiskAssessment] = {}
+        self.risk_thresholds: dict[RiskLevel, float] = {
             RiskLevel.CRITICAL: 0.9,
             RiskLevel.HIGH: 0.7,
             RiskLevel.MEDIUM: 0.5,
@@ -91,7 +92,7 @@ class RiskGovernor:
         category: RiskCategory,
         probability: float,
         impact: float,
-        mitigations: Optional[List[str]] = None,
+        mitigations: Optional[list[str]] = None,
         assessor: str = "system",
     ) -> RiskAssessment:
         """Assess risk for a target activity."""
@@ -143,8 +144,8 @@ class RiskGovernor:
     def evaluate_action_risk(
         self,
         action_type: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Evaluate risk of taking an action."""
         # Base risk by action type
         base_risks = {
@@ -186,12 +187,12 @@ class RiskGovernor:
             "approved": assessment.residual_risk.value < RiskLevel.HIGH.value,
         }
 
-    def get_risk_summary(self) -> Dict[str, Any]:
+    def get_risk_summary(self) -> dict[str, Any]:
         """Get summary of all risk assessments."""
         if not self.assessments:
             return {"status": "no_assessments"}
 
-        by_category: Dict[str, List[RiskAssessment]] = {}
+        by_category: dict[str, list[RiskAssessment]] = {}
         for a in self.assessments.values():
             cat = a.category.value
             if cat not in by_category:
@@ -245,11 +246,11 @@ class RiskGovernor:
         }
         assessments_file.write_text(json.dumps(data, indent=2))
 
-    def list_assessments(self) -> List[Dict[str, Any]]:
+    def list_assessments(self) -> list[dict[str, Any]]:
         """List all risk assessments."""
         return [a.to_dict() for a in self.assessments.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get governor status."""
         summary = self.get_risk_summary()
         critical = sum(1 for a in self.assessments.values() if a.risk_level == RiskLevel.CRITICAL)

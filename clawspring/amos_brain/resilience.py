@@ -6,21 +6,21 @@ for production reliability.
 """
 
 import sys
-import time
 import threading
-import traceback
-from typing import Dict, List, Any, Optional, Callable
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Optional
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 class FailureType(Enum):
     """Types of failures."""
+
     TRANSIENT = "transient"  # Temporary, retry may succeed
     PERSISTENT = "persistent"  # Requires intervention
     CRITICAL = "critical"  # System-wide impact
@@ -30,6 +30,7 @@ class FailureType(Enum):
 @dataclass
 class Failure:
     """Failure event."""
+
     component: str
     failure_type: FailureType
     error: str
@@ -41,6 +42,7 @@ class Failure:
 @dataclass
 class RecoveryAction:
     """Recovery action result."""
+
     action: str
     success: bool
     message: str
@@ -107,7 +109,7 @@ class RetryPolicy:
         max_retries: int = 3,
         base_delay: float = 1.0,
         max_delay: float = 60.0,
-        exponential_base: float = 2.0
+        exponential_base: float = 2.0,
     ):
         self.max_retries = max_retries
         self.base_delay = base_delay
@@ -124,10 +126,7 @@ class RetryPolicy:
             except Exception as e:
                 last_exception = e
                 if attempt < self.max_retries:
-                    delay = min(
-                        self.base_delay * (self.exponential_base ** attempt),
-                        self.max_delay
-                    )
+                    delay = min(self.base_delay * (self.exponential_base**attempt), self.max_delay)
                     time.sleep(delay)
 
         raise last_exception
@@ -137,10 +136,10 @@ class ResilienceManager:
     """Manages system resilience and self-healing."""
 
     def __init__(self):
-        self.failures: List[Failure] = []
-        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
+        self.failures: list[Failure] = []
+        self.circuit_breakers: dict[str, CircuitBreaker] = {}
         self.retry_policy = RetryPolicy()
-        self.recovery_handlers: Dict[str, Callable] = {}
+        self.recovery_handlers: dict[str, Callable] = {}
         self._running = False
         self._monitor_thread: Optional[threading.Thread] = None
         self._lock = threading.Lock()
@@ -149,7 +148,7 @@ class ResilienceManager:
         self,
         name: str,
         circuit_breaker: Optional[CircuitBreaker] = None,
-        recovery_handler: Optional[Callable] = None
+        recovery_handler: Optional[Callable] = None,
     ) -> None:
         """Register a component for resilience management."""
         if circuit_breaker:
@@ -157,13 +156,7 @@ class ResilienceManager:
         if recovery_handler:
             self.recovery_handlers[name] = recovery_handler
 
-    def execute_with_resilience(
-        self,
-        component: str,
-        func: Callable,
-        *args,
-        **kwargs
-    ) -> Any:
+    def execute_with_resilience(self, component: str, func: Callable, *args, **kwargs) -> Any:
         """Execute function with full resilience protection."""
         try:
             # Check circuit breaker
@@ -179,13 +172,7 @@ class ResilienceManager:
             self._attempt_recovery(component)
             raise e
 
-    def _execute_with_retry(
-        self,
-        component: str,
-        func: Callable,
-        *args,
-        **kwargs
-    ) -> Any:
+    def _execute_with_retry(self, component: str, func: Callable, *args, **kwargs) -> Any:
         """Execute with retry policy."""
         return self.retry_policy.execute(func, *args, **kwargs)
 
@@ -195,7 +182,7 @@ class ResilienceManager:
             component=component,
             failure_type=self._classify_error(error),
             error=str(error),
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         with self._lock:
@@ -244,10 +231,7 @@ class ResilienceManager:
             return
 
         self._running = True
-        self._monitor_thread = threading.Thread(
-            target=self._monitor_loop,
-            daemon=True
-        )
+        self._monitor_thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self._monitor_thread.start()
         print("[Resilience] Monitoring started")
 
@@ -271,7 +255,8 @@ class ResilienceManager:
         """Check overall system health."""
         with self._lock:
             recent_failures = [
-                f for f in self.failures
+                f
+                for f in self.failures
                 if (datetime.now() - f.timestamp).seconds < 300  # 5 min
                 and not f.resolved
             ]
@@ -279,12 +264,12 @@ class ResilienceManager:
         if len(recent_failures) > 10:
             print(f"[Resilience] WARNING: {len(recent_failures)} recent failures")
 
-    def get_resilience_report(self) -> Dict[str, Any]:
+    def get_resilience_report(self) -> dict[str, Any]:
         """Get resilience status report."""
         with self._lock:
             total = len(self.failures)
             resolved = sum(1 for f in self.failures if f.resolved)
-            by_type: Dict[str, int] = {}
+            by_type: dict[str, int] = {}
 
             for f in self.failures:
                 ft = f.failure_type.value
@@ -295,11 +280,8 @@ class ResilienceManager:
                 "resolved": resolved,
                 "unresolved": total - resolved,
                 "by_type": by_type,
-                "circuit_breakers": {
-                    name: cb.state
-                    for name, cb in self.circuit_breakers.items()
-                },
-                "status": "healthy" if (total - resolved) < 5 else "degraded"
+                "circuit_breakers": {name: cb.state for name, cb in self.circuit_breakers.items()},
+                "status": "healthy" if (total - resolved) < 5 else "degraded",
             }
 
 
@@ -317,12 +299,13 @@ def get_resilience() -> ResilienceManager:
 
 def resilient(component: str):
     """Decorator for resilient function execution."""
+
     def decorator(func: Callable) -> Callable:
         def wrapper(*args, **kwargs):
-            return get_resilience().execute_with_resilience(
-                component, func, *args, **kwargs
-            )
+            return get_resilience().execute_with_resilience(component, func, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -342,14 +325,10 @@ def main():
         print("  Reconnecting organism bridge...")
 
     resilience.register_component(
-        "cognitive_router",
-        CircuitBreaker(failure_threshold=3),
-        recover_cognitive
+        "cognitive_router", CircuitBreaker(failure_threshold=3), recover_cognitive
     )
     resilience.register_component(
-        "organism_bridge",
-        CircuitBreaker(failure_threshold=5),
-        recover_bridge
+        "organism_bridge", CircuitBreaker(failure_threshold=5), recover_bridge
     )
 
     # Start monitoring
@@ -361,6 +340,7 @@ def main():
     @resilient("cognitive_router")
     def risky_operation():
         import random
+
         if random.random() < 0.3:  # 30% failure rate
             raise Exception("Simulated transient error")
         return "Success"

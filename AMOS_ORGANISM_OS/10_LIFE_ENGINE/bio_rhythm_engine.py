@@ -1,5 +1,4 @@
-"""
-Bio Rhythm Engine — Circadian cycles and energy management
+"""Bio Rhythm Engine — Circadian cycles and energy management
 
 Tracks biological rhythms, sleep cycles, and energy states
 to optimize cognitive performance.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class CircadianPhase(Enum):
     """Phases of the circadian cycle."""
+
     DEEP_SLEEP = "deep_sleep"
     LIGHT_SLEEP = "light_sleep"
     REM_SLEEP = "rem_sleep"
@@ -31,6 +31,7 @@ class CircadianPhase(Enum):
 
 class EnergyState(Enum):
     """Energy level states."""
+
     EXHAUSTED = 1
     VERY_TIRED = 2
     TIRED = 3
@@ -43,29 +44,31 @@ class EnergyState(Enum):
 @dataclass
 class SleepSession:
     """A sleep session record."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     start_time: str = ""
     end_time: Optional[str] = None
     duration_minutes: int = 0
     quality_score: float = 0.0  # 0-1
-    phases: List[Dict[str, Any]] = field(default_factory=list)
+    phases: list[dict[str, Any]] = field(default_factory=list)
     interruptions: int = 0
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class EnergyLog:
     """Energy level at a point in time."""
+
     timestamp: str
     level: int  # 1-7
     state: EnergyState
     activity: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "state": self.state.name,
@@ -73,8 +76,7 @@ class EnergyLog:
 
 
 class BioRhythmEngine:
-    """
-    Manages biological rhythms and energy cycles.
+    """Manages biological rhythms and energy cycles.
 
     Tracks sleep patterns, circadian rhythms, and
     provides energy optimization recommendations.
@@ -86,8 +88,8 @@ class BioRhythmEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.sleep_sessions: List[SleepSession] = []
-        self.energy_logs: List[EnergyLog] = []
+        self.sleep_sessions: list[SleepSession] = []
+        self.energy_logs: list[EnergyLog] = []
         self.circadian_phase: CircadianPhase = CircadianPhase.MORNING
 
         self._load_data()
@@ -138,13 +140,13 @@ class BioRhythmEngine:
         for session in self.sleep_sessions:
             if session.id == session_id and session.end_time is None:
                 session.end_time = datetime.utcnow().isoformat()
-                
+
                 # Calculate duration
                 start = datetime.fromisoformat(session.start_time)
                 end = datetime.fromisoformat(session.end_time)
                 session.duration_minutes = int((end - start).total_seconds() / 60)
                 session.quality_score = quality
-                
+
                 self.save()
                 return session
         return None
@@ -153,7 +155,7 @@ class BioRhythmEngine:
         """Log current energy level (1-7)."""
         level = max(1, min(7, level))
         state = EnergyState(level)
-        
+
         log = EnergyLog(
             timestamp=datetime.utcnow().isoformat(),
             level=level,
@@ -168,7 +170,7 @@ class BioRhythmEngine:
     def get_current_circadian_phase(self) -> CircadianPhase:
         """Determine current circadian phase based on time."""
         hour = datetime.utcnow().hour
-        
+
         if 0 <= hour < 4:
             return CircadianPhase.DEEP_SLEEP
         elif 4 <= hour < 6:
@@ -186,17 +188,17 @@ class BioRhythmEngine:
         else:
             return CircadianPhase.WIND_DOWN
 
-    def get_energy_trend(self, hours: int = 24) -> Dict[str, Any]:
+    def get_energy_trend(self, hours: int = 24) -> dict[str, Any]:
         """Get energy trend over recent hours."""
         cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.energy_logs if e.timestamp > cutoff]
-        
+
         if not recent:
             return {"average": 0, "trend": "unknown", "samples": 0}
-        
+
         levels = [e.level for e in recent]
         avg = sum(levels) / len(levels)
-        
+
         # Determine trend
         if len(levels) >= 3:
             if levels[-1] > levels[0]:
@@ -207,7 +209,7 @@ class BioRhythmEngine:
                 trend = "stable"
         else:
             trend = "insufficient_data"
-        
+
         return {
             "average": round(avg, 2),
             "min": min(levels),
@@ -216,34 +218,40 @@ class BioRhythmEngine:
             "samples": len(levels),
         }
 
-    def get_sleep_stats(self, days: int = 7) -> Dict[str, Any]:
+    def get_sleep_stats(self, days: int = 7) -> dict[str, Any]:
         """Get sleep statistics for recent days."""
         cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
         recent = [s for s in self.sleep_sessions if s.end_time and s.end_time > cutoff]
-        
+
         if not recent:
             return {"sessions": 0, "average_duration": 0, "average_quality": 0}
-        
+
         durations = [s.duration_minutes for s in recent if s.duration_minutes > 0]
         qualities = [s.quality_score for s in recent]
-        
+
         return {
             "sessions": len(recent),
-            "average_duration_hours": round(sum(durations) / len(durations) / 60, 1) if durations else 0,
+            "average_duration_hours": round(sum(durations) / len(durations) / 60, 1)
+            if durations
+            else 0,
             "average_quality": round(sum(qualities) / len(qualities), 2) if qualities else 0,
             "total_sleep_hours": round(sum(durations) / 60, 1) if durations else 0,
         }
 
-    def get_optimal_work_window(self) -> Dict[str, Any]:
+    def get_optimal_work_window(self) -> dict[str, Any]:
         """Get recommended work window based on circadian rhythm."""
         phase = self.get_current_circadian_phase()
-        
+
         # Peak performance windows
         optimal_phases = [CircadianPhase.MORNING, CircadianPhase.MIDDAY]
         good_phases = [CircadianPhase.AFTERNOON]
-        avoid_phases = [CircadianPhase.WIND_DOWN, CircadianPhase.DEEP_SLEEP, 
-                       CircadianPhase.LIGHT_SLEEP, CircadianPhase.REM_SLEEP]
-        
+        avoid_phases = [
+            CircadianPhase.WIND_DOWN,
+            CircadianPhase.DEEP_SLEEP,
+            CircadianPhase.LIGHT_SLEEP,
+            CircadianPhase.REM_SLEEP,
+        ]
+
         if phase in optimal_phases:
             recommendation = "high_performance"
             efficiency = 1.0
@@ -256,7 +264,7 @@ class BioRhythmEngine:
         else:
             recommendation = "moderate_performance"
             efficiency = 0.6
-        
+
         return {
             "current_phase": phase.value,
             "recommendation": recommendation,
@@ -275,7 +283,7 @@ class BioRhythmEngine:
         else:
             return "Tomorrow 08:00 (Morning peak)"
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current bio rhythm status."""
         return {
             "current_phase": self.get_current_circadian_phase().value,
@@ -306,7 +314,7 @@ if __name__ == "__main__":
     engine = get_bio_rhythm_engine()
 
     print(f"\nCurrent circadian phase: {engine.get_current_circadian_phase().value}")
-    
+
     print("\nOptimal work window:")
     window = engine.get_optimal_work_window()
     print(f"  Recommendation: {window['recommendation']}")

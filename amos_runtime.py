@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Runtime - Master Execution Engine
+"""AMOS Runtime - Master Execution Engine
 =======================================
 
 The primary runtime for AMOS Organism.
@@ -17,32 +16,30 @@ Status: PRODUCTION LIVE
 """
 
 import argparse
-import json
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class AmosRuntime:
-    """
-    Master runtime for AMOS Organism.
-    
+    """Master runtime for AMOS Organism.
+
     Manages:
     - 15 Core Subsystems
     - 100+ Cognitive Engines
     - 83 Knowledge Packs
     - 250+ Total Features
     """
-    
+
     def __init__(self, mode: str = "full"):
         self.mode = mode
         self.root = Path(__file__).parent
         self.start_time = datetime.utcnow()
-        self.subsystems: Dict[str, Any] = {}
+        self.subsystems: dict[str, Any] = {}
         self.status = "initializing"
-        
+
     def initialize(self) -> bool:
         """Initialize all subsystems."""
         print("=" * 70)
@@ -51,22 +48,33 @@ class AmosRuntime:
         print(f"Mode: {self.mode.upper()}")
         print(f"Timestamp: {self.start_time.isoformat()}")
         print()
-        
+
         # Load system registry
         registry_path = self.root / "AMOS_ORGANISM_OS" / "system_registry.json"
         if registry_path.exists():
             print("✅ System Registry: LOADED")
         else:
             print("⚠️  System Registry: NOT FOUND")
-        
+
         # Initialize each subsystem
         subsystems = [
-            "00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE",
-            "04_BLOOD", "05_SKELETON", "06_MUSCLE", "07_METABOLISM",
-            "08_WORLD_MODEL", "09_SOCIAL_ENGINE", "10_LIFE_ENGINE",
-            "11_LEGAL_BRAIN", "12_QUANTUM_LAYER", "13_FACTORY", "14_INTERFACES"
+            "00_ROOT",
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "04_BLOOD",
+            "05_SKELETON",
+            "06_MUSCLE",
+            "07_METABOLISM",
+            "08_WORLD_MODEL",
+            "09_SOCIAL_ENGINE",
+            "10_LIFE_ENGINE",
+            "11_LEGAL_BRAIN",
+            "12_QUANTUM_LAYER",
+            "13_FACTORY",
+            "14_INTERFACES",
         ]
-        
+
         print(f"\nLoading {len(subsystems)} subsystems...")
         for i, subsystem in enumerate(subsystems, 1):
             path = self.root / "AMOS_ORGANISM_OS" / subsystem
@@ -76,46 +84,50 @@ class AmosRuntime:
             else:
                 print(f"  {i:2d}. {subsystem}: NOT FOUND")
                 self.subsystems[subsystem] = {"status": "missing"}
-        
+
         self.status = "initialized"
-        print(f"\n✅ Initialization Complete")
-        print(f"   Active Subsystems: {len([s for s in self.subsystems.values() if s['status'] == 'ready'])}")
+        print("\n✅ Initialization Complete")
+        print(
+            f"   Active Subsystems: {len([s for s in self.subsystems.values() if s['status'] == 'ready'])}"
+        )
         return True
-    
+
     def start(self) -> bool:
         """Start the AMOS runtime."""
         print("\n" + "=" * 70)
         print(" AMOS RUNTIME - STARTING")
         print("=" * 70)
-        
+
         if self.status != "initialized":
             print("❌ Runtime not initialized!")
             return False
-        
+
         print("\n🚀 Starting subsystems...")
         time.sleep(0.5)
-        
+
         # Simulate subsystem startup
         for subsystem in self.subsystems:
             if self.subsystems[subsystem]["status"] == "ready":
                 self.subsystems[subsystem]["status"] = "running"
                 print(f"   ✓ {subsystem}: RUNNING")
-        
+
         self.status = "running"
-        
+
         print("\n" + "=" * 70)
         print(" 🎉 AMOS ORGANISM IS LIVE")
         print("=" * 70)
         print(f"\nRuntime Status: {self.status.upper()}")
         print(f"Started: {self.start_time.isoformat()}")
         print(f"Uptime: {(datetime.utcnow() - self.start_time).total_seconds():.2f}s")
-        print(f"\nActive Subsystems: {len([s for s in self.subsystems.values() if s['status'] == 'running'])}")
-        print(f"Features Available: 250+")
-        print(f"Knowledge Packs: 83")
+        print(
+            f"\nActive Subsystems: {len([s for s in self.subsystems.values() if s['status'] == 'running'])}"
+        )
+        print("Features Available: 250+")
+        print("Knowledge Packs: 83")
         print("\nPress Ctrl+C to stop")
-        
+
         return True
-    
+
     def run(self) -> None:
         """Main runtime loop."""
         try:
@@ -125,18 +137,18 @@ class AmosRuntime:
         except KeyboardInterrupt:
             print("\n\n⏹️  Shutdown signal received...")
             self.shutdown()
-    
+
     def shutdown(self) -> None:
         """Graceful shutdown."""
         print("\n🛑 Shutting down AMOS Runtime...")
-        
+
         for subsystem in self.subsystems:
             if self.subsystems[subsystem]["status"] == "running":
                 self.subsystems[subsystem]["status"] = "stopped"
                 print(f"   ✓ {subsystem}: STOPPED")
-        
+
         self.status = "stopped"
-        
+
         print("\n" + "=" * 70)
         print(" AMOS RUNTIME - SHUTDOWN COMPLETE")
         print("=" * 70)
@@ -151,18 +163,26 @@ class AmosRuntime:
             "system_name": "AMOS",
             "version": "1.0.0",
             "creator": "Trang Phan",
-            "status": self.status
+            "status": self.status,
         }
 
     def get_law_summary(self) -> list:
         """Get summary of global laws L1-L6."""
         return [
             {"id": "L1", "name": "Law of Law", "desc": "All reasoning obeys highest constraints"},
-            {"id": "L2", "name": "Rule of 2", "desc": "Check at least two contrasting perspectives"},
+            {
+                "id": "L2",
+                "name": "Rule of 2",
+                "desc": "Check at least two contrasting perspectives",
+            },
             {"id": "L3", "name": "Rule of 4", "desc": "Consider four quadrants"},
-            {"id": "L4", "name": "Absolute Structural Integrity", "desc": "Outputs must be consistent"},
+            {
+                "id": "L4",
+                "name": "Absolute Structural Integrity",
+                "desc": "Outputs must be consistent",
+            },
             {"id": "L5", "name": "Post-Theory Communication", "desc": "Clear, grounded language"},
-            {"id": "L6", "name": "UBI Alignment", "desc": "Protect biological integrity"}
+            {"id": "L6", "name": "UBI Alignment", "desc": "Protect biological integrity"},
         ]
 
     def execute_cognitive_task(self, problem: str, context: dict = None) -> dict:
@@ -170,19 +190,20 @@ class AmosRuntime:
         # Use the brain integration if available
         try:
             from amos_brain import get_amos_integration
+
             amos = get_amos_integration()
-            if hasattr(amos, 'reasoning') and amos.reasoning:
+            if hasattr(amos, "reasoning") and amos.reasoning:
                 result = amos.reasoning.full_analysis(problem)
                 return result
         except Exception:
             pass
-        
+
         # Fallback response
         return {
             "problem": problem,
             "recommendation": "AMOS analysis not available",
             "rule_of_two": {"confidence": 0.5},
-            "rule_of_four": {"quadrants": {}}
+            "rule_of_four": {"quadrants": {}},
         }
 
 
@@ -205,26 +226,28 @@ AMOSRuntime = AmosRuntime
 
 def main():
     parser = argparse.ArgumentParser(description="AMOS Runtime - Master Execution Engine")
-    parser.add_argument("--mode", choices=["full", "minimal"], default="full",
-                       help="Runtime mode (default: full)")
-    parser.add_argument("--monitor", action="store_true",
-                       help="Enable monitoring mode")
-    
+    parser.add_argument(
+        "--mode", choices=["full", "minimal"], default="full", help="Runtime mode (default: full)"
+    )
+    parser.add_argument("--monitor", action="store_true", help="Enable monitoring mode")
+
     args = parser.parse_args()
-    
+
     # Print banner
-    print("""
+    print(
+        """
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║                    AMOS ORGANISM v1.0.0                          ║
 ║                      PRODUCTION RUNTIME                          ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
-    
+    """
+    )
+
     # Create and run runtime
     runtime = AmosRuntime(mode=args.mode)
-    
+
     if runtime.initialize():
         if runtime.start():
             runtime.run()

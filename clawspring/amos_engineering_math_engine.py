@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
-import math
+from typing import Any
 
 
 class MathDomain(Enum):
     """Mathematics domain classifications."""
+
     PURE = "pure"
     APPLIED = "applied"
     NUMERICAL = "numerical"
@@ -16,6 +16,7 @@ class MathDomain(Enum):
 
 class EngineeringDomain(Enum):
     """Engineering domain classifications."""
+
     MECHANICAL = "mechanical"
     ELECTRICAL = "electrical"
     THERMAL = "thermal"
@@ -212,7 +213,7 @@ class NumericalMethodsKernel:
         order = method.get("convergence_order", 1)
 
         # Error ~ O(h^order)
-        error_estimate = step_size ** order
+        error_estimate = step_size**order
 
         return {
             "method": method_name,
@@ -261,7 +262,7 @@ class MechanicalSystemsKernel:
         cross_section: float,
     ) -> dict:
         """Analyze stress and strain (conceptual)."""
-        stress = load / cross_section if cross_section > 0 else float('inf')
+        stress = load / cross_section if cross_section > 0 else float("inf")
 
         return {
             "material": material,
@@ -407,8 +408,12 @@ class EngineeringMathematicsEngine:
     ) -> dict[str, Any]:
         """Run engineering/math analysis across specified domains."""
         domains = domains or [
-            "pure_math", "applied_math", "numerical",
-            "mechanical", "electrical", "control"
+            "pure_math",
+            "applied_math",
+            "numerical",
+            "mechanical",
+            "electrical",
+            "control",
         ]
         results: dict[str, Any] = {}
 
@@ -503,54 +508,58 @@ class EngineeringMathematicsEngine:
 
         for domain, data in results.items():
             display_name = domain_names.get(domain, domain.title())
-            lines.extend([
-                f"",
-                f"### {display_name}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### {display_name}",
+                ]
+            )
             if isinstance(data, dict):
                 for key, value in data.items():
                     if key not in ["principles", "query"]:
                         lines.append(f"- {key}: {value}")
 
-        lines.extend([
-            "",
-            "## Safety & Compliance",
-            "",
-            "### Safety Constraints",
-            "- NO weapon design or warfare applications",
-            "- NO surveillance abuse",
-            "- NO fraud or market manipulation",
-            "- NO real-time control of physical systems",
-            "- Conceptual analysis only",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Mathematical structure preserved",
-            "- L2 (Temporal): Time-dependent systems modeled",
-            "- L3 (Semantic): Clear mathematical reasoning",
-            "- L4 (Cognitive): Multi-domain integration",
-            "- L5 (Safety): No harmful applications",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT a numerical solver. "
-            "All calculations are CONCEPTUAL approximations only.",
-            "",
-            "Specific Gaps:",
-            "- No symbolic computation (CAS)",
-            "- No numerical PDE solving",
-            "- No finite element analysis",
-            "- No real engineering simulation",
-            "- No CAD/CAE integration",
-            "- Pattern-based analysis only, not computation",
-            "",
-            "### Deterministic Logic Requirement",
-            "All mathematical reasoning requires clear derivations.",
-            "No black-box results without explanation.",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Compliance",
+                "",
+                "### Safety Constraints",
+                "- NO weapon design or warfare applications",
+                "- NO surveillance abuse",
+                "- NO fraud or market manipulation",
+                "- NO real-time control of physical systems",
+                "- Conceptual analysis only",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Mathematical structure preserved",
+                "- L2 (Temporal): Time-dependent systems modeled",
+                "- L3 (Semantic): Clear mathematical reasoning",
+                "- L4 (Cognitive): Multi-domain integration",
+                "- L5 (Safety): No harmful applications",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT a numerical solver. "
+                "All calculations are CONCEPTUAL approximations only.",
+                "",
+                "Specific Gaps:",
+                "- No symbolic computation (CAS)",
+                "- No numerical PDE solving",
+                "- No finite element analysis",
+                "- No real engineering simulation",
+                "- No CAD/CAE integration",
+                "- Pattern-based analysis only, not computation",
+                "",
+                "### Deterministic Logic Requirement",
+                "All mathematical reasoning requires clear derivations.",
+                "No black-box results without explanation.",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 

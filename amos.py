@@ -12,11 +12,11 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Ensure clawspring is in path
-clawspring_path = os.path.join(os.path.dirname(__file__), 'clawspring')
+clawspring_path = os.path.join(os.path.dirname(__file__), "clawspring")
 if clawspring_path not in sys.path:
     sys.path.insert(0, clawspring_path)
 
@@ -24,6 +24,7 @@ if clawspring_path not in sys.path:
 try:
     from amos_brain import get_brain
     from amos_brain.integration import get_amos_integration
+
     AMOS_AVAILABLE = True
 except ImportError as e:
     print(f"[WARNING] AMOS brain not available: {e}")
@@ -34,6 +35,7 @@ try:
     import clawspring
     from clawspring.clawspring import main as clawspring_main
     from clawspring.multi_agent.subagent import get_agent_definition
+
     CLAWSPRING_AVAILABLE = True
 except ImportError:
     CLAWSPRING_AVAILABLE = False
@@ -41,6 +43,7 @@ except ImportError:
     try:
         from clawspring import main as clawspring_main
         from multi_agent.subagent import get_agent_definition
+
         CLAWSPRING_AVAILABLE = True
     except ImportError as e:
         print(f"[ERROR] ClawSpring not available: {e}")
@@ -49,7 +52,8 @@ except ImportError:
 
 def print_amos_banner():
     """Print AMOS Brain startup banner."""
-    print(r"""
+    print(
+        r"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║   █████╗ ███╗   ███╗ ██████╗ ███████╗                            ║
@@ -63,7 +67,8 @@ def print_amos_banner():
 ║   Deterministic Cognitive Architecture for AI Coding             ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
     if AMOS_AVAILABLE:
         try:
@@ -83,15 +88,15 @@ def main():
     print_amos_banner()
 
     # Set default agent to AMOS if not specified
-    if CLAWSPRING_AVAILABLE and '--agent' not in sys.argv and '-a' not in sys.argv:
+    if CLAWSPRING_AVAILABLE and "--agent" not in sys.argv and "-a" not in sys.argv:
         # Check if AMOS agent is available
-        amos_def = get_agent_definition('amos')
+        amos_def = get_agent_definition("amos")
         if amos_def:
-            sys.argv.extend(['--agent', 'amos'])
+            sys.argv.extend(["--agent", "amos"])
             print("[AMOS] Using AMOS brain-powered agent")
         else:
             print("[AMOS] Agent definition not found, using default")
-    
+
     # Run clawspring main loop
     try:
         clawspring_main()

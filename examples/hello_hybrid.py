@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Hello Hybrid - AMOSL Multi-Substrate Demo."""
-import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
+import sys
 
-from amosl.runtime import RuntimeKernel
-from amosl.prover import TheoremProver
-from amosl.ledger import Ledger
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
+
 from amosl.bridge import BridgeExecutor, BridgeType
-from amosl.evolution import EvolutionOperator, BlockMatrix
+from amosl.evolution import BlockMatrix, EvolutionOperator
+from amosl.ledger import Ledger
+from amosl.prover import TheoremProver
+from amosl.runtime import RuntimeKernel
 
 
 def main():
@@ -29,9 +30,7 @@ def main():
         print(f"\n   Cycle {i}:")
 
         # Classical computation
-        kernel.step(action_bundle={
-            "classical": {"set": {"cycle": i}, "emit": f"cycle_{i}"}
-        })
+        kernel.step(action_bundle={"classical": {"set": {"cycle": i}, "emit": f"cycle_{i}"}})
         print(f"      Classical: cycle={i}")
 
         # Classical → Quantum
@@ -45,7 +44,7 @@ def main():
 
         # Classical → Biological
         c_to_b = bridge.execute(BridgeType.C_TO_B, float(i) / 3, threshold=0.3)
-        status = "ON" if c_to_b['output']['activated'] else "OFF"
+        status = "ON" if c_to_b["output"]["activated"] else "OFF"
         print(f"      C→B: {float(i)/3:.2f} → {status}")
 
         # Record to ledger
@@ -53,7 +52,7 @@ def main():
             step=i,
             state=kernel.state,
             outcome={"cycle": i, "substrates": ["C", "Q", "B"]},
-            uncertainty={"classical": 0.01, "quantum": 0.1, "biological": 0.05}
+            uncertainty={"classical": 0.01, "quantum": 0.1, "biological": 0.05},
         )
 
     print("\n2. Verification:")
@@ -74,7 +73,7 @@ def main():
         kernel.state.biological,
         kernel.state.hybrid,
         kernel.state.environment,
-        kernel.state.time
+        kernel.state.time,
     ]
     trajectory = evo.run_steps(state_vector, steps=3)
     print(f"   Evolved {len(trajectory)-1} steps")

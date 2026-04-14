@@ -2,7 +2,7 @@
 """AMOS Brain Phase 15: Post-Category-Theory Decision
 
 Current State (46+ components):
-- Core: AMOS Brain cognitive architecture  
+- Core: AMOS Brain cognitive architecture
 - Language: AMOSL compiler with 9-tuple, 4 IRs, 8 invariants
 - Formal: Mathematical specification (16-tuple)
 - Categorical: Category-theoretic formulation (functors, adjunctions)
@@ -14,8 +14,9 @@ Current State (46+ components):
 
 What is the highest-value synthesis after category theory?
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision
@@ -44,8 +45,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must connect theory to implementation. Must demonstrate civilisational successor claim. Must be executable.",
-        "goals": "Create unified master specification. Enable theorem proving. Demonstrate practical application."
-    }
+        "goals": "Create unified master specification. Enable theorem proving. Demonstrate practical application.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -57,7 +58,8 @@ for i, rec in enumerate(result.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Create Master Theorem Prover & Reference Suite")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: AMOSL Master System Integration
 
    WHY NOW:
@@ -75,7 +77,7 @@ print("""
       - Legal(B_ij)  [bridge legality]
       - Γ ⊢ e:τ  [type derivations]
       - Explain(L) = Outcome  [audit verification]
-      
+
       Features:
       - SMT solver integration (Z3)
       - Proof term generation
@@ -88,7 +90,7 @@ print("""
       - ledger.py: Immutable trace with Explain()
       - verify.py: V_type ⊕ V_contract ⊕ V_constraint
       - bridge.py: B_ij cross-substrate morphisms
-      
+
    3. REFERENCE SUITE (examples/)
       Working demonstrations:
       - demo_categorical.py: Functor implementations
@@ -119,12 +121,13 @@ print("""
    • amosl/runtime/*.py - Complete runtime (4 modules)
    • examples/demo_*.py - 4 reference demonstrations
    • docs/AMOSL_MASTER_SPEC.md - Unified specification
-   
+
    VALIDATION:
    • Prove: Valid(Σ) for sample programs
    • Prove: Legal(B_ij) for all bridges
    • Prove: Γ ⊢ e:τ for type system
    • Execute: End-to-end AMOSL program
-""")
+"""
+)
 
 print("\n✅ Decision: Build theorem prover + complete runtime + reference suite")

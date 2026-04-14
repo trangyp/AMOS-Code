@@ -3,14 +3,15 @@ from __future__ import annotations
 
 import providers
 
-
 # ── Token estimation ──────────────────────────────────────────────────────
+
 
 def estimate_tokens(messages: list) -> int:
     """Estimate token count by summing content lengths / 3.5.
 
     Args:
         messages: list of message dicts with "content" field (str or list of dicts)
+
     Returns:
         approximate token count, int
     """
@@ -40,6 +41,7 @@ def get_context_limit(model: str) -> int:
 
     Args:
         model: model string (e.g. "claude-opus-4-6", "ollama/llama3.3")
+
     Returns:
         context limit in tokens
     """
@@ -49,6 +51,7 @@ def get_context_limit(model: str) -> int:
 
 
 # ── Layer 1: Snip old tool results ────────────────────────────────────────
+
 
 def snip_old_tool_results(
     messages: list,
@@ -77,13 +80,14 @@ def snip_old_tool_results(
         if not isinstance(content, str) or len(content) <= max_chars:
             continue
         first_half = content[: max_chars // 2]
-        last_quarter = content[-(max_chars // 4):]
+        last_quarter = content[-(max_chars // 4) :]
         snipped = len(content) - len(first_half) - len(last_quarter)
         m["content"] = f"{first_half}\n[... {snipped} chars snipped ...]\n{last_quarter}"
     return messages
 
 
 # ── Layer 2: Auto-compact ─────────────────────────────────────────────────
+
 
 def find_split_point(messages: list, keep_ratio: float = 0.3) -> int:
     """Find index that splits messages so ~keep_ratio of tokens are in the recent portion.
@@ -116,6 +120,7 @@ def compact_messages(messages: list, config: dict) -> list:
     Args:
         messages: full message list
         config: agent config dict (must contain "model")
+
     Returns:
         new compacted message list
     """
@@ -167,6 +172,7 @@ def compact_messages(messages: list, config: dict) -> list:
 
 # ── Main entry ────────────────────────────────────────────────────────────
 
+
 def maybe_compact(state, config: dict) -> bool:
     """Check if context window is getting full and compress if needed.
 
@@ -175,6 +181,7 @@ def maybe_compact(state, config: dict) -> bool:
     Args:
         state: AgentState with .messages list
         config: agent config dict (must contain "model")
+
     Returns:
         True if compaction was performed
     """

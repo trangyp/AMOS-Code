@@ -1,5 +1,4 @@
-"""
-12_QUANTUM_LAYER — Probabilistic timing and decision layer
+"""12_QUANTUM_LAYER — Probabilistic timing and decision layer
 
 The quantum substrate of AMOS. Manages superposition states,
 probabilistic decisions, uncertainty quantification, and
@@ -12,18 +11,34 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .superposition_manager import SuperpositionManager, SuperpositionState, get_superposition_manager
-from .probability_engine import ProbabilityEngine, ProbabilityDistribution, get_probability_engine
-from .timing_synchronizer import TimingSynchronizer, SynchronicityEvent, get_timing_synchronizer
-from .quantum_decision_engine import QuantumDecisionEngine, DecisionPath, get_quantum_decision_engine
+from .probability_engine import ProbabilityDistribution, ProbabilityEngine, get_probability_engine
+from .quantum_decision_engine import (
+    DecisionPath,
+    QuantumDecisionEngine,
+    get_quantum_decision_engine,
+)
+from .superposition_manager import (
+    SuperpositionManager,
+    SuperpositionState,
+    get_superposition_manager,
+)
+from .timing_synchronizer import SynchronicityEvent, TimingSynchronizer, get_timing_synchronizer
 
 __all__ = [
     # Superposition
-    "SuperpositionManager", "SuperpositionState", "get_superposition_manager",
+    "SuperpositionManager",
+    "SuperpositionState",
+    "get_superposition_manager",
     # Probability
-    "ProbabilityEngine", "ProbabilityDistribution", "get_probability_engine",
+    "ProbabilityEngine",
+    "ProbabilityDistribution",
+    "get_probability_engine",
     # Timing
-    "TimingSynchronizer", "SynchronicityEvent", "get_timing_synchronizer",
+    "TimingSynchronizer",
+    "SynchronicityEvent",
+    "get_timing_synchronizer",
     # Decisions
-    "QuantumDecisionEngine", "DecisionPath", "get_quantum_decision_engine",
+    "QuantumDecisionEngine",
+    "DecisionPath",
+    "get_quantum_decision_engine",
 ]

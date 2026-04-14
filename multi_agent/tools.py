@@ -10,8 +10,8 @@ Registers the following tools into the central tool_registry:
 from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool
-from .subagent import SubAgentManager, get_agent_definition, load_agent_definitions
 
+from .subagent import SubAgentManager, get_agent_definition, load_agent_definitions
 
 # ── Singleton manager ──────────────────────────────────────────────────────
 
@@ -27,6 +27,7 @@ def get_agent_manager() -> SubAgentManager:
 
 
 # ── Tool implementations ───────────────────────────────────────────────────
+
 
 def _agent_tool(params: dict, config: dict) -> str:
     """Spawn a sub-agent.
@@ -63,7 +64,9 @@ def _agent_tool(params: dict, config: dict) -> str:
             )
 
     task = mgr.spawn(
-        prompt, eff_config, system_prompt,
+        prompt,
+        eff_config,
+        system_prompt,
         depth=depth,
         agent_def=agent_def,
         isolation=isolation,
@@ -157,139 +160,149 @@ def _list_agent_types(params: dict, config: dict) -> str:
 
 # ── Tool registrations ─────────────────────────────────────────────────────
 
-register_tool(ToolDef(
-    name="Agent",
-    schema={
-        "name": "Agent",
-        "description": (
-            "Spawn a sub-agent to handle a task autonomously. The sub-agent runs in a "
-            "separate thread with its own conversation history. Supports specialized agent "
-            "types (coder, reviewer, researcher, tester, or custom from .clawspring/agents/), "
-            "isolated git worktrees for parallel work, and background execution.\n\n"
-            "When using isolation='worktree', the agent gets its own git branch and "
-            "working copy — ideal for parallel coding tasks that shouldn't interfere."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "prompt": {
-                    "type": "string",
-                    "description": "Task description for the sub-agent",
+register_tool(
+    ToolDef(
+        name="Agent",
+        schema={
+            "name": "Agent",
+            "description": (
+                "Spawn a sub-agent to handle a task autonomously. The sub-agent runs in a "
+                "separate thread with its own conversation history. Supports specialized agent "
+                "types (coder, reviewer, researcher, tester, or custom from .clawspring/agents/), "
+                "isolated git worktrees for parallel work, and background execution.\n\n"
+                "When using isolation='worktree', the agent gets its own git branch and "
+                "working copy — ideal for parallel coding tasks that shouldn't interfere."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "prompt": {
+                        "type": "string",
+                        "description": "Task description for the sub-agent",
+                    },
+                    "subagent_type": {
+                        "type": "string",
+                        "description": (
+                            "Specialized agent type: 'general-purpose', 'coder', 'reviewer', "
+                            "'researcher', 'tester', or any custom type. "
+                            "Use ListAgentTypes to see all available types."
+                        ),
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": (
+                            "Human-readable name for this agent instance. "
+                            "Makes it addressable via SendMessage while running in background."
+                        ),
+                    },
+                    "model": {
+                        "type": "string",
+                        "description": "Model override for this specific agent (optional)",
+                    },
+                    "wait": {
+                        "type": "boolean",
+                        "description": (
+                            "Block until complete (default: true). "
+                            "Set false to run in background."
+                        ),
+                    },
+                    "isolation": {
+                        "type": "string",
+                        "enum": ["worktree"],
+                        "description": (
+                            "'worktree' creates a temporary git worktree so the agent works "
+                            "on an isolated copy of the repo. Changes stay on a separate branch "
+                            "and can be reviewed/merged after completion."
+                        ),
+                    },
                 },
-                "subagent_type": {
-                    "type": "string",
-                    "description": (
-                        "Specialized agent type: 'general-purpose', 'coder', 'reviewer', "
-                        "'researcher', 'tester', or any custom type. "
-                        "Use ListAgentTypes to see all available types."
-                    ),
-                },
-                "name": {
-                    "type": "string",
-                    "description": (
-                        "Human-readable name for this agent instance. "
-                        "Makes it addressable via SendMessage while running in background."
-                    ),
-                },
-                "model": {
-                    "type": "string",
-                    "description": "Model override for this specific agent (optional)",
-                },
-                "wait": {
-                    "type": "boolean",
-                    "description": (
-                        "Block until complete (default: true). "
-                        "Set false to run in background."
-                    ),
-                },
-                "isolation": {
-                    "type": "string",
-                    "enum": ["worktree"],
-                    "description": (
-                        "'worktree' creates a temporary git worktree so the agent works "
-                        "on an isolated copy of the repo. Changes stay on a separate branch "
-                        "and can be reviewed/merged after completion."
-                    ),
-                },
+                "required": ["prompt"],
             },
-            "required": ["prompt"],
         },
-    },
-    func=_agent_tool,
-    read_only=False,
-    concurrent_safe=False,
-))
+        func=_agent_tool,
+        read_only=False,
+        concurrent_safe=False,
+    )
+)
 
-register_tool(ToolDef(
-    name="SendMessage",
-    schema={
-        "name": "SendMessage",
-        "description": (
-            "Send a follow-up message to a running background agent. "
-            "The message is queued and processed after the agent finishes its current work. "
-            "Reference agents by the name set via Agent(name=...) or by task ID."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "to":      {"type": "string", "description": "Agent name or task ID"},
-                "message": {"type": "string", "description": "Message to send to the agent"},
+register_tool(
+    ToolDef(
+        name="SendMessage",
+        schema={
+            "name": "SendMessage",
+            "description": (
+                "Send a follow-up message to a running background agent. "
+                "The message is queued and processed after the agent finishes its current work. "
+                "Reference agents by the name set via Agent(name=...) or by task ID."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "to": {"type": "string", "description": "Agent name or task ID"},
+                    "message": {"type": "string", "description": "Message to send to the agent"},
+                },
+                "required": ["to", "message"],
             },
-            "required": ["to", "message"],
         },
-    },
-    func=_send_message,
-    read_only=False,
-    concurrent_safe=True,
-))
+        func=_send_message,
+        read_only=False,
+        concurrent_safe=True,
+    )
+)
 
-register_tool(ToolDef(
-    name="CheckAgentResult",
-    schema={
-        "name": "CheckAgentResult",
-        "description": "Check the status and result of a spawned sub-agent task.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "task_id": {"type": "string", "description": "Task ID returned by Agent tool"},
+register_tool(
+    ToolDef(
+        name="CheckAgentResult",
+        schema={
+            "name": "CheckAgentResult",
+            "description": "Check the status and result of a spawned sub-agent task.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "task_id": {"type": "string", "description": "Task ID returned by Agent tool"},
+                },
+                "required": ["task_id"],
             },
-            "required": ["task_id"],
         },
-    },
-    func=_check_agent_result,
-    read_only=True,
-    concurrent_safe=True,
-))
+        func=_check_agent_result,
+        read_only=True,
+        concurrent_safe=True,
+    )
+)
 
-register_tool(ToolDef(
-    name="ListAgentTasks",
-    schema={
-        "name": "ListAgentTasks",
-        "description": "List all sub-agent tasks and their statuses.",
-        "input_schema": {
-            "type": "object",
-            "properties": {},
+register_tool(
+    ToolDef(
+        name="ListAgentTasks",
+        schema={
+            "name": "ListAgentTasks",
+            "description": "List all sub-agent tasks and their statuses.",
+            "input_schema": {
+                "type": "object",
+                "properties": {},
+            },
         },
-    },
-    func=_list_agent_tasks,
-    read_only=True,
-    concurrent_safe=True,
-))
+        func=_list_agent_tasks,
+        read_only=True,
+        concurrent_safe=True,
+    )
+)
 
-register_tool(ToolDef(
-    name="ListAgentTypes",
-    schema={
-        "name": "ListAgentTypes",
-        "description": (
-            "List all available agent types (built-in and custom). "
-            "Use the type names as subagent_type when calling Agent."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {},
+register_tool(
+    ToolDef(
+        name="ListAgentTypes",
+        schema={
+            "name": "ListAgentTypes",
+            "description": (
+                "List all available agent types (built-in and custom). "
+                "Use the type names as subagent_type when calling Agent."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {},
+            },
         },
-    },
-    func=_list_agent_types,
-    read_only=True,
-    concurrent_safe=True,
-))
+        func=_list_agent_types,
+        read_only=True,
+        concurrent_safe=True,
+    )
+)

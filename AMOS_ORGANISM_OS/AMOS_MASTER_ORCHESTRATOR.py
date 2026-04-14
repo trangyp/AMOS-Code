@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS MASTER ORCHESTRATOR
+"""AMOS MASTER ORCHESTRATOR
 ========================
 
 The central nervous system of the AMOS 7-System Organism.
@@ -19,8 +18,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
+from typing import Any, Optional
 
 # ============================================================================
 # CONSTANTS & PATHS
@@ -31,21 +29,11 @@ AMOS_ROOT = Path(__file__).resolve().parent.parent
 ORGANISM_ROOT = AMOS_ROOT / "AMOS_ORGANISM_OS"
 BRAIN_ROOT = AMOS_ROOT / "_AMOS_BRAIN"
 
-SYSTEM_REGISTRY_PATH = (
-    ORGANISM_ROOT / "system_registry.json"
-)
-AGENT_REGISTRY_PATH = (
-    ORGANISM_ROOT / "agent_registry.json"
-)
-ENGINE_REGISTRY_PATH = (
-    ORGANISM_ROOT / "engine_registry.json"
-)
-WORLD_STATE_PATH = (
-    ORGANISM_ROOT / "world_state.json"
-)
-OPERATOR_PROFILE_PATH = (
-    ORGANISM_ROOT / "operator_profile_trang.json"
-)
+SYSTEM_REGISTRY_PATH = ORGANISM_ROOT / "system_registry.json"
+AGENT_REGISTRY_PATH = ORGANISM_ROOT / "agent_registry.json"
+ENGINE_REGISTRY_PATH = ORGANISM_ROOT / "engine_registry.json"
+WORLD_STATE_PATH = ORGANISM_ROOT / "world_state.json"
+OPERATOR_PROFILE_PATH = ORGANISM_ROOT / "operator_profile_trang.json"
 
 LOGS_DIR = ORGANISM_ROOT / "logs"
 MEMORY_DIR = ORGANISM_ROOT / "memory"
@@ -74,20 +62,21 @@ PRIMARY_LOOP = [
 # DATA STRUCTURES
 # ============================================================================
 
+
 @dataclass
 class AmosEvent:
     timestamp: str
     event_type: str
     subsystem: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
 
 
 @dataclass
 class CycleResult:
     subsystem: str
     status: str
-    actions: List[str]
-    outputs: Dict[str, Any]
+    actions: list[str]
+    outputs: dict[str, Any]
     next_recommended: Optional[str] = None
 
 
@@ -95,24 +84,25 @@ class CycleResult:
 class OrchestratorState:
     cycle_count: int = 0
     current_position: str = "01_BRAIN"
-    active_subsystems: List[str] = field(default_factory=list)
+    active_subsystems: list[str] = field(default_factory=list)
     last_cycle_time: Optional[float] = None
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 # ============================================================================
 # REGISTRY LOADER
 # ============================================================================
 
+
 class RegistryLoader:
     """Loads and caches all AMOS registries."""
 
     def __init__(self) -> None:
-        self.system_registry: Optional[Dict] = None
-        self.agent_registry: Optional[Dict] = None
-        self.engine_registry: Optional[Dict] = None
-        self.world_state: Optional[Dict] = None
-        self.operator_profile: Optional[Dict] = None
+        self.system_registry: Optional[dict] = None
+        self.agent_registry: Optional[dict] = None
+        self.engine_registry: Optional[dict] = None
+        self.world_state: Optional[dict] = None
+        self.operator_profile: Optional[dict] = None
 
     def load_all(self) -> bool:
         """Load all registry files. Returns True if successful."""
@@ -135,11 +125,11 @@ class RegistryLoader:
             return False
 
     @staticmethod
-    def _load_json(path: Path) -> Optional[Dict]:
+    def _load_json(path: Path) -> Optional[dict]:
         if not path.exists():
             return None
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             return None
@@ -149,16 +139,17 @@ class RegistryLoader:
 # SUBSYSTEM HANDLERS
 # ============================================================================
 
+
 class SubsystemHandler:
     """Base class for subsystem-specific logic."""
 
-    def __init__(self, code: str, registry: Dict) -> None:
+    def __init__(self, code: str, registry: dict) -> None:
         self.code = code
         self.registry = registry
         self.subsystems = registry.get("subsystems", {})
         self.config = self.subsystems.get(code, {})
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         """Process one cycle for this subsystem."""
         raise NotImplementedError
 
@@ -166,49 +157,51 @@ class SubsystemHandler:
 class BrainHandler(SubsystemHandler):
     """01_BRAIN: Reasoning, planning, decomposition."""
 
-    def __init__(self, code: str, config: Dict[str, Any]):
+    def __init__(self, code: str, config: dict[str, Any]):
         super().__init__(code, config)
         self._cognitive_activator = None
         self._worker_bridge = None
 
-    def _load_cognitive_engines(self, organism_root: Path) -> Dict[str, Any]:
+    def _load_cognitive_engines(self, organism_root: Path) -> dict[str, Any]:
         """Load dormant cognitive engines from _AMOS_BRAIN."""
         try:
             sys.path.insert(0, str(organism_root / "01_BRAIN"))
             from cognitive_engine_activator import CognitiveEngineActivator
+
             self._cognitive_activator = CognitiveEngineActivator()
             return self._cognitive_activator.get_status()
         except Exception as e:
             print(f"[01_BRAIN] Cognitive engine loading error: {e}")
             return {"loaded": False, "engines_count": 0, "error": str(e)}
 
-    def _initialize_worker_bridge(self, organism_root: Path) -> Dict[str, Any]:
+    def _initialize_worker_bridge(self, organism_root: Path) -> dict[str, Any]:
         """Initialize brain-worker bridge for task routing."""
         try:
             sys.path.insert(0, str(organism_root / "01_BRAIN"))
             from brain_worker_bridge import BrainWorkerBridge
+
             self._worker_bridge = BrainWorkerBridge(organism_root)
             return self._worker_bridge.get_bridge_status()
         except Exception as e:
             print(f"[01_BRAIN] Bridge initialization error: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _route_pending_tasks(self, organism_root: Path, tasks: List[str]) -> List[Dict[str, Any]]:
+    def _route_pending_tasks(self, organism_root: Path, tasks: list[str]) -> list[dict[str, Any]]:
         """Route pending tasks to optimal workers."""
         if not self._worker_bridge:
             self._initialize_worker_bridge(organism_root)
-        
+
         if self._worker_bridge and tasks:
             return self._worker_bridge.optimize_task_execution(tasks)
         return {"tasks": [], "total_tasks": 0, "average_confidence": 0}
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "load_cognition_engine",
             "activate_cognitive_engines",
             "initialize_worker_bridge",
             "route_pending_tasks",
-            "check_working_memory"
+            "check_working_memory",
         ]
 
         # Load cognition kernel references
@@ -237,16 +230,16 @@ class BrainHandler(SubsystemHandler):
                 "cognitive_activator_ready": cognitive_status.get("loaded", False),
                 "bridge_operational": bridge_status.get("status") == "operational",
                 "tasks_routed": task_routing.get("total_tasks", 0),
-                "routing_confidence": task_routing.get("average_confidence", 0)
+                "routing_confidence": task_routing.get("average_confidence", 0),
             },
-            next_recommended="02_SENSES"
+            next_recommended="02_SENSES",
         )
 
 
 class SensesHandler(SubsystemHandler):
     """02_SENSES: Filesystem, environment, context."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = ["scan_filesystem", "check_environment", "read_emotion_inputs"]
 
         return CycleResult(
@@ -256,16 +249,16 @@ class SensesHandler(SubsystemHandler):
             outputs={
                 "filesystem_status": "accessible",
                 "environment_loaded": True,
-                "context_updated": datetime.utcnow().isoformat() + "Z"
+                "context_updated": datetime.utcnow().isoformat() + "Z",
             },
-            next_recommended="05_SKELETON"
+            next_recommended="05_SKELETON",
         )
 
 
 class SkeletonHandler(SubsystemHandler):
     """05_SKELETON: Rules, constraints, hierarchy."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = ["load_constraints", "check_permissions", "validate_time_architecture"]
 
         return CycleResult(
@@ -274,49 +267,47 @@ class SkeletonHandler(SubsystemHandler):
             actions=actions,
             outputs={
                 "constraints_loaded": ["Law_of_Law", "Rule_of_2", "Rule_of_4"],
-                "permissions_valid": True
+                "permissions_valid": True,
             },
-            next_recommended="08_WORLD_MODEL"
+            next_recommended="08_WORLD_MODEL",
         )
 
 
 class WorldModelHandler(SubsystemHandler):
     """08_WORLD_MODEL: Macroeconomics, geopolitics, sectors."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = ["load_tss_tpe", "scan_global_signals", "update_sector_maps"]
 
         return CycleResult(
             subsystem=self.code,
             status="active",
             actions=actions,
-            outputs={
-                "tss_tpe_loaded": True,
-                "global_signals": [],
-                "sector_status": "stable"
-            },
-            next_recommended="12_QUANTUM_LAYER"
+            outputs={"tss_tpe_loaded": True, "global_signals": [], "sector_status": "stable"},
+            next_recommended="12_QUANTUM_LAYER",
         )
 
 
 class QuantumLayerHandler(SubsystemHandler):
     """12_QUANTUM_LAYER: Timing, probability flows, predictive analytics."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "load_quantum_stack",
             "check_timing_vectors",
             "assess_probabilities",
-            "generate_predictions"
+            "generate_predictions",
         ]
 
         # Generate predictions
         predictions = {}
         try:
             import sys
+
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "12_QUANTUM_LAYER"))
             from predictive_engine import PredictiveEngine
+
             engine = PredictiveEngine(organism_root)
             predictions = engine.get_all_predictions()
         except Exception as e:
@@ -331,52 +322,53 @@ class QuantumLayerHandler(SubsystemHandler):
                 "timing_aligned": True,
                 "probability_states": ["baseline"],
                 "predictions_generated": bool(predictions),
-                "forecast_available": True
+                "forecast_available": True,
             },
-            next_recommended="06_MUSCLE"
+            next_recommended="06_MUSCLE",
         )
 
 
 class MuscleHandler(SubsystemHandler):
     """06_MUSCLE: Run commands, write code, deploy, execute tasks, run workflows."""
 
-    def __init__(self, code: str, config: Dict[str, Any]):
+    def __init__(self, code: str, config: dict[str, Any]):
         super().__init__(code, config)
         self._brain_muscle_bridge = None
 
-    def _initialize_brain_muscle_bridge(self, organism_root: Path) -> Dict[str, Any]:
+    def _initialize_brain_muscle_bridge(self, organism_root: Path) -> dict[str, Any]:
         """Initialize brain-muscle bridge for optimized execution."""
         try:
             sys.path.insert(0, str(organism_root / "06_MUSCLE"))
             from brain_muscle_bridge import BrainMuscleBridge
+
             self._brain_muscle_bridge = BrainMuscleBridge(organism_root)
             return {"status": "operational", "optimization_enabled": True}
         except Exception as e:
             print(f"[06_MUSCLE] Bridge initialization error: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _optimize_execution_plan(self, organism_root: Path, tasks: List[str]) -> Dict[str, Any]:
+    def _optimize_execution_plan(self, organism_root: Path, tasks: list[str]) -> dict[str, Any]:
         """Optimize execution plan using brain-muscle bridge."""
         if not self._brain_muscle_bridge:
             self._initialize_brain_muscle_bridge(organism_root)
-        
+
         if self._brain_muscle_bridge and tasks:
             plan = self._brain_muscle_bridge.create_execution_plan(
                 task_description="Optimize " + str(len(tasks)) + " pending tasks",
                 task_type="code",
-                priority="high"
+                priority="high",
             )
             return plan
         return {"plan_created": False, "steps": []}
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "check_code_engines",
             "validate_motor_actions",
             "initialize_brain_muscle_bridge",
             "optimize_execution_plan",
             "execute_pending_tasks",
-            "process_workflows"
+            "process_workflows",
         ]
 
         # Check if there are pending code tasks
@@ -396,6 +388,7 @@ class MuscleHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "06_MUSCLE"))
             from task_executor import AgentTaskRouter
+
             router = AgentTaskRouter(organism_root)
             results = router.process_pending_tasks(max_tasks=2)
             tasks_executed = len(results)
@@ -408,6 +401,7 @@ class MuscleHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "06_MUSCLE"))
             from workflow_engine import WorkflowEngine
+
             engine = WorkflowEngine()
             # Check for pending workflows and execute
             for workflow in engine.list_workflows():
@@ -432,25 +426,30 @@ class MuscleHandler(SubsystemHandler):
                 "optimization_enabled": bridge_status.get("optimization_enabled", False),
                 "execution_plan_steps": len(execution_plan.get("steps", [])),
                 "motor_actions_allowed": [
-                    "generate_plan", "refine_plan", "analyze_text",
-                    "propose_code_change", "log_decision", "simulate_outcome",
-                    "run_workflow", "create_workflow"
-                ]
+                    "generate_plan",
+                    "refine_plan",
+                    "analyze_text",
+                    "propose_code_change",
+                    "log_decision",
+                    "simulate_outcome",
+                    "run_workflow",
+                    "create_workflow",
+                ],
             },
-            next_recommended="07_METABOLISM"
+            next_recommended="07_METABOLISM",
         )
 
 
 class MetabolismHandler(SubsystemHandler):
     """07_METABOLISM: Pipelines, transforms, IO routing, task queue."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "run_pipeline_cleanup",
             "route_io",
             "transform_data",
             "process_task_queue",
-            "execute_pipelines"
+            "execute_pipelines",
         ]
 
         # Get available agents for task assignment
@@ -462,6 +461,7 @@ class MetabolismHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "07_METABOLISM"))
             from pipeline_engine import PipelineEngine
+
             engine = PipelineEngine()
 
             # Execute pending pipelines
@@ -484,21 +484,21 @@ class MetabolismHandler(SubsystemHandler):
                 "cycle_complete": True,
                 "agents_available": len(available_agents),
                 "task_queue_processed": True,
-                "pipelines_executed": pipelines_executed
+                "pipelines_executed": pipelines_executed,
             },
-            next_recommended="01_BRAIN"
+            next_recommended="01_BRAIN",
         )
 
 
 class ImmuneHandler(SubsystemHandler):
     """03_IMMUNE: Security, threat detection, and alerting."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "validate_security_policies",
             "check_threat_indicators",
             "audit_recent_actions",
-            "evaluate_alert_rules"
+            "evaluate_alert_rules",
         ]
 
         # Evaluate alerts based on current metrics
@@ -508,6 +508,7 @@ class ImmuneHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "03_IMMUNE"))
             from alert_manager import AlertManager
+
             manager = AlertManager(organism_root)
 
             # Build metrics from context
@@ -533,21 +534,17 @@ class ImmuneHandler(SubsystemHandler):
                 "threats_checked": True,
                 "audit_complete": True,
                 "alerts_triggered": alerts_triggered,
-                "active_alerts": active_alerts
+                "active_alerts": active_alerts,
             },
-            next_recommended="11_LEGAL_BRAIN"
+            next_recommended="11_LEGAL_BRAIN",
         )
 
 
 class LifeHandler(SubsystemHandler):
     """10_LIFE_ENGINE: Personal life management for Trang."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "check_daily_schedule",
-            "update_habit_streaks",
-            "calculate_life_balance"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["check_daily_schedule", "update_habit_streaks", "calculate_life_balance"]
 
         return CycleResult(
             subsystem=self.code,
@@ -556,44 +553,32 @@ class LifeHandler(SubsystemHandler):
             outputs={
                 "schedule_checked": True,
                 "habits_updated": True,
-                "life_balance_calculated": True
+                "life_balance_calculated": True,
             },
-            next_recommended="11_LEGAL_BRAIN"
+            next_recommended="11_LEGAL_BRAIN",
         )
 
 
 class BloodHandler(SubsystemHandler):
     """04_BLOOD: Financial engine, budgeting, resource allocation."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "check_budget_status",
-            "record_cycle_cost",
-            "update_cashflow"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["check_budget_status", "record_cycle_cost", "update_cashflow"]
 
         return CycleResult(
             subsystem=self.code,
             status="active",
             actions=actions,
-            outputs={
-                "budget_healthy": True,
-                "cycle_cost_recorded": True,
-                "cashflow_updated": True
-            },
-            next_recommended="05_SKELETON"
+            outputs={"budget_healthy": True, "cycle_cost_recorded": True, "cashflow_updated": True},
+            next_recommended="05_SKELETON",
         )
 
 
 class SocialHandler(SubsystemHandler):
     """09_SOCIAL_ENGINE: Agent communication, coordination."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "sync_agent_presence",
-            "process_messages",
-            "update_social_graph"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["sync_agent_presence", "process_messages", "update_social_graph"]
 
         return CycleResult(
             subsystem=self.code,
@@ -602,21 +587,17 @@ class SocialHandler(SubsystemHandler):
             outputs={
                 "agents_synced": True,
                 "messages_processed": True,
-                "social_graph_updated": True
+                "social_graph_updated": True,
             },
-            next_recommended="10_LIFE_ENGINE"
+            next_recommended="10_LIFE_ENGINE",
         )
 
 
 class LegalHandler(SubsystemHandler):
     """11_LEGAL_BRAIN: Legal compliance and governance."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "check_compliance",
-            "validate_governance",
-            "assess_risks"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["check_compliance", "validate_governance", "assess_risks"]
 
         return CycleResult(
             subsystem=self.code,
@@ -625,44 +606,32 @@ class LegalHandler(SubsystemHandler):
             outputs={
                 "compliance_checked": True,
                 "governance_validated": True,
-                "risks_assessed": True
+                "risks_assessed": True,
             },
-            next_recommended="06_MUSCLE"
+            next_recommended="06_MUSCLE",
         )
 
 
 class FactoryHandler(SubsystemHandler):
     """13_FACTORY: Agent creation and management."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "sync_agent_registry",
-            "monitor_agent_health",
-            "spawn_needed_agents"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["sync_agent_registry", "monitor_agent_health", "spawn_needed_agents"]
 
         return CycleResult(
             subsystem=self.code,
             status="active",
             actions=actions,
-            outputs={
-                "registry_synced": True,
-                "agents_monitored": True,
-                "spawned_count": 0
-            },
-            next_recommended="06_MUSCLE"
+            outputs={"registry_synced": True, "agents_monitored": True, "spawned_count": 0},
+            next_recommended="06_MUSCLE",
         )
 
 
 class MemoryArchivalHandler(SubsystemHandler):
     """13_MEMORY_ARCHIVAL: Archives resolved cases for analogical reasoning."""
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = [
-            "archive_completed_tasks",
-            "index_memories",
-            "prepare_analogical_search"
-        ]
+    def process(self, context: dict[str, Any]) -> CycleResult:
+        actions = ["archive_completed_tasks", "index_memories", "prepare_analogical_search"]
 
         # Archive completed cycle results
         archived_count = 0
@@ -670,6 +639,7 @@ class MemoryArchivalHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "13_MEMORY_ARCHIVAL"))
             from memory_archiver import MemoryArchiver
+
             archiver = MemoryArchiver(organism_root / "13_MEMORY_ARCHIVAL")
 
             # Archive cycle results if available
@@ -688,40 +658,37 @@ class MemoryArchivalHandler(SubsystemHandler):
             subsystem=self.code,
             status="active",
             actions=actions,
-            outputs={
-                "archived_count": archived_count,
-                "index_updated": True,
-                "search_ready": True
-            },
-            next_recommended="15_KNOWLEDGE_CORE"
+            outputs={"archived_count": archived_count, "index_updated": True, "search_ready": True},
+            next_recommended="15_KNOWLEDGE_CORE",
         )
 
 
 class KnowledgeCoreHandler(SubsystemHandler):
     """15_KNOWLEDGE_CORE: Feature discovery and knowledge catalog."""
 
-    def __init__(self, code: str, config: Dict[str, Any]):
+    def __init__(self, code: str, config: dict[str, Any]):
         super().__init__(code, config)
         self._pack_loader = None
 
-    def _load_knowledge_packs(self, organism_root: Path) -> Dict[str, Any]:
+    def _load_knowledge_packs(self, organism_root: Path) -> dict[str, Any]:
         """Load and index knowledge packs from _AMOS_BRAIN."""
         try:
             sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
             from knowledge_pack_loader import KnowledgePackLoader
+
             self._pack_loader = KnowledgePackLoader()
             return self._pack_loader.get_status()
         except Exception as e:
             print(f"[15_KNOWLEDGE_CORE] Knowledge pack loading error: {e}")
             return {"loaded": False, "total_packs": 0, "error": str(e)}
 
-    def process(self, context: Dict[str, Any]) -> CycleResult:
+    def process(self, context: dict[str, Any]) -> CycleResult:
         actions = [
             "discover_features",
             "catalog_engines",
             "load_knowledge_packs",
             "index_knowledge_packs",
-            "update_capability_registry"
+            "update_capability_registry",
         ]
 
         # Discover and catalog features
@@ -734,6 +701,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
             organism_root = context.get("organism_root", Path.cwd())
             sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
             from feature_registry import FeatureRegistry
+
             registry = FeatureRegistry(organism_root)
 
             # Auto-discover all features
@@ -765,9 +733,9 @@ class KnowledgeCoreHandler(SubsystemHandler):
                 "knowledge_pack_stats": pack_stats,
                 "pack_loader_ready": self._pack_loader is not None,
                 "registry_updated": True,
-                "discovery_complete": True
+                "discovery_complete": True,
             },
-            next_recommended="01_BRAIN"
+            next_recommended="01_BRAIN",
         )
 
 
@@ -775,7 +743,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
 # HANDLER FACTORY
 # ============================================================================
 
-HANDLER_MAP: Dict[str, type] = {
+HANDLER_MAP: dict[str, type] = {
     "01_BRAIN": BrainHandler,
     "02_SENSES": SensesHandler,
     "03_IMMUNE": ImmuneHandler,
@@ -794,7 +762,7 @@ HANDLER_MAP: Dict[str, type] = {
 }
 
 
-def get_handler(code: str, registry: Dict) -> Optional[SubsystemHandler]:
+def get_handler(code: str, registry: dict) -> Optional[SubsystemHandler]:
     """Factory function to get appropriate handler for subsystem code."""
     handler_class = HANDLER_MAP.get(code)
     if handler_class:
@@ -806,9 +774,9 @@ def get_handler(code: str, registry: Dict) -> Optional[SubsystemHandler]:
 # MASTER ORCHESTRATOR
 # ============================================================================
 
+
 class AmosMasterOrchestrator:
-    """
-    The central orchestrator for the AMOS 7-System Organism.
+    """The central orchestrator for the AMOS 7-System Organism.
     Manages the primary cognitive loop across all subsystems.
     """
 
@@ -842,14 +810,12 @@ class AmosMasterOrchestrator:
 
         return True
 
-    def run_cycle(
-        self, context: Optional[Dict] = None
-    ) -> List[CycleResult]:
+    def run_cycle(self, context: Optional[dict] = None) -> list[CycleResult]:
         """Run one complete cycle through the primary loop."""
         if context is None:
             context = {}
 
-        results: List[CycleResult] = []
+        results: list[CycleResult] = []
         start_time = time.time()
 
         print(f"\n[AMOS] === CYCLE {self.state.cycle_count + 1} ===")
@@ -868,16 +834,18 @@ class AmosMasterOrchestrator:
                 results.append(result)
 
                 # Log the event
-                self._log_event(AmosEvent(
-                    timestamp=datetime.utcnow().isoformat() + "Z",
-                    event_type="subsystem_cycle",
-                    subsystem=subsystem_code,
-                    payload={
-                        "status": result.status,
-                        "actions": result.actions,
-                        "outputs": result.outputs
-                    }
-                ))
+                self._log_event(
+                    AmosEvent(
+                        timestamp=datetime.utcnow().isoformat() + "Z",
+                        event_type="subsystem_cycle",
+                        subsystem=subsystem_code,
+                        payload={
+                            "status": result.status,
+                            "actions": result.actions,
+                            "outputs": result.outputs,
+                        },
+                    )
+                )
 
                 print(f"[AMOS] [{subsystem_code}] Status: {result.status}")
 
@@ -918,13 +886,13 @@ class AmosMasterOrchestrator:
             "timestamp": event.timestamp,
             "event_type": event.event_type,
             "subsystem": event.subsystem,
-            "payload": event.payload
+            "payload": event.payload,
         }
 
-        with open(log_file, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(log_entry, ensure_ascii=False) + '\n')
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current orchestrator status."""
         return {
             "cycle_count": self.state.cycle_count,
@@ -932,13 +900,14 @@ class AmosMasterOrchestrator:
             "active_subsystems": self.state.active_subsystems,
             "last_cycle_time": self.state.last_cycle_time,
             "error_count": len(self.state.errors),
-            "running": self.running
+            "running": self.running,
         }
 
 
 # ============================================================================
 # CLI INTERFACE
 # ============================================================================
+
 
 def main() -> int:
     """Main entry point."""
@@ -969,7 +938,7 @@ def main() -> int:
 
     # Save state to memory
     state_file = MEMORY_DIR / "orchestrator_state.json"
-    with open(state_file, 'w', encoding='utf-8') as f:
+    with open(state_file, "w", encoding="utf-8") as f:
         json.dump(status, f, indent=2)
 
     print(f"\n[AMOS] State saved to: {state_file}")

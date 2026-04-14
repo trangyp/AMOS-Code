@@ -1,5 +1,4 @@
-"""
-Contract Manager — Contract & IP Management
+"""Contract Manager — Contract & IP Management
 
 Manages contracts, intellectual property protection,
 and legal agreements for the organism.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ContractStatus(Enum):
     """Status of a contract."""
+
     DRAFT = "draft"
     PENDING = "pending"
     ACTIVE = "active"
@@ -27,6 +27,7 @@ class ContractStatus(Enum):
 
 class IPType(Enum):
     """Type of intellectual property."""
+
     COPYRIGHT = "copyright"
     PATENT = "patent"
     TRADEMARK = "trademark"
@@ -37,17 +38,18 @@ class IPType(Enum):
 @dataclass
 class Contract:
     """A legal contract."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     contract_type: str = ""  # service, license, nda, etc.
-    parties: List[str] = field(default_factory=list)
-    terms: Dict[str, Any] = field(default_factory=dict)
+    parties: list[str] = field(default_factory=list)
+    terms: dict[str, Any] = field(default_factory=dict)
     status: ContractStatus = ContractStatus.DRAFT
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -57,15 +59,16 @@ class Contract:
 @dataclass
 class IPProtection:
     """Intellectual property protection record."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     ip_type: IPType = IPType.COPYRIGHT
     owner: str = ""
     description: str = ""
     registration_date: Optional[str] = None
-    protections: List[str] = field(default_factory=list)
+    protections: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "ip_type": self.ip_type.value,
@@ -73,8 +76,7 @@ class IPProtection:
 
 
 class ContractManager:
-    """
-    Manages contracts and intellectual property.
+    """Manages contracts and intellectual property.
 
     Tracks contract lifecycle, IP protection, and legal agreements.
     """
@@ -85,8 +87,8 @@ class ContractManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.contracts: Dict[str, Contract] = {}
-        self.ip_registry: Dict[str, IPProtection] = {}
+        self.contracts: dict[str, Contract] = {}
+        self.ip_registry: dict[str, IPProtection] = {}
 
         self._load_data()
 
@@ -94,8 +96,8 @@ class ContractManager:
         self,
         name: str,
         contract_type: str,
-        parties: List[str],
-        terms: Optional[Dict[str, Any]] = None,
+        parties: list[str],
+        terms: Optional[dict[str, Any]] = None,
     ) -> Contract:
         """Create a new contract."""
         contract = Contract(
@@ -135,7 +137,7 @@ class ContractManager:
         ip_type: IPType,
         owner: str,
         description: str = "",
-        protections: Optional[List[str]] = None,
+        protections: Optional[list[str]] = None,
     ) -> IPProtection:
         """Register intellectual property."""
         ip = IPProtection(
@@ -149,11 +151,11 @@ class ContractManager:
         self._save_data()
         return ip
 
-    def get_active_contracts(self) -> List[Contract]:
+    def get_active_contracts(self) -> list[Contract]:
         """Get all active contracts."""
         return [c for c in self.contracts.values() if c.status == ContractStatus.ACTIVE]
 
-    def check_ip_protection(self, content: str) -> List[str]:
+    def check_ip_protection(self, content: str) -> list[str]:
         """Check if content matches registered IP."""
         violations = []
         for ip in self.ip_registry.values():
@@ -203,15 +205,15 @@ class ContractManager:
         }
         contracts_file.write_text(json.dumps(data, indent=2))
 
-    def list_contracts(self) -> List[Dict[str, Any]]:
+    def list_contracts(self) -> list[dict[str, Any]]:
         """List all contracts."""
         return [c.to_dict() for c in self.contracts.values()]
 
-    def list_ip(self) -> List[Dict[str, Any]]:
+    def list_ip(self) -> list[dict[str, Any]]:
         """List all registered IP."""
         return [ip.to_dict() for ip in self.ip_registry.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get manager status."""
         active = len(self.get_active_contracts())
         return {

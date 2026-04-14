@@ -21,8 +21,9 @@ Current State (48+ components):
 
 Gap: No unified master specification document
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision
@@ -58,8 +59,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must synthesize all formal layers. Must create actionable documentation. Must enable adoption.",
-        "goals": "Create unified reference. Enable developer onboarding. Demonstrate civilisational successor claim."
-    }
+        "goals": "Create unified reference. Enable developer onboarding. Demonstrate civilisational successor claim.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -71,7 +72,8 @@ for i, rec in enumerate(result.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Create AMOSL Master Specification Document")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: AMOSL Master Spec v1.0
 
    WHY NOW:
@@ -85,14 +87,14 @@ print("""
 
    1. MASTER SPEC (docs/AMOSL_MASTER_SPEC.md)
       Unified document integrating:
-      
+
       Part I: Language (9-tuple)
         ⟨O, S, D, C, Obs, U, A, V, R⟩
         - Ontology declarations
         - Syntax and grammar
         - Type system
         - 8 invariant laws
-      
+
       Part II: Formal System (16-tuple)
         ⟨Ω,Τ,Σ,Ξ,Δ,Λ,Γ,Π,C,E,M,U,A,V,K,R⟩
         - Ontology algebra
@@ -101,26 +103,26 @@ print("""
         - Effect system
         - Multi-IR compiler
         - Kernel specification
-      
+
       Part III: Category Theory
         - Categories: C_syn, C_sem, C_run
         - Functors: F_s, F_r, B_ij
         - Adjunctions: F_s ⊣ G, F_r ⊣ Trace
         - Monoidal structure
         - Civilisational meta-equation
-      
+
       Part IV: Runtime Architecture
         - State manifold Σ = Σ_c × Σ_q × Σ_b × Σ_h × Σ_e × Σ_t
         - Evolution: 𝐒_{t+1} = 𝐓(𝐒_t, 𝐮_t, 𝐧_t)
         - Ledger: L_t = ⟨Σ_t, a_t, o_t, 𝒰_t, Λ_t, outcome_t⟩
         - Verification: 𝒱 = 𝒱_type ⊕ 𝒱_contract ⊕ 𝒱_constraint
         - Bridges: B_{i→j}
-      
+
       Part V: Theorem Prover
         - Constraint satisfaction
         - Proof tactics
         - Counterexample finding
-      
+
       Part VI: API Reference
         - Python SDK
         - JavaScript SDK
@@ -173,12 +175,13 @@ print("""
    • docs/AMOSL_MASTER_SPEC.md (comprehensive)
    • docs/QUICKSTART_AMOSL.md (5-minute guide)
    • examples/hello_*.py (4 examples)
-   
+
    IMPACT:
    • Developers can understand AMOSL
    • Mathematicians can verify formalism
    • Users can run programs immediately
    • Ecosystem ready for adoption
-""")
+"""
+)
 
 print("\n✅ Decision: Create master specification + quickstart + examples")

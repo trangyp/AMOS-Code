@@ -6,6 +6,6 @@ blood_path = Path(__file__).parent.parent / "04_BLOOD"
 if str(blood_path) not in sys.path:
     sys.path.insert(0, str(blood_path))
 
-from budget_manager import BudgetManager, Budget, BudgetCategory
+from budget_manager import Budget, BudgetCategory, BudgetManager
 
 __all__ = ["BudgetManager", "Budget", "BudgetCategory"]

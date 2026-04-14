@@ -6,20 +6,21 @@ production deployments. Ensures clean resource cleanup and
 state persistence during termination.
 """
 
-import sys
-import signal
 import atexit
+import json
+import signal
+import sys
 import threading
-from typing import Dict, List, Callable, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-import json
+from typing import Any, Callable, Optional
 
 
 @dataclass
 class LifecycleState:
     """Current lifecycle state."""
+
     status: str  # "starting", "running", "stopping", "stopped"
     start_time: datetime
     stop_time: Optional[datetime] = None
@@ -33,18 +34,15 @@ class LifecycleManager:
 
     def __init__(self, app_name: str = "amos-ecosystem"):
         self.app_name = app_name
-        self.state = LifecycleState(
-            status="starting",
-            start_time=datetime.now()
-        )
-        self._cleanup_handlers: List[Callable[[], None]] = []
+        self.state = LifecycleState(status="starting", start_time=datetime.now())
+        self._cleanup_handlers: list[Callable[[], None]] = []
         self._shutdown_event = threading.Event()
         self._lock = threading.Lock()
         self._state_file = Path(f".amos_lifecycle_{app_name}.json")
-        
+
         # Register signal handlers
         self._setup_signal_handlers()
-        
+
         # Register atexit handler
         atexit.register(self._atexit_cleanup)
 
@@ -132,13 +130,13 @@ class LifecycleManager:
                 with open(self._state_file) as f:
                     prev_state = json.load(f)
                 if prev_state.get("status") == "running":
-                    print(f"[Lifecycle] Warning: Previous session did not shut down cleanly")
+                    print("[Lifecycle] Warning: Previous session did not shut down cleanly")
             except Exception:
                 pass
 
         with self._lock:
             self.state.status = "running"
-        
+
         self._save_state()
         print(f"[Lifecycle] {self.app_name} is now running")
         return True
@@ -152,15 +150,15 @@ class LifecycleManager:
             self.state.shutdown_reason = reason
 
         print(f"[Lifecycle] Shutdown: {reason}")
-        
+
         # Run cleanup handlers
         self._run_cleanup_handlers()
-        
+
         # Update state
         with self._lock:
             self.state.status = "stopped"
             self.state.stop_time = datetime.now()
-        
+
         self._save_state()
         self._shutdown_event.set()
         print(f"[Lifecycle] {self.app_name} stopped")
@@ -174,13 +172,13 @@ class LifecycleManager:
         with self._lock:
             return self.state.status == "running"
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get current lifecycle status."""
         with self._lock:
             uptime = None
             if self.state.status == "running":
                 uptime = (datetime.now() - self.state.start_time).total_seconds()
-            
+
             return {
                 "app_name": self.app_name,
                 "status": self.state.status,
@@ -200,29 +198,28 @@ class LifecycleManager:
         print(f"Application: {status['app_name']}")
         print(f"Status: {status['status']}")
         print(f"Started: {status['start_time']}")
-        uptime = status.get('uptime_seconds')
+        uptime = status.get("uptime_seconds")
         if uptime:
             hours = int(uptime // 3600)
             mins = int((uptime % 3600) // 60)
             print(f"Uptime: {hours}h {mins}m")
-        cleanup_completed = status['cleanup_completed']
-        cleanup_total = status['cleanup_total']
+        cleanup_completed = status["cleanup_completed"]
+        cleanup_total = status["cleanup_total"]
         print(f"Cleanup: {cleanup_completed}/{cleanup_total}")
         print("=" * 50)
 
 
 class ResourceManager:
     """Manages resource cleanup for AMOS components."""
-    
+
     def __init__(self, lifecycle: LifecycleManager):
         self.lifecycle = lifecycle
-        self._resources: Dict[str, Any] = {}
-        
+        self._resources: dict[str, Any] = {}
+
         # Register cleanup handler
         lifecycle.register_cleanup_handler(self._cleanup_all)
-    
-    def register(self, name: str, resource: Any,
-                 cleanup_fn: Callable[[Any], None]) -> None:
+
+    def register(self, name: str, resource: Any, cleanup_fn: Callable[[Any], None]) -> None:
         """Register a resource for automatic cleanup."""
         self._resources[name] = {
             "resource": resource,
@@ -233,7 +230,7 @@ class ResourceManager:
     def _cleanup_all(self) -> None:
         """Cleanup all registered resources."""
         print(f"[ResourceManager] Cleaning up {len(self._resources)} resources...")
-        
+
         for name, data in self._resources.items():
             try:
                 data["cleanup"](data["resource"])

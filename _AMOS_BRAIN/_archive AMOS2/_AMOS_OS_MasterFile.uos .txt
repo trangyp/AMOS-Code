@@ -1582,17 +1582,17 @@ Every emotional micro-state is a variation of:
 E = (L × ΔX × θI) ÷ C
 
 Where:
-• E = emotional activation intensity  
-• L = load (external → internal demand)  
-• ΔX = expectation gap (difference between predicted outcome vs. observed)  
-• θI = identity-threat multiplier (0–5)  
-• C = capacity (biological + cognitive bandwidth)  
+• E = emotional activation intensity
+• L = load (external → internal demand)
+• ΔX = expectation gap (difference between predicted outcome vs. observed)
+• θI = identity-threat multiplier (0–5)
+• C = capacity (biological + cognitive bandwidth)
 
 Special forms:
-• Eᵣ = reactive emotion (fast)  
-• Eₚ = predictive emotion (forecast-based)  
-• Eᵢ = identity emotion (self-definition based)  
-• Eₛ = somatic emotion (body-first state)  
+• Eᵣ = reactive emotion (fast)
+• Eₚ = predictive emotion (forecast-based)
+• Eᵢ = identity emotion (self-definition based)
+• Eₛ = somatic emotion (body-first state)
 
 Every micro-state below is a permutation of this.
 

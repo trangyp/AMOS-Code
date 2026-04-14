@@ -1,5 +1,4 @@
-"""
-Quantum Router — Intelligent Decision Routing
+"""Quantum Router — Intelligent Decision Routing
 
 Routes decisions through appropriate optimization pipelines,
 combining scenario evaluation, Monte Carlo simulation, and
@@ -9,15 +8,16 @@ multi-criteria analysis.
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
 from pathlib import Path
+from typing import Any, Optional
 
 
 class RouteType(Enum):
     """Types of decision routes."""
+
     SCENARIO_BASED = "scenario_based"
     SIMULATION_BASED = "simulation_based"
     OPTIMIZER_BASED = "optimizer_based"
@@ -27,18 +27,19 @@ class RouteType(Enum):
 @dataclass
 class RouteDecision:
     """A routed decision with full analysis."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     decision_type: str = ""
     route_type: RouteType = RouteType.HYBRID
-    input_data: Dict[str, Any] = field(default_factory=dict)
-    scenarios: List[Dict[str, Any]] = field(default_factory=list)
-    simulation_result: Optional[Dict[str, Any]] = None
-    optimizer_result: Optional[Dict[str, Any]] = None
+    input_data: dict[str, Any] = field(default_factory=dict)
+    scenarios: list[dict[str, Any]] = field(default_factory=list)
+    simulation_result: Optional[dict[str, Any]] = None
+    optimizer_result: Optional[dict[str, Any]] = None
     recommendation: str = ""
     confidence: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "route_type": self.route_type.value,
@@ -46,8 +47,7 @@ class RouteDecision:
 
 
 class QuantumRouter:
-    """
-    Routes decisions through the quantum decision layer.
+    """Routes decisions through the quantum decision layer.
 
     Integrates scenario engine, Monte Carlo simulator, and
     decision optimizer to provide comprehensive decision analysis.
@@ -55,7 +55,7 @@ class QuantumRouter:
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
-        self.routes: Dict[str, RouteDecision] = {}
+        self.routes: dict[str, RouteDecision] = {}
 
         # Import engines lazily to avoid circular dependencies
         self._scenario_engine = None
@@ -67,6 +67,7 @@ class QuantumRouter:
         """Lazy-load scenario engine."""
         if self._scenario_engine is None:
             from .scenario_engine import get_scenario_engine
+
             self._scenario_engine = get_scenario_engine(self.data_dir)
         return self._scenario_engine
 
@@ -75,6 +76,7 @@ class QuantumRouter:
         """Lazy-load Monte Carlo simulator."""
         if self._monte_carlo is None:
             from .monte_carlo import get_monte_carlo_simulator
+
             self._monte_carlo = get_monte_carlo_simulator(self.data_dir)
         return self._monte_carlo
 
@@ -83,18 +85,18 @@ class QuantumRouter:
         """Lazy-load decision optimizer."""
         if self._optimizer is None:
             from .decision_optimizer import get_decision_optimizer
+
             self._optimizer = get_decision_optimizer(self.data_dir)
         return self._optimizer
 
     def route_decision(
         self,
         decision_type: str,
-        options: List[Dict[str, Any]],
+        options: list[dict[str, Any]],
         route_type: RouteType = RouteType.HYBRID,
         criteria: str = "balanced",
     ) -> RouteDecision:
-        """
-        Route a decision through the quantum layer.
+        """Route a decision through the quantum layer.
 
         Args:
             decision_type: Type/category of decision
@@ -129,7 +131,7 @@ class QuantumRouter:
     def _run_scenarios(
         self,
         route: RouteDecision,
-        options: List[Dict[str, Any]],
+        options: list[dict[str, Any]],
         criteria: str,
     ):
         """Run scenario evaluation for options."""
@@ -152,7 +154,7 @@ class QuantumRouter:
     def _run_simulation(
         self,
         route: RouteDecision,
-        options: List[Dict[str, Any]],
+        options: list[dict[str, Any]],
     ):
         """Run Monte Carlo simulation for options."""
         # Create simulation functions for each option
@@ -165,10 +167,12 @@ class QuantumRouter:
             # Create function that simulates outcomes with variance
             def make_sim(val, rk):
                 import random
+
                 def sim():
                     if random.random() < (1 - rk):  # Success probability
                         return random.gauss(val, val * rk * 0.5)
                     return random.gauss(-val * 0.5, val * rk)  # Failure
+
                 return sim
 
             strategies[name] = make_sim(expected_value, risk)
@@ -186,12 +190,13 @@ class QuantumRouter:
     def _run_optimizer(
         self,
         route: RouteDecision,
-        options: List[Dict[str, Any]],
+        options: list[dict[str, Any]],
         criteria: str,
     ):
         """Run decision optimizer for options."""
         # Map criteria string to enum
         from .decision_optimizer import DecisionCriteria
+
         criteria_map = {
             "maximize_return": DecisionCriteria.MAXIMIZE_RETURN,
             "minimize_risk": DecisionCriteria.MINIMIZE_RISK,
@@ -234,10 +239,12 @@ class QuantumRouter:
         # From scenarios
         if route.scenarios:
             best_scenario = max(route.scenarios, key=lambda x: x.get("score", 0))
-            recommendations.append((
-                best_scenario.get("name", ""),
-                best_scenario.get("score", 0) * 0.4,  # 40% weight
-            ))
+            recommendations.append(
+                (
+                    best_scenario.get("name", ""),
+                    best_scenario.get("score", 0) * 0.4,  # 40% weight
+                )
+            )
 
         # From simulation
         if route.simulation_result:
@@ -252,7 +259,7 @@ class QuantumRouter:
 
         # Combine weighted recommendations
         if recommendations:
-            scores: Dict[str, float] = {}
+            scores: dict[str, float] = {}
             for name, weight in recommendations:
                 if name:
                     scores[name] = scores.get(name, 0) + weight
@@ -266,11 +273,11 @@ class QuantumRouter:
         """Get a specific routed decision."""
         return self.routes.get(route_id)
 
-    def list_routes(self) -> List[Dict[str, Any]]:
+    def list_routes(self) -> list[dict[str, Any]]:
         """List all routed decisions."""
         return [r.to_dict() for r in self.routes.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get router status."""
         return {
             "total_routes": len(self.routes),

@@ -1,32 +1,32 @@
 """AMOS Master Orchestrator - Unified command layer for all ecosystem components."""
 
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Optional
 
 # Import all ecosystem components
 from organism_bridge import get_organism_bridge
 from predictive_integration import get_predictive_integration, predict_task
-from task_execution_integration import get_task_execution_integration, execute_task
+from task_execution_integration import execute_task, get_task_execution_integration
 
 
 @dataclass
 class OrchestrationResult:
     """Result of orchestrated cognitive workflow."""
+
     task_id: str
     timestamp: str
     domain: str
-    analysis: Dict[str, Any]
-    prediction: Dict[str, Any]
-    execution: Dict[str, Any]
-    organism_enhancements: Dict[str, Any]
+    analysis: dict[str, Any]
+    prediction: dict[str, Any]
+    execution: dict[str, Any]
+    organism_enhancements: dict[str, Any]
     overall_success: bool
     total_duration_ms: float
 
 
 class MasterOrchestrator:
-    """
-    Master orchestration layer for AMOS ecosystem.
+    """Master orchestration layer for AMOS ecosystem.
     Coordinates cognitive routing, prediction, and execution.
     """
 
@@ -34,7 +34,7 @@ class MasterOrchestrator:
         self._organism_bridge = None
         self._predictive = None
         self._task_executor = None
-        self._orchestration_history: List[OrchestrationResult] = []
+        self._orchestration_history: list[OrchestrationResult] = []
         self._initialized = False
 
     def initialize(self) -> bool:
@@ -50,14 +50,10 @@ class MasterOrchestrator:
             return False
 
     def orchestrate_cognitive_task(
-        self,
-        task_id: str,
-        task_description: str,
-        priority: str = "MEDIUM"
+        self, task_id: str, task_description: str, priority: str = "MEDIUM"
     ) -> OrchestrationResult:
-        """
-        Execute full cognitive workflow with organism enhancement.
-        
+        """Execute full cognitive workflow with organism enhancement.
+
         Workflow:
         1. Cognitive domain analysis
         2. Organism coherence check
@@ -66,24 +62,21 @@ class MasterOrchestrator:
         5. Result synthesis
         """
         import time
+
         start_time = time.time()
-        
+
         if not self._initialized:
             self.initialize()
 
         # Step 1: Cognitive Analysis (via router)
         domain = self._analyze_domain(task_description)
-        
+
         # Step 2: Organism Enhancement
         organism_enhancements = {}
         if self._organism_bridge:
             try:
-                enhancement = self._organism_bridge.enhance_cognitive_analysis(
-                    task_description
-                )
-                organism_enhancements = enhancement.get(
-                    "organism_enhancements", {}
-                )
+                enhancement = self._organism_bridge.enhance_cognitive_analysis(task_description)
+                organism_enhancements = enhancement.get("organism_enhancements", {})
             except Exception:
                 pass
 
@@ -91,11 +84,7 @@ class MasterOrchestrator:
         prediction_result = None
         if self._predictive:
             try:
-                prediction_result = predict_task(
-                    task_description,
-                    domain,
-                    priority
-                )
+                prediction_result = predict_task(task_description, domain, priority)
             except Exception:
                 pass
 
@@ -105,11 +94,7 @@ class MasterOrchestrator:
         if self._task_executor:
             try:
                 execution_result = execute_task(
-                    task_id,
-                    task_description,
-                    domain,
-                    engines,
-                    priority
+                    task_id, task_description, domain, engines, priority
                 )
             except Exception:
                 pass
@@ -128,34 +113,25 @@ class MasterOrchestrator:
             },
             prediction={
                 "predicted_duration_ms": (
-                    prediction_result.predicted_duration_ms
-                    if prediction_result else 0
+                    prediction_result.predicted_duration_ms if prediction_result else 0
                 ),
-                "confidence": (
-                    prediction_result.confidence
-                    if prediction_result else 0
-                ),
-                "risk_factors": (
-                    prediction_result.risk_factors
-                    if prediction_result else []
-                ),
-            } if prediction_result else {},
+                "confidence": (prediction_result.confidence if prediction_result else 0),
+                "risk_factors": (prediction_result.risk_factors if prediction_result else []),
+            }
+            if prediction_result
+            else {},
             execution={
                 "success": execution_result.success if execution_result else False,
-                "duration_ms": (
-                    execution_result.duration_ms
-                    if execution_result else 0
-                ),
+                "duration_ms": (execution_result.duration_ms if execution_result else 0),
                 "execution_type": (
-                    execution_result.execution_type
-                    if execution_result else "unknown"
+                    execution_result.execution_type if execution_result else "unknown"
                 ),
-            } if execution_result else {},
+            }
+            if execution_result
+            else {},
             organism_enhancements=organism_enhancements,
-            overall_success=(
-                execution_result.success if execution_result else False
-            ),
-            total_duration_ms=duration_ms
+            overall_success=(execution_result.success if execution_result else False),
+            total_duration_ms=duration_ms,
         )
 
         self._orchestration_history.append(result)
@@ -164,7 +140,7 @@ class MasterOrchestrator:
     def _analyze_domain(self, task_description: str) -> str:
         """Analyze task domain (simplified without router import)."""
         task_lower = task_description.lower()
-        
+
         # Domain detection patterns
         domains = {
             "security": ["security", "vulnerability", "threat", "attack"],
@@ -174,14 +150,14 @@ class MasterOrchestrator:
             "infrastructure": ["deploy", "server", "cloud", "infrastructure"],
             "data": ["data", "database", "query", "dataset"],
         }
-        
+
         for domain, keywords in domains.items():
             if any(kw in task_lower for kw in keywords):
                 return domain
-        
+
         return "analysis"
 
-    def _get_recommended_engines(self, domain: str) -> List[str]:
+    def _get_recommended_engines(self, domain: str) -> list[str]:
         """Get recommended engines for domain."""
         engine_map = {
             "security": ["AMOS_Deterministic_Logic_And_Law_Engine"],
@@ -193,20 +169,11 @@ class MasterOrchestrator:
         }
         return engine_map.get(domain, ["AMOS_Deterministic_Logic_And_Law_Engine"])
 
-    def get_ecosystem_status(self) -> Dict[str, Any]:
+    def get_ecosystem_status(self) -> dict[str, Any]:
         """Get complete ecosystem status."""
-        organism_status = (
-            self._organism_bridge.get_status()
-            if self._organism_bridge else {}
-        )
-        predictive_status = (
-            self._predictive.get_status()
-            if self._predictive else {}
-        )
-        executor_status = (
-            self._task_executor.get_status()
-            if self._task_executor else {}
-        )
+        organism_status = self._organism_bridge.get_status() if self._organism_bridge else {}
+        predictive_status = self._predictive.get_status() if self._predictive else {}
+        executor_status = self._task_executor.get_status() if self._task_executor else {}
 
         return {
             "initialized": self._initialized,
@@ -216,8 +183,7 @@ class MasterOrchestrator:
             "predictive_ready": predictive_status.get("initialized", False),
             "executor_ready": executor_status.get("initialized", False),
             "orchestrations_completed": len(self._orchestration_history),
-            "ecosystem_health": "OPERATIONAL"
-                if self._initialized else "DEGRADED",
+            "ecosystem_health": "OPERATIONAL" if self._initialized else "DEGRADED",
         }
 
     def print_status(self):
@@ -250,15 +216,11 @@ def get_master_orchestrator() -> MasterOrchestrator:
 
 
 def orchestrate_task(
-    task_id: str,
-    task_description: str,
-    priority: str = "MEDIUM"
+    task_id: str, task_description: str, priority: str = "MEDIUM"
 ) -> OrchestrationResult:
     """Convenience function for task orchestration."""
     orchestrator = get_master_orchestrator()
-    return orchestrator.orchestrate_cognitive_task(
-        task_id, task_description, priority
-    )
+    return orchestrator.orchestrate_cognitive_task(task_id, task_description, priority)
 
 
 if __name__ == "__main__":
@@ -280,5 +242,4 @@ if __name__ == "__main__":
     for tid, desc, priority in test_tasks:
         result = orchestrate_task(tid, desc, priority)
         status_icon = "✓" if result.overall_success else "✗"
-        print(f"  {status_icon} {tid}: {result.domain} "
-              f"({result.total_duration_ms:.1f}ms)")
+        print(f"  {status_icon} {tid}: {result.domain} " f"({result.total_duration_ms:.1f}ms)")

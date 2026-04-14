@@ -1,12 +1,11 @@
-"""
-Constraint Engine — Structural constraints for AMOS.
+"""Constraint Engine — Structural constraints for AMOS.
 """
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Callable
 from enum import Enum
-import re
+from typing import Any
 
 
 class ConstraintType(Enum):
@@ -19,12 +18,12 @@ class ConstraintType(Enum):
 
 
 class ConstraintOp(Enum):
-    LT = "lt"      # less than
-    GT = "gt"      # greater than
-    EQ = "eq"      # equal
-    NE = "ne"      # not equal
-    LE = "le"      # less or equal
-    GE = "ge"      # greater or equal
+    LT = "lt"  # less than
+    GT = "gt"  # greater than
+    EQ = "eq"  # equal
+    NE = "ne"  # not equal
+    LE = "le"  # less or equal
+    GE = "ge"  # greater or equal
     MATCH = "match"
     NOT_MATCH = "not_match"
 
@@ -32,6 +31,7 @@ class ConstraintOp(Enum):
 @dataclass
 class Constraint:
     """A structural constraint."""
+
     id: str
     name: str
     constraint_type: ConstraintType
@@ -47,6 +47,7 @@ class Constraint:
 @dataclass
 class ConstraintResult:
     """Result of constraint validation."""
+
     constraint_id: str
     passed: bool
     target: str
@@ -57,8 +58,7 @@ class ConstraintResult:
 
 
 class ConstraintEngine:
-    """
-    Validates structural constraints.
+    """Validates structural constraints.
 
     Responsibilities:
     - Define and manage constraints
@@ -68,8 +68,8 @@ class ConstraintEngine:
     """
 
     def __init__(self):
-        self._constraints: Dict[str, Constraint] = {}
-        self._history: List[ConstraintResult] = []
+        self._constraints: dict[str, Constraint] = {}
+        self._history: list[ConstraintResult] = []
         self._setup_default_constraints()
 
     def _setup_default_constraints(self):
@@ -121,7 +121,7 @@ class ConstraintEngine:
             return True
         return False
 
-    def validate_file(self, filepath: str, content: str = None) -> List[ConstraintResult]:
+    def validate_file(self, filepath: str, content: str = None) -> list[ConstraintResult]:
         """Validate a file against all applicable constraints."""
         results = []
 
@@ -148,8 +148,9 @@ class ConstraintEngine:
             return filepath.endswith(ext)
         return filepath == constraint.target or constraint.target in filepath
 
-    def _check_constraint(self, constraint: Constraint, filepath: str,
-                          content: str = None) -> ConstraintResult:
+    def _check_constraint(
+        self, constraint: Constraint, filepath: str, content: str = None
+    ) -> ConstraintResult:
         """Check a single constraint."""
         try:
             actual = self._get_actual_value(constraint, filepath, content)
@@ -174,8 +175,7 @@ class ConstraintEngine:
                 message=f"Error checking constraint: {e}",
             )
 
-    def _get_actual_value(self, constraint: Constraint, filepath: str,
-                          content: str = None) -> Any:
+    def _get_actual_value(self, constraint: Constraint, filepath: str, content: str = None) -> Any:
         """Get actual value for comparison."""
         import os
 
@@ -185,7 +185,7 @@ class ConstraintEngine:
         elif constraint.constraint_type == ConstraintType.LINE_COUNT:
             if content:
                 return len(content.splitlines())
-            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            with open(filepath, encoding="utf-8", errors="ignore") as f:
                 return len(f.readlines())
 
         elif constraint.constraint_type == ConstraintType.EXTENSION:
@@ -197,7 +197,7 @@ class ConstraintEngine:
         elif constraint.constraint_type == ConstraintType.CONTENT_PATTERN:
             if content:
                 return content
-            with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            with open(filepath, encoding="utf-8", errors="ignore") as f:
                 return f.read()
 
         return None
@@ -222,11 +222,11 @@ class ConstraintEngine:
             return not bool(re.match(expected, str(actual), re.MULTILINE))
         return False
 
-    def validate_batch(self, filepaths: List[str]) -> Dict[str, List[ConstraintResult]]:
+    def validate_batch(self, filepaths: list[str]) -> dict[str, list[ConstraintResult]]:
         """Validate multiple files."""
         return {fp: self.validate_file(fp) for fp in filepaths}
 
-    def get_violations(self, severity: str = None, limit: int = 100) -> List[ConstraintResult]:
+    def get_violations(self, severity: str = None, limit: int = 100) -> list[ConstraintResult]:
         """Get constraint violations from history."""
         violations = [r for r in self._history if not r.passed]
         if severity:
@@ -239,7 +239,7 @@ class ConstraintEngine:
             violations = filtered
         return violations[-limit:]
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get engine status."""
         violations = [r for r in self._history if not r.passed]
         return {
@@ -248,9 +248,25 @@ class ConstraintEngine:
             "total_validations": len(self._history),
             "total_violations": len(violations),
             "by_severity": {
-                "error": len([v for v in violations
-                             if self._constraints.get(v.constraint_id, Constraint(severity="error")).severity == "error"]),
-                "warning": len([v for v in violations
-                               if self._constraints.get(v.constraint_id, Constraint(severity="warning")).severity == "warning"]),
+                "error": len(
+                    [
+                        v
+                        for v in violations
+                        if self._constraints.get(
+                            v.constraint_id, Constraint(severity="error")
+                        ).severity
+                        == "error"
+                    ]
+                ),
+                "warning": len(
+                    [
+                        v
+                        for v in violations
+                        if self._constraints.get(
+                            v.constraint_id, Constraint(severity="warning")
+                        ).severity
+                        == "warning"
+                    ]
+                ),
             },
         }

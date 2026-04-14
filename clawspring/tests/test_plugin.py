@@ -2,33 +2,35 @@
 from __future__ import annotations
 
 import json
-import shutil
 import threading
-from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
-from plugin.types import (
-    PluginManifest, PluginEntry, PluginScope,
-    parse_plugin_identifier, sanitize_plugin_name,
-)
-from plugin.recommend import (
-    recommend_plugins, recommend_from_files, format_recommendations,
-    PluginRecommendation,
-)
 import plugin.store as _store
-
+import pytest
+from plugin.recommend import (
+    PluginRecommendation,
+    format_recommendations,
+    recommend_from_files,
+    recommend_plugins,
+)
+from plugin.types import (
+    PluginEntry,
+    PluginManifest,
+    PluginScope,
+    parse_plugin_identifier,
+    sanitize_plugin_name,
+)
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(autouse=True)
 def tmp_plugin_paths(tmp_path, monkeypatch):
     """Redirect all plugin config paths to tmp_path."""
-    user_cfg  = tmp_path / "user_plugins.json"
-    user_dir  = tmp_path / "user_plugins"
-    proj_cfg  = tmp_path / "proj_plugins.json"
-    proj_dir  = tmp_path / "proj_plugins"
+    user_cfg = tmp_path / "user_plugins.json"
+    user_dir = tmp_path / "user_plugins"
+    proj_cfg = tmp_path / "proj_plugins.json"
+    proj_dir = tmp_path / "proj_plugins"
 
     monkeypatch.setattr(_store, "USER_PLUGIN_DIR", user_dir)
     monkeypatch.setattr(_store, "USER_PLUGIN_CFG", user_cfg)
@@ -57,6 +59,7 @@ def local_plugin(tmp_path):
 
 # ── types ─────────────────────────────────────────────────────────────────────
 
+
 class TestPluginTypes:
     def test_parse_simple(self):
         name, src = parse_plugin_identifier("myplugin")
@@ -73,12 +76,14 @@ class TestPluginTypes:
         assert sanitize_plugin_name("ok_name") == "ok_name"
 
     def test_manifest_from_dict(self):
-        m = PluginManifest.from_dict({
-            "name": "test",
-            "version": "1.2.3",
-            "tags": ["a", "b"],
-            "tools": ["tools"],
-        })
+        m = PluginManifest.from_dict(
+            {
+                "name": "test",
+                "version": "1.2.3",
+                "tags": ["a", "b"],
+                "tools": ["tools"],
+            }
+        )
         assert m.name == "test"
         assert m.version == "1.2.3"
         assert m.tags == ["a", "b"]
@@ -133,14 +138,13 @@ class TestPluginTypes:
 
 # ── store ─────────────────────────────────────────────────────────────────────
 
+
 class TestPluginStore:
     def test_list_empty(self):
         assert _store.list_plugins() == []
 
     def test_install_local(self, local_plugin):
-        ok, msg = _store.install_plugin(
-            f"my-plugin@{local_plugin}", scope=PluginScope.USER
-        )
+        ok, msg = _store.install_plugin(f"my-plugin@{local_plugin}", scope=PluginScope.USER)
         assert ok, msg
         entries = _store.list_plugins()
         assert len(entries) == 1
@@ -164,7 +168,9 @@ class TestPluginStore:
 
     def test_install_force(self, local_plugin):
         _store.install_plugin(f"myplugin@{local_plugin}", scope=PluginScope.USER)
-        ok2, _ = _store.install_plugin(f"myplugin@{local_plugin}", scope=PluginScope.USER, force=True)
+        ok2, _ = _store.install_plugin(
+            f"myplugin@{local_plugin}", scope=PluginScope.USER, force=True
+        )
         assert ok2
 
     def test_get_plugin(self, local_plugin):
@@ -226,6 +232,7 @@ class TestPluginStore:
 
 # ── recommend ─────────────────────────────────────────────────────────────────
 
+
 class TestPluginRecommend:
     def test_empty_context(self):
         recs = recommend_plugins("")
@@ -265,13 +272,15 @@ class TestPluginRecommend:
         assert len(recs) >= 1
 
     def test_format_recommendations(self):
-        recs = [PluginRecommendation(
-            name="git-tools",
-            description="Git helpers",
-            source="https://example.com/git-tools",
-            score=5.0,
-            reasons=["tags match: git"],
-        )]
+        recs = [
+            PluginRecommendation(
+                name="git-tools",
+                description="Git helpers",
+                source="https://example.com/git-tools",
+                score=5.0,
+                reasons=["tags match: git"],
+            )
+        ]
         text = format_recommendations(recs)
         assert "git-tools" in text
         assert "Install:" in text
@@ -283,10 +292,12 @@ class TestPluginRecommend:
 
 # ── AskUserQuestion (via tools module) ────────────────────────────────────────
 
+
 class TestAskUserQuestion:
     def test_drain_empty(self):
         """drain_pending_questions returns False when nothing pending."""
-        from tools import drain_pending_questions, _pending_questions
+        from tools import _pending_questions, drain_pending_questions
+
         _pending_questions.clear()
         assert drain_pending_questions() is False
 
@@ -306,7 +317,9 @@ class TestAskUserQuestion:
         t = threading.Thread(target=_submit, daemon=True)
         t.start()
 
-        import time; time.sleep(0.05)  # let _submit block on event
+        import time
+
+        time.sleep(0.05)  # let _submit block on event
 
         # Simulate REPL drain with user input "yes"
         with patch("builtins.input", return_value="yes"):
@@ -318,6 +331,7 @@ class TestAskUserQuestion:
     def test_roundtrip_with_option_selection(self):
         """Select option 1 from a numbered list."""
         import tools as _tools
+
         _tools._pending_questions.clear()
 
         answered = threading.Event()
@@ -335,7 +349,9 @@ class TestAskUserQuestion:
         t = threading.Thread(target=_submit, daemon=True)
         t.start()
 
-        import time; time.sleep(0.05)
+        import time
+
+        time.sleep(0.05)
 
         with patch("builtins.input", return_value="1"):
             _tools.drain_pending_questions()
@@ -346,5 +362,6 @@ class TestAskUserQuestion:
     def test_tool_schema_registered(self):
         """AskUserQuestion must appear in TOOL_SCHEMAS."""
         from tools import TOOL_SCHEMAS
+
         names = [s["name"] for s in TOOL_SCHEMAS]
         assert "AskUserQuestion" in names

@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
 
 class PhysicsDomain(Enum):
     """Physics domain classifications."""
+
     CLASSICAL = "classical"
     ELECTROMAGNETISM = "electromagnetism"
     QUANTUM = "quantum"
@@ -83,7 +84,7 @@ class ClassicalDynamicsKernel:
         velocity = system.state_variables.get("velocity", 0.0)
 
         # Calculate kinetic energy
-        kinetic_energy = 0.5 * mass * velocity ** 2
+        kinetic_energy = 0.5 * mass * velocity**2
 
         # Calculate momentum
         momentum = mass * velocity
@@ -384,7 +385,11 @@ class PhysicsCosmosEngine:
     ) -> dict[str, Any]:
         """Run physics analysis across specified domains."""
         domains = domains or [
-            "classical", "electromagnetism", "quantum", "statistical", "cosmology"
+            "classical",
+            "electromagnetism",
+            "quantum",
+            "statistical",
+            "cosmology",
         ]
         results: dict[str, Any] = {}
 
@@ -460,52 +465,56 @@ class PhysicsCosmosEngine:
         ]
 
         for domain, data in results.items():
-            lines.extend([
-                f"",
-                f"### {domain.title()} Physics",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### {domain.title()} Physics",
+                ]
+            )
             if isinstance(data, dict):
                 for key, value in data.items():
                     if key != "principles" and key != "query":
                         lines.append(f"- {key}: {value}")
 
-        lines.extend([
-            "",
-            "## Safety & Boundaries",
-            "",
-            "### Safety Constraints",
-            "- NO new physical laws claimed as proven",
-            "- SPECULATIVE content marked as hypothetical",
-            "- NO weapon fabrication instructions",
-            "- NO unsafe experiment guidance",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Rule of 2/4 applied",
-            "- L2 (Temporal): Time scales respected",
-            "- L3 (Semantic): Clear physical reasoning",
-            "- L4 (Cognitive): Multi-domain analysis",
-            "- L5 (Safety): No harmful applications",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT a physics simulator. All calculations are "
-            "SIMPLIFIED conceptual models only.",
-            "",
-            "Specific Gaps:",
-            "- No numerical PDE solving",
-            "- No finite element analysis",
-            "- No real quantum state evolution",
-            "- No cosmological simulation",
-            "- Pattern-based analysis only, not computation",
-            "",
-            "### IP Protection",
-            "Internal AMOS canon and kernels are proprietary.",
-            "Only summaries exposed, not raw structure.",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Boundaries",
+                "",
+                "### Safety Constraints",
+                "- NO new physical laws claimed as proven",
+                "- SPECULATIVE content marked as hypothetical",
+                "- NO weapon fabrication instructions",
+                "- NO unsafe experiment guidance",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Rule of 2/4 applied",
+                "- L2 (Temporal): Time scales respected",
+                "- L3 (Semantic): Clear physical reasoning",
+                "- L4 (Cognitive): Multi-domain analysis",
+                "- L5 (Safety): No harmful applications",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT a physics simulator. All calculations are "
+                "SIMPLIFIED conceptual models only.",
+                "",
+                "Specific Gaps:",
+                "- No numerical PDE solving",
+                "- No finite element analysis",
+                "- No real quantum state evolution",
+                "- No cosmological simulation",
+                "- Pattern-based analysis only, not computation",
+                "",
+                "### IP Protection",
+                "Internal AMOS canon and kernels are proprietary.",
+                "Only summaries exposed, not raw structure.",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 

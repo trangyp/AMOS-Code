@@ -10,20 +10,17 @@ def main():
     print("AMOS ORGANISM BRIDGE INTEGRATION DEMO")
     print("=" * 70)
     print("\nDemonstrating brain-to-organism connection...")
-    
+
     # Test 1: Import organism bridge from brain module
     print("\n[1] Testing lazy-loaded organism bridge imports...")
     try:
-        from amos_brain import (
-            get_organism_bridge,
-            initialize_organism,
-            execute_organism_task
-        )
+        from amos_brain import execute_organism_task, get_organism_bridge, initialize_organism
+
         print("   ✓ Organism bridge functions imported from amos_brain")
     except ImportError as e:
         print(f"   ✗ Import failed: {e}")
         return 1
-    
+
     # Test 2: Initialize organism through brain
     print("\n[2] Initializing organism via brain API...")
     try:
@@ -35,7 +32,7 @@ def main():
             print("   ⚠ Organism initialization returned None")
     except Exception as e:
         print(f"   ✗ Initialization error: {e}")
-    
+
     # Test 3: Get organism bridge
     print("\n[3] Getting organism bridge...")
     try:
@@ -47,7 +44,7 @@ def main():
             print("   ⚠ Bridge returned None")
     except Exception as e:
         print(f"   ✗ Bridge error: {e}")
-    
+
     # Test 4: Execute task through organism
     print("\n[4] Executing task via organism bridge...")
     try:
@@ -55,23 +52,24 @@ def main():
         if result:
             print("   ✓ Task executed successfully")
             if isinstance(result, dict):
-                status = result.get('status', 'unknown')
+                status = result.get("status", "unknown")
                 print(f"   → Status: {status}")
         else:
             print("   ⚠ Task execution returned None")
     except Exception as e:
         print(f"   ✗ Task execution error: {e}")
-    
+
     # Test 5: Master Orchestrator integration
     print("\n[5] Testing Master Orchestrator with organism...")
     try:
         from amos_master_cognitive_orchestrator import MasterCognitiveOrchestrator
+
         amos = MasterCognitiveOrchestrator()
-        
+
         # Process a task that should utilize organism systems
         task = "Coordinate organism subsystems for market analysis"
         result = amos.process(task)
-        
+
         print("   ✓ Master Orchestrator processed task")
         print(f"   → Engine: {result.engine_used}")
         print(f"   → Category: {result.category}")
@@ -79,12 +77,13 @@ def main():
         print(f"   → Time: {result.processing_time_ms}ms")
     except Exception as e:
         print(f"   ✗ Orchestrator error: {e}")
-    
+
     # Summary
     print("\n" + "=" * 70)
     print("ORGANISM BRIDGE INTEGRATION SUMMARY")
     print("=" * 70)
-    print("""
+    print(
+        """
 The organism bridge connects the AMOS Brain to 15 subsystems:
 
   01_BRAIN          → Cognitive processing
@@ -108,11 +107,12 @@ Integration validated via:
   • Organism bridge functions
   • Master Cognitive Orchestrator
   • 53-component ecosystem
-""")
+"""
+    )
     print("=" * 70)
     print("\n✓ Organism Bridge Integration Demo Complete")
     print("=" * 70)
-    
+
     return 0
 
 

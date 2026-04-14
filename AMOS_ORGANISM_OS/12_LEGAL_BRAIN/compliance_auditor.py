@@ -1,5 +1,4 @@
-"""
-Compliance Auditor — Compliance Checking & Reporting
+"""Compliance Auditor — Compliance Checking & Reporting
 
 Audits actions and configurations for compliance with
 policies, regulations, and standards.
@@ -7,17 +6,17 @@ policies, regulations, and standards.
 
 from __future__ import annotations
 
-import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ComplianceLevel(Enum):
     """Level of compliance."""
+
     FULL = "full"
     PARTIAL = "partial"
     NON_COMPLIANT = "non_compliant"
@@ -26,6 +25,7 @@ class ComplianceLevel(Enum):
 
 class AuditType(Enum):
     """Type of audit."""
+
     SECURITY = "security"
     PRIVACY = "privacy"
     OPERATIONAL = "operational"
@@ -36,6 +36,7 @@ class AuditType(Enum):
 @dataclass
 class AuditFinding:
     """A single audit finding."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     category: str = ""
     severity: int = 1  # 1-5
@@ -43,23 +44,24 @@ class AuditFinding:
     recommendation: str = ""
     reference: str = ""  # Policy/regulation reference
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class AuditResult:
     """Result of a compliance audit."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     audit_type: AuditType = AuditType.COMPREHENSIVE
     target: str = ""
     compliance_level: ComplianceLevel = ComplianceLevel.UNKNOWN
     score: float = 0.0  # 0-100
-    findings: List[AuditFinding] = field(default_factory=list)
+    findings: list[AuditFinding] = field(default_factory=list)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     duration_seconds: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "audit_type": self.audit_type.value,
@@ -69,8 +71,7 @@ class AuditResult:
 
 
 class ComplianceAuditor:
-    """
-    Performs compliance audits and generates reports.
+    """Performs compliance audits and generates reports.
 
     Checks configurations, actions, and states against
     compliance requirements and policies.
@@ -82,8 +83,8 @@ class ComplianceAuditor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.audit_history: List[AuditResult] = []
-        self.compliance_standards: Dict[str, Dict[str, Any]] = {}
+        self.audit_history: list[AuditResult] = []
+        self.compliance_standards: dict[str, dict[str, Any]] = {}
 
         self._init_default_standards()
 
@@ -121,7 +122,7 @@ class ComplianceAuditor:
         self,
         target: str,
         audit_type: AuditType = AuditType.COMPREHENSIVE,
-        context: Optional[Dict[str, Any]] = None,
+        context: Optional[dict[str, Any]] = None,
     ) -> AuditResult:
         """Perform a compliance audit."""
         start_time = datetime.utcnow()
@@ -170,70 +171,78 @@ class ComplianceAuditor:
         self.audit_history.append(result)
         return result
 
-    def _audit_security(self, context: Optional[Dict[str, Any]]) -> List[AuditFinding]:
+    def _audit_security(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
         """Perform security audit."""
         findings = []
 
         # Check authentication
         if not context or not context.get("authentication_enabled", False):
-            findings.append(AuditFinding(
-                category="security",
-                severity=5,
-                description="Authentication not enabled",
-                recommendation="Enable authentication for all access",
-                reference="security_baseline:authentication_required",
-            ))
+            findings.append(
+                AuditFinding(
+                    category="security",
+                    severity=5,
+                    description="Authentication not enabled",
+                    recommendation="Enable authentication for all access",
+                    reference="security_baseline:authentication_required",
+                )
+            )
 
         # Check access controls
         if not context or not context.get("access_controls", False):
-            findings.append(AuditFinding(
-                category="security",
-                severity=4,
-                description="Access controls not configured",
-                recommendation="Implement role-based access control",
-                reference="security_baseline:access_controls",
-            ))
+            findings.append(
+                AuditFinding(
+                    category="security",
+                    severity=4,
+                    description="Access controls not configured",
+                    recommendation="Implement role-based access control",
+                    reference="security_baseline:access_controls",
+                )
+            )
 
         return findings
 
-    def _audit_privacy(self, context: Optional[Dict[str, Any]]) -> List[AuditFinding]:
+    def _audit_privacy(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
         """Perform privacy audit."""
         findings = []
 
         # Check data minimization
         if context and context.get("collects_pii", False):
             if not context.get("pii_protection", False):
-                findings.append(AuditFinding(
-                    category="privacy",
-                    severity=5,
-                    description="PII collected without protection",
-                    recommendation="Implement PII encryption and access controls",
-                    reference="privacy_gdpr:data_minimization",
-                ))
+                findings.append(
+                    AuditFinding(
+                        category="privacy",
+                        severity=5,
+                        description="PII collected without protection",
+                        recommendation="Implement PII encryption and access controls",
+                        reference="privacy_gdpr:data_minimization",
+                    )
+                )
 
         return findings
 
-    def _audit_operational(self, context: Optional[Dict[str, Any]]) -> List[AuditFinding]:
+    def _audit_operational(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
         """Perform operational audit."""
         findings = []
 
         # Check backups
         if not context or not context.get("backups_enabled", False):
-            findings.append(AuditFinding(
-                category="operational",
-                severity=3,
-                description="Backups not enabled",
-                recommendation="Enable daily automated backups",
-                reference="operational_sla:backup_daily",
-            ))
+            findings.append(
+                AuditFinding(
+                    category="operational",
+                    severity=3,
+                    description="Backups not enabled",
+                    recommendation="Enable daily automated backups",
+                    reference="operational_sla:backup_daily",
+                )
+            )
 
         return findings
 
-    def get_audit_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_audit_history(self, limit: int = 10) -> list[dict[str, Any]]:
         """Get recent audit history."""
         return [a.to_dict() for a in self.audit_history[-limit:]]
 
-    def get_compliance_report(self) -> Dict[str, Any]:
+    def get_compliance_report(self) -> dict[str, Any]:
         """Generate comprehensive compliance report."""
         if not self.audit_history:
             return {"status": "no_audits_performed"}
@@ -248,7 +257,7 @@ class ComplianceAuditor:
             "standards_checked": list(self.compliance_standards.keys()),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get auditor status."""
         return {
             "total_audits": len(self.audit_history),

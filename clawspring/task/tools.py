@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool
-from .store import create_task, get_task, list_tasks, update_task, delete_task
-from .types import TaskStatus
 
+from .store import create_task, delete_task, get_task, list_tasks, update_task
+from .types import TaskStatus
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -128,7 +128,10 @@ _TASK_LIST_SCHEMA = {
 
 # ── Implementations ────────────────────────────────────────────────────────────
 
-def _task_create(subject: str, description: str, active_form: str = "", metadata: dict = None) -> str:
+
+def _task_create(
+    subject: str, description: str, active_form: str = "", metadata: dict = None
+) -> str:
     task = create_task(subject, description, active_form=active_form, metadata=metadata)
     return f"Task #{task.id} created: {task.subject}"
 
@@ -201,7 +204,7 @@ def _task_list() -> str:
     lines = []
     for task in tasks:
         pending_blockers = [b for b in task.blocked_by if b not in resolved]
-        owner_str   = f" ({task.owner})" if task.owner else ""
+        owner_str = f" ({task.owner})" if task.owner else ""
         blocked_str = f" [blocked by #{', #'.join(pending_blockers)}]" if pending_blockers else ""
         lines.append(
             f"#{task.id} [{task.status.value}] {task.status_icon()} "
@@ -211,6 +214,7 @@ def _task_list() -> str:
 
 
 # ── Registration ───────────────────────────────────────────────────────────────
+
 
 def _register() -> None:
     defs = [

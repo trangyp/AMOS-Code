@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Simple API
+"""AMOS Brain Simple API
 =====================
 Lightweight HTTP API for AMOS Brain using built-in Python libraries.
 
@@ -22,11 +21,11 @@ Example:
 """
 from __future__ import annotations
 
-import sys
-import json
 import argparse
+import json
+import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Any
 
 # Add paths
@@ -63,6 +62,7 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
         elif path == "/api/status":
             try:
                 from amos_brain import get_amos_integration
+
                 amos = get_amos_integration()
                 status = amos.get_status()
                 self._send_json(status)
@@ -72,6 +72,7 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
         elif path == "/api/laws":
             try:
                 from amos_brain.laws import GlobalLaws
+
                 laws = GlobalLaws()
                 result = {
                     "laws": [
@@ -86,6 +87,7 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
         elif path == "/api/engines":
             try:
                 from amos_brain import get_amos_integration
+
                 amos = get_amos_integration()
                 stack = amos.cognitive_stack
                 engines = [
@@ -97,18 +99,20 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
                 self._send_error(str(e), 500)
 
         elif path == "/":
-            self._send_json({
-                "name": "AMOS Brain API",
-                "version": "1.0",
-                "endpoints": [
-                    "GET /api/health",
-                    "GET /api/status",
-                    "GET /api/laws",
-                    "GET /api/engines",
-                    "POST /api/think",
-                    "POST /api/reason"
-                ]
-            })
+            self._send_json(
+                {
+                    "name": "AMOS Brain API",
+                    "version": "1.0",
+                    "endpoints": [
+                        "GET /api/health",
+                        "GET /api/status",
+                        "GET /api/laws",
+                        "GET /api/engines",
+                        "POST /api/think",
+                        "POST /api/reason",
+                    ],
+                }
+            )
 
         else:
             self._send_error("Not found", 404)
@@ -130,6 +134,7 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
         if path == "/api/think":
             try:
                 from amos_brain import get_amos_integration
+
                 amos = get_amos_integration()
 
                 problem = data.get("problem", "")
@@ -142,21 +147,24 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
 
                 # Run reasoning if available
                 reasoning_result = None
-                if hasattr(amos, 'reasoning') and amos.reasoning:
+                if hasattr(amos, "reasoning") and amos.reasoning:
                     reasoning_result = amos.reasoning.full_analysis(problem)
 
-                self._send_json({
-                    "problem": problem,
-                    "pre_processing": pre,
-                    "reasoning": reasoning_result,
-                    "status": "completed"
-                })
+                self._send_json(
+                    {
+                        "problem": problem,
+                        "pre_processing": pre,
+                        "reasoning": reasoning_result,
+                        "status": "completed",
+                    }
+                )
             except Exception as e:
                 self._send_error(str(e), 500)
 
         elif path == "/api/reason":
             try:
                 from amos_brain import get_amos_integration
+
                 amos = get_amos_integration()
 
                 problem = data.get("problem", "")
@@ -165,16 +173,18 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
                     return
 
                 # Run reasoning
-                if hasattr(amos, 'reasoning') and amos.reasoning:
+                if hasattr(amos, "reasoning") and amos.reasoning:
                     result = amos.reasoning.full_analysis(problem)
-                    self._send_json({
-                        "problem": problem,
-                        "rule_of_two": result.get("rule_of_two"),
-                        "rule_of_four": result.get("rule_of_four"),
-                        "cross_validation": result.get("cross_validation"),
-                        "confidence": result.get("confidence", 0),
-                        "recommendation": result.get("recommendation", "")
-                    })
+                    self._send_json(
+                        {
+                            "problem": problem,
+                            "rule_of_two": result.get("rule_of_two"),
+                            "rule_of_four": result.get("rule_of_four"),
+                            "cross_validation": result.get("cross_validation"),
+                            "confidence": result.get("confidence", 0),
+                            "recommendation": result.get("recommendation", ""),
+                        }
+                    )
                 else:
                     self._send_error("Reasoning engine not available", 500)
             except Exception as e:

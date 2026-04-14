@@ -10,8 +10,9 @@ Usage: python amos_integrated_workflow.py <task>
 """
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent))
-sys.path.insert(0, str(Path(__file__).parent / 'AMOS_ORGANISM_OS'))
+sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 
 class IntegratedWorkflow:
@@ -26,15 +27,11 @@ class IntegratedWorkflow:
         """Step 1: Validate coherence using Coherence Engine."""
         try:
             from amos_coherence_engine import AMOSCoherenceEngine
+
             engine = AMOSCoherenceEngine()
 
             # Check task coherence
-            result = {
-                "coherent": True,
-                "confidence": 0.92,
-                "state": "stable",
-                "violations": []
-            }
+            result = {"coherent": True, "confidence": 0.92, "state": "stable", "violations": []}
 
             print(f"  ✓ Coherence check: {result['confidence']:.2f} confidence")
             return result
@@ -51,7 +48,7 @@ class IntegratedWorkflow:
                 "success_probability": 0.87,
                 "risk_level": "low",
                 "estimated_duration": "15s",
-                "confidence": 0.85
+                "confidence": 0.85,
             }
 
             print(f"  ✓ Prediction: {result['success_probability']:.0%} success rate")
@@ -76,7 +73,7 @@ class IntegratedWorkflow:
                 "status": "completed",
                 "duration_ms": 1250,
                 "output": f"Task '{task[:30]}...' completed successfully",
-                "coherence_maintained": True
+                "coherence_maintained": True,
             }
 
             print(f"  ✓ Execution: {result['status']} ({result['duration_ms']}ms)")
@@ -114,8 +111,8 @@ class IntegratedWorkflow:
         print(f"  Prediction: {self.prediction_result['success_probability']:.0%} success")
         print(f"  Execution: {self.execution_result['status']}")
 
-        if self.execution_result['status'] == 'completed':
-            print(f"\n  ✅ WORKFLOW SUCCESSFUL")
+        if self.execution_result["status"] == "completed":
+            print("\n  ✅ WORKFLOW SUCCESSFUL")
         else:
             print(f"\n  ⚠️  WORKFLOW BLOCKED: {self.execution_result.get('reason', 'unknown')}")
 
@@ -125,7 +122,7 @@ class IntegratedWorkflow:
             "coherence": self.coherence_result,
             "prediction": self.prediction_result,
             "execution": self.execution_result,
-            "success": self.execution_result['status'] == 'completed'
+            "success": self.execution_result["status"] == "completed",
         }
 
 
@@ -136,7 +133,7 @@ def main():
     workflow = IntegratedWorkflow()
     result = workflow.run(task)
 
-    return 0 if result['success'] else 1
+    return 0 if result["success"] else 1
 
 
 if __name__ == "__main__":

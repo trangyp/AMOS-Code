@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS ORGANISM OS — Run the digital organism
+"""AMOS ORGANISM OS — Run the digital organism
 
 Usage:
     python run.py [command]
@@ -20,7 +19,8 @@ _HERE = Path(__file__).parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
-from organism import AmosOrganism, main as organism_main
+from organism import AmosOrganism
+from organism import main as organism_main
 
 
 def run_demo():
@@ -94,8 +94,8 @@ def run_cli():
             elif cmd == "memory":
                 stats = organism.memory.stats()
                 print(f"\nTotal memories: {stats['total_memories']}")
-                for layer, count in stats['by_layer'].items():
-                    cap = stats['capacity'][layer]
+                for layer, count in stats["by_layer"].items():
+                    cap = stats["capacity"][layer]
                     print(f"  {layer}: {count}/{cap}")
 
             else:
@@ -111,6 +111,7 @@ def run_api():
     """Run API server."""
     organism = AmosOrganism()
     from INTERFACES.api_server import APIServer
+
     server = APIServer(organism, host="localhost", port=8765)
     try:
         server.start()
@@ -132,6 +133,7 @@ def main():
     elif command == "status":
         organism = AmosOrganism()
         import json
+
         print(json.dumps(organism.status(), indent=2, default=str))
     else:
         print(f"Unknown command: {command}")

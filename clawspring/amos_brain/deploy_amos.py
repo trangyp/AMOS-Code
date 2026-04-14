@@ -5,19 +5,20 @@ Automates installation, configuration, and deployment of the
 complete AMOS v2.0 cognitive ecosystem.
 """
 
-import os
-import sys
 import json
+import os
 import subprocess
-from pathlib import Path
-from typing import List, Optional
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
 
 @dataclass
 class DeploymentStep:
     """A single deployment step."""
+
     name: str
     status: str = "PENDING"
     message: str = ""
@@ -27,8 +28,9 @@ class DeploymentStep:
 @dataclass
 class DeploymentResult:
     """Result of deployment."""
+
     success: bool
-    steps: List[DeploymentStep]
+    steps: list[DeploymentStep]
     deploy_path: str
     timestamp: str
     version: str = "2.0"
@@ -44,7 +46,7 @@ class AMOSDeployer:
         self.unified_dashboard_path = self.amos_path / "unified_dashboard.html"
         self.clawspring_path = self.base_path / "clawspring"
         self.log_file = self.base_path / ".amos_deploy.log"
-        self.steps: List[DeploymentStep] = []
+        self.steps: list[DeploymentStep] = []
 
     def log(self, message: str) -> None:
         """Log deployment activity."""
@@ -233,7 +235,7 @@ class AMOSDeployer:
 
     def _generate_unix_launcher(self) -> str:
         """Generate Unix launcher script."""
-        return f'''#!/bin/bash
+        return f"""#!/bin/bash
 # AMOS Ecosystem Launcher v2.0
 
 cd "{self.base_path}"
@@ -242,11 +244,11 @@ export AMOS_DEPLOY_PATH="{self.amos_path}"
 
 echo " Starting AMOS Ecosystem v2.0..."
 python3 clawspring/clawspring.py "$@"
-'''
+"""
 
     def _generate_windows_launcher(self) -> str:
         """Generate Windows launcher script."""
-        return f'''@echo off
+        return f"""@echo off
 REM AMOS Ecosystem Launcher v2.0
 
 cd "{self.base_path}"
@@ -255,7 +257,7 @@ set AMOS_DEPLOY_PATH={self.amos_path}
 
 echo Starting AMOS Ecosystem v2.0...
 python clawspring/clawspring.py %*
-'''
+"""
 
     def _generate_validator_script(self) -> str:
         """Generate standalone validator script."""

@@ -15,8 +15,7 @@ def load_all_plugins(scope: PluginScope | None = None) -> list[PluginEntry]:
 
 
 def load_plugin_tools(scope: PluginScope | None = None) -> list[dict]:
-    """
-    Import tool modules from all enabled plugins and collect their TOOL_SCHEMAS.
+    """Import tool modules from all enabled plugins and collect their TOOL_SCHEMAS.
     Returns combined list of tool schema dicts.
     """
     schemas: list[dict] = []
@@ -31,11 +30,11 @@ def load_plugin_tools(scope: PluginScope | None = None) -> list[dict]:
 
 
 def register_plugin_tools(scope: PluginScope | None = None) -> int:
-    """
-    Import tool modules from enabled plugins and register them into tool_registry.
+    """Import tool modules from enabled plugins and register them into tool_registry.
     Returns number of tools registered.
     """
-    from tool_registry import register_tool, ToolDef
+    from tool_registry import register_tool
+
     count = 0
     for entry in load_all_plugins(scope):
         if not entry.manifest or not entry.manifest.tools:

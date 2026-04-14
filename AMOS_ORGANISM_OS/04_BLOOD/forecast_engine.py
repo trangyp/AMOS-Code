@@ -1,5 +1,4 @@
-"""
-Forecast Engine — Resource and financial forecasting
+"""Forecast Engine — Resource and financial forecasting
 
 Predicts future resource needs, cashflow trends, and
 provides planning scenarios.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ForecastModel(Enum):
     """Available forecasting models."""
+
     LINEAR = "linear"  # Simple linear extrapolation
     AVERAGE = "average"  # Moving average
     TREND = "trend"  # Trend-based with seasonality
@@ -27,18 +27,19 @@ class ForecastModel(Enum):
 @dataclass
 class Forecast:
     """A forecast result."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     metric: str = ""  # What is being forecasted
     model: ForecastModel = ForecastModel.AVERAGE
     horizon_days: int = 30
-    predictions: List[Dict[str, Any]] = field(default_factory=list)
+    predictions: list[dict[str, Any]] = field(default_factory=list)
     confidence_interval: float = 0.8  # 80% confidence
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     based_on_data_points: int = 0
     notes: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "model": self.model.value,
@@ -46,8 +47,7 @@ class Forecast:
 
 
 class ForecastEngine:
-    """
-    Forecasting engine for resources and finances.
+    """Forecasting engine for resources and finances.
 
     Provides projections based on historical data using
     multiple forecasting models.
@@ -59,7 +59,7 @@ class ForecastEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.forecasts: List[Forecast] = []
+        self.forecasts: list[Forecast] = []
         self._load_forecasts()
 
     def _load_forecasts(self):
@@ -96,7 +96,7 @@ class ForecastEngine:
 
     def forecast_cashflow(
         self,
-        historical_data: List[Dict[str, Any]],
+        historical_data: list[dict[str, Any]],
         horizon_days: int = 30,
         model: ForecastModel = ForecastModel.AVERAGE,
     ) -> Forecast:
@@ -110,9 +110,7 @@ class ForecastEngine:
             net = entry.get("income", 0) - entry.get("expense", 0)
             daily_flows.append(net)
 
-        predictions = self._generate_predictions(
-            daily_flows, horizon_days, model
-        )
+        predictions = self._generate_predictions(daily_flows, horizon_days, model)
 
         forecast = Forecast(
             name="Cashflow Forecast",
@@ -129,7 +127,7 @@ class ForecastEngine:
 
     def forecast_resource_usage(
         self,
-        utilization_history: List[float],
+        utilization_history: list[float],
         capacity: float,
         horizon_days: int = 30,
         model: ForecastModel = ForecastModel.TREND,
@@ -138,9 +136,7 @@ class ForecastEngine:
         if not utilization_history:
             return self._empty_forecast("resource_utilization", horizon_days)
 
-        predictions = self._generate_predictions(
-            utilization_history, horizon_days, model
-        )
+        predictions = self._generate_predictions(utilization_history, horizon_days, model)
 
         # Convert to capacity percentages
         for p in predictions:
@@ -175,12 +171,14 @@ class ForecastEngine:
         predictions = []
         for day in range(0, horizon_days, 7):  # Weekly predictions
             projected_balance = current_balance - (avg_daily_spend * day)
-            predictions.append({
-                "day": day,
-                "date": (datetime.utcnow() + timedelta(days=day)).strftime("%Y-%m-%d"),
-                "value": max(0, projected_balance),
-                "unit": "currency",
-            })
+            predictions.append(
+                {
+                    "day": day,
+                    "date": (datetime.utcnow() + timedelta(days=day)).strftime("%Y-%m-%d"),
+                    "value": max(0, projected_balance),
+                    "unit": "currency",
+                }
+            )
 
         forecast = Forecast(
             name="Budget Depletion Forecast",
@@ -198,10 +196,10 @@ class ForecastEngine:
 
     def _generate_predictions(
         self,
-        historical: List[float],
+        historical: list[float],
         horizon: int,
         model: ForecastModel,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Generate predictions based on model."""
         if not historical:
             return []
@@ -219,13 +217,15 @@ class ForecastEngine:
 
             for day in range(1, horizon + 1):
                 value = base + (trend * day)
-                predictions.append({
-                    "day": day,
-                    "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
-                    "value": value,
-                    "confidence_low": value * 0.9,
-                    "confidence_high": value * 1.1,
-                })
+                predictions.append(
+                    {
+                        "day": day,
+                        "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
+                        "value": value,
+                        "confidence_low": value * 0.9,
+                        "confidence_high": value * 1.1,
+                    }
+                )
 
         elif model == ForecastModel.AVERAGE:
             # Moving average
@@ -233,13 +233,15 @@ class ForecastEngine:
             avg = sum(historical[-window:]) / window if window > 0 else 0
 
             for day in range(1, horizon + 1):
-                predictions.append({
-                    "day": day,
-                    "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
-                    "value": avg,
-                    "confidence_low": avg * 0.8,
-                    "confidence_high": avg * 1.2,
-                })
+                predictions.append(
+                    {
+                        "day": day,
+                        "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
+                        "value": avg,
+                        "confidence_low": avg * 0.8,
+                        "confidence_high": avg * 1.2,
+                    }
+                )
 
         elif model == ForecastModel.CONSERVATIVE:
             # Conservative: use minimum of recent values
@@ -247,13 +249,15 @@ class ForecastEngine:
             conservative_val = min(historical[-window:]) if window > 0 else 0
 
             for day in range(1, horizon + 1):
-                predictions.append({
-                    "day": day,
-                    "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
-                    "value": conservative_val,
-                    "confidence_low": conservative_val * 0.95,
-                    "confidence_high": conservative_val * 1.05,
-                })
+                predictions.append(
+                    {
+                        "day": day,
+                        "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
+                        "value": conservative_val,
+                        "confidence_low": conservative_val * 0.95,
+                        "confidence_high": conservative_val * 1.05,
+                    }
+                )
 
         else:  # TREND
             # Trend with slight decay/growth
@@ -263,17 +267,23 @@ class ForecastEngine:
             for day in range(1, horizon + 1):
                 # Gradual 1% daily adjustment based on recent trend
                 if len(historical) >= 2:
-                    daily_change = (historical[-1] - historical[-2]) / historical[-2] if historical[-2] != 0 else 0
-                    trend_factor *= (1 + daily_change * 0.1)
+                    daily_change = (
+                        (historical[-1] - historical[-2]) / historical[-2]
+                        if historical[-2] != 0
+                        else 0
+                    )
+                    trend_factor *= 1 + daily_change * 0.1
 
                 value = recent_avg * trend_factor
-                predictions.append({
-                    "day": day,
-                    "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
-                    "value": value,
-                    "confidence_low": value * 0.85,
-                    "confidence_high": value * 1.15,
-                })
+                predictions.append(
+                    {
+                        "day": day,
+                        "date": (now + timedelta(days=day)).strftime("%Y-%m-%d"),
+                        "value": value,
+                        "confidence_low": value * 0.85,
+                        "confidence_high": value * 1.15,
+                    }
+                )
 
         return predictions
 
@@ -288,7 +298,7 @@ class ForecastEngine:
             notes="No historical data available for forecasting",
         )
 
-    def get_forecast_summary(self, forecast_id: str) -> Optional[Dict[str, Any]]:
+    def get_forecast_summary(self, forecast_id: str) -> Optional[dict[str, Any]]:
         """Get summary of a specific forecast."""
         for fc in self.forecasts:
             if fc.id == forecast_id:
@@ -305,7 +315,7 @@ class ForecastEngine:
                 }
         return None
 
-    def list_forecasts(self) -> List[Dict[str, Any]]:
+    def list_forecasts(self) -> list[dict[str, Any]]:
         """List all forecasts."""
         return [
             {

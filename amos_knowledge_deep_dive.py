@@ -9,11 +9,11 @@ Reads and catalogs all knowledge from:
 
 Usage: python amos_knowledge_deep_dive.py [--engine <name>] [--list-all]
 """
-import sys
 import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional
+import sys
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -21,12 +21,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 @dataclass
 class EngineSpec:
     """Parsed engine specification."""
+
     name: str
     version: str
-    domains: List[str]
-    capabilities: List[str]
-    principles: List[str]
-    constraints: List[str]
+    domains: list[str]
+    capabilities: list[str]
+    principles: list[str]
+    constraints: list[str]
     file_path: str
     size_bytes: int
 
@@ -37,10 +38,10 @@ class AMOSKnowledgeDeepDive:
     def __init__(self, root_path: Optional[Path] = None):
         self.root = root_path or Path(__file__).parent
         self.brain_dir = self.root / "_AMOS_BRAIN"
-        self.engines: List[EngineSpec] = []
+        self.engines: list[EngineSpec] = []
         self.total_knowledge_size = 0
 
-    def scan_cognitive_engines(self) -> List[EngineSpec]:
+    def scan_cognitive_engines(self) -> list[EngineSpec]:
         """Scan all 12 cognitive engine specs."""
         cognitive_dir = self.brain_dir / "Cognitive"
         engines = []
@@ -111,20 +112,16 @@ class AMOSKnowledgeDeepDive:
                 principles=principles[:5],  # Limit principles shown
                 constraints=constraints,
                 file_path=str(file_path.relative_to(self.root)),
-                size_bytes=file_path.stat().st_size
+                size_bytes=file_path.stat().st_size,
             )
 
         except Exception:
             return None
 
-    def scan_organism_specs(self) -> Dict[str, Any]:
+    def scan_organism_specs(self) -> dict[str, Any]:
         """Scan Organism OS specifications."""
         organism_dir = self.root / "AMOS_ORGANISM_OS"
-        specs = {
-            "subsystems": 0,
-            "total_files": 0,
-            "total_size": 0
-        }
+        specs = {"subsystems": 0, "total_files": 0, "total_size": 0}
 
         for py_file in organism_dir.rglob("*.py"):
             if "__pycache__" not in str(py_file):
@@ -133,7 +130,7 @@ class AMOSKnowledgeDeepDive:
 
         return specs
 
-    def scan_clawspring_engines(self) -> List[Dict[str, Any]]:
+    def scan_clawspring_engines(self) -> list[dict[str, Any]]:
         """Scan ClawSpring engine implementations."""
         clawspring_dir = self.root / "clawspring"
         engines = []
@@ -143,27 +140,30 @@ class AMOSKnowledgeDeepDive:
                 content = py_file.read_text()
                 # Extract class names
                 import ast
+
                 tree = ast.parse(content)
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         if "Engine" in node.name:
                             methods = [
-                                n.name for n in node.body
-                                if isinstance(n, ast.FunctionDef)
-                                and not n.name.startswith("_")
+                                n.name
+                                for n in node.body
+                                if isinstance(n, ast.FunctionDef) and not n.name.startswith("_")
                             ]
-                            engines.append({
-                                "name": node.name,
-                                "file": str(py_file.relative_to(self.root)),
-                                "methods": methods[:5]
-                            })
+                            engines.append(
+                                {
+                                    "name": node.name,
+                                    "file": str(py_file.relative_to(self.root)),
+                                    "methods": methods[:5],
+                                }
+                            )
             except Exception:
                 pass
 
         return engines
 
-    def generate_knowledge_report(self) -> Dict[str, Any]:
+    def generate_knowledge_report(self) -> dict[str, Any]:
         """Generate comprehensive knowledge report."""
         self.engines = self.scan_cognitive_engines()
         organism_specs = self.scan_organism_specs()
@@ -186,25 +186,25 @@ class AMOSKnowledgeDeepDive:
                         "version": e.version,
                         "domains": e.domains,
                         "capabilities_count": len(e.capabilities),
-                        "size_kb": e.size_bytes // 1024
+                        "size_kb": e.size_bytes // 1024,
                     }
                     for e in self.engines
-                ]
+                ],
             },
             "domain_coverage": {
                 "unique_domains": list(total_domains),
-                "unique_capabilities": len(total_capabilities)
+                "unique_capabilities": len(total_capabilities),
             },
             "organism_os": organism_specs,
             "clawspring_engines": {
                 "count": len(clawspring_engines),
-                "engines": clawspring_engines[:10]
+                "engines": clawspring_engines[:10],
             },
             "summary": {
                 "total_knowledge_size_mb": self.total_knowledge_size / (1024 * 1024),
                 "total_engines": len(self.engines) + len(clawspring_engines),
-                "total_domains_covered": len(total_domains)
-            }
+                "total_domains_covered": len(total_domains),
+            },
         }
 
     def print_knowledge_summary(self) -> None:
@@ -232,13 +232,13 @@ class AMOSKnowledgeDeepDive:
 
         # Domain Coverage
         coverage = report["domain_coverage"]
-        print(f"\n  🌐 DOMAIN COVERAGE")
+        print("\n  🌐 DOMAIN COVERAGE")
         print(f"     Unique Domains: {coverage['unique_domains']}")
         print(f"     Total Capabilities: {coverage['unique_capabilities']}")
 
         # Organism OS
         org = report["organism_os"]
-        print(f"\n  🏥 ORGANISM OS")
+        print("\n  🏥 ORGANISM OS")
         print(f"     Implementation Files: {org['total_files']}")
         print(f"     Code Size: {org['total_size'] // 1024:,} KB")
 

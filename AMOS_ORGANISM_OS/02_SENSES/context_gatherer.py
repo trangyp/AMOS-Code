@@ -1,37 +1,34 @@
-"""
-Context Gatherer — Environment context for AMOS.
+"""Context Gatherer — Environment context for AMOS.
 """
 
 from __future__ import annotations
 
-import json
 import os
 import platform
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
 class ContextSnapshot:
     """A snapshot of environment context."""
+
     timestamp: str
     cwd: str
     python_version: str
     platform: str
-    env_vars: Dict[str, str]
+    env_vars: dict[str, str]
     shell: str
     user: str
     hostname: str
 
 
 class ContextGatherer:
-    """
-    Gathers environment context for decision making.
-    """
+    """Gathers environment context for decision making."""
 
     def __init__(self):
-        self._history: List[ContextSnapshot] = []
+        self._history: list[ContextSnapshot] = []
         self._sensitive_keys = ["KEY", "SECRET", "TOKEN", "PASSWORD", "API"]
 
     def gather(self) -> ContextSnapshot:
@@ -62,7 +59,7 @@ class ContextGatherer:
 
         return snapshot
 
-    def get_relevant_context(self, task: str) -> Dict[str, Any]:
+    def get_relevant_context(self, task: str) -> dict[str, Any]:
         """Get context relevant to a specific task."""
         ctx = self.gather()
 
@@ -86,10 +83,11 @@ class ContextGatherer:
 
         return context
 
-    def _get_git_info(self) -> Dict[str, str]:
+    def _get_git_info(self) -> dict[str, str]:
         """Get git information if available."""
         try:
             import subprocess
+
             result = subprocess.run(
                 ["git", "rev-parse", "--short", "HEAD"],
                 capture_output=True,
@@ -110,7 +108,7 @@ class ContextGatherer:
         except Exception:
             return {"commit": "unknown", "remote": "unknown"}
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get gatherer status."""
         return {
             "snapshots_stored": len(self._history),

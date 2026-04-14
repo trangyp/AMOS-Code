@@ -210,7 +210,7 @@ FUNCTION forecast_demand(geo, time_cycle, mobility_mode):
 
 
 ===========================================================
-= END OF FILE                                              
+= END OF FILE
 ===========================================================
 
 """
@@ -1193,7 +1193,7 @@ if __name__ == "__main__":
     print("Formula f2:", f2)
     print("f2 contradictory?", is_contradictory(f2))
 
-ALL-IN-ONE SYSTEM TABLE  
+ALL-IN-ONE SYSTEM TABLE
 (Plain Text • Single Block • Fully Copyable)
 
 ----------------------------------------------------------------
@@ -1442,22 +1442,22 @@ META-RULE-GENERATOR:
 Generates cross-dimensional rules from all dimensions.
 
 FUNCTIONS:
-resolve_behavior(context)  
-resolve_best_product(context)  
+resolve_behavior(context)
+resolve_best_product(context)
 forecast_demand(context)
 
 ----------------------------------------------------------------
 LAYER: SYSTEM ROLE
 ----------------------------------------------------------------
 The full system performs:
-- Universal reasoning  
-- Domain inference  
-- Product allocation  
-- Risk classification  
-- Demand forecasting  
-- Contradiction detection  
-- Deterministic normalization  
-- Multi-layer logic evaluation  
+- Universal reasoning
+- Domain inference
+- Product allocation
+- Risk classification
+- Demand forecasting
+- Contradiction detection
+- Deterministic normalization
+- Multi-layer logic evaluation
 
 ----------------------------------------------------------------
 END OF BLOCK
@@ -1551,5 +1551,3 @@ DOMAIN LOGIC-DB | meta_rule_generator | all dimensions | expanded rules | Auto-r
 DOMAIN LOGIC-DB | resolve_behavior | context | behavior | Uses fact tables | Behavior prediction | Rule-based
 DOMAIN LOGIC-DB | resolve_best_product | context | product | Chooses optimal EV product | Product selection | Deterministic
 DOMAIN LOGIC-DB | forecast_demand | context | numerical forecast | Demand forecasting | Energy + mobility | Deterministic
-
-

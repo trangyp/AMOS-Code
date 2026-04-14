@@ -20,20 +20,22 @@ Current State (51+ components):
 
 Gap: No implementation embodying the field-theoretic regime
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 18 - Mathematical Regime Synthesis")
 print("=" * 70)
 
-print("""
+print(
+    """
 ECOSYSTEM STATUS (51+ components):
 
 FORMAL FOUNDATION (4 layers):
   1. 9-Tuple Language       - Implemented
-  2. 16-Tuple Formal System - Implemented  
+  2. 16-Tuple Formal System - Implemented
   3. Category Theory        - Documented
   4. Mathematical Regime    - Just completed
      - Axiomatic core (8 axioms)
@@ -52,18 +54,20 @@ VERIFIED:
   - 8 invariants proven
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: Field-Theoretic Runtime Enhancement")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Implement Field-Theoretic Components
 
    ANALYSIS:
    The mathematical regime provides 5 lenses, but the runtime
    only fully implements the Control and Category lenses.
-   
+
    The Field-Theoretic and Information-Geometric regimes
    need executable realizations.
 
@@ -87,7 +91,7 @@ print("""
    3. LAGRANGIAN DYNAMICS (amosl/lagrangian.py)
       Per-substrate Lagrangians:
       - L_c: Classical field
-      - L_q: Quantum evolution  
+      - L_q: Quantum evolution
       - L_b: Reaction-diffusion
       - L_h: Hybrid coupling
       - L_int: Cross-domain terms
@@ -119,7 +123,7 @@ print("""
 
    MATHEMATICAL FAITHFULNESS:
    The implementation will mirror the formal equations:
-   
+
    - Field decomposition: Φ = φ_c ⊕ φ_q ⊕ φ_b ⊕ φ_h
    - Dynamics: ∂L/∂Φ - d/dt(∂L/∂Φ̇) = 0
    - Belief: p(x|y) = p(y|x)p(x)/p(y)
@@ -145,7 +149,8 @@ print("""
    - Computer science operational semantics
    - Biological reaction-diffusion
    - Quantum Lindbladian evolution
-""")
+"""
+)
 
 print("\n✅ Decision: Implement field-theoretic and information-geometric runtime")
 print("=" * 70)

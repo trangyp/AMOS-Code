@@ -6,6 +6,6 @@ skeleton_path = Path(__file__).parent.parent / "05_SKELETON"
 if str(skeleton_path) not in sys.path:
     sys.path.insert(0, str(skeleton_path))
 
-from structural_integrity import StructuralIntegrity, IntegrityCheck
+from structural_integrity import IntegrityCheck, StructuralIntegrity
 
 __all__ = ["StructuralIntegrity", "IntegrityCheck"]

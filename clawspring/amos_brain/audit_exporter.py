@@ -1,15 +1,15 @@
 """AMOS Audit Data Exporter - Export cognitive audit data for analysis."""
 
-import json
 import csv
+import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Optional
 
 try:
-    from .cognitive_audit import get_audit_trail, AuditEntry
+    from .cognitive_audit import AuditEntry, get_audit_trail
 except ImportError:
-    from cognitive_audit import get_audit_trail, AuditEntry
+    from cognitive_audit import get_audit_trail
 
 
 class AuditExporter:
@@ -26,7 +26,7 @@ class AuditExporter:
             "export_metadata": {
                 "timestamp": datetime.now().isoformat(),
                 "total_entries": len(entries),
-                "format": "json"
+                "format": "json",
             },
             "entries": [
                 {
@@ -40,16 +40,16 @@ class AuditExporter:
                     "laws_checked": e.laws_checked,
                     "violations_found": e.violations_found,
                     "execution_time_ms": e.execution_time_ms,
-                    "recommendation": e.final_recommendation
+                    "recommendation": e.final_recommendation,
                 }
                 for e in entries
-            ]
+            ],
         }
 
         if output_path is None:
             output_path = Path(f"amos_audit_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(data, f, indent=2)
 
         return output_path
@@ -61,24 +61,34 @@ class AuditExporter:
         if output_path is None:
             output_path = Path(f"amos_audit_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
 
-        with open(output_path, 'w', newline='') as f:
+        with open(output_path, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow([
-                'timestamp', 'domain', 'risk_level', 'engines', 'consensus_score',
-                'violations', 'execution_ms', 'task_preview'
-            ])
+            writer.writerow(
+                [
+                    "timestamp",
+                    "domain",
+                    "risk_level",
+                    "engines",
+                    "consensus_score",
+                    "violations",
+                    "execution_ms",
+                    "task_preview",
+                ]
+            )
 
             for e in entries:
-                writer.writerow([
-                    e.timestamp,
-                    e.domain,
-                    e.risk_level,
-                    '|'.join(e.engines_selected),
-                    e.consensus_score or '',
-                    len(e.violations_found),
-                    e.execution_time_ms,
-                    e.task_preview[:100]
-                ])
+                writer.writerow(
+                    [
+                        e.timestamp,
+                        e.domain,
+                        e.risk_level,
+                        "|".join(e.engines_selected),
+                        e.consensus_score or "",
+                        len(e.violations_found),
+                        e.execution_time_ms,
+                        e.task_preview[:100],
+                    ]
+                )
 
         return output_path
 
@@ -89,12 +99,12 @@ class AuditExporter:
         if output_path is None:
             output_path = Path(f"amos_audit_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md")
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             f.write(report)
 
         return output_path
 
-    def get_summary_stats(self) -> Dict:
+    def get_summary_stats(self) -> dict:
         """Get summary statistics for quick overview."""
         stats = self.audit.get_statistics()
         entries = self.audit.get_recent(1000)
@@ -117,7 +127,7 @@ class AuditExporter:
             **stats,
             "engine_usage": engine_usage,
             "daily_activity": domain_trends,
-            "last_decision": entries[0].timestamp if entries else None
+            "last_decision": entries[0].timestamp if entries else None,
         }
 
     def export_by_domain(self, domain: str, output_path: Optional[Path] = None) -> Path:
@@ -131,7 +141,7 @@ class AuditExporter:
             "export_metadata": {
                 "timestamp": datetime.now().isoformat(),
                 "domain_filter": domain,
-                "total_entries": len(entries)
+                "total_entries": len(entries),
             },
             "entries": [
                 {
@@ -140,13 +150,13 @@ class AuditExporter:
                     "risk_level": e.risk_level,
                     "engines": e.engines_selected,
                     "consensus_score": e.consensus_score,
-                    "violations": e.violations_found
+                    "violations": e.violations_found,
                 }
                 for e in entries
-            ]
+            ],
         }
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             json.dump(data, f, indent=2)
 
         return output_path

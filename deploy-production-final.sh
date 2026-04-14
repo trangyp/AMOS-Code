@@ -73,14 +73,14 @@ case $choice in
     1)
         print_info "Deploying in STANDARD mode (HTTP)"
         echo ""
-        
+
         # Build and deploy
         print_info "Building images..."
         docker-compose build --parallel
-        
+
         print_info "Starting services..."
         docker-compose up -d
-        
+
         # Health check
         sleep 5
         if curl -s http://localhost:5000/health | grep -q "healthy"; then
@@ -96,18 +96,18 @@ case $choice in
             exit 1
         fi
         ;;
-        
+
     2)
         print_info "Deploying in PRODUCTION mode (HTTPS)"
         echo ""
-        
+
         # Check for SSL certificates
         if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
             print_warning "SSL certificates not found for $DOMAIN"
             print_info "Run ./setup-ssl.sh first to obtain certificates"
             echo ""
             read -p "Run SSL setup now? [y/N]: " ssl_setup
-            
+
             if [[ $ssl_setup =~ ^[Yy]$ ]]; then
                 sudo ./setup-ssl.sh
             else
@@ -115,14 +115,14 @@ case $choice in
                 exit 1
             fi
         fi
-        
+
         # Deploy with SSL
         print_info "Building images..."
         docker-compose -f docker-compose.ssl.yml build --parallel
-        
+
         print_info "Starting services with SSL..."
         docker-compose -f docker-compose.ssl.yml up -d
-        
+
         # Health check
         sleep 5
         if curl -s http://localhost:5000/health | grep -q "healthy"; then
@@ -148,7 +148,7 @@ case $choice in
             exit 1
         fi
         ;;
-        
+
     *)
         print_error "Invalid choice"
         exit 1

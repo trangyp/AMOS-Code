@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """AMOS Brain: Next Step Analysis - Post-CI/CD Build"""
 
-from amos_brain import BrainClient, think, decide, validate
-from pathlib import Path
 import json
+from pathlib import Path
+
+from amos_brain import decide, think
 
 
 def check_current_state():
@@ -15,7 +16,9 @@ def check_current_state():
         "ci_cd_workflow": (repo / ".github" / "workflows" / "deploy.yml").exists(),
         "api_server": (repo / "amos_api_server.py").exists(),
         "requirements_deploy": (repo / "requirements-deploy.txt").exists(),
-        "dockerfile_updated": "amos_api_server.py" in (repo / "Dockerfile").read_text() if (repo / "Dockerfile").exists() else False,
+        "dockerfile_updated": "amos_api_server.py" in (repo / "Dockerfile").read_text()
+        if (repo / "Dockerfile").exists()
+        else False,
     }
 
     return built_files
@@ -46,10 +49,10 @@ def analyze_next_needs(built_files):
         "What should be built next after CI/CD workflow and API server are ready? "
         "The domain is neurosyncai.tech on Hostinger. "
         "Need to complete the deployment pipeline and ensure the service runs.",
-        domain="software"
+        domain="software",
     )
 
-    print(f"\n🧠 Brain Analysis:")
+    print("\n🧠 Brain Analysis:")
     print(f"   Confidence: {response.confidence}")
     print(f"   Law Compliant: {response.law_compliant}")
 
@@ -71,14 +74,14 @@ def decide_next_step():
             "Build Hostinger deployment script with API integration",
             "Create environment configuration (.env.example, config loader)",
             "Add nginx reverse proxy configuration",
-            "Build monitoring/health dashboard endpoint"
-        ]
+            "Build monitoring/health dashboard endpoint",
+        ],
     )
 
     print(f"\n✅ Decision Approved: {decision.approved}")
     print(f"🎯 Decision ID: {decision.decision_id}")
     print(f"⚠️ Risk Level: {decision.risk_level}")
-    print(f"\n📝 Reasoning:")
+    print("\n📝 Reasoning:")
     print(f"   {decision.reasoning[:300]}...")
 
     return decision
@@ -94,21 +97,17 @@ def determine_next_build():
     next_build = {
         "action": "CREATE_DOCKER_COMPOSE",
         "priority": "high",
-        "files": [
-            "docker-compose.yml",
-            ".env.example",
-            "deploy-to-hostinger.sh"
-        ],
+        "files": ["docker-compose.yml", ".env.example", "deploy-to-hostinger.sh"],
         "rationale": "Docker Compose orchestrates API server + any future services (db, cache). Environment config separates secrets from code. Deployment script automates Hostinger push.",
-        "validation": "After this, only need to configure Hostinger webhook or run deploy script"
+        "validation": "After this, only need to configure Hostinger webhook or run deploy script",
     }
 
-    print(f"\n🎯 NEXT BUILD TARGET:")
+    print("\n🎯 NEXT BUILD TARGET:")
     print(f"   Action: {next_build['action']}")
     print(f"   Priority: {next_build['priority']}")
 
-    print(f"\n📁 Files to Create:")
-    for f in next_build['files']:
+    print("\n📁 Files to Create:")
+    for f in next_build["files"]:
         print(f"   • {f}")
 
     print(f"\n💭 Rationale: {next_build['rationale']}")
@@ -141,9 +140,9 @@ def main():
 
     output = {
         "current_state": state,
-        "next_build": build['action'],
-        "files_to_create": build['files'],
-        "rationale": build['rationale']
+        "next_build": build["action"],
+        "files_to_create": build["files"],
+        "rationale": build["rationale"],
     }
 
     print(json.dumps(output, indent=2))

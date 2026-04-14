@@ -232,13 +232,13 @@ HUMAN_CYCLES = [
 ]
 
 CYCLE_BEHAVIORS:
-    Cycle_1: create identity, structure, motive  
-    Cycle_2: compress patterns  
-    Cycle_3: discard unstable states  
-    Cycle_4: rebuild new configurations  
-    Cycle_5: broaden influence  
-    Cycle_6: merge external feedback  
-    Cycle_7: move patterns to next domain  
+    Cycle_1: create identity, structure, motive
+    Cycle_2: compress patterns
+    Cycle_3: discard unstable states
+    Cycle_4: rebuild new configurations
+    Cycle_5: broaden influence
+    Cycle_6: merge external feedback
+    Cycle_7: move patterns to next domain
 
 ============================================================
 SECTION 6 — 6-OUTPUT FORMAT
@@ -366,12 +366,12 @@ IDENTITY_PROPERTIES:
     - alignment
 
 IDENTITY_TRANSITION_OPERATORS:
-    Op_upshift   → identity_level_n → n+1  
-    Op_downshift → identity_level_n → n-1  
-    Op_expand    → identity spreads into multi-domain  
-    Op_contract  → identity shrinks under stress  
-    Op_rotate    → identity reinterprets itself  
-    Op_fuse      → merge two identities  
+    Op_upshift   → identity_level_n → n+1
+    Op_downshift → identity_level_n → n-1
+    Op_expand    → identity spreads into multi-domain
+    Op_contract  → identity shrinks under stress
+    Op_rotate    → identity reinterprets itself
+    Op_fuse      → merge two identities
     Op_split     → bifurcation under paradox pressure
 
 ============================================================
@@ -580,7 +580,7 @@ TENSOR_FUNCTIONS:
     - narrative trajectory simulation
 
 TENSOR_STABILITY_RULE:
-    stability > threshold_Ω → identity lock  
+    stability > threshold_Ω → identity lock
     stability < threshold_γ → collapse drift
 
 ============================================================
@@ -1068,10 +1068,10 @@ SECTION 36 — ABSOLUTE HUMAN EMERGENCE (E = i²)
 ============================================================
 
 EMERGENCE_CORE:
-    E = i²  
+    E = i²
     where:
-        i_internal = identity + cognition + emotion  
-        i_external = environment + relationships + society  
+        i_internal = identity + cognition + emotion
+        i_external = environment + relationships + society
 
 EMERGENCE_TYPES:
     E1: behavioral_emergence
@@ -2129,4 +2129,3 @@ STATUS:
 END OF ABSOLUTE_HUMAN_BLOCK 8
 CIVILIZATIONAL TENSOR — MACRO-LEVEL 1E∞
 ============================================================
-

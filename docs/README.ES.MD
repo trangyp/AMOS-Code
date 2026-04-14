@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="https://github.com/trangyp/AMOS-Code">
-    <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/logo-v1.png" alt="Logo" width="280"> 
+    <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/logo-v1.png" alt="Logo" width="280">
   </a>
 
 
@@ -13,7 +13,7 @@
 </div>
 
  <div align=center>
- <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="https://github.com/trangyp/AMOS-Code/blob/main/docs/demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>

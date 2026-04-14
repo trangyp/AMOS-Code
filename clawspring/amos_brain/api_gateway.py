@@ -6,52 +6,58 @@ FastAPI-based with automatic documentation.
 """
 
 import sys
-from typing import Dict, List, Any, Optional
-from dataclasses import asdict
 from datetime import datetime
+from typing import Any, Optional
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 try:
-    from fastapi import FastAPI, HTTPException, BackgroundTasks
+    from fastapi import BackgroundTasks, FastAPI, HTTPException
     from fastapi.responses import JSONResponse
     from pydantic import BaseModel
+
     HAS_FASTAPI = True
 except ImportError:
     HAS_FASTAPI = False
+
     # Mock classes for when FastAPI not installed
     class BaseModel:
         pass
+
     class FastAPI:
         pass
 
 
 class RouteRequest(BaseModel):
     """Cognitive routing request."""
+
     task: str
-    context: Optional[Dict[str, Any]] = None
+    context: Optional[dict[str, Any]] = None
 
 
 class RouteResponse(BaseModel):
     """Cognitive routing response."""
+
     domain: str
     risk_level: str
-    engines: List[str]
+    engines: list[str]
     confidence: float
 
 
 class ValidateRequest(BaseModel):
     """Validation request."""
+
     action: str
     framework: str = "principlism"
 
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
-    components: Dict[str, str]
+    components: dict[str, str]
     timestamp: str
 
 
@@ -64,7 +70,7 @@ class APIGateway:
             self.app = FastAPI(
                 title="AMOS Ecosystem API",
                 description="REST API for AMOS cognitive ecosystem",
-                version="2.6.0"
+                version="2.6.0",
             )
             self._setup_routes()
 
@@ -82,9 +88,9 @@ class APIGateway:
                     "cognitive_router": "up",
                     "organism_bridge": "up",
                     "ethics_validator": "up",
-                    "master_orchestrator": "up"
+                    "master_orchestrator": "up",
                 },
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
         @self.app.post("/cognitive/route", response_model=RouteResponse)
@@ -92,6 +98,7 @@ class APIGateway:
             """Route a task through cognitive system."""
             try:
                 from amos_cognitive_router import CognitiveRouter
+
                 router = CognitiveRouter()
                 result = router.analyze(request.task)
 
@@ -99,7 +106,7 @@ class APIGateway:
                     domain=result.primary_domain,
                     risk_level=result.risk_level,
                     engines=result.suggested_engines,
-                    confidence=result.confidence
+                    confidence=result.confidence,
                 )
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
@@ -109,12 +116,13 @@ class APIGateway:
             """Run system validation."""
             try:
                 from system_validator import validate_system
+
                 success, summary = validate_system()
                 return {
-                    "passed": summary['passed'],
-                    "total": summary['total'],
-                    "pass_rate": summary['pass_rate'],
-                    "status": "pass" if success else "fail"
+                    "passed": summary["passed"],
+                    "total": summary["total"],
+                    "pass_rate": summary["pass_rate"],
+                    "status": "pass" if success else "fail",
                 }
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
@@ -124,11 +132,10 @@ class APIGateway:
             """Validate action against ethics framework."""
             try:
                 from ethics_integration import EthicsValidator
+
                 ethics = EthicsValidator()
                 result = ethics.validate_action(
-                    request.action,
-                    {"consent": True, "harm_potential": 0.1},
-                    request.framework
+                    request.action, {"consent": True, "harm_potential": 0.1}, request.framework
                 )
 
                 return {
@@ -136,7 +143,7 @@ class APIGateway:
                     "score": result.score,
                     "framework": result.framework,
                     "violations": result.violations,
-                    "warnings": result.warnings
+                    "warnings": result.warnings,
                 }
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
@@ -146,6 +153,7 @@ class APIGateway:
             """Get telemetry metrics."""
             try:
                 from telemetry import get_telemetry
+
                 telemetry = get_telemetry()
                 return telemetry.get_dashboard_data()
             except Exception as e:
@@ -160,9 +168,9 @@ class APIGateway:
                     "cognitive": "operational",
                     "organism_bridge": "connected",
                     "ethics": "active",
-                    "telemetry": "collecting"
+                    "telemetry": "collecting",
                 },
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
 
     def get_app(self) -> Any:
@@ -176,6 +184,7 @@ class APIGateway:
             return
 
         import uvicorn
+
         uvicorn.run(self.app, host=host, port=port)
 
 

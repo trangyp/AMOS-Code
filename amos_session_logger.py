@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Session Logger
+"""AMOS Session Logger
 ====================
 Tracks AMOS Brain usage and analytics for measuring value.
 
@@ -16,19 +15,20 @@ Commands:
 """
 from __future__ import annotations
 
-import sys
-import json
 import argparse
 import hashlib
+import json
+import sys
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
-from datetime import datetime
-from dataclasses import dataclass, field, asdict
 
 
 @dataclass
 class AMOSInteraction:
     """Record of a single AMOS interaction."""
+
     timestamp: str
     interaction_type: str  # 'skill', 'tool', 'reasoning', 'command'
     name: str
@@ -43,6 +43,7 @@ class AMOSInteraction:
 @dataclass
 class AMOSSession:
     """Complete AMOS usage session."""
+
     session_id: str
     start_time: str
     end_time: str | None = None
@@ -67,11 +68,11 @@ class AMOSSession:
         for i in self.interactions:
             # Handle both dataclass and dict (when loaded from JSON)
             if isinstance(i, dict):
-                itype = i.get('interaction_type', 'unknown')
-                iengines = i.get('engines_used', [])
-                ilaws = i.get('laws_applied', [])
-                iduration = i.get('duration_ms', 0)
-                isuccess = i.get('success', True)
+                itype = i.get("interaction_type", "unknown")
+                iengines = i.get("engines_used", [])
+                ilaws = i.get("laws_applied", [])
+                iduration = i.get("duration_ms", 0)
+                isuccess = i.get("success", True)
             else:
                 itype = i.interaction_type
                 iengines = i.engines_used
@@ -117,9 +118,7 @@ class AMOSSessionLogger:
         """Start a new logging session."""
         session_id = self._generate_session_id()
         self.current_session = AMOSSession(
-            session_id=session_id,
-            start_time=datetime.now().isoformat(),
-            metadata=metadata or {}
+            session_id=session_id, start_time=datetime.now().isoformat(), metadata=metadata or {}
         )
         # Save immediately so other processes can load it
         self._save_session()
@@ -148,7 +147,7 @@ class AMOSSessionLogger:
         engines_used: list[str] | None = None,
         laws_applied: list[str] | None = None,
         duration_ms: int = 0,
-        success: bool = True
+        success: bool = True,
     ) -> bool:
         """Log a single AMOS interaction."""
         if not self.current_session:
@@ -163,7 +162,7 @@ class AMOSSessionLogger:
             engines_used=engines_used or [],
             laws_applied=laws_applied or [],
             duration_ms=duration_ms,
-            success=success
+            success=success,
         )
 
         self.current_session.add_interaction(interaction)
@@ -199,7 +198,7 @@ Total Interactions: {stats['total_interactions']}
 
 Breakdown by Type:
 """
-        for t, count in stats['interactions_by_type'].items():
+        for t, count in stats["interactions_by_type"].items():
             report += f"  - {t}: {count}\n"
 
         report += f"""
@@ -227,12 +226,9 @@ Performance:
 
         filepath = filepath or str(self.LOG_DIR / f"{session.session_id}.json")
 
-        data = {
-            "session": asdict(session),
-            "stats": session.get_stats()
-        }
+        data = {"session": asdict(session), "stats": session.get_stats()}
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(data, f, indent=2, default=str)
 
         return filepath
@@ -244,19 +240,21 @@ Performance:
             try:
                 with open(f) as file:
                     data = json.load(file)
-                    sessions.append({
-                        "session_id": data['session']['session_id'],
-                        "start_time": data['session']['start_time'],
-                        "interactions": len(data['session']['interactions']),
-                        "file": str(f)
-                    })
+                    sessions.append(
+                        {
+                            "session_id": data["session"]["session_id"],
+                            "start_time": data["session"]["start_time"],
+                            "interactions": len(data["session"]["interactions"]),
+                            "file": str(f),
+                        }
+                    )
             except Exception:
                 continue
-        return sorted(sessions, key=lambda x: x['start_time'], reverse=True)
+        return sorted(sessions, key=lambda x: x["start_time"], reverse=True)
 
     def _generate_session_id(self) -> str:
         """Generate unique session ID."""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         rand = hashlib.md5(str(datetime.now()).encode()).hexdigest()[:6]
         return f"amos_{timestamp}_{rand}"
 
@@ -280,7 +278,7 @@ Performance:
         try:
             with open(filepath) as f:
                 data = json.load(f)
-            session_data = data['session']
+            session_data = data["session"]
             return AMOSSession(**session_data)
         except Exception:
             return None
@@ -288,28 +286,30 @@ Performance:
 
 def main():
     parser = argparse.ArgumentParser(description="AMOS Session Logger")
-    parser.add_argument('command', choices=['start', 'end', 'log', 'stats', 'report', 'list', 'export'])
-    parser.add_argument('--session-id', help='Session ID for operations')
-    parser.add_argument('--type', default='command', help='Interaction type')
-    parser.add_argument('--name', default='unknown', help='Interaction name')
-    parser.add_argument('--input', default='', help='Input data')
-    parser.add_argument('--output', default='', help='Output data')
-    parser.add_argument('--file', help='Export file path')
+    parser.add_argument(
+        "command", choices=["start", "end", "log", "stats", "report", "list", "export"]
+    )
+    parser.add_argument("--session-id", help="Session ID for operations")
+    parser.add_argument("--type", default="command", help="Interaction type")
+    parser.add_argument("--name", default="unknown", help="Interaction name")
+    parser.add_argument("--input", default="", help="Input data")
+    parser.add_argument("--output", default="", help="Output data")
+    parser.add_argument("--file", help="Export file path")
     args = parser.parse_args()
 
     logger = AMOSSessionLogger()
 
-    if args.command == 'start':
+    if args.command == "start":
         sid = logger.start_session()
         print(f"Started session: {sid}")
         # Save session ID to temp file for reference
-        with open('/tmp/amos_current_session', 'w') as f:
+        with open("/tmp/amos_current_session", "w") as f:
             f.write(sid)
 
-    elif args.command == 'end':
+    elif args.command == "end":
         # Try to load current session
         try:
-            with open('/tmp/amos_current_session') as f:
+            with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
         except Exception:
@@ -317,27 +317,22 @@ def main():
         stats = logger.end_session()
         print(json.dumps(stats, indent=2))
 
-    elif args.command == 'log':
+    elif args.command == "log":
         # Try to get session ID from temp file
         try:
-            with open('/tmp/amos_current_session') as f:
+            with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
         except Exception:
             pass
 
-        success = logger.log_interaction(
-            args.type,
-            args.name,
-            args.input,
-            args.output
-        )
+        success = logger.log_interaction(args.type, args.name, args.input, args.output)
         print("Logged" if success else "No active session")
 
-    elif args.command == 'stats':
+    elif args.command == "stats":
         # Try to load current session
         try:
-            with open('/tmp/amos_current_session') as f:
+            with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
         except Exception:
@@ -345,11 +340,11 @@ def main():
         stats = logger.get_current_stats()
         print(json.dumps(stats, indent=2))
 
-    elif args.command == 'report':
+    elif args.command == "report":
         # Try to load current session if no ID provided
         if not args.session_id:
             try:
-                with open('/tmp/amos_current_session') as f:
+                with open("/tmp/amos_current_session") as f:
                     sid = f.read().strip()
                 logger.current_session = logger._load_session(sid)
             except Exception:
@@ -357,12 +352,12 @@ def main():
         report = logger.generate_report(args.session_id)
         print(report)
 
-    elif args.command == 'list':
+    elif args.command == "list":
         sessions = logger.list_sessions()
         for s in sessions:
             print(f"{s['session_id']}: {s['start_time']} ({s['interactions']} interactions)")
 
-    elif args.command == 'export':
+    elif args.command == "export":
         path = logger.export_session(args.session_id, args.file)
         print(f"Exported to: {path}")
 

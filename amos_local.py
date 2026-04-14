@@ -20,8 +20,8 @@ Environment:
 from __future__ import annotations
 
 import argparse
-import sys
 import os
+import sys
 
 # Ensure amos_brain is in path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # noqa: E402
@@ -31,13 +31,16 @@ from amos_brain.config_validator import (  # noqa: E402
 )
 from amos_brain.local_runtime import (  # noqa: E402
     create_local_runtime,
+)
+from amos_brain.local_runtime import (
     main as runtime_main,
 )
 
 
 def print_local_banner():
     """Print AMOS Local Runtime startup banner."""
-    print(r"""
+    print(
+        r"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║   █████╗ ███╗   ███╗ ██████╗ ███████╗                            ║
@@ -52,15 +55,14 @@ def print_local_banner():
 ║   AMOS as policy/governance layer                                ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description=(
-            "AMOS Local Runtime - Local LLMs with cognitive governance"
-        ),
+        description=("AMOS Local Runtime - Local LLMs with cognitive governance"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -70,35 +72,26 @@ Examples:
   python amos_local.py --base-url http://localhost:8080/v1
 
 For more info, see README.MD and AMOS_BRAIN_GUIDE.md
-        """
+        """,
     )
 
     parser.add_argument(
         "--provider",
         choices=["ollama", "lmstudio", "vllm", "llamacpp", "openai-local"],
-        help="Backend type (default: from AMOS_LLM_BACKEND env or ollama)"
+        help="Backend type (default: from AMOS_LLM_BACKEND env or ollama)",
     )
 
     parser.add_argument(
-        "--model",
-        help="Model name (default: from AMOS_MODEL env or qwen2.5:14b-instruct)"
+        "--model", help="Model name (default: from AMOS_MODEL env or qwen2.5:14b-instruct)"
     )
 
-    parser.add_argument(
-        "--base-url",
-        help="Custom base URL for the backend server"
-    )
+    parser.add_argument("--base-url", help="Custom base URL for the backend server")
 
     parser.add_argument(
-        "--api-key",
-        help="API key for OpenAI-compatible servers (default: 'local')"
+        "--api-key", help="API key for OpenAI-compatible servers (default: 'local')"
     )
 
-    parser.add_argument(
-        "--check",
-        action="store_true",
-        help="Run health check and exit"
-    )
+    parser.add_argument("--check", action="store_true", help="Run health check and exit")
 
     return parser.parse_args()
 
@@ -146,12 +139,12 @@ def main():
         print("\nBackend Status:")
         backend = status.get("backend", {})
         print(f"  Status: {backend.get('status', 'unknown')}")
-        btype = backend.get('backend', 'unknown')
+        btype = backend.get("backend", "unknown")
         print(f"  Backend type: {btype}")
         print(f"  Model: {backend.get('model', 'unknown')}")
 
         if backend.get("available_models"):
-            avail = backend['available_models']
+            avail = backend["available_models"]
             print(f"  Available models: {len(avail)}")
             for m in backend["available_models"][:5]:
                 print(f"    - {m}")

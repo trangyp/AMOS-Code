@@ -10,21 +10,23 @@ Measures performance metrics for all critical components:
 
 import sys
 import time
-import psutil
-from typing import List, Callable, Any
 from dataclasses import dataclass
 from datetime import datetime
 from statistics import mean, stdev
+from typing import Any, Callable
+
+import psutil
 
 # Add paths
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 @dataclass
 class BenchmarkResult:
     """Result of a single benchmark."""
+
     name: str
     iterations: int
     total_time_ms: float
@@ -40,7 +42,7 @@ class PerformanceBenchmark:
     """Benchmark suite for AMOS Ecosystem."""
 
     def __init__(self):
-        self.results: List[BenchmarkResult] = []
+        self.results: list[BenchmarkResult] = []
         self.process = psutil.Process()
 
     def _measure_memory(self) -> float:
@@ -48,11 +50,7 @@ class PerformanceBenchmark:
         return self.process.memory_info().rss / 1024 / 1024
 
     def _run_benchmark(
-        self,
-        name: str,
-        fn: Callable[[], Any],
-        iterations: int = 100,
-        warmup: int = 10
+        self, name: str, fn: Callable[[], Any], iterations: int = 100, warmup: int = 10
     ) -> BenchmarkResult:
         """Run a benchmark and collect metrics."""
         print(f"  Benchmarking: {name} ({iterations} iterations)...")
@@ -95,7 +93,7 @@ class PerformanceBenchmark:
             max_time_ms=max_time,
             std_dev_ms=std_dev,
             memory_mb=memory_end - memory_start,
-            throughput_ops_sec=throughput
+            throughput_ops_sec=throughput,
         )
 
         self.results.append(result)
@@ -104,13 +102,14 @@ class PerformanceBenchmark:
     def benchmark_cognitive_router(self) -> BenchmarkResult:
         """Benchmark cognitive routing performance."""
         from amos_cognitive_router import CognitiveRouter
+
         router = CognitiveRouter()
         tasks = [
             "Design REST API endpoint",
             "Implement authentication",
             "Optimize database query",
             "Write unit tests",
-            "Deploy to production"
+            "Deploy to production",
         ]
         counter = [0]
 
@@ -124,6 +123,7 @@ class PerformanceBenchmark:
     def benchmark_organism_bridge(self) -> BenchmarkResult:
         """Benchmark organism bridge performance."""
         from organism_bridge import get_organism_bridge
+
         bridge = get_organism_bridge()
 
         def task():
@@ -134,14 +134,13 @@ class PerformanceBenchmark:
     def benchmark_master_orchestrator(self) -> BenchmarkResult:
         """Benchmark master orchestrator performance."""
         from master_orchestrator import MasterOrchestrator
+
         orchestrator = MasterOrchestrator()
         counter = [0]
 
         def task():
             orchestrator.orchestrate_cognitive_task(
-                f"bench_{counter[0]}",
-                "Design microservice architecture",
-                "HIGH"
+                f"bench_{counter[0]}", "Design microservice architecture", "HIGH"
             )
             counter[0] += 1
 
@@ -203,14 +202,18 @@ class PerformanceBenchmark:
         print()
 
         # Header
-        print(f"{'Component':<25} {'Avg (ms)':<12} {'Min (ms)':<12} "
-              f"{'Max (ms)':<12} {'Throughput':<15}")
+        print(
+            f"{'Component':<25} {'Avg (ms)':<12} {'Min (ms)':<12} "
+            f"{'Max (ms)':<12} {'Throughput':<15}"
+        )
         print("-" * 70)
 
         # Results
         for r in self.results:
-            print(f"{r.name:<25} {r.avg_time_ms:<12.2f} {r.min_time_ms:<12.2f} "
-                  f"{r.max_time_ms:<12.2f} {r.throughput_ops_sec:<15.1f}")
+            print(
+                f"{r.name:<25} {r.avg_time_ms:<12.2f} {r.min_time_ms:<12.2f} "
+                f"{r.max_time_ms:<12.2f} {r.throughput_ops_sec:<15.1f}"
+            )
 
         print("-" * 70)
         print()
@@ -250,13 +253,13 @@ class PerformanceBenchmark:
         low, med, high = thresholds.get(name, (50, 200, 500))
 
         if avg_ms < low:
-            return "🟢 EXCELLENT (<{:.0f}ms)".format(low)
+            return f"🟢 EXCELLENT (<{low:.0f}ms)"
         elif avg_ms < med:
-            return "🟢 GOOD (<{:.0f}ms)".format(med)
+            return f"🟢 GOOD (<{med:.0f}ms)"
         elif avg_ms < high:
-            return "🟡 ACCEPTABLE (<{:.0f}ms)".format(high)
+            return f"🟡 ACCEPTABLE (<{high:.0f}ms)"
         else:
-            return "🔴 NEEDS OPTIMIZATION (>={:.0f}ms)".format(high)
+            return f"🔴 NEEDS OPTIMIZATION (>={high:.0f}ms)"
 
     def export_results(self, filename: str = "benchmark_results.json") -> None:
         """Export results to JSON."""
@@ -279,7 +282,7 @@ class PerformanceBenchmark:
                     "throughput_ops_sec": r.throughput_ops_sec,
                 }
                 for r in self.results
-            ]
+            ],
         }
 
         with open(filename, "w") as f:

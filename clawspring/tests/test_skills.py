@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from pathlib import Path
 
 import skill.loader as _loader
-from skill.loader import _parse_skill_file, _parse_list_field, find_skill, SkillDef
 from skill import load_skills, substitute_arguments
-
+from skill.loader import _parse_list_field, _parse_skill_file, find_skill
 
 COMMIT_MD = """\
 ---
@@ -59,6 +57,7 @@ def skill_dir(tmp_path, monkeypatch):
 # _parse_list_field
 # ------------------------------------------------------------------
 
+
 def test_parse_list_field_bracket():
     assert _parse_list_field("[a, b, c]") == ["a", "b", "c"]
 
@@ -74,6 +73,7 @@ def test_parse_list_field_single():
 # ------------------------------------------------------------------
 # _parse_skill_file
 # ------------------------------------------------------------------
+
 
 def test_parse_skill_file(skill_dir):
     path = skill_dir / "commit.md"
@@ -131,6 +131,7 @@ def test_parse_skill_file_allowed_tools(tmp_path):
 # load_skills
 # ------------------------------------------------------------------
 
+
 def test_load_skills(skill_dir):
     skills = load_skills()
     assert len(skills) == 2
@@ -179,6 +180,7 @@ def test_load_skills_project_overrides_builtin(tmp_path, monkeypatch):
 # find_skill
 # ------------------------------------------------------------------
 
+
 def test_find_skill_commit(skill_dir):
     skill = find_skill("/commit")
     assert skill is not None
@@ -205,6 +207,7 @@ def test_find_skill_nonexistent(skill_dir):
 # ------------------------------------------------------------------
 # substitute_arguments
 # ------------------------------------------------------------------
+
 
 def test_substitute_arguments_placeholder():
     result = substitute_arguments("Deploy $ARGUMENTS please", "v1.2 prod", [])

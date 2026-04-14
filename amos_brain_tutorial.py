@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Interactive Tutorial - Learn brain features hands-on.
+"""AMOS Brain Interactive Tutorial - Learn brain features hands-on.
 
 Guides users through:
   1. Rule of 2 (dual perspective decision analysis)
@@ -14,16 +13,14 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
-import time
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from amos_brain import get_amos_integration, GlobalLaws
+from amos_brain import GlobalLaws, get_amos_integration
+from amos_brain.dashboard import print_dashboard
 from amos_brain.memory import get_brain_memory
-from amos_brain.dashboard import BrainDashboard, print_dashboard
-
 
 C = {
     "cyan": "\033[36m",
@@ -69,7 +66,7 @@ def demo_decide(amos, memory):
     lesson(
         "The Problem",
         "You need to make a decision but aren't sure which approach is best.\n"
-        "Without structured analysis, you might miss critical perspectives."
+        "Without structured analysis, you might miss critical perspectives.",
     )
 
     lesson(
@@ -77,7 +74,7 @@ def demo_decide(amos, memory):
         "The Rule of 2 requires checking TWO contrasting perspectives:\n"
         "  1. Primary (Internal/Micro) - Direct factors, immediate impact\n"
         "  2. Alternative (External/Macro) - Systemic factors, long-term\n\n"
-        "This prevents confirmation bias and ensures balanced analysis."
+        "This prevents confirmation bias and ensures balanced analysis.",
     )
 
     lesson(
@@ -87,7 +84,7 @@ def demo_decide(amos, memory):
         "  2. Technical/Infrastructural - Feasibility, reliability, complexity\n"
         "  3. Economic/Organizational - Cost, ROI, resources\n"
         "  4. Environmental/Planetary - Sustainability, impact\n\n"
-        "This ensures comprehensive coverage of all system dimensions."
+        "This ensures comprehensive coverage of all system dimensions.",
     )
 
     print(clr("🎯 LIVE DEMO: Analyzing a real decision", "magenta", "bold"))
@@ -108,8 +105,10 @@ def demo_decide(amos, memory):
         print(clr("┌─ Rule of 2 Results ─", "bold"))
 
         for i, p in enumerate(r2.get("perspectives", []), 1):
-            name = p.name if hasattr(p, 'name') else f"Perspective {i}"
-            print(f"│ {clr(name, 'cyan')}: {p.viewpoint[:50] if hasattr(p, 'viewpoint') else str(p)[:50]}...")
+            name = p.name if hasattr(p, "name") else f"Perspective {i}"
+            print(
+                f"│ {clr(name, 'cyan')}: {p.viewpoint[:50] if hasattr(p, 'viewpoint') else str(p)[:50]}..."
+            )
 
         print(f"│ Synthesis: {r2.get('recommendation', 'N/A')[:50]}...")
         print(f"│ Confidence: {r2.get('confidence', 0):.0%}")
@@ -138,7 +137,7 @@ def demo_decide(amos, memory):
         "Key Takeaway",
         "Use `python amos_brain_cli.py decide <problem>` whenever you need structured analysis.\n"
         "The brain automatically applies Rule of 2 and Rule of 4,\n"
-        "saving you time while ensuring comprehensive coverage."
+        "saving you time while ensuring comprehensive coverage.",
     )
 
 
@@ -150,7 +149,7 @@ def demo_analyze(amos, memory):
         "The Problem",
         "You need to understand a complex system or topic deeply.\n"
         "Surface-level analysis misses second-order effects and\n"
-        "interconnections between different domains."
+        "interconnections between different domains.",
     )
 
     lesson(
@@ -160,7 +159,7 @@ def demo_analyze(amos, memory):
         "  - Engineering engine for technical feasibility\n"
         "  - Economics engine for financial analysis\n"
         "  - Strategy engine for competitive dynamics\n\n"
-        "Multi-scale analysis at Micro, Meso, and Macro levels."
+        "Multi-scale analysis at Micro, Meso, and Macro levels.",
     )
 
     print(clr("🎯 LIVE DEMO: Systems analysis", "magenta", "bold"))
@@ -172,6 +171,7 @@ def demo_analyze(amos, memory):
 
     # Route to engines
     from amos_brain.cognitive_stack import CognitiveStack
+
     stack = CognitiveStack()
     engines = stack.route_query(topic)
 
@@ -204,7 +204,7 @@ def demo_analyze(amos, memory):
         "Key Takeaway",
         "Use `python amos_brain_cli.py analyze <topic>` for deep systems understanding.\n"
         "The brain automatically routes through relevant engines\n"
-        "and provides multi-scale, multi-domain analysis."
+        "and provides multi-scale, multi-domain analysis.",
     )
 
 
@@ -215,7 +215,7 @@ def demo_memory_recall(memory):
     lesson(
         "The Problem",
         "You've analyzed similar problems before but can't remember\n"
-        "the details. You repeat analysis unnecessarily."
+        "the details. You repeat analysis unnecessarily.",
     )
 
     lesson(
@@ -224,7 +224,7 @@ def demo_memory_recall(memory):
         "  - Saves all reasoning with metadata\n"
         "  - Finds similar past problems\n"
         "  - Surfaces relevant recommendations\n\n"
-        "Uses Jaccard similarity with stop-word filtering."
+        "Uses Jaccard similarity with stop-word filtering.",
     )
 
     print(clr("🎯 LIVE DEMO: Recall similar reasoning", "magenta", "bold"))
@@ -248,7 +248,7 @@ def demo_memory_recall(memory):
             print()
             print(f"  Similarity: {clr(f'{sim:.0%}', 'yellow')}")
             print(f"  Original: {entry.get('problem_preview', 'N/A')}")
-            print(f"  Past recommendations:")
+            print("  Past recommendations:")
             for rec in entry.get("recommendations", [])[:2]:
                 print(f"    • {rec[:50]}...")
     else:
@@ -260,7 +260,7 @@ def demo_memory_recall(memory):
         "Key Takeaway",
         "The brain automatically recalls similar past reasoning\n"
         "when you use `decide` or `analyze`. Check `history` and `recall`\n"
-        "to leverage your decision history."
+        "to leverage your decision history.",
     )
 
 
@@ -272,7 +272,7 @@ def demo_dashboard():
         "The Problem",
         "You don't know if you're using the brain effectively.\n"
         "Are you consistently applying Rule of 2? Is your\n"
-        "confidence trending up or down?"
+        "confidence trending up or down?",
     )
 
     lesson(
@@ -282,7 +282,7 @@ def demo_dashboard():
         "  - Confidence trends over time\n"
         "  - Decision velocity (decisions per day)\n"
         "  - Domain pattern analysis\n"
-        "  - Personalized insights and recommendations"
+        "  - Personalized insights and recommendations",
     )
 
     print(clr("🎯 LIVE DEMO: Dashboard view", "magenta", "bold"))
@@ -293,7 +293,7 @@ def demo_dashboard():
     lesson(
         "Key Takeaway",
         "Use /dashboard regularly to track your reasoning patterns.\n"
-        "The insights help you improve decision quality over time."
+        "The insights help you improve decision quality over time.",
     )
 
 
@@ -304,7 +304,7 @@ def demo_laws():
     lesson(
         "The Foundation",
         "All AMOS reasoning is governed by 6 Global Laws:\n"
-        "These ensure consistent, high-quality analysis."
+        "These ensure consistent, high-quality analysis.",
     )
 
     laws = GlobalLaws()
@@ -324,7 +324,7 @@ def demo_laws():
         "  - L2: At least 2 perspectives checked\n"
         "  - L3: All 4 quadrants considered\n"
         "  - L4: No contradictions in output\n\n"
-        "Use `python amos_brain_cli.py audit --text ...` to validate text against the laws."
+        "Use `python amos_brain_cli.py audit --text ...` to validate text against the laws.",
     )
 
 
@@ -354,7 +354,7 @@ def demo_practical_exercises(amos, memory):
         "  python amos_brain_cli.py\n\n"
         "Or integrate into clawspring:\n"
         "  python amos_clawspring.py\n\n"
-        "Use /help anytime to see available commands."
+        "Use /help anytime to see available commands.",
     )
 
 
@@ -372,12 +372,12 @@ def main():
     memory = get_brain_memory()
 
     status = amos.get_status()
-    if not status.get('initialized'):
+    if not status.get("initialized"):
         print(clr("Error: Brain initialization failed", "red"))
         return
 
     print(f"✓ {status.get('engines_count', 0)} engines ready")
-    print(f"✓ 6 global laws active")
+    print("✓ 6 global laws active")
     print()
 
     print(clr("This tutorial will teach you:", "green"))

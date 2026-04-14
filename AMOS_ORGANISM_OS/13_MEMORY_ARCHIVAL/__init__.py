@@ -1,5 +1,4 @@
-"""
-13_MEMORY_ARCHIVAL — Memory Archival & Storage Management
+"""13_MEMORY_ARCHIVAL — Memory Archival & Storage Management
 
 Manages long-term memory storage, archival processes, and memory
 retrieval for the AMOS organism.
@@ -14,10 +13,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .memory_archiver import MemoryArchiver, ArchivedMemory, ArchiveConfig
-from .storage_manager import StorageManager, StorageBackend, StorageMetrics
-from .memory_indexer import MemoryIndexer, MemoryIndex, IndexEntry
-from .archival_scheduler import ArchivalScheduler, ArchivalJob, ScheduleConfig
+from .archival_scheduler import ArchivalJob, ArchivalScheduler, ScheduleConfig
+from .memory_archiver import ArchiveConfig, ArchivedMemory, MemoryArchiver
+from .memory_indexer import IndexEntry, MemoryIndex, MemoryIndexer
+from .storage_manager import StorageBackend, StorageManager, StorageMetrics
 
 __all__ = [
     "MemoryArchiver",

@@ -9,13 +9,12 @@ Demonstrates the AMOSL multi-substrate compiler with:
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from amosl import parse, compile_program, validate_invariants
-
+from amosl import compile_program, parse, validate_invariants
 
 # Sample AMOSL program
 SAMPLE_AMOSL = """
@@ -30,16 +29,16 @@ ontology {
             state: Text
         }
     }
-    
+
     quantum {
         qubit qreg[2]
     }
-    
+
     biological {
         gene expression_marker
         protein signal_protein
     }
-    
+
     hybrid {
         bridge bio_to_classic
     }
@@ -50,17 +49,17 @@ state {
         cell_count: Int
         threshold: Float
     }
-    
+
     quantum {
         psi
         phi
     }
-    
+
     biological {
         marker_level
         protein_count
     }
-    
+
     hybrid {
         sensor bridge(classical, quantum)
     }
@@ -71,10 +70,10 @@ dynamics {
         pre: cell_count > 0
         post: cell_count >= 0
     }
-    
+
     transition idle -> processing
     transition processing -> complete
-    
+
     evolve cell_count mutate
 }
 
@@ -104,26 +103,32 @@ def main():
     print("  AMOSL COMPILER DEMO")
     print("=" * 70)
     print()
-    
+
     # Step 1: Parse
     print("Step 1: Parsing AMOSL source...")
     try:
         program = parse(SAMPLE_AMOSL)
         print("  ✓ Parse successful")
-        print(f"  - Ontology: {len(program.ontology.classical)} classical, "
-              f"{len(program.ontology.quantum)} quantum, "
-              f"{len(program.ontology.biological)} biological entities")
-        print(f"  - State: {len(program.state.classical)} classical, "
-              f"{len(program.state.quantum)} quantum, "
-              f"{len(program.state.biological)} biological vars")
-        print(f"  - Dynamics: {len(program.dynamics.actions)} actions, "
-              f"{len(program.dynamics.transitions)} transitions")
+        print(
+            f"  - Ontology: {len(program.ontology.classical)} classical, "
+            f"{len(program.ontology.quantum)} quantum, "
+            f"{len(program.ontology.biological)} biological entities"
+        )
+        print(
+            f"  - State: {len(program.state.classical)} classical, "
+            f"{len(program.state.quantum)} quantum, "
+            f"{len(program.state.biological)} biological vars"
+        )
+        print(
+            f"  - Dynamics: {len(program.dynamics.actions)} actions, "
+            f"{len(program.dynamics.transitions)} transitions"
+        )
     except Exception as e:
         print(f"  ✗ Parse failed: {e}")
         return 1
-    
+
     print()
-    
+
     # Step 2: Validate Invariants
     print("Step 2: Validating 8 AMOSL invariants...")
     success, violations = validate_invariants(program)
@@ -133,36 +138,36 @@ def main():
         print(f"  ⚠ {len(violations)} invariant violations:")
         for v in violations[:3]:
             print(f"    - {v}")
-    
+
     print()
-    
+
     # Step 3: Compile to IR
     print("Step 3: Compiling to 4 IRs...")
     try:
         cir, qir, bir, hir = compile_program(program)
-        
+
         print("  ✓ CIR (Classical IR):")
         print(f"    - {len(cir.blocks)} blocks")
         print(f"    - {len(cir.effects)} effects declared")
-        
+
         print("  ✓ QIR (Quantum IR):")
         print(f"    - {len(qir.registers)} registers")
         print(f"    - {len(qir.gates)} gates")
         print(f"    - {len(qir.measures)} measurements")
-        
+
         print("  ✓ BIR (Biological IR):")
         print(f"    - {len(bir.species)} species")
         print(f"    - {len(bir.sequences)} sequences")
         print(f"    - {len(bir.reactions)} reactions")
-        
+
         print("  ✓ HIR (Hybrid IR):")
         print(f"    - {len(hir.bridges)} bridges")
         print(f"    - {len(hir.schedules)} schedules")
-        
+
     except Exception as e:
         print(f"  ✗ Compile failed: {e}")
         return 1
-    
+
     print()
     print("=" * 70)
     print("  AMOSL DEMO COMPLETE")
@@ -176,7 +181,7 @@ def main():
     print("Architecture: (O,S,D,C,E,M,U,V,A,R) 9-tuple")
     print("Substrates: Classical ⊕ Quantum ⊕ Biological ⊕ Hybrid")
     print()
-    
+
     return 0
 
 

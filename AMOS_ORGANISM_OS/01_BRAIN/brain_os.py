@@ -1,40 +1,40 @@
-"""
-AMOS Brain OS — Core reasoning and orchestration engine.
+"""AMOS Brain OS — Core reasoning and orchestration engine.
 """
 
 from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class ThoughtType(Enum):
-    PERCEPTUAL = "perceptual"      # Raw sensory input processing
-    CONCEPTUAL = "conceptual"      # Pattern recognition, categorization
-    NARRATIVE = "narrative"        # Story, timeline, sequence
-    CAUSAL = "causal"              # Cause-effect reasoning
-    SYSTEMIC = "systemic"          # Multi-system, multi-actor
-    META = "meta"                  # Self-reflection, audit, ethics
+    PERCEPTUAL = "perceptual"  # Raw sensory input processing
+    CONCEPTUAL = "conceptual"  # Pattern recognition, categorization
+    NARRATIVE = "narrative"  # Story, timeline, sequence
+    CAUSAL = "causal"  # Cause-effect reasoning
+    SYSTEMIC = "systemic"  # Multi-system, multi-actor
+    META = "meta"  # Self-reflection, audit, ethics
 
 
 @dataclass
 class Thought:
     """A single unit of cognition in the AMOS brain."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     type: ThoughtType = ThoughtType.CONCEPTUAL
     content: str = ""
-    source: str = "internal"       # Which subsystem originated this
+    source: str = "internal"  # Which subsystem originated this
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    confidence: float = 0.8          # 0.0 to 1.0
-    tags: List[str] = field(default_factory=list)
-    references: List[str] = field(default_factory=list)  # IDs of related thoughts
+    confidence: float = 0.8  # 0.0 to 1.0
+    tags: list[str] = field(default_factory=list)
+    references: list[str] = field(default_factory=list)  # IDs of related thoughts
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "type": self.type.value,
@@ -50,15 +50,16 @@ class Thought:
 @dataclass
 class Plan:
     """A structured plan with steps and audit trail."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     goal: str = ""
-    horizon: str = "short-term"    # short-term, medium-term, long-term
-    steps: List[Dict[str, Any]] = field(default_factory=list)
+    horizon: str = "short-term"  # short-term, medium-term, long-term
+    steps: list[dict[str, Any]] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    status: str = "draft"          # draft, active, completed, abandoned
-    audit_trail: List[Dict[str, Any]] = field(default_factory=list)
+    status: str = "draft"  # draft, active, completed, abandoned
+    audit_trail: list[dict[str, Any]] = field(default_factory=list)
 
-    def add_step(self, action: str, subsystem: str, params: Dict[str, Any] = None):
+    def add_step(self, action: str, subsystem: str, params: dict[str, Any] = None):
         """Add a step to the plan."""
         step = {
             "id": str(uuid.uuid4())[:8],
@@ -73,23 +74,26 @@ class Plan:
 
     def audit(self, finding: str, subsystem: str):
         """Add an audit entry."""
-        self.audit_trail.append({
-            "timestamp": datetime.utcnow().isoformat(),
-            "subsystem": subsystem,
-            "finding": finding,
-        })
+        self.audit_trail.append(
+            {
+                "timestamp": datetime.utcnow().isoformat(),
+                "subsystem": subsystem,
+                "finding": finding,
+            }
+        )
 
 
 @dataclass
 class BrainState:
     """Complete state snapshot of the brain."""
+
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
-    thoughts: List[Thought] = field(default_factory=list)
-    active_plans: List[Plan] = field(default_factory=list)
-    completed_plans: List[Plan] = field(default_factory=list)
-    current_focus: str = ""        # What the brain is currently focused on
+    thoughts: list[Thought] = field(default_factory=list)
+    active_plans: list[Plan] = field(default_factory=list)
+    completed_plans: list[Plan] = field(default_factory=list)
+    current_focus: str = ""  # What the brain is currently focused on
     last_update: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    cycle_count: int = 0           # How many primary loops completed
+    cycle_count: int = 0  # How many primary loops completed
 
     def add_thought(self, thought: Thought) -> Thought:
         """Add a thought and update timestamp."""
@@ -97,18 +101,17 @@ class BrainState:
         self.last_update = datetime.utcnow().isoformat()
         return thought
 
-    def get_thoughts_by_type(self, ttype: ThoughtType) -> List[Thought]:
+    def get_thoughts_by_type(self, ttype: ThoughtType) -> list[Thought]:
         """Filter thoughts by type."""
         return [t for t in self.thoughts if t.type == ttype]
 
-    def get_recent_thoughts(self, n: int = 10) -> List[Thought]:
+    def get_recent_thoughts(self, n: int = 10) -> list[Thought]:
         """Get the n most recent thoughts."""
         return sorted(self.thoughts, key=lambda t: t.timestamp, reverse=True)[:n]
 
 
 class BrainOS:
-    """
-    The core Brain operating system.
+    """The core Brain operating system.
 
     Implements the 7-layer brain model:
     - sensory_layer: Raw inputs
@@ -151,7 +154,7 @@ class BrainOS:
         )
         return self.state.add_thought(thought)
 
-    def narrativize(self, concepts: List[Thought], story: str) -> Thought:
+    def narrativize(self, concepts: list[Thought], story: str) -> Thought:
         """Create narrative from concepts."""
         thought = Thought(
             type=ThoughtType.NARRATIVE,
@@ -175,16 +178,15 @@ class BrainOS:
 
     def think_systemically(
         self,
-        causal_thoughts: List[Thought],
-        systems: List[str],
+        causal_thoughts: list[Thought],
+        systems: list[str],
         time_horizon: str,
     ) -> Thought:
         """Multi-system, multi-actor, multi-decade reasoning."""
         thought = Thought(
             type=ThoughtType.SYSTEMIC,
             content=(
-                f"Systemic analysis across {', '.join(systems)} "
-                f"over {time_horizon} horizon"
+                f"Systemic analysis across {', '.join(systems)} " f"over {time_horizon} horizon"
             ),
             source="01_BRAIN",
             references=[c.id for c in causal_thoughts],
@@ -252,7 +254,7 @@ class BrainOS:
         self.state.cycle_count = data.get("cycle_count", 0)
         return True
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get current brain status."""
         return {
             "session_id": self.state.session_id,
@@ -262,7 +264,6 @@ class BrainOS:
             "current_focus": self.state.current_focus,
             "last_update": self.state.last_update,
             "thoughts_by_type": {
-                t.value: len(self.state.get_thoughts_by_type(t))
-                for t in ThoughtType
+                t.value: len(self.state.get_thoughts_by_type(t)) for t in ThoughtType
             },
         }

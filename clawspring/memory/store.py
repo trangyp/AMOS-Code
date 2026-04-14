@@ -14,7 +14,6 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-
 # ── Paths ──────────────────────────────────────────────────────────────────
 
 USER_MEMORY_DIR = Path.home() / ".clawspring" / "memory"
@@ -44,6 +43,7 @@ def get_memory_dir(scope: str = "user") -> Path:
 
 # ── Data model ─────────────────────────────────────────────────────────────
 
+
 @dataclass
 class MemoryEntry:
     """A single memory entry loaded from a .md file.
@@ -61,6 +61,7 @@ class MemoryEntry:
         last_used_at:   ISO date of last retrieval (updated on MemorySearch hits)
         conflict_group: tag linking related/conflicting memories (e.g. "writing_style")
     """
+
     name: str
     description: str
     type: str
@@ -75,6 +76,7 @@ class MemoryEntry:
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
+
 
 def _slugify(name: str) -> str:
     """Convert name to a filesystem-safe slug (max 60 chars)."""
@@ -126,6 +128,7 @@ def _format_entry_md(entry: MemoryEntry) -> str:
 
 # ── Core storage operations ────────────────────────────────────────────────
 
+
 def save_memory(entry: MemoryEntry, scope: str = "user") -> None:
     """Write/update a memory file and rebuild the index for that scope.
 
@@ -176,19 +179,21 @@ def load_entries(scope: str = "user") -> list[MemoryEntry]:
         except Exception:
             continue
         meta, body = parse_frontmatter(text)
-        entries.append(MemoryEntry(
-            name=meta.get("name", fp.stem),
-            description=meta.get("description", ""),
-            type=meta.get("type", "user"),
-            content=body,
-            file_path=str(fp),
-            created=meta.get("created", ""),
-            scope=scope,
-            confidence=float(meta.get("confidence", 1.0)),
-            source=meta.get("source", "user"),
-            last_used_at=meta.get("last_used_at", ""),
-            conflict_group=meta.get("conflict_group", ""),
-        ))
+        entries.append(
+            MemoryEntry(
+                name=meta.get("name", fp.stem),
+                description=meta.get("description", ""),
+                type=meta.get("type", "user"),
+                content=body,
+                file_path=str(fp),
+                created=meta.get("created", ""),
+                scope=scope,
+                confidence=float(meta.get("confidence", 1.0)),
+                source=meta.get("source", "user"),
+                last_used_at=meta.get("last_used_at", ""),
+                conflict_group=meta.get("conflict_group", ""),
+            )
+        )
     return entries
 
 
@@ -228,10 +233,7 @@ def _rewrite_index(scope: str) -> None:
         return
     index_path = mem_dir / INDEX_FILENAME
     entries = load_entries(scope)
-    lines = [
-        f"- [{e.name}]({Path(e.file_path).name}) — {e.description}"
-        for e in entries
-    ]
+    lines = [f"- [{e.name}]({Path(e.file_path).name}) — {e.description}" for e in entries]
     index_path.write_text("\n".join(lines) + ("\n" if lines else ""))
 
 
@@ -244,7 +246,7 @@ def get_index_content(scope: str = "user") -> str:
     return index_path.read_text().strip()
 
 
-def check_conflict(entry: "MemoryEntry", scope: str = "user") -> dict | None:
+def check_conflict(entry: MemoryEntry, scope: str = "user") -> dict | None:
     """Check whether a same-named memory already exists with different content.
 
     Returns a dict with the existing memory's key fields if a conflict is found,
@@ -276,6 +278,7 @@ def touch_last_used(file_path: str) -> None:
     tracking stays current. Silent on any error.
     """
     from datetime import date
+
     fp = Path(file_path)
     if not fp.exists():
         return
@@ -288,8 +291,16 @@ def touch_last_used(file_path: str) -> None:
         meta["last_used_at"] = today
         # Rebuild frontmatter
         fm_lines = ["---"]
-        for k in ("name", "description", "type", "created", "confidence",
-                   "source", "last_used_at", "conflict_group"):
+        for k in (
+            "name",
+            "description",
+            "type",
+            "created",
+            "confidence",
+            "source",
+            "last_used_at",
+            "conflict_group",
+        ):
             v = meta.get(k)
             if v is not None and str(v):
                 fm_lines.append(f"{k}: {v}")

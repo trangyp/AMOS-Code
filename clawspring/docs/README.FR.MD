@@ -413,7 +413,7 @@ Le nom du modèle doit correspondre à celui affiché par LM Studio dans la barr
 
 Pour les serveurs d’inférence auto-hébergés (vLLM, TGI, serveur llama.cpp, etc.) exposant une API compatible OpenAI :
 
-Démarrage rapide pour l’option C :  
+Démarrage rapide pour l’option C :
 Étape 1 : démarrer vllm :
 ```bash
 CUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server \
@@ -664,7 +664,7 @@ Les clés sont enregistrées dans `~/.nano_claude/config.json` et chargées auto
 - `n` ou Entrée — refuser
 - `a` — approuver et passer en `accept-all` pour le reste de la session
 
-**Commandes toujours auto-approuvées en mode `auto` :**  
+**Commandes toujours auto-approuvées en mode `auto` :**
 `ls`, `cat`, `head`, `tail`, `wc`, `pwd`, `echo`, `git status`, `git log`, `git diff`, `git show`, `find`, `grep`, `rg`, `python`, `node`, `pip show`, `npm list`, ainsi que les autres commandes shell en lecture seule.
 
 ---

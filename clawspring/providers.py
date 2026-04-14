@@ -1,5 +1,4 @@
-"""
-Multi-provider support for ClawSpring.
+"""Multi-provider support for ClawSpring.
 
 Supported providers:
   anthropic  — Claude (claude-opus-4-6, claude-sonnet-4-6, ...)
@@ -20,108 +19,138 @@ Model string formats:
   "custom/my-model"          uses CUSTOM_BASE_URL from config
 """
 from __future__ import annotations
+
 import json
 import urllib.request
-from typing import Generator
+from collections.abc import Generator
 
 # ── Provider registry ──────────────────────────────────────────────────────
 
 PROVIDERS: dict[str, dict] = {
     "anthropic": {
-        "type":       "anthropic",
+        "type": "anthropic",
         "api_key_env": "ANTHROPIC_API_KEY",
         "context_limit": 200000,
         "models": [
-            "claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5-20251001",
-            "claude-opus-4-5", "claude-sonnet-4-5",
-            "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022",
+            "claude-opus-4-6",
+            "claude-sonnet-4-6",
+            "claude-haiku-4-5-20251001",
+            "claude-opus-4-5",
+            "claude-sonnet-4-5",
+            "claude-3-5-sonnet-20241022",
+            "claude-3-5-haiku-20241022",
         ],
     },
     "openai": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "OPENAI_API_KEY",
-        "base_url":   "https://api.openai.com/v1",
+        "base_url": "https://api.openai.com/v1",
         "context_limit": 128000,
         "max_completion_tokens": 16384,  # safe cap across gpt-4o/gpt-4.1 family
         "models": [
-            "gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4.1", "gpt-4.1-mini",
-            "o3-mini", "o1", "o1-mini",
+            "gpt-4o",
+            "gpt-4o-mini",
+            "gpt-4-turbo",
+            "gpt-4.1",
+            "gpt-4.1-mini",
+            "o3-mini",
+            "o1",
+            "o1-mini",
         ],
     },
     "gemini": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "GEMINI_API_KEY",
-        "base_url":   "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
         "context_limit": 1000000,
         "models": [
             "gemini-2.5-pro-preview-03-25",
-            "gemini-2.0-flash", "gemini-2.0-flash-lite",
-            "gemini-1.5-pro", "gemini-1.5-flash",
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-lite",
+            "gemini-1.5-pro",
+            "gemini-1.5-flash",
         ],
     },
     "kimi": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "MOONSHOT_API_KEY",
-        "base_url":   "https://api.moonshot.cn/v1",
+        "base_url": "https://api.moonshot.cn/v1",
         "context_limit": 128000,
         "models": [
-            "moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k",
+            "moonshot-v1-8k",
+            "moonshot-v1-32k",
+            "moonshot-v1-128k",
             "kimi-latest",
         ],
     },
     "qwen": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "DASHSCOPE_API_KEY",
-        "base_url":   "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
         "context_limit": 1000000,
         "models": [
-            "qwen-max", "qwen-plus", "qwen-turbo", "qwen-long",
-            "qwen2.5-72b-instruct", "qwen2.5-coder-32b-instruct",
+            "qwen-max",
+            "qwen-plus",
+            "qwen-turbo",
+            "qwen-long",
+            "qwen2.5-72b-instruct",
+            "qwen2.5-coder-32b-instruct",
             "qwq-32b",
         ],
     },
     "zhipu": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "ZHIPU_API_KEY",
-        "base_url":   "https://open.bigmodel.cn/api/paas/v4/",
+        "base_url": "https://open.bigmodel.cn/api/paas/v4/",
         "context_limit": 128000,
         "models": [
-            "glm-4-plus", "glm-4", "glm-4-flash", "glm-4-air",
+            "glm-4-plus",
+            "glm-4",
+            "glm-4-flash",
+            "glm-4-air",
             "glm-z1-flash",
         ],
     },
     "deepseek": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "DEEPSEEK_API_KEY",
-        "base_url":   "https://api.deepseek.com/v1",
+        "base_url": "https://api.deepseek.com/v1",
         "context_limit": 64000,
         "models": [
-            "deepseek-chat", "deepseek-coder", "deepseek-reasoner",
+            "deepseek-chat",
+            "deepseek-coder",
+            "deepseek-reasoner",
         ],
     },
     "ollama": {
-        "type":       "ollama",
+        "type": "ollama",
         "api_key_env": None,
-        "base_url":   "http://localhost:11434",
-        "api_key":    "ollama",
+        "base_url": "http://localhost:11434",
+        "api_key": "ollama",
         "context_limit": 128000,
         "models": [
-            "llama3.3", "llama3.2", "phi4", "mistral", "mixtral",
-            "qwen2.5-coder", "deepseek-r1", "gemma3",
+            "llama3.3",
+            "llama3.2",
+            "phi4",
+            "mistral",
+            "mixtral",
+            "qwen2.5-coder",
+            "deepseek-r1",
+            "gemma3",
         ],
     },
     "lmstudio": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": None,
-        "base_url":   "http://localhost:1234/v1",
-        "api_key":    "lm-studio",
+        "base_url": "http://localhost:1234/v1",
+        "api_key": "lm-studio",
         "context_limit": 128000,
-        "models": [],   # dynamic, depends on loaded model
+        "models": [],  # dynamic, depends on loaded model
     },
     "custom": {
-        "type":       "openai",
+        "type": "openai",
         "api_key_env": "CUSTOM_API_KEY",
-        "base_url":   None,   # read from config["custom_base_url"]
+        "base_url": None,  # read from config["custom_base_url"]
         "context_limit": 128000,
         "models": [],
     },
@@ -129,54 +158,55 @@ PROVIDERS: dict[str, dict] = {
 
 # Cost per million tokens (approximate, fallback to 0 for unknown)
 COSTS = {
-    "claude-opus-4-6":          (15.0, 75.0),
-    "claude-sonnet-4-6":        (3.0,  15.0),
-    "claude-haiku-4-5-20251001": (0.8,  4.0),
-    "gpt-4o":                   (2.5,  10.0),
-    "gpt-4o-mini":              (0.15,  0.6),
-    "o3-mini":                  (1.1,   4.4),
-    "gemini-2.0-flash":         (0.075, 0.3),
-    "gemini-1.5-pro":           (1.25,  5.0),
+    "claude-opus-4-6": (15.0, 75.0),
+    "claude-sonnet-4-6": (3.0, 15.0),
+    "claude-haiku-4-5-20251001": (0.8, 4.0),
+    "gpt-4o": (2.5, 10.0),
+    "gpt-4o-mini": (0.15, 0.6),
+    "o3-mini": (1.1, 4.4),
+    "gemini-2.0-flash": (0.075, 0.3),
+    "gemini-1.5-pro": (1.25, 5.0),
     "gemini-2.5-pro-preview-03-25": (1.25, 10.0),
-    "moonshot-v1-8k":           (1.0,   3.0),
-    "moonshot-v1-32k":          (2.4,   7.0),
-    "moonshot-v1-128k":         (8.0,  24.0),
-    "qwen-max":                 (2.4,   9.6),
-    "qwen-plus":                (0.4,   1.2),
-    "deepseek-chat":            (0.27,  1.1),
-    "deepseek-reasoner":        (0.55,  2.19),
-    "glm-4-plus":               (0.7,   0.7),
+    "moonshot-v1-8k": (1.0, 3.0),
+    "moonshot-v1-32k": (2.4, 7.0),
+    "moonshot-v1-128k": (8.0, 24.0),
+    "qwen-max": (2.4, 9.6),
+    "qwen-plus": (0.4, 1.2),
+    "deepseek-chat": (0.27, 1.1),
+    "deepseek-reasoner": (0.55, 2.19),
+    "glm-4-plus": (0.7, 0.7),
 }
 
 # Auto-detection: prefix → provider name
 _PREFIXES = [
-    ("claude-",       "anthropic"),
-    ("gpt-",          "openai"),
-    ("o1",            "openai"),
-    ("o3",            "openai"),
-    ("gemini-",       "gemini"),
-    ("moonshot-",     "kimi"),
-    ("kimi-",         "kimi"),
-    ("qwen",          "qwen"),  # qwen-max, qwen2.5-...
-    ("qwq-",          "qwen"),
-    ("glm-",          "zhipu"),
-    ("deepseek-",     "deepseek"),
-    ("llama",         "ollama"),
-    ("mistral",       "ollama"),
-    ("phi",           "ollama"),
-    ("gemma",         "ollama"),
+    ("claude-", "anthropic"),
+    ("gpt-", "openai"),
+    ("o1", "openai"),
+    ("o3", "openai"),
+    ("gemini-", "gemini"),
+    ("moonshot-", "kimi"),
+    ("kimi-", "kimi"),
+    ("qwen", "qwen"),  # qwen-max, qwen2.5-...
+    ("qwq-", "qwen"),
+    ("glm-", "zhipu"),
+    ("deepseek-", "deepseek"),
+    ("llama", "ollama"),
+    ("mistral", "ollama"),
+    ("phi", "ollama"),
+    ("gemma", "ollama"),
 ]
 
 
 def detect_provider(model: str) -> str:
     """Return provider name for a model string.
-    Supports 'provider/model' explicit format, or auto-detect by prefix."""
+    Supports 'provider/model' explicit format, or auto-detect by prefix.
+    """
     if "/" in model:
         return model.split("/", 1)[0]
     for prefix, pname in _PREFIXES:
         if model.lower().startswith(prefix):
             return pname
-    return "openai"   # fallback
+    return "openai"  # fallback
 
 
 def bare_model(model: str) -> str:
@@ -194,6 +224,7 @@ def get_api_key(provider_name: str, config: dict) -> str:
     env_var = prov.get("api_key_env")
     if env_var:
         import os
+
         return os.environ.get(env_var, "")
     # 3. Hardcoded (for local providers)
     return prov.get("api_key", "")
@@ -206,15 +237,16 @@ def calc_cost(model: str, in_tok: int, out_tok: int) -> float:
 
 # ── Tool schema conversion ─────────────────────────────────────────────────
 
+
 def tools_to_openai(tool_schemas: list) -> list:
     """Convert Anthropic-style tool schemas to OpenAI function-calling format."""
     return [
         {
             "type": "function",
             "function": {
-                "name":        t["name"],
+                "name": t["name"],
                 "description": t["description"],
-                "parameters":  t["input_schema"],
+                "parameters": t["input_schema"],
             },
         }
         for t in tool_schemas
@@ -229,6 +261,7 @@ def tools_to_openai(tool_schemas: list) -> list:
 #       {"id": "...", "name": "...", "input": {...}}
 #   ]}
 #   {"role": "tool", "tool_call_id": "...", "name": "...", "content": "..."}
+
 
 def messages_to_anthropic(messages: list) -> list:
     """Convert neutral messages → Anthropic API format."""
@@ -248,12 +281,14 @@ def messages_to_anthropic(messages: list) -> list:
             if text:
                 blocks.append({"type": "text", "text": text})
             for tc in m.get("tool_calls", []):
-                blocks.append({
-                    "type":  "tool_use",
-                    "id":    tc["id"],
-                    "name":  tc["name"],
-                    "input": tc["input"],
-                })
+                blocks.append(
+                    {
+                        "type": "tool_use",
+                        "id": tc["id"],
+                        "name": tc["name"],
+                        "input": tc["input"],
+                    }
+                )
             result.append({"role": "assistant", "content": blocks})
             i += 1
 
@@ -262,11 +297,13 @@ def messages_to_anthropic(messages: list) -> list:
             tool_blocks = []
             while i < len(messages) and messages[i]["role"] == "tool":
                 t = messages[i]
-                tool_blocks.append({
-                    "type":        "tool_result",
-                    "tool_use_id": t["tool_call_id"],
-                    "content":     t["content"],
-                })
+                tool_blocks.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": t["tool_call_id"],
+                        "content": t["content"],
+                    }
+                )
                 i += 1
             result.append({"role": "user", "content": tool_blocks})
 
@@ -301,10 +338,10 @@ def messages_to_openai(messages: list, pass_images: bool = False) -> list:
                 msg["tool_calls"] = []
                 for tc in tcs:
                     tc_msg = {
-                        "id":   tc["id"],
+                        "id": tc["id"],
                         "type": "function",
                         "function": {
-                            "name":      tc["name"],
+                            "name": tc["name"],
                             "arguments": json.dumps(tc["input"], ensure_ascii=False),
                         },
                     }
@@ -315,30 +352,38 @@ def messages_to_openai(messages: list, pass_images: bool = False) -> list:
             result.append(msg)
 
         elif role == "tool":
-            result.append({
-                "role":         "tool",
-                "tool_call_id": m["tool_call_id"],
-                "content":      m["content"],
-            })
+            result.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": m["tool_call_id"],
+                    "content": m["content"],
+                }
+            )
 
     return result
 
 
 # ── Streaming adapters ─────────────────────────────────────────────────────
 
+
 class TextChunk:
-    def __init__(self, text): self.text = text
+    def __init__(self, text):
+        self.text = text
+
 
 class ThinkingChunk:
-    def __init__(self, text): self.text = text
+    def __init__(self, text):
+        self.text = text
+
 
 class AssistantTurn:
     """Completed assistant turn with text + tool_calls."""
+
     def __init__(self, text, tool_calls, in_tokens, out_tokens):
-        self.text        = text
-        self.tool_calls  = tool_calls   # list of {id, name, input}
-        self.in_tokens   = in_tokens
-        self.out_tokens  = out_tokens
+        self.text = text
+        self.tool_calls = tool_calls  # list of {id, name, input}
+        self.in_tokens = in_tokens
+        self.out_tokens = out_tokens
 
 
 def stream_anthropic(
@@ -351,23 +396,24 @@ def stream_anthropic(
 ) -> Generator:
     """Stream from Anthropic API. Yields TextChunk/ThinkingChunk, then AssistantTurn."""
     import anthropic as _ant
+
     client = _ant.Anthropic(api_key=api_key)
 
     kwargs = {
-        "model":      model,
+        "model": model,
         "max_tokens": config.get("max_tokens", 8192),
-        "system":     system,
-        "messages":   messages_to_anthropic(messages),
-        "tools":      tool_schemas,
+        "system": system,
+        "messages": messages_to_anthropic(messages),
+        "tools": tool_schemas,
     }
     if config.get("thinking"):
         kwargs["thinking"] = {
-            "type":          "enabled",
+            "type": "enabled",
             "budget_tokens": config.get("thinking_budget", 10000),
         }
 
     tool_calls = []
-    text       = ""
+    text = ""
 
     with client.messages.stream(**kwargs) as stream:
         for event in stream:
@@ -384,14 +430,17 @@ def stream_anthropic(
         final = stream.get_final_message()
         for block in final.content:
             if block.type == "tool_use":
-                tool_calls.append({
-                    "id":    block.id,
-                    "name":  block.name,
-                    "input": block.input,
-                })
+                tool_calls.append(
+                    {
+                        "id": block.id,
+                        "name": block.name,
+                        "input": block.input,
+                    }
+                )
 
         yield AssistantTurn(
-            text, tool_calls,
+            text,
+            tool_calls,
             final.usage.input_tokens,
             final.usage.output_tokens,
         )
@@ -408,22 +457,27 @@ def stream_openai_compat(
 ) -> Generator:
     """Stream from any OpenAI-compatible API. Yields TextChunk, then AssistantTurn."""
     from openai import OpenAI
+
     client = OpenAI(api_key=api_key or "dummy", base_url=base_url)
 
     oai_messages = [{"role": "system", "content": system}] + messages_to_openai(messages)
 
     kwargs: dict = {
-        "model":    model,
+        "model": model,
         "messages": oai_messages,
-        "stream":   True,
+        "stream": True,
     }
 
     # Pass num_ctx for known Ollama/LM Studio ports only — avoids matching other local servers (e.g. vLLM on :8000)
     _is_local_ollama = "11434" in base_url
-    _is_lmstudio     = "1234" in base_url and ("lmstudio" in base_url or "localhost" in base_url or "127.0.0.1" in base_url)
+    _is_lmstudio = "1234" in base_url and (
+        "lmstudio" in base_url or "localhost" in base_url or "127.0.0.1" in base_url
+    )
     if _is_local_ollama or _is_lmstudio:
         prov = detect_provider(model)
-        ctx_limit = PROVIDERS.get(prov if prov in ("ollama", "lmstudio") else "ollama", {}).get("context_limit", 128000)
+        ctx_limit = PROVIDERS.get(prov if prov in ("ollama", "lmstudio") else "ollama", {}).get(
+            "context_limit", 128000
+        )
         kwargs["extra_body"] = {"options": {"num_ctx": ctx_limit}}
 
     if tool_schemas and not config.get("no_tools"):
@@ -436,8 +490,8 @@ def stream_openai_compat(
         mt = config["max_tokens"]
         kwargs["max_tokens"] = min(mt, prov_cap) if prov_cap else mt
 
-    text          = ""
-    tool_buf: dict = {}   # index → {id, name, args_str}
+    text = ""
+    tool_buf: dict = {}  # index → {id, name, args_str}
     in_tok = out_tok = 0
 
     stream = client.chat.completions.create(**kwargs)
@@ -445,12 +499,12 @@ def stream_openai_compat(
         if not chunk.choices:
             # usage-only chunk (some providers send this last)
             if hasattr(chunk, "usage") and chunk.usage:
-                in_tok  = chunk.usage.prompt_tokens
+                in_tok = chunk.usage.prompt_tokens
                 out_tok = chunk.usage.completion_tokens
             continue
 
         choice = chunk.choices[0]
-        delta  = choice.delta
+        delta = choice.delta
 
         if delta.content:
             text += delta.content
@@ -475,7 +529,7 @@ def stream_openai_compat(
 
         # Some providers include usage in the last chunk
         if hasattr(chunk, "usage") and chunk.usage:
-            in_tok  = chunk.usage.prompt_tokens  or in_tok
+            in_tok = chunk.usage.prompt_tokens or in_tok
             out_tok = chunk.usage.completion_tokens or out_tok
 
     tool_calls = []
@@ -502,8 +556,10 @@ def stream_ollama(
     config: dict,
 ) -> Generator:
     # pass_images=True: Ollama /api/chat accepts base64 images natively in the message
-    oai_messages = [{"role": "system", "content": system}] + messages_to_openai(messages, pass_images=True)
-    
+    oai_messages = [{"role": "system", "content": system}] + messages_to_openai(
+        messages, pass_images=True
+    )
+
     # Ollama requires tool arguments as dict objects, not strings. OpenAI uses strings.
     for m in oai_messages:
         if m.get("content") is None:
@@ -516,55 +572,54 @@ def stream_ollama(
                         fn["arguments"] = json.loads(fn["arguments"])
                     except Exception:
                         pass
-    
+
     payload = {
         "model": model,
         "messages": oai_messages,
         "stream": True,
-        "options": {
-            "num_ctx": config.get("context_limit", 128000)
-        }
+        "options": {"num_ctx": config.get("context_limit", 128000)},
     }
-    
+
     if tool_schemas and not config.get("no_tools"):
         payload["tools"] = tools_to_openai(tool_schemas)
 
     req = urllib.request.Request(
         f"{base_url.rstrip('/')}/api/chat",
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"}
+        headers={"Content-Type": "application/json"},
     )
-    
+
     text = ""
     tool_buf: dict = {}
-    
+
     with urllib.request.urlopen(req) as resp:
         for line in resp:
-            if not line.strip(): continue
+            if not line.strip():
+                continue
             try:
                 data = json.loads(line)
             except Exception:
                 continue
-            
+
             msg = data.get("message", {})
-            
+
             # Ollama native reasoning models stream thoughts here
             if "thinking" in msg and msg["thinking"]:
                 yield ThinkingChunk(msg["thinking"])
-                
+
             if "content" in msg and msg["content"]:
                 text += msg["content"]
                 yield TextChunk(msg["content"])
-            
+
             # Handle native ollama tools format which mirrors OpenAI
             for tc in msg.get("tool_calls", []):
                 fn = tc.get("function", {})
-                idx = len(tool_buf) # Ollama sends complete tool calls, not delta
+                idx = len(tool_buf)  # Ollama sends complete tool calls, not delta
                 tool_buf[idx] = {
                     "id": "call_ollama" + str(idx),
                     "name": fn.get("name", ""),
                     "args": json.dumps(fn.get("arguments", {})),
-                    "input": fn.get("arguments", {})
+                    "input": fn.get("arguments", {}),
                 }
 
     tool_calls = []
@@ -584,15 +639,14 @@ def stream(
     tool_schemas: list,
     config: dict,
 ) -> Generator:
-    """
-    Unified streaming entry point.
+    """Unified streaming entry point.
     Auto-detects provider from model string.
     Yields: TextChunk | ThinkingChunk | AssistantTurn
     """
     provider_name = detect_provider(model)
-    model_name    = bare_model(model)
-    prov          = PROVIDERS.get(provider_name, PROVIDERS["openai"])
-    api_key       = get_api_key(provider_name, config)
+    model_name = bare_model(model)
+    prov = PROVIDERS.get(provider_name, PROVIDERS["openai"])
+    api_key = get_api_key(provider_name, config)
 
     if prov["type"] == "anthropic":
         yield from stream_anthropic(api_key, model_name, system, messages, tool_schemas, config)
@@ -601,9 +655,9 @@ def stream(
         yield from stream_ollama(base_url, model_name, system, messages, tool_schemas, config)
     else:
         import os as _os
+
         if provider_name == "custom":
-            base_url = (config.get("custom_base_url")
-                        or _os.environ.get("CUSTOM_BASE_URL", ""))
+            base_url = config.get("custom_base_url") or _os.environ.get("CUSTOM_BASE_URL", "")
             if not base_url:
                 raise ValueError(
                     "custom provider requires a base_url. "

@@ -1,5 +1,4 @@
-"""
-Cleanup Engine — Resource cleanup and maintenance
+"""Cleanup Engine — Resource cleanup and maintenance
 
 Manages cleanup tasks, temporary file removal, and
 system maintenance operations.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable, Optional
 
 
 class CleanupPolicy(Enum):
     """Policy for cleanup operations."""
+
     DELETE = "delete"  # Remove immediately
     ARCHIVE = "archive"  # Move to archive
     COMPRESS = "compress"  # Compress then archive
@@ -26,6 +26,7 @@ class CleanupPolicy(Enum):
 
 class TaskStatus(Enum):
     """Status of a cleanup task."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -36,6 +37,7 @@ class TaskStatus(Enum):
 @dataclass
 class CleanupTask:
     """A cleanup task definition."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     target_pattern: str = ""  # Files/paths to clean
@@ -51,7 +53,7 @@ class CleanupTask:
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     enabled: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "policy": self.policy.value,
@@ -60,8 +62,7 @@ class CleanupTask:
 
 
 class CleanupEngine:
-    """
-    Manages system cleanup and maintenance.
+    """Manages system cleanup and maintenance.
 
     Handles temporary file cleanup, log rotation, and
     general maintenance tasks.
@@ -73,8 +74,8 @@ class CleanupEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.tasks: Dict[str, CleanupTask] = []
-        self.cleanup_handlers: Dict[CleanupPolicy, Callable] = {}
+        self.tasks: dict[str, CleanupTask] = []
+        self.cleanup_handlers: dict[CleanupPolicy, Callable] = {}
 
         self._load_tasks()
         self._register_default_handlers()
@@ -179,7 +180,7 @@ class CleanupEngine:
         self.save()
         return task
 
-    def execute_task(self, task_id: str, base_path: Optional[Path] = None) -> Dict[str, Any]:
+    def execute_task(self, task_id: str, base_path: Optional[Path] = None) -> dict[str, Any]:
         """Execute a specific cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -213,7 +214,7 @@ class CleanupEngine:
             self.save()
             return {"success": False, "error": str(e)}
 
-    def execute_all(self, base_path: Optional[Path] = None) -> Dict[str, Any]:
+    def execute_all(self, base_path: Optional[Path] = None) -> dict[str, Any]:
         """Execute all enabled cleanup tasks."""
         results = []
         total_cleaned = 0
@@ -222,11 +223,13 @@ class CleanupEngine:
         for task in self.tasks:
             if task.enabled:
                 result = self.execute_task(task.id, base_path)
-                results.append({
-                    "task_id": task.id,
-                    "task_name": task.name,
-                    **result,
-                })
+                results.append(
+                    {
+                        "task_id": task.id,
+                        "task_name": task.name,
+                        **result,
+                    }
+                )
                 if result["success"]:
                     total_cleaned += result.get("items_cleaned", 0)
                     total_space += result.get("space_reclaimed_mb", 0.0)
@@ -239,10 +242,9 @@ class CleanupEngine:
         }
 
     # Cleanup handlers
-    def _handle_delete(self, task: CleanupTask, base_path: Optional[Path]) -> Dict[str, Any]:
+    def _handle_delete(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
         """Handle delete policy."""
         import glob
-        import os
 
         if base_path is None:
             base_path = Path(__file__).parent.parent
@@ -267,6 +269,7 @@ class CleanupEngine:
                             path_obj.unlink()
                         elif path_obj.is_dir():
                             import shutil
+
                             shutil.rmtree(path)
 
                     items_cleaned += 1
@@ -278,7 +281,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def _handle_archive(self, task: CleanupTask, base_path: Optional[Path]) -> Dict[str, Any]:
+    def _handle_archive(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
         """Handle archive policy."""
         import glob
         import shutil
@@ -318,7 +321,7 @@ class CleanupEngine:
             "archive_dir": str(archive_dir),
         }
 
-    def _handle_truncate(self, task: CleanupTask, base_path: Optional[Path]) -> Dict[str, Any]:
+    def _handle_truncate(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
         """Handle truncate policy for log files."""
         import glob
 
@@ -344,7 +347,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
+    def get_task_status(self, task_id: str) -> Optional[dict[str, Any]]:
         """Get status of a cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -371,7 +374,7 @@ class CleanupEngine:
 
         return next_run.isoformat()
 
-    def list_tasks(self, enabled_only: bool = False) -> List[Dict]:
+    def list_tasks(self, enabled_only: bool = False) -> list[dict]:
         """List all cleanup tasks."""
         tasks = self.tasks
         if enabled_only:

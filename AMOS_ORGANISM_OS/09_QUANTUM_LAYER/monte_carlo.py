@@ -1,5 +1,4 @@
-"""
-Monte Carlo Simulator — Probabilistic Decision Analysis
+"""Monte Carlo Simulator — Probabilistic Decision Analysis
 
 Runs Monte Carlo simulations to evaluate decision outcomes
 with probabilistic confidence intervals.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import random
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
 from pathlib import Path
+from typing import Any, Callable, Optional
 
 
 @dataclass
 class SimulationResult:
     """Result of a Monte Carlo simulation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     iterations: int = 1000
     mean_outcome: float = 0.0
@@ -28,16 +28,15 @@ class SimulationResult:
     confidence_95_low: float = 0.0
     confidence_95_high: float = 0.0
     success_rate: float = 0.0  # Probability of positive outcome
-    distribution: Dict[str, float] = field(default_factory=dict)
+    distribution: dict[str, float] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class MonteCarloSimulator:
-    """
-    Runs Monte Carlo simulations for decision analysis.
+    """Runs Monte Carlo simulations for decision analysis.
 
     Simulates many possible outcomes based on probability distributions,
     providing confidence intervals and risk assessment.
@@ -45,7 +44,7 @@ class MonteCarloSimulator:
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
-        self.simulations: Dict[str, SimulationResult] = {}
+        self.simulations: dict[str, SimulationResult] = {}
 
     def run_simulation(
         self,
@@ -53,8 +52,7 @@ class MonteCarloSimulator:
         iterations: int = 1000,
         name: str = "",
     ) -> SimulationResult:
-        """
-        Run a Monte Carlo simulation.
+        """Run a Monte Carlo simulation.
 
         Args:
             decision_func: Function that returns outcome value for one iteration
@@ -82,7 +80,7 @@ class MonteCarloSimulator:
 
         # Standard deviation
         variance = sum((x - mean) ** 2 for x in outcomes) / len(outcomes)
-        std_dev = variance ** 0.5
+        std_dev = variance**0.5
 
         # 95% confidence interval
         ci_low = outcomes[int(len(outcomes) * 0.025)]
@@ -110,17 +108,17 @@ class MonteCarloSimulator:
     def simulate_risk_scenario(
         self,
         base_value: float,
-        risk_factors: List[Dict[str, Any]],
+        risk_factors: list[dict[str, Any]],
         iterations: int = 1000,
     ) -> SimulationResult:
-        """
-        Simulate a risk scenario with multiple risk factors.
+        """Simulate a risk scenario with multiple risk factors.
 
         Args:
             base_value: Starting value
             risk_factors: List of {probability, impact, type} dicts
             iterations: Number of simulation runs
         """
+
         def scenario():
             value = base_value
             for factor in risk_factors:
@@ -130,9 +128,9 @@ class MonteCarloSimulator:
 
                 if random.random() < prob:
                     if negative:
-                        value *= (1 - impact)
+                        value *= 1 - impact
                     else:
-                        value *= (1 + impact)
+                        value *= 1 + impact
             return value - base_value  # Return delta
 
         return self.run_simulation(scenario, iterations, "risk_scenario")
@@ -146,31 +144,31 @@ class MonteCarloSimulator:
         iterations: int = 1000,
     ) -> SimulationResult:
         """Simulate investment returns with given volatility."""
+
         def investment():
             value = principal
             for _ in range(time_periods):
                 # Monthly return with random volatility
                 monthly_return = random.gauss(
-                    expected_return / time_periods,
-                    volatility / (time_periods ** 0.5)
+                    expected_return / time_periods, volatility / (time_periods**0.5)
                 )
-                value *= (1 + monthly_return)
+                value *= 1 + monthly_return
             return value - principal
 
         return self.run_simulation(investment, iterations, "investment")
 
     def compare_strategies(
         self,
-        strategies: Dict[str, Callable[[], float]],
+        strategies: dict[str, Callable[[], float]],
         iterations: int = 1000,
-    ) -> Dict[str, SimulationResult]:
+    ) -> dict[str, SimulationResult]:
         """Compare multiple strategies via simulation."""
         results = {}
         for name, func in strategies.items():
             results[name] = self.run_simulation(func, iterations, name)
         return results
 
-    def _calculate_distribution(self, outcomes: List[float]) -> Dict[str, float]:
+    def _calculate_distribution(self, outcomes: list[float]) -> dict[str, float]:
         """Calculate outcome distribution buckets."""
         if not outcomes:
             return {}
@@ -208,7 +206,7 @@ class MonteCarloSimulator:
 
     def recommend_decision(
         self,
-        results: Dict[str, SimulationResult],
+        results: dict[str, SimulationResult],
         criteria: str = "expected_value",  # expected_value, risk_adjusted, safety
     ) -> str:
         """Recommend best strategy based on simulation results."""
@@ -236,7 +234,7 @@ class MonteCarloSimulator:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[0][0] if scored else ""
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get simulator status."""
         return {
             "total_simulations": len(self.simulations),

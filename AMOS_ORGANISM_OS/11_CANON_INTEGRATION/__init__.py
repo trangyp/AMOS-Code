@@ -1,5 +1,4 @@
-"""
-11_CANON_INTEGRATION — Canonical Standards & Integration Layer
+"""11_CANON_INTEGRATION — Canonical Standards & Integration Layer
 
 Ensures AMOS adheres to canonical standards, integrates with external systems,
 and maintains compliance with defined protocols and specifications.
@@ -15,9 +14,9 @@ Version: 1.0.0
 """
 
 from .canon_enforcer import CanonEnforcer, CanonRule, ViolationReport
-from .integration_manager import IntegrationManager, ExternalSystem, IntegrationConfig
-from .protocol_handler import ProtocolHandler, Protocol, MessageFormat
-from .standards_registry import StandardsRegistry, Standard, ComplianceStatus
+from .integration_manager import ExternalSystem, IntegrationConfig, IntegrationManager
+from .protocol_handler import MessageFormat, Protocol, ProtocolHandler
+from .standards_registry import ComplianceStatus, Standard, StandardsRegistry
 
 __all__ = [
     "CanonEnforcer",

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Complete UI - Production Server
+"""AMOS Brain Complete UI - Production Server
 ==========================================
 
 Single consolidated server combining all UI features.
@@ -16,11 +15,11 @@ import json
 import sys
 import webbrowser
 from datetime import datetime
-from typing import Any, Dict
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
 from urllib.parse import urlparse
 
-from amos_brain import think, validate, decide
+from amos_brain import decide, think, validate
 
 
 class CompleteBrainUIHandler(BaseHTTPRequestHandler):
@@ -73,7 +72,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         else:
             self._send_json({"error": "Not found"}, 404)
 
-    def _send_json(self, data: Dict, status: int = 200) -> None:
+    def _send_json(self, data: dict, status: int = 200) -> None:
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -94,23 +93,20 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         if not self.brain:
             self._send_json({"error": "Brain not initialized"}, 500)
             return
-        self._send_json({
-            "status": "active",
-            "brain": self.brain.status(),
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        self._send_json(
+            {
+                "status": "active",
+                "brain": self.brain.status(),
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
 
     def _serve_thoughts(self) -> None:
         if not self.brain:
             self._send_json({"error": "Brain not initialized"}, 500)
             return
         thoughts = [
-            {
-                "id": t.id,
-                "type": t.type.value,
-                "content": t.content,
-                "timestamp": t.timestamp
-            }
+            {"id": t.id, "type": t.type.value, "content": t.content, "timestamp": t.timestamp}
             for t in self.brain.state.get_recent_thoughts(20)
         ]
         self._send_json({"thoughts": thoughts})
@@ -120,12 +116,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             self._send_json({"error": "Brain not initialized"}, 500)
             return
         plans = [
-            {
-                "id": p.id,
-                "goal": p.goal,
-                "status": p.status,
-                "steps": len(p.steps)
-            }
+            {"id": p.id, "goal": p.goal, "status": p.status, "steps": len(p.steps)}
             for p in self.brain.state.active_plans
         ]
         self._send_json({"plans": plans})
@@ -159,7 +150,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         ]
         self._send_json({"layers": layers})
 
-    def _handle_think(self, data: Dict) -> None:
+    def _handle_think(self, data: dict) -> None:
         query = data.get("query", "")
         if not query:
             self._send_json({"error": "No query"}, 400)
@@ -168,17 +159,15 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             result = think(query)
             if self.brain:
                 self.brain.perceive(query, "user_ui")
-            response = {
-                "success": True,
-                "query": query,
-                "timestamp": datetime.utcnow().isoformat()
-            }
+            response = {"success": True, "query": query, "timestamp": datetime.utcnow().isoformat()}
             if hasattr(result, "content"):
                 response["result"] = {
                     "content": result.content,
                     "reasoning": result.reasoning if hasattr(result, "reasoning") else [],
                     "confidence": result.confidence if hasattr(result, "confidence") else "medium",
-                    "law_compliant": result.law_compliant if hasattr(result, "law_compliant") else True
+                    "law_compliant": result.law_compliant
+                    if hasattr(result, "law_compliant")
+                    else True,
                 }
             else:
                 response["result"] = {"content": str(result)}
@@ -186,7 +175,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_decide(self, data: Dict) -> None:
+    def _handle_decide(self, data: dict) -> None:
         scenario = data.get("scenario", "")
         options = data.get("options", [])
         if not scenario:
@@ -200,13 +189,13 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             response = {
                 "success": True,
                 "scenario": scenario,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
             if hasattr(result, "approved"):
                 response["decision"] = {
                     "approved": result.approved,
                     "reasoning": result.reasoning if hasattr(result, "reasoning") else "",
-                    "risk_level": result.risk_level if hasattr(result, "risk_level") else "low"
+                    "risk_level": result.risk_level if hasattr(result, "risk_level") else "low",
                 }
             else:
                 response["decision"] = {"content": str(result)}
@@ -214,23 +203,25 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_validate(self, data: Dict) -> None:
+    def _handle_validate(self, data: dict) -> None:
         proposition = data.get("proposition", "")
         if not proposition:
             self._send_json({"error": "No proposition"}, 400)
             return
         try:
             result = validate(proposition)
-            self._send_json({
-                "success": True,
-                "proposition": proposition,
-                "timestamp": datetime.utcnow().isoformat(),
-                "validation": {"result": str(result)}
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "proposition": proposition,
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "validation": {"result": str(result)},
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_plan(self, data: Dict) -> None:
+    def _handle_plan(self, data: dict) -> None:
         goal = data.get("goal", "")
         horizon = data.get("horizon", "medium-term")
         if not goal:
@@ -238,19 +229,21 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             return
         try:
             plan = self.brain.create_plan(goal, horizon)
-            self._send_json({
-                "success": True,
-                "plan_id": plan.id,
-                "goal": plan.goal,
-                "horizon": plan.horizon,
-                "status": plan.status,
-                "created_at": plan.created_at
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "plan_id": plan.id,
+                    "goal": plan.goal,
+                    "horizon": plan.horizon,
+                    "status": plan.status,
+                    "created_at": plan.created_at,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
     def _serve_complete_ui(self) -> None:
-        html = '''<!DOCTYPE html>
+        html = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -525,7 +518,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
         setInterval(loadStats, 5000);
     </script>
 </body>
-</html>'''
+</html>"""
         self._send_html(html)
 
 
@@ -534,6 +527,7 @@ def run_complete_server(port: int = 9000) -> None:
     print("🧠 Initializing AMOS Brain Complete UI...")
     try:
         from AMOS_ORGANISM_OS.organism import AmosOrganism
+
         organism = AmosOrganism()
         CompleteBrainUIHandler.orchestrator = organism
         CompleteBrainUIHandler.brain = organism.brain
@@ -541,6 +535,7 @@ def run_complete_server(port: int = 9000) -> None:
     except Exception as e:
         print(f"   ⚠ Brain init warning: {e}")
         from AMOS_ORGANISM_OS.BRAIN.brain_os import BrainOS
+
         brain = BrainOS()
         CompleteBrainUIHandler.brain = brain
         print(f"   ✓ Brain loaded (fallback): {brain.state.session_id}")

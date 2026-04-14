@@ -13,11 +13,9 @@ All backends capture raw PCM: 16 kHz, 16-bit signed little-endian, mono.
 
 from __future__ import annotations
 
-import io
 import shutil
 import subprocess
 import threading
-from pathlib import Path
 
 SAMPLE_RATE = 16000
 CHANNELS = 1
@@ -25,9 +23,9 @@ DTYPE = "int16"
 BYTES_PER_SAMPLE = 2  # int16
 
 # Silence detection parameters
-SILENCE_THRESHOLD_RMS = 0.012   # fraction of int16 max (0..1)
-SILENCE_DURATION_SECS = 1.8     # stop after this many seconds of silence
-CHUNK_SECS = 0.08               # 80 ms chunks for RMS poll
+SILENCE_THRESHOLD_RMS = 0.012  # fraction of int16 max (0..1)
+SILENCE_DURATION_SECS = 1.8  # stop after this many seconds of silence
+CHUNK_SECS = 0.08  # 80 ms chunks for RMS poll
 
 
 def _has_cmd(cmd: str) -> bool:
@@ -36,11 +34,13 @@ def _has_cmd(cmd: str) -> bool:
 
 # ── Availability ──────────────────────────────────────────────────────────
 
+
 def check_recording_availability() -> tuple[bool, str | None]:
     """Return (available, reason_if_not)."""
     # sounddevice (ImportError = not installed; OSError = PortAudio library missing)
     try:
         import sounddevice  # noqa: F401
+
         return True, None
     except (ImportError, OSError):
         pass
@@ -64,12 +64,13 @@ def check_recording_availability() -> tuple[bool, str | None]:
 
 # ── sounddevice backend ───────────────────────────────────────────────────
 
+
 def _record_sounddevice(
     max_seconds: int = 30,
-    on_energy: "callable | None" = None,
+    on_energy: callable | None = None,
 ) -> bytes:
-    import sounddevice as sd
     import numpy as np
+    import sounddevice as sd
 
     chunk_samples = int(SAMPLE_RATE * CHUNK_SECS)
     silence_chunks_needed = int(SILENCE_DURATION_SECS / CHUNK_SECS)
@@ -79,7 +80,7 @@ def _record_sounddevice(
     silence_count = 0
     done_evt = threading.Event()
 
-    def callback(indata: "np.ndarray", frames: int, time_info, status) -> None:
+    def callback(indata: np.ndarray, frames: int, time_info, status) -> None:
         nonlocal silence_count
         mono = indata[:, 0].copy()
         chunks.append(mono.tobytes())
@@ -117,21 +118,27 @@ def _record_sounddevice(
 
 # ── arecord backend (Linux ALSA) ──────────────────────────────────────────
 
+
 def _record_arecord(
     max_seconds: int = 30,
-    on_energy: "callable | None" = None,
+    on_energy: callable | None = None,
 ) -> bytes:
     """Record via arecord.  Silence detection done in Python on the piped PCM."""
     import numpy as np
 
     cmd = [
         "arecord",
-        "-f", "S16_LE",
-        "-r", str(SAMPLE_RATE),
-        "-c", str(CHANNELS),
-        "-t", "raw",
+        "-f",
+        "S16_LE",
+        "-r",
+        str(SAMPLE_RATE),
+        "-c",
+        str(CHANNELS),
+        "-t",
+        "raw",
         "-q",
-        "-d", str(max_seconds),
+        "-d",
+        str(max_seconds),
         "-",
     ]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -150,7 +157,7 @@ def _record_arecord(
             chunks.append(raw)
 
             arr = np.frombuffer(raw, dtype=np.int16).astype(np.float32)
-            rms = float(np.sqrt(np.mean(arr ** 2))) / 32768.0
+            rms = float(np.sqrt(np.mean(arr**2))) / 32768.0
             if on_energy:
                 on_energy(rms)
 
@@ -174,9 +181,10 @@ def _record_arecord(
 
 # ── SoX rec backend ───────────────────────────────────────────────────────
 
+
 def _record_sox(
     max_seconds: int = 30,
-    on_energy: "callable | None" = None,
+    on_energy: callable | None = None,
 ) -> bytes:
     """Record via SoX `rec` with built-in silence detection."""
     silence_threshold = "3%"
@@ -186,16 +194,26 @@ def _record_sox(
     cmd = [
         "rec",
         "-q",
-        "--buffer", "1024",
-        "-t", "raw",
-        "-r", str(SAMPLE_RATE),
-        "-e", "signed",
-        "-b", "16",
-        "-c", str(CHANNELS),
+        "--buffer",
+        "1024",
+        "-t",
+        "raw",
+        "-r",
+        str(SAMPLE_RATE),
+        "-e",
+        "signed",
+        "-b",
+        "16",
+        "-c",
+        str(CHANNELS),
         "-",
         "silence",
-        "1", silence_pre_duration, silence_threshold,
-        "1", silence_post_duration, silence_threshold,
+        "1",
+        silence_pre_duration,
+        silence_threshold,
+        "1",
+        silence_post_duration,
+        silence_threshold,
     ]
 
     # Honour max_seconds via a timeout
@@ -212,9 +230,10 @@ def _record_sox(
 
 # ── Public entry point ────────────────────────────────────────────────────
 
+
 def record_until_silence(
     max_seconds: int = 30,
-    on_energy: "callable | None" = None,
+    on_energy: callable | None = None,
 ) -> bytes:
     """Record from microphone until silence or max_seconds.
 
@@ -224,6 +243,7 @@ def record_until_silence(
     """
     try:
         import sounddevice  # noqa: F401
+
         return _record_sounddevice(max_seconds=max_seconds, on_energy=on_energy)
     except (ImportError, OSError):
         pass
@@ -231,6 +251,7 @@ def record_until_silence(
     if _has_cmd("arecord"):
         try:
             import numpy  # noqa: F401
+
             return _record_arecord(max_seconds=max_seconds, on_energy=on_energy)
         except ImportError:
             # numpy missing — fall through to sox (no RMS feedback)

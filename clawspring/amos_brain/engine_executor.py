@@ -1,20 +1,20 @@
 """AMOS Cognitive Engine Executor - Executes tasks through selected engines."""
 
 import json
-from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
-from pathlib import Path
+from dataclasses import dataclass
+from typing import Any, Callable, Optional
 
 
 @dataclass
 class ExecutionResult:
     """Result of executing a task through cognitive engines."""
+
     task: str
-    engines_used: List[str]
-    reasoning_steps: List[Dict[str, Any]]
+    engines_used: list[str]
+    reasoning_steps: list[dict[str, Any]]
     output: str
-    laws_checked: List[str]
-    violations_found: List[str]
+    laws_checked: list[str]
+    violations_found: list[str]
     execution_time_ms: float = 0.0
 
 
@@ -23,7 +23,7 @@ class EngineExecutor:
 
     def __init__(self, brain_loader: Any = None):
         self.brain_loader = brain_loader
-        self._engines: Dict[str, Callable] = {}
+        self._engines: dict[str, Callable] = {}
         self._register_default_engines()
 
     def _register_default_engines(self):
@@ -37,81 +37,81 @@ class EngineExecutor:
             "AMOS_Society_Culture_Engine": self._execute_society_engine,
         }
 
-    def _execute_logic_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_logic_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute deterministic logic analysis."""
         return {
             "perspectives": [
                 "Logical structure analysis",
                 "Contradiction detection",
-                "Deductive reasoning chain"
+                "Deductive reasoning chain",
             ],
             "confidence": 0.85,
-            "reasoning": "Applied formal logic decomposition"
+            "reasoning": "Applied formal logic decomposition",
         }
 
-    def _execute_engineering_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_engineering_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute engineering/mathematical analysis."""
         is_code = any(kw in task.lower() for kw in ["code", "function", "class", "implement"])
         return {
             "perspectives": [
                 "Technical feasibility assessment",
                 "Implementation structure",
-                "Edge case analysis" if is_code else "Mathematical formalization"
+                "Edge case analysis" if is_code else "Mathematical formalization",
             ],
             "confidence": 0.80,
             "reasoning": "Engineering decomposition applied",
-            "code_focused": is_code
+            "code_focused": is_code,
         }
 
-    def _execute_design_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_design_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute design language analysis."""
         return {
             "perspectives": [
                 "Structural clarity review",
                 "Pattern recognition",
-                "Aesthetic/functional balance"
+                "Aesthetic/functional balance",
             ],
             "confidence": 0.75,
-            "reasoning": "Design principles applied"
+            "reasoning": "Design principles applied",
         }
 
-    def _execute_biology_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_biology_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute biological/cognitive analysis."""
         return {
             "perspectives": [
                 "UBI alignment check",
                 "Cognitive load assessment",
-                "Natural pattern resonance"
+                "Natural pattern resonance",
             ],
             "confidence": 0.70,
-            "reasoning": "Biological intelligence principles applied"
+            "reasoning": "Biological intelligence principles applied",
         }
 
-    def _execute_strategy_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_strategy_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute strategic/game-theoretic analysis."""
         return {
             "perspectives": [
                 "Long-term trajectory analysis",
                 "Adversarial scenario planning",
-                "Resource optimization"
+                "Resource optimization",
             ],
             "confidence": 0.78,
-            "reasoning": "Strategic foresight applied"
+            "reasoning": "Strategic foresight applied",
         }
 
-    def _execute_society_engine(self, task: str, context: Dict) -> Dict[str, Any]:
+    def _execute_society_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute social/cultural analysis."""
         return {
             "perspectives": [
                 "Stakeholder impact assessment",
                 "Cultural sensitivity check",
-                "Collaborative dynamics"
+                "Collaborative dynamics",
             ],
             "confidence": 0.72,
-            "reasoning": "Social systems analysis applied"
+            "reasoning": "Social systems analysis applied",
         }
 
-    def _check_laws(self, task: str, reasoning: List[Dict]) -> List[str]:
+    def _check_laws(self, task: str, reasoning: list[dict]) -> list[str]:
         """Check for global law violations in reasoning."""
         violations = []
         all_text = task.lower() + " " + json.dumps(reasoning).lower()
@@ -128,18 +128,18 @@ class EngineExecutor:
         # Check structural integrity
         vague_phrases = ["etc.", "and so on", "something like", "kind of"]
         if any(p in all_text for p in vague_phrases):
-            violations.append("ABSOLUTE_STRUCTURAL_INTEGRITY: Ambiguity detected - label assumptions")
+            violations.append(
+                "ABSOLUTE_STRUCTURAL_INTEGRITY: Ambiguity detected - label assumptions"
+            )
 
         return violations
 
     def execute(
-        self,
-        task: str,
-        engines: List[str],
-        context: Optional[Dict] = None
+        self, task: str, engines: list[str], context: Optional[dict] = None
     ) -> ExecutionResult:
         """Execute a task through the specified cognitive engines."""
         import time
+
         start = time.time()
 
         ctx = context or {}
@@ -151,16 +151,13 @@ class EngineExecutor:
             if engine_name in self._engines:
                 engines_used.append(engine_name)
                 result = self._engines[engine_name](task, ctx)
-                reasoning_steps.append({
-                    "engine": engine_name,
-                    "result": result
-                })
+                reasoning_steps.append({"engine": engine_name, "result": result})
 
         # Check laws against all reasoning
         all_violations = self._check_laws(task, reasoning_steps)
 
         # Build synthesized output
-        output_parts = [f"## Cognitive Execution Results\n"]
+        output_parts = ["## Cognitive Execution Results\n"]
         output_parts.append(f"Engines engaged: {len(engines_used)}\n")
 
         for step in reasoning_steps:
@@ -188,7 +185,7 @@ class EngineExecutor:
             output="\n".join(output_parts),
             laws_checked=["RULE_OF_2", "RULE_OF_4", "ABSOLUTE_STRUCTURAL_INTEGRITY"],
             violations_found=all_violations,
-            execution_time_ms=elapsed
+            execution_time_ms=elapsed,
         )
 
 
@@ -205,9 +202,7 @@ def get_executor(brain_loader: Any = None) -> EngineExecutor:
 
 
 def execute_cognitive_task(
-    task: str,
-    engines: List[str],
-    context: Optional[Dict] = None
+    task: str, engines: list[str], context: Optional[dict] = None
 ) -> ExecutionResult:
     """Convenience function to execute a task through cognitive engines."""
     executor = get_executor()
@@ -220,7 +215,7 @@ if __name__ == "__main__":
     test_engines = [
         "AMOS_Engineering_And_Mathematics_Engine",
         "AMOS_Deterministic_Logic_And_Law_Engine",
-        "AMOS_Design_Language_Engine"
+        "AMOS_Design_Language_Engine",
     ]
 
     print("=" * 60)

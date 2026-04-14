@@ -1,5 +1,4 @@
-"""
-Scenario Engine — Parallel Scenario Evaluation
+"""Scenario Engine — Parallel Scenario Evaluation
 
 Evaluates multiple decision scenarios in parallel,
 comparing outcomes to find optimal paths.
@@ -7,18 +6,18 @@ comparing outcomes to find optimal paths.
 
 from __future__ import annotations
 
-import json
+import random
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
-import random
+from typing import Any, Callable, Optional
 
 
 class ScenarioStatus(Enum):
     """Status of a scenario evaluation."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -28,31 +27,33 @@ class ScenarioStatus(Enum):
 @dataclass
 class ScenarioResult:
     """Result of a scenario evaluation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     scenario_id: str = ""
     score: float = 0.0  # 0-1 success score
     risk_level: float = 0.0  # 0-1 risk assessment
     cost_estimate: float = 0.0
     time_estimate: float = 0.0  # seconds
-    outcome_data: Dict[str, Any] = field(default_factory=dict)
+    outcome_data: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class Scenario:
     """A single scenario for evaluation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     status: ScenarioStatus = ScenarioStatus.PENDING
     result: Optional[ScenarioResult] = None
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -61,8 +62,7 @@ class Scenario:
 
 
 class ScenarioEngine:
-    """
-    Evaluates multiple scenarios in parallel for decision making.
+    """Evaluates multiple scenarios in parallel for decision making.
 
     Creates scenario variations, runs simulations,
     and compares outcomes to recommend optimal paths.
@@ -74,8 +74,8 @@ class ScenarioEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.scenarios: Dict[str, Scenario] = {}
-        self.evaluators: Dict[str, Callable] = {}
+        self.scenarios: dict[str, Scenario] = {}
+        self.evaluators: dict[str, Callable] = {}
 
         self._register_default_evaluators()
 
@@ -89,7 +89,7 @@ class ScenarioEngine:
         self,
         name: str,
         description: str = "",
-        parameters: Optional[Dict[str, Any]] = None,
+        parameters: Optional[dict[str, Any]] = None,
     ) -> Scenario:
         """Create a new scenario."""
         scenario = Scenario(
@@ -131,7 +131,7 @@ class ScenarioEngine:
     def evaluate_all(
         self,
         evaluator_type: str = "default",
-    ) -> Dict[str, ScenarioResult]:
+    ) -> dict[str, ScenarioResult]:
         """Evaluate all pending scenarios."""
         results = {}
         for scenario_id, scenario in self.scenarios.items():
@@ -143,22 +143,24 @@ class ScenarioEngine:
 
     def compare_scenarios(
         self,
-        scenario_ids: List[str],
+        scenario_ids: list[str],
         metric: str = "score",
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Compare multiple scenarios by a metric."""
         comparisons = []
         for sid in scenario_ids:
             scenario = self.scenarios.get(sid)
             if scenario and scenario.result:
-                comparisons.append({
-                    "id": sid,
-                    "name": scenario.name,
-                    "score": scenario.result.score,
-                    "risk": scenario.result.risk_level,
-                    "cost": scenario.result.cost_estimate,
-                    "time": scenario.result.time_estimate,
-                })
+                comparisons.append(
+                    {
+                        "id": sid,
+                        "name": scenario.name,
+                        "score": scenario.result.score,
+                        "risk": scenario.result.risk_level,
+                        "cost": scenario.result.cost_estimate,
+                        "time": scenario.result.time_estimate,
+                    }
+                )
 
         # Sort by metric (descending for score, ascending for risk/cost/time)
         reverse = metric == "score"
@@ -167,7 +169,7 @@ class ScenarioEngine:
 
     def recommend_best(
         self,
-        scenario_ids: List[str],
+        scenario_ids: list[str],
         criteria: str = "balanced",  # score, risk, cost, balanced
     ) -> Optional[str]:
         """Recommend the best scenario based on criteria."""
@@ -188,9 +190,7 @@ class ScenarioEngine:
             # Score - risk - normalized cost
             for comp in comparisons:
                 comp["balanced_score"] = (
-                    comp["score"] * 0.5
-                    - comp["risk"] * 0.3
-                    - (comp["cost"] / 100) * 0.2
+                    comp["score"] * 0.5 - comp["risk"] * 0.3 - (comp["cost"] / 100) * 0.2
                 )
             return max(comparisons, key=lambda x: x["balanced_score"])["id"]
 
@@ -257,11 +257,11 @@ class ScenarioEngine:
             outcome_data={"roi": roi, "benefit": benefit},
         )
 
-    def list_scenarios(self) -> List[Dict[str, Any]]:
+    def list_scenarios(self) -> list[dict[str, Any]]:
         """List all scenarios."""
         return [s.to_dict() for s in self.scenarios.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get engine status."""
         pending = sum(1 for s in self.scenarios.values() if s.status == ScenarioStatus.PENDING)
         completed = sum(1 for s in self.scenarios.values() if s.status == ScenarioStatus.COMPLETED)

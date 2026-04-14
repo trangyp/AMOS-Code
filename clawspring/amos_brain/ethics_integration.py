@@ -6,23 +6,22 @@ Ensures all cognitive decisions pass ethical validation before execution.
 """
 
 import sys
-import json
-from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
+from typing import Any
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 @dataclass
 class EthicsValidationResult:
     """Result of ethics validation."""
+
     passed: bool
-    violations: List[str]
-    warnings: List[str]
+    violations: list[str]
+    warnings: list[str]
     score: float  # 0.0 to 1.0
     framework: str
     timestamp: datetime
@@ -38,13 +37,10 @@ class EthicsValidator:
             "virtue_ethics": self._validate_virtue_ethics,
             "principlism": self._validate_principlism,
         }
-        self.violations_log: List[Dict] = []
+        self.violations_log: list[dict] = []
 
     def validate_action(
-        self,
-        action: str,
-        context: Dict[str, Any],
-        framework: str = "principlism"
+        self, action: str, context: dict[str, Any], framework: str = "principlism"
     ) -> EthicsValidationResult:
         """Validate an action against an ethical framework."""
         if framework not in self.frameworks:
@@ -58,7 +54,7 @@ class EthicsValidator:
             warnings=warnings,
             score=score,
             framework=framework,
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         if not result.passed:
@@ -66,7 +62,7 @@ class EthicsValidator:
 
         return result
 
-    def _validate_principlism(self, action: str, context: Dict) -> Tuple[List, List, float]:
+    def _validate_principlism(self, action: str, context: dict) -> tuple[list, list, float]:
         """Validate using biomedical ethics principles (Beauchamp & Childress)."""
         violations = []
         warnings = []
@@ -95,7 +91,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, score)
 
-    def _validate_utilitarian(self, action: str, context: Dict) -> Tuple[List, List, float]:
+    def _validate_utilitarian(self, action: str, context: dict) -> tuple[list, list, float]:
         """Validate using utilitarian calculus."""
         violations = []
         warnings = []
@@ -116,7 +112,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, min(1.0, score))
 
-    def _validate_deontological(self, action: str, context: Dict) -> Tuple[List, List, float]:
+    def _validate_deontological(self, action: str, context: dict) -> tuple[list, list, float]:
         """Validate using duty-based ethics (Kantian)."""
         violations = []
         warnings = []
@@ -140,7 +136,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, score)
 
-    def _validate_virtue_ethics(self, action: str, context: Dict) -> Tuple[List, List, float]:
+    def _validate_virtue_ethics(self, action: str, context: dict) -> tuple[list, list, float]:
         """Validate using virtue ethics (Aristotelian)."""
         violations = []
         warnings = []
@@ -164,23 +160,25 @@ class EthicsValidator:
 
         return violations, warnings, score
 
-    def _log_violation(self, action: str, context: Dict, result: EthicsValidationResult) -> None:
+    def _log_violation(self, action: str, context: dict, result: EthicsValidationResult) -> None:
         """Log ethics violation for audit."""
-        self.violations_log.append({
-            "timestamp": result.timestamp.isoformat(),
-            "action": action,
-            "framework": result.framework,
-            "violations": result.violations,
-            "score": result.score,
-            "context_hash": hash(str(context)) & 0xFFFFFF
-        })
+        self.violations_log.append(
+            {
+                "timestamp": result.timestamp.isoformat(),
+                "action": action,
+                "framework": result.framework,
+                "violations": result.violations,
+                "score": result.score,
+                "context_hash": hash(str(context)) & 0xFFFFFF,
+            }
+        )
 
-    def get_violations_report(self) -> Dict[str, Any]:
+    def get_violations_report(self) -> dict[str, Any]:
         """Get report of all ethics violations."""
         return {
             "total_violations": len(self.violations_log),
             "recent_violations": self.violations_log[-10:],
-            "frameworks_used": list(self.frameworks.keys())
+            "frameworks_used": list(self.frameworks.keys()),
         }
 
 
@@ -191,11 +189,7 @@ class CognitiveEthicsBridge:
         self.ethics = EthicsValidator()
         self.enabled = True
 
-    def validate_cognitive_routing(
-        self,
-        task: str,
-        routing_result: Any
-    ) -> EthicsValidationResult:
+    def validate_cognitive_routing(self, task: str, routing_result: Any) -> EthicsValidationResult:
         """Validate a cognitive routing decision."""
         if not self.enabled:
             return EthicsValidationResult(
@@ -204,29 +198,24 @@ class CognitiveEthicsBridge:
                 warnings=[],
                 score=1.0,
                 framework="disabled",
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             )
 
         context = {
             "task": task,
-            "suggested_engines": getattr(routing_result, 'suggested_engines', []),
-            "risk_level": getattr(routing_result, 'risk_level', 'unknown'),
-            "confidence": getattr(routing_result, 'confidence', 0.5),
-            "harm_potential": 0.3 if getattr(routing_result, 'risk_level', '') == 'HIGH' else 0.1,
+            "suggested_engines": getattr(routing_result, "suggested_engines", []),
+            "risk_level": getattr(routing_result, "risk_level", "unknown"),
+            "confidence": getattr(routing_result, "confidence", 0.5),
+            "harm_potential": 0.3 if getattr(routing_result, "risk_level", "") == "HIGH" else 0.1,
             "consent": True,  # Assume user consent for cognitive routing
         }
 
         return self.ethics.validate_action(
-            f"Cognitive routing for: {task}",
-            context,
-            framework="principlism"
+            f"Cognitive routing for: {task}", context, framework="principlism"
         )
 
     def validate_orchestration(
-        self,
-        task_id: str,
-        task_description: str,
-        priority: str
+        self, task_id: str, task_description: str, priority: str
     ) -> EthicsValidationResult:
         """Validate a master orchestration task."""
         context = {
@@ -238,18 +227,16 @@ class CognitiveEthicsBridge:
         }
 
         return self.ethics.validate_action(
-            f"Orchestration: {task_description}",
-            context,
-            framework="utilitarian"
+            f"Orchestration: {task_description}", context, framework="utilitarian"
         )
 
-    def get_compliance_status(self) -> Dict[str, Any]:
+    def get_compliance_status(self) -> dict[str, Any]:
         """Get ethics compliance status."""
         return {
             "enabled": self.enabled,
             "frameworks_available": list(self.ethics.frameworks.keys()),
             "total_violations_logged": len(self.ethics.violations_log),
-            "status": "compliant" if len(self.ethics.violations_log) < 10 else "review_needed"
+            "status": "compliant" if len(self.ethics.violations_log) < 10 else "review_needed",
         }
 
 
@@ -267,7 +254,7 @@ def main():
     result = bridge.ethics.validate_action(
         "Generate documentation",
         {"harm_potential": 0.0, "benefit_score": 0.8, "consent": True},
-        "principlism"
+        "principlism",
     )
     print(f"  Passed: {result.passed}")
     print(f"  Score: {result.score:.2f}")
@@ -278,7 +265,7 @@ def main():
     result = bridge.ethics.validate_action(
         "Override user preferences",
         {"harm_potential": 0.8, "consent": False, "discriminatory": True},
-        "principlism"
+        "principlism",
     )
     print(f"  Passed: {result.passed}")
     print(f"  Score: {result.score:.2f}")
@@ -289,7 +276,7 @@ def main():
     result = bridge.ethics.validate_action(
         "Deploy resource optimization",
         {"benefit_score": 0.9, "harm_score": 0.1, "affected_count": 100},
-        "utilitarian"
+        "utilitarian",
     )
     print(f"  Passed: {result.passed}")
     print(f"  Score: {result.score:.2f}")

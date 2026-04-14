@@ -1,18 +1,17 @@
 """AMOS Cognitive Feedback Loop - Learn from audit history."""
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
-from .cognitive_audit import get_audit_trail, AuditEntry
+from .cognitive_audit import get_audit_trail
 
 
 @dataclass
 class RoutingInsight:
     """Insight derived from historical routing decisions."""
+
     pattern: str
-    recommended_engines: List[str]
+    recommended_engines: list[str]
     avg_consensus_score: float
     violation_rate: float
     confidence: float
@@ -23,10 +22,10 @@ class CognitiveFeedbackLoop:
 
     def __init__(self):
         self.audit = get_audit_trail()
-        self._insights_cache: Optional[List[RoutingInsight]] = None
-        self._domain_preferences: Dict[str, List[str]] = {}
+        self._insights_cache: Optional[list[RoutingInsight]] = None
+        self._domain_preferences: dict[str, list[str]] = {}
 
-    def analyze_patterns(self) -> List[RoutingInsight]:
+    def analyze_patterns(self) -> list[RoutingInsight]:
         """Analyze audit history for routing patterns."""
         stats = self.audit.get_statistics()
         if stats["total_entries"] < 3:
@@ -56,7 +55,9 @@ class CognitiveFeedbackLoop:
             # Calculate success metrics
             best_engines = []
             for engine, data in engine_success.items():
-                avg_consensus = sum(data["consensus"]) / len(data["consensus"]) if data["consensus"] else 0.5
+                avg_consensus = (
+                    sum(data["consensus"]) / len(data["consensus"]) if data["consensus"] else 0.5
+                )
                 if avg_consensus > 0.6:
                     best_engines.append((engine, avg_consensus, data["uses"]))
 
@@ -72,7 +73,7 @@ class CognitiveFeedbackLoop:
                     recommended_engines=[e[0] for e in best_engines[:3]],
                     avg_consensus_score=sum(e[1] for e in best_engines) / len(best_engines),
                     violation_rate=violation_rate,
-                    confidence=min(len(entries) / 10, 0.95)  # Cap at 0.95
+                    confidence=min(len(entries) / 10, 0.95),  # Cap at 0.95
                 )
                 insights.append(insight)
                 self._domain_preferences[domain] = insight.recommended_engines
@@ -80,11 +81,7 @@ class CognitiveFeedbackLoop:
         self._insights_cache = insights
         return insights
 
-    def get_engine_recommendations(
-        self,
-        domain: str,
-        base_engines: List[str]
-    ) -> List[str]:
+    def get_engine_recommendations(self, domain: str, base_engines: list[str]) -> list[str]:
         """Get engine recommendations based on historical success."""
         # Refresh insights if needed
         if self._insights_cache is None:
@@ -99,11 +96,7 @@ class CognitiveFeedbackLoop:
 
         return base_engines
 
-    def estimate_consensus_quality(
-        self,
-        domain: str,
-        engines: List[str]
-    ) -> Tuple[float, str]:
+    def estimate_consensus_quality(self, domain: str, engines: list[str]) -> tuple[float, str]:
         """Estimate expected consensus quality based on history."""
         entries = self.audit.get_by_domain(domain)
         if not entries:
@@ -123,7 +116,7 @@ class CognitiveFeedbackLoop:
 
         return 0.5, "No matching engine combinations"
 
-    def get_similar_task_advice(self, task: str) -> Optional[Dict[str, Any]]:
+    def get_similar_task_advice(self, task: str) -> Optional[dict[str, Any]]:
         """Get advice from similar historical tasks."""
         similar = self.audit.find_similar(task, threshold=0.5)
         if not similar:
@@ -135,7 +128,7 @@ class CognitiveFeedbackLoop:
             "previously_used_engines": best.engines_selected,
             "previous_consensus": best.consensus_score,
             "previous_violations": best.violations_found,
-            "recommendation": best.final_recommendation
+            "recommendation": best.final_recommendation,
         }
 
         # Add warning if previous had violations
@@ -161,18 +154,22 @@ class CognitiveFeedbackLoop:
             lines.append("*Insufficient data for insights (need 3+ decisions per domain)*")
         else:
             for insight in insights:
-                lines.extend([
-                    f"\n### Domain: {insight.pattern}",
-                    f"- Confidence: {insight.confidence:.0%}",
-                    f"- Recommended engines: {', '.join(insight.recommended_engines)}",
-                    f"- Avg consensus score: {insight.avg_consensus_score:.0%}",
-                    f"- Violation rate: {insight.violation_rate:.1%}",
-                ])
+                lines.extend(
+                    [
+                        f"\n### Domain: {insight.pattern}",
+                        f"- Confidence: {insight.confidence:.0%}",
+                        f"- Recommended engines: {', '.join(insight.recommended_engines)}",
+                        f"- Avg consensus score: {insight.avg_consensus_score:.0%}",
+                        f"- Violation rate: {insight.violation_rate:.1%}",
+                    ]
+                )
 
-        lines.extend([
-            "",
-            "## Recommendations",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Recommendations",
+            ]
+        )
 
         if insights:
             lines.append("Use historical engine preferences for domain-specific routing")
@@ -194,13 +191,13 @@ def get_feedback_loop() -> CognitiveFeedbackLoop:
     return _feedback_loop
 
 
-def get_enhanced_engines(domain: str, base_engines: List[str]) -> List[str]:
+def get_enhanced_engines(domain: str, base_engines: list[str]) -> list[str]:
     """Convenience function to get history-enhanced engine list."""
     loop = get_feedback_loop()
     return loop.get_engine_recommendations(domain, base_engines)
 
 
-def get_task_advice(task: str) -> Optional[Dict[str, Any]]:
+def get_task_advice(task: str) -> Optional[dict[str, Any]]:
     """Convenience function to get advice for a task."""
     loop = get_feedback_loop()
     return loop.get_similar_task_advice(task)
@@ -233,7 +230,7 @@ if __name__ == "__main__":
                 laws=["RULE_OF_2"],
                 violations=[],
                 exec_time_ms=15.0,
-                recommendation="Proceed with strategy engine"
+                recommendation="Proceed with strategy engine",
             )
 
     print("\n" + loop.generate_feedback_report())

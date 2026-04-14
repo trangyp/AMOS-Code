@@ -1,5 +1,4 @@
-"""
-INTERFACES module — Alias for 14_INTERFACES
+"""INTERFACES module — Alias for 14_INTERFACES
 """
 
 import sys
@@ -12,8 +11,9 @@ if str(interfaces_path) not in sys.path:
 
 # Import and re-export
 try:
-    from cli import AmosCLI, CommandHandler
     from api_server import APIServer
+    from cli import AmosCLI, CommandHandler
+
     __all__ = ["AmosCLI", "CommandHandler", "APIServer"]
 except ImportError:
     __all__ = []

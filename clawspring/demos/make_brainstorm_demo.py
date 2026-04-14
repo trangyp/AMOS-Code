@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
-"""
-Generate animated GIF demo of clawspring /brainstorm command using PIL.
+"""Generate animated GIF demo of clawspring /brainstorm command using PIL.
 Simulates the full brainstorm session: agent count prompt → persona generation
 → multi-agent debate → synthesis.
 """
-from PIL import Image, ImageDraw, ImageFont
 import os
 
+from PIL import Image, ImageDraw, ImageFont
+
 # ── Catppuccin Mocha palette ─────────────────────────────────────────────
-BG      = (30,  30,  46)
-SURFACE = (49,  50,  68)
-TEXT    = (205, 214, 244)
+BG = (30, 30, 46)
+SURFACE = (49, 50, 68)
+TEXT = (205, 214, 244)
 SUBTEXT = (108, 112, 134)
-CYAN    = (137, 220, 235)
-GREEN   = (166, 227, 161)
-YELLOW  = (249, 226, 175)
-RED     = (243, 139, 168)
-MAUVE   = (203, 166, 247)
-BLUE    = (137, 180, 250)
-PEACH   = (250, 179, 135)
+CYAN = (137, 220, 235)
+GREEN = (166, 227, 161)
+YELLOW = (249, 226, 175)
+RED = (243, 139, 168)
+MAUVE = (203, 166, 247)
+BLUE = (137, 180, 250)
+PEACH = (250, 179, 135)
 
 W, H = 960, 720
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 FONT_SIZE = 14
-LINE_H    = 20
-PAD_X     = 18
-PAD_Y     = 16
+LINE_H = 20
+PAD_X = 18
+PAD_Y = 16
 
 
 def make_font(size=FONT_SIZE, bold=False):
@@ -37,7 +37,7 @@ def make_font(size=FONT_SIZE, bold=False):
         return ImageFont.load_default()
 
 
-FONT   = make_font()
+FONT = make_font()
 FONT_B = make_font(bold=True)
 
 
@@ -60,8 +60,8 @@ def blank_frame():
 
 def draw_frame(lines_segments):
     img = blank_frame()
-    d   = ImageDraw.Draw(img)
-    y   = PAD_Y
+    d = ImageDraw.Draw(img)
+    y = PAD_Y
     for item in lines_segments:
         if item is None:
             y += LINE_H
@@ -145,6 +145,7 @@ def tool_ok(msg):
 
 # ── Scene builder ─────────────────────────────────────────────────────────
 
+
 def build_scenes():
     scenes = []
 
@@ -152,7 +153,7 @@ def build_scenes():
         scenes.append((lines, ms))
 
     TOPIC = "medical research funding"
-    FILE  = "brainstorm_outputs/brainstorm_20260406_103045.md"
+    FILE = "brainstorm_outputs/brainstorm_20260406_103045.md"
 
     # ── 0: Banner + empty prompt ─────────────────────────────────────────
     add(BANNER + [prompt_line(cursor=True)], 1000)
@@ -165,36 +166,54 @@ def build_scenes():
 
     # ── 2: Agent count prompt ─────────────────────────────────────────────
     base0 = BANNER + [prompt_line(cmd)]
-    add(base0 + [
-        [seg("  How many agents? ", SUBTEXT),
-         seg("(2-100, default 5)", SUBTEXT),
-         seg(" > ", CYAN, True)],
-    ], 700)
+    add(
+        base0
+        + [
+            [
+                seg("  How many agents? ", SUBTEXT),
+                seg("(2-100, default 5)", SUBTEXT),
+                seg(" > ", CYAN, True),
+            ],
+        ],
+        700,
+    )
 
     # User types "3"
-    add(base0 + [
-        [seg("  How many agents? ", SUBTEXT),
-         seg("(2-100, default 5)", SUBTEXT),
-         seg(" > ", CYAN, True),
-         seg("3", TEXT)],
-    ], 600)
+    add(
+        base0
+        + [
+            [
+                seg("  How many agents? ", SUBTEXT),
+                seg("(2-100, default 5)", SUBTEXT),
+                seg(" > ", CYAN, True),
+                seg("3", TEXT),
+            ],
+        ],
+        600,
+    )
 
     # ── 3: Generating personas ────────────────────────────────────────────
     base1 = base0 + [
-        [seg("  How many agents? ", SUBTEXT),
-         seg("(2-100, default 5)", SUBTEXT),
-         seg(" > ", CYAN, True),
-         seg("3", TEXT)],
+        [
+            seg("  How many agents? ", SUBTEXT),
+            seg("(2-100, default 5)", SUBTEXT),
+            seg(" > ", CYAN, True),
+            seg("3", TEXT),
+        ],
     ]
     add(base1 + [info_line("Generating 3 topic-appropriate expert personas...")], 900)
 
     # ── 4: Session starts ─────────────────────────────────────────────────
-    add(base1 + [
-        info_line("Generating 3 topic-appropriate expert personas..."),
-        ok_line(f"Starting 3-Agent Brainstorming Session on: {TOPIC}"),
-        info_line("Generating diverse perspectives..."),
-        None,
-    ], 700)
+    add(
+        base1
+        + [
+            info_line("Generating 3 topic-appropriate expert personas..."),
+            ok_line(f"Starting 3-Agent Brainstorming Session on: {TOPIC}"),
+            info_line("Generating diverse perspectives..."),
+            None,
+        ],
+        700,
+    )
 
     base2 = base1 + [
         info_line("Generating 3 topic-appropriate expert personas..."),
@@ -208,49 +227,84 @@ def build_scenes():
     add(base2 + [agent_thinking("🩺", "Clinical Trials Director"), agent_done()], 600)
 
     # ── 6: Agent 2 thinking → done ───────────────────────────────────────
-    add(base2 + [
-        agent_thinking("🩺", "Clinical Trials Director"), agent_done(),
-        agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
-    ], 1200)
-    add(base2 + [
-        agent_thinking("🩺", "Clinical Trials Director"), agent_done(),
-        agent_thinking("⚖️ ", "Medical Ethics Committee Member"), agent_done(),
-    ], 600)
+    add(
+        base2
+        + [
+            agent_thinking("🩺", "Clinical Trials Director"),
+            agent_done(),
+            agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
+        ],
+        1200,
+    )
+    add(
+        base2
+        + [
+            agent_thinking("🩺", "Clinical Trials Director"),
+            agent_done(),
+            agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
+            agent_done(),
+        ],
+        600,
+    )
 
     # ── 7: Agent 3 thinking → done ───────────────────────────────────────
-    add(base2 + [
-        agent_thinking("🩺", "Clinical Trials Director"), agent_done(),
-        agent_thinking("⚖️ ", "Medical Ethics Committee Member"), agent_done(),
-        agent_thinking("💰", "Health Economics Policy Analyst"),
-    ], 1200)
-    add(base2 + [
-        agent_thinking("🩺", "Clinical Trials Director"), agent_done(),
-        agent_thinking("⚖️ ", "Medical Ethics Committee Member"), agent_done(),
-        agent_thinking("💰", "Health Economics Policy Analyst"), agent_done(),
-    ], 700)
+    add(
+        base2
+        + [
+            agent_thinking("🩺", "Clinical Trials Director"),
+            agent_done(),
+            agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
+            agent_done(),
+            agent_thinking("💰", "Health Economics Policy Analyst"),
+        ],
+        1200,
+    )
+    add(
+        base2
+        + [
+            agent_thinking("🩺", "Clinical Trials Director"),
+            agent_done(),
+            agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
+            agent_done(),
+            agent_thinking("💰", "Health Economics Policy Analyst"),
+            agent_done(),
+        ],
+        700,
+    )
 
     base3 = base2 + [
-        agent_thinking("🩺", "Clinical Trials Director"), agent_done(),
-        agent_thinking("⚖️ ", "Medical Ethics Committee Member"), agent_done(),
-        agent_thinking("💰", "Health Economics Policy Analyst"), agent_done(),
+        agent_thinking("🩺", "Clinical Trials Director"),
+        agent_done(),
+        agent_thinking("⚖️ ", "Medical Ethics Committee Member"),
+        agent_done(),
+        agent_thinking("💰", "Health Economics Policy Analyst"),
+        agent_done(),
     ]
 
     # ── 8: Brainstorming complete ─────────────────────────────────────────
-    add(base3 + [
-        None,
-        ok_line(f"Brainstorming complete! Results saved to {FILE}"),
-        info_line("Injecting debate results into current session for final analysis..."),
-    ], 900)
+    add(
+        base3
+        + [
+            None,
+            ok_line(f"Brainstorming complete! Results saved to {FILE}"),
+            info_line("Injecting debate results into current session for final analysis..."),
+        ],
+        900,
+    )
 
     # ── 9: Analysis from Main Agent header ───────────────────────────────
-    add(base3 + [
-        None,
-        ok_line(f"Brainstorming complete! Results saved to {FILE}"),
-        info_line("Injecting debate results into current session for final analysis..."),
-        None,
-        [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
-        None,
-    ], 600)
+    add(
+        base3
+        + [
+            None,
+            ok_line(f"Brainstorming complete! Results saved to {FILE}"),
+            info_line("Injecting debate results into current session for final analysis..."),
+            None,
+            [seg("  ── Analysis from Main Agent ──", SUBTEXT)],
+            None,
+        ],
+        600,
+    )
 
     base4 = base3 + [
         None,
@@ -262,8 +316,11 @@ def build_scenes():
 
     # ── 10: Claude box + Read tool ────────────────────────────────────────
     add(base4 + [claude_header(), tool_line("⚙", "Read", FILE)], 500)
-    add(base4 + [claude_header(), tool_line("⚙", "Read", FILE),
-                 tool_ok("→ 241 lines (21403 chars)")], 700)
+    add(
+        base4
+        + [claude_header(), tool_line("⚙", "Read", FILE), tool_ok("→ 241 lines (21403 chars)")],
+        700,
+    )
 
     # ── 11: Stream synthesis response ────────────────────────────────────
     synthesis = [
@@ -294,31 +351,61 @@ def build_scenes():
         streamed.append(text_line(line, 2))
         add(base4 + [claude_header()] + tool_sec + streamed, 70 if line else 30)
 
-    add(base4 + [claude_header()] + tool_sec +
-        [text_line(l, 2) for l in synthesis] + [claude_sep()], 1000)
+    add(
+        base4
+        + [claude_header()]
+        + tool_sec
+        + [text_line(l, 2) for l in synthesis]
+        + [claude_sep()],
+        1000,
+    )
 
     # ── 12: Synthesis saved ───────────────────────────────────────────────
-    add(base4 + [claude_header()] + tool_sec +
-        [text_line(l, 2) for l in synthesis] + [claude_sep()] +
-        [None, ok_line(f"Synthesis appended to {FILE}")], 1200)
+    add(
+        base4
+        + [claude_header()]
+        + tool_sec
+        + [text_line(l, 2) for l in synthesis]
+        + [claude_sep()]
+        + [None, ok_line(f"Synthesis appended to {FILE}")],
+        1200,
+    )
 
     # ── 13: New prompt ────────────────────────────────────────────────────
-    add(base4 + [claude_header()] + tool_sec +
-        [text_line(l, 2) for l in synthesis] + [claude_sep()] +
-        [None, ok_line(f"Synthesis appended to {FILE}"),
-         None, prompt_line(cursor=True)], 2500)
+    add(
+        base4
+        + [claude_header()]
+        + tool_sec
+        + [text_line(l, 2) for l in synthesis]
+        + [claude_sep()]
+        + [None, ok_line(f"Synthesis appended to {FILE}"), None, prompt_line(cursor=True)],
+        2500,
+    )
 
     return scenes
 
 
 # ── Palette + render ──────────────────────────────────────────────────────
 
+
 def _build_palette():
     theme = [
-        BG, SURFACE, TEXT, SUBTEXT,
-        CYAN, GREEN, YELLOW, RED, MAUVE, BLUE, PEACH,
-        (255, 255, 255), (0, 0, 0),
-        (50, 55, 80), (90, 95, 120), (160, 166, 200),
+        BG,
+        SURFACE,
+        TEXT,
+        SUBTEXT,
+        CYAN,
+        GREEN,
+        YELLOW,
+        RED,
+        MAUVE,
+        BLUE,
+        PEACH,
+        (255, 255, 255),
+        (0, 0, 0),
+        (50, 55, 80),
+        (90, 95, 120),
+        (160, 166, 200),
     ]
     flat = []
     for c in theme:
@@ -361,7 +448,8 @@ def render_gif(output_path):
 
 
 if __name__ == "__main__":
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                       "..", "docs", "brainstorm_demo.gif")
+    out = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "docs", "brainstorm_demo.gif"
+    )
     render_gif(out)
     print(f"\nGIF saved: {out}")

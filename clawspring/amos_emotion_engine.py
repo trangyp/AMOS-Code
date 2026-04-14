@@ -1,7 +1,7 @@
 """AMOS Emotion Engine - Affective, somatic, and motivational analysis."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -41,11 +41,13 @@ class AffectiveKernel:
         for category, terms in affective_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "affective_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "affective_primitives": self._get_primitives(category),
+                    }
+                )
 
         return EmotionAnalysis(
             domain="affective",
@@ -104,11 +106,13 @@ class SomaticKernel:
         for category, terms in somatic_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "somatic_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "somatic_primitives": self._get_primitives(category),
+                    }
+                )
 
         # Add safety warnings for somatic content
         warnings = []
@@ -119,7 +123,9 @@ class SomaticKernel:
         return EmotionAnalysis(
             domain="somatic",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.65 if findings else 0.25,
             limitations=[
                 "No physiological monitoring",
@@ -165,11 +171,13 @@ class MotivationKernel:
         for category, terms in motivation_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "motivation_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "motivation_primitives": self._get_primitives(category),
+                    }
+                )
 
         return EmotionAnalysis(
             domain="motivation",
@@ -219,11 +227,13 @@ class EmpathyKernel:
         for category, terms in empathy_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "empathy_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "empathy_primitives": self._get_primitives(category),
+                    }
+                )
 
         return EmotionAnalysis(
             domain="empathy",
@@ -311,23 +321,27 @@ class AMOSEmotionEngine:
         for notice in self.SAFETY_NOTICE:
             lines.append(f"⚠️ {notice}")
 
-        lines.extend([
-            "=" * 50,
-            "",
-            f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
-            "",
-            "## Findings by Domain",
-            "",
-        ])
+        lines.extend(
+            [
+                "=" * 50,
+                "",
+                f"Domains analyzed: {len(results)}",
+                f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+                "",
+                "## Findings by Domain",
+                "",
+            ]
+        )
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper()}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper()}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 if finding.get("type") == "safety_warnings":
@@ -336,16 +350,23 @@ class AMOSEmotionEngine:
                 else:
                     cat = finding.get("category", "general")
                     lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                    primitives = finding.get("affective_primitives") or finding.get("somatic_primitives") or finding.get("motivation_primitives") or finding.get("empathy_primitives")
+                    primitives = (
+                        finding.get("affective_primitives")
+                        or finding.get("somatic_primitives")
+                        or finding.get("motivation_primitives")
+                        or finding.get("empathy_primitives")
+                    )
                     if primitives:
                         lines.append(f"  Primitives: {', '.join(primitives[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -353,25 +374,29 @@ class AMOSEmotionEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Emotion analysis is LEXICAL PATTERN MATCHING ONLY.",
-            "NO REAL EMOTION RECOGNITION. NO PHYSIOLOGICAL DATA. NO SUBJECTIVE ACCESS.",
-            "This is simulation of emotion-related patterns, not emotional intelligence.",
-            "Human emotional expertise required for all affective judgments.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Emotion analysis is LEXICAL PATTERN MATCHING ONLY.",
+                "NO REAL EMOTION RECOGNITION. NO PHYSIOLOGICAL DATA. NO SUBJECTIVE ACCESS.",
+                "This is simulation of emotion-related patterns, not emotional intelligence.",
+                "Human emotional expertise required for all affective judgments.",
+            ]
+        )
 
         return "\n".join(lines)
 

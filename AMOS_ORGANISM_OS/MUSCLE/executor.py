@@ -7,10 +7,10 @@ if str(muscle_path) not in sys.path:
     sys.path.insert(0, str(muscle_path))
 
 from executor import (
-    MuscleExecutor,
-    ExecutionResult,
     ExecutionContext,
+    ExecutionResult,
     ExecutionStatus,
+    MuscleExecutor,
 )
 
 __all__ = ["MuscleExecutor", "ExecutionResult", "ExecutionContext", "ExecutionStatus"]

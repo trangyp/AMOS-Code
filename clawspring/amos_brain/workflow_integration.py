@@ -7,20 +7,19 @@ seamless migration and backward compatibility.
 """
 
 import sys
-import json
-from typing import Dict, List, Any, Optional, Callable
-from pathlib import Path
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Any, Callable, Optional
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 class WorkflowStatus(Enum):
     """Workflow execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -31,14 +30,15 @@ class WorkflowStatus(Enum):
 @dataclass
 class WorkflowStep:
     """Single workflow step definition."""
+
     id: str
     name: str
     module: str  # Which v2.8 module handles this
     action: str  # What action to perform
-    params: Dict[str, Any]
-    depends_on: List[str]
+    params: dict[str, Any]
+    depends_on: list[str]
     status: WorkflowStatus = WorkflowStatus.PENDING
-    result: Optional[Dict] = None
+    result: Optional[dict] = None
     error: Optional[str] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
@@ -47,10 +47,11 @@ class WorkflowStep:
 @dataclass
 class WorkflowDefinition:
     """Complete workflow definition."""
+
     id: str
     name: str
     description: str
-    steps: List[WorkflowStep]
+    steps: list[WorkflowStep]
     created_at: datetime
     version: str = "2.8"
 
@@ -59,8 +60,8 @@ class WorkflowEngine:
     """Execute workflows using v2.8 ecosystem modules."""
 
     def __init__(self):
-        self.active_workflows: Dict[str, WorkflowDefinition] = {}
-        self.step_handlers: Dict[str, Callable] = {}
+        self.active_workflows: dict[str, WorkflowDefinition] = {}
+        self.step_handlers: dict[str, Callable] = {}
         self._register_handlers()
 
     def _register_handlers(self) -> None:
@@ -77,10 +78,7 @@ class WorkflowEngine:
         }
 
     def create_workflow(
-        self,
-        name: str,
-        description: str,
-        steps_config: List[Dict]
+        self, name: str, description: str, steps_config: list[dict]
     ) -> WorkflowDefinition:
         """Create a new workflow definition."""
         steps = []
@@ -91,7 +89,7 @@ class WorkflowEngine:
                 module=config.get("module", "cognitive_router"),
                 action=config.get("action", "execute"),
                 params=config.get("params", {}),
-                depends_on=config.get("depends_on", [])
+                depends_on=config.get("depends_on", []),
             )
             steps.append(step)
 
@@ -100,13 +98,13 @@ class WorkflowEngine:
             name=name,
             description=description,
             steps=steps,
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
 
         self.active_workflows[workflow.id] = workflow
         return workflow
 
-    def execute_workflow(self, workflow_id: str) -> Dict[str, Any]:
+    def execute_workflow(self, workflow_id: str) -> dict[str, Any]:
         """Execute a workflow."""
         if workflow_id not in self.active_workflows:
             return {"error": "Workflow not found"}
@@ -119,7 +117,7 @@ class WorkflowEngine:
             "status": "running",
             "steps_completed": 0,
             "steps_total": len(workflow.steps),
-            "step_results": {}
+            "step_results": {},
         }
 
         # Execute steps in dependency order
@@ -134,9 +132,7 @@ class WorkflowEngine:
                     continue
 
                 # Check dependencies
-                deps_satisfied = all(
-                    d in completed_steps for d in step.depends_on
-                )
+                deps_satisfied = all(d in completed_steps for d in step.depends_on)
                 if not deps_satisfied:
                     continue
 
@@ -169,13 +165,16 @@ class WorkflowEngine:
                 results["step_results"][step.id] = {
                     "status": step.status.value,
                     "result": step.result,
-                    "error": step.error
+                    "error": step.error,
                 }
 
             if not progress and len(completed_steps) + len(failed_steps) < len(workflow.steps):
                 # Deadlock - remaining steps have unsatisfied dependencies
-                remaining = [s.id for s in workflow.steps
-                            if s.id not in completed_steps and s.id not in failed_steps]
+                remaining = [
+                    s.id
+                    for s in workflow.steps
+                    if s.id not in completed_steps and s.id not in failed_steps
+                ]
                 print(f"  ⚠ Deadlock detected: {remaining}")
                 break
 
@@ -191,94 +190,87 @@ class WorkflowEngine:
 
     # Step Handlers
 
-    def _handle_cognitive_route(self, action: str, params: Dict) -> Dict:
+    def _handle_cognitive_route(self, action: str, params: dict) -> dict:
         """Handle cognitive routing step."""
         from amos_cognitive_router import CognitiveRouter
+
         router = CognitiveRouter()
         result = router.analyze(params.get("task", ""))
         return {
             "domain": result.primary_domain,
             "risk": result.risk_level,
-            "engines": result.suggested_engines
+            "engines": result.suggested_engines,
         }
 
-    def _handle_ethics_check(self, action: str, params: Dict) -> Dict:
+    def _handle_ethics_check(self, action: str, params: dict) -> dict:
         """Handle ethics validation step."""
         from ethics_integration import EthicsValidator
+
         ethics = EthicsValidator()
         result = ethics.validate_action(
             params.get("action", ""),
             params.get("context", {}),
-            params.get("framework", "principlism")
+            params.get("framework", "principlism"),
         )
-        return {
-            "passed": result.passed,
-            "score": result.score,
-            "violations": result.violations
-        }
+        return {"passed": result.passed, "score": result.score, "violations": result.violations}
 
-    def _handle_orchestration(self, action: str, params: Dict) -> Dict:
+    def _handle_orchestration(self, action: str, params: dict) -> dict:
         """Handle master orchestration step."""
         from master_orchestrator import MasterOrchestrator
+
         orch = MasterOrchestrator()
         result = orch.orchestrate_cognitive_task(
             params.get("task_id", "workflow_task"),
             params.get("task", ""),
-            params.get("priority", "MEDIUM")
+            params.get("priority", "MEDIUM"),
         )
         return {
             "success": result.success,
             "predicted_duration": result.predicted_duration_mins,
-            "confidence": result.confidence
+            "confidence": result.confidence,
         }
 
-    def _handle_organism_task(self, action: str, params: Dict) -> Dict:
+    def _handle_organism_task(self, action: str, params: dict) -> dict:
         """Handle organism bridge task."""
         from organism_bridge import get_organism_bridge
+
         bridge = get_organism_bridge()
         return bridge.get_status()
 
-    def _handle_validation(self, action: str, params: Dict) -> Dict:
+    def _handle_validation(self, action: str, params: dict) -> dict:
         """Handle system validation step."""
         from system_validator import validate_system
-        success, summary = validate_system()
-        return {
-            "passed": summary['passed'],
-            "total": summary['total'],
-            "success": success
-        }
 
-    def _handle_telemetry(self, action: str, params: Dict) -> Dict:
+        success, summary = validate_system()
+        return {"passed": summary["passed"], "total": summary["total"], "success": success}
+
+    def _handle_telemetry(self, action: str, params: dict) -> dict:
         """Handle telemetry recording."""
         from telemetry import get_telemetry
+
         telemetry = get_telemetry()
         telemetry.metrics.increment_counter(
-            params.get("metric", "workflow_step"),
-            params.get("value", 1)
+            params.get("metric", "workflow_step"), params.get("value", 1)
         )
         return {"recorded": True}
 
-    def _handle_resilient_operation(self, action: str, params: Dict) -> Dict:
+    def _handle_resilient_operation(self, action: str, params: dict) -> dict:
         """Handle resilient operation."""
         from resilience import get_resilience
-        resilience = get_resilience()
-        return {
-            "status": "configured",
-            "resilience": "active"
-        }
 
-    def _handle_unified_task(self, action: str, params: Dict) -> Dict:
+        resilience = get_resilience()
+        return {"status": "configured", "resilience": "active"}
+
+    def _handle_unified_task(self, action: str, params: dict) -> dict:
         """Handle unified cognitive-organism task."""
         from deep_integration import get_deep_integration
+
         integration = get_deep_integration()
-        result = integration.execute_unified_task(
-            params.get("task", ""),
-            params.get("context", {})
-        )
+        result = integration.execute_unified_task(params.get("task", ""), params.get("context", {}))
         return {
             "success": result.get("success", False),
             "confidence": result.get("confidence", 0),
-            "coherence": result.get("state", {}).get("coherence_score", 0)
+            "coherence": result.get("state", {}).get("coherence_score", 0),
         }
 
 
@@ -286,7 +278,7 @@ class WorkflowMigrationTool:
     """Migrate existing workflows to v2.8 format."""
 
     @staticmethod
-    def migrate_legacy_workflow(legacy_config: Dict) -> WorkflowDefinition:
+    def migrate_legacy_workflow(legacy_config: dict) -> WorkflowDefinition:
         """Convert legacy workflow to v2.8 format."""
         engine = WorkflowEngine()
 
@@ -301,18 +293,20 @@ class WorkflowMigrationTool:
                 "validate": "system_validator",
             }
 
-            steps.append({
-                "name": step.get("name", f"Step {i}"),
-                "module": module_map.get(step.get("type"), "cognitive_router"),
-                "action": step.get("action", "execute"),
-                "params": step.get("params", {}),
-                "depends_on": step.get("depends_on", [])
-            })
+            steps.append(
+                {
+                    "name": step.get("name", f"Step {i}"),
+                    "module": module_map.get(step.get("type"), "cognitive_router"),
+                    "action": step.get("action", "execute"),
+                    "params": step.get("params", {}),
+                    "depends_on": step.get("depends_on", []),
+                }
+            )
 
         return engine.create_workflow(
             name=legacy_config.get("name", "Migrated Workflow"),
             description=legacy_config.get("description", "Migrated from legacy format"),
-            steps_config=steps
+            steps_config=steps,
         )
 
 
@@ -334,7 +328,7 @@ def main():
                 "module": "cognitive_router",
                 "action": "analyze",
                 "params": {"task": "Design secure authentication API"},
-                "depends_on": []
+                "depends_on": [],
             },
             {
                 "name": "Ethics Check",
@@ -343,9 +337,9 @@ def main():
                 "params": {
                     "action": "Build authentication system",
                     "context": {"consent": True, "harm_potential": 0.1},
-                    "framework": "principlism"
+                    "framework": "principlism",
                 },
-                "depends_on": ["step_0"]
+                "depends_on": ["step_0"],
             },
             {
                 "name": "Orchestrate Development",
@@ -354,18 +348,18 @@ def main():
                 "params": {
                     "task_id": "auth_api",
                     "task": "Implement secure API",
-                    "priority": "HIGH"
+                    "priority": "HIGH",
                 },
-                "depends_on": ["step_1"]
+                "depends_on": ["step_1"],
             },
             {
                 "name": "System Validation",
                 "module": "system_validator",
                 "action": "validate",
                 "params": {},
-                "depends_on": ["step_2"]
-            }
-        ]
+                "depends_on": ["step_2"],
+            },
+        ],
     )
 
     print(f"\nCreated Workflow: {workflow.name}")
@@ -379,9 +373,9 @@ def main():
     print(f"\nWorkflow Status: {result['status'].upper()}")
     print(f"Steps Completed: {result['steps_completed']}/{result['steps_total']}")
 
-    if result['status'] == 'completed':
+    if result["status"] == "completed":
         print("\n✅ Workflow completed successfully!")
-    elif result['status'] == 'partial':
+    elif result["status"] == "partial":
         print("\n⚠️ Workflow completed with some failures")
     else:
         print("\n❌ Workflow failed")

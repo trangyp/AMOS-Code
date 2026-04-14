@@ -1,5 +1,4 @@
-"""
-Superposition Manager — Multiple potential state management
+"""Superposition Manager — Multiple potential state management
 
 Manages superposition states where multiple possibilities
 exist simultaneously until collapse/decision.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class SuperpositionStatus(Enum):
     """Status of a superposition state."""
+
     ACTIVE = "active"
     COLLAPSING = "collapsing"
     COLLAPSED = "collapsed"
@@ -27,30 +27,32 @@ class SuperpositionStatus(Enum):
 @dataclass
 class PotentialState:
     """A single potential state within superposition."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
     probability: float = 0.5  # 0-1
-    attributes: Dict[str, Any] = field(default_factory=dict)
+    attributes: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class SuperpositionState:
     """A superposition containing multiple potential states."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     context: str = ""  # What is being decided/considered
-    potential_states: List[PotentialState] = field(default_factory=list)
+    potential_states: list[PotentialState] = field(default_factory=list)
     status: SuperpositionStatus = SuperpositionStatus.ACTIVE
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     collapsed_at: Optional[str] = None
     collapsed_to: Optional[str] = None  # ID of chosen state
     collapse_reason: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -59,8 +61,7 @@ class SuperpositionState:
 
 
 class SuperpositionManager:
-    """
-    Manages superposition states for ambiguous situations.
+    """Manages superposition states for ambiguous situations.
 
     Maintains multiple potential states until observation
     or decision causes collapse to a single outcome.
@@ -72,7 +73,7 @@ class SuperpositionManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.superpositions: List[SuperpositionState] = []
+        self.superpositions: list[SuperpositionState] = []
 
         self._load_data()
 
@@ -121,7 +122,7 @@ class SuperpositionManager:
     def create_superposition(
         self,
         context: str,
-        potential_states: List[PotentialState],
+        potential_states: list[PotentialState],
     ) -> SuperpositionState:
         """Create a new superposition state."""
         # Normalize probabilities
@@ -186,27 +187,22 @@ class SuperpositionManager:
 
         return self.collapse(sp_id, chosen.id, "probabilistic")
 
-    def get_active_superpositions(self) -> List[Dict[str, Any]]:
+    def get_active_superpositions(self) -> list[dict[str, Any]]:
         """Get all active (non-collapsed) superpositions."""
-        active = [
-            s for s in self.superpositions
-            if s.status == SuperpositionStatus.ACTIVE
-        ]
+        active = [s for s in self.superpositions if s.status == SuperpositionStatus.ACTIVE]
         return [s.to_dict() for s in active]
 
-    def get_collapse_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_collapse_history(self, limit: int = 10) -> list[dict[str, Any]]:
         """Get recent collapse events."""
-        collapsed = [
-            s for s in self.superpositions
-            if s.status == SuperpositionStatus.COLLAPSED
-        ]
+        collapsed = [s for s in self.superpositions if s.status == SuperpositionStatus.COLLAPSED]
         collapsed.sort(key=lambda x: x.collapsed_at or "", reverse=True)
         return [s.to_dict() for s in collapsed[:limit]]
 
-    def get_uncertainty_for_context(self, context: str) -> Dict[str, Any]:
+    def get_uncertainty_for_context(self, context: str) -> dict[str, Any]:
         """Get uncertainty metrics for a context."""
         relevant = [
-            s for s in self.superpositions
+            s
+            for s in self.superpositions
             if context in s.context and s.status == SuperpositionStatus.ACTIVE
         ]
 
@@ -218,6 +214,7 @@ class SuperpositionManager:
         for sp in relevant:
             # Shannon entropy
             import math
+
             entropy = 0
             for p in sp.potential_states:
                 if p.probability > 0:

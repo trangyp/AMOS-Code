@@ -1,5 +1,4 @@
-"""
-AMOS Runtime - Migrated to use standalone amos_brain package.
+"""AMOS Runtime - Migrated to use standalone amos_brain package.
 
 This module provides backward compatibility for clawspring while
 using the unified amos_brain package.
@@ -14,7 +13,6 @@ which provides:
 from __future__ import annotations
 
 import sys
-import os
 from pathlib import Path
 
 # Add parent dir to path for standalone amos_brain
@@ -23,16 +21,12 @@ if str(_parent_dir) not in sys.path:
     sys.path.insert(0, str(_parent_dir))
 
 # Import from standalone package
-from amos_brain import get_amos_integration, AMOSBrainIntegration
-from amos_brain.loader import BrainLoader
-from amos_brain.laws import GlobalLaws
-from amos_brain.reasoning import RuleOfTwo, RuleOfFour
+from amos_brain import AMOSBrainIntegration, get_amos_integration
 
 
 def get_runtime() -> AMOSBrainIntegration:
-    """
-    Get AMOS runtime - now returns the unified brain integration.
-    
+    """Get AMOS runtime - now returns the unified brain integration.
+
     Maintains backward compatibility with clawspring's API
     while using the standalone amos_brain package.
     """
@@ -40,21 +34,20 @@ def get_runtime() -> AMOSBrainIntegration:
 
 
 def analyze_task(task: str, context: dict | None = None) -> dict:
-    """
-    Analyze a task with AMOS brain - delegated to standalone package.
-    
+    """Analyze a task with AMOS brain - delegated to standalone package.
+
     Args:
         task: Task description to analyze
         context: Optional context dict
-        
+
     Returns:
         Analysis result with Rule of 2, Rule of 4, and recommendations
     """
     amos = get_amos_integration()
-    
+
     # Run analysis
     result = amos.analyze_with_rules(task)
-    
+
     # Enhance result with runtime-like structure for compatibility
     return {
         "task": task,
@@ -69,26 +62,25 @@ def analyze_task(task: str, context: dict | None = None) -> dict:
 
 # Backward compatibility class
 class AMOSRuntime:
-    """
-    Legacy AMOSRuntime wrapper - delegates to standalone package.
-    
+    """Legacy AMOSRuntime wrapper - delegates to standalone package.
+
     Maintains API compatibility with existing clawspring code.
     """
-    
+
     def __init__(self):
         self._amos = None
-        
+
     @property
     def amos(self) -> AMOSBrainIntegration:
         """Lazy-load AMOS brain integration."""
         if self._amos is None:
             self._amos = get_amos_integration()
         return self._amos
-    
+
     def bootstrap(self):
         """Initialize - now handled automatically by singleton."""
         return self
-    
+
     def get_identity(self) -> dict:
         """Get system identity."""
         return {
@@ -97,7 +89,7 @@ class AMOSRuntime:
             "primary_purpose": "Design, analyse, and improve systems using structurally precise, biologically grounded, ethically governed reasoning.",
             "creator": "Trang Phan",
         }
-    
+
     def get_law_summary(self) -> list[dict]:
         """Get global laws summary."""
         return [
@@ -108,7 +100,7 @@ class AMOSRuntime:
             {"id": "L5", "name": "Communication", "priority": 5},
             {"id": "L6", "name": "UBI Alignment", "priority": 6},
         ]
-    
+
     def execute_cognitive_task(self, task: str, context: dict | None = None) -> dict:
         """Execute task with AMOS brain."""
         return analyze_task(task, context)

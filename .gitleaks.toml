@@ -1,0 +1,53 @@
+# Gitleaks Configuration for AMOS
+# Reduces false positives from test data and example configs
+
+title = "AMOS Gitleaks Config"
+
+[extend]
+# Use default config as base
+useDefault = true
+
+[allowlist]
+# Paths to exclude from secret scanning
+paths = [
+    '''profiling_results''',
+    '''__pycache__''',
+    '''\.pyc$''',
+    '''\.pyo$''',
+    '''\.log$''',
+    '''\.json$''',
+    '''_AMOS_BRAIN/_Archive''',
+    '''tests/''',
+    '''test_.*\.py$''',
+    '''demo.*\.py$''',
+    '''\.venv''',
+    '''venv''',
+    '''\.git''',
+    '''\.cache''',
+    '''node_modules''',
+]
+
+# Regexes for test/mock data that look like secrets
+regexes = [
+    # Test API keys
+    '''test_key_[a-zA-Z0-9]+''',
+    '''example_key_[a-zA-Z0-9]+''',
+    '''fake_[a-zA-Z0-9]+''',
+    '''mock_[a-zA-Z0-9]+''',
+    # Local development configs
+    '''localhost''',
+    '''127\.0\.0\.1''',
+    # UUIDs in test data
+    '''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}''',
+]
+
+# Stopwords for common test patterns
+stopwords = [
+    "test",
+    "example",
+    "fake",
+    "mock",
+    "local",
+    "dev",
+    "placeholder",
+]

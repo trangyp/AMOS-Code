@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Alert Manager - IMMUNE Subsystem Integration
+"""AMOS Alert Manager - IMMUNE Subsystem Integration
 =================================================
 
 Integrates the alerting system into the IMMUNE subsystem for
@@ -10,22 +9,21 @@ Owner: Trang
 Version: 1.0.0
 """
 
-import sys
 import asyncio
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Optional
 
 # Add repo root to path to import amos_alerting
 REPO_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from amos_alerting import AMOSAlerting, AlertRule, AlertSeverity, WebhookChannel, SlackChannel
+from amos_alerting import AlertRule, AlertSeverity, AMOSAlerting, SlackChannel, WebhookChannel
 
 
 class AlertManager:
-    """
-    Alert manager for IMMUNE subsystem.
+    """Alert manager for IMMUNE subsystem.
     Connects anomaly detection to alerting system.
     """
 
@@ -46,7 +44,7 @@ class AlertManager:
                 threshold=80.0,
                 severity=AlertSeverity.WARNING,
                 duration_seconds=60,
-                description="Subsystem load exceeded 80%"
+                description="Subsystem load exceeded 80%",
             ),
             AlertRule(
                 name="critical_subsystem_load",
@@ -55,7 +53,7 @@ class AlertManager:
                 threshold=95.0,
                 severity=AlertSeverity.CRITICAL,
                 duration_seconds=30,
-                description="Critical: Subsystem load exceeded 95%"
+                description="Critical: Subsystem load exceeded 95%",
             ),
             AlertRule(
                 name="task_queue_backlog",
@@ -64,7 +62,7 @@ class AlertManager:
                 threshold=10.0,
                 severity=AlertSeverity.WARNING,
                 duration_seconds=300,
-                description="Task queue has more than 10 pending tasks"
+                description="Task queue has more than 10 pending tasks",
             ),
             AlertRule(
                 name="anomaly_detected",
@@ -73,7 +71,7 @@ class AlertManager:
                 threshold=0.0,
                 severity=AlertSeverity.WARNING,
                 duration_seconds=0,
-                description="Anomalies detected in system"
+                description="Anomalies detected in system",
             ),
         ]
 
@@ -85,7 +83,7 @@ class AlertManager:
         # Console channel (always available)
         self.alerting.add_channel("console", ConsoleChannel())
 
-    def evaluate_and_alert(self, metrics: Dict[str, float]) -> List[Dict[str, Any]]:
+    def evaluate_and_alert(self, metrics: dict[str, float]) -> list[dict[str, Any]]:
         """Evaluate metrics and send alerts if needed."""
         alerts = self.alerting.evaluate_rules(metrics)
 
@@ -108,7 +106,7 @@ class AlertManager:
             except Exception as e:
                 print(f"[ALERT] Failed to send to {name}: {e}")
 
-    def _alert_to_dict(self, alert) -> Dict[str, Any]:
+    def _alert_to_dict(self, alert) -> dict[str, Any]:
         """Convert alert to dictionary."""
         return {
             "id": alert.id,
@@ -121,11 +119,11 @@ class AlertManager:
             "timestamp": alert.timestamp.isoformat(),
         }
 
-    def get_active_alerts(self) -> List[Dict[str, Any]]:
+    def get_active_alerts(self) -> list[dict[str, Any]]:
         """Get all active alerts."""
         return [self._alert_to_dict(a) for a in self.alerting.active_alerts.values()]
 
-    def get_alert_history(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_alert_history(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get alert history."""
         history = self.alerting.alert_history[-limit:]
         return [self._alert_to_dict(a) for a in history]
@@ -140,7 +138,7 @@ class AlertManager:
                 return True
         return False
 
-    def add_webhook_channel(self, name: str, url: str, headers: Optional[Dict] = None):
+    def add_webhook_channel(self, name: str, url: str, headers: Optional[dict] = None):
         """Add a webhook notification channel."""
         self.alerting.add_channel(name, WebhookChannel(url, headers))
 
@@ -148,7 +146,7 @@ class AlertManager:
         """Add a Slack notification channel."""
         self.alerting.add_channel(name, SlackChannel(webhook_url, channel))
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get alert manager status."""
         return {
             "rules_configured": len(self.alerting.rules),
@@ -163,11 +161,9 @@ class ConsoleChannel:
 
     async def send(self, alert) -> bool:
         """Print alert to console."""
-        severity_icon = {
-            "info": "ℹ️",
-            "warning": "⚠️",
-            "critical": "🔴"
-        }.get(alert.severity.value, "ℹ️")
+        severity_icon = {"info": "ℹ️", "warning": "⚠️", "critical": "🔴"}.get(
+            alert.severity.value, "ℹ️"
+        )
 
         print(f"\n[ALERT] {severity_icon} {alert.severity.value.upper()}")
         print(f"  Rule: {alert.rule_name}")
@@ -188,7 +184,7 @@ def main():
 
     # Show status
     status = manager.get_status()
-    print(f"\nStatus:")
+    print("\nStatus:")
     print(f"  Rules: {status['rules_configured']}")
     print(f"  Channels: {status['channels_configured']}")
     print(f"  Active alerts: {status['active_alerts']}")
@@ -200,8 +196,8 @@ def main():
 
     test_metrics = {
         "subsystem_load": 85.0,  # Should trigger warning
-        "pending_tasks": 15.0,   # Should trigger warning
-        "anomaly_count": 2.0,    # Should trigger warning
+        "pending_tasks": 15.0,  # Should trigger warning
+        "anomaly_count": 2.0,  # Should trigger warning
     }
 
     alerts = manager.evaluate_and_alert(test_metrics)

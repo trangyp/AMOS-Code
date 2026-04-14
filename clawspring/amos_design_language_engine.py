@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
 
 class DesignDomain(Enum):
     """Design domain classifications."""
+
     UX = "ux"
     VISUAL = "visual"
     CONTENT = "content"
@@ -187,7 +188,7 @@ class LanguageClarityKernel:
     ) -> dict:
         """Analyze text clarity."""
         words = text.split()
-        sentences = text.split('.')
+        sentences = text.split(".")
 
         # Simple metrics
         avg_words_per_sentence = len(words) / max(len(sentences), 1)
@@ -397,10 +398,12 @@ class DesignLanguageEngine:
 
         for domain, data in results.items():
             display_name = domain_names.get(domain, domain.title())
-            lines.extend([
-                f"",
-                f"### {display_name}",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"### {display_name}",
+                ]
+            )
             if isinstance(data, dict):
                 for key, value in data.items():
                     if key not in ["principles", "query", "clarity_analysis"]:
@@ -408,40 +411,42 @@ class DesignLanguageEngine:
                     elif key == "clarity_analysis":
                         lines.append(f"- clarity: {value.get('clarity_score', 'unknown')}")
 
-        lines.extend([
-            "",
-            "## Safety & Compliance",
-            "",
-            "### Safety Constraints",
-            "- NO manipulative dark patterns",
-            "- NO deceptive design practices",
-            "- Respect user autonomy",
-            "- Cultural sensitivity required",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Miller's Law (7±2) applied",
-            "- L2 (Temporal): Progressive disclosure",
-            "- L3 (Semantic): Clear visual language",
-            "- L4 (Cognitive): Multi-modal presentation",
-            "- L5 (Safety): No manipulative patterns",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT a design tool. "
-            "All outputs are CONCEPTUAL guidelines only.",
-            "",
-            "Specific Gaps:",
-            "- No visual rendering or prototyping",
-            "- No actual WCAG automated testing",
-            "- No color palette generation",
-            "- No real user research data",
-            "- No design system implementation",
-            "- Pattern-based analysis only, not design software",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Compliance",
+                "",
+                "### Safety Constraints",
+                "- NO manipulative dark patterns",
+                "- NO deceptive design practices",
+                "- Respect user autonomy",
+                "- Cultural sensitivity required",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Miller's Law (7±2) applied",
+                "- L2 (Temporal): Progressive disclosure",
+                "- L3 (Semantic): Clear visual language",
+                "- L4 (Cognitive): Multi-modal presentation",
+                "- L5 (Safety): No manipulative patterns",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT a design tool. "
+                "All outputs are CONCEPTUAL guidelines only.",
+                "",
+                "Specific Gaps:",
+                "- No visual rendering or prototyping",
+                "- No actual WCAG automated testing",
+                "- No color palette generation",
+                "- No real user research data",
+                "- No design system implementation",
+                "- Pattern-based analysis only, not design software",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 

@@ -1,7 +1,7 @@
 """AMOS Society/Culture Engine - Social and cultural analysis."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -37,11 +37,13 @@ class InstitutionalKernel:
         for category, terms in institutional_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "institutional_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "institutional_primitives": self._get_primitives(category),
+                    }
+                )
 
         return SocietyAnalysis(
             domain="institutional",
@@ -95,11 +97,13 @@ class CulturalNormsKernel:
         for category, terms in cultural_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "cultural_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "cultural_primitives": self._get_primitives(category),
+                    }
+                )
 
         # Add safety flag if cultural content detected
         warnings = []
@@ -110,7 +114,9 @@ class CulturalNormsKernel:
         return SocietyAnalysis(
             domain="cultural_norms",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.65 if findings else 0.25,
             limitations=[
                 "No ethnographic fieldwork",
@@ -154,11 +160,13 @@ class DemographicKernel:
         for category, terms in demographic_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "demographic_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "demographic_primitives": self._get_primitives(category),
+                    }
+                )
 
         # Flag sensitive demographic topics
         warnings = []
@@ -170,7 +178,9 @@ class DemographicKernel:
         return SocietyAnalysis(
             domain="demographic",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.7 if findings else 0.3,
             limitations=[
                 "No census data access",
@@ -220,11 +230,13 @@ class MediaInformationKernel:
         for category, terms in media_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "media_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "media_primitives": self._get_primitives(category),
+                    }
+                )
 
         # Add safety warnings for sensitive media topics
         warnings = []
@@ -235,7 +247,9 @@ class MediaInformationKernel:
         return SocietyAnalysis(
             domain="media_information",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.7 if findings else 0.3,
             limitations=[
                 "No real-time media data",
@@ -317,12 +331,14 @@ class AMOSSocietyEngine:
         ]
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 if finding.get("type") == "safety_warnings":
@@ -331,16 +347,23 @@ class AMOSSocietyEngine:
                 else:
                     cat = finding.get("category", "general")
                     lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                    primitives = finding.get("institutional_primitives") or finding.get("cultural_primitives") or finding.get("demographic_primitives") or finding.get("media_primitives")
+                    primitives = (
+                        finding.get("institutional_primitives")
+                        or finding.get("cultural_primitives")
+                        or finding.get("demographic_primitives")
+                        or finding.get("media_primitives")
+                    )
                     if primitives:
                         lines.append(f"  Primitives: {', '.join(primitives[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -348,25 +371,29 @@ class AMOSSocietyEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Society/culture analysis is pattern matching on text, not social science research.",
-            "No fieldwork. No ethnography. No cultural immersion.",
-            "Avoid prescriptive judgments. Respect cultural diversity.",
-            "Human social expertise required for all conclusions.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Society/culture analysis is pattern matching on text, not social science research.",
+                "No fieldwork. No ethnography. No cultural immersion.",
+                "Avoid prescriptive judgments. Respect cultural diversity.",
+                "Human social expertise required for all conclusions.",
+            ]
+        )
 
         return "\n".join(lines)
 

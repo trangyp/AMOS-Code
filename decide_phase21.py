@@ -31,15 +31,17 @@ Current State (57+ components):
 
 Gap: Need to instantiate the maximal specification in executable form
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 21 - Maximal Specification Analysis")
 print("=" * 70)
 
-print("""
+print(
+    """
 FORMAL FOUNDATION STATUS:
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -72,19 +74,21 @@ MAXIMAL SPECIFICATION ACHIEVED.
 The only thing deeper is to choose one formal language and instantiate it.
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: Formal Verification Engine + Proof Assistant")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Instantiate Maximal Specification
 
    ANALYSIS:
    The maximal specification provides the complete formal universe.
    The 21-tuple defines the absolute structure.
    The 10 axioms provide the foundational laws.
-   
+
    Now we must build the formal verification engine that can:
    1. Check admissibility against all 10 axioms
    2. Verify programs satisfy the grand admissibility theorem
@@ -164,7 +168,8 @@ print("""
    - Full formal verification pipeline
 
    The system achieves absolute mathematical rigor.
-""")
+"""
+)
 
 print("\n✅ Decision: Build formal verification engine for maximal spec")
 print("=" * 70)

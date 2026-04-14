@@ -7,14 +7,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from amos_brain.local_runtime import create_local_runtime, AMOSLocalRuntime
+from amos_brain.local_runtime import AMOSLocalRuntime, create_local_runtime
 from amos_coherence_engine import (
     AMOSCoherenceEngine,
-    SignalDetectionEngine,
-    StateRegulationEngine,
-    InterventionSelectionEngine,
     CoherenceResult,
     HumanState,
+    InterventionSelectionEngine,
+    SignalDetectionEngine,
+    StateRegulationEngine,
 )
 
 
@@ -66,14 +66,10 @@ class CoherenceLocalBridge:
         state = self._assess_state(analysis)
 
         # Step 3: Intervention selection (local)
-        intervention = self.intervention_selector.select(
-            analysis, state, analysis.clarity_score
-        )
+        intervention = self.intervention_selector.select(analysis, state, analysis.clarity_score)
 
         # Step 4: Generate response via local LLM
-        prompt = self._build_coherence_prompt(
-            message, analysis, state, intervention
-        )
+        prompt = self._build_coherence_prompt(message, analysis, state, intervention)
 
         response = self.runtime.reply(prompt)
 
@@ -215,4 +211,5 @@ def demo_coherence_bridge():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(demo_coherence_bridge())

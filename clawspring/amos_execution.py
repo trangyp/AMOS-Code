@@ -1,17 +1,17 @@
 """AMOS Execution Kernel - Layer 6 Integration and Output Production."""
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from amos_runtime import get_runtime, AMOSRuntime
+from amos_runtime import AMOSRuntime, get_runtime
 
 
 class OutputFormatter(Protocol):
     """Protocol for output formatters."""
 
-    def format(self, data: dict) -> str: ...
+    def format(self, data: dict) -> str:
+        ...
 
 
 @dataclass
@@ -54,12 +54,14 @@ class CodingEngine:
         ]
         for i, step in enumerate(plan.steps, 1):
             lines.append(f"{i}. {step.get('action', 'Unnamed step')}")
-            if 'details' in step:
+            if "details" in step:
                 lines.append(f"   Details: {step['details']}")
-        lines.extend([
-            "",
-            "## Constraints Applied",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Constraints Applied",
+            ]
+        )
         for c in plan.constraints:
             lines.append(f"- {c}")
         return "\n".join(lines)
@@ -76,13 +78,15 @@ class DesignEngine:
             "## User Experience Map",
         ]
         for step in plan.steps:
-            if 'ui_element' in step:
+            if "ui_element" in step:
                 lines.append(f"- {step['ui_element']}: {step.get('purpose', '')}")
-        lines.extend([
-            "",
-            "## Interaction Flow",
-            " → ".join(s.get('action', '?') for s in plan.steps[:5]),
-        ])
+        lines.extend(
+            [
+                "",
+                "## Interaction Flow",
+                " → ".join(s.get("action", "?") for s in plan.steps[:5]),
+            ]
+        )
         return "\n".join(lines)
 
 
@@ -98,14 +102,15 @@ class ScientificEngine:
         ]
         for assumption in plan.assumptions:
             lines.append(f"- Assumption: {assumption}")
-        lines.extend([
-            "",
-            "## Methodology",
-            f"Analysis approach: {plan.output_type}",
-            "Quadrant coverage: " + ", ".join(
-                plan.reasoning_result.get('quadrant_analysis', {}).keys()
-            ),
-        ])
+        lines.extend(
+            [
+                "",
+                "## Methodology",
+                f"Analysis approach: {plan.output_type}",
+                "Quadrant coverage: "
+                + ", ".join(plan.reasoning_result.get("quadrant_analysis", {}).keys()),
+            ]
+        )
         return "\n".join(lines)
 
 
@@ -160,16 +165,17 @@ class AMOSExecutionKernel:
         # Determine steps from quadrants
         steps = []
         for q_name, q_data in reasoning.get("quadrant_analysis", {}).items():
-            steps.append({
-                "action": f"Address {q_name.replace('_', ' ')} quadrant",
-                "focus": q_data.get("focus", ""),
-                "questions": q_data.get("questions", []),
-            })
+            steps.append(
+                {
+                    "action": f"Address {q_name.replace('_', ' ')} quadrant",
+                    "focus": q_data.get("focus", ""),
+                    "questions": q_data.get("questions", []),
+                }
+            )
 
         # Get constraints from laws
         constraints = [
-            law.get("description", "")[:80] + "..."
-            for law in self.runtime.get_law_summary()[:4]
+            law.get("description", "")[:80] + "..." for law in self.runtime.get_law_summary()[:4]
         ]
 
         return ExecutionPlan(
@@ -210,7 +216,9 @@ class AMOSExecutionKernel:
             gap_acknowledgment=gap,
             metadata={
                 "perspectives_used": len(plan.reasoning_result.get("perspectives", [])),
-                "quadrants_analyzed": list(plan.reasoning_result.get("quadrant_analysis", {}).keys()),
+                "quadrants_analyzed": list(
+                    plan.reasoning_result.get("quadrant_analysis", {}).keys()
+                ),
                 "engines_available": list(self.OUTPUT_TYPES.keys()),
             },
         )
@@ -227,9 +235,7 @@ class AMOSExecutionKernel:
     def _check_law_compliance(self, plan: ExecutionPlan) -> dict[str, bool]:
         """Verify compliance with all 6 global laws."""
         laws = self.runtime.get_law_summary()
-        return {
-            law["id"]: True for law in laws[:6]
-        }
+        return {law["id"]: True for law in laws[:6]}
 
     def quick_produce(self, task: str, output_type: str = "structured_explanation") -> str:
         """Quick production without full metadata."""

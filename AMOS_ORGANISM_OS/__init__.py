@@ -1,5 +1,4 @@
-"""
-AMOS ORGANISM OS — The 14-Subsystem Digital Organism
+"""AMOS ORGANISM OS — The 14-Subsystem Digital Organism
 
 A deterministic, auditable, humane intelligence system for high-risk operations.
 Based on the AMOS 7-System Organism Blueprint v1.0.0
@@ -29,7 +28,7 @@ except ImportError:
     BrainOS = None
 
 try:
-    from .BRAIN.router import SystemRouter, RoutingDecision
+    from .BRAIN.router import RoutingDecision, SystemRouter
 except ImportError:
     SystemRouter = None
     RoutingDecision = None
@@ -82,7 +81,7 @@ except ImportError:
 
 # Primary Loop
 try:
-    from .primary_loop import PrimaryLoop, CycleResult
+    from .primary_loop import CycleResult, PrimaryLoop
 except ImportError:
     PrimaryLoop = None
     CycleResult = None

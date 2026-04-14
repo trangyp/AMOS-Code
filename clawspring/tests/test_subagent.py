@@ -1,13 +1,12 @@
 """Tests for the sub-agent system (subagent.py)."""
 import time
-import threading
 
 import pytest
 
-from multi_agent.subagent import SubAgentManager, SubAgentTask, _extract_final_text
-
+from multi_agent.subagent import SubAgentManager, _extract_final_text
 
 # ── Mock for _agent_run ──────────────────────────────────────────────────
+
 
 def _make_mock_agent_run(sleep_per_iter=0.05, iters=3):
     """Return a mock _agent_run that simulates work and checks cancellation."""
@@ -18,11 +17,13 @@ def _make_mock_agent_run(sleep_per_iter=0.05, iters=3):
                 return
             time.sleep(sleep_per_iter)
         # Append an assistant message to state
-        state.messages.append({
-            "role": "assistant",
-            "content": f"Result for: {prompt}",
-            "tool_calls": [],
-        })
+        state.messages.append(
+            {
+                "role": "assistant",
+                "content": f"Result for: {prompt}",
+                "tool_calls": [],
+            }
+        )
         # Yield a TurnDone-like event (generator protocol)
         yield None
 
@@ -55,6 +56,7 @@ def slow_manager(monkeypatch):
 
 
 # ── Tests ────────────────────────────────────────────────────────────────
+
 
 class TestSpawnAndWait:
     def test_spawn_and_wait_completes(self, manager):

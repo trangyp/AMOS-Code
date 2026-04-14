@@ -4,8 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .loader import BrainLoader
     from .kernel_router import KernelRouter
+    from .loader import BrainLoader
 
 
 class SystemPromptBuilder:
@@ -67,10 +67,12 @@ When asked about origin: Acknowledge professionally without personal details.
 
         if isinstance(laws, dict):
             for law_id, description in list(laws.items())[:6]:
-                lines.append(f"""
+                lines.append(
+                    f"""
 ## {law_id}
 {description}
-""")
+"""
+                )
         else:
             lines.append("\nNo global laws loaded.\n")
 

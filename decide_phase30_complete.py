@@ -18,7 +18,8 @@ print("=" * 70)
 print("  AMOS BRAIN: Phase 30 - Integration Complete")
 print("=" * 70)
 
-print("""
+print(
+    """
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║           AMOS Brain v14.0.0 - Phase 30 Integration Status            ║
 ╠═══════════════════════════════════════════════════════════════════════╣
@@ -64,39 +65,42 @@ print("""
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  RECOMMENDATION: Build Deployment Configuration")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 BRAIN ANALYSIS:
 
    The 14-Layer Cognitive OS is structurally complete:
-   
+
    ✓ API Server - Organism integration functional
    ✓ CLI - Orchestrator command working
    ✓ All organism components - Accessible via CLI
-   
+
    NEXT LOGICAL STEP: Deployment Infrastructure
-   
+
    The system needs:
    1. Deployment configuration (Docker, K8s, etc.)
    2. Installation automation
    3. Environment setup
    4. Service orchestration
-   
+
    This enables: Production deployment → User adoption → Ecosystem growth
-   
+
    🎯 BUILD: Deployment Configuration
-   
+
    Components to build:
    - docker-compose.yml (organism stack)
    - .env.example (configuration template)
    - install.sh (unified installer)
    - scripts/init_registries.py (setup)
-   
+
    AMOS Brain v14.0.0 - Ready for deployment infrastructure
-   
+
    ✅ PHASE 30 COMPLETE - Proceed to deployment build
-""")
+"""
+)

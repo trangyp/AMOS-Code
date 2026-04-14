@@ -1,5 +1,4 @@
-"""
-Contract Manager — Contract tracking and management
+"""Contract Manager — Contract tracking and management
 
 Manages contracts, agreements, and legal obligations
 for the AMOS organism.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timedelta
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class ContractStatus(Enum):
     """Status of a contract."""
+
     DRAFT = "draft"
     PENDING = "pending"
     ACTIVE = "active"
@@ -28,6 +28,7 @@ class ContractStatus(Enum):
 
 class ContractType(Enum):
     """Type of contract."""
+
     SERVICE = "service"
     LICENSE = "license"
     PARTNERSHIP = "partnership"
@@ -40,24 +41,25 @@ class ContractType(Enum):
 @dataclass
 class Contract:
     """A contract or agreement."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     title: str = ""
     contract_type: ContractType = ContractType.CUSTOM
     status: ContractStatus = ContractStatus.DRAFT
-    parties: List[str] = field(default_factory=list)
+    parties: list[str] = field(default_factory=list)
     start_date: str = ""
     end_date: Optional[str] = None
     renewal_date: Optional[str] = None
     value: float = 0.0
     currency: str = "USD"
-    key_terms: List[str] = field(default_factory=list)
-    obligations: List[str] = field(default_factory=list)
+    key_terms: list[str] = field(default_factory=list)
+    obligations: list[str] = field(default_factory=list)
     notes: str = ""
     document_path: Optional[str] = None
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "contract_type": self.contract_type.value,
@@ -68,6 +70,7 @@ class Contract:
 @dataclass
 class ContractAlert:
     """Alert for contract events."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     contract_id: str = ""
     alert_type: str = ""  # renewal, expiry, payment, etc.
@@ -76,13 +79,12 @@ class ContractAlert:
     acknowledged: bool = False
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class ContractManager:
-    """
-    Manages contracts and legal agreements.
+    """Manages contracts and legal agreements.
 
     Tracks contract lifecycle, renewals, obligations,
     and generates alerts for important dates.
@@ -94,8 +96,8 @@ class ContractManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.contracts: List[Contract] = []
-        self.alerts: List[ContractAlert] = []
+        self.contracts: list[Contract] = []
+        self.alerts: list[ContractAlert] = []
 
         self._load_data()
 
@@ -146,7 +148,7 @@ class ContractManager:
         self,
         title: str,
         contract_type: ContractType,
-        parties: List[str],
+        parties: list[str],
         start_date: str,
         end_date: Optional[str] = None,
     ) -> Contract:
@@ -180,7 +182,7 @@ class ContractManager:
             return True
         return False
 
-    def check_expirations(self) -> List[ContractAlert]:
+    def check_expirations(self) -> list[ContractAlert]:
         """Check for upcoming expirations and generate alerts."""
         new_alerts = []
         today = datetime.utcnow()
@@ -230,15 +232,16 @@ class ContractManager:
         self.save()
         return new_alerts
 
-    def get_active_contracts(self) -> List[Dict[str, Any]]:
+    def get_active_contracts(self) -> list[dict[str, Any]]:
         """Get all active contracts."""
         active = [
-            c for c in self.contracts
+            c
+            for c in self.contracts
             if c.status in [ContractStatus.ACTIVE, ContractStatus.EXPIRING]
         ]
         return [c.to_dict() for c in active]
 
-    def get_pending_alerts(self) -> List[Dict[str, Any]]:
+    def get_pending_alerts(self) -> list[dict[str, Any]]:
         """Get pending (unacknowledged) alerts."""
         pending = [a for a in self.alerts if not a.acknowledged]
         return sorted(
@@ -255,7 +258,7 @@ class ContractManager:
                 return True
         return False
 
-    def get_contract_summary(self) -> Dict[str, Any]:
+    def get_contract_summary(self) -> dict[str, Any]:
         """Get summary of contract portfolio."""
         by_status = {}
         for c in self.contracts:
@@ -267,7 +270,9 @@ class ContractManager:
         return {
             "total_contracts": len(self.contracts),
             "by_status": by_status,
-            "active_contracts": len([c for c in self.contracts if c.status == ContractStatus.ACTIVE]),
+            "active_contracts": len(
+                [c for c in self.contracts if c.status == ContractStatus.ACTIVE]
+            ),
             "total_portfolio_value": total_value,
             "currency": "USD",
             "pending_alerts": len([a for a in self.alerts if not a.acknowledged]),

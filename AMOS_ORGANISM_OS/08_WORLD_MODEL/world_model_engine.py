@@ -1,5 +1,4 @@
-"""
-World Model Engine — Main orchestrator for world context
+"""World Model Engine — Main orchestrator for world context
 
 Integrates macroeconomic, geopolitical, and sector analysis
 to provide unified world context for AMOS decisions.
@@ -7,32 +6,31 @@ to provide unified world context for AMOS decisions.
 
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
-from macroeconomic_scanner import get_macro_scanner, MacroeconomicScanner
-from geopolitical_monitor import get_geopolitical_monitor, GeopoliticalMonitor
-from sector_analyzer import get_sector_analyzer, SectorAnalyzer
+from geopolitical_monitor import get_geopolitical_monitor
+from macroeconomic_scanner import get_macro_scanner
+from sector_analyzer import get_sector_analyzer
 
 
 @dataclass
 class WorldContext:
     """Comprehensive world context snapshot."""
+
     timestamp: str
     economic_stability: str
     geopolitical_risk: str
-    top_sectors: List[str]
-    active_risks: List[str]
-    opportunities: List[str]
-    recommended_actions: List[str]
+    top_sectors: list[str]
+    active_risks: list[str]
+    opportunities: list[str]
+    recommended_actions: list[str]
 
 
 class WorldModelEngine:
-    """
-    Main engine for world model operations.
+    """Main engine for world model operations.
 
     Integrates all world model components and provides
     unified context for organism decisions.
@@ -75,9 +73,7 @@ class WorldModelEngine:
         top_opps = [f"{o['sector']}: {o['opportunity']}" for o in opps[:3]]
 
         # Generate recommendations
-        recommendations = self._generate_recommendations(
-            econ, geo_risk, sector_ov
-        )
+        recommendations = self._generate_recommendations(econ, geo_risk, sector_ov)
 
         return WorldContext(
             timestamp=datetime.utcnow().isoformat(),
@@ -91,10 +87,10 @@ class WorldModelEngine:
 
     def _generate_recommendations(
         self,
-        econ: Dict[str, Any],
-        geo_risk: Dict[str, Any],
-        sectors: Dict[str, Any],
-    ) -> List[str]:
+        econ: dict[str, Any],
+        geo_risk: dict[str, Any],
+        sectors: dict[str, Any],
+    ) -> list[str]:
         """Generate recommendations based on world state."""
         recs = []
 
@@ -118,7 +114,7 @@ class WorldModelEngine:
 
         return recs
 
-    def scan_all(self) -> Dict[str, Any]:
+    def scan_all(self) -> dict[str, Any]:
         """Run comprehensive world scan."""
         macro_result = self.macro.scan()
         geo_summary = self.geo.get_global_summary()
@@ -150,7 +146,7 @@ class WorldModelEngine:
             },
         }
 
-    def assess_operational_risk(self, regions: List[str]) -> Dict[str, Any]:
+    def assess_operational_risk(self, regions: list[str]) -> dict[str, Any]:
         """Assess operational risk for given regions."""
         # Economic risk
         econ_stability = self.macro._calculate_stability()
@@ -159,7 +155,9 @@ class WorldModelEngine:
         geo_assessment = self.geo.assess_risk(regions)
 
         # Combined risk score
-        econ_risk = 0.5 if econ_stability == "unstable" else 0.2 if econ_stability == "moderate" else 0.1
+        econ_risk = (
+            0.5 if econ_stability == "unstable" else 0.2 if econ_stability == "moderate" else 0.1
+        )
         geo_risk_score = geo_assessment.get("overall_risk", 0.5)
 
         combined = (econ_risk + geo_risk_score) / 2
@@ -173,7 +171,7 @@ class WorldModelEngine:
             "recommendation": geo_assessment.get("recommendation", "no specific recommendation"),
         }
 
-    def get_sector_recommendations(self) -> List[Dict[str, Any]]:
+    def get_sector_recommendations(self) -> list[dict[str, Any]]:
         """Get investment recommendations by sector."""
         opportunities = self.sectors.scan_opportunities()
         recommendations = []
@@ -181,13 +179,15 @@ class WorldModelEngine:
         for opp in opportunities[:5]:
             sector_data = self.sectors.analyze_sector(opp["sector_id"])
             if sector_data:
-                recommendations.append({
-                    "sector": opp["sector"],
-                    "opportunity": opp["opportunity"],
-                    "health": sector_data["sector"]["health"],
-                    "attractiveness": sector_data["investment_attractiveness"],
-                    "risk_level": sector_data["risk_assessment"]["level"],
-                })
+                recommendations.append(
+                    {
+                        "sector": opp["sector"],
+                        "opportunity": opp["opportunity"],
+                        "health": sector_data["sector"]["health"],
+                        "attractiveness": sector_data["investment_attractiveness"],
+                        "risk_level": sector_data["risk_assessment"]["level"],
+                    }
+                )
 
         return recommendations
 

@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
 
 class TruthValue(Enum):
     """Truth value primitives."""
+
     TRUE = "TRUE"
     FALSE = "FALSE"
     UNKNOWN = "UNKNOWN"
@@ -16,6 +17,7 @@ class TruthValue(Enum):
 
 class Modality(Enum):
     """Deontic modalities."""
+
     MUST = "MUST"
     MAY = "MAY"
     MUST_NOT = "MUST_NOT"
@@ -25,6 +27,7 @@ class Modality(Enum):
 
 class BurdenLevel(Enum):
     """Burden of proof levels."""
+
     NONE = "NONE"
     LOW = "LOW"
     MEDIUM = "MEDIUM"
@@ -34,6 +37,7 @@ class BurdenLevel(Enum):
 
 class JurisdictionPriority(Enum):
     """Jurisdiction priority levels."""
+
     SUPRANATIONAL = 1
     NATIONAL = 2
     SUBNATIONAL = 3
@@ -136,7 +140,7 @@ class FormalLogicKernel:
 
         # Check for direct contradictions
         for i, stmt1 in enumerate(self.statements):
-            for stmt2 in self.statements[i + 1:]:
+            for stmt2 in self.statements[i + 1 :]:
                 if (
                     stmt1.subject == stmt2.subject
                     and stmt1.predicate != stmt2.predicate
@@ -388,10 +392,12 @@ class PolicyDesignKernel:
     def add_metric(self, policy_idx: int, name: str, target: str) -> None:
         """Add metric to policy."""
         if 0 <= policy_idx < len(self.policies):
-            self.policies[policy_idx]["metrics"].append({
-                "name": name,
-                "target": target,
-            })
+            self.policies[policy_idx]["metrics"].append(
+                {
+                    "name": name,
+                    "target": target,
+                }
+            )
 
     def _get_principles(self) -> list[str]:
         """Return kernel principles."""
@@ -488,57 +494,65 @@ class LogicLawEngine:
 
         if "logic" in results:
             logic = results["logic"]
-            lines.extend([
-                f"- Statements: {logic['statements_count']}",
-                f"- Consistency: {'✓' if logic['consistency_check']['consistent'] else '⚠'}",
-            ])
+            lines.extend(
+                [
+                    f"- Statements: {logic['statements_count']}",
+                    f"- Consistency: {'✓' if logic['consistency_check']['consistent'] else '⚠'}",
+                ]
+            )
 
-        lines.extend([
-            "",
-            "## Legal Analysis",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Legal Analysis",
+            ]
+        )
 
         if "legal" in results:
             legal = results["legal"]
-            lines.extend([
-                f"- Entities: {legal['entities']}",
-                f"- Relations: {legal['relations']}",
-                f"- Rule Layers: {legal['rule_layers']}",
-            ])
+            lines.extend(
+                [
+                    f"- Entities: {legal['entities']}",
+                    f"- Relations: {legal['relations']}",
+                    f"- Rule Layers: {legal['rule_layers']}",
+                ]
+            )
 
-        lines.extend([
-            "",
-            "## Safety & Compliance",
-            "",
-            "### Safety Constraints",
-            "- NO binding legal advice (informational only)",
-            "- MUST include disclaimer for legal outputs",
-            "- NO drafts enabling serious crime or violence",
-            "- Creator attribution required (Trang Phan)",
-            "",
-            "### Global Law Compliance",
-            "- L1 (Structural): Rule of 2/4 applied",
-            "- L2 (Temporal): Analysis time-boxed",
-            "- L3 (Semantic): Clear reasoning path",
-            "- L4 (Cognitive): Multi-perspective analysis",
-            "- L5 (Safety): No harmful legal guidance",
-            "- L6 (Humility): GAP acknowledgment below",
-            "",
-            "## Gap Acknowledgment",
-            "",
-            "**CRITICAL GAP:** This is NOT legal advice. NOT a substitute for "
-            "qualified legal counsel. All outputs are SIMULATED analysis only.",
-            "",
-            "Specific Gaps:",
-            "- No access to real legal databases",
-            "- No jurisdiction-specific rule lookup",
-            "- No case law precedent search",
-            "- No binding legal authority",
-            "- Pattern-based analysis only, not legal reasoning",
-            "",
-            "### Creator Attribution",
-            "This engine was architected by Trang Phan as part of AMOS vInfinity.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Safety & Compliance",
+                "",
+                "### Safety Constraints",
+                "- NO binding legal advice (informational only)",
+                "- MUST include disclaimer for legal outputs",
+                "- NO drafts enabling serious crime or violence",
+                "- Creator attribution required (Trang Phan)",
+                "",
+                "### Global Law Compliance",
+                "- L1 (Structural): Rule of 2/4 applied",
+                "- L2 (Temporal): Analysis time-boxed",
+                "- L3 (Semantic): Clear reasoning path",
+                "- L4 (Cognitive): Multi-perspective analysis",
+                "- L5 (Safety): No harmful legal guidance",
+                "- L6 (Humility): GAP acknowledgment below",
+                "",
+                "## Gap Acknowledgment",
+                "",
+                "**CRITICAL GAP:** This is NOT legal advice. NOT a substitute for "
+                "qualified legal counsel. All outputs are SIMULATED analysis only.",
+                "",
+                "Specific Gaps:",
+                "- No access to real legal databases",
+                "- No jurisdiction-specific rule lookup",
+                "- No case law precedent search",
+                "- No binding legal authority",
+                "- Pattern-based analysis only, not legal reasoning",
+                "",
+                "### Creator Attribution",
+                "This engine was architected by Trang Phan as part of AMOS vInfinity.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -564,12 +578,8 @@ if __name__ == "__main__":
     engine = get_logic_law_engine()
 
     # Add sample logical statements
-    engine.logic_kernel.add_statement(
-        "Contract", "is_valid", TruthValue.TRUE, Modality.MUST
-    )
-    engine.logic_kernel.add_statement(
-        "Party_A", "performs_obligation", TruthValue.TRUE
-    )
+    engine.logic_kernel.add_statement("Contract", "is_valid", TruthValue.TRUE, Modality.MUST)
+    engine.logic_kernel.add_statement("Party_A", "performs_obligation", TruthValue.TRUE)
 
     # Add sample legal entities
     engine.legal_kernel.add_entity("PERSON", "Party_A", role="contractor")

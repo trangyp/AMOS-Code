@@ -1,9 +1,7 @@
 """System context: CLAUDE.md, git info, cwd injection."""
-import os
 import subprocess
-from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 from memory import get_memory_context
 
@@ -18,10 +16,12 @@ def _get_amos_brain():
     if _amos_brain_loader is None:
         try:
             import sys
+
             amos_path = Path(__file__).resolve().parent.parent
             if str(amos_path) not in sys.path:
                 sys.path.insert(0, str(amos_path))
             from amos_brain import get_brain
+
             try:
                 from .amos_cognitive_router import get_router
             except ImportError:
@@ -30,6 +30,7 @@ def _get_amos_brain():
             _amos_router = get_router()
         except Exception as e:
             import sys
+
             print(f"[AMOS Brain] Initialization warning: {e}", file=sys.stderr)
             _amos_brain_loader = False
             _amos_router = False
@@ -42,6 +43,7 @@ def _get_amos_router():
     if _amos_router is None:
         _get_amos_brain()
     return _amos_router
+
 
 SYSTEM_PROMPT_TEMPLATE = """\
 You are ClawSpring, Created by SAIL Lab (Safe AI and Robot Learning Lab at UC Berkeley), an AI coding assistant running in the terminal.
@@ -136,20 +138,20 @@ def get_git_info() -> str:
     """Return git branch/status summary if in a git repo."""
     try:
         branch = subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            stderr=subprocess.DEVNULL, text=True).strip()
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
         status = subprocess.check_output(
-            ["git", "status", "--short"],
-            stderr=subprocess.DEVNULL, text=True).strip()
+            ["git", "status", "--short"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
         log = subprocess.check_output(
-            ["git", "log", "--oneline", "-5"],
-            stderr=subprocess.DEVNULL, text=True).strip()
+            ["git", "log", "--oneline", "-5"], stderr=subprocess.DEVNULL, text=True
+        ).strip()
         parts = [f"- Git branch: {branch}"]
         if status:
-            lines = status.split('\n')[:10]
+            lines = status.split("\n")[:10]
             parts.append("- Git status:\n" + "\n".join(f"  {l}" for l in lines))
         if log:
-            parts.append("- Recent commits:\n" + "\n".join(f"  {l}" for l in log.split('\n')))
+            parts.append("- Recent commits:\n" + "\n".join(f"  {l}" for l in log.split("\n")))
         return "\n".join(parts) + "\n"
     except Exception:
         return ""
@@ -204,9 +206,7 @@ def build_system_prompt(amos_mode: bool = False, task_description: str = "") -> 
     if amos_mode and task_description:
         router = _get_amos_router()
         if router and router is not False:
-            routing_prompt = router.build_cognitive_prompt(
-                task_description, execute=True
-            )
+            routing_prompt = router.build_cognitive_prompt(task_description, execute=True)
             prompt += f"\n\n{routing_prompt}\n"
     elif amos_mode:
         # Basic AMOS context without routing

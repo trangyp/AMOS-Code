@@ -3,7 +3,7 @@
 
 System Check Results:
 - AMOSL imports: ✓ OK
-- amos_brain imports: ✓ OK  
+- amos_brain imports: ✓ OK
 - Axiom validator: ✓ OK
 - Coherence bridge: ✗ Import error found
 
@@ -13,15 +13,17 @@ Issue: Wrong class name in import check
 
 Fix: Correct class name reference
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 26 - Issue Fix")
 print("=" * 70)
 
-print("""
+print(
+    """
 ISSUE IDENTIFIED:
 
 Import test was using wrong class name:
@@ -40,16 +42,18 @@ FIX APPLIED:
 No code changes needed - import reference corrected in diagnostic.
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: System Verified - No Additional Fixes Required")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 FINAL VERIFICATION:
 
    All Critical Systems: OPERATIONAL ✓
-   
+
    AMOSL Layer (5 specification layers):
    ├── amosl.runtime        ✓
    ├── amosl.prover         ✓
@@ -58,7 +62,7 @@ print("""
    ├── amosl.field           ✓
    ├── amosl.cli            ✓
    └── amosl.* (all modules) ✓
-   
+
    AMOS Brain Layer (8-layer architecture):
    ├── amos_brain.local_runtime   ✓
    ├── amos_brain.model_backend   ✓
@@ -66,18 +70,18 @@ print("""
    ├── amos_brain.integration     ✓
    ├── amos_brain.cookbook        ✓
    └── amos_brain.* (all modules) ✓
-   
+
    Integration Layer:
    ├── amos_coherence_bridge (CoherenceLocalBridge) ✓
    ├── amos_axiom_validator                          ✓
    └── amos_unified                                  ✓
-   
+
    Tests:
    ├── test_integration.py       16/16 PASS ✓
    ├── test_model_backends.py    13/13 PASS ✓
    ├── test_coherence_bridge.py   8/8 PASS  ✓
    └── Total:                     37/37 PASS ✓
-   
+
    CLI:
    ├── amosl status              ✓
    ├── amosl verify              ✓
@@ -88,7 +92,8 @@ SYSTEM STATUS: PRODUCTION READY ✓
 
 No fixes required. All systems operational.
 Ready for deployment and usage.
-""")
+"""
+)
 
 print("\n✅ System Verified - No Additional Fixes Required")
 print("=" * 70)

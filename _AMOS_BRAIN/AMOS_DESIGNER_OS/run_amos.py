@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from workers import WORKER_REGISTRY, WorkerResponse
-
 
 BASE_DIR = Path(__file__).resolve().parent
 BRAIN_FILE = BASE_DIR / "AMOS.brain"
@@ -20,7 +19,7 @@ MEMORY_DIR = BASE_DIR / "memory"
 class AmosEvent:
     timestamp: str
     event_type: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
 
 
 def _load_text_file(path: Path) -> str:
@@ -32,8 +31,8 @@ def _load_text_file(path: Path) -> str:
         return ""
 
 
-def _parse_brain(raw: str) -> Dict[str, Dict[str, str]]:
-    sections: Dict[str, Dict[str, str]] = {}
+def _parse_brain(raw: str) -> dict[str, dict[str, str]]:
+    sections: dict[str, dict[str, str]] = {}
     current: Optional[str] = None
     for line in raw.splitlines():
         line = line.strip()
@@ -51,7 +50,7 @@ def _parse_brain(raw: str) -> Dict[str, Dict[str, str]]:
     return sections
 
 
-def _load_config() -> Dict[str, Any]:
+def _load_config() -> dict[str, Any]:
     if not CONFIG_FILE.exists():
         return {}
     try:
@@ -73,12 +72,12 @@ def _log_event(event: AmosEvent) -> None:
         f.write(line + "\n")
 
 
-def _pick_next_action(brain: Dict[str, Dict[str, str]]) -> str:
+def _pick_next_action(brain: dict[str, dict[str, str]]) -> str:
     nxt = brain.get("NEXT_ACTION", {}).get("next_action", "")
     return nxt or "map_global_requirements"
 
 
-def _run_planner(brain: Dict[str, Dict[str, str]]) -> WorkerResponse:
+def _run_planner(brain: dict[str, dict[str, str]]) -> WorkerResponse:
     identity = brain.get("IDENTITY", {})
     goals = brain.get("GOALS", {})
     goal = goals.get("1", "Clarify system mission.")
@@ -91,7 +90,7 @@ def _run_planner(brain: Dict[str, Dict[str, str]]) -> WorkerResponse:
     return worker("generate_plan", payload)
 
 
-def _run_analyst(brain: Dict[str, Dict[str, str]]) -> WorkerResponse:
+def _run_analyst(brain: dict[str, dict[str, str]]) -> WorkerResponse:
     topic = _pick_next_action(brain)
     worker = WORKER_REGISTRY["analyst"]
     return worker("analyze_topic", {"topic": topic})

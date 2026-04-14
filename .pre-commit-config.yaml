@@ -1,0 +1,108 @@
+# AMOS Open-Source Baseline Pre-commit Configuration
+# Install: pre-commit install
+# Run all: pre-commit run --all-files
+# Docs: https://pre-commit.com
+
+minimum_pre_commit_version: "3.5.0"
+default_stages: [pre-commit, pre-push]
+fail_fast: false
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$|\.json$'
+      - id: end-of-file-fixer
+        exclude: '\.json$'
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: debug-statements
+      - id: detect-private-key
+      - id: mixed-line-ending
+      - id: requirements-txt-fixer
+
+  # Python linting and formatting (Ruff - replaces black, flake8, isort)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        types_or: [python, pyi]
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # Python type checking (MyPy)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.7.1
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic>=2.0.0
+          - types-PyYAML
+          - types-requests
+        args: [--ignore-missing-imports, --show-error-codes]
+        exclude: "tests/|test_|venv/|.venv/|__pycache__/"
+
+  # Security: Secret scanning (Gitleaks)
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.1
+    hooks:
+      - id: gitleaks
+        name: Detect hardcoded secrets
+        description: Detects hardcoded secrets using Gitleaks
+        entry: gitleaks detect --verbose --redact --source .
+        language: golang
+        pass_filenames: false
+
+  # Security: Static analysis (Semgrep)
+  - repo: https://github.com/semgrep/pre-commit
+    rev: v1.52.0
+    hooks:
+      - id: semgrep
+        name: Semgrep security scan
+        args: ['--config=auto', '--error', '--skip-unknown-extensions']
+        stages: [pre-push]
+
+  # Security: Dependency vulnerability scanning (OSV-Scanner)
+  # Note: Requires osv-scanner binary installed
+  - repo: local
+    hooks:
+      - id: osv-scanner
+        name: OSV-Scanner dependency audit
+        entry: osv-scanner
+        args: ["-r", "."]
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+  # Testing: pytest with coverage
+  # Note: Only runs on push, not every commit
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run tests with pytest
+        entry: python -m pytest
+        args: ["-q", "--tb=short"]
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      - id: coverage
+        name: Check test coverage
+        entry: coverage run -m pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

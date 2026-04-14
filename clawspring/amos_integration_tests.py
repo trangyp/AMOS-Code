@@ -3,8 +3,7 @@ from __future__ import annotations
 
 import time
 import traceback
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 
 @dataclass
@@ -125,6 +124,7 @@ class AMOSIntegrationTests:
 
         def test_runtime_init():
             from amos_runtime import get_runtime
+
             rt = get_runtime()
             assert rt is not None
             identity = rt.get_identity()
@@ -134,6 +134,7 @@ class AMOSIntegrationTests:
 
         def test_law_summary():
             from amos_runtime import get_runtime
+
             rt = get_runtime()
             summary = rt.get_law_summary()
             assert len(summary) == 6
@@ -149,12 +150,14 @@ class AMOSIntegrationTests:
 
         def test_execution_kernel():
             from amos_execution import get_execution_kernel
+
             kernel = get_execution_kernel()
             assert kernel is not None
             return {"kernel_type": type(kernel).__name__}
 
         def test_basic_execution():
             from amos_execution import full_execute
+
             result = full_execute("Test task", "structured_explanation")
             assert result is not None
             assert hasattr(result, "content")
@@ -169,12 +172,14 @@ class AMOSIntegrationTests:
 
         def test_orchestrator_init():
             from amos_orchestrator import get_orchestrator
+
             orch = get_orchestrator()
             assert orch is not None
             return {"orchestrator_type": type(orch).__name__}
 
         def test_workflow_chain():
             from amos_orchestrator import get_orchestrator
+
             orch = get_orchestrator()
             workflow = orch.create_standard_workflow("Integration test task")
             result = orch.run_workflow(workflow.id)
@@ -189,6 +194,7 @@ class AMOSIntegrationTests:
 
         def test_coding_engine():
             from amos_coding_engine import get_coding_engine
+
             engine = get_coding_engine()
             assert engine is not None
             assert len(engine.LAYERS) == 4
@@ -196,6 +202,7 @@ class AMOSIntegrationTests:
 
         def test_code_generation():
             from amos_coding_engine import get_coding_engine
+
             engine = get_coding_engine()
             result = engine.generate_code(
                 layer="backend",
@@ -214,6 +221,7 @@ class AMOSIntegrationTests:
 
         def test_design_engine():
             from amos_design_engine import get_design_engine
+
             engine = get_design_engine()
             assert engine is not None
             status = engine.get_engine_status()
@@ -227,6 +235,7 @@ class AMOSIntegrationTests:
 
         def test_ubi_engine():
             from amos_ubi_engine import get_ubi_engine
+
             engine = get_ubi_engine()
             assert engine is not None
             assert len(engine.DOMAINS) == 4
@@ -234,6 +243,7 @@ class AMOSIntegrationTests:
 
         def test_ubi_analysis():
             from amos_ubi_engine import get_ubi_engine
+
             engine = get_ubi_engine()
             results = engine.analyze("Test user interface")
             assert len(results) > 0
@@ -247,19 +257,24 @@ class AMOSIntegrationTests:
 
         def test_memory_init():
             from amos_memory import get_memory_bridge
+
             bridge = get_memory_bridge()
             assert bridge is not None
             stats = bridge.store.get_memory_stats()
             return {"memory_stats": stats}
 
         def test_memory_store():
-            from amos_memory import get_memory_bridge, remember
-            entry_id = remember("reasoning", {
-                "task": "Integration test",
-                "perspectives": [{"view": "test"}],
-                "quadrants": {},
-                "recommendation": "test",
-            })
+            from amos_memory import remember
+
+            entry_id = remember(
+                "reasoning",
+                {
+                    "task": "Integration test",
+                    "perspectives": [{"view": "test"}],
+                    "quadrants": {},
+                    "recommendation": "test",
+                },
+            )
             assert entry_id is not None
             return {"entry_id": entry_id}
 
@@ -271,12 +286,14 @@ class AMOSIntegrationTests:
 
         def test_audit_init():
             from amos_cognitive_audit import get_cognitive_audit
+
             audit = get_cognitive_audit()
             assert audit is not None
             return {"audit_type": type(audit).__name__}
 
         def test_audit_content():
             from amos_cognitive_audit import get_cognitive_audit
+
             audit = get_cognitive_audit()
             result = audit.audit("This is a test with cognitive load considerations.")
             assert result is not None
@@ -291,6 +308,7 @@ class AMOSIntegrationTests:
 
         def test_multi_agent_init():
             from amos_multi_agent import get_multi_agent_coordinator
+
             coord = get_multi_agent_coordinator()
             assert coord is not None
             assert len(coord.agent_registry) == 5
@@ -303,6 +321,7 @@ class AMOSIntegrationTests:
 
         def test_scientific_init():
             from amos_scientific_engine import get_scientific_engine
+
             engine = get_scientific_engine()
             assert engine is not None
             assert len(engine.DOMAINS) == 4
@@ -310,6 +329,7 @@ class AMOSIntegrationTests:
 
         def test_scientific_analysis():
             from amos_scientific_engine import get_scientific_engine
+
             engine = get_scientific_engine()
             results = engine.analyze("Neural signal processing system")
             assert len(results) > 0
@@ -323,12 +343,14 @@ class AMOSIntegrationTests:
 
         def test_tools_registry():
             from amos_tools import AMOS_TOOLS
+
             assert len(AMOS_TOOLS) >= 13
             tool_names = [t.name for t in AMOS_TOOLS]
             return {"tool_count": len(AMOS_TOOLS), "tools": tool_names}
 
         def test_core_tools_exist():
             from amos_tools import AMOS_TOOLS
+
             tool_names = [t.name for t in AMOS_TOOLS]
             core_tools = ["AMOSReasoning", "AMOSCode", "AMOSDesign", "AMOSUBI", "AMOSAudit"]
             for tool in core_tools:
@@ -369,21 +391,25 @@ class AMOSIntegrationTests:
         # Failed tests detail
         failed_tests = [r for r in self.results if not r.passed]
         if failed_tests:
-            lines.extend([
-                "FAILED TESTS DETAIL:",
-                "",
-            ])
+            lines.extend(
+                [
+                    "FAILED TESTS DETAIL:",
+                    "",
+                ]
+            )
             for test in failed_tests:
                 lines.append(f"✗ {test.layer} - {test.test_name}")
                 lines.append(f"  Error: {test.error}")
                 lines.append("")
 
-        lines.extend([
-            "=" * 70,
-            "Gap Acknowledgment:",
-            result.gap_acknowledgment,
-            "=" * 70,
-        ])
+        lines.extend(
+            [
+                "=" * 70,
+                "Gap Acknowledgment:",
+                result.gap_acknowledgment,
+                "=" * 70,
+            ]
+        )
 
         return "\n".join(lines)
 

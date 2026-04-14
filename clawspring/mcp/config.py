@@ -24,18 +24,16 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
 
 from .types import MCPServerConfig
 
-
 # ── Config file locations ─────────────────────────────────────────────────────
 
-USER_MCP_CONFIG  = Path.home() / ".clawspring" / "mcp.json"
-PROJECT_MCP_NAME = ".mcp.json"   # looked up relative to cwd
+USER_MCP_CONFIG = Path.home() / ".clawspring" / "mcp.json"
+PROJECT_MCP_NAME = ".mcp.json"  # looked up relative to cwd
 
 
-def _load_file(path: Path) -> Dict[str, dict]:
+def _load_file(path: Path) -> dict[str, dict]:
     """Read a single mcp.json file and return the mcpServers dict."""
     if not path.exists():
         return {}
@@ -46,10 +44,10 @@ def _load_file(path: Path) -> Dict[str, dict]:
         return {}
 
 
-def load_mcp_configs() -> Dict[str, MCPServerConfig]:
+def load_mcp_configs() -> dict[str, MCPServerConfig]:
     """Return all MCP server configs, project-level overriding user-level."""
     # User-level first (lowest priority)
-    servers: Dict[str, dict] = _load_file(USER_MCP_CONFIG)
+    servers: dict[str, dict] = _load_file(USER_MCP_CONFIG)
 
     # Walk up from cwd to find .mcp.json (up to 10 levels)
     p = Path.cwd()
@@ -57,20 +55,17 @@ def load_mcp_configs() -> Dict[str, MCPServerConfig]:
         candidate = p / PROJECT_MCP_NAME
         if candidate.exists():
             project_servers = _load_file(candidate)
-            servers.update(project_servers)   # project wins
+            servers.update(project_servers)  # project wins
             break
         parent = p.parent
         if parent == p:
             break
         p = parent
 
-    return {
-        name: MCPServerConfig.from_dict(name, raw)
-        for name, raw in servers.items()
-    }
+    return {name: MCPServerConfig.from_dict(name, raw) for name, raw in servers.items()}
 
 
-def save_user_mcp_config(servers: Dict[str, dict]) -> None:
+def save_user_mcp_config(servers: dict[str, dict]) -> None:
     """Write (or update) the user-level MCP config file."""
     USER_MCP_CONFIG.parent.mkdir(parents=True, exist_ok=True)
     existing: dict = {}
@@ -115,7 +110,7 @@ def remove_server_from_user_config(name: str) -> bool:
         return False
 
 
-def list_config_files() -> List[Path]:
+def list_config_files() -> list[Path]:
     """Return paths of all mcp.json config files that exist."""
     found = []
     if USER_MCP_CONFIG.exists():

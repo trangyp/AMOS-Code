@@ -2,6 +2,7 @@
 """Quick AMOS System Validator."""
 
 import sys
+
 sys.path.insert(0, "clawspring/amos_brain")
 sys.path.insert(0, "clawspring")
 

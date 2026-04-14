@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""
-AMOS Knowledge Discovery Interface
+"""AMOS Knowledge Discovery Interface
 =================================
 Unified search and discovery for the complete AMOS knowledge ecosystem.
 
 Features:
 - Search 963+ JSON engines by name, domain, or content
-- Browse 72 PDF manuals and training materials  
+- Browse 72 PDF manuals and training materials
 - Query 55 country knowledge packs
 - Access 19 sector packs
 - Discovery mode for exploring unknown capabilities
@@ -25,13 +24,12 @@ Commands:
 """
 from __future__ import annotations
 
-import sys
-import json
 import argparse
-from pathlib import Path
-from typing import Any, Optional
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -40,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 @dataclass
 class KnowledgeItem:
     """Represents a knowledge item in the ecosystem."""
+
     name: str
     path: Path
     category: str
@@ -50,7 +49,7 @@ class KnowledgeItem:
 
 class KnowledgeDiscovery:
     """Discover and search the AMOS knowledge ecosystem."""
-    
+
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
         self.index: dict[str, list[KnowledgeItem]] = {
@@ -62,36 +61,36 @@ class KnowledgeDiscovery:
             "core": [],
             "packs": [],
             "training": [],
-            "archive": []
+            "archive": [],
         }
         self.stats = {
             "total_files": 0,
             "total_size_mb": 0.0,
             "json_engines": 0,
             "pdf_manuals": 0,
-            "txt_specs": 0
+            "txt_specs": 0,
         }
-        
+
     def scan(self) -> dict[str, Any]:
         """Scan entire _AMOS_BRAIN directory and build index."""
         print("=" * 70)
         print("AMOS KNOWLEDGE DISCOVERY - SCANNING ECOSYSTEM")
         print("=" * 70)
         print(f"\nScanning: {self.brain_root}")
-        
+
         if not self.brain_root.exists():
             return {"error": f"Brain root not found: {self.brain_root}"}
-        
+
         # Scan all files
         all_files = list(self.brain_root.rglob("*"))
         total_size = 0
-        
+
         for file_path in all_files:
             if file_path.is_file():
                 self.stats["total_files"] += 1
                 size = file_path.stat().st_size
                 total_size += size
-                
+
                 # Categorize
                 category = self._categorize(file_path)
                 item = KnowledgeItem(
@@ -99,104 +98,107 @@ class KnowledgeDiscovery:
                     path=file_path,
                     category=category,
                     size_bytes=size,
-                    modified=datetime.fromtimestamp(file_path.stat().st_mtime)
+                    modified=datetime.fromtimestamp(file_path.stat().st_mtime),
                 )
-                
+
                 if category in self.index:
                     self.index[category].append(item)
-                
+
                 # Track by type
-                if file_path.suffix == '.json':
+                if file_path.suffix == ".json":
                     self.stats["json_engines"] += 1
-                elif file_path.suffix == '.pdf':
+                elif file_path.suffix == ".pdf":
                     self.stats["pdf_manuals"] += 1
-                elif file_path.suffix == '.txt':
+                elif file_path.suffix == ".txt":
                     self.stats["txt_specs"] += 1
-        
+
         self.stats["total_size_mb"] = round(total_size / (1024 * 1024), 2)
-        
+
         # Print summary
-        print(f"\n✅ Scan Complete")
+        print("\n✅ Scan Complete")
         print(f"  Total Files: {self.stats['total_files']}")
         print(f"  Total Size: {self.stats['total_size_mb']} MB")
         print(f"  JSON Engines: {self.stats['json_engines']}")
         print(f"  PDF Manuals: {self.stats['pdf_manuals']}")
         print(f"  Text Specs: {self.stats['txt_specs']}")
-        print(f"\nBy Category:")
+        print("\nBy Category:")
         for cat, items in sorted(self.index.items()):
             if items:
                 cat_size = sum(i.size_bytes for i in items) / (1024 * 1024)
                 print(f"  {cat:15s}: {len(items):4d} files ({cat_size:.1f} MB)")
-        
+
         return self.stats
-    
+
     def _categorize(self, path: Path) -> str:
         """Categorize a file based on its path."""
         path_str = str(path).lower()
-        
-        if '/training/' in path_str:
+
+        if "/training/" in path_str:
             return "training"
-        elif '/cognitive/' in path_str:
+        elif "/cognitive/" in path_str:
             return "cognitive"
-        elif '/kernels/tech/' in path_str:
+        elif "/kernels/tech/" in path_str:
             return "tech"
-        elif '/kernels/' in path_str:
+        elif "/kernels/" in path_str:
             return "kernels"
-        elif '/domains/' in path_str:
+        elif "/domains/" in path_str:
             return "domains"
-        elif '/unipower/' in path_str:
+        elif "/unipower/" in path_str:
             return "unipower"
-        elif '/packs/' in path_str:
+        elif "/packs/" in path_str:
             return "packs"
-        elif '/core/' in path_str:
+        elif "/core/" in path_str:
             return "core"
-        elif '/_archive/' in path_str:
+        elif "/_archive/" in path_str:
             return "archive"
         else:
             return "other"
-    
+
     def search(self, query: str) -> list[KnowledgeItem]:
         """Search all knowledge by name or content."""
         query_lower = query.lower()
         results = []
-        
+
         for category, items in self.index.items():
             for item in items:
                 # Search in filename
                 if query_lower in item.name.lower():
                     results.append(item)
                     continue
-                
+
                 # For JSON files, search in content
-                if item.path.suffix == '.json' and item.size_bytes < 1000000:  # < 1MB
+                if item.path.suffix == ".json" and item.size_bytes < 1000000:  # < 1MB
                     try:
-                        with open(item.path, 'r', encoding='utf-8', errors='ignore') as f:
+                        with open(item.path, encoding="utf-8", errors="ignore") as f:
                             content = f.read()
                             if query_lower in content.lower():
                                 results.append(item)
                     except:
                         pass
-        
+
         return results
-    
+
     def list_category(self, category: str) -> list[KnowledgeItem]:
         """List all items in a category."""
         return self.index.get(category, [])
-    
+
     def get_pdf_manuals(self) -> list[KnowledgeItem]:
         """Get all PDF training manuals."""
         pdfs = []
         for category, items in self.index.items():
             for item in items:
-                if item.path.suffix == '.pdf':
+                if item.path.suffix == ".pdf":
                     pdfs.append(item)
         return sorted(pdfs, key=lambda x: x.size_bytes, reverse=True)
-    
+
     def get_country_packs(self) -> list[KnowledgeItem]:
         """Get all country knowledge packs."""
-        return [i for i in self.index.get("packs", []) 
-                if 'country' in str(i.path).lower() or 'vn_' in i.name.lower()]
-    
+        return [
+            i
+            for i in self.index.get("packs", [])
+            if "country" in str(i.path).lower() or "vn_" in i.name.lower()
+        ]
+
     def print_stats(self):
         """Print detailed statistics."""
         print("\n" + "=" * 70)
@@ -204,20 +206,20 @@ class KnowledgeDiscovery:
         print("=" * 70)
         print(f"\nTotal Files: {self.stats['total_files']}")
         print(f"Total Size: {self.stats['total_size_mb']:.2f} MB")
-        print(f"\nBreakdown:")
+        print("\nBreakdown:")
         print(f"  JSON Engines: {self.stats['json_engines']}")
         print(f"  PDF Manuals: {self.stats['pdf_manuals']}")
         print(f"  Text Specs: {self.stats['txt_specs']}")
-        
-        print(f"\nTop 10 Largest Files:")
+
+        print("\nTop 10 Largest Files:")
         all_items = []
         for items in self.index.values():
             all_items.extend(items)
-        
+
         for item in sorted(all_items, key=lambda x: x.size_bytes, reverse=True)[:10]:
             size_mb = item.size_bytes / (1024 * 1024)
             print(f"  {size_mb:8.2f} MB | {item.name[:50]}")
-    
+
     def browse_interactive(self):
         """Interactive browser for knowledge discovery."""
         print("\n" + "=" * 70)
@@ -230,14 +232,16 @@ class KnowledgeDiscovery:
         print("  4. countries        - List country packs")
         print("  5. stats            - Show statistics")
         print("  6. quit             - Exit browser")
-        print("\nCategories: cognitive, tech, domains, unipower, kernels, core, packs, training, archive")
-        
+        print(
+            "\nCategories: cognitive, tech, domains, unipower, kernels, core, packs, training, archive"
+        )
+
         while True:
             try:
                 cmd = input("\n> ").strip().split()
                 if not cmd:
                     continue
-                
+
                 if cmd[0] == "quit":
                     break
                 elif cmd[0] == "stats":
@@ -272,7 +276,7 @@ class KnowledgeDiscovery:
                 break
             except Exception as e:
                 print(f"Error: {e}")
-        
+
         print("\nGoodbye!")
 
 
@@ -287,16 +291,20 @@ Examples:
   python amos_knowledge_discovery.py search "biology"
   python amos_knowledge_discovery.py list cognitive
   python amos_knowledge_discovery.py browse
-        """
+        """,
     )
-    parser.add_argument("command", nargs="?", default="scan",
-                       choices=["scan", "stats", "search", "list", "browse", "pdfs", "countries"])
+    parser.add_argument(
+        "command",
+        nargs="?",
+        default="scan",
+        choices=["scan", "stats", "search", "list", "browse", "pdfs", "countries"],
+    )
     parser.add_argument("query", nargs="?", help="Search query or category")
-    
+
     args = parser.parse_args()
-    
+
     discovery = KnowledgeDiscovery()
-    
+
     if args.command == "scan":
         discovery.scan()
     elif args.command == "stats":
@@ -335,7 +343,7 @@ Examples:
     elif args.command == "browse":
         discovery.scan()
         discovery.browse_interactive()
-    
+
     return 0
 
 

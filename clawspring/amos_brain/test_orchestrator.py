@@ -8,20 +8,19 @@ consolidated reporting.
 
 import sys
 import time
-import subprocess
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from datetime import datetime
-from pathlib import Path
+from typing import Any
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 @dataclass
 class TestSuiteResult:
     """Result from a test suite execution."""
+
     name: str
     passed: int
     failed: int
@@ -35,17 +34,17 @@ class TestOrchestrator:
     """Orchestrates all AMOS test suites."""
 
     def __init__(self):
-        self.results: List[TestSuiteResult] = []
+        self.results: list[TestSuiteResult] = []
         self.start_time = time.time()
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test orchestration."""
         print("\n" + "=" * 78)
         print(" " * 18 + "AMOS ECOSYSTEM v2.8")
         print(" " * 16 + "AUTOMATED TEST ORCHESTRATOR")
         print("=" * 78)
         print(f"\nStarted: {datetime.now().isoformat()}")
-        print(f"Suites: 4 | Target: Production Readiness\n")
+        print("Suites: 4 | Target: Production Readiness\n")
 
         # Suite 1: Integration Test Suite
         self._run_suite("Integration Test Suite", self._run_integration_suite)
@@ -73,15 +72,17 @@ class TestOrchestrator:
             duration = time.time() - start
 
             status = "PASS" if failed == 0 else "FAIL"
-            self.results.append(TestSuiteResult(
-                name=name,
-                passed=passed,
-                failed=failed,
-                skipped=0,
-                duration=duration,
-                status=status,
-                output=output
-            ))
+            self.results.append(
+                TestSuiteResult(
+                    name=name,
+                    passed=passed,
+                    failed=failed,
+                    skipped=0,
+                    duration=duration,
+                    status=status,
+                    output=output,
+                )
+            )
 
             print(f"  Status: {status}")
             print(f"  Passed: {passed}")
@@ -90,21 +91,24 @@ class TestOrchestrator:
 
         except Exception as e:
             duration = time.time() - start
-            self.results.append(TestSuiteResult(
-                name=name,
-                passed=0,
-                failed=1,
-                skipped=0,
-                duration=duration,
-                status="ERROR",
-                output=str(e)
-            ))
+            self.results.append(
+                TestSuiteResult(
+                    name=name,
+                    passed=0,
+                    failed=1,
+                    skipped=0,
+                    duration=duration,
+                    status="ERROR",
+                    output=str(e),
+                )
+            )
             print(f"  Status: ERROR - {str(e)[:60]}")
 
     def _run_integration_suite(self) -> tuple:
         """Run the 20-test integration suite."""
         try:
             from test_integration_suite import IntegrationTestSuite
+
             suite = IntegrationTestSuite()
             result = suite.run_all_tests()
 
@@ -119,6 +123,7 @@ class TestOrchestrator:
         """Run system health validation."""
         try:
             from system_health_validator import SystemHealthValidator
+
             validator = SystemHealthValidator()
             result = validator.run_full_validation()
 
@@ -134,6 +139,7 @@ class TestOrchestrator:
         """Run the 7-phase complete demo."""
         try:
             from demo_complete_system import CompleteSystemDemo
+
             demo = CompleteSystemDemo()
             result = demo.run_full_demo()
 
@@ -192,7 +198,7 @@ class TestOrchestrator:
 
         return passed, failed, f"Modules: {passed}/{passed + failed}"
 
-    def _generate_final_report(self) -> Dict[str, Any]:
+    def _generate_final_report(self) -> dict[str, Any]:
         """Generate final orchestrated test report."""
         duration = time.time() - self.start_time
 
@@ -217,13 +223,13 @@ class TestOrchestrator:
         print("ORCHESTRATED TEST REPORT")
         print("=" * 78)
 
-        print(f"\nExecution Summary:")
+        print("\nExecution Summary:")
         print(f"  Total Suites: {len(self.results)}")
         print(f"  Total Passed: {total_passed}")
         print(f"  Total Failed: {total_failed}")
         print(f"  Duration: {duration:.2f}s")
 
-        print(f"\nSuite Results:")
+        print("\nSuite Results:")
         for result in self.results:
             icon = "✓" if result.status == "PASS" else "✗"
             print(f"  {icon} {result.name:.<35} {result.status} ({result.duration:.1f}s)")
@@ -252,10 +258,10 @@ class TestOrchestrator:
                     "status": r.status,
                     "passed": r.passed,
                     "failed": r.failed,
-                    "duration": r.duration
+                    "duration": r.duration,
                 }
                 for r in self.results
-            ]
+            ],
         }
 
 

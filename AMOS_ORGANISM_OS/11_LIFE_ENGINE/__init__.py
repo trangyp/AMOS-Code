@@ -1,5 +1,4 @@
-"""
-11_LIFE_ENGINE — Growth, Adaptation & Evolution
+"""11_LIFE_ENGINE — Growth, Adaptation & Evolution
 ===============================================
 
 The life management layer of AMOS.
@@ -13,10 +12,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from .adaptation_system import AdaptationStrategy, AdaptationSystem, EnvironmentFeedback
 from .growth_engine import GrowthEngine, GrowthPlan, GrowthStage
-from .adaptation_system import AdaptationSystem, AdaptationStrategy, EnvironmentFeedback
-from .health_monitor import HealthMonitor, HealthMetric, HealthStatus
-from .lifecycle_manager import LifecycleManager, LifecycleStage, LifecycleEvent
+from .health_monitor import HealthMetric, HealthMonitor, HealthStatus
+from .lifecycle_manager import LifecycleEvent, LifecycleManager, LifecycleStage
 
 __all__ = [
     # Growth

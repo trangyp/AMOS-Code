@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Unified UI with WebSocket Support
+"""AMOS Brain Unified UI with WebSocket Support
 =============================================
 
 Single, production-ready interface combining both UIs with real-time updates.
@@ -11,21 +10,22 @@ Version: 4.0.0
 
 from __future__ import annotations
 
+import asyncio
 import json
 import sys
 import threading
 import webbrowser
-import asyncio
-import websockets
 from datetime import datetime
-from typing import Any, Dict, Set
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Any
 from urllib.parse import urlparse
 
-from amos_brain import think, validate, decide
+import websockets
+
+from amos_brain import decide, think, validate
 
 # Global state for WebSocket connections
-connected_clients: Set[websockets.WebSocketServerProtocol] = set()
+connected_clients: set[websockets.WebSocketServerProtocol] = set()
 
 
 class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
@@ -80,7 +80,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         else:
             self._send_json({"error": "Not found"}, 404)
 
-    def _send_json(self, data: Dict, status: int = 200) -> None:
+    def _send_json(self, data: dict, status: int = 200) -> None:
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -110,11 +110,9 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             return
 
         status = self.brain.status()
-        self._send_json({
-            "status": "active",
-            "brain": status,
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        self._send_json(
+            {"status": "active", "brain": status, "timestamp": datetime.utcnow().isoformat()}
+        )
 
     def _serve_thoughts(self) -> None:
         if not self.brain:
@@ -129,7 +127,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 "source": t.source,
                 "timestamp": t.timestamp,
                 "confidence": t.confidence,
-                "tags": t.tags
+                "tags": t.tags,
             }
             for t in self.brain.state.get_recent_thoughts(20)
         ]
@@ -147,7 +145,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 "status": p.status,
                 "horizon": p.horizon,
                 "steps": len(p.steps),
-                "created_at": p.created_at
+                "created_at": p.created_at,
             }
             for p in self.brain.state.active_plans
         ]
@@ -182,7 +180,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         ]
         self._send_json({"layers": layers})
 
-    def _handle_think(self, data: Dict) -> None:
+    def _handle_think(self, data: dict) -> None:
         query = data.get("query", "")
         if not query:
             self._send_json({"error": "No query provided"}, 400)
@@ -197,7 +195,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "query": query,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             if hasattr(result, "content"):
@@ -205,7 +203,9 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                     "content": result.content,
                     "reasoning": result.reasoning if hasattr(result, "reasoning") else [],
                     "confidence": result.confidence if hasattr(result, "confidence") else "medium",
-                    "law_compliant": result.law_compliant if hasattr(result, "law_compliant") else True
+                    "law_compliant": result.law_compliant
+                    if hasattr(result, "law_compliant")
+                    else True,
                 }
             else:
                 response_data["result"] = {"content": str(result)}
@@ -214,7 +214,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_decide(self, data: Dict) -> None:
+    def _handle_decide(self, data: dict) -> None:
         scenario = data.get("scenario", "")
         options = data.get("options", [])
 
@@ -231,14 +231,14 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "scenario": scenario,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             if hasattr(result, "approved"):
                 response_data["decision"] = {
                     "approved": result.approved,
                     "reasoning": result.reasoning if hasattr(result, "reasoning") else "",
-                    "risk_level": result.risk_level if hasattr(result, "risk_level") else "low"
+                    "risk_level": result.risk_level if hasattr(result, "risk_level") else "low",
                 }
             else:
                 response_data["decision"] = {"content": str(result)}
@@ -247,7 +247,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_validate(self, data: Dict) -> None:
+    def _handle_validate(self, data: dict) -> None:
         proposition = data.get("proposition", "")
         if not proposition:
             self._send_json({"error": "No proposition provided"}, 400)
@@ -259,7 +259,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "proposition": proposition,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }
 
             if hasattr(result, "to_dict"):
@@ -271,7 +271,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_perceive(self, data: Dict) -> None:
+    def _handle_perceive(self, data: dict) -> None:
         content = data.get("content", "")
         source = data.get("source", "user_ui")
 
@@ -281,17 +281,19 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
 
         try:
             thought = self.brain.perceive(content, source)
-            self._send_json({
-                "success": True,
-                "thought_id": thought.id,
-                "content": thought.content,
-                "type": thought.type.value,
-                "timestamp": thought.timestamp
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "thought_id": thought.id,
+                    "content": thought.content,
+                    "type": thought.type.value,
+                    "timestamp": thought.timestamp,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
-    def _handle_plan(self, data: Dict) -> None:
+    def _handle_plan(self, data: dict) -> None:
         goal = data.get("goal", "")
         horizon = data.get("horizon", "medium-term")
 
@@ -301,14 +303,16 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
 
         try:
             plan = self.brain.create_plan(goal, horizon)
-            self._send_json({
-                "success": True,
-                "plan_id": plan.id,
-                "goal": plan.goal,
-                "horizon": plan.horizon,
-                "status": plan.status,
-                "created_at": plan.created_at
-            })
+            self._send_json(
+                {
+                    "success": True,
+                    "plan_id": plan.id,
+                    "goal": plan.goal,
+                    "horizon": plan.horizon,
+                    "status": plan.status,
+                    "created_at": plan.created_at,
+                }
+            )
         except Exception as e:
             self._send_json({"error": str(e)}, 500)
 
@@ -317,7 +321,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
         self._send_html(html)
 
     def _generate_unified_html(self) -> str:
-        return '''<!DOCTYPE html>
+        return """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -575,7 +579,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             <span>🟢</span> WebSocket Connected
         </div>
     </header>
-    
+
     <main class="main-container">
         <aside class="cognitive-stack">
             <div class="layer active" data-layer="6">
@@ -603,7 +607,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 <span class="layer-name">Perceptual</span>
             </div>
         </aside>
-        
+
         <section class="center-panel">
             <div class="input-section">
                 <div class="mode-selector">
@@ -612,7 +616,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                     <button class="mode-btn" onclick="setMode(\'validate\')">✓ Validate</button>
                     <button class="mode-btn" onclick="setMode(\'plan\')">📋 Plan</button>
                 </div>
-                <textarea id="main-input" class="input-field" 
+                <textarea id="main-input" class="input-field"
                     placeholder="Enter your cognitive query..."></textarea>
                 <div class="input-actions">
                     <button class="btn btn-primary" onclick="processInput()">🚀 Process</button>
@@ -621,7 +625,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             </div>
             <div class="results-section" id="results"></div>
         </section>
-        
+
         <aside class="right-panel">
             <div class="panel-card">
                 <div class="panel-title">📊 Metrics</div>
@@ -648,22 +652,22 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             </div>
         </aside>
     </main>
-    
+
     <script>
         let currentMode = \'think\';
         let ws = null;
-        
+
         // WebSocket connection
         function connectWebSocket() {
             const wsUrl = `ws://${window.location.host}/ws`;
             ws = new WebSocket(wsUrl);
-            
+
             ws.onopen = () => {
                 console.log(\'WebSocket connected\');
                 document.getElementById(\'ws-status\').classList.remove(\'disconnected\');
                 document.getElementById(\'ws-status\').innerHTML = \'<span>🟢</span> WebSocket Connected\';
             };
-            
+
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === \'thought\') {
@@ -671,7 +675,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                     loadStatus();
                 }
             };
-            
+
             ws.onclose = () => {
                 console.log(\'WebSocket disconnected\');
                 document.getElementById(\'ws-status\').classList.add(\'disconnected\');
@@ -679,41 +683,41 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 setTimeout(connectWebSocket, 5000);
             };
         }
-        
+
         function setMode(mode) {
             currentMode = mode;
             document.querySelectorAll(\'.mode-btn\').forEach(btn => btn.classList.remove(\'active\'));
             event.target.classList.add(\'active\');
         }
-        
+
         async function processInput() {
             const input = document.getElementById(\'main-input\').value.trim();
             if (!input) return;
-            
+
             const results = document.getElementById(\'results\');
             results.innerHTML = \'<div class="processing"><div class="spinner"></div>Processing...</div>\';
-            
+
             const endpoints = {
                 think: \'/api/think\',
                 decide: \'/api/decide\',
                 validate: \'/api/validate\',
                 plan: \'/api/plan\'
             };
-            
+
             const bodies = {
                 think: { query: input },
                 decide: { scenario: input },
                 validate: { proposition: input },
                 plan: { goal: input }
             };
-            
+
             try {
                 const response = await fetch(endpoints[currentMode], {
                     method: \'POST\',
                     headers: { \'Content-Type\': \'application/json\' },
                     body: JSON.stringify(bodies[currentMode])
                 });
-                
+
                 const result = await response.json();
                 displayResult(result);
                 loadThoughts();
@@ -722,17 +726,17 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 results.innerHTML = `<div class="result-card" style="border-color: #F44336;">Error: ${error.message}</div>`;
             }
         }
-        
+
         function displayResult(result) {
             const results = document.getElementById(\'results\');
             const content = result.result?.content || result.decision?.approved || JSON.stringify(result);
             const reasoning = result.result?.reasoning || [];
-            
+
             let reasoningHtml = \'\';
             if (reasoning.length > 0) {
                 reasoningHtml = `<div class="reasoning-path"><strong>Reasoning Path:</strong><br>${reasoning.join(\'<br>\')}</div>`;
             }
-            
+
             results.innerHTML = `
                 <div class="result-card">
                     <div class="result-header">
@@ -744,7 +748,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 </div>
             `;
         }
-        
+
         async function loadStatus() {
             try {
                 const response = await fetch(\'/api/status\');
@@ -756,7 +760,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 }
             } catch (e) {}
         }
-        
+
         async function loadThoughts() {
             try {
                 const response = await fetch(\'/api/thoughts\');
@@ -771,12 +775,12 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
                 }
             } catch (e) {}
         }
-        
+
         function clearAll() {
             document.getElementById(\'main-input\').value = \'\';
             document.getElementById(\'results\').innerHTML = \'\';
         }
-        
+
         // Initialize
         document.addEventListener(\'DOMContentLoaded\', () => {
             loadStatus();
@@ -784,22 +788,21 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             connectWebSocket();
             setInterval(() => { loadStatus(); loadThoughts(); }, 5000);
         });
-        
+
         document.getElementById(\'main-input\').addEventListener(\'keydown\', (e) => {
             if (e.key === \'Enter\' && e.metaKey) processInput();
         });
     </script>
 </body>
-</html>'''
+</html>"""
 
 
-async def broadcast_update(update_type: str, data: Dict) -> None:
+async def broadcast_update(update_type: str, data: dict) -> None:
     """Broadcast update to all connected WebSocket clients."""
     if connected_clients:
         message = json.dumps({"type": update_type, "data": data})
         await asyncio.gather(
-            *[client.send(message) for client in connected_clients],
-            return_exceptions=True
+            *[client.send(message) for client in connected_clients], return_exceptions=True
         )
 
 
@@ -841,6 +844,7 @@ def run_unified_server(http_port: int = 8890, ws_port: int = 8891) -> None:
     print("🧠 Initializing AMOS Brain Unified UI...")
     try:
         from AMOS_ORGANISM_OS.organism import AmosOrganism
+
         organism = AmosOrganism()
         UnifiedBrainUIHandler.orchestrator = organism
         UnifiedBrainUIHandler.brain = organism.brain
@@ -848,6 +852,7 @@ def run_unified_server(http_port: int = 8890, ws_port: int = 8891) -> None:
     except Exception as e:
         print(f"   ⚠ Brain init warning: {e}")
         from AMOS_ORGANISM_OS.BRAIN.brain_os import BrainOS
+
         brain = BrainOS()
         UnifiedBrainUIHandler.brain = brain
         print(f"   ✓ Brain loaded (fallback): {brain.state.session_id}")

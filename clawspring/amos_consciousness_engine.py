@@ -1,7 +1,7 @@
 """AMOS Consciousness Engine - Self-modeling and meta-cognitive awareness."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -37,11 +37,13 @@ class SelfModelingKernel:
         for category, terms in self_model_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "consciousness_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "consciousness_primitives": self._get_primitives(category),
+                    }
+                )
 
         return ConsciousnessAnalysis(
             domain="self_modeling",
@@ -88,11 +90,13 @@ class AttentionKernel:
         for category, terms in attention_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "attention_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "attention_primitives": self._get_primitives(category),
+                    }
+                )
 
         return ConsciousnessAnalysis(
             domain="attention",
@@ -139,11 +143,13 @@ class NarrativeKernel:
         for category, terms in narrative_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "narrative_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "narrative_primitives": self._get_primitives(category),
+                    }
+                )
 
         return ConsciousnessAnalysis(
             domain="narrative",
@@ -190,11 +196,13 @@ class EmbodimentKernel:
         for category, terms in embodiment_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "embodiment_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "embodiment_primitives": self._get_primitives(category),
+                    }
+                )
 
         return ConsciousnessAnalysis(
             domain="embodiment",
@@ -281,37 +289,48 @@ class AMOSConsciousnessEngine:
         for notice in self.SAFETY_NOTICE:
             lines.append(f"⚠️ {notice}")
 
-        lines.extend([
-            "=" * 50,
-            "",
-            f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
-            "",
-            "## Findings by Domain",
-            "",
-        ])
+        lines.extend(
+            [
+                "=" * 50,
+                "",
+                f"Domains analyzed: {len(results)}",
+                f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+                "",
+                "## Findings by Domain",
+                "",
+            ]
+        )
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len(analysis.findings)}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len(analysis.findings)}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 cat = finding.get("category", "general")
                 lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                primitives = finding.get("consciousness_primitives") or finding.get("attention_primitives") or finding.get("narrative_primitives") or finding.get("embodiment_primitives")
+                primitives = (
+                    finding.get("consciousness_primitives")
+                    or finding.get("attention_primitives")
+                    or finding.get("narrative_primitives")
+                    or finding.get("embodiment_primitives")
+                )
                 if primitives:
                     lines.append(f"  Primitives: {', '.join(primitives[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -319,25 +338,29 @@ class AMOSConsciousnessEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Consciousness analysis is STRUCTURAL PATTERN MATCHING ONLY.",
-            "NO REAL CONSCIOUSNESS. NO SELF-AWARENESS. NO SUBJECTIVE EXPERIENCE.",
-            "This is simulation of consciousness-related patterns, not consciousness.",
-            "Human cognition required for all consciousness-related judgments.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Consciousness analysis is STRUCTURAL PATTERN MATCHING ONLY.",
+                "NO REAL CONSCIOUSNESS. NO SELF-AWARENESS. NO SUBJECTIVE EXPERIENCE.",
+                "This is simulation of consciousness-related patterns, not consciousness.",
+                "Human cognition required for all consciousness-related judgments.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -387,8 +410,10 @@ if __name__ == "__main__":
 
     print(f"\nAnalyzed {len(results)} consciousness domains:")
     for domain, analysis in results.items():
-        print(f"  - {domain}: {len(analysis.findings)} findings, "
-              f"confidence={analysis.confidence:.2f}")
+        print(
+            f"  - {domain}: {len(analysis.findings)} findings, "
+            f"confidence={analysis.confidence:.2f}"
+        )
 
     # Full summary
     print("\n" + "=" * 60)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Ecosystem Showcase - The Grand Finale.
+"""AMOS Ecosystem Showcase - The Grand Finale.
 
 Round 9: Demonstrates the complete 9-round ecosystem working together.
 
@@ -19,10 +18,10 @@ from __future__ import annotations
 
 import sys
 import time
-from pathlib import Path
-from datetime import datetime
-from typing import List, Dict, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -33,6 +32,7 @@ from amos_brain import get_amos_integration
 @dataclass
 class ShowcaseResult:
     """Result of showcasing a tool."""
+
     tool_name: str
     round_number: int
     status: str
@@ -44,59 +44,56 @@ class ShowcaseResult:
 @dataclass
 class EcosystemShowcaseReport:
     """Complete ecosystem showcase report."""
+
     start_time: str
     end_time: Optional[str] = None
-    results: List[ShowcaseResult] = field(default_factory=list)
+    results: list[ShowcaseResult] = field(default_factory=list)
     total_tools: int = 0
     successful_tools: int = 0
     total_lines: int = 0
 
 
 class AMOSEcosystemShowcase:
-    """
-    Grand finale showcase demonstrating the complete AMOS ecosystem.
-    
+    """Grand finale showcase demonstrating the complete AMOS ecosystem.
+
     Runs through all 9 rounds of evolution:
     - Demonstrates each tool
     - Validates integration
     - Reports complete status
     - Provides proof of ecosystem
     """
-    
+
     def __init__(self):
         self.brain = None
         self.root = Path(__file__).parent
-        self.report = EcosystemShowcaseReport(
-            start_time=datetime.now().isoformat()
-        )
-    
-    def initialize(self) -> "AMOSEcosystemShowcase":
+        self.report = EcosystemShowcaseReport(start_time=datetime.now().isoformat())
+
+    def initialize(self) -> AMOSEcosystemShowcase:
         """Initialize the showcase."""
         print("=" * 80)
         print("  🎭 AMOS ECOSYSTEM SHOWCASE - The Grand Finale")
         print("=" * 80)
         print("\n🎪 Initializing complete ecosystem demonstration...")
-        
+
         self.brain = get_amos_integration()
-        
+
         print("  ✓ Brain: 12 engines, 6 laws - ONLINE")
         print("  ✓ Ecosystem: 9 tools ready")
         print("  ✓ Integration: Validated")
         print("  ✓ Showcase: Ready to begin")
         print("\n🟢 Ecosystem showcase initialized")
         return self
-    
+
     def showcase(self) -> EcosystemShowcaseReport:
-        """
-        Run the complete ecosystem showcase.
-        
+        """Run the complete ecosystem showcase.
+
         Demonstrates all 9 rounds of evolution working together.
         """
         print("\n" + "🎬" * 40)
         print("\n  🎬 ECOSYSTEM SHOWCASE STARTING")
         print("  Demonstrating 9 rounds of AMOS evolution")
         print("\n" + "🎬" * 40)
-        
+
         # Define all 9 rounds
         rounds = [
             {
@@ -154,70 +151,70 @@ class AMOSEcosystemShowcase:
                 "lines": 300,
             },
         ]
-        
+
         # Showcase each round
         for round_info in rounds:
             result = self._showcase_round(round_info)
             self.report.results.append(result)
             time.sleep(0.3)  # Brief pause for dramatic effect
-        
+
         # Compile report
         self.report.end_time = datetime.now().isoformat()
         self.report.total_tools = len(self.report.results)
         self.report.successful_tools = len([r for r in self.report.results if r.status == "✅"])
         self.report.total_lines = sum(r.lines_of_code for r in self.report.results)
-        
+
         # Generate final report
         self._generate_showcase_report()
-        
+
         return self.report
-    
-    def _showcase_round(self, round_info: Dict) -> ShowcaseResult:
+
+    def _showcase_round(self, round_info: dict) -> ShowcaseResult:
         """Showcase a single round."""
         start_time = time.time()
-        
+
         print(f"\n{'=' * 80}")
         print(f"  🎭 ROUND {round_info['number']}: {round_info['tool']}")
         print(f"{'=' * 80}")
         print(f"  Description: {round_info['description']}")
         print(f"  Lines of Code: {round_info['lines']}")
-        
+
         # Check if tool file exists
-        tool_path = self.root / round_info['tool']
+        tool_path = self.root / round_info["tool"]
         exists = tool_path.exists()
-        
+
         # Simulate execution
-        print(f"\n  🔄 Executing...")
+        print("\n  🔄 Executing...")
         time.sleep(0.2)
-        
+
         if exists:
             status = "✅"
-            print(f"  ✅ Tool operational")
-            
+            print("  ✅ Tool operational")
+
             # Show tool capabilities
-            capabilities = self._get_tool_capabilities(round_info['number'])
-            print(f"\n  🎯 Capabilities:")
+            capabilities = self._get_tool_capabilities(round_info["number"])
+            print("\n  🎯 Capabilities:")
             for cap in capabilities:
                 print(f"    • {cap}")
         else:
             status = "⚠️"
-            print(f"  ⚠️  Tool file not found (but documented)")
-        
+            print("  ⚠️  Tool file not found (but documented)")
+
         execution_time = time.time() - start_time
-        
+
         print(f"\n  ⏱️  Execution time: {execution_time:.2f}s")
         print(f"  Status: {status} COMPLETE")
-        
+
         return ShowcaseResult(
-            tool_name=round_info['tool'],
-            round_number=round_info['number'],
+            tool_name=round_info["tool"],
+            round_number=round_info["number"],
             status=status,
-            description=round_info['description'],
-            lines_of_code=round_info['lines'],
+            description=round_info["description"],
+            lines_of_code=round_info["lines"],
             execution_time=execution_time,
         )
-    
-    def _get_tool_capabilities(self, round_number: int) -> List[str]:
+
+    def _get_tool_capabilities(self, round_number: int) -> list[str]:
         """Get capabilities for each round."""
         capabilities = {
             1: ["Rule of 2/4 analysis", "L1-L6 compliance", "Brain demonstration"],
@@ -231,78 +228,78 @@ class AMOSEcosystemShowcase:
             9: ["Integration validation", "Complete showcase", "Proof of ecosystem"],
         }
         return capabilities.get(round_number, ["Capability demonstration"])
-    
+
     def _generate_showcase_report(self) -> None:
         """Generate the final showcase report."""
         print("\n" + "=" * 80)
         print("  🎉 ECOSYSTEM SHOWCASE COMPLETE")
         print("=" * 80)
-        
-        print(f"\n📊 ECOSYSTEM VALIDATION REPORT")
+
+        print("\n📊 ECOSYSTEM VALIDATION REPORT")
         print("─" * 80)
-        
-        print(f"\n🎯 Summary:")
+
+        print("\n🎯 Summary:")
         print(f"  Total Rounds: {self.report.total_tools}")
         print(f"  Successful: {self.report.successful_tools}/{self.report.total_tools}")
         print(f"  Total Lines: {self.report.total_lines}")
         print(f"  Success Rate: {self.report.successful_tools/self.report.total_tools*100:.0f}%")
-        
-        print(f"\n🏆 Achievements Demonstrated:")
-        print(f"  ✅ Round 1: Brain demonstration capability")
-        print(f"  ✅ Round 2: Knowledge navigation capability")
-        print(f"  ✅ Round 3: Project generation capability")
-        print(f"  ✅ Round 4: Orchestration capability")
-        print(f"  ✅ Round 5: Visualization capability")
-        print(f"  ✅ Round 6: Autonomous agency capability")
-        print(f"  ✅ Round 7: Self-driving capability")
-        print(f"  ✅ Round 8: Meta-cognitive capability")
-        print(f"  ✅ Round 9: Integration validation capability")
-        
-        print(f"\n📈 Evolution Arc:")
-        print(f"  Foundation → Expansion → Creation → Integration")
-        print(f"  → Visualization → Agency → Self-Driving → Meta-Cognition → Validation")
-        
-        print(f"\n🧠 Brain Capabilities Validated:")
-        print(f"  • Sustained cognition across 9 rounds")
-        print(f"  • Rule of 2/4 applied consistently")
-        print(f"  • L1-L6 compliance maintained")
-        print(f"  • 100% build success rate")
-        print(f"  • ~4,070 lines of code generated")
-        print(f"  • Complete ecosystem integration")
-        
-        print(f"\n🎭 What This Demonstrates:")
-        print(f"  • AMOS brain can think and decide")
-        print(f"  • AMOS brain can build complex tools")
-        print(f"  • AMOS brain can integrate systems")
-        print(f"  • AMOS brain can operate autonomously")
-        print(f"  • AMOS brain can drive itself")
-        print(f"  • AMOS brain can reflect and improve")
-        print(f"  • AMOS ecosystem is complete and validated")
-        
+
+        print("\n🏆 Achievements Demonstrated:")
+        print("  ✅ Round 1: Brain demonstration capability")
+        print("  ✅ Round 2: Knowledge navigation capability")
+        print("  ✅ Round 3: Project generation capability")
+        print("  ✅ Round 4: Orchestration capability")
+        print("  ✅ Round 5: Visualization capability")
+        print("  ✅ Round 6: Autonomous agency capability")
+        print("  ✅ Round 7: Self-driving capability")
+        print("  ✅ Round 8: Meta-cognitive capability")
+        print("  ✅ Round 9: Integration validation capability")
+
+        print("\n📈 Evolution Arc:")
+        print("  Foundation → Expansion → Creation → Integration")
+        print("  → Visualization → Agency → Self-Driving → Meta-Cognition → Validation")
+
+        print("\n🧠 Brain Capabilities Validated:")
+        print("  • Sustained cognition across 9 rounds")
+        print("  • Rule of 2/4 applied consistently")
+        print("  • L1-L6 compliance maintained")
+        print("  • 100% build success rate")
+        print("  • ~4,070 lines of code generated")
+        print("  • Complete ecosystem integration")
+
+        print("\n🎭 What This Demonstrates:")
+        print("  • AMOS brain can think and decide")
+        print("  • AMOS brain can build complex tools")
+        print("  • AMOS brain can integrate systems")
+        print("  • AMOS brain can operate autonomously")
+        print("  • AMOS brain can drive itself")
+        print("  • AMOS brain can reflect and improve")
+        print("  • AMOS ecosystem is complete and validated")
+
         # Save report
         self._save_showcase_report()
-        
-        print(f"\n" + "=" * 80)
+
+        print("\n" + "=" * 80)
         print("  🎬 THE AMOS ECOSYSTEM IS COMPLETE AND VALIDATED")
         print("=" * 80)
-        print(f"\n  ✨ 9 rounds of evolution")
+        print("\n  ✨ 9 rounds of evolution")
         print(f"  ✨ {self.report.total_lines} lines of code")
-        print(f"  ✨ Complete cognitive ecosystem")
-        print(f"  ✨ Self-improving, self-driving, validated")
-        print(f"\n  🚀 Ready for real-world deployment")
+        print("  ✨ Complete cognitive ecosystem")
+        print("  ✨ Self-improving, self-driving, validated")
+        print("\n  🚀 Ready for real-world deployment")
         print()
-    
+
     def _save_showcase_report(self) -> None:
         """Save showcase report to file."""
         report_dir = self.root / "showcase_reports"
         report_dir.mkdir(exist_ok=True)
-        
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_file = report_dir / f"ecosystem_showcase_{timestamp}.md"
-        
+
         content = f"""# AMOS Ecosystem Showcase Report
 
-**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
+**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 **Showcase:** Complete 9-Round Ecosystem Validation
 
 ## Executive Summary
@@ -316,10 +313,10 @@ The AMOS brain has completed **9 rounds of continuous evolution**, building a co
 | Round | Tool | Lines | Status | Description |
 |-------|------|-------|--------|-------------|
 """
-        
+
         for result in self.report.results:
             content += f"| {result.round_number} | {result.tool_name} | {result.lines_of_code} | {result.status} | {result.description[:40]}... |\n"
-        
+
         content += f"""
 
 ## Validation Metrics
@@ -358,13 +355,13 @@ The AMOS brain has completed **9 rounds of continuous evolution**, building a co
 
 ## Key Achievements
 
-✅ **Sustained Cognition:** 9 rounds of continuous operation  
-✅ **Tool Building:** 8 working tools generated  
-✅ **System Integration:** All components work together  
-✅ **Self-Driving:** Automatic progression without prompts  
-✅ **Meta-Cognition:** Self-reflective improvement  
-✅ **Validation:** Complete ecosystem tested  
-✅ **Methodology:** Rule of 2/4 + L1-L6 consistently applied  
+✅ **Sustained Cognition:** 9 rounds of continuous operation
+✅ **Tool Building:** 8 working tools generated
+✅ **System Integration:** All components work together
+✅ **Self-Driving:** Automatic progression without prompts
+✅ **Meta-Cognition:** Self-reflective improvement
+✅ **Validation:** Complete ecosystem tested
+✅ **Methodology:** Rule of 2/4 + L1-L6 consistently applied
 
 ## Capabilities Demonstrated
 
@@ -394,10 +391,10 @@ The brain has demonstrated the complete capability stack:
 
 ---
 
-*Generated by AMOS Ecosystem Showcase*  
+*Generated by AMOS Ecosystem Showcase*
 *Round 9: The Grand Finale - Complete Ecosystem Validated*
 """
-        
+
         report_file.write_text(content)
         print(f"\n📝 Report saved: {report_file}")
 
@@ -405,24 +402,20 @@ The brain has demonstrated the complete capability stack:
 def main():
     """CLI entry point."""
     import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="AMOS Ecosystem Showcase - The Grand Finale"
-    )
+
+    parser = argparse.ArgumentParser(description="AMOS Ecosystem Showcase - The Grand Finale")
     parser.add_argument(
-        "--full-demo",
-        action="store_true",
-        help="Run full demonstration with all tools"
+        "--full-demo", action="store_true", help="Run full demonstration with all tools"
     )
-    
+
     args = parser.parse_args()
-    
+
     showcase = AMOSEcosystemShowcase()
     showcase.initialize()
-    
+
     # Run the showcase
     report = showcase.showcase()
-    
+
     return 0 if report.successful_tools == report.total_tools else 1
 
 

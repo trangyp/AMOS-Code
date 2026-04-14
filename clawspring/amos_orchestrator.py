@@ -4,10 +4,11 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable
+from typing import Callable
+
+from amos_execution import full_execute, get_execution_kernel
 
 from amos_runtime import get_runtime
-from amos_execution import get_execution_kernel, full_execute
 
 
 @dataclass
@@ -79,7 +80,8 @@ class StepHandlers:
             "has_gap_acknowledgment": "gap" in content.lower() or "embodiment" in content.lower(),
             "has_assumptions": "assumption" in content.lower(),
             "proper_length": len(content) > 200,
-            "no_vague_language": "vibration" not in content.lower() and "energy" not in content.lower(),
+            "no_vague_language": "vibration" not in content.lower()
+            and "energy" not in content.lower(),
         }
         return {"checks": checks, "all_passed": all(checks.values()), "laws_verified": len(laws)}
 
@@ -172,7 +174,9 @@ class AMOSWorkflowOrchestrator:
         workflow.completed_at = datetime.now()
         return workflow
 
-    def create_standard_workflow(self, task: str, output_type: str = "structured_explanation") -> Workflow:
+    def create_standard_workflow(
+        self, task: str, output_type: str = "structured_explanation"
+    ) -> Workflow:
         """Create standard 4-step workflow: cognitive → execution → validation → output."""
         return self.create_workflow(
             name=f"AMOS_Standard_{task[:30]}",

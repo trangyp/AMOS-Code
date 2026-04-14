@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS ∞ — Deepest Formal Closure
+"""AMOS ∞ — Deepest Formal Closure
 
 Recursive, higher-order, multi-scale ontology of executable reality.
 
@@ -33,29 +32,32 @@ Usage:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple, Any, Callable
-from enum import Enum, auto
 from datetime import datetime
-import numpy as np
+from enum import Enum, auto
+from typing import Any, Callable, Optional
 
+import numpy as np
 
 # ============================================================================
 # 1. ABSOLUTE UNIVERSE — Core Structures
 # ============================================================================
 
+
 class Substrate(Enum):
     """Substrate classes (graded by complexity)."""
-    CLASSICAL = auto()    # Grade 0-1
-    QUANTUM = auto()      # Grade 1-2
-    BIOLOGICAL = auto()   # Grade 2-3
-    HYBRID = auto()       # Grade 3-4
-    META = auto()         # Grade 4-5
-    INFINITE = auto()     # Grade 5+ (self-referential closure)
+
+    CLASSICAL = auto()  # Grade 0-1
+    QUANTUM = auto()  # Grade 1-2
+    BIOLOGICAL = auto()  # Grade 2-3
+    HYBRID = auto()  # Grade 3-4
+    META = auto()  # Grade 4-5
+    INFINITE = auto()  # Grade 5+ (self-referential closure)
 
 
 @dataclass
 class ScaleParams:
     """Scale/time/temperature/energy parameters θ."""
+
     time: float = 0.0
     delta_t: float = 1.0
     timescale: str = "classical"  # quantum, classical, biological, ecological
@@ -69,7 +71,7 @@ class ScaleParams:
             "classical": 2,
             "biological": 3,
             "ecological": 4,
-            "civilizational": 5
+            "civilizational": 5,
         }
         return scale_grades.get(self.timescale, 2)
 
@@ -77,12 +79,13 @@ class ScaleParams:
 @dataclass
 class EpistemicState:
     """Epistemic state / belief μ."""
-    belief: Dict[str, float] = field(default_factory=dict)
-    uncertainty: Dict[str, float] = field(default_factory=dict)
+
+    belief: dict[str, float] = field(default_factory=dict)
+    uncertainty: dict[str, float] = field(default_factory=dict)
     confidence: float = 0.5
     gamma: float = 0.1  # learning rate
 
-    def update(self, observation: Dict, noise: float):
+    def update(self, observation: dict, noise: float):
         """Bayesian-like belief update."""
         for key, value in observation.items():
             if key in self.belief:
@@ -97,25 +100,28 @@ class EpistemicState:
 # 2. HYPERBUNDLE STATE — Section 4
 # ============================================================================
 
+
 @dataclass
 class FiberBundle:
     """Base class for state fibers."""
-    substrate: Substrate
-    data: Dict[str, Any] = field(default_factory=dict)
 
-    def project(self) -> Dict:
+    substrate: Substrate
+    data: dict[str, Any] = field(default_factory=dict)
+
+    def project(self) -> dict:
         """Projection to base."""
         return {"substrate": self.substrate.name, "data_keys": list(self.data.keys())}
 
 
-@dataclass 
+@dataclass
 class ClassicalFiber(FiberBundle):
     """Classical fiber X_c = (E_c, S_c, Π_c, H_c, Con_c)."""
+
     energy: float = 0.0  # E_c
-    structure: Dict = field(default_factory=dict)  # S_c
-    policy: Dict = field(default_factory=dict)  # Π_c
-    history: List = field(default_factory=list)  # H_c
-    constraints: Dict = field(default_factory=dict)  # Con_c
+    structure: dict = field(default_factory=dict)  # S_c
+    policy: dict = field(default_factory=dict)  # Π_c
+    history: list = field(default_factory=list)  # H_c
+    constraints: dict = field(default_factory=dict)  # Con_c
 
     def __post_init__(self):
         self.substrate = Substrate.CLASSICAL
@@ -124,11 +130,12 @@ class ClassicalFiber(FiberBundle):
 @dataclass
 class QuantumFiber(FiberBundle):
     """Quantum fiber X_q = (H_q, ρ, O_q, U_q, R_q)."""
+
     hilbert_dim: int = 2
     density_matrix: Optional[np.ndarray] = None  # ρ
-    operators: Dict[str, np.ndarray] = field(default_factory=dict)  # O_q
-    unitaries: List[np.ndarray] = field(default_factory=list)  # U_q
-    resources: Dict[str, float] = field(default_factory=dict)  # R_q
+    operators: dict[str, np.ndarray] = field(default_factory=dict)  # O_q
+    unitaries: list[np.ndarray] = field(default_factory=list)  # U_q
+    resources: dict[str, float] = field(default_factory=dict)  # R_q
 
     def __post_init__(self):
         self.substrate = Substrate.QUANTUM
@@ -146,11 +153,12 @@ class QuantumFiber(FiberBundle):
 @dataclass
 class BiologicalFiber(FiberBundle):
     """Biological fiber X_b = (G, R, P, C, N, N_b, V_b)."""
+
     genome: str = ""  # G - DNA sequence
-    rna_pool: List[str] = field(default_factory=list)  # R
-    proteome: Dict[str, float] = field(default_factory=dict)  # P
-    concentrations: Dict[str, float] = field(default_factory=dict)  # C
-    network_state: Dict = field(default_factory=dict)  # N
+    rna_pool: list[str] = field(default_factory=list)  # R
+    proteome: dict[str, float] = field(default_factory=dict)  # P
+    concentrations: dict[str, float] = field(default_factory=dict)  # C
+    network_state: dict = field(default_factory=dict)  # N
     viability: float = 1.0  # V_b
 
     def __post_init__(self):
@@ -164,11 +172,12 @@ class BiologicalFiber(FiberBundle):
 @dataclass
 class HybridFiber(FiberBundle):
     """Hybrid fiber X_h (bridge states)."""
-    bridge_map: Dict = field(default_factory=dict)  # B_act
+
+    bridge_map: dict = field(default_factory=dict)  # B_act
     time_rescaling: float = 1.0  # T_h
-    scale_params: Dict = field(default_factory=dict)  # S_h
+    scale_params: dict = field(default_factory=dict)  # S_h
     uncertainty_transport: float = 0.0  # U_h
-    perturbation_profile: Dict = field(default_factory=dict)  # Π_h
+    perturbation_profile: dict = field(default_factory=dict)  # Π_h
 
     def __post_init__(self):
         self.substrate = Substrate.HYBRID
@@ -177,14 +186,15 @@ class HybridFiber(FiberBundle):
 @dataclass
 class IdentityFiber(FiberBundle):
     """Identity fiber X_id = (ι, ~_I, p_I)."""
+
     identity_marker: str = ""
     persistence_threshold: float = 0.8  # λ_I
-    identity_metric: Dict[Tuple, float] = field(default_factory=dict)
+    identity_metric: dict[tuple, float] = field(default_factory=dict)
 
     def __post_init__(self):
         self.substrate = Substrate.META
 
-    def measure_identity(self, x1: Dict, x2: Dict) -> float:
+    def measure_identity(self, x1: dict, x2: dict) -> float:
         """Identity metric ι: X × X → [0,1]."""
         # Simplified: compare key features
         if not x1 or not x2:
@@ -200,7 +210,7 @@ class IdentityFiber(FiberBundle):
                 similarities.append(max(0.0, sim))
         return np.mean(similarities) if similarities else 0.0
 
-    def is_same_identity(self, x1: Dict, x2: Dict) -> bool:
+    def is_same_identity(self, x1: dict, x2: dict) -> bool:
         """Check x1 ~_I x2."""
         return self.measure_identity(x1, x2) >= self.persistence_threshold
 
@@ -208,31 +218,32 @@ class IdentityFiber(FiberBundle):
 @dataclass
 class MetaFiber(FiberBundle):
     """Meta fiber X_meta = (Sem, Rep, MetaEval, SelfModel)."""
-    semantics: Dict = field(default_factory=dict)  # Sem
+
+    semantics: dict = field(default_factory=dict)  # Sem
     representation: Any = None  # Rep
     meta_evaluator: Optional[Callable] = None  # MetaEval
-    self_model: Dict = field(default_factory=dict)  # SelfModel
+    self_model: dict = field(default_factory=dict)  # SelfModel
 
     def __post_init__(self):
         self.substrate = Substrate.INFINITE
 
-    def adapt_semantics(self, old_sem: Dict, fitness: float, trace: List) -> Dict:
+    def adapt_semantics(self, old_sem: dict, fitness: float, trace: list) -> dict:
         """Meta-adaptation: Sem_{t+1} = AdaptSem(...)."""
         new_sem = old_sem.copy()
         # Adjust based on fitness feedback
         if fitness < 0.5:
-            new_sem['revision_needed'] = True
-            new_sem['fitness'] = fitness
+            new_sem["revision_needed"] = True
+            new_sem["fitness"] = fitness
         return new_sem
 
 
 @dataclass
 class HyperState:
-    """
-    Hyperbundle state — Section 4 & 5.
+    """Hyperbundle state — Section 4 & 5.
 
     State is a section σ: B_base → X over world-time-scale.
     """
+
     # Fibers
     classical: ClassicalFiber = field(default_factory=ClassicalFiber)
     quantum: Optional[QuantumFiber] = None
@@ -242,11 +253,11 @@ class HyperState:
     meta: Optional[MetaFiber] = None
 
     # Base manifold coordinates (Section 5)
-    world_coords: Dict = field(default_factory=dict)  # W
+    world_coords: dict = field(default_factory=dict)  # W
     scale_params: ScaleParams = field(default_factory=ScaleParams)  # Θ
 
     # Ledger fiber X_ℓ
-    ledger_history: List[Dict] = field(default_factory=list)
+    ledger_history: list[dict] = field(default_factory=list)
 
     # Epistemic fiber X_u
     epistemic: EpistemicState = field(default_factory=EpistemicState)
@@ -259,7 +270,7 @@ class HyperState:
         # Add more components as needed
         return np.array(components)
 
-    def jacobian_block(self, other: 'HyperState') -> np.ndarray:
+    def jacobian_block(self, other: "HyperState") -> np.ndarray:
         """Compute Jacobian J_t between states (Section 6)."""
         # Simplified: return identity with perturbation
         dim = len(self.as_vector())
@@ -270,8 +281,10 @@ class HyperState:
 # 3. ONTOLOGY ∞-GRADED ALGEBRA — Section 7
 # ============================================================================
 
+
 class OntologyGrade(Enum):
     """Grades of the ∞-graded ontology."""
+
     PRIMITIVE = 0
     TYPED = 1
     RELATIONAL = 2
@@ -284,12 +297,13 @@ class OntologyGrade(Enum):
 @dataclass
 class OntologyElement:
     """Element of ∞-graded ontology."""
+
     name: str
     grade: OntologyGrade
     substrate: Substrate
     data: Any = None
 
-    def compose(self, other: 'OntologyElement') -> 'OntologyElement':
+    def compose(self, other: "OntologyElement") -> "OntologyElement":
         """Monoidal composition ⊗_O (Section 7)."""
         # Grade adds under composition
         new_grade = OntologyGrade(min(self.grade.value + other.grade.value, 6))
@@ -297,7 +311,7 @@ class OntologyElement:
             name=f"{self.name}⊗{other.name}",
             grade=new_grade,
             substrate=Substrate.HYBRID if self.substrate != other.substrate else self.substrate,
-            data=(self.data, other.data)
+            data=(self.data, other.data),
         )
 
 
@@ -305,13 +319,13 @@ class OntologyAlgebra:
     """∞-graded ontology algebra O = ⊕_{n≥0} O^{(n)}."""
 
     def __init__(self):
-        self.elements: Dict[str, OntologyElement] = {}
+        self.elements: dict[str, OntologyElement] = {}
         self.substrate_decomp = {
             Substrate.CLASSICAL: [],
             Substrate.QUANTUM: [],
             Substrate.BIOLOGICAL: [],
             Substrate.HYBRID: [],
-            Substrate.META: []
+            Substrate.META: [],
         }
 
     def add(self, element: OntologyElement):
@@ -319,7 +333,7 @@ class OntologyAlgebra:
         self.elements[element.name] = element
         self.substrate_decomp[element.substrate].append(element)
 
-    def get_grade(self, n: int) -> List[OntologyElement]:
+    def get_grade(self, n: int) -> list[OntologyElement]:
         """Get all elements of grade n."""
         return [e for e in self.elements.values() if e.grade.value == n]
 
@@ -334,9 +348,9 @@ class OntologyAlgebra:
 # 4. EFFECT QUANTALE — Section 9
 # ============================================================================
 
+
 class EffectQuantale:
-    """
-    Effect algebra as higher quantale (E, ∨, ·, ⊥, ⊤).
+    """Effect algebra as higher quantale (E, ∨, ·, ⊥, ⊤).
 
     Effects form a lattice with:
     - ∨ (join) = union of effects
@@ -349,12 +363,12 @@ class EffectQuantale:
     UNRESTRICTED = "⊤"
 
     def __init__(self):
-        self.effects: Set[str] = {self.IMPOSSIBLE, self.UNRESTRICTED}
+        self.effects: set[str] = {self.IMPOSSIBLE, self.UNRESTRICTED}
         self.sub_effects = {
             Substrate.CLASSICAL: {"read", "write", "compute"},
             Substrate.QUANTUM: {"measure", "cohere", "entangle", "collapse"},
             Substrate.BIOLOGICAL: {"mutate", "replicate", "express", "select"},
-            Substrate.META: {"self-inspect", "self-modify", "rebind", "retype"}
+            Substrate.META: {"self-inspect", "self-modify", "rebind", "retype"},
         }
 
     def join(self, e1: str, e2: str) -> str:
@@ -378,8 +392,7 @@ class EffectQuantale:
         return f"{e1}·{e2}"
 
     def commute(self, f: str, g: str) -> bool:
-        """
-        Commute(f, g) iff RW(f) ∩ W(g) = ∅ and RW(g) ∩ W(f) = ∅.
+        """Commute(f, g) iff RW(f) ∩ W(g) = ∅ and RW(g) ∩ W(f) = ∅.
         Simplified: assume no commute for different substrates.
         """
         return False  # Conservative: effects don't commute by default
@@ -389,29 +402,27 @@ class EffectQuantale:
 # 5. CONSTRAINT SHEAF — Section 10
 # ============================================================================
 
+
 @dataclass
 class ConstraintSection:
     """Local constraint section c_U ∈ C(U)."""
-    context: str  # U
-    constraints: List[Callable[[HyperState], bool]]
 
-    def restrict(self, subcontext: str) -> 'ConstraintSection':
+    context: str  # U
+    constraints: list[Callable[[HyperState], bool]]
+
+    def restrict(self, subcontext: str) -> "ConstraintSection":
         """Restriction c_U|_{U∩V}."""
-        return ConstraintSection(
-            context=subcontext,
-            constraints=self.constraints
-        )
+        return ConstraintSection(context=subcontext, constraints=self.constraints)
 
 
 class ConstraintSheaf:
-    """
-    Constraint field as multi-regime sheaf (Section 10).
+    """Constraint field as multi-regime sheaf (Section 10).
 
     Constraints are local-to-global sections with gluing law.
     """
 
     def __init__(self):
-        self.sections: Dict[str, ConstraintSection] = {}
+        self.sections: dict[str, ConstraintSection] = {}
         self.partition = {
             "hard": [],
             "soft": [],
@@ -419,7 +430,7 @@ class ConstraintSheaf:
             "observational": [],
             "adaptive": [],
             "ethical": [],
-            "identity": []
+            "identity": [],
         }
 
     def add_section(self, section: ConstraintSection):
@@ -427,9 +438,7 @@ class ConstraintSheaf:
         self.sections[section.context] = section
 
     def can_glue(self, u: str, v: str) -> bool:
-        """
-        Gluing law: c_U|_{U∩V} = c_V|_{U∩V} ⇒ ∃ c_{U∪V}.
-        """
+        """Gluing law: c_U|_{U∩V} = c_V|_{U∩V} ⇒ ∃ c_{U∪V}."""
         if u not in self.sections or v not in self.sections:
             return False
         # Simplified: check if restrictions match on intersection
@@ -448,9 +457,9 @@ class ConstraintSheaf:
 # 6. UNCERTAINTY GEOMETRY — Section 13
 # ============================================================================
 
+
 class UncertaintyGeometry:
-    """
-    Statistical manifold with Fisher metric (Section 13).
+    """Statistical manifold with Fisher metric (Section 13).
 
     Beliefs μ_θ(x) ∈ P(X) with:
     - Fisher metric g_{ij}(θ)
@@ -463,18 +472,14 @@ class UncertaintyGeometry:
         self.belief_params = np.random.randn(dim) * 0.1
         self.fisher_metric = np.eye(dim)  # g_{ij}
 
-    def compute_fisher_metric(self, beliefs: Dict[str, float]) -> np.ndarray:
-        """
-        g_{ij}(θ) = E_θ[∂_i log μ_θ(x) · ∂_j log μ_θ(x)].
-        """
+    def compute_fisher_metric(self, beliefs: dict[str, float]) -> np.ndarray:
+        """g_{ij}(θ) = E_θ[∂_i log μ_θ(x) · ∂_j log μ_θ(x)]."""
         # Simplified: return identity scaled by uncertainty
         uncertainty = np.mean(list(beliefs.values()))
         return np.eye(self.dim) / (uncertainty + 1e-10)
 
-    def bridge_divergence(self, mu_i: Dict, mu_j: Dict, bridge_inv: Callable) -> float:
-        """
-        D_{ij} = D_KL(μ_i || B_{ij}^{-1} μ_j).
-        """
+    def bridge_divergence(self, mu_i: dict, mu_j: dict, bridge_inv: Callable) -> float:
+        """D_{ij} = D_KL(μ_i || B_{ij}^{-1} μ_j)."""
         # Simplified KL divergence
         kl = 0.0
         for key in mu_i:
@@ -493,35 +498,31 @@ class UncertaintyGeometry:
 # 7. BRIDGE TENSOR — Section 16
 # ============================================================================
 
+
 @dataclass
 class BridgeTensor:
-    """
-    Bridge as transport object (Section 16).
+    """Bridge as transport object (Section 16).
 
     B_{ij} = (φ_{ij}, η_{ij}, τ_{ij}, ε_{ij}, π_{ij}, χ_{ij})
     """
+
     source: Substrate
     target: Substrate
 
     # Components
-    representational_map: Dict = field(default_factory=dict)  # φ_{ij}
+    representational_map: dict = field(default_factory=dict)  # φ_{ij}
     uncertainty_transport: float = 0.0  # η_{ij}
     time_rescaling: float = 1.0  # τ_{ij}
     error_bound: float = 0.1  # ε_{ij}
-    perturbation_profile: Dict = field(default_factory=dict)  # π_{ij}
+    perturbation_profile: dict = field(default_factory=dict)  # π_{ij}
     identity_preservation: Callable = None  # χ_{ij}
 
-    def transport(self, 
-                  x_i: Dict, 
-                  q_i: float, 
-                  theta_i: ScaleParams,
-                  iota_i: str) -> Tuple[Dict, float, ScaleParams, str]:
-        """
-        Bridge action: B_{ij}: (x_i, q_i, θ_i, ι_i) ↦ (x_j, q_j, θ_j, ι_j).
-        """
+    def transport(
+        self, x_i: dict, q_i: float, theta_i: ScaleParams, iota_i: str
+    ) -> tuple[dict, float, ScaleParams, str]:
+        """Bridge action: B_{ij}: (x_i, q_i, θ_i, ι_i) ↦ (x_j, q_j, θ_j, ι_j)."""
         # Apply representational map
-        x_j = {self.representational_map.get(k, k): v 
-               for k, v in x_i.items()}
+        x_j = {self.representational_map.get(k, k): v for k, v in x_i.items()}
 
         # Transport uncertainty
         q_j = q_i + self.uncertainty_transport
@@ -530,7 +531,7 @@ class BridgeTensor:
         theta_j = ScaleParams(
             time=theta_i.time * self.time_rescaling,
             delta_t=theta_i.delta_t * self.time_rescaling,
-            timescale=theta_i.timescale
+            timescale=theta_i.timescale,
         )
 
         # Check identity preservation
@@ -543,7 +544,7 @@ class BridgeTensorNetwork:
     """Total bridge tensor B = [B_{ij}]_{i,j∈{c,q,b,h,m}}."""
 
     def __init__(self):
-        self.bridges: Dict[Tuple[Substrate, Substrate], BridgeTensor] = {}
+        self.bridges: dict[tuple[Substrate, Substrate], BridgeTensor] = {}
 
     def add_bridge(self, bridge: BridgeTensor):
         """Add bridge to tensor network."""
@@ -558,9 +559,9 @@ class BridgeTensorNetwork:
 # 8. TIME-SCALE RENORMALIZATION — Section 19
 # ============================================================================
 
+
 class RenormalizationOperator:
-    """
-    Renormalization operator N_λ: X_micro → X_macro^{(λ)} (Section 19).
+    """Renormalization operator N_λ: X_micro → X_macro^{(λ)} (Section 19).
 
     Consistency law: N_λ ∘ D_micro ≈ D_macro ∘ N_λ
     """
@@ -568,39 +569,32 @@ class RenormalizationOperator:
     def __init__(self, scale_factor: float = 2.0):
         self.scale_factor = scale_factor
         self.scale_tower = [
-            "quantum",      # θ_q
-            "classical",    # θ_c
-            "biological",   # θ_b
-            "hybrid",       # θ_h
-            "adaptive",     # θ_a
-            "meta"          # θ_m
+            "quantum",  # θ_q
+            "classical",  # θ_c
+            "biological",  # θ_b
+            "hybrid",  # θ_h
+            "adaptive",  # θ_a
+            "meta",  # θ_m
         ]
 
     def coarse_grain(self, micro_state: HyperState, target_scale: str) -> HyperState:
-        """
-        Apply renormalization N_λ to move from micro to macro scale.
-        """
+        """Apply renormalization N_λ to move from micro to macro scale."""
         # Simplified: average/aggregate classical components
         macro_state = HyperState(
-            classical=ClassicalFiber(
-                energy=micro_state.classical.energy / self.scale_factor
-            ),
+            classical=ClassicalFiber(energy=micro_state.classical.energy / self.scale_factor),
             scale_params=ScaleParams(
                 timescale=target_scale,
                 time=micro_state.scale_params.time,
-                temperature=micro_state.scale_params.temperature
+                temperature=micro_state.scale_params.temperature,
             ),
-            identity=micro_state.identity
+            identity=micro_state.identity,
         )
         return macro_state
 
-    def check_consistency(self, 
-                          micro_dynamics: Callable,
-                          macro_dynamics: Callable,
-                          test_state: HyperState) -> bool:
-        """
-        Check N_λ ∘ D_micro ≈ D_macro ∘ N_λ.
-        """
+    def check_consistency(
+        self, micro_dynamics: Callable, macro_dynamics: Callable, test_state: HyperState
+    ) -> bool:
+        """Check N_λ ∘ D_micro ≈ D_macro ∘ N_λ."""
         # Left side: N(D(x))
         micro_evolved = micro_dynamics(test_state)
         left = self.coarse_grain(micro_evolved, "classical")
@@ -617,15 +611,15 @@ class RenormalizationOperator:
 # 9. LEDGER CHAIN COMPLEX — Section 23
 # ============================================================================
 
+
 @dataclass
 class LedgerEntry:
-    """
-    Ledger entry ℓ_t = (x_t, u_t, y_t, q_t, c_t, v_t, x_{t+1}).
-    """
+    """Ledger entry ℓ_t = (x_t, u_t, y_t, q_t, c_t, v_t, x_{t+1})."""
+
     x_t: HyperState
-    u_t: Dict  # Action
-    y_t: Any   # Observation result
-    q_t: float # Uncertainty
+    u_t: dict  # Action
+    y_t: Any  # Observation result
+    q_t: float  # Uncertainty
     c_t: bool  # Constraint satisfaction
     v_t: bool  # Verification
     x_t1: HyperState
@@ -633,16 +627,15 @@ class LedgerEntry:
 
 
 class LedgerChainComplex:
-    """
-    Ledger chain complex L_* = ⊕_n Z ℓ_n (Section 23).
+    """Ledger chain complex L_* = ⊕_n Z ℓ_n (Section 23).
 
     Boundary: ∂ℓ_t = x_{t+1} - x_t
     ∂² = 0 (chain complex property)
     """
 
     def __init__(self):
-        self.entries: List[LedgerEntry] = []
-        self.boundaries: List[HyperState] = []
+        self.entries: list[LedgerEntry] = []
+        self.boundaries: list[HyperState] = []
 
     def append(self, entry: LedgerEntry):
         """Add entry to chain."""
@@ -666,8 +659,10 @@ class LedgerChainComplex:
         if not self.entries:
             return "No outcome"
         final = self.entries[-1]
-        return f"Final state: {final.x_t1.identity.identity_marker}, " \
-               f"ledger size: {len(self.entries)}"
+        return (
+            f"Final state: {final.x_t1.identity.identity_marker}, "
+            f"ledger size: {len(self.entries)}"
+        )
 
     def replay(self) -> HyperState:
         """Replay(ℒ_*) = x_n."""
@@ -680,11 +675,11 @@ class LedgerChainComplex:
 # 10. VARIATIONAL MASTER FUNCTIONAL — Section 26
 # ============================================================================
 
-class VariationalMasterFunctional:
-    """
-    Variational master functional S[Φ, u, μ] (Section 26).
 
-    S = ∫ (L_dyn + L_obs + L_bridge + L_law + L_obj + L_energy + 
+class VariationalMasterFunctional:
+    """Variational master functional S[Φ, u, μ] (Section 26).
+
+    S = ∫ (L_dyn + L_obs + L_bridge + L_law + L_obj + L_energy +
             L_identity + L_ethical + L_meta) dt
 
     Stationary admissible trajectories: δS = 0 subject to Φ(t) ∈ Z*
@@ -692,15 +687,15 @@ class VariationalMasterFunctional:
 
     def __init__(self):
         self.lagrangians = {
-            'dynamic': self._L_dyn,
-            'observation': self._L_obs,
-            'bridge': self._L_bridge,
-            'law': self._L_law,
-            'objective': self._L_obj,
-            'energy': self._L_energy,
-            'identity': self._L_identity,
-            'ethical': self._L_ethical,
-            'meta': self._L_meta
+            "dynamic": self._L_dyn,
+            "observation": self._L_obs,
+            "bridge": self._L_bridge,
+            "law": self._L_law,
+            "objective": self._L_obj,
+            "energy": self._L_energy,
+            "identity": self._L_identity,
+            "ethical": self._L_ethical,
+            "meta": self._L_meta,
         }
 
     def _L_dyn(self, state: HyperState) -> float:
@@ -746,12 +741,8 @@ class VariationalMasterFunctional:
             total += L_func(state) * dt
         return total
 
-    def find_stationary(self, 
-                        initial: HyperState, 
-                        actions: List[Dict],
-                        world: Dict) -> HyperState:
-        """
-        Find stationary admissible trajectory: δS = 0 subject to Φ(t) ∈ Z*.
+    def find_stationary(self, initial: HyperState, actions: list[dict], world: dict) -> HyperState:
+        """Find stationary admissible trajectory: δS = 0 subject to Φ(t) ∈ Z*.
         Simplified: return best action outcome.
         """
         # Simplified: just return evolved state
@@ -762,9 +753,9 @@ class VariationalMasterFunctional:
 # 11. AMOS INFINITE — Master Orchestrator
 # ============================================================================
 
+
 class AMOSInfinite:
-    """
-    AMOS ∞ — Deepest formal closure.
+    """AMOS ∞ — Deepest formal closure.
 
     Implements the absolute governing equation:
     x_{t+1} = Commit_Z* ∘ R ∘ V ∘ M ∘ B ∘ A ∘ D (x_t, u_t, w_t, μ_t, θ_t)
@@ -783,26 +774,25 @@ class AMOSInfinite:
 
         # Total admissible space Z* (Section 3)
         self.admissible_subspaces = {
-            'type': lambda s: True,
-            'logical': lambda s: True,
-            'physical': lambda s: True,
-            'quantum': lambda s: s.quantum is None or s.quantum.is_valid(),
-            'biological': lambda s: s.biological is None or s.biological.is_viable(),
-            'temporal': lambda s: s.scale_params.time >= 0,
-            'energetic': lambda s: s.classical.energy >= 0,
-            'epistemic': lambda s: s.epistemic.confidence > 0,
-            'identity': lambda s: s.identity.identity_marker != "",
-            'deontic': lambda s: True,
-            'meta': lambda s: True
+            "type": lambda s: True,
+            "logical": lambda s: True,
+            "physical": lambda s: True,
+            "quantum": lambda s: s.quantum is None or s.quantum.is_valid(),
+            "biological": lambda s: s.biological is None or s.biological.is_viable(),
+            "temporal": lambda s: s.scale_params.time >= 0,
+            "energetic": lambda s: s.classical.energy >= 0,
+            "epistemic": lambda s: s.epistemic.confidence > 0,
+            "identity": lambda s: s.identity.identity_marker != "",
+            "deontic": lambda s: True,
+            "meta": lambda s: True,
         }
 
         self.initialized = True
         print("✓ AMOS ∞ initialized")
         print("  Deepest formal closure ready")
 
-    def check_admissibility(self, state: HyperState) -> Tuple[bool, List[str]]:
-        """
-        Check if x ∈ Z* (total admissible subspace).
+    def check_admissibility(self, state: HyperState) -> tuple[bool, list[str]]:
+        """Check if x ∈ Z* (total admissible subspace).
 
         Z* = Z_type ∩ Z_logical ∩ Z_physical ∩ ... ∩ Z_meta
         """
@@ -814,8 +804,7 @@ class AMOSInfinite:
         return len(failed) == 0, failed
 
     def commit(self, state: HyperState) -> Optional[HyperState]:
-        """
-        Commit_Z*(x) = x iff x ∈ Z*, else ⊥.
+        """Commit_Z*(x) = x iff x ∈ Z*, else ⊥.
 
         Section 3: Commit law
         """
@@ -827,9 +816,8 @@ class AMOSInfinite:
             print(f"  Commit rejected: failed regimes {failed}")
             return None
 
-    def D(self, state: HyperState, action: Dict, world: Dict) -> HyperState:
-        """
-        Native dynamics D: X × U × W → X (Section 2).
+    def D(self, state: HyperState, action: dict, world: dict) -> HyperState:
+        """Native dynamics D: X × U × W → X (Section 2).
 
         Apply differential tensor law (Section 6):
         δx_{t+1} = J_t δx_t + U_t δu_t + W_t δw_t + Q_t δq_t
@@ -837,11 +825,11 @@ class AMOSInfinite:
         # Simplified: apply action effect to classical state
         new_state = HyperState(
             classical=ClassicalFiber(
-                energy=state.classical.energy + action.get('energy_delta', 0),
+                energy=state.classical.energy + action.get("energy_delta", 0),
                 structure=state.classical.structure.copy(),
-                policy=action.get('policy', state.classical.policy),
+                policy=action.get("policy", state.classical.policy),
                 history=state.classical.history + [action],
-                constraints=state.classical.constraints
+                constraints=state.classical.constraints,
             ),
             quantum=state.quantum,
             biological=state.biological,
@@ -851,14 +839,13 @@ class AMOSInfinite:
             world_coords=world,
             scale_params=state.scale_params,
             ledger_history=state.ledger_history,
-            epistemic=state.epistemic
+            epistemic=state.epistemic,
         )
 
         return new_state
 
-    def A(self, state: HyperState, ledger: List, world: Dict) -> HyperState:
-        """
-        Adaptation A: X × L × W → X (Section 2).
+    def A(self, state: HyperState, ledger: list, world: dict) -> HyperState:
+        """Adaptation A: X × L × W → X (Section 2).
 
         With identity preservation (Section 17):
         A(x) = x' implies ι(x, x') ≥ λ_I ∨ ExplicitReplacement(x, x')
@@ -866,7 +853,7 @@ class AMOSInfinite:
         # Check identity preservation
         if state.identity and state.classical.history:
             prev = state.classical.history[-1] if state.classical.history else {}
-            curr = {'energy': state.classical.energy, 'structure': state.classical.structure}
+            curr = {"energy": state.classical.energy, "structure": state.classical.structure}
             if not state.identity.is_same_identity(prev, curr):
                 print("  Warning: Identity preservation threshold not met")
 
@@ -876,9 +863,7 @@ class AMOSInfinite:
         return state
 
     def B(self, state: HyperState, source: Substrate, target: Substrate) -> HyperState:
-        """
-        Bridge B: X_i → X_j (Section 2, 16).
-        """
+        """Bridge B: X_i → X_j (Section 2, 16)."""
         bridge = self.bridge_network.get_bridge(source, target)
         if bridge is None:
             return state
@@ -892,23 +877,24 @@ class AMOSInfinite:
         x_j, q_j, theta_j, iota_j = bridge.transport(x_i, q_i, theta_i, iota_i)
 
         # Update state
-        state.classical.energy = x_j.get('energy', state.classical.energy)
+        state.classical.energy = x_j.get("energy", state.classical.energy)
         state.scale_params = theta_j
         state.identity.identity_marker = iota_j
 
         return state
 
-    def M(self, state: HyperState, observer: str = "default") -> Tuple[Any, float, float, HyperState]:
-        """
-        Observation M: X → Y × Q × Π × X (Section 2, 12).
+    def M(
+        self, state: HyperState, observer: str = "default"
+    ) -> tuple[Any, float, float, HyperState]:
+        """Observation M: X → Y × Q × Π × X (Section 2, 12).
 
         M_{o,m}(x) = (y, q, π, x')
         """
         # Generate observation
         y = {
-            'classical_energy': state.classical.energy,
-            'uncertainty': sum(state.epistemic.uncertainty.values()),
-            'identity': state.identity.identity_marker
+            "classical_energy": state.classical.energy,
+            "uncertainty": sum(state.epistemic.uncertainty.values()),
+            "identity": state.identity.identity_marker,
         }
         q = 0.1  # Uncertainty
         pi = 0.05  # Perturbation
@@ -919,8 +905,7 @@ class AMOSInfinite:
         return y, q, pi, state
 
     def V(self, state: HyperState) -> bool:
-        """
-        Verification V (Section 2).
+        """Verification V (Section 2).
 
         ∀ω ∈ Obl(x), ∃v: Verifies(v, ω)
         """
@@ -929,21 +914,17 @@ class AMOSInfinite:
         return admissible
 
     def R(self, state: HyperState) -> Optional[HyperState]:
-        """
-        Runtime R (Section 2, 25).
+        """Runtime R (Section 2, 25).
 
         R_t = Commit_Z* ∘ V_t ∘ M_t ∘ B_t ∘ A_t ∘ D_t
         """
         # This is the composition - in practice, evolve does this
         return state
 
-    def evolve(self, 
-               state: HyperState, 
-               action: Dict, 
-               world: Dict,
-               compute_variational: bool = False) -> Optional[HyperState]:
-        """
-        Complete evolution: x_{t+1} = Commit_Z* ∘ R ∘ ... ∘ D (x_t, u_t, w_t).
+    def evolve(
+        self, state: HyperState, action: dict, world: dict, compute_variational: bool = False
+    ) -> Optional[HyperState]:
+        """Complete evolution: x_{t+1} = Commit_Z* ∘ R ∘ ... ∘ D (x_t, u_t, w_t).
 
         The absolute governing equation (Section 2).
         """
@@ -954,8 +935,8 @@ class AMOSInfinite:
         state_adapted = self.A(state_prime, state.ledger_history, world)
 
         # B: Bridge (if needed)
-        if action.get('cross_substrate'):
-            state_bridged = self.B(state_adapted, action['source'], action['target'])
+        if action.get("cross_substrate"):
+            state_bridged = self.B(state_adapted, action["source"], action["target"])
         else:
             state_bridged = state_adapted
 
@@ -974,13 +955,7 @@ class AMOSInfinite:
         if result is not None:
             # Record in ledger
             entry = LedgerEntry(
-                x_t=state,
-                u_t=action,
-                y_t=y,
-                q_t=q,
-                c_t=verified,
-                v_t=verified,
-                x_t1=result
+                x_t=state, u_t=action, y_t=y, q_t=q, c_t=verified, v_t=verified, x_t1=result
             )
             self.ledger.append(entry)
 
@@ -1007,21 +982,15 @@ class AMOSInfinite:
         state = HyperState(
             classical=ClassicalFiber(
                 energy=100.0,
-                structure={'type': 'organism'},
-                policy={'mode': 'survive_and_compound'}
+                structure={"type": "organism"},
+                policy={"mode": "survive_and_compound"},
             ),
-            identity=IdentityFiber(
-                identity_marker="AMOS_Agent_001",
-                persistence_threshold=0.8
-            ),
-            scale_params=ScaleParams(
-                timescale="classical",
-                energy_budget=1000.0
-            ),
+            identity=IdentityFiber(identity_marker="AMOS_Agent_001", persistence_threshold=0.8),
+            scale_params=ScaleParams(timescale="classical", energy_budget=1000.0),
             epistemic=EpistemicState(
-                belief={'survival_prob': 0.9, 'growth_potential': 0.7},
-                uncertainty={'survival_prob': 0.1, 'growth_potential': 0.2}
-            )
+                belief={"survival_prob": 0.9, "growth_potential": 0.7},
+                uncertainty={"survival_prob": 0.1, "growth_potential": 0.2},
+            ),
         )
         print(f"  Initial energy: {state.classical.energy}")
         print(f"  Identity: {state.identity.identity_marker}")
@@ -1039,26 +1008,26 @@ class AMOSInfinite:
         # Evolve
         print("[3] Evolution: x_{t+1} = Commit_Z* ∘ R ∘ ... ∘ D (Section 2)")
         action = {
-            'energy_delta': -10.0,
-            'policy': {'mode': 'invest_growth'},
-            'uncertainty_increase': 0.05
+            "energy_delta": -10.0,
+            "policy": {"mode": "invest_growth"},
+            "uncertainty_increase": 0.05,
         }
-        world = {'market_condition': 'stable', 'opportunity': 0.8}
+        world = {"market_condition": "stable", "opportunity": 0.8}
 
         new_state = self.evolve(state, action, world, compute_variational=True)
 
         if new_state:
-            print(f"  Evolution successful")
+            print("  Evolution successful")
             print(f"  New energy: {new_state.classical.energy}")
             print(f"  Confidence: {new_state.epistemic.confidence:.2f}")
         else:
-            print(f"  Evolution rejected - state not in Z*")
+            print("  Evolution rejected - state not in Z*")
         print()
 
         # Show ledger
         print("[4] Ledger Chain Complex (Section 23)")
         print(f"  Ledger entries: {len(self.ledger.entries)}")
-        print(f"  Boundary ∂ℓ_t = x_{{t+1}} - x_t computed")
+        print("  Boundary ∂ℓ_t = x_{t+1} - x_t computed")
         print(f"  ∂² = 0: {self.ledger.check_boundary_squared()}")
         print(f"  Outcome: {self.ledger.explain_outcome()}")
         print()
@@ -1080,17 +1049,17 @@ class AMOSInfinite:
             source=Substrate.CLASSICAL,
             target=Substrate.HYBRID,
             time_rescaling=2.0,
-            uncertainty_transport=0.1
+            uncertainty_transport=0.1,
         )
         print(f"  Bridge B_{{c,h}}: τ = {bridge.time_rescaling}")
-        print(f"  Transport test: (x,q,θ,ι) → ...")
+        print("  Transport test: (x,q,θ,ι) → ...")
         print()
 
         # Renormalization
         print("[7] Time-Scale Renormalization (Section 19)")
         print(f"  Scale tower: {' < '.join(self.renormalization.scale_tower)}")
         coarse = self.renormalization.coarse_grain(state, "biological")
-        print(f"  N_λ: classical → biological scale")
+        print("  N_λ: classical → biological scale")
         print(f"  Coarse-grained energy: {coarse.classical.energy:.2f}")
         print()
 

@@ -2,7 +2,8 @@
 """AMOS Brain: Next Iteration Analysis - What to build now?"""
 
 from pathlib import Path
-from amos_brain import think, decide
+
+from amos_brain import decide
 
 
 def check_complete_stack():
@@ -70,8 +71,8 @@ def main():
             "Demo/tutorial scripts showing use cases",
             "Authentication system (API keys)",
             "Batch processing endpoint for multiple queries",
-            "WebSocket real-time endpoint"
-        ]
+            "WebSocket real-time endpoint",
+        ],
     )
 
     print(f"\n✅ Decision: {decision.approved}")
@@ -86,17 +87,13 @@ def main():
 
     next_build = {
         "action": "CREATE_API_DOCUMENTATION",
-        "files": [
-            "API_README.md",
-            "examples/python_client.py",
-            "examples/curl_examples.sh"
-        ],
-        "rationale": "Documentation enables immediate API adoption. Examples show practical usage. No value in deployed API if no one knows how to use it."
+        "files": ["API_README.md", "examples/python_client.py", "examples/curl_examples.sh"],
+        "rationale": "Documentation enables immediate API adoption. Examples show practical usage. No value in deployed API if no one knows how to use it.",
     }
 
     print(f"\nAction: {next_build['action']}")
-    print(f"\nFiles:")
-    for f in next_build['files']:
+    print("\nFiles:")
+    for f in next_build["files"]:
         print(f"   • {f}")
     print(f"\nRationale: {next_build['rationale']}")
 

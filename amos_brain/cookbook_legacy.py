@@ -1,5 +1,4 @@
-"""
-AMOS Brain Cookbook - Real-world workflow examples.
+"""AMOS Brain Cookbook - Real-world workflow examples.
 
 Pre-built workflows for common scenarios:
   - Architecture Decision Records (ADRs)
@@ -15,16 +14,17 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
 
 from amos_brain import get_amos_integration
-from amos_brain.memory import get_brain_memory, save_reasoning_result
+from amos_brain.memory import get_brain_memory
 
 
 @dataclass
 class WorkflowResult:
     """Result from running a cookbook workflow."""
+
     workflow_name: str
     problem: str
     analysis: dict[str, Any]
@@ -34,8 +34,7 @@ class WorkflowResult:
 
 
 class ArchitectureDecision:
-    """
-    Workflow for architecture decisions.
+    """Workflow for architecture decisions.
 
     Use when: Choosing between architectural approaches,
               technology stacks, or system designs.
@@ -51,8 +50,7 @@ class ArchitectureDecision:
 
     @classmethod
     def run(cls, problem: str, context: dict[str, Any] | None = None) -> WorkflowResult:
-        """
-        Execute architecture decision workflow.
+        """Execute architecture decision workflow.
 
         Args:
             problem: The architectural decision to analyze
@@ -79,11 +77,7 @@ class ArchitectureDecision:
         recommendations = cls._structure_recommendations(analysis)
 
         # Save to memory
-        memory_id = memory.save_reasoning(
-            problem,
-            analysis,
-            tags=cls.TEMPLATE_TAGS
-        )
+        memory_id = memory.save_reasoning(problem, analysis, tags=cls.TEMPLATE_TAGS)
 
         return WorkflowResult(
             workflow_name=cls.WORKFLOW_NAME,
@@ -91,7 +85,7 @@ class ArchitectureDecision:
             analysis=analysis,
             memory_id=memory_id,
             recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+            confidence=analysis.get("structural_integrity_score", 0.0),
         )
 
     @classmethod
@@ -137,8 +131,7 @@ class ArchitectureDecision:
 
 
 class ProjectPlanner:
-    """
-    Workflow for project planning and estimation.
+    """Workflow for project planning and estimation.
 
     Use when: Planning a new project, estimating scope,
               or breaking down complex work.
@@ -160,10 +153,9 @@ class ProjectPlanner:
         project: str,
         timeline: str | None = None,
         team: str | None = None,
-        constraints: list[str] | None = None
+        constraints: list[str] | None = None,
     ) -> WorkflowResult:
-        """
-        Execute project planning workflow.
+        """Execute project planning workflow.
 
         Args:
             project: Project description
@@ -204,7 +196,7 @@ class ProjectPlanner:
             analysis=analysis,
             memory_id=memory_id,
             recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+            confidence=analysis.get("structural_integrity_score", 0.0),
         )
 
     @classmethod
@@ -225,8 +217,7 @@ class ProjectPlanner:
 
 
 class ProblemDiagnosis:
-    """
-    Workflow for problem diagnosis and root cause analysis.
+    """Workflow for problem diagnosis and root cause analysis.
 
     Use when: Debugging complex issues, investigating outages,
               or analyzing failures.
@@ -248,10 +239,9 @@ class ProblemDiagnosis:
         problem: str,
         symptoms: list[str] | None = None,
         checked: list[str] | None = None,
-        timeline: str | None = None
+        timeline: str | None = None,
     ) -> WorkflowResult:
-        """
-        Execute problem diagnosis workflow.
+        """Execute problem diagnosis workflow.
 
         Args:
             problem: Problem description
@@ -297,7 +287,7 @@ class ProblemDiagnosis:
             analysis=analysis,
             memory_id=memory_id,
             recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+            confidence=analysis.get("structural_integrity_score", 0.0),
         )
 
     @classmethod
@@ -316,8 +306,7 @@ class ProblemDiagnosis:
 
 
 class TechnologySelection:
-    """
-    Workflow for technology/tool selection.
+    """Workflow for technology/tool selection.
 
     Use when: Choosing between frameworks, libraries,
               tools, or platforms.
@@ -339,10 +328,9 @@ class TechnologySelection:
         category: str,
         options: list[str],
         criteria: list[str] | None = None,
-        must_haves: list[str] | None = None
+        must_haves: list[str] | None = None,
     ) -> WorkflowResult:
-        """
-        Execute technology selection workflow.
+        """Execute technology selection workflow.
 
         Args:
             category: Category (e.g., "database", "frontend framework")
@@ -381,15 +369,11 @@ class TechnologySelection:
             analysis=analysis,
             memory_id=memory_id,
             recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+            confidence=analysis.get("structural_integrity_score", 0.0),
         )
 
     @classmethod
-    def _selection_recommendations(
-        cls,
-        analysis: dict[str, Any],
-        options: list[str]
-    ) -> list[str]:
+    def _selection_recommendations(cls, analysis: dict[str, Any], options: list[str]) -> list[str]:
         """Structure selection recommendations."""
         recs = []
 
@@ -406,8 +390,7 @@ class TechnologySelection:
 
 
 class RiskAssessment:
-    """
-    Workflow for risk assessment and mitigation planning.
+    """Workflow for risk assessment and mitigation planning.
 
     Use when: Evaluating risks for projects, decisions,
               or operational changes.
@@ -429,10 +412,9 @@ class RiskAssessment:
         action: str,
         impacts: list[str] | None = None,
         mitigations: list[str] | None = None,
-        severity_threshold: str = "medium"
+        severity_threshold: str = "medium",
     ) -> WorkflowResult:
-        """
-        Execute risk assessment workflow.
+        """Execute risk assessment workflow.
 
         Args:
             action: Action/decision being assessed
@@ -471,7 +453,7 @@ class RiskAssessment:
             analysis=analysis,
             memory_id=memory_id,
             recommendations=recommendations,
-            confidence=analysis.get("structural_integrity_score", 0.0)
+            confidence=analysis.get("structural_integrity_score", 0.0),
         )
 
     @classmethod

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain-Backed Worker (06_MUSCLE)
+"""AMOS Brain-Backed Worker (06_MUSCLE)
 =====================================
 
 Enhanced worker engine that queries the 17MB brain before executing tasks.
@@ -15,7 +14,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
@@ -26,8 +25,7 @@ from brain_worker_bridge import BrainWorkerBridge
 
 
 class BrainBackedWorker(AmosWorkerEngine):
-    """
-    Worker engine enhanced with brain knowledge integration.
+    """Worker engine enhanced with brain knowledge integration.
     Queries the 17MB brain before executing tasks.
     """
 
@@ -37,11 +35,9 @@ class BrainBackedWorker(AmosWorkerEngine):
         self._brain_enabled = True
 
     def execute_with_brain(
-        self, plan: Dict[str, Any], context: Optional[Dict] = None
+        self, plan: dict[str, Any], context: Optional[dict] = None
     ) -> WorkerResult:
-        """
-        Execute a plan with brain knowledge enrichment.
-        """
+        """Execute a plan with brain knowledge enrichment."""
         print("\n[BRAIN-BACKED] Enriching plan with brain knowledge...")
 
         # Enrich plan with brain knowledge
@@ -49,7 +45,8 @@ class BrainBackedWorker(AmosWorkerEngine):
 
         # Show knowledge summary
         knowledge_count = sum(
-            1 for s in enriched_plan.get("steps", [])
+            1
+            for s in enriched_plan.get("steps", [])
             if s.get("brain_knowledge", {}).get("results_count", 0) > 0
         )
         print(f"[BRAIN-BACKED] Enriched {knowledge_count} steps with brain knowledge")
@@ -60,18 +57,12 @@ class BrainBackedWorker(AmosWorkerEngine):
         # Add brain metadata
         if result.success:
             result.metadata["brain_enriched"] = True
-            result.metadata["knowledge_sources"] = enriched_plan.get(
-                "knowledge_sources", []
-            )
+            result.metadata["knowledge_sources"] = enriched_plan.get("knowledge_sources", [])
 
         return result
 
-    def generate_with_brain(
-        self, prompt: str, target_file: Optional[str] = None
-    ) -> WorkerResult:
-        """
-        Generate code with brain knowledge.
-        """
+    def generate_with_brain(self, prompt: str, target_file: Optional[str] = None) -> WorkerResult:
+        """Generate code with brain knowledge."""
         print(f"\n[BRAIN-BACKED] Querying brain for: '{prompt[:50]}...'")
 
         # Query brain for relevant knowledge
@@ -91,7 +82,7 @@ class BrainBackedWorker(AmosWorkerEngine):
                     "action": "generate_code",
                     "prompt": prompt,
                     "target_file": target_file,
-                    "brain_context": brain_result
+                    "brain_context": brain_result,
                 }
             ]
         }
@@ -99,9 +90,7 @@ class BrainBackedWorker(AmosWorkerEngine):
         return self.execute_with_brain(plan)
 
     def analyze_with_brain(self, topic: str) -> WorkerResult:
-        """
-        Analyze topic with brain knowledge.
-        """
+        """Analyze topic with brain knowledge."""
         print(f"\n[BRAIN-BACKED] Deep analysis of: '{topic}'")
 
         # Query brain
@@ -112,10 +101,7 @@ class BrainBackedWorker(AmosWorkerEngine):
             cognitive_result = self.runtime.think(topic, "diagnostic_analysis")
 
             # Combine with brain knowledge
-            combined = {
-                "cognitive_analysis": cognitive_result,
-                "brain_knowledge": brain_result
-            }
+            combined = {"cognitive_analysis": cognitive_result, "brain_knowledge": brain_result}
 
             output = json.dumps(combined, indent=2)
         else:
@@ -125,18 +111,11 @@ class BrainBackedWorker(AmosWorkerEngine):
             success=True,
             output=output,
             artifacts=[],
-            metadata={
-                "brain_results": brain_result["results_count"],
-                "brain_enriched": True
-            }
+            metadata={"brain_results": brain_result["results_count"], "brain_enriched": True},
         )
 
-    def audit_with_brain(
-        self, target: str, check_brain_alignment: bool = True
-    ) -> WorkerResult:
-        """
-        Audit with brain validation.
-        """
+    def audit_with_brain(self, target: str, check_brain_alignment: bool = True) -> WorkerResult:
+        """Audit with brain validation."""
         print(f"\n[BRAIN-BACKED] Auditing: '{target[:50]}...'")
 
         # Standard audit via runtime
@@ -154,7 +133,7 @@ class BrainBackedWorker(AmosWorkerEngine):
             success=True,
             output=json.dumps(audit_result, indent=2),
             artifacts=[],
-            metadata={"brain_validated": check_brain_alignment}
+            metadata={"brain_validated": check_brain_alignment},
         )
 
 
@@ -175,12 +154,12 @@ def main() -> int:
     print(f"Brain results: {result.metadata.get('brain_results', 0)}")
 
     # Show sample of output
-    output_lines = result.output.split('\n')[:20]
+    output_lines = result.output.split("\n")[:20]
     print("\nOutput preview:")
     for line in output_lines:
         print(line)
 
-    if len(result.output.split('\n')) > 20:
+    if len(result.output.split("\n")) > 20:
         print("...")
 
     return 0

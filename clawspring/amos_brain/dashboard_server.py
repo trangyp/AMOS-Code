@@ -2,8 +2,8 @@
 
 import json
 import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
 # Add parent for imports
@@ -64,7 +64,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     "recommended_engines": i.recommended_engines,
                     "avg_consensus_score": i.avg_consensus_score,
                     "violation_rate": i.violation_rate,
-                    "confidence": i.confidence
+                    "confidence": i.confidence,
                 }
                 for i in insights
             ]
@@ -79,16 +79,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     "engines_selected": e.engines_selected,
                     "consensus_score": e.consensus_score,
                     "violations_found": e.violations_found,
-                    "execution_time_ms": e.execution_time_ms
+                    "execution_time_ms": e.execution_time_ms,
                 }
                 for e in entries
             ]
 
-            data = {
-                "stats": stats,
-                "entries": entries_data,
-                "insights": insights_data
-            }
+            data = {"stats": stats, "entries": entries_data, "insights": insights_data}
 
             self._send_response(200, "application/json", json.dumps(data))
         except Exception as e:
@@ -123,6 +119,7 @@ def start_dashboard_server(port=8080):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="AMOS Dashboard Server")
     parser.add_argument("--port", type=int, default=8080, help="Port to serve on")
     args = parser.parse_args()

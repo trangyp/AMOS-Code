@@ -6,6 +6,6 @@ factory_path = Path(__file__).parent.parent / "13_FACTORY"
 if str(factory_path) not in sys.path:
     sys.path.insert(0, str(factory_path))
 
-from builder_engine import BuilderEngine, BuildTask, BuildResult
+from builder_engine import BuilderEngine, BuildResult, BuildTask
 
 __all__ = ["BuilderEngine", "BuildTask", "BuildResult"]

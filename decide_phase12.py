@@ -12,8 +12,9 @@ Current State (35+ components):
 
 Next: Platform expansion and ecosystem growth
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision, ProjectPlanner
@@ -40,8 +41,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must leverage existing infrastructure. Must attract developers. Must scale usage. Must create network effects.",
-        "goals": "Grow developer community. Enable integrations. Create marketplace. Scale to enterprise."
-    }
+        "goals": "Grow developer community. Enable integrations. Create marketplace. Scale to enterprise.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -56,8 +57,8 @@ plan = ProjectPlanner.plan(
     constraints={
         "timeline": "1 week",
         "team": "1 developer",
-        "requirements": "MCP protocol compliance, tool definitions, AMOS Brain integration"
-    }
+        "requirements": "MCP protocol compliance, tool definitions, AMOS Brain integration",
+    },
 )
 
 print(f"\n📋 Plan Confidence: {plan.confidence}")
@@ -68,7 +69,8 @@ for i, rec in enumerate(plan.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: MCP Server for AI Assistant Integration")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: MCP Server
 
    WHY:
@@ -90,12 +92,12 @@ print("""
       - Tool: decide(question, options)
       - Tool: validate(action)
       - Tool: amosl_compile(source)
-      
+
    2. Tool Definitions
       - Input schemas
       - Output schemas
       - Descriptions for AI
-      
+
    3. Integration Examples
       - Claude Desktop config
       - Cursor integration
@@ -106,6 +108,7 @@ print("""
    • mcp/tools.json - Tool definitions
    • docs/mcp-integration.md - Setup guide
    • examples/mcp-claude.json - Claude Desktop config
-""")
+"""
+)
 
 print("\n✅ Decision: Build MCP Server for AI Assistant Integration")

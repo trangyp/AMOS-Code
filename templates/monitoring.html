@@ -158,7 +158,7 @@
             <span id="overall-status" class="status-indicator status-healthy">● HEALTHY</span>
         </p>
     </div>
-    
+
     <div class="container">
         <div class="grid">
             <!-- API Metrics -->
@@ -185,7 +185,7 @@
                     <span class="metric-value" id="p95-latency">0ms</span>
                 </div>
             </div>
-            
+
             <!-- Health Checks -->
             <div class="card">
                 <h2>🏥 Health Checks</h2>
@@ -212,7 +212,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Active Alerts -->
             <div class="card">
                 <h2>🔔 Active Alerts</h2>
@@ -225,7 +225,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Top Endpoints -->
             <div class="card">
                 <h2>🌐 Top Endpoints</h2>
@@ -248,7 +248,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- System Resources -->
             <div class="card">
                 <h2>💻 System Resources</h2>
@@ -269,7 +269,7 @@
                     <span class="metric-value" id="uptime">0h 0m</span>
                 </div>
             </div>
-            
+
             <!-- Status Codes -->
             <div class="card">
                 <h2>📈 Status Codes</h2>
@@ -289,39 +289,39 @@
                 </div>
             </div>
         </div>
-        
+
         <p class="timestamp">Last updated: <span id="timestamp">-</span></p>
     </div>
-    
+
     <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
-    
+
     <script>
         async function refreshData() {
             try {
                 // Fetch metrics
                 const metricsRes = await fetch('/api/metrics/summary');
                 const metrics = await metricsRes.json();
-                
+
                 // Fetch health
                 const healthRes = await fetch('/api/health');
                 const health = await healthRes.json();
-                
+
                 // Fetch alerts
                 const alertsRes = await fetch('/api/alerts/active');
                 const alerts = await alertsRes.json();
-                
+
                 // Update metrics
                 document.getElementById('total-requests').textContent = metrics.total_requests || 0;
                 document.getElementById('rps').textContent = (metrics.requests_per_second || 0).toFixed(2);
                 document.getElementById('error-rate').textContent = (metrics.error_rate || 0) + '%';
                 document.getElementById('avg-latency').textContent = (metrics.response_time_ms?.avg || 0) + 'ms';
                 document.getElementById('p95-latency').textContent = (metrics.response_time_ms?.p95 || 0) + 'ms';
-                
+
                 // Update health status
                 const statusEl = document.getElementById('overall-status');
                 statusEl.className = 'status-indicator status-' + (health.overall || 'unknown');
                 statusEl.textContent = '● ' + (health.overall || 'UNKNOWN').toUpperCase();
-                
+
                 // Update health checks
                 const checksHtml = health.checks?.map(check => `
                     <div class="health-check">
@@ -331,7 +331,7 @@
                     </div>
                 `).join('') || '';
                 document.getElementById('health-checks').innerHTML = checksHtml;
-                
+
                 // Update alerts
                 const alertsHtml = alerts.alerts?.length ? alerts.alerts.map(alert => `
                     <div class="alert-item alert-${alert.severity}">
@@ -350,7 +350,7 @@
                     </div>
                 `;
                 document.getElementById('active-alerts').innerHTML = alertsHtml;
-                
+
                 // Update top endpoints
                 const endpointsHtml = metrics.top_endpoints?.map(ep => `
                     <div class="endpoint-item">
@@ -359,7 +359,7 @@
                     </div>
                 `).join('') || '';
                 document.getElementById('top-endpoints').innerHTML = endpointsHtml;
-                
+
                 // Update status codes
                 const codesHtml = Object.entries(metrics.status_codes || {}).map(([code, count]) => `
                     <div class="metric">
@@ -368,26 +368,26 @@
                     </div>
                 `).join('') || '';
                 document.getElementById('status-codes').innerHTML = codesHtml;
-                
+
                 // Update system resources from gauges
                 if (metrics.gauges) {
                     document.getElementById('cpu-usage').textContent = (metrics.gauges.cpu_percent || 0) + '%';
                     document.getElementById('memory-usage').textContent = (metrics.gauges.memory_percent || 0) + '%';
                     document.getElementById('disk-usage').textContent = (metrics.gauges.disk_percent || 0) + '%';
                 }
-                
+
                 // Update timestamp
                 document.getElementById('timestamp').textContent = new Date().toLocaleString();
-                
+
             } catch (error) {
                 console.error('Failed to refresh:', error);
                 document.getElementById('timestamp').textContent = 'Error: ' + error.message;
             }
         }
-        
+
         // Auto-refresh every 10 seconds
         setInterval(refreshData, 10000);
-        
+
         // Initial load
         refreshData();
     </script>

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Hello Biological - AMOSL Biological Substrate Demo."""
-import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
 
 from amosl.bridge import BridgeExecutor, BridgeType
 
@@ -22,14 +23,14 @@ def main():
     print("\n2. Biological → Classical Threshold:")
     for level in expression_levels:
         result = bridge.execute(BridgeType.B_TO_C, level, threshold=0.5)
-        state = "ON" if result['output'] else "OFF"
+        state = "ON" if result["output"] else "OFF"
         print(f"   Expression {level:.1f} → Threshold 0.5 → {state}")
 
     print("\n3. Classical → Biological Control:")
     control_signals = [0.0, 0.3, 0.6, 1.0]
     for signal in control_signals:
         result = bridge.execute(BridgeType.C_TO_B, signal, threshold=0.5)
-        status = "Activated" if result['output']['activated'] else "Inactive"
+        status = "Activated" if result["output"]["activated"] else "Inactive"
         print(f"   Control {signal:.1f} → {status}")
 
     print("\n4. Biological → Quantum Bridge:")

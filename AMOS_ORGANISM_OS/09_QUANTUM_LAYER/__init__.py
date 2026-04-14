@@ -1,5 +1,4 @@
-"""
-09_QUANTUM_LAYER — Decision Optimization Engine
+"""09_QUANTUM_LAYER — Decision Optimization Engine
 =================================================
 
 The quantum decision layer of AMOS.
@@ -13,10 +12,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .scenario_engine import ScenarioEngine, Scenario, ScenarioResult
+from .decision_optimizer import Decision, DecisionOptimizer, DecisionOutcome
 from .monte_carlo import MonteCarloSimulator, SimulationResult
-from .decision_optimizer import DecisionOptimizer, Decision, DecisionOutcome
 from .quantum_router import QuantumRouter, RouteDecision
+from .scenario_engine import Scenario, ScenarioEngine, ScenarioResult
 
 __all__ = [
     # Scenario engine

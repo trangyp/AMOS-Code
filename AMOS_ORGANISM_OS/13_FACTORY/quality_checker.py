@@ -1,5 +1,4 @@
-"""
-Quality Checker — Build Quality Assurance
+"""Quality Checker — Build Quality Assurance
 
 Validates generated code and build artifacts for quality,
 syntax correctness, and compliance with standards.
@@ -9,33 +8,33 @@ from __future__ import annotations
 
 import ast
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
 class QualityReport:
     """Quality check report for a build artifact."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     artifact_path: str = ""
     passed: bool = False
     score: float = 0.0  # 0-1 quality score
     syntax_valid: bool = False
-    style_issues: List[str] = field(default_factory=list)
-    security_issues: List[str] = field(default_factory=list)
+    style_issues: list[str] = field(default_factory=list)
+    security_issues: list[str] = field(default_factory=list)
     complexity_score: float = 0.0
     test_coverage: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class QualityChecker:
-    """
-    Checks quality of generated code and artifacts.
+    """Checks quality of generated code and artifacts.
 
     Performs syntax validation, style checks, complexity analysis,
     and generates quality reports.
@@ -47,7 +46,7 @@ class QualityChecker:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.reports: Dict[str, QualityReport] = {}
+        self.reports: dict[str, QualityReport] = {}
 
     def check_file(self, file_path: Path) -> QualityReport:
         """Check quality of a single file."""
@@ -90,7 +89,7 @@ class QualityChecker:
         except SyntaxError:
             return False
 
-    def _check_style(self, content: str) -> List[str]:
+    def _check_style(self, content: str) -> list[str]:
         """Check code style issues."""
         issues = []
         lines = content.split("\n")
@@ -105,11 +104,17 @@ class QualityChecker:
                 issues.append(f"Line {i} has trailing whitespace")
 
         # Check imports at top
-        import_lines = [i for i, line in enumerate(lines) if line.strip().startswith(("import ", "from "))]
+        import_lines = [
+            i for i, line in enumerate(lines) if line.strip().startswith(("import ", "from "))
+        ]
         if import_lines:
             non_import_after_import = False
             for i in range(min(import_lines), len(lines)):
-                if i not in import_lines and lines[i].strip() and not lines[i].strip().startswith("#"):
+                if (
+                    i not in import_lines
+                    and lines[i].strip()
+                    and not lines[i].strip().startswith("#")
+                ):
                     non_import_after_import = True
                 if i in import_lines and non_import_after_import:
                     issues.append(f"Import at line {i+1} not at top of file")
@@ -136,7 +141,7 @@ class QualityChecker:
         score = min(1.0, branches / 10)
         return score
 
-    def _check_security(self, content: str) -> List[str]:
+    def _check_security(self, content: str) -> list[str]:
         """Check for basic security issues."""
         issues = []
 
@@ -173,7 +178,7 @@ class QualityChecker:
 
         return max(0.0, min(1.0, score))
 
-    def check_directory(self, directory: Path) -> List[QualityReport]:
+    def check_directory(self, directory: Path) -> list[QualityReport]:
         """Check all Python files in a directory."""
         reports = []
         for file_path in directory.rglob("*.py"):
@@ -181,7 +186,7 @@ class QualityChecker:
             reports.append(report)
         return reports
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of all quality checks."""
         if not self.reports:
             return {"total": 0, "passed": 0, "failed": 0, "average_score": 0}
@@ -197,11 +202,11 @@ class QualityChecker:
             "syntax_valid": sum(1 for r in self.reports.values() if r.syntax_valid),
         }
 
-    def list_reports(self) -> List[Dict[str, Any]]:
+    def list_reports(self) -> list[dict[str, Any]]:
         """List all quality reports."""
         return [r.to_dict() for r in self.reports.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get checker status."""
         summary = self.get_summary()
         return {

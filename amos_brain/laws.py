@@ -1,9 +1,9 @@
 """Global Laws and UBI alignment enforcement."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Callable
-import re
 
 
 @dataclass
@@ -25,8 +25,7 @@ class LawCheckResult:
 
 
 class GlobalLaws:
-    """
-    AMOS Global Laws (from AMOS_Os_Agent_v0.json).
+    """AMOS Global Laws (from AMOS_Os_Agent_v0.json).
 
     L1: Law of Law - highest constraints must be respected
     L2: Rule of 2 - dual perspective check
@@ -111,9 +110,7 @@ class GlobalLaws:
             return False, "L2 violation: Single-line conclusion without dual check"
         return True, "L2 compliant"
 
-    def enforce_l3_quadrants(
-        self, quadrants_present: set[str]
-    ) -> tuple[bool, list[str]]:
+    def enforce_l3_quadrants(self, quadrants_present: set[str]) -> tuple[bool, list[str]]:
         """Enforce Rule of 4 - check all quadrants present."""
         required = {"biological", "technical", "economic", "environmental"}
         missing = required - quadrants_present
@@ -128,9 +125,7 @@ class GlobalLaws:
         for i, stmt1 in enumerate(statements):
             for stmt2 in statements[i + 1 :]:
                 if self._is_contradictory(stmt1, stmt2):
-                    contradictions.append(
-                        f"Contradiction: '{stmt1[:50]}...' vs '{stmt2[:50]}...'"
-                    )
+                    contradictions.append(f"Contradiction: '{stmt1[:50]}...' vs '{stmt2[:50]}...'")
         return len(contradictions) == 0, contradictions
 
     def _is_contradictory(self, stmt1: str, stmt2: str) -> bool:
@@ -144,10 +139,7 @@ class GlobalLaws:
             stmt2.lower().startswith(n) or f" {n}" in stmt2.lower() for n in negations
         )
         # Simplified check - real implementation would use semantic analysis
-        return (
-            stmt1_has_neg != stmt2_has_neg
-            and self._semantic_similarity(stmt1, stmt2) > 0.7
-        )
+        return stmt1_has_neg != stmt2_has_neg and self._semantic_similarity(stmt1, stmt2) > 0.7
 
     def _semantic_similarity(self, s1: str, s2: str) -> float:
         """Calculate semantic similarity between statements."""
@@ -184,8 +176,7 @@ class GlobalLaws:
         return "\n".join(lines)
 
     def validate_action(self, action: str) -> LawCheckResult:
-        """
-        Validate an action against all applicable laws.
+        """Validate an action against all applicable laws.
 
         Args:
             action: Action description to validate
@@ -209,8 +200,7 @@ class GlobalLaws:
 
 
 class UBILaws:
-    """
-    Unified Biological Intelligence alignment principles.
+    """Unified Biological Intelligence alignment principles.
 
     Protect biological integrity across:
     - Neurobiological Intelligence

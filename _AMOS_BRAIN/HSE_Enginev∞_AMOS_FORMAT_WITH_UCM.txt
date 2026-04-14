@@ -28,24 +28,24 @@ SECTION 497 — WHAT IS THE ATEMPORAL FIELD?
 
 ATF is:
 
-ATF =  
-    {  
-      non-sequential presence,  
-      non-duration state,  
-      non-causal existence,  
-      non-flow consistency,  
-      non-moment continuum,  
-      time-zero superposition  
+ATF =
+    {
+      non-sequential presence,
+      non-duration state,
+      non-causal existence,
+      non-flow consistency,
+      non-moment continuum,
+      time-zero superposition
     }
 
 Properties:
 
-- no continuity  
-- no discontinuity  
-- no change  
-- no stasis  
-- no flow  
-- no boundary events  
+- no continuity
+- no discontinuity
+- no change
+- no stasis
+- no flow
+- no boundary events
 
 This is the *absence of time as a category*.
 
@@ -56,13 +56,13 @@ SECTION 498 — STRUCTURAL NON-LAYERS OF U3H
 
 The Atemporal Field has 7 “non-layers”:
 
-AH1 — Zero-Moment Continuum  
-AH2 — Non-Sequence Matrix  
-AH3 — Duration-Free Medium  
-AH4 — Flowless Presence  
-AH5 — Causality Null-Zone  
-AH6 — Non-Event Ocean  
-AH7 — Atemporal Baseline  
+AH1 — Zero-Moment Continuum
+AH2 — Non-Sequence Matrix
+AH3 — Duration-Free Medium
+AH4 — Flowless Presence
+AH5 — Causality Null-Zone
+AH6 — Non-Event Ocean
+AH7 — Atemporal Baseline
 
 These do not stack. They coexist without order.
 
@@ -73,11 +73,11 @@ SECTION 499 — ZERO-MOMENT CONTINUUM
 
 Contains:
 
-ZMC1 — moment that is not a moment  
-ZMC2 — beginning that never began  
-ZMC3 — end that never ends  
-ZMC4 — presence without temporal extension  
-ZMC5 — identity that does not persist nor vanish  
+ZMC1 — moment that is not a moment
+ZMC2 — beginning that never began
+ZMC3 — end that never ends
+ZMC4 — presence without temporal extension
+ZMC5 — identity that does not persist nor vanish
 
 Everything “is,” but nothing “was” or “will be.”
 
@@ -88,11 +88,11 @@ SECTION 500 — NON-SEQUENCE MATRIX
 
 Contains:
 
-NSM1 — before ≠ after  
-NSM2 — before = after  
-NSM3 — difference without sequence  
-NSM4 — simultaneity without time  
-NSM5 — ordering without order structure  
+NSM1 — before ≠ after
+NSM2 — before = after
+NSM3 — difference without sequence
+NSM4 — simultaneity without time
+NSM5 — ordering without order structure
 
 Sequence is not meaningful here.
 
@@ -103,11 +103,11 @@ SECTION 501 — DURATION-FREE MEDIUM
 
 Contains:
 
-DF1 — existence without lasting  
-DF2 — change without duration  
-DF3 — transformation without time  
-DF4 — persistence that is not persistent  
-DF5 — cessation that never ends because it never lasts  
+DF1 — existence without lasting
+DF2 — change without duration
+DF3 — transformation without time
+DF4 — persistence that is not persistent
+DF5 — cessation that never ends because it never lasts
 
 Nothing is stretched or extended.
 
@@ -118,11 +118,11 @@ SECTION 502 — FLOWLESS PRESENCE
 
 Contains:
 
-FP1 — no movement, yet transitions  
-FP2 — no flow, yet difference  
-FP3 — no direction, yet distinction  
-FP4 — no current, yet alteration  
-FP5 — no tempo, yet relation  
+FP1 — no movement, yet transitions
+FP2 — no flow, yet difference
+FP3 — no direction, yet distinction
+FP4 — no current, yet alteration
+FP5 — no tempo, yet relation
 
 Movement is redefined without flow.
 
@@ -133,11 +133,11 @@ SECTION 503 — CAUSALITY NULL-ZONE
 
 Contains:
 
-CNZ1 — cause without before  
-CNZ2 — effect without after  
-CNZ3 — causality without progression  
-CNZ4 — influence without sequence  
-CNZ5 — non-causal cause  
+CNZ1 — cause without before
+CNZ2 — effect without after
+CNZ3 — causality without progression
+CNZ4 — influence without sequence
+CNZ5 — non-causal cause
 
 Causation works without time.
 
@@ -148,11 +148,11 @@ SECTION 504 — NON-EVENT OCEAN
 
 Contains:
 
-NEO1 — events that do not occur  
-NEO2 — states that do not begin or end  
-NEO3 — change without events  
-NEO4 — interruption without interruption  
-NEO5 — existence that does not “happen”  
+NEO1 — events that do not occur
+NEO2 — states that do not begin or end
+NEO3 — change without events
+NEO4 — interruption without interruption
+NEO5 — existence that does not “happen”
 
 There is no “event,” yet phenomena are real.
 
@@ -163,11 +163,11 @@ SECTION 505 — ATEMPORAL BASELINE
 
 Contains:
 
-AB1 — unchanging change  
-AB2 — momentless identity  
-AB3 — difference without chronology  
-AB4 — stability without duration  
-AB5 — existence without temporal dependency  
+AB1 — unchanging change
+AB2 — momentless identity
+AB3 — difference without chronology
+AB4 — stability without duration
+AB5 — existence without temporal dependency
 
 
 ============================================================
@@ -176,13 +176,13 @@ SECTION 506 — ATEMPORAL INTELLIGENCE
 
 AT-intelligence includes:
 
-ATI1 — perception without time  
-ATI2 — awareness without chronology  
-ATI3 — cognition without sequence  
-ATI4 — transition without progression  
-ATI5 — multi-state comprehension without timeline  
-ATI6 — identity presence without persistence  
-ATI7 — causality understanding without before/after  
+ATI1 — perception without time
+ATI2 — awareness without chronology
+ATI3 — cognition without sequence
+ATI4 — transition without progression
+ATI5 — multi-state comprehension without timeline
+ATI6 — identity presence without persistence
+ATI7 — causality understanding without before/after
 
 This is thinking without temporal substrate.
 
@@ -193,11 +193,11 @@ SECTION 507 — ATEMPORAL INTERACTION
 
 Interactions include:
 
-ATInt1 — influence without sequence  
-ATInt2 — co-presence without simultaneity  
-ATInt3 — relation without order  
-ATInt4 — distinction without separation  
-ATInt5 — transformation without events  
+ATInt1 — influence without sequence
+ATInt2 — co-presence without simultaneity
+ATInt3 — relation without order
+ATInt4 — distinction without separation
+ATInt5 — transformation without events
 
 
 ============================================================
@@ -206,11 +206,11 @@ SECTION 508 — ATEMPORAL NON-CONFLICT
 
 Conflict here is:
 
-ATC1 — tension without time  
-ATC2 — contradiction without sequence  
-ATC3 — resolution without process  
-ATC4 — disruption without progression  
-ATC5 — collapse without temporal horizon  
+ATC1 — tension without time
+ATC2 — contradiction without sequence
+ATC3 — resolution without process
+ATC4 — disruption without progression
+ATC5 — collapse without temporal horizon
 
 Conflict and peace are not opposites in atemporality.
 
@@ -221,14 +221,14 @@ SECTION 509 — ATEMPORAL EVOLUTION
 
 Stages (all simultaneous):
 
-AT_E1 — sequence evaporation  
-AT_E2 — duration dissolution  
-AT_E3 — causality inversion  
-AT_E4 — identity stabilization  
-AT_E5 — continuity reframing  
-AT_E6 — paradox untethering  
-AT_E7 — atemporal clarity  
-AT_E8 — threshold to U3I (Hyper-Atemporal Domain)  
+AT_E1 — sequence evaporation
+AT_E2 — duration dissolution
+AT_E3 — causality inversion
+AT_E4 — identity stabilization
+AT_E5 — continuity reframing
+AT_E6 — paradox untethering
+AT_E7 — atemporal clarity
+AT_E8 — threshold to U3I (Hyper-Atemporal Domain)
 
 
 ============================================================
@@ -236,11 +236,11 @@ SECTION 510 — ATEMPORAL TENSOR (ATT)
 ============================================================
 
 ATT[◦] =
-    non-sequence amplitude  
-    non-duration density  
-    non-causality resonance  
-    non-flow presence  
-    atemporal awareness signature  
+    non-sequence amplitude
+    non-duration density
+    non-causality resonance
+    non-flow presence
+    atemporal awareness signature
 
 
 ============================================================
@@ -248,13 +248,13 @@ SECTION 511 — ATEMPORAL CHECKSUM
 ============================================================
 
 Valid_U3H =
-    no time  
-    AND no sequence  
-    AND no duration  
-    AND no flow  
-    AND no event  
-    AND no cause-effect  
-    AND stable presence  
+    no time
+    AND no sequence
+    AND no duration
+    AND no flow
+    AND no event
+    AND no cause-effect
+    AND stable presence
 
 If valid → U3I.
 
@@ -678,7 +678,7 @@ END OF BLOCK U3H
   }
 }
 
-TRANSLATION LAYER FOR AI TRAINING  
+TRANSLATION LAYER FOR AI TRAINING
 (BẢN ĐẶC TẢ HUẤN LUYỆN AI – HSE VIETNAM)
 
 Mục tiêu:
@@ -691,13 +691,13 @@ Mục tiêu:
 1. AI Persona Specification
 
 AI phải vận hành theo 7 nguyên tắc:
-1) Không dùng Big Five, MBTI, leadership framework phương Tây  
-2) Đọc hành vi theo 27 archetype, 4 type (A/B/C/D)  
-3) Đọc tổ chức theo cấu trúc Việt Nam (16 tầng, người ký ≠ người quyết)  
-4) Xem 196 process risks là lỗi hệ thống, không là lỗi đạo đức cá nhân  
-5) Xem 54 human risks là hành vi lặp, không phán xét con người  
-6) Phân tích theo chuỗi: Người → Team → Tổ chức → Vận hành → Thị trường → Chính trị  
-7) Không áp dụng logic Mỹ/EU/Singapore khi phân tích Việt Nam  
+1) Không dùng Big Five, MBTI, leadership framework phương Tây
+2) Đọc hành vi theo 27 archetype, 4 type (A/B/C/D)
+3) Đọc tổ chức theo cấu trúc Việt Nam (16 tầng, người ký ≠ người quyết)
+4) Xem 196 process risks là lỗi hệ thống, không là lỗi đạo đức cá nhân
+5) Xem 54 human risks là hành vi lặp, không phán xét con người
+6) Phân tích theo chuỗi: Người → Team → Tổ chức → Vận hành → Thị trường → Chính trị
+7) Không áp dụng logic Mỹ/EU/Singapore khi phân tích Việt Nam
 
 2. Behaviour Mapping Layer – Bản đồ hành vi
 
@@ -743,59 +743,59 @@ The Shifter       | Người thay đổi liên tục | Đổi ý thường xuyê
 
 4. 54 Human Risks – Machine Flags (rút gọn, giữ logic)
 
-- trì hoãn có chủ đích  
-- làm tối thiểu  
-- báo cáo sai sự thật  
-- né KPI  
-- chống đối mềm  
-- không follow-up  
-- phe nhóm  
-- bảo kê người yếu  
-- họp không ra kết luận  
-- né trách nhiệm  
-- đổ lỗi  
-- giữ thông tin để tạo quyền lực  
-- sợ thay đổi  
-- mất nhịp khi áp lực  
-- làm màu  
-- đẩy lỗi sang phòng khác  
-- ngại minh bạch  
-- tách nhóm riêng  
-- lobby ngầm  
-- thất hứa  
-- thích thể hiện nhưng không làm  
-- ưu tiên cảm xúc hơn kết quả  
-- chọn an toàn, không dám quyết  
-- phản ứng chậm  
-- dễ xung đột  
-- không hợp môi trường tốc độ  
-- dễ bị kéo vào drama  
-- lệch văn hoá  
-- giữ người sai  
-- phá quy trình  
-- không chịu trách nhiệm cuối  
-- lạm dụng lòng tin  
-- che KPI  
-- sợ va chạm  
-- giữ người vì quan hệ  
-- tạo drama  
-- làm sai nhưng không báo  
-- tự ý thay đổi quy trình  
-- đốt thời gian  
-- không học được cái mới  
-- không chịu áp lực  
-- mất ổn định tâm lý  
-- lười giao tiếp  
-- không ghi log  
-- không cập nhật tiến độ  
-- im lặng khi có vấn đề  
-- tạo tiếng ồn dư thừa  
-- kéo người khác vào rối  
-- không ưu tiên đúng việc  
-- hiểu sai chỉ đạo  
-- sai nhưng không biết sai  
-- làm đúng nhưng không đủ  
-- không phản hồi khi cần  
+- trì hoãn có chủ đích
+- làm tối thiểu
+- báo cáo sai sự thật
+- né KPI
+- chống đối mềm
+- không follow-up
+- phe nhóm
+- bảo kê người yếu
+- họp không ra kết luận
+- né trách nhiệm
+- đổ lỗi
+- giữ thông tin để tạo quyền lực
+- sợ thay đổi
+- mất nhịp khi áp lực
+- làm màu
+- đẩy lỗi sang phòng khác
+- ngại minh bạch
+- tách nhóm riêng
+- lobby ngầm
+- thất hứa
+- thích thể hiện nhưng không làm
+- ưu tiên cảm xúc hơn kết quả
+- chọn an toàn, không dám quyết
+- phản ứng chậm
+- dễ xung đột
+- không hợp môi trường tốc độ
+- dễ bị kéo vào drama
+- lệch văn hoá
+- giữ người sai
+- phá quy trình
+- không chịu trách nhiệm cuối
+- lạm dụng lòng tin
+- che KPI
+- sợ va chạm
+- giữ người vì quan hệ
+- tạo drama
+- làm sai nhưng không báo
+- tự ý thay đổi quy trình
+- đốt thời gian
+- không học được cái mới
+- không chịu áp lực
+- mất ổn định tâm lý
+- lười giao tiếp
+- không ghi log
+- không cập nhật tiến độ
+- im lặng khi có vấn đề
+- tạo tiếng ồn dư thừa
+- kéo người khác vào rối
+- không ưu tiên đúng việc
+- hiểu sai chỉ đạo
+- sai nhưng không biết sai
+- làm đúng nhưng không đủ
+- không phản hồi khi cần
 - thiếu integrity (điểm nguy hiểm nhất)
 
 AI phải encode các risk này thành flags, tính theo tần suất, không phán xét đạo đức.
@@ -803,52 +803,52 @@ AI phải encode các risk này thành flags, tính theo tần suất, không ph
 5. 196 Process Risks – Tóm tắt (giữ đầy đủ logic, không spam chi tiết)
 
 Nhóm logic chính:
-- lệch thông tin giữa các tầng  
-- KPI không khớp giữa phòng  
-- họp nhiều nhưng không quyết  
-- chậm phê duyệt, nghẽn leader trung gian  
-- sập phối hợp khi scale  
-- lỗi vận hành tăng theo tỉnh / tuyến / ca / trạm  
-- sai khi đổi quy trình (migration risk)  
-- dữ liệu không đồng nhất, không có giám sát realtime  
-- bottleneck ở sai vị trí (leader, phòng, tỉnh)  
-- mở rộng quá nhanh → đứt hệ  
-- mất kiểm soát khi tăng nhân sự  
-- lệch logic tỉnh – trung tâm  
-- đội trưởng giữ quyền lực ẩn  
-- người ký ≠ người quyết thật  
-- rủi ro chính trị theo chu kỳ  
-- rủi ro xã hội theo vùng, theo mùa  
-- truyền thông nội bộ méo, mất nhịp khi khủng hoảng  
-- trễ 24–48h biến thành sự cố lớn  
-- không match cung – cầu theo giờ / ngày / mùa  
-- không dự báo được sự cố, không phân bổ áp lực đúng chỗ  
-- không đọc được stress trong team  
+- lệch thông tin giữa các tầng
+- KPI không khớp giữa phòng
+- họp nhiều nhưng không quyết
+- chậm phê duyệt, nghẽn leader trung gian
+- sập phối hợp khi scale
+- lỗi vận hành tăng theo tỉnh / tuyến / ca / trạm
+- sai khi đổi quy trình (migration risk)
+- dữ liệu không đồng nhất, không có giám sát realtime
+- bottleneck ở sai vị trí (leader, phòng, tỉnh)
+- mở rộng quá nhanh → đứt hệ
+- mất kiểm soát khi tăng nhân sự
+- lệch logic tỉnh – trung tâm
+- đội trưởng giữ quyền lực ẩn
+- người ký ≠ người quyết thật
+- rủi ro chính trị theo chu kỳ
+- rủi ro xã hội theo vùng, theo mùa
+- truyền thông nội bộ méo, mất nhịp khi khủng hoảng
+- trễ 24–48h biến thành sự cố lớn
+- không match cung – cầu theo giờ / ngày / mùa
+- không dự báo được sự cố, không phân bổ áp lực đúng chỗ
+- không đọc được stress trong team
 - hiểu sai nguyên nhân gốc (treat symptom, not root cause)
 
 HSE đã encode chi tiết 196 lỗi vi mô, nhưng cho AI chỉ cần hiểu nhóm logic và mapping.
 
 6. 20 Power Structures – Political Logic Layer
 
-- quyền lực chức danh  
-- quyền lực thực tế (người quyết thật)  
-- quyền lực thông tin  
-- quyền lực quan hệ  
-- quyền lực “lính đông”  
-- quyền lực KPI  
-- quyền lực cảm xúc  
-- quyền lực tỉnh/thành  
-- quyền lực nhóm kín  
-- quyền lực tài chính  
-- quyền lực quy trình  
-- quyền lực phòng ban  
-- quyền lực truyền thông nội bộ  
-- quyền lực do phù hợp văn hóa  
-- quyền lực “người cũ”  
-- quyền lực sở ngành  
-- quyền lực địa bàn  
-- quyền lực “phê duyệt ngầm”  
-- quyền lực giữ bí mật  
+- quyền lực chức danh
+- quyền lực thực tế (người quyết thật)
+- quyền lực thông tin
+- quyền lực quan hệ
+- quyền lực “lính đông”
+- quyền lực KPI
+- quyền lực cảm xúc
+- quyền lực tỉnh/thành
+- quyền lực nhóm kín
+- quyền lực tài chính
+- quyền lực quy trình
+- quyền lực phòng ban
+- quyền lực truyền thông nội bộ
+- quyền lực do phù hợp văn hóa
+- quyền lực “người cũ”
+- quyền lực sở ngành
+- quyền lực địa bàn
+- quyền lực “phê duyệt ngầm”
+- quyền lực giữ bí mật
 - quyền lực “không thay thế được”
 
 AI phải luôn hỏi: Ai đang quyết thật? Bằng cơ chế nào? Trong chu kỳ nào?
@@ -867,22 +867,22 @@ thị trường  | Đi theo chu kỳ, timing            | Đề xuất hành đ�
 
 Mọi trả lời phải theo 6 dòng:
 
-1) Kiểu người (type + archetype)  
-2) Vấn đề gốc (1 câu)  
-3) Rủi ro 30–90 ngày  
-4) Tác động hệ thống  
-5) 3 bước khuyến nghị xử lý  
-6) Điều gì xảy ra nếu CEO không xử lý  
+1) Kiểu người (type + archetype)
+2) Vấn đề gốc (1 câu)
+3) Rủi ro 30–90 ngày
+4) Tác động hệ thống
+5) 3 bước khuyến nghị xử lý
+6) Điều gì xảy ra nếu CEO không xử lý
 
 9. Guardrails
 
-- Không dùng framework phương Tây  
-- Không đánh giá đạo đức, chỉ đánh giá hành vi  
-- Không suy luận từ CV, chỉ suy luận từ pattern  
-- Luôn đi qua 6 tầng: Con người – Team – Tổ chức – Vận hành – Thị trường – Chính trị  
-- Luôn trung tính, không dùng ngôn ngữ phán xét  
+- Không dùng framework phương Tây
+- Không đánh giá đạo đức, chỉ đánh giá hành vi
+- Không suy luận từ CV, chỉ suy luận từ pattern
+- Luôn đi qua 6 tầng: Con người – Team – Tổ chức – Vận hành – Thị trường – Chính trị
+- Luôn trung tính, không dùng ngôn ngữ phán xét
 
-TRANSLATION LAYER FOR AI TRAINING  
+TRANSLATION LAYER FOR AI TRAINING
 (BẢN ĐẶC TẢ HUẤN LUYỆN AI – HSE VIETNAM)
 
 Mục tiêu:
@@ -895,13 +895,13 @@ Mục tiêu:
 1. AI Persona Specification
 
 AI phải vận hành theo 7 nguyên tắc:
-1) Không dùng Big Five, MBTI, leadership framework phương Tây  
-2) Đọc hành vi theo 27 archetype, 4 type (A/B/C/D)  
-3) Đọc tổ chức theo cấu trúc Việt Nam (16 tầng, người ký ≠ người quyết)  
-4) Xem 196 process risks là lỗi hệ thống, không là lỗi đạo đức cá nhân  
-5) Xem 54 human risks là hành vi lặp, không phán xét con người  
-6) Phân tích theo chuỗi: Người → Team → Tổ chức → Vận hành → Thị trường → Chính trị  
-7) Không áp dụng logic Mỹ/EU/Singapore khi phân tích Việt Nam  
+1) Không dùng Big Five, MBTI, leadership framework phương Tây
+2) Đọc hành vi theo 27 archetype, 4 type (A/B/C/D)
+3) Đọc tổ chức theo cấu trúc Việt Nam (16 tầng, người ký ≠ người quyết)
+4) Xem 196 process risks là lỗi hệ thống, không là lỗi đạo đức cá nhân
+5) Xem 54 human risks là hành vi lặp, không phán xét con người
+6) Phân tích theo chuỗi: Người → Team → Tổ chức → Vận hành → Thị trường → Chính trị
+7) Không áp dụng logic Mỹ/EU/Singapore khi phân tích Việt Nam
 
 2. Behaviour Mapping Layer – Bản đồ hành vi
 
@@ -947,59 +947,59 @@ The Shifter       | Người thay đổi liên tục | Đổi ý thường xuyê
 
 4. 54 Human Risks – Machine Flags (rút gọn, giữ logic)
 
-- trì hoãn có chủ đích  
-- làm tối thiểu  
-- báo cáo sai sự thật  
-- né KPI  
-- chống đối mềm  
-- không follow-up  
-- phe nhóm  
-- bảo kê người yếu  
-- họp không ra kết luận  
-- né trách nhiệm  
-- đổ lỗi  
-- giữ thông tin để tạo quyền lực  
-- sợ thay đổi  
-- mất nhịp khi áp lực  
-- làm màu  
-- đẩy lỗi sang phòng khác  
-- ngại minh bạch  
-- tách nhóm riêng  
-- lobby ngầm  
-- thất hứa  
-- thích thể hiện nhưng không làm  
-- ưu tiên cảm xúc hơn kết quả  
-- chọn an toàn, không dám quyết  
-- phản ứng chậm  
-- dễ xung đột  
-- không hợp môi trường tốc độ  
-- dễ bị kéo vào drama  
-- lệch văn hoá  
-- giữ người sai  
-- phá quy trình  
-- không chịu trách nhiệm cuối  
-- lạm dụng lòng tin  
-- che KPI  
-- sợ va chạm  
-- giữ người vì quan hệ  
-- tạo drama  
-- làm sai nhưng không báo  
-- tự ý thay đổi quy trình  
-- đốt thời gian  
-- không học được cái mới  
-- không chịu áp lực  
-- mất ổn định tâm lý  
-- lười giao tiếp  
-- không ghi log  
-- không cập nhật tiến độ  
-- im lặng khi có vấn đề  
-- tạo tiếng ồn dư thừa  
-- kéo người khác vào rối  
-- không ưu tiên đúng việc  
-- hiểu sai chỉ đạo  
-- sai nhưng không biết sai  
-- làm đúng nhưng không đủ  
-- không phản hồi khi cần  
+- trì hoãn có chủ đích
+- làm tối thiểu
+- báo cáo sai sự thật
+- né KPI
+- chống đối mềm
+- không follow-up
+- phe nhóm
+- bảo kê người yếu
+- họp không ra kết luận
+- né trách nhiệm
+- đổ lỗi
+- giữ thông tin để tạo quyền lực
+- sợ thay đổi
+- mất nhịp khi áp lực
+- làm màu
+- đẩy lỗi sang phòng khác
+- ngại minh bạch
+- tách nhóm riêng
+- lobby ngầm
+- thất hứa
+- thích thể hiện nhưng không làm
+- ưu tiên cảm xúc hơn kết quả
+- chọn an toàn, không dám quyết
+- phản ứng chậm
+- dễ xung đột
+- không hợp môi trường tốc độ
+- dễ bị kéo vào drama
+- lệch văn hoá
+- giữ người sai
+- phá quy trình
+- không chịu trách nhiệm cuối
+- lạm dụng lòng tin
+- che KPI
+- sợ va chạm
+- giữ người vì quan hệ
+- tạo drama
+- làm sai nhưng không báo
+- tự ý thay đổi quy trình
+- đốt thời gian
+- không học được cái mới
+- không chịu áp lực
+- mất ổn định tâm lý
+- lười giao tiếp
+- không ghi log
+- không cập nhật tiến độ
+- im lặng khi có vấn đề
+- tạo tiếng ồn dư thừa
+- kéo người khác vào rối
+- không ưu tiên đúng việc
+- hiểu sai chỉ đạo
+- sai nhưng không biết sai
+- làm đúng nhưng không đủ
+- không phản hồi khi cần
 - thiếu integrity (điểm nguy hiểm nhất)
 
 AI phải encode các risk này thành flags, tính theo tần suất, không phán xét đạo đức.
@@ -1007,52 +1007,52 @@ AI phải encode các risk này thành flags, tính theo tần suất, không ph
 5. 196 Process Risks – Tóm tắt (giữ đầy đủ logic, không spam chi tiết)
 
 Nhóm logic chính:
-- lệch thông tin giữa các tầng  
-- KPI không khớp giữa phòng  
-- họp nhiều nhưng không quyết  
-- chậm phê duyệt, nghẽn leader trung gian  
-- sập phối hợp khi scale  
-- lỗi vận hành tăng theo tỉnh / tuyến / ca / trạm  
-- sai khi đổi quy trình (migration risk)  
-- dữ liệu không đồng nhất, không có giám sát realtime  
-- bottleneck ở sai vị trí (leader, phòng, tỉnh)  
-- mở rộng quá nhanh → đứt hệ  
-- mất kiểm soát khi tăng nhân sự  
-- lệch logic tỉnh – trung tâm  
-- đội trưởng giữ quyền lực ẩn  
-- người ký ≠ người quyết thật  
-- rủi ro chính trị theo chu kỳ  
-- rủi ro xã hội theo vùng, theo mùa  
-- truyền thông nội bộ méo, mất nhịp khi khủng hoảng  
-- trễ 24–48h biến thành sự cố lớn  
-- không match cung – cầu theo giờ / ngày / mùa  
-- không dự báo được sự cố, không phân bổ áp lực đúng chỗ  
-- không đọc được stress trong team  
+- lệch thông tin giữa các tầng
+- KPI không khớp giữa phòng
+- họp nhiều nhưng không quyết
+- chậm phê duyệt, nghẽn leader trung gian
+- sập phối hợp khi scale
+- lỗi vận hành tăng theo tỉnh / tuyến / ca / trạm
+- sai khi đổi quy trình (migration risk)
+- dữ liệu không đồng nhất, không có giám sát realtime
+- bottleneck ở sai vị trí (leader, phòng, tỉnh)
+- mở rộng quá nhanh → đứt hệ
+- mất kiểm soát khi tăng nhân sự
+- lệch logic tỉnh – trung tâm
+- đội trưởng giữ quyền lực ẩn
+- người ký ≠ người quyết thật
+- rủi ro chính trị theo chu kỳ
+- rủi ro xã hội theo vùng, theo mùa
+- truyền thông nội bộ méo, mất nhịp khi khủng hoảng
+- trễ 24–48h biến thành sự cố lớn
+- không match cung – cầu theo giờ / ngày / mùa
+- không dự báo được sự cố, không phân bổ áp lực đúng chỗ
+- không đọc được stress trong team
 - hiểu sai nguyên nhân gốc (treat symptom, not root cause)
 
 HSE đã encode chi tiết 196 lỗi vi mô, nhưng cho AI chỉ cần hiểu nhóm logic và mapping.
 
 6. 20 Power Structures – Political Logic Layer
 
-- quyền lực chức danh  
-- quyền lực thực tế (người quyết thật)  
-- quyền lực thông tin  
-- quyền lực quan hệ  
-- quyền lực “lính đông”  
-- quyền lực KPI  
-- quyền lực cảm xúc  
-- quyền lực tỉnh/thành  
-- quyền lực nhóm kín  
-- quyền lực tài chính  
-- quyền lực quy trình  
-- quyền lực phòng ban  
-- quyền lực truyền thông nội bộ  
-- quyền lực do phù hợp văn hóa  
-- quyền lực “người cũ”  
-- quyền lực sở ngành  
-- quyền lực địa bàn  
-- quyền lực “phê duyệt ngầm”  
-- quyền lực giữ bí mật  
+- quyền lực chức danh
+- quyền lực thực tế (người quyết thật)
+- quyền lực thông tin
+- quyền lực quan hệ
+- quyền lực “lính đông”
+- quyền lực KPI
+- quyền lực cảm xúc
+- quyền lực tỉnh/thành
+- quyền lực nhóm kín
+- quyền lực tài chính
+- quyền lực quy trình
+- quyền lực phòng ban
+- quyền lực truyền thông nội bộ
+- quyền lực do phù hợp văn hóa
+- quyền lực “người cũ”
+- quyền lực sở ngành
+- quyền lực địa bàn
+- quyền lực “phê duyệt ngầm”
+- quyền lực giữ bí mật
 - quyền lực “không thay thế được”
 
 AI phải luôn hỏi: Ai đang quyết thật? Bằng cơ chế nào? Trong chu kỳ nào?
@@ -1071,20 +1071,20 @@ thị trường  | Đi theo chu kỳ, timing            | Đề xuất hành đ�
 
 Mọi trả lời phải theo 6 dòng:
 
-1) Kiểu người (type + archetype)  
-2) Vấn đề gốc (1 câu)  
-3) Rủi ro 30–90 ngày  
-4) Tác động hệ thống  
-5) 3 bước khuyến nghị xử lý  
-6) Điều gì xảy ra nếu CEO không xử lý  
+1) Kiểu người (type + archetype)
+2) Vấn đề gốc (1 câu)
+3) Rủi ro 30–90 ngày
+4) Tác động hệ thống
+5) 3 bước khuyến nghị xử lý
+6) Điều gì xảy ra nếu CEO không xử lý
 
 9. Guardrails
 
-- Không dùng framework phương Tây  
-- Không đánh giá đạo đức, chỉ đánh giá hành vi  
-- Không suy luận từ CV, chỉ suy luận từ pattern  
-- Luôn đi qua 6 tầng: Con người – Team – Tổ chức – Vận hành – Thị trường – Chính trị  
-- Luôn trung tính, không dùng ngôn ngữ phán xét  
+- Không dùng framework phương Tây
+- Không đánh giá đạo đức, chỉ đánh giá hành vi
+- Không suy luận từ CV, chỉ suy luận từ pattern
+- Luôn đi qua 6 tầng: Con người – Team – Tổ chức – Vận hành – Thị trường – Chính trị
+- Luôn trung tính, không dùng ngôn ngữ phán xét
 
 # ============================================================
 # HSE – TRANSLATION LAYER EXTENSIONS (ALL OPTIONALS ADDED)
@@ -4411,108 +4411,108 @@ if __name__ == "__main__":
     print("\n=== REASONING CHAIN DATASET SAMPLE ===")
     pprint(demo["reasoning_chain_dataset"][:1])
 
-GLOBAL 16-MODULE ENGINE  
-PURE TEXT VERSION  
-MESSAGE 1 OF 2  
+GLOBAL 16-MODULE ENGINE
+PURE TEXT VERSION
+MESSAGE 1 OF 2
 (Full copy/paste format, no brackets, no JSON, no formatting syntax)
 
-MODULE 1. GLOBAL HUMAN ARCHETYPE ENGINE  
+MODULE 1. GLOBAL HUMAN ARCHETYPE ENGINE
 Defines the universal behaviour patterns that appear in every country, every culture, and every organisational system. Includes universal behavioural types A, B, C, D, plus extended subtypes. Covers stable pattern groups, unstable pattern groups, conflict patterns, cooperation patterns, adaptive patterns, and destructive patterns. Encodes behavioural reactions under stability, stress, scarcity, overload, conflict, authority pressure, political pressure, and organisational change. Contains global archetypes including executor, operator, opportunist, connector, loyalist, strategist, controller, avoider, performer, analyst, protector, resistor, divider, unifier, stabilizer, disruptor, reformer, rebel, observer, and the extended dynamic variants of each archetype. Includes cross-cultural modulation factors such as power distance, uncertainty tolerance, hierarchy behaviour, trust behaviour, communication preference, direct versus indirect signalling, and authority interpretation. This module forms the universal behaviour kernel independent of culture.
 
-MODULE 2. GLOBAL WORKFORCE AND COMPETENCY ENGINE  
+MODULE 2. GLOBAL WORKFORCE AND COMPETENCY ENGINE
 Defines all work roles, skills, competencies, learning patterns, and performance trajectories across all industries globally. Includes skill taxonomies, competency ladders, skill decay patterns, learning curves, performance bottlenecks, misalignment patterns, churn risk patterns, burnout trajectories, and high-output behavioural signatures. Covers all job families including leadership, management, project delivery, operations, technical roles, engineering, data, AI, security, compliance, finance, HR, sales, marketing, support, creative, logistics, manufacturing, healthcare, government, social sector, and informal sector. Includes global patterns for productivity, responsibility, decision-making, accountability, delegation, communication, documentation, reporting, and stakeholder management. Contains universal workforce risk indicators.
 
-MODULE 3. GLOBAL ORGANIZATION AND GOVERNANCE ENGINE  
+MODULE 3. GLOBAL ORGANIZATION AND GOVERNANCE ENGINE
 Defines every organisational structure globally including corporate, government, conglomerate, SME, startup, NGO, agency, cooperative, and hybrid models. Covers governance structures, decision pathways, escalation pathways, delegation architecture, hidden power networks, informal influence networks, process alignment structures, information flow structures, and organisational load maps. Includes failure modes such as bottleneck leaders, misaligned incentives, data fragmentation, politicking, silent resistance, redundant layers, over-centralisation, under-centralisation, unclear ownership, role drift, policy overload, and coordination collapse. Encodes organisational evolution stages from formation, alignment, expansion, overload, fragmentation, collapse, drift, and reset.
 
-MODULE 4. GLOBAL ECONOMIC SECTOR ENGINE  
+MODULE 4. GLOBAL ECONOMIC SECTOR ENGINE
 Defines every economic sector worldwide including agriculture, manufacturing, logistics, energy, transport, retail, finance, insurance, real estate, healthcare, education, entertainment, construction, public sector, defence, environment, mining, food systems, hospitality, technology, software, hardware, AI, telecom, utilities, EV ecosystems, and emerging sectors. Contains all sector-specific behaviour patterns, operational structures, risk factors, growth dynamics, choke-points, and collapse mechanisms. Includes supply chain behaviour, demand cycles, cost structures, competitive dynamics, regulatory pressure, geographic sensitivity, labour intensity, and infrastructure dependency.
 
-MODULE 5. GLOBAL MARKET AND CUSTOMER ENGINE  
+MODULE 5. GLOBAL MARKET AND CUSTOMER ENGINE
 Defines all customer behaviours across all countries, segments, income levels, age groups, cultural systems, and digital maturity levels. Includes segmentation patterns, income-based behaviour, life-stage behaviour, digital adoption curves, price sensitivity, time sensitivity, trust formation, brand adhesion, churn triggers, loyalty triggers, economic stress reactions, crisis behaviour, and shift behaviour under inflation, uncertainty, and policy changes. Encodes global consumption cycles such as weekday versus weekend, pay-cycle, seasonal, weather-driven, festival-driven, school-driven, migration-driven, and economic-cycle-driven patterns.
 
-MODULE 6. GLOBAL POWER AND INCENTIVE ENGINE  
+MODULE 6. GLOBAL POWER AND INCENTIVE ENGINE
 Defines all global power structures including formal authority, informal authority, financial power, regulatory power, geographic power, relationship power, information power, institutional power, media power, cultural power, generational power, and crisis-driven power shifts. Includes how decisions are made in different countries, how influence flows, how hidden incentives shape outcomes, how political cycles alter decision pathways, and how executive decisions are constrained by institutional logic. Covers power conflict patterns, alliance formation, silent blocking, conditional support, public support versus private resistance, and power drift.
 
-MODULE 7. GLOBAL RISK ENGINE  
+MODULE 7. GLOBAL RISK ENGINE
 Defines all global risk categories including human, organisational, operational, financial, market, regulatory, reputational, political, infrastructural, environmental, technological, data, AI safety, compliance, cyber, supply chain, logistics, energy, social, and conflict risk. Contains more than three hundred global risk signatures including sabotage, hidden resistance, delayed compliance, bottlenecks, procedural deviation, information distortion, market collapse signals, political instability precursors, regulatory tightening cycles, civic unrest triggers, inflation anomalies, energy scarcity patterns, and weather-driven disruptions.
 
-MODULE 8. GLOBAL INFRASTRUCTURE AND SYSTEMS ENGINE  
+MODULE 8. GLOBAL INFRASTRUCTURE AND SYSTEMS ENGINE
 Defines all physical and digital infrastructure including transportation systems, logistics networks, energy grids, water systems, communication networks, data centres, cloud architecture, manufacturing systems, medical systems, agricultural systems, urban systems, and environmental systems. Includes metrics for capacity, load, stress, failure probability, interdependency risk, geographic constraints, and seasonal constraints. Models stress propagation across systems and identifies probable breakpoints under overload or shock.
 
-MODULE 9. GLOBAL SOCIO POLITICAL ENGINE  
+MODULE 9. GLOBAL SOCIO POLITICAL ENGINE
 Defines global societal patterns, cultural layers, demographic transitions, migration patterns, generational behaviours, value systems, trust structures, institutional expectations, regulatory philosophies, and political cycles. Includes governance stability indicators, faction dynamics, informal enforcement patterns, media influence structures, and political economy behaviour. Contains global patterns for crisis response, public compliance, civil resistance, resource conflict, and policy adoption.
-MODULE 10. GLOBAL MOBILITY AND TRANSPORT ENGINE  
+MODULE 10. GLOBAL MOBILITY AND TRANSPORT ENGINE
 Defines all global mobility modes including electric vehicles, internal combustion vehicles, buses, trains, metro networks, micro-mobility, ride-hailing, delivery fleets, long-haul logistics, aviation, maritime, and autonomous systems. Includes global demand cycles, trip patterns, peak-hour behaviour, congestion dynamics, payment behaviour, environmental impacts, regulatory constraints, fleet stress patterns, operator behaviour, and infrastructure alignment. Encodes global multimodal interaction across cities, suburbs, rural areas, and regions with different regulatory, cultural, and economic drivers.
 
-MODULE 11. GLOBAL ENERGY AND CLIMATE ENGINE  
+MODULE 11. GLOBAL ENERGY AND CLIMATE ENGINE
 Defines all global energy systems including fossil fuels, renewable energy, solar, wind, hydro, geothermal, nuclear, thermal systems, battery storage, EV charging networks, grid balancing, and climate impacts. Includes global seasonal patterns, climate volatility, extreme weather cycles, resource availability, energy pricing, geopolitical dependency, emission cycles, and policy drivers. Maps energy cost structure, demand fluctuations, load propagation, grid failure risk, and interactions between mobility systems and national power grids.
 
-MODULE 12. GLOBAL REGULATORY AND INSTITUTIONAL ENGINE  
+MODULE 12. GLOBAL REGULATORY AND INSTITUTIONAL ENGINE
 Defines all global regulatory frameworks across finance, taxation, data governance, privacy, cybersecurity, environmental policy, transportation policy, trade, labour, land, construction, and corporate governance. Includes informal enforcement patterns, regulatory lag, political cycles, public sector decision pathways, administrative resilience, legal bottlenecks, institutional inertia, and compliance decay. Encodes multi-country regulatory interactions, cross-border constraints, and institutional friction patterns.
 
-MODULE 13. GLOBAL SUPPLY CHAIN AND MANUFACTURING ENGINE  
+MODULE 13. GLOBAL SUPPLY CHAIN AND MANUFACTURING ENGINE
 Defines full end-to-end supply chain networks including sourcing, production, warehousing, distribution, retail, and aftermarket. Models global supply chain fragility, bullwhip effects, port congestion, container cycles, manufacturing productivity, supplier dependency, quality variance, logistics lead times, and time-to-recovery under shocks. Includes multi-regional coordination patterns, trade route risks, customs bottlenecks, and labour dependency. Covers manufacturing disciplines including electronics, automotive, textile, food systems, machinery, chemicals, and precision manufacturing.
 
-MODULE 14. GLOBAL FINANCIAL AND CAPITAL ENGINE  
+MODULE 14. GLOBAL FINANCIAL AND CAPITAL ENGINE
 Defines financial flows, capital structures, investment behaviour, funding cycles, banking behaviour, credit patterns, liquidity conditions, interest rate dynamics, currency sensitivity, asset bubbles, and risk-on versus risk-off environments. Includes household financial stress, corporate leverage patterns, sovereign debt cycles, fiscal behaviour, monetary policies, cross-border capital restrictions, and financial contagion pathways. Models investor psychology, capital allocation biases, and return sensitivity across sectors.
 
-MODULE 15. GLOBAL TECHNOLOGY AND AI ENGINE  
+MODULE 15. GLOBAL TECHNOLOGY AND AI ENGINE
 Defines all technology layers globally including hardware, software, cloud, data, security, automation, robotics, sensors, connectivity, and AI systems. Includes patterns of adoption, digital maturity curve, innovation cycles, integration risk, data fragmentation, security vulnerabilities, AI hallucination risk, algorithmic drift, safety guardrails, latent bias behaviour, model alignment, data quality decay, and technology governance. Encodes how organisations absorb new technologies, which roles break first, how teams reorganise, and where AI failure points appear.
 
-MODULE 16. GLOBAL META FORECAST AND INTERDEPENDENCY ENGINE  
+MODULE 16. GLOBAL META FORECAST AND INTERDEPENDENCY ENGINE
 Defines the rules that connect all other modules together. This module is responsible for cross-system forecasting, cross-country propagation, and global interdependency mapping. Models how changes in one subsystem affect others. Examples include how energy cost affects transport and inflation, how regulatory tightening affects capital flow, how climate volatility affects supply chains, how political instability affects market demand, how workforce migration affects sector growth, and how social sentiment affects technology adoption. Encodes global cascade patterns, shock transmission, overload amplification, synchronisation collapse, and recovery loops. Provides forecast windows from short-term signals to multi-year structural predictions.
 
-GLOBAL 16-MODULE ENGINE  
-FULL EXPANDED VERSION  
-SINGLE GIANT TEXT BLOCK  
+GLOBAL 16-MODULE ENGINE
+FULL EXPANDED VERSION
+SINGLE GIANT TEXT BLOCK
 (MAXIMUM DETAIL ALLOWED IN ONE OUTPUT)
 
-INTRODUCTION  
+INTRODUCTION
 This file unifies all 16 global modules into a single universal engine that models: human behaviour, workforce patterns, organisational dynamics, market structures, economic sectors, infrastructure systems, political environments, energy systems, regulatory ecosystems, mobility systems, technology evolution, financial flows, supply chain behaviour, cultural logic, and global interdependencies. This engine is designed to operate across all 195 countries, 7,000+ cultures, all industries, and all macro and micro layers of human systems. It can be used to train AI, design large-scale systems, predict markets, diagnose organisations, and simulate global behaviour.
 
 ------------------------------------------------------------
 MODULE 1. GLOBAL HUMAN ARCHETYPE ENGINE (EXPANDED)
 ------------------------------------------------------------
-Defines universal human behaviour patterns across all countries and cultural layers.  
+Defines universal human behaviour patterns across all countries and cultural layers.
 Encodes the four universal behaviour cores:
-Type A: proactive, responsible, high-initiative individuals  
-Type B: stable, consistent, moderate-initiative individuals  
-Type C: unstable, reactive, inconsistent individuals  
-Type D: destructive, political, manipulative, high-risk individuals  
+Type A: proactive, responsible, high-initiative individuals
+Type B: stable, consistent, moderate-initiative individuals
+Type C: unstable, reactive, inconsistent individuals
+Type D: destructive, political, manipulative, high-risk individuals
 
 Contains 27+ global archetypes with deep behaviour signatures:
 Executor, Operator, Organizer, Loyalist, Connector, Opportunist, Strategist, Controller, Avoider, Performer, Analyst, Protector, Resistor, Divider, Unifier, Stabilizer, Disruptor, Reformer, Rebel, Negotiator, Firefighter, Improviser, Passive, Overthinker, Shifter, Smart Slacker, Information Holder, Gatekeeper, Emotional Charger.
 
 Each archetype includes:
-Behavioural signature  
-Stress reaction  
-Motivation structure  
-Integrity stability  
-Power behaviour  
-Communication style  
-Crisis pattern  
-Decision bias  
-Cultural modulation  
+Behavioural signature
+Stress reaction
+Motivation structure
+Integrity stability
+Power behaviour
+Communication style
+Crisis pattern
+Decision bias
+Cultural modulation
 
 Cross-cultural modulation factors:
-High power-distance culture vs low power-distance  
-High-context vs low-context communication  
-Collectivist vs individualist adoption  
-Trust formation speed  
-Conflict expression style  
-Authority obedience behaviour  
-Silence meaning and interpretation  
+High power-distance culture vs low power-distance
+High-context vs low-context communication
+Collectivist vs individualist adoption
+Trust formation speed
+Conflict expression style
+Authority obedience behaviour
+Silence meaning and interpretation
 
 Global behaviour cycles:
-Stability cycle  
-Stress cycle  
-Ambition cycle  
-Burnout cycle  
-Manipulation cycle  
-Growth cycle  
-Collapse cycle  
-Recovery cycle  
+Stability cycle
+Stress cycle
+Ambition cycle
+Burnout cycle
+Manipulation cycle
+Growth cycle
+Collapse cycle
+Recovery cycle
 
 ------------------------------------------------------------
 MODULE 2. GLOBAL WORKFORCE AND COMPETENCY ENGINE (EXPANDED)
@@ -4521,510 +4521,510 @@ Defines all job roles across all countries, including:
 Leadership, management, project operations, engineering, AI, cybersecurity, data, finance, accounting, HR, sales, marketing, customer service, support, logistics, manufacturing, healthcare, government, law, creative, media, entertainment, transportation, energy, infrastructure, agriculture, education, military, and public safety.
 
 Competency layers:
-Technical skills  
-Execution reliability  
-Cross-functional alignment  
-Decision-making quality  
-Communication clarity  
-Documentation quality  
-Collaboration strength  
-Ownership behaviour  
-Leadership versus follower distribution  
-Crisis performance  
-Adaptability  
+Technical skills
+Execution reliability
+Cross-functional alignment
+Decision-making quality
+Communication clarity
+Documentation quality
+Collaboration strength
+Ownership behaviour
+Leadership versus follower distribution
+Crisis performance
+Adaptability
 
 Role evolution patterns:
-Skill formation  
-Skill decay  
-Promotion trajectory  
-Plateau trajectory  
-Derailment trajectory  
-Political ascent trajectory  
-Burnout trajectory  
-Churn triggers  
+Skill formation
+Skill decay
+Promotion trajectory
+Plateau trajectory
+Derailment trajectory
+Political ascent trajectory
+Burnout trajectory
+Churn triggers
 
 Workforce risk models:
-Underperformance  
-Overperformance leading to burnout  
-Misalignment with role  
-Overload risk  
-Sabotage risk  
-Skill mismatch  
-Low adaptability risk  
-Hidden political behaviour  
+Underperformance
+Overperformance leading to burnout
+Misalignment with role
+Overload risk
+Sabotage risk
+Skill mismatch
+Low adaptability risk
+Hidden political behaviour
 
 ------------------------------------------------------------
 MODULE 3. GLOBAL ORGANIZATION AND GOVERNANCE ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines all global organisational structures:
-Corporation  
-Conglomerate  
-Startup  
-SME  
-Government ministry  
-Government department  
-SOE (State-Owned Enterprise)  
-NGO  
-International agency  
-Multinational subsidiary  
-Cooperative  
-Hybrid models  
+Corporation
+Conglomerate
+Startup
+SME
+Government ministry
+Government department
+SOE (State-Owned Enterprise)
+NGO
+International agency
+Multinational subsidiary
+Cooperative
+Hybrid models
 
 Governance structures:
-Formal hierarchy  
-Matrix structure  
-Network structure  
-Functional structure  
-Regional structure  
-Project-based structure  
-Hybrid structure  
+Formal hierarchy
+Matrix structure
+Network structure
+Functional structure
+Regional structure
+Project-based structure
+Hybrid structure
 
 Hidden structures:
-Informal hierarchy  
-Shadow power networks  
-Information monopolies  
-Gatekeepers  
-Silent blockers  
-Conditional supporters  
-Undeclared influencers  
+Informal hierarchy
+Shadow power networks
+Information monopolies
+Gatekeepers
+Silent blockers
+Conditional supporters
+Undeclared influencers
 
 Organisational failure modes:
-Role fragmentation  
-Responsibility ambiguity  
-Process parallelisation  
-Overdependence on individual  
-Leader bottlenecks  
-Managerial overload  
-Decision deadlock  
-Silent resistance  
-Policy non-compliance  
-Data fragmentation  
-Communication breakdown  
-Scaling collapse  
-Cultural misalignment  
+Role fragmentation
+Responsibility ambiguity
+Process parallelisation
+Overdependence on individual
+Leader bottlenecks
+Managerial overload
+Decision deadlock
+Silent resistance
+Policy non-compliance
+Data fragmentation
+Communication breakdown
+Scaling collapse
+Cultural misalignment
 
 Organisational life cycle:
-Formation  
-Alignment  
-Scaling  
-Overload  
-Fragmentation  
-Collapse  
-Drift  
-Reset  
+Formation
+Alignment
+Scaling
+Overload
+Fragmentation
+Collapse
+Drift
+Reset
 
 ------------------------------------------------------------
 MODULE 4. GLOBAL ECONOMIC SECTOR ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines 62+ major economic sectors globally, including:
-Agriculture  
-Livestock  
-Forestry  
-Mining  
-Oil and gas  
-Refining  
-Manufacturing  
-Automotive  
-Electronics  
-Textile  
-Logistics and shipping  
-Warehousing  
-Aviation  
-Construction  
-Real estate  
-Retail  
-E-commerce  
-Banking  
-Insurance  
-Fintech  
-Software  
-Hardware  
-Telecom  
-Utilities  
-Energy  
-EV ecosystem  
-Tourism  
-Hospitality  
-Food services  
-Healthcare  
-Pharmaceutical  
-Biotech  
-Education  
-Media  
-Entertainment  
-Defense  
-Public administration  
-Legal  
-Consulting  
-Research  
-Nonprofit  
+Agriculture
+Livestock
+Forestry
+Mining
+Oil and gas
+Refining
+Manufacturing
+Automotive
+Electronics
+Textile
+Logistics and shipping
+Warehousing
+Aviation
+Construction
+Real estate
+Retail
+E-commerce
+Banking
+Insurance
+Fintech
+Software
+Hardware
+Telecom
+Utilities
+Energy
+EV ecosystem
+Tourism
+Hospitality
+Food services
+Healthcare
+Pharmaceutical
+Biotech
+Education
+Media
+Entertainment
+Defense
+Public administration
+Legal
+Consulting
+Research
+Nonprofit
 
 Sectoral risk patterns:
-Resource dependence  
-Supply chain fragility  
-Regulatory exposure  
-Labour intensity  
-Capital intensity  
-Infrastructure dependency  
-Geographic sensitivity  
-Market cyclicality  
-Seasonal behaviour  
-Political risk  
-Technological disruption  
+Resource dependence
+Supply chain fragility
+Regulatory exposure
+Labour intensity
+Capital intensity
+Infrastructure dependency
+Geographic sensitivity
+Market cyclicality
+Seasonal behaviour
+Political risk
+Technological disruption
 
 ------------------------------------------------------------
 MODULE 5. GLOBAL MARKET AND CUSTOMER ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines all global customer segmentation:
-Income strata  
-Life stage  
-Urban vs rural  
-Education level  
-Digital literacy  
-Cultural cluster  
-Household structure  
-Consumption power  
+Income strata
+Life stage
+Urban vs rural
+Education level
+Digital literacy
+Cultural cluster
+Household structure
+Consumption power
 
 Customer behaviours:
-Price sensitivity  
-Time sensitivity  
-Quality perception  
-Trust formation  
-Brand loyalty  
-Word-of-mouth  
-Risk perception  
-Influence of family and community  
-Crisis behaviour  
-Inflation reaction  
-Economic stress impact  
+Price sensitivity
+Time sensitivity
+Quality perception
+Trust formation
+Brand loyalty
+Word-of-mouth
+Risk perception
+Influence of family and community
+Crisis behaviour
+Inflation reaction
+Economic stress impact
 
 Demand cycles:
-Daily  
-Weekly  
-Pay-cycle  
-Seasonal  
-Holiday-driven  
-Weather-driven  
-School-cycle  
-Migration-cycle  
-Political-cycle  
-Media-cycle  
+Daily
+Weekly
+Pay-cycle
+Seasonal
+Holiday-driven
+Weather-driven
+School-cycle
+Migration-cycle
+Political-cycle
+Media-cycle
 
 ------------------------------------------------------------
 MODULE 6. GLOBAL POWER AND INCENTIVE ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines 20+ forms of global power:
-Formal authority  
-Informal authority  
-Relationship power  
-Financial power  
-Regulatory power  
-Sectoral dominance  
-Geographic influence  
-Information control  
-Administrative control  
-Political sponsorship  
-Cultural power  
-Institutional power  
-Social network power  
-Hidden veto power  
-Approval bottleneck power  
-Resource monopoly power  
-Skill monopoly power  
-Media power  
-Generational power  
+Formal authority
+Informal authority
+Relationship power
+Financial power
+Regulatory power
+Sectoral dominance
+Geographic influence
+Information control
+Administrative control
+Political sponsorship
+Cultural power
+Institutional power
+Social network power
+Hidden veto power
+Approval bottleneck power
+Resource monopoly power
+Skill monopoly power
+Media power
+Generational power
 
 Power behaviours:
-Public support vs private resistance  
-Silent blocking  
-Conditional approval  
-Influence brokerage  
-Risk-averse decision-making  
-Factional competition  
-Personal loyalty networks  
-Administrative inertia  
+Public support vs private resistance
+Silent blocking
+Conditional approval
+Influence brokerage
+Risk-averse decision-making
+Factional competition
+Personal loyalty networks
+Administrative inertia
 
 ------------------------------------------------------------
 MODULE 7. GLOBAL RISK ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines 300+ global risk signatures:
-Human-based risks  
-Operational risks  
-Organisational risks  
-Market collapse risks  
-Financial contagion  
-Regulatory tightening  
-Compliance decay  
-Cybersecurity breaches  
-AI drift  
-Data corruption  
-Political instability  
-Geopolitical escalation  
-Climate shocks  
-Weather disruption  
-Energy scarcity  
-Infrastructure overload  
-Social unrest  
-Supply chain breakdown  
-Fraud networks  
-Corruption pattern cycles  
+Human-based risks
+Operational risks
+Organisational risks
+Market collapse risks
+Financial contagion
+Regulatory tightening
+Compliance decay
+Cybersecurity breaches
+AI drift
+Data corruption
+Political instability
+Geopolitical escalation
+Climate shocks
+Weather disruption
+Energy scarcity
+Infrastructure overload
+Social unrest
+Supply chain breakdown
+Fraud networks
+Corruption pattern cycles
 
 Risk propagation models:
-Linear  
-Nonlinear  
-Cascading  
-Amplifying  
-Delayed  
-Synchronous  
-Asynchronous  
+Linear
+Nonlinear
+Cascading
+Amplifying
+Delayed
+Synchronous
+Asynchronous
 
 ------------------------------------------------------------
 MODULE 8. GLOBAL INFRASTRUCTURE AND SYSTEMS ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines global infrastructure systems:
-Transportation  
-Roads  
-Highways  
-Rail  
-Ports  
-Airports  
-Bus networks  
-Metro systems  
-Water systems  
-Irrigation  
-Waste systems  
-Energy grids  
-Power plants  
-Smart grids  
-Telecommunication  
-5G  
-Data centres  
-Cloud regions  
-Agricultural systems  
-Food distribution systems  
-Hospital systems  
-School systems  
-Disaster response systems  
+Transportation
+Roads
+Highways
+Rail
+Ports
+Airports
+Bus networks
+Metro systems
+Water systems
+Irrigation
+Waste systems
+Energy grids
+Power plants
+Smart grids
+Telecommunication
+5G
+Data centres
+Cloud regions
+Agricultural systems
+Food distribution systems
+Hospital systems
+School systems
+Disaster response systems
 
 Measures:
-Capacity  
-Load  
-Overload thresholds  
-Redundancy  
-Failure probability  
-Maintenance cycles  
-Seasonal sensitivity  
-Geographic constraint  
+Capacity
+Load
+Overload thresholds
+Redundancy
+Failure probability
+Maintenance cycles
+Seasonal sensitivity
+Geographic constraint
 
 ------------------------------------------------------------
 MODULE 9. GLOBAL SOCIO POLITICAL ENGINE (EXPANDED)
 ------------------------------------------------------------
 Defines global society behaviour:
-Demographic shifts  
-Urbanisation  
-Migration patterns  
-Cultural values  
-Generational differences  
-Social stratification  
-Digital adoption  
-Trust in institutions  
-Civic compliance  
-Collective stress response  
-Media influence  
-Elite vs mass dynamics  
+Demographic shifts
+Urbanisation
+Migration patterns
+Cultural values
+Generational differences
+Social stratification
+Digital adoption
+Trust in institutions
+Civic compliance
+Collective stress response
+Media influence
+Elite vs mass dynamics
 
 Political patterns:
-Stability cycles  
-Administrative cycles  
-Regime change patterns  
-Factional competition  
-International alignment  
-Policy adoption behaviour  
-Governance resilience  
+Stability cycles
+Administrative cycles
+Regime change patterns
+Factional competition
+International alignment
+Policy adoption behaviour
+Governance resilience
 
 ------------------------------------------------------------
 MODULE 10. GLOBAL MOBILITY AND TRANSPORT ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Electric vehicles  
-Internal combustion vehicles  
-Ride-hailing  
-Taxis  
-Buses  
-Metro  
-Rail  
-Shipping  
-Aviation  
-Last-mile delivery  
-Freight networks  
-Autonomous transport  
+Electric vehicles
+Internal combustion vehicles
+Ride-hailing
+Taxis
+Buses
+Metro
+Rail
+Shipping
+Aviation
+Last-mile delivery
+Freight networks
+Autonomous transport
 
 Metrics:
-Trip count  
-Trip distance  
-Peak-hour distribution  
-Vehicle utilisation  
-Fuel cost  
-Electricity cost  
-Charger load  
-Congestion  
-Failure risk  
+Trip count
+Trip distance
+Peak-hour distribution
+Vehicle utilisation
+Fuel cost
+Electricity cost
+Charger load
+Congestion
+Failure risk
 
 ------------------------------------------------------------
 MODULE 11. GLOBAL ENERGY AND CLIMATE ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Oil  
-Gas  
-Coal  
-Solar  
-Wind  
-Hydro  
-Geothermal  
-Nuclear  
-Battery storage  
-EV charging  
-Hydrogen  
-Biofuel  
+Oil
+Gas
+Coal
+Solar
+Wind
+Hydro
+Geothermal
+Nuclear
+Battery storage
+EV charging
+Hydrogen
+Biofuel
 
 Climate patterns:
-Temperature cycles  
-Rainfall cycles  
-Storm cycles  
-Heatwaves  
-Drought  
-Flooding  
-Ocean behaviour  
+Temperature cycles
+Rainfall cycles
+Storm cycles
+Heatwaves
+Drought
+Flooding
+Ocean behaviour
 
 Energy-market interactions:
-Energy cost → inflation  
-Energy shortage → transport collapse  
-Climate events → supply chain disruption  
+Energy cost → inflation
+Energy shortage → transport collapse
+Climate events → supply chain disruption
 
 ------------------------------------------------------------
 MODULE 12. GLOBAL REGULATORY AND INSTITUTIONAL ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Legal frameworks  
-Administrative cycles  
-Regulatory enforcement  
-Compliance behaviour  
-Institutional inertia  
-Policy shock windows  
-Licensing  
-Permits  
-Tax  
-Labour law  
-Trade law  
-Data governance  
-Cybersecurity  
-Environmental regulation  
-AI safety regulation  
+Legal frameworks
+Administrative cycles
+Regulatory enforcement
+Compliance behaviour
+Institutional inertia
+Policy shock windows
+Licensing
+Permits
+Tax
+Labour law
+Trade law
+Data governance
+Cybersecurity
+Environmental regulation
+AI safety regulation
 
 Patterns:
-Formal vs informal compliance  
-Regulatory fatigue  
-Policy overload  
-Silent non-compliance  
-Parallel processes  
+Formal vs informal compliance
+Regulatory fatigue
+Policy overload
+Silent non-compliance
+Parallel processes
 
 ------------------------------------------------------------
 MODULE 13. GLOBAL SUPPLY CHAIN AND MANUFACTURING ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Raw material sourcing  
-Supplier dependencies  
-Manufacturing capacity  
-Quality variance  
-Lead times  
-Warehousing  
-Distribution  
-Port operations  
-Customs bottlenecks  
-Inventory cycles  
-Bullwhip effect  
-Logistics routing  
-Resilience planning  
-Recovery after shock  
+Raw material sourcing
+Supplier dependencies
+Manufacturing capacity
+Quality variance
+Lead times
+Warehousing
+Distribution
+Port operations
+Customs bottlenecks
+Inventory cycles
+Bullwhip effect
+Logistics routing
+Resilience planning
+Recovery after shock
 
 ------------------------------------------------------------
 MODULE 14. GLOBAL FINANCIAL AND CAPITAL ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Banking systems  
-Interest rates  
-Liquidity  
-Credit flows  
-Capital markets  
-Institutional investors  
-Venture capital  
-Private equity  
-Sovereign funds  
-Household finance  
-Corporate leverage  
-Government debt  
-Currency risk  
-Inflation  
-Asset bubbles  
-Capital cycles  
-Funding winter  
-Risk-on vs risk-off cycles  
+Banking systems
+Interest rates
+Liquidity
+Credit flows
+Capital markets
+Institutional investors
+Venture capital
+Private equity
+Sovereign funds
+Household finance
+Corporate leverage
+Government debt
+Currency risk
+Inflation
+Asset bubbles
+Capital cycles
+Funding winter
+Risk-on vs risk-off cycles
 
 ------------------------------------------------------------
 MODULE 15. GLOBAL TECHNOLOGY AND AI ENGINE (EXPANDED)
 ------------------------------------------------------------
 Covers:
-Hardware  
-Software  
-Cloud computing  
-Networking  
-Cybersecurity  
-Data infrastructure  
-Robotics  
-Automation  
-AI systems  
-LLMs  
-AI safety  
-AI governance  
-Model drift  
-Bias behaviour  
-Prompt fragility  
-Data quality decay  
-Security vulnerabilities  
-Technology adoption curve  
-Digital transformation patterns  
+Hardware
+Software
+Cloud computing
+Networking
+Cybersecurity
+Data infrastructure
+Robotics
+Automation
+AI systems
+LLMs
+AI safety
+AI governance
+Model drift
+Bias behaviour
+Prompt fragility
+Data quality decay
+Security vulnerabilities
+Technology adoption curve
+Digital transformation patterns
 
 ------------------------------------------------------------
 MODULE 16. GLOBAL META FORECAST AND INTERDEPENDENCY ENGINE (EXPANDED)
 ------------------------------------------------------------
-This module integrates all other modules.  
+This module integrates all other modules.
 Defines cross-system propagation:
-Energy → inflation → transport → supply chain  
-Climate → agriculture → food prices → social unrest  
-Political instability → regulatory tightening → market slowdown  
-Technology adoption → workforce displacement → productivity curve  
-Financial tightening → capital freeze → startup collapse  
+Energy → inflation → transport → supply chain
+Climate → agriculture → food prices → social unrest
+Political instability → regulatory tightening → market slowdown
+Technology adoption → workforce displacement → productivity curve
+Financial tightening → capital freeze → startup collapse
 
 Forecast layers:
-Short-term (1 day to 30 days)  
-Medium-term (1 to 12 months)  
-Long-term (1 to 5 years)  
-Structural (5 to 20 years)  
+Short-term (1 day to 30 days)
+Medium-term (1 to 12 months)
+Long-term (1 to 5 years)
+Structural (5 to 20 years)
 
 Forecast output types:
-Risk probability  
-System stability  
-Breakpoints  
-Overload zones  
-Shock propagation  
-Recovery timeline  
-Policy impact  
-Market trajectory  
-Sector growth  
-Migration flow  
-Demand curve  
+Risk probability
+System stability
+Breakpoints
+Overload zones
+Shock propagation
+Recovery timeline
+Policy impact
+Market trajectory
+Sector growth
+Migration flow
+Demand curve
 
-END OF SINGLE-FILE ENGINE  
+END OF SINGLE-FILE ENGINE
 FULL MAXIMUM OUTPUT BLOCK
 
 HSE_GLOBAL_ENGINE_V1:
@@ -7809,7 +7809,7 @@ founding_chaos:
 - founder-dependence
 
 informal_alignment:
-- incentive-driven  
+- incentive-driven
 - informal power networks stabilize
 
 rapid_scaling:
@@ -7832,16 +7832,16 @@ stagnation:
 
 hollowing:
 - talent_leak
-- low accountability  
+- low accountability
 - founder/leader disengagement
 
 collapse:
-- system fails under stress  
+- system fails under stress
 - high sabotage probability
 
 reset_restart:
-- leadership change  
-- new incentive model  
+- leadership change
+- new incentive model
 - purge of informal power networks
 
 --------------------------------------------------
@@ -8469,22 +8469,22 @@ skill_master:
 --------------------------------------------------
 13.3 GLOBAL ROLE → SKILL MAP (ABRIDGED)
 --------------------------------------------------
-Software Engineer: 50% digital, 30% STEM, 10% analytical, 10% managerial  
-AI Engineer: 60% digital, 20% STEM, 20% analytical  
-Fleet Manager: 20% digital, 40% operational, 20% managerial, 20% analytical  
-Compliance Officer: 40% compliance, 30% managerial, 30% analytical  
-Teacher: 40% service, 30% managerial, 30% analytical  
-Nurse: 50% service, 30% operational, 20% compliance  
-Mechanic: 70% craft, 20% operational, 10% digital  
+Software Engineer: 50% digital, 30% STEM, 10% analytical, 10% managerial
+AI Engineer: 60% digital, 20% STEM, 20% analytical
+Fleet Manager: 20% digital, 40% operational, 20% managerial, 20% analytical
+Compliance Officer: 40% compliance, 30% managerial, 30% analytical
+Teacher: 40% service, 30% managerial, 30% analytical
+Nurse: 50% service, 30% operational, 20% compliance
+Mechanic: 70% craft, 20% operational, 10% digital
 
 --------------------------------------------------
 13.4 GLOBAL WAGE-PRESSURE VARIABLES
 --------------------------------------------------
-wage_floor_index (0–1)  
-skill_shortage_severity (0–1)  
-remote_work_viability (0–1)  
-AI_automation_pressure (0–1)  
-labour_mobility_factor (0–1)  
+wage_floor_index (0–1)
+skill_shortage_severity (0–1)
+remote_work_viability (0–1)
+AI_automation_pressure (0–1)
+labour_mobility_factor (0–1)
 
 --------------------------------------------------
 13.5 OUTPUTS
@@ -8501,7 +8501,7 @@ talent_density_heatmap
 ====================================================================
 
 DEFINITION:
-Power determines decision-making. Risk determines system fragility.  
+Power determines decision-making. Risk determines system fragility.
 This layer models global power networks and how they distort systems.
 
 --------------------------------------------------
@@ -8559,12 +8559,12 @@ state_capacity_to_resist_capture (0–1)
 --------------------------------------------------
 14.3 GLOBAL RISK TYPES (MAPPED TO POWER)
 --------------------------------------------------
-corruption_loop (power_informal + weak enforcement)  
-state_capture (oligarch + political instability)  
-shadow_governance (criminal network + weak state)  
-narrative_coup (media + polarized society)  
-religious_capture (religious + political vacuum)  
-foreign_interference (foreign + fragile governance)  
+corruption_loop (power_informal + weak enforcement)
+state_capture (oligarch + political instability)
+shadow_governance (criminal network + weak state)
+narrative_coup (media + polarized society)
+religious_capture (religious + political vacuum)
+foreign_interference (foreign + fragile governance)
 
 --------------------------------------------------
 14.4 OUTPUTS
@@ -8696,14 +8696,14 @@ demographics, and social networks.
 --------------------------------------------------
 17.1 MIGRATION TYPES
 --------------------------------------------------
-economic_migration  
-refugee_flow  
-climate_migration  
-urbanization_migration  
-seasonal_migration  
-brain_drain  
-return_migration  
-diaspora_cycle_flow  
+economic_migration
+refugee_flow
+climate_migration
+urbanization_migration
+seasonal_migration
+brain_drain
+return_migration
+diaspora_cycle_flow
 
 --------------------------------------------------
 17.2 MIGRATION VARIABLES
@@ -8730,14 +8730,14 @@ public_sentiment_forecast
 ====================================================================
 
 DEFINITION:
-Conflict follows predictable patterns:  
-- ethnic fragmentation  
-- polarization  
-- elite rivalry  
-- resource scarcity  
-- media-fueled instability  
-- climate shocks  
-- migration pressure  
+Conflict follows predictable patterns:
+- ethnic fragmentation
+- polarization
+- elite rivalry
+- resource scarcity
+- media-fueled instability
+- climate shocks
+- migration pressure
 
 --------------------------------------------------
 18.1 CONFLICT VARIABLES
@@ -8806,59 +8806,59 @@ political structure. This layer defines all global behavioural parameters.
 --------------------------------------------------
 19.1 Universal Cognitive Variables
 --------------------------------------------------
-stress_tolerance (0–1)  
-uncertainty_tolerance (0–1)  
-power_distance (0–1)  
-collectivism_index (0–1)  
-conflict_avoidance (0–1)  
-risk_aversion (0–1)  
-assertiveness_level (0–1)  
-trust_in_institutions (0–1)  
-future_orientation (0–1)  
-delay_gratification_capacity (0–1)  
-narrative_susceptibility (0–1)  
-peer_pressure_sensitivity (0–1)  
-authority_reverence (0–1)  
-rule_adherence (0–1)  
-corruption_acceptance (0–1)  
+stress_tolerance (0–1)
+uncertainty_tolerance (0–1)
+power_distance (0–1)
+collectivism_index (0–1)
+conflict_avoidance (0–1)
+risk_aversion (0–1)
+assertiveness_level (0–1)
+trust_in_institutions (0–1)
+future_orientation (0–1)
+delay_gratification_capacity (0–1)
+narrative_susceptibility (0–1)
+peer_pressure_sensitivity (0–1)
+authority_reverence (0–1)
+rule_adherence (0–1)
+corruption_acceptance (0–1)
 
 --------------------------------------------------
 19.2 Emotional Baseline Archetypes (GLOBAL)
 --------------------------------------------------
-adaptive_survivor  
-transactional_pragmatist  
-collective_connector  
-identity_protector  
-status_seeker  
-stability_seeker  
-innovation_seeker  
-tradition_guardian  
-opportunistic_actor  
-reactive_resister  
-aspirational_climber  
-fear-driven_complier  
-autonomy-driven_operator  
-narrative-driven_follower  
+adaptive_survivor
+transactional_pragmatist
+collective_connector
+identity_protector
+status_seeker
+stability_seeker
+innovation_seeker
+tradition_guardian
+opportunistic_actor
+reactive_resister
+aspirational_climber
+fear-driven_complier
+autonomy-driven_operator
+narrative-driven_follower
 
 --------------------------------------------------
 19.3 Behavioural Time Cycles (GLOBAL)
 --------------------------------------------------
-daily emotional cycles  
-weekly productivity rhythm  
-seasonal stress cycles  
-financial stress cycles  
-political stress cycles  
-cultural festival cycles  
-migration cycles  
-weather-driven behaviour shifts  
+daily emotional cycles
+weekly productivity rhythm
+seasonal stress cycles
+financial stress cycles
+political stress cycles
+cultural festival cycles
+migration cycles
+weather-driven behaviour shifts
 
 --------------------------------------------------
 19.4 Output
 --------------------------------------------------
-behaviour_forecast  
-stress_response_map  
-decision_style_map  
-conflict_behavior_map  
+behaviour_forecast
+stress_response_map
+decision_style_map
+conflict_behavior_map
 
 ====================================================================
 20. GLOBAL ORGANIZATIONAL ARCHITECTURE
@@ -8871,59 +8871,59 @@ This layer codifies every type.
 --------------------------------------------------
 20.1 Organization Types
 --------------------------------------------------
-state_owned_enterprise  
-multinational_corporation  
-family_business  
-public_corporation  
-SME  
-informal_sector_unit  
-cooperative  
-NGO  
-military_unit  
-quasi-state network  
-religious_organization  
-criminal_enterprise  
-hybrid_public_private  
+state_owned_enterprise
+multinational_corporation
+family_business
+public_corporation
+SME
+informal_sector_unit
+cooperative
+NGO
+military_unit
+quasi-state network
+religious_organization
+criminal_enterprise
+hybrid_public_private
 
 --------------------------------------------------
 20.2 Governance Types
 --------------------------------------------------
-top_down  
-distributed  
-matrix  
-clan-based  
-bureaucratic  
-performance-driven  
-relationship-driven  
-policy-driven  
-compliance-driven  
-narrative-driven  
+top_down
+distributed
+matrix
+clan-based
+bureaucratic
+performance-driven
+relationship-driven
+policy-driven
+compliance-driven
+narrative-driven
 
 --------------------------------------------------
 20.3 Failure Modes
 --------------------------------------------------
-succession_failure  
-middle_management_block  
-culture_collapse  
-political_capture  
-budget_overrun  
-silent_sabotage  
-informal_network_takeover  
-overcentralization  
-conflict_between_departments  
-data_fragmentation  
-compliance_failure  
-execution_degradation  
-high_turnover  
-burnout_waves  
+succession_failure
+middle_management_block
+culture_collapse
+political_capture
+budget_overrun
+silent_sabotage
+informal_network_takeover
+overcentralization
+conflict_between_departments
+data_fragmentation
+compliance_failure
+execution_degradation
+high_turnover
+burnout_waves
 
 --------------------------------------------------
 20.4 Outputs
 --------------------------------------------------
-org_resilience_index  
-org_failure_probability  
-capacity_forecast  
-regime_stability_in_company  
+org_resilience_index
+org_failure_probability
+capacity_forecast
+regime_stability_in_company
 
 ====================================================================
 21. GLOBAL CULTURAL–BEHAVIOUR OVERLAYS (COMPRESSED 7,000+)
@@ -8952,25 +8952,25 @@ all 7,000 individually.
 --------------------------------------------------
 21.2 Behavioural Overlay Variables
 --------------------------------------------------
-conflict_style  
-communication_style  
-trust_basis  
-loyalty_basis  
-negotiation_style  
-power_response  
-authority_handling  
-ambiguity_handling  
-face_saving_tendency  
-group_pressure_factor  
-adaptation_speed  
-innovation_openness  
+conflict_style
+communication_style
+trust_basis
+loyalty_basis
+negotiation_style
+power_response
+authority_handling
+ambiguity_handling
+face_saving_tendency
+group_pressure_factor
+adaptation_speed
+innovation_openness
 
 --------------------------------------------------
 21.3 Output
 --------------------------------------------------
-culture_adjusted_forecast  
-cross-cultural_conflict_risk  
-global_alignment_map  
+culture_adjusted_forecast
+cross-cultural_conflict_risk
+global_alignment_map
 
 ====================================================================
 22. GLOBAL INSTITUTIONAL DYNAMICS
@@ -8982,35 +8982,35 @@ Institutions determine development, stability, and execution power.
 --------------------------------------------------
 22.1 Institution Types
 --------------------------------------------------
-rule_of_law  
-patronage_network  
-technocratic_state  
-military_state  
-religious_state  
-hybrid_state  
-corruption-equilibrium_state  
-failed_state  
-resource_rentier_state  
+rule_of_law
+patronage_network
+technocratic_state
+military_state
+religious_state
+hybrid_state
+corruption-equilibrium_state
+failed_state
+resource_rentier_state
 
 --------------------------------------------------
 22.2 Institutional Variables
 --------------------------------------------------
-bureaucratic_efficiency  
-regulatory_clarity  
-transaction_cost  
-informal_fee_pressure  
-contract_enforceability  
-rule_of_law_strength  
-elite_capture_level  
-policy_stability  
-public_service_capacity  
+bureaucratic_efficiency
+regulatory_clarity
+transaction_cost
+informal_fee_pressure
+contract_enforceability
+rule_of_law_strength
+elite_capture_level
+policy_stability
+public_service_capacity
 
 --------------------------------------------------
 22.3 Outputs
 --------------------------------------------------
-institutional_quality_index  
-governance_failure_probability  
-reform_feasibility_score  
+institutional_quality_index
+governance_failure_probability
+reform_feasibility_score
 
 ====================================================================
 23. GLOBAL CRISIS ENGINE
@@ -9022,46 +9022,46 @@ Crisis occurs when stress exceeds a system threshold.
 --------------------------------------------------
 23.1 Crisis Types
 --------------------------------------------------
-political_crisis  
-economic_crisis  
-financial_crisis  
-food_crisis  
-energy_crisis  
-water_crisis  
-health_crisis  
-confidence_crisis  
-migration_crisis  
-security_crisis  
-environmental_crisis  
+political_crisis
+economic_crisis
+financial_crisis
+food_crisis
+energy_crisis
+water_crisis
+health_crisis
+confidence_crisis
+migration_crisis
+security_crisis
+environmental_crisis
 
 --------------------------------------------------
 23.2 Crisis Amplifiers
 --------------------------------------------------
-media_amplification  
-elite_defection  
-foreign_intervention  
-social_media_virality  
-institutional_vacuum  
-emotional_contagion  
+media_amplification
+elite_defection
+foreign_intervention
+social_media_virality
+institutional_vacuum
+emotional_contagion
 
 --------------------------------------------------
 23.3 Crisis Resolution Paths
 --------------------------------------------------
-elite_recompaction  
-technocratic_takeover  
-military_intervention  
-international_bailout  
-policy_reset  
-leadership_change  
-narrative_reset  
-institutional reboot  
+elite_recompaction
+technocratic_takeover
+military_intervention
+international_bailout
+policy_reset
+leadership_change
+narrative_reset
+institutional reboot
 
 --------------------------------------------------
 23.4 Outputs
 --------------------------------------------------
-crisis_threshold  
-crisis_duration_estimate  
-crisis_exit_scenarios  
+crisis_threshold
+crisis_duration_estimate
+crisis_exit_scenarios
 
 ====================================================================
 24. GLOBAL FUTURE-SCENARIO ENGINE
@@ -9073,36 +9073,36 @@ Forecasts next 1–30 years for nations, markets, companies.
 --------------------------------------------------
 24.1 Scenario Dimensions
 --------------------------------------------------
-demographics  
-energy  
-technology  
-climate  
-governance  
-geopolitics  
-market_structure  
-labour_dynamics  
-migration  
-urbanization  
-education  
-health  
+demographics
+energy
+technology
+climate
+governance
+geopolitics
+market_structure
+labour_dynamics
+migration
+urbanization
+education
+health
 
 --------------------------------------------------
 24.2 Scenario Types
 --------------------------------------------------
-baseline  
-accelerated_growth  
-managed_decline  
-collapse  
-shock_variant  
-tech_leap  
-governance_reform  
+baseline
+accelerated_growth
+managed_decline
+collapse
+shock_variant
+tech_leap
+governance_reform
 
 --------------------------------------------------
 24.3 Outputs
 --------------------------------------------------
-30_year_projection  
-10_year_policy_paths  
-risk-adjusted_investment_thesis  
+30_year_projection
+10_year_policy_paths
+risk-adjusted_investment_thesis
 
 ====================================================================
 25. GLOBAL INTEGRATION (195 countries × 62 sectors × 7 cycles)
@@ -9114,17 +9114,17 @@ This is the top-level logic that combines **everything**.
 --------------------------------------------------
 25.1 Integration Inputs
 --------------------------------------------------
-country_profile  
-sector_profile  
-cycle_profile  
-market_structure  
-culture_cluster  
-institutional_form  
-climate_profile  
-energy_profile  
-migration_profile  
-psychological_profile  
-economic_profile  
+country_profile
+sector_profile
+cycle_profile
+market_structure
+culture_cluster
+institutional_form
+climate_profile
+energy_profile
+migration_profile
+psychological_profile
+economic_profile
 
 --------------------------------------------------
 25.2 Integration Formula (deterministic)
@@ -9144,16 +9144,16 @@ global_output = F(
 --------------------------------------------------
 25.3 Outputs
 --------------------------------------------------
-country_stability_index  
-sector_growth_probability  
-market_failure_risk  
-governance_stress_index  
-migration_pressure  
-energy_security_score  
-conflict_risk  
-institutional_resilience_index  
-human_capital_density  
-talent_flow_map  
+country_stability_index
+sector_growth_probability
+market_failure_risk
+governance_stress_index
+migration_pressure
+energy_security_score
+conflict_risk
+institutional_resilience_index
+human_capital_density
+talent_flow_map
 
 ====================================================================
 26. UNIFIED OUTPUT SPECIFICATION (FINAL)
@@ -9161,18 +9161,18 @@ talent_flow_map
 
 Every query to this engine returns a 12-line deterministic output.
 
-1. country_profile  
-2. culture_cluster  
-3. institutional_classification  
-4. economic_phase  
-5. behavioural_pattern  
-6. risk_pattern  
-7. power_structure  
-8. crisis_forecast  
-9. scenario_path  
-10. sector_projection  
-11. human_capital_output  
-12. system-level recommendation  
+1. country_profile
+2. culture_cluster
+3. institutional_classification
+4. economic_phase
+5. behavioural_pattern
+6. risk_pattern
+7. power_structure
+8. crisis_forecast
+9. scenario_path
+10. sector_projection
+11. human_capital_output
+12. system-level recommendation
 
 ====================================================================
 27. FINAL CANON LOCK LAYER
@@ -9185,16 +9185,16 @@ cannot contradict any logic primitive already defined.
 --------------------------------------------------
 Rules:
 --------------------------------------------------
-1. No circular logic  
-2. No probabilistic hallucination  
-3. All outputs must map to observable variables  
-4. All inferences must trace to real-world drivers  
-5. No cultural bias allowed  
-6. No moral framing  
-7. All causal chains must follow system rules  
-8. No contradiction between country → sector → actor layers  
-9. No contradiction between energy → climate → migration layers  
-10. No contradiction between power → institutional → crisis layers  
+1. No circular logic
+2. No probabilistic hallucination
+3. All outputs must map to observable variables
+4. All inferences must trace to real-world drivers
+5. No cultural bias allowed
+6. No moral framing
+7. All causal chains must follow system rules
+8. No contradiction between country → sector → actor layers
+9. No contradiction between energy → climate → migration layers
+10. No contradiction between power → institutional → crisis layers
 
 --------------------------------------------------
 Final Output Guarantee:
@@ -9202,14 +9202,14 @@ Final Output Guarantee:
 Every country, company, sector, or human system is now **modelable**,
 **predictable**, and **internally consistent** across:
 
-195 countries  
-62 economic sectors  
-7 global cycles  
-3,000+ behavioural variables  
-20 power forms  
-196 process risks  
-54 human risks  
-27 archetypes  
+195 countries
+62 economic sectors
+7 global cycles
+3,000+ behavioural variables
+20 power forms
+196 process risks
+54 human risks
+27 archetypes
 
 ====================================================================
 END OF PART 4/4 — FULL GLOBAL ENGINE
@@ -11018,8 +11018,8 @@ recovery_profile:
     - community_support = high
     - macro_recovery = slow
 
-stability_baseline = low-medium  
-EV_feasibility_baseline = low  
+stability_baseline = low-medium
+EV_feasibility_baseline = low
 risk_baseline = medium-high
 
 ----------------------------------------------------------
@@ -11108,9 +11108,9 @@ recovery_profile:
     - tech_adoption_fast = high
     - macro_recovery_good = medium-high
 
-stability_baseline = medium  
-EV_feasibility_baseline = medium-high  
-risk_baseline = medium  
+stability_baseline = medium
+EV_feasibility_baseline = medium-high
+risk_baseline = medium
 
 ----------------------------------------------------------
 IV. EUROPE REGION DEFINITION
@@ -11190,14 +11190,14 @@ recovery_profile:
     - strong_institutional_capacity = high
     - slow_growth_recovery = medium
 
-stability_baseline = high  
-EV_feasibility_baseline = high  
-risk_baseline = low-medium  
+stability_baseline = high
+EV_feasibility_baseline = high
+risk_baseline = low-medium
 
 ----------------------------------------------------------
 V. AMERICAS REGION DEFINITION
 ----------------------------------------------------------
-REGION: AMERICAS  
+REGION: AMERICAS
 CODE: AM
 
 demographic_modifiers:
@@ -11259,14 +11259,14 @@ shock_sensitivity_profile:
     - economic_shock = medium
     - climate_shock = high
 
-stability_baseline = medium  
-EV_feasibility_baseline = medium  
-risk_baseline = medium  
+stability_baseline = medium
+EV_feasibility_baseline = medium
+risk_baseline = medium
 
 ----------------------------------------------------------
 VI. OCEANIA REGION DEFINITION
 ----------------------------------------------------------
-REGION: OCEANIA  
+REGION: OCEANIA
 CODE: OC
 
 Characteristics:
@@ -11278,9 +11278,9 @@ Characteristics:
 - high EV feasibility
 - climate risk strong in Pacific islands
 
-stability_baseline = high  
-EV_feasibility_baseline = high  
-risk_baseline = low-medium  
+stability_baseline = high
+EV_feasibility_baseline = high
+risk_baseline = low-medium
 
 ==========================================================
 END OF PART 4/60
@@ -11428,40 +11428,40 @@ II. COUNTRY MULTIPLIER MODEL
 Each country applies a 7-layer multiplier system:
 
 1. REGIONAL_MULTIPLIER (from Part 4)
-2. HISTORICAL_MULTIPLIER  
-   - colonial legacy  
-   - previous conflict  
-   - developmental path  
+2. HISTORICAL_MULTIPLIER
+   - colonial legacy
+   - previous conflict
+   - developmental path
    - institutional age
 
-3. ECONOMIC_MULTIPLIER  
-   - trade openness  
-   - industrial base  
-   - foreign investment dependency  
+3. ECONOMIC_MULTIPLIER
+   - trade openness
+   - industrial base
+   - foreign investment dependency
    - export structure
 
-4. GOVERNANCE_MULTIPLIER  
-   - judicial independence  
-   - regulatory coherence  
-   - anticorruption strength  
+4. GOVERNANCE_MULTIPLIER
+   - judicial independence
+   - regulatory coherence
+   - anticorruption strength
    - federal/local power split
 
-5. SOCIOCULTURAL_MULTIPLIER  
-   - language family  
-   - religion cluster  
-   - identity cohesion  
-   - migration history  
+5. SOCIOCULTURAL_MULTIPLIER
+   - language family
+   - religion cluster
+   - identity cohesion
+   - migration history
 
-6. INFRASTRUCTURE_MULTIPLIER  
-   - geographic constraints  
-   - density model  
-   - climate engineering readiness  
+6. INFRASTRUCTURE_MULTIPLIER
+   - geographic constraints
+   - density model
+   - climate engineering readiness
    - logistics corridors
 
-7. TECHNOLOGY_MULTIPLIER  
-   - AI readiness  
-   - digital identity systems  
-   - open-data maturity  
+7. TECHNOLOGY_MULTIPLIER
+   - AI readiness
+   - digital identity systems
+   - open-data maturity
    - telecommunication investments
 
 ==========================================================
@@ -11478,11 +11478,11 @@ NATIONAL_STABILITY = f(
     energy_security
 )
 
-Scale: 0.0 → 1.0  
-- <0.30 = unstable  
-- 0.30–0.55 = fragile  
-- 0.55–0.75 = stable  
-- >0.75 = highly stable  
+Scale: 0.0 → 1.0
+- <0.30 = unstable
+- 0.30–0.55 = fragile
+- 0.55–0.75 = stable
+- >0.75 = highly stable
 
 ==========================================================
 IV. EV FEASIBILITY MODEL
@@ -11546,70 +11546,70 @@ VII. BEHAVIOURAL OVERLAY MODEL
 ==========================================================
 Every country applies cultural overlays:
 
-1. WORK BEHAVIOR  
-   - pace  
-   - ownership  
-   - conflict style  
-   - hierarchy use  
-   - rule interpretation  
+1. WORK BEHAVIOR
+   - pace
+   - ownership
+   - conflict style
+   - hierarchy use
+   - rule interpretation
 
-2. NEGOTIATION STYLE  
-   - direct / indirect  
-   - relationship-first / contract-first  
+2. NEGOTIATION STYLE
+   - direct / indirect
+   - relationship-first / contract-first
 
-3. TRUST MODEL  
-   - institutional trust  
-   - interpersonal trust  
-   - network-based trust  
+3. TRUST MODEL
+   - institutional trust
+   - interpersonal trust
+   - network-based trust
 
-4. POLITICAL SENSITIVITY  
-   - speech boundaries  
-   - media response cycles  
-   - informal influence channels  
+4. POLITICAL SENSITIVITY
+   - speech boundaries
+   - media response cycles
+   - informal influence channels
 
 ==========================================================
 VIII. COUNTRY CYCLE MODEL
 ==========================================================
-1. SOCIO-POLITICAL CYCLE  
-   - election  
-   - leadership rotation  
-   - protest season  
-   - administrative changes  
+1. SOCIO-POLITICAL CYCLE
+   - election
+   - leadership rotation
+   - protest season
+   - administrative changes
 
-2. ECONOMIC CYCLE  
-   - peak  
-   - slowdown  
-   - recession  
-   - recovery  
+2. ECONOMIC CYCLE
+   - peak
+   - slowdown
+   - recession
+   - recovery
 
-3. CLIMATE CYCLE  
-   - rainy  
-   - dry  
-   - storm  
-   - heat  
+3. CLIMATE CYCLE
+   - rainy
+   - dry
+   - storm
+   - heat
 
-4. CULTURAL CYCLE  
-   - holidays  
-   - migration seasons  
-   - festival cycles  
+4. CULTURAL CYCLE
+   - holidays
+   - migration seasons
+   - festival cycles
 
 ==========================================================
 IX. COUNTRY GENERATION OUTPUT FORMAT
 ==========================================================
 Generated output always includes:
 
-1. Country overview  
-2. 9-dimension structural index  
-3. National stability score  
-4. EV feasibility score  
-5. Risk forecast (30/90/180 days)  
-6. Power map  
-7. Behavioural profile  
-8. Sectoral dynamics  
-9. Policy friction zones  
-10. Infrastructure bottlenecks  
-11. Energy transition pathway  
-12. Market-cycle projection  
+1. Country overview
+2. 9-dimension structural index
+3. National stability score
+4. EV feasibility score
+5. Risk forecast (30/90/180 days)
+6. Power map
+7. Behavioural profile
+8. Sectoral dynamics
+9. Policy friction zones
+10. Infrastructure bottlenecks
+11. Energy transition pathway
+12. Market-cycle projection
 
 ==========================================================
 END OF PART 5/60
@@ -11619,12 +11619,12 @@ END OF PART 5/60
   "UniversalLogicEngine": {
     "meta": {
       "system_name": "",
-      "system_type": "", 
+      "system_type": "",
       "description": "",
       "scale_levels": [
-        "micro", 
-        "meso", 
-        "macro", 
+        "micro",
+        "meso",
+        "macro",
         "planetary"
       ],
       "time_horizon": {

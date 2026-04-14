@@ -8,28 +8,28 @@ software development scenario from task analysis to deployment.
 import sys
 import time
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 class CompleteSystemDemo:
     """Full ecosystem demonstration."""
 
     def __init__(self):
-        self.results: Dict[str, Any] = {}
+        self.results: dict[str, Any] = {}
         self.start_time = time.time()
 
-    def run_full_demo(self) -> Dict[str, Any]:
+    def run_full_demo(self) -> dict[str, Any]:
         """Execute complete system demonstration."""
         print("\n" + "=" * 78)
         print(" " * 20 + "AMOS ECOSYSTEM v2.8")
         print(" " * 18 + "COMPLETE SYSTEM DEMO")
         print("=" * 78)
         print(f"\nDemo Started: {datetime.now().isoformat()}")
-        print(f"Modules: 28 | Lines: ~4,800 | Status: PRODUCTION READY\n")
+        print("Modules: 28 | Lines: ~4,800 | Status: PRODUCTION READY\n")
 
         # Phase 1: Task Intake & Analysis
         self._phase1_task_analysis()
@@ -62,6 +62,7 @@ class CompleteSystemDemo:
 
         try:
             from amos_cognitive_router import CognitiveRouter
+
             router = CognitiveRouter()
 
             task = "Design and implement a secure REST API for user authentication with JWT tokens, rate limiting, and audit logging"
@@ -69,11 +70,11 @@ class CompleteSystemDemo:
             print(f"\nTask: {task[:70]}...")
             analysis = router.analyze(task)
 
-            self.results['phase1'] = {
-                'domain': analysis.primary_domain,
-                'risk': analysis.risk_level,
-                'engines': analysis.suggested_engines,
-                'confidence': analysis.confidence
+            self.results["phase1"] = {
+                "domain": analysis.primary_domain,
+                "risk": analysis.risk_level,
+                "engines": analysis.suggested_engines,
+                "confidence": analysis.confidence,
             }
 
             print(f"\n✓ Domain: {analysis.primary_domain}")
@@ -84,7 +85,7 @@ class CompleteSystemDemo:
 
         except Exception as e:
             print(f"⚠ Phase 1: {e}")
-            self.results['phase1'] = {'error': str(e)}
+            self.results["phase1"] = {"error": str(e)}
 
     def _phase2_cognitive_processing(self) -> None:
         """Phase 2: Multi-agent cognitive processing."""
@@ -98,13 +99,13 @@ class CompleteSystemDemo:
             orch = MultiAgentOrchestrator()
             task = "Analyze authentication system requirements"
 
-            print(f"\nExecuting parallel cognitive analysis...")
+            print("\nExecuting parallel cognitive analysis...")
 
             # Simulate multi-agent execution
             engines = [
                 "AMOS_Deterministic_Logic_And_Law_Engine",
                 "AMOS_Engineering_And_Mathematics_Engine",
-                "AMOS_Security_And_Compliance_Engine"
+                "AMOS_Security_And_Compliance_Engine",
             ]
 
             print(f"✓ Deploying {len(engines)} cognitive engines")
@@ -112,17 +113,17 @@ class CompleteSystemDemo:
             print("  • Engineering Engine")
             print("  • Security Engine")
 
-            self.results['phase2'] = {
-                'engines_deployed': len(engines),
-                'consensus': 'achieved',
-                'confidence': 0.87
+            self.results["phase2"] = {
+                "engines_deployed": len(engines),
+                "consensus": "achieved",
+                "confidence": 0.87,
             }
 
             print("\n[Phase 2 Complete]")
 
         except Exception as e:
             print(f"⚠ Phase 2: {e}")
-            self.results['phase2'] = {'error': str(e)}
+            self.results["phase2"] = {"error": str(e)}
 
     def _phase3_ethics_validation(self) -> None:
         """Phase 3: Ethics and validation checks."""
@@ -140,21 +141,17 @@ class CompleteSystemDemo:
                 "harm_potential": 0.2,
                 "benefit_score": 0.9,
                 "discriminatory": False,
-                "affected_count": 1000
+                "affected_count": 1000,
             }
 
             print("\nRunning ethics validation...")
-            result = ethics.validate_action(
-                "Implement authentication API",
-                context,
-                "principlism"
-            )
+            result = ethics.validate_action("Implement authentication API", context, "principlism")
 
-            self.results['phase3'] = {
-                'passed': result.passed,
-                'score': result.score,
-                'violations': len(result.violations),
-                'framework': result.framework
+            self.results["phase3"] = {
+                "passed": result.passed,
+                "score": result.score,
+                "violations": len(result.violations),
+                "framework": result.framework,
             }
 
             status = "✓ PASSED" if result.passed else "✗ FAILED"
@@ -166,7 +163,7 @@ class CompleteSystemDemo:
 
         except Exception as e:
             print(f"⚠ Phase 3: {e}")
-            self.results['phase3'] = {'error': str(e)}
+            self.results["phase3"] = {"error": str(e)}
 
     def _phase4_orchestration(self) -> None:
         """Phase 4: Master orchestration."""
@@ -181,15 +178,13 @@ class CompleteSystemDemo:
 
             print("\nOrchestrating cognitive task...")
             result = orch.orchestrate_cognitive_task(
-                "demo_auth_api",
-                "Design and implement secure authentication API",
-                "HIGH"
+                "demo_auth_api", "Design and implement secure authentication API", "HIGH"
             )
 
-            self.results['phase4'] = {
-                'success': result.success,
-                'predicted_duration': result.predicted_duration_mins,
-                'confidence': result.confidence
+            self.results["phase4"] = {
+                "success": result.success,
+                "predicted_duration": result.predicted_duration_mins,
+                "confidence": result.confidence,
             }
 
             status = "✓ SUCCESS" if result.success else "✗ FAILED"
@@ -200,7 +195,7 @@ class CompleteSystemDemo:
 
         except Exception as e:
             print(f"⚠ Phase 4: {e}")
-            self.results['phase4'] = {'error': str(e)}
+            self.results["phase4"] = {"error": str(e)}
 
     def _phase5_organism_integration(self) -> None:
         """Phase 5: Organism bridge integration."""
@@ -209,8 +204,8 @@ class CompleteSystemDemo:
         print("─" * 78)
 
         try:
-            from organism_bridge import get_organism_bridge
             from deep_integration import get_deep_integration
+            from organism_bridge import get_organism_bridge
 
             print("\nConnecting to organism systems...")
 
@@ -220,20 +215,22 @@ class CompleteSystemDemo:
             integration = get_deep_integration()
             unified_state = integration.get_unified_state()
 
-            self.results['phase5'] = {
-                'organism_connected': bridge_status.get('components', {}).get('coherence', False),
-                'coherence': unified_state.coherence_score,
-                'ethics_clearance': unified_state.ethics_clearance
+            self.results["phase5"] = {
+                "organism_connected": bridge_status.get("components", {}).get("coherence", False),
+                "coherence": unified_state.coherence_score,
+                "ethics_clearance": unified_state.ethics_clearance,
             }
 
-            print(f"✓ Organism Bridge: Connected")
+            print("✓ Organism Bridge: Connected")
             print(f"✓ Coherence Engine: {unified_state.coherence_score:.2f}")
-            print(f"✓ Ethics Clearance: {'Granted' if unified_state.ethics_clearance else 'Denied'}")
+            print(
+                f"✓ Ethics Clearance: {'Granted' if unified_state.ethics_clearance else 'Denied'}"
+            )
             print("\n[Phase 5 Complete]")
 
         except Exception as e:
             print(f"⚠ Phase 5: {e}")
-            self.results['phase5'] = {'error': str(e)}
+            self.results["phase5"] = {"error": str(e)}
 
     def _phase6_execution_monitoring(self) -> None:
         """Phase 6: Task execution and telemetry."""
@@ -242,8 +239,8 @@ class CompleteSystemDemo:
         print("─" * 78)
 
         try:
+            from resilience import CircuitBreaker, get_resilience
             from telemetry import get_telemetry
-            from resilience import get_resilience, CircuitBreaker
 
             telemetry = get_telemetry()
             resilience = get_resilience()
@@ -258,10 +255,10 @@ class CompleteSystemDemo:
             cb = CircuitBreaker(failure_threshold=3)
             resilience.register_component("demo_task", cb)
 
-            self.results['phase6'] = {
-                'metrics_recorded': True,
-                'circuit_breaker': 'active',
-                'monitoring': 'enabled'
+            self.results["phase6"] = {
+                "metrics_recorded": True,
+                "circuit_breaker": "active",
+                "monitoring": "enabled",
             }
 
             print("✓ Telemetry: Active")
@@ -271,7 +268,7 @@ class CompleteSystemDemo:
 
         except Exception as e:
             print(f"⚠ Phase 6: {e}")
-            self.results['phase6'] = {'error': str(e)}
+            self.results["phase6"] = {"error": str(e)}
 
     def _phase7_feedback_audit(self) -> None:
         """Phase 7: Feedback loop and audit."""
@@ -298,29 +295,29 @@ class CompleteSystemDemo:
                 laws=["security_compliance", "data_protection"],
                 violations=[],
                 exec_time_ms=1250.0,
-                recommendation="Proceed with implementation"
+                recommendation="Proceed with implementation",
             )
 
             # Record feedback
             feedback.record_feedback("demo_auth_api", True, 0.92)
             stats = feedback.get_effectiveness_stats()
 
-            self.results['phase7'] = {
-                'audit_recorded': True,
-                'task_hash': entry.task_hash,
-                'feedback_score': 0.92
+            self.results["phase7"] = {
+                "audit_recorded": True,
+                "task_hash": entry.task_hash,
+                "feedback_score": 0.92,
             }
 
             print(f"✓ Audit Entry: {entry.task_hash}")
-            print(f"✓ Feedback Score: 92%")
-            print(f"✓ Learning: Active")
+            print("✓ Feedback Score: 92%")
+            print("✓ Learning: Active")
             print("\n[Phase 7 Complete]")
 
         except Exception as e:
             print(f"⚠ Phase 7: {e}")
-            self.results['phase7'] = {'error': str(e)}
+            self.results["phase7"] = {"error": str(e)}
 
-    def _generate_summary(self) -> Dict[str, Any]:
+    def _generate_summary(self) -> dict[str, Any]:
         """Generate demo summary."""
         duration = time.time() - self.start_time
 
@@ -328,7 +325,7 @@ class CompleteSystemDemo:
         print("DEMO SUMMARY")
         print("=" * 78)
 
-        phases_complete = sum(1 for p in self.results.values() if 'error' not in p)
+        phases_complete = sum(1 for p in self.results.values() if "error" not in p)
         total_phases = 7
 
         print(f"\nPhases Completed: {phases_complete}/{total_phases}")
@@ -345,7 +342,7 @@ class CompleteSystemDemo:
             "Telemetry System",
             "Resilience Manager",
             "Audit Trail",
-            "Feedback Loop"
+            "Feedback Loop",
         ]
 
         for system in systems:
@@ -361,11 +358,11 @@ class CompleteSystemDemo:
         print("=" * 78)
 
         return {
-            'phases_complete': phases_complete,
-            'total_phases': total_phases,
-            'duration': duration,
-            'timestamp': datetime.now().isoformat(),
-            'status': 'complete' if phases_complete == total_phases else 'partial'
+            "phases_complete": phases_complete,
+            "total_phases": total_phases,
+            "duration": duration,
+            "timestamp": datetime.now().isoformat(),
+            "status": "complete" if phases_complete == total_phases else "partial",
         }
 
 
@@ -373,7 +370,7 @@ def main():
     """Run complete system demo."""
     demo = CompleteSystemDemo()
     result = demo.run_full_demo()
-    return 0 if result['status'] == 'complete' else 1
+    return 0 if result["status"] == "complete" else 1
 
 
 if __name__ == "__main__":

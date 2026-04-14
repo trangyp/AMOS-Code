@@ -2,7 +2,7 @@
 """AMOS Brain Phase 16: Post-Theorem-Prover Decision
 
 Current State (47+ components):
-- Core: AMOS Brain cognitive architecture  
+- Core: AMOS Brain cognitive architecture
 - Language: AMOSL compiler (9-tuple, 4 IRs, 8 invariants)
 - Formal: 16-tuple mathematical specification
 - Categorical: Category-theoretic backbone (22 sections)
@@ -15,8 +15,9 @@ Current State (47+ components):
 
 Gap: Runtime incomplete (missing ledger, verify, bridge, evolution)
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision
@@ -47,8 +48,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must match formal spec exactly. Must enable end-to-end execution. Must integrate with theorem prover.",
-        "goals": "Create executable realization of 16-tuple formal system. Enable running AMOSL programs with verification."
-    }
+        "goals": "Create executable realization of 16-tuple formal system. Enable running AMOSL programs with verification.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -60,7 +61,8 @@ for i, rec in enumerate(result.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Complete Runtime + End-to-End Demo")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Finish AMOSL Reference Runtime
 
    MISSING COMPONENTS:
@@ -133,6 +135,7 @@ print("""
    • amosl/evolution.py
    • examples/demo_full_amOSL.py
    • docs/runtime_integration.md
-""")
+"""
+)
 
 print("\n✅ Decision: Complete runtime (4 modules) + full E2E demonstration")

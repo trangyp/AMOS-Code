@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import threading
-import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -20,6 +19,7 @@ _loaded = False
 
 
 # ── persistence ───────────────────────────────────────────────────────────────
+
 
 def _tasks_file() -> Path:
     return Path.cwd() / ".clawspring" / "tasks.json"
@@ -57,6 +57,7 @@ def _next_id() -> str:
 
 
 # ── public API ────────────────────────────────────────────────────────────────
+
 
 def create_task(
     subject: str,

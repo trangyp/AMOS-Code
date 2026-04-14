@@ -11,15 +11,17 @@ Analysis:
 
 BUILD: Add orchestrator CLI command
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 30 - Build Orchestrator CLI Command")
 print("=" * 70)
 
-print("""
+print(
+    """
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║           AMOS Brain v14.0.0 - 14-Layer Cognitive OS                  ║
 ╠═══════════════════════════════════════════════════════════════════════╣
@@ -57,7 +59,8 @@ print("""
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BUILDING: Orchestrator CLI Command")
@@ -68,28 +71,28 @@ orchestrator_cmd_code = '''
 def cmd_orchestrator(args) -> int:
     """Orchestrator management (00_ROOT)."""
     organism_root = get_organism_root()
-    
+
     if args.action == "cycle":
         # Trigger orchestrator cycle
         orchestrator = organism_root / "AMOS_MASTER_ORCHESTRATOR.py"
         if not orchestrator.exists():
             print("✗ Orchestrator not found")
             return 1
-        
+
         import subprocess
         result = subprocess.run(
             [sys.executable, str(orchestrator), "--cycle"],
             capture_output=True,
             text=True
         )
-        
+
         if result.returncode == 0:
             print("✓ Orchestrator cycle triggered")
             print(result.stdout)
         else:
             print(f"✗ Cycle failed: {result.stderr}")
             return 1
-    
+
     elif args.action == "status":
         # Check orchestrator status
         sys.path.insert(0, str(organism_root))
@@ -101,7 +104,7 @@ def cmd_orchestrator(args) -> int:
         except Exception as e:
             print(f"✗ Status check failed: {e}")
             return 1
-    
+
     elif args.action == "config":
         # Show orchestrator configuration
         config_file = organism_root / "00_ROOT" / "config.json"
@@ -115,7 +118,7 @@ def cmd_orchestrator(args) -> int:
         else:
             print("✗ Configuration file not found")
             return 1
-    
+
     return 0
 '''
 
@@ -125,7 +128,8 @@ print(orchestrator_cmd_code)
 print("\n" + "=" * 70)
 print("  BUILD COMPLETE: Orchestrator CLI Command Defined")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT STEPS:
 
    1. Add cmd_orchestrator() to amos_cli.py
@@ -135,7 +139,7 @@ print("""
    5. Test: python amos_cli.py orchestrator config
 
    This completes the organism CLI layer.
-   
+
    AMOS Brain v14.0.0 will have full CLI control over:
    - Brain (cognitive engines)
    - Workflow (MUSCLE)
@@ -143,6 +147,7 @@ print("""
    - Alert (IMMUNE)
    - API Server (INTERFACES)
    - Orchestrator (ROOT)
-   
+
    ✅ BUILD: Orchestrator CLI Command Ready
-""")
+"""
+)

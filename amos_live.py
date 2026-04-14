@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Live Production Launch
+"""AMOS Live Production Launch
 ===========================
 
 The final production launch sequence for AMOS Organism.
@@ -21,7 +20,8 @@ from pathlib import Path
 
 def print_live_banner():
     """Display production live banner."""
-    print("""
+    print(
+        """
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
 ║                    🚀 AMOS ORGANISM 🚀                            ║
@@ -33,13 +33,14 @@ def print_live_banner():
 ║  └─────────────────────────────────────────────────────────┘    ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 def check_production_readiness() -> bool:
     """Verify system is ready for live operation."""
     print("[LIVE] Checking production readiness...")
-    
+
     root = Path(__file__).parent
     checks = {
         "Organism Root": (root / "AMOS_ORGANISM_OS").exists(),
@@ -49,14 +50,14 @@ def check_production_readiness() -> bool:
         "Activator": (root / "AMOS_ORGANISM_OS" / "amos_activate.py").exists(),
         "Deploy Script": (root / "deploy.py").exists(),
     }
-    
+
     all_ready = True
     for name, ready in checks.items():
         status = "✓" if ready else "✗"
         print(f"       {status} {name}")
         if not ready:
             all_ready = False
-    
+
     return all_ready
 
 
@@ -65,19 +66,20 @@ def launch_production():
     print_live_banner()
     print(f"[{datetime.utcnow().isoformat()}] Launch sequence initiated")
     print()
-    
+
     # Phase 1: Readiness check
     if not check_production_readiness():
         print("\n[ERROR] System not ready for production!")
         return False
-    
+
     print("\n[LIVE] All systems ready for production!")
     print()
-    
+
     # Phase 2: Health verification
     print("[LIVE] Running pre-launch health check...")
     try:
         import subprocess
+
         result = subprocess.run(
             [sys.executable, "AMOS_ORGANISM_OS/system_health_monitor.py"],
             capture_output=True,
@@ -90,9 +92,9 @@ def launch_production():
             print("       ⚠ Health check issues detected")
     except Exception as e:
         print(f"       ⚠ Health check error: {e}")
-    
+
     print()
-    
+
     # Phase 3: Live activation
     print("[LIVE] Activating AMOS Organism...")
     print("       ✓ Subsystems loading...")
@@ -102,7 +104,7 @@ def launch_production():
     print("       ✓ Interfaces online...")
     time.sleep(0.2)
     print("       ✓ Health monitoring enabled...")
-    
+
     print()
     print("=" * 70)
     print(" 🎉 AMOS ORGANISM IS NOW LIVE IN PRODUCTION 🎉")
@@ -121,7 +123,7 @@ def launch_production():
     print()
     print(f"[{datetime.utcnow().isoformat()}] AMOS PRODUCTION LIVE")
     print()
-    
+
     return True
 
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Organism Validation Runner
+"""AMOS Organism Validation Runner
 ===============================
 Executes validation tests to confirm all 14 subsystems
 are operational and properly integrated.
@@ -9,6 +8,7 @@ are operational and properly integrated.
 import sys
 import traceback
 from pathlib import Path
+
 
 def validate():
     """Validate the complete organism."""
@@ -29,8 +29,9 @@ def validate():
     # Test 1: Import
     print("[TEST 1] Import organism module...")
     try:
-        sys.path.insert(0, str(Path(__file__).parent / 'AMOS_ORGANISM_OS'))
+        sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
         from organism import AmosOrganism
+
         print("  ✓ PASS - Module imported successfully")
         results["import"] = True
     except Exception as e:
@@ -83,16 +84,16 @@ def validate():
             all_present = False
 
     if all_present:
-        print(f"  ✓ PASS - All 14 subsystems present")
+        print("  ✓ PASS - All 14 subsystems present")
     else:
-        print(f"  ✗ FAIL - Some subsystems missing")
+        print("  ✗ FAIL - Some subsystems missing")
 
     # Test 4: Get status
     print("[TEST 4] Retrieve organism status...")
     try:
         status = org.status()
-        active = status.get('active_subsystems', [])
-        print(f"  ✓ PASS - Status retrieved")
+        active = status.get("active_subsystems", [])
+        print("  ✓ PASS - Status retrieved")
         print(f"    → Active subsystems: {len(active)}")
         print(f"    → Session: {status.get('session_id', 'N/A')[:8]}...")
         print(f"    → Started: {status.get('started_at', 'N/A')[:19]}")
@@ -112,7 +113,7 @@ def validate():
             "lifecycle_stage": org.lifecycle_manager.current_stage.value,
             "milestones": sum(1 for m in org.lifecycle_manager.milestones.values() if m.achieved),
         }
-        print(f"  ✓ PASS - LIFE_ENGINE operational")
+        print("  ✓ PASS - LIFE_ENGINE operational")
         print(f"    → Growth plans: {life_data['plans']}")
         print(f"    → Capabilities: {life_data['capabilities']}")
         print(f"    → Health: {life_data['health_status']}")

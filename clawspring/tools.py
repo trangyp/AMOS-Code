@@ -1,9 +1,9 @@
 """Tool definitions and implementations for ClawSpring."""
+import difflib
+import glob as _glob
 import json
 import os
 import re
-import glob as _glob
-import difflib
 import subprocess
 import threading
 from pathlib import Path
@@ -14,7 +14,9 @@ from tool_registry import execute_tool as _registry_execute
 
 # ── AskUserQuestion state ──────────────────────────────────────────────────────
 # The main REPL loop drains _pending_questions and fills _question_answers.
-_pending_questions: list[dict] = []   # [{id, question, options, allow_freetext, event, result_holder}]
+_pending_questions: list[
+    dict
+] = []  # [{id, question, options, allow_freetext, event, result_holder}]
 _ask_lock = threading.Lock()
 
 # ── Tool JSON schemas (sent to Claude API) ─────────────────────────────────
@@ -30,8 +32,8 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "file_path": {"type": "string", "description": "Absolute file path"},
-                "limit":     {"type": "integer", "description": "Max lines to read"},
-                "offset":    {"type": "integer", "description": "Start line (0-indexed)"},
+                "limit": {"type": "integer", "description": "Max lines to read"},
+                "offset": {"type": "integer", "description": "Start line (0-indexed)"},
             },
             "required": ["file_path"],
         },
@@ -43,7 +45,7 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "file_path": {"type": "string"},
-                "content":   {"type": "string"},
+                "content": {"type": "string"},
             },
             "required": ["file_path", "content"],
         },
@@ -57,9 +59,9 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "file_path":   {"type": "string"},
-                "old_string":  {"type": "string", "description": "Exact text to replace"},
-                "new_string":  {"type": "string", "description": "Replacement text"},
+                "file_path": {"type": "string"},
+                "old_string": {"type": "string", "description": "Exact text to replace"},
+                "new_string": {"type": "string", "description": "Replacement text"},
                 "replace_all": {"type": "boolean", "description": "Replace all occurrences"},
             },
             "required": ["file_path", "old_string", "new_string"],
@@ -72,7 +74,10 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "command": {"type": "string"},
-                "timeout": {"type": "integer", "description": "Seconds before timeout (default 30)"},
+                "timeout": {
+                    "type": "integer",
+                    "description": "Seconds before timeout (default 30)",
+                },
             },
             "required": ["command"],
         },
@@ -84,7 +89,7 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "pattern": {"type": "string", "description": "Glob pattern e.g. **/*.py"},
-                "path":    {"type": "string", "description": "Base directory (default: cwd)"},
+                "path": {"type": "string", "description": "Base directory (default: cwd)"},
             },
             "required": ["pattern"],
         },
@@ -95,16 +100,16 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "pattern":      {"type": "string", "description": "Regex pattern"},
-                "path":         {"type": "string", "description": "File or directory to search"},
-                "glob":         {"type": "string", "description": "File filter e.g. *.py"},
-                "output_mode":  {
+                "pattern": {"type": "string", "description": "Regex pattern"},
+                "path": {"type": "string", "description": "File or directory to search"},
+                "glob": {"type": "string", "description": "File filter e.g. *.py"},
+                "output_mode": {
                     "type": "string",
                     "enum": ["content", "files_with_matches", "count"],
                     "description": "content=matching lines, files_with_matches=file paths, count=match counts",
                 },
                 "case_insensitive": {"type": "boolean"},
-                "context":      {"type": "integer", "description": "Lines of context around matches"},
+                "context": {"type": "integer", "description": "Lines of context around matches"},
             },
             "required": ["pattern"],
         },
@@ -115,7 +120,7 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "url":    {"type": "string"},
+                "url": {"type": "string"},
                 "prompt": {"type": "string", "description": "Hint for what to extract"},
             },
             "required": ["url"],
@@ -142,10 +147,13 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "subject":     {"type": "string", "description": "Brief title"},
+                "subject": {"type": "string", "description": "Brief title"},
                 "description": {"type": "string", "description": "What needs to be done"},
-                "active_form": {"type": "string", "description": "Present-continuous label while in_progress"},
-                "metadata":    {"type": "object", "description": "Arbitrary metadata"},
+                "active_form": {
+                    "type": "string",
+                    "description": "Present-continuous label while in_progress",
+                },
+                "metadata": {"type": "object", "description": "Arbitrary metadata"},
             },
             "required": ["subject", "description"],
         },
@@ -161,15 +169,18 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "task_id":       {"type": "string"},
-                "subject":       {"type": "string"},
-                "description":   {"type": "string"},
-                "status":        {"type": "string", "enum": ["pending","in_progress","completed","cancelled","deleted"]},
-                "active_form":   {"type": "string"},
-                "owner":         {"type": "string"},
-                "add_blocks":    {"type": "array", "items": {"type": "string"}},
-                "add_blocked_by":{"type": "array", "items": {"type": "string"}},
-                "metadata":      {"type": "object"},
+                "task_id": {"type": "string"},
+                "subject": {"type": "string"},
+                "description": {"type": "string"},
+                "status": {
+                    "type": "string",
+                    "enum": ["pending", "in_progress", "completed", "cancelled", "deleted"],
+                },
+                "active_form": {"type": "string"},
+                "owner": {"type": "string"},
+                "add_blocks": {"type": "array", "items": {"type": "string"}},
+                "add_blocked_by": {"type": "array", "items": {"type": "string"}},
+                "metadata": {"type": "object"},
             },
             "required": ["task_id"],
         },
@@ -279,7 +290,7 @@ TOOL_SCHEMAS = [
                     "items": {
                         "type": "object",
                         "properties": {
-                            "label":       {"type": "string"},
+                            "label": {"type": "string"},
                             "description": {"type": "string"},
                         },
                         "required": ["label"],
@@ -302,7 +313,10 @@ TOOL_SCHEMAS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "seconds": {"type": "integer", "description": "Number of seconds to sleep before waking up."}
+                "seconds": {
+                    "type": "integer",
+                    "description": "Number of seconds to sleep before waking up.",
+                }
             },
             "required": ["seconds"],
         },
@@ -312,16 +326,53 @@ TOOL_SCHEMAS = [
 # ── Safe bash commands (never ask permission) ───────────────────────────────
 
 _SAFE_PREFIXES = (
-    "ls", "cat", "head", "tail", "wc", "pwd", "echo", "printf", "date",
-    "which", "type", "env", "printenv", "uname", "whoami", "id",
-    "git log", "git status", "git diff", "git show", "git branch",
-    "git remote", "git stash list", "git tag",
-    "find ", "grep ", "rg ", "ag ", "fd ",
-    "python ", "python3 ", "node ", "ruby ", "perl ",
-    "pip show", "pip list", "npm list", "cargo metadata",
-    "df ", "du ", "free ", "top -bn", "ps ",
-    "curl -I", "curl --head",
+    "ls",
+    "cat",
+    "head",
+    "tail",
+    "wc",
+    "pwd",
+    "echo",
+    "printf",
+    "date",
+    "which",
+    "type",
+    "env",
+    "printenv",
+    "uname",
+    "whoami",
+    "id",
+    "git log",
+    "git status",
+    "git diff",
+    "git show",
+    "git branch",
+    "git remote",
+    "git stash list",
+    "git tag",
+    "find ",
+    "grep ",
+    "rg ",
+    "ag ",
+    "fd ",
+    "python ",
+    "python3 ",
+    "node ",
+    "ruby ",
+    "perl ",
+    "pip show",
+    "pip list",
+    "npm list",
+    "cargo metadata",
+    "df ",
+    "du ",
+    "free ",
+    "top -bn",
+    "ps ",
+    "curl -I",
+    "curl --head",
 )
+
 
 def _is_safe_bash(cmd: str) -> bool:
     c = cmd.strip()
@@ -330,12 +381,15 @@ def _is_safe_bash(cmd: str) -> bool:
 
 # ── Diff helpers ──────────────────────────────────────────────────────────
 
+
 def generate_unified_diff(old, new, filename, context_lines=3):
     old_lines = old.splitlines(keepends=True)
     new_lines = new.splitlines(keepends=True)
-    diff = difflib.unified_diff(old_lines, new_lines,
-        fromfile=f"a/{filename}", tofile=f"b/{filename}", n=context_lines)
+    diff = difflib.unified_diff(
+        old_lines, new_lines, fromfile=f"a/{filename}", tofile=f"b/{filename}", n=context_lines
+    )
     return "".join(diff)
+
 
 def maybe_truncate_diff(diff_text, max_lines=80):
     lines = diff_text.splitlines()
@@ -348,6 +402,7 @@ def maybe_truncate_diff(diff_text, max_lines=80):
 
 # ── Tool implementations ───────────────────────────────────────────────────
 
+
 def _read(file_path: str, limit: int = None, offset: int = None) -> str:
     p = Path(file_path)
     if not p.exists():
@@ -356,9 +411,11 @@ def _read(file_path: str, limit: int = None, offset: int = None) -> str:
         return f"Error: {file_path} is a directory"
     try:
         # Explicitly use utf-8 and newline="" to avoid encoding/line-ending mismatches
-        lines = p.read_text(encoding="utf-8", errors="replace", newline="").splitlines(keepends=True)
+        lines = p.read_text(encoding="utf-8", errors="replace", newline="").splitlines(
+            keepends=True
+        )
         start = offset or 0
-        chunk = lines[start:start + limit] if limit else lines[start:]
+        chunk = lines[start : start + limit] if limit else lines[start:]
         if not chunk:
             return "(empty file)"
         # Use standard 6-char padding for line numbers, matching Claude's expected format
@@ -396,7 +453,7 @@ def _edit(file_path: str, old_string: str, new_string: str, replace_all: bool = 
     try:
         # Read with newline="" to get original line endings
         content = p.read_text(encoding="utf-8", errors="replace", newline="")
-        
+
         # Detect original line endings: only treat as pure CRLF if every \n is part of \r\n
         crlf_count = content.count("\r\n")
         lf_count = content.count("\n")
@@ -411,12 +468,17 @@ def _edit(file_path: str, old_string: str, new_string: str, replace_all: bool = 
         if count == 0:
             return "Error: old_string not found in file. Please ensure EXACT match, including all exact leading spaces/indentation and trailing newlines."
         if count > 1 and not replace_all:
-            return (f"Error: old_string appears {count} times. "
-                    "Provide more context to make it unique, or use replace_all=true.")
+            return (
+                f"Error: old_string appears {count} times. "
+                "Provide more context to make it unique, or use replace_all=true."
+            )
 
         old_content_norm = content_norm
-        new_content_norm = content_norm.replace(old_norm, new_norm) if replace_all else \
-                           content_norm.replace(old_norm, new_norm, 1)
+        new_content_norm = (
+            content_norm.replace(old_norm, new_norm)
+            if replace_all
+            else content_norm.replace(old_norm, new_norm, 1)
+        )
 
         # Restore CRLF only for pure-CRLF files; mixed or LF-only files stay as LF
         if is_pure_crlf:
@@ -425,7 +487,7 @@ def _edit(file_path: str, old_string: str, new_string: str, replace_all: bool = 
         else:
             final_content = new_content_norm
             old_content_final = content_norm
-                      
+
         # Write with newline="" to prevent double CRLF translation on Windows
         p.write_text(final_content, encoding="utf-8", newline="")
         filename = p.name
@@ -438,8 +500,12 @@ def _edit(file_path: str, old_string: str, new_string: str, replace_all: bool = 
 def _bash(command: str, timeout: int = 30) -> str:
     try:
         r = subprocess.run(
-            command, shell=True, capture_output=True, text=True,
-            timeout=timeout, cwd=os.getcwd(),
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=os.getcwd(),
         )
         out = r.stdout
         if r.stderr:
@@ -470,9 +536,14 @@ def _has_rg() -> bool:
         return False
 
 
-def _grep(pattern: str, path: str = None, glob: str = None,
-          output_mode: str = "files_with_matches",
-          case_insensitive: bool = False, context: int = 0) -> str:
+def _grep(
+    pattern: str,
+    path: str = None,
+    glob: str = None,
+    output_mode: str = "files_with_matches",
+    case_insensitive: bool = False,
+    context: int = 0,
+) -> str:
     use_rg = _has_rg()
     cmd = ["rg" if use_rg else "grep", "--no-heading"]
     if case_insensitive:
@@ -486,7 +557,7 @@ def _grep(pattern: str, path: str = None, glob: str = None,
         if context:
             cmd += ["-C", str(context)]
     if glob:
-        cmd += (["--glob", glob] if use_rg else ["--include", glob])
+        cmd += ["--glob", glob] if use_rg else ["--include", glob]
     cmd.append(pattern)
     cmd.append(path or str(Path.cwd()))
     try:
@@ -500,15 +571,15 @@ def _grep(pattern: str, path: str = None, glob: str = None,
 def _webfetch(url: str, prompt: str = None) -> str:
     try:
         import httpx
-        r = httpx.get(url, headers={"User-Agent": "NanoClaude/1.0"},
-                      timeout=30, follow_redirects=True)
+
+        r = httpx.get(
+            url, headers={"User-Agent": "NanoClaude/1.0"}, timeout=30, follow_redirects=True
+        )
         r.raise_for_status()
         ct = r.headers.get("content-type", "")
         if "html" in ct:
-            text = re.sub(r"<script[^>]*>.*?</script>", "", r.text,
-                          flags=re.DOTALL | re.IGNORECASE)
-            text = re.sub(r"<style[^>]*>.*?</style>", "", text,
-                          flags=re.DOTALL | re.IGNORECASE)
+            text = re.sub(r"<script[^>]*>.*?</script>", "", r.text, flags=re.DOTALL | re.IGNORECASE)
+            text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL | re.IGNORECASE)
             text = re.sub(r"<[^>]+>", " ", text)
             text = re.sub(r"\s+", " ", text).strip()
         else:
@@ -523,12 +594,18 @@ def _webfetch(url: str, prompt: str = None) -> str:
 def _websearch(query: str) -> str:
     try:
         import httpx
+
         url = "https://html.duckduckgo.com/html/"
-        r = httpx.get(url, params={"q": query},
-                      headers={"User-Agent": "Mozilla/5.0 (compatible)"},
-                      timeout=30, follow_redirects=True)
-        titles   = re.findall(r'class="result__title"[^>]*>.*?<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
-                               r.text, re.DOTALL)
+        r = httpx.get(
+            url,
+            params={"q": query},
+            headers={"User-Agent": "Mozilla/5.0 (compatible)"},
+            timeout=30,
+            follow_redirects=True,
+        )
+        titles = re.findall(
+            r'class="result__title"[^>]*>.*?<a[^>]*href="([^"]+)"[^>]*>(.*?)</a>', r.text, re.DOTALL
+        )
         snippets = re.findall(r'class="result__snippet"[^>]*>(.*?)</div>', r.text, re.DOTALL)
         results = []
         for i, (link, title) in enumerate(titles[:8]):
@@ -543,6 +620,7 @@ def _websearch(query: str) -> str:
 
 
 # ── NotebookEdit implementation ────────────────────────────────────────────
+
 
 def _parse_cell_id(cell_id: str) -> Optional[int]:
     """Convert 'cell-N' shorthand to integer index; return None if not that form."""
@@ -605,7 +683,9 @@ def _notebook_edit(
         use_ids = nbformat > 4 or (nbformat == 4 and nbformat_minor >= 5)
         new_id = None
         if use_ids:
-            import random, string
+            import random
+            import string
+
             new_id = "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
 
         if cell_type == "markdown":
@@ -651,18 +731,19 @@ def _notebook_edit(
 
 # ── GetDiagnostics implementation ──────────────────────────────────────────
 
+
 def _detect_language(file_path: str) -> str:
     ext = Path(file_path).suffix.lower()
     return {
-        ".py":   "python",
-        ".js":   "javascript",
-        ".mjs":  "javascript",
-        ".cjs":  "javascript",
-        ".ts":   "typescript",
-        ".tsx":  "typescript",
-        ".sh":   "shellscript",
+        ".py": "python",
+        ".js": "javascript",
+        ".mjs": "javascript",
+        ".cjs": "javascript",
+        ".ts": "typescript",
+        ".tsx": "typescript",
+        ".sh": "shellscript",
         ".bash": "shellscript",
-        ".zsh":  "shellscript",
+        ".zsh": "shellscript",
     }.get(ext, "unknown")
 
 
@@ -670,7 +751,10 @@ def _run_quietly(cmd: list[str], cwd: Optional[str] = None, timeout: int = 30) -
     """Run a command, return (returncode, combined_output)."""
     try:
         r = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout,
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
             cwd=cwd or os.getcwd(),
         )
         out = (r.stdout + ("\n" + r.stderr if r.stderr else "")).strip()
@@ -756,20 +840,22 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
             results.append(f"bash -n (syntax check):\n{out2}" if out2 else "bash -n: syntax OK")
 
     else:
-        results.append(f"No diagnostic tool available for language: {lang or 'unknown'} (ext: {Path(file_path).suffix})")
+        results.append(
+            f"No diagnostic tool available for language: {lang or 'unknown'} (ext: {Path(file_path).suffix})"
+        )
 
     return "\n\n".join(results) if results else "(no diagnostics output)"
 
 
 # ── AskUserQuestion implementation ────────────────────────────────────────
 
+
 def _ask_user_question(
     question: str,
     options: Optional[list[dict]] = None,
     allow_freetext: bool = True,
 ) -> str:
-    """
-    Block the agent loop and surface a question to the user in the terminal.
+    """Block the agent loop and surface a question to the user in the terminal.
 
     The REPL loop (clawspring.py) periodically calls drain_pending_questions()
     to render any questions and collect answers.  We use a threading.Event to
@@ -796,8 +882,7 @@ def _ask_user_question(
 
 
 def drain_pending_questions() -> bool:
-    """
-    Called by the REPL loop after each streaming turn.
+    """Called by the REPL loop after each streaming turn.
     Renders pending questions and collects user input.
     Returns True if any questions were answered.
     """
@@ -810,10 +895,10 @@ def drain_pending_questions() -> bool:
 
     for entry in pending:
         question = entry["question"]
-        options  = entry["options"]
+        options = entry["options"]
         allow_ft = entry["allow_freetext"]
-        event    = entry["event"]
-        result   = entry["result"]
+        event = entry["event"]
+        result = entry["result"]
 
         print()
         print("\033[1;35m❓ Question from assistant:\033[0m")
@@ -823,8 +908,8 @@ def drain_pending_questions() -> bool:
             print()
             for i, opt in enumerate(options, 1):
                 label = opt.get("label", "")
-                desc  = opt.get("description", "")
-                line  = f"  [{i}] {label}"
+                desc = opt.get("description", "")
+                line = f"  [{i}] {label}"
                 if desc:
                     line += f" — {desc}"
                 print(line)
@@ -868,21 +953,26 @@ def drain_pending_questions() -> bool:
 
 def _sleeptimer(seconds: int, config: dict) -> str:
     import threading
+
     cb = config.get("_run_query_callback")
     if not cb:
         return "Error: Internal callback missing, clawspring did not provide _run_query_callback"
-        
+
     def worker():
         import time
+
         time.sleep(seconds)
-        cb("(System Automated Event): The timer has finished. Please wake up, perform any pending monitoring checks and report to the user now.")
-        
+        cb(
+            "(System Automated Event): The timer has finished. Please wake up, perform any pending monitoring checks and report to the user now."
+        )
+
     t = threading.Thread(target=worker, daemon=True)
     t.start()
     return f"Timer successfully scheduled for {seconds} seconds. You can output your final thoughts and end your turn. You will be automatically awakened."
 
 
 # ── Dispatcher (backward-compatible wrapper) ──────────────────────────────
+
 
 def execute_tool(
     name: str,
@@ -927,6 +1017,7 @@ def execute_tool(
 
 
 # ── Register built-in tools with the plugin registry ─────────────────────
+
 
 def _register_builtins() -> None:
     """Register all built-in tools into the central registry."""
@@ -973,7 +1064,9 @@ def _register_builtins() -> None:
             name="Grep",
             schema=_schemas["Grep"],
             func=lambda p, c: _grep(
-                p["pattern"], p.get("path"), p.get("glob"),
+                p["pattern"],
+                p.get("path"),
+                p.get("glob"),
                 p.get("output_mode", "files_with_matches"),
                 p.get("case_insensitive", False),
                 p.get("context", 0),
@@ -1046,33 +1139,29 @@ _register_builtins()
 
 # ── Memory tools (MemorySave, MemoryDelete, MemorySearch, MemoryList) ────────
 # Defined in memory/tools.py; importing registers them automatically.
-import memory.tools as _memory_tools  # noqa: F401
-
-
-
-# ── Multi-agent tools (Agent, SendMessage, CheckAgentResult, ListAgentTasks, ListAgentTypes) ──
-# Defined in multi_agent/tools.py; importing registers them automatically.
-import multi_agent.tools as _multiagent_tools  # noqa: F401
-
-# Expose get_agent_manager at module level for backward compatibility
-from multi_agent.tools import get_agent_manager as _get_agent_manager  # noqa: F401
-
-
-# ── Skill tools (Skill, SkillList) ────────────────────────────────────────
-# Defined in skill/tools.py; importing registers them automatically.
-import skill.tools as _skill_tools  # noqa: F401
-
-
 # ── MCP tools ─────────────────────────────────────────────────────────────────
 # mcp/tools.py connects to configured MCP servers and registers their tools.
 # Connection happens in a background thread so startup is not blocked.
 import mcp.tools as _mcp_tools  # noqa: F401
 
+import memory.tools as _memory_tools  # noqa: F401
+
+# ── Multi-agent tools (Agent, SendMessage, CheckAgentResult, ListAgentTasks, ListAgentTypes) ──
+# Defined in multi_agent/tools.py; importing registers them automatically.
+import multi_agent.tools as _multiagent_tools  # noqa: F401
+
+# ── Skill tools (Skill, SkillList) ────────────────────────────────────────
+# Defined in skill/tools.py; importing registers them automatically.
+import skill.tools as _skill_tools  # noqa: F401
+
+# Expose get_agent_manager at module level for backward compatibility
+from multi_agent.tools import get_agent_manager as _get_agent_manager  # noqa: F401
 
 # ── Plugin tools ───────────────────────────────────────────────────────────────
 # Load tools contributed by installed+enabled plugins.
 try:
     from plugin.loader import register_plugin_tools as _reg_plugin_tools
+
     _reg_plugin_tools()
 except Exception as _plugin_err:
     pass  # Plugin loading is best-effort; never crash startup
@@ -1081,7 +1170,6 @@ except Exception as _plugin_err:
 # ── Task tools (TaskCreate, TaskUpdate, TaskGet, TaskList) ─────────────────────
 # task/tools.py registers all four tools into the central registry on import.
 import task.tools as _task_tools  # noqa: F401
-
 
 # ── AMOS Brain Integration ────────────────────────────────────────────────────
 # AMOS cognitive runtime integration - provides Rule of 2/4 reasoning with

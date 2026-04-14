@@ -1,21 +1,22 @@
 """Tests for the task package (task/)."""
 from __future__ import annotations
 
-import json
 import threading
-from pathlib import Path
 
 import pytest
-
-from task.types import Task, TaskStatus
-from task import (
-    create_task, get_task, list_tasks, update_task,
-    delete_task, clear_all_tasks,
-)
 import task.store as _store
-
+from task import (
+    clear_all_tasks,
+    create_task,
+    delete_task,
+    get_task,
+    list_tasks,
+    update_task,
+)
+from task.types import Task, TaskStatus
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
+
 
 @pytest.fixture(autouse=True)
 def isolated_store(tmp_path, monkeypatch):
@@ -30,6 +31,7 @@ def isolated_store(tmp_path, monkeypatch):
 
 # ── types ─────────────────────────────────────────────────────────────────────
 
+
 class TestTaskTypes:
     def test_default_status(self):
         t = Task(id="1", subject="Do X", description="Details")
@@ -41,9 +43,15 @@ class TestTaskTypes:
         assert t.status_icon() == "✓"
 
     def test_to_dict_roundtrip(self):
-        t = Task(id="42", subject="Fix bug", description="In module X",
-                 status=TaskStatus.IN_PROGRESS, owner="alice",
-                 blocks=["2"], blocked_by=["1"])
+        t = Task(
+            id="42",
+            subject="Fix bug",
+            description="In module X",
+            status=TaskStatus.IN_PROGRESS,
+            owner="alice",
+            blocks=["2"],
+            blocked_by=["1"],
+        )
         d = t.to_dict()
         assert d["id"] == "42"
         assert d["status"] == "in_progress"
@@ -75,6 +83,7 @@ class TestTaskTypes:
 
 
 # ── store ─────────────────────────────────────────────────────────────────────
+
 
 class TestTaskStore:
     def test_create_returns_task(self):
@@ -194,6 +203,7 @@ class TestTaskStore:
     def test_thread_safety(self):
         """Concurrent creates should produce unique IDs."""
         errors = []
+
         def worker():
             try:
                 create_task("Concurrent", "")
@@ -214,23 +224,27 @@ class TestTaskStore:
 
 # ── tool functions ────────────────────────────────────────────────────────────
 
+
 class TestTaskToolFunctions:
     """Test the string-returning functions used by the registered tools."""
 
     def test_task_create_tool(self):
         from task.tools import _task_create
+
         result = _task_create("Write README", "Add installation section")
         assert "#1" in result
         assert "Write README" in result
 
     def test_task_update_tool_status(self):
         from task.tools import _task_create, _task_update
+
         _task_create("Fix lint", "Run ruff")
         result = _task_update("1", status="in_progress")
         assert "in_progress" in result or "updated" in result.lower()
 
     def test_task_update_tool_delete(self):
         from task.tools import _task_create, _task_update
+
         _task_create("Temp task", "Will be deleted")
         result = _task_update("1", status="deleted")
         assert "deleted" in result.lower()
@@ -238,11 +252,13 @@ class TestTaskToolFunctions:
 
     def test_task_update_not_found(self):
         from task.tools import _task_update
+
         result = _task_update("999", status="completed")
         assert "not found" in result.lower()
 
     def test_task_get_tool(self):
         from task.tools import _task_create, _task_get
+
         _task_create("Review PR", "Check the diff carefully")
         result = _task_get("1")
         assert "Review PR" in result
@@ -250,16 +266,19 @@ class TestTaskToolFunctions:
 
     def test_task_get_not_found(self):
         from task.tools import _task_get
+
         result = _task_get("999")
         assert "not found" in result.lower()
 
     def test_task_list_tool_empty(self):
         from task.tools import _task_list
+
         result = _task_list()
         assert "No tasks" in result
 
     def test_task_list_tool_multiple(self):
         from task.tools import _task_create, _task_list
+
         _task_create("Step 1", "First thing")
         _task_create("Step 2", "Second thing")
         result = _task_list()
@@ -267,9 +286,10 @@ class TestTaskToolFunctions:
         assert "#2" in result
 
     def test_task_list_hides_resolved_blockers(self):
-        from task.tools import _task_create, _task_update, _task_list
-        _task_create("Step A", "")           # id=1 (blocker)
-        _task_create("Step B", "")           # id=2 (depends on 1)
+        from task.tools import _task_create, _task_list, _task_update
+
+        _task_create("Step A", "")  # id=1 (blocker)
+        _task_create("Step B", "")  # id=2 (depends on 1)
         _task_update("2", add_blocked_by=["1"])
         _task_update("1", status="completed")
         result = _task_list()
@@ -281,12 +301,14 @@ class TestTaskToolFunctions:
     def test_tool_schemas_registered(self):
         """All four task tools must be registered in tool_registry."""
         from tool_registry import get_tool
+
         for name in ("TaskCreate", "TaskUpdate", "TaskGet", "TaskList"):
             assert get_tool(name) is not None, f"{name} not registered"
 
     def test_tool_schemas_in_tool_schemas_list(self):
         """Task tool schemas are also present in TOOL_SCHEMAS for Claude's tool list."""
         from tools import TOOL_SCHEMAS
+
         names = {s["name"] for s in TOOL_SCHEMAS}
         for name in ("TaskCreate", "TaskUpdate", "TaskGet", "TaskList"):
             assert name in names, f"{name} missing from TOOL_SCHEMAS"

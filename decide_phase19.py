@@ -21,8 +21,9 @@ Current State (55+ components):
 
 Gap: Need unified integration and demonstration of civilisational successor claim
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
@@ -67,13 +68,14 @@ print(current_state)
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Create Unified Integration Demo + Performance Suite")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Demonstrate Civilisational Successor Claim
 
    ANALYSIS:
    All 5 mathematical lenses are implemented and verified.
    The field-theoretic runtime is working with action S[Φ] = -8.048.
-   
+
    Now we must demonstrate the "civilisational successor" claim
    through comprehensive integration and performance validation.
 
@@ -81,13 +83,13 @@ print("""
 
    1. UNIFIED INTEGRATION DEMO (examples/demo_civilisational.py)
       Complete demonstration showing:
-      
+
       a) Traditional PL Limitations
          - Single substrate
          - No formal verification
          - No audit trail
          - No explanation capability
-      
+
       b) AMOSL Capabilities
          - Multi-substrate (C/Q/B/H)
          - 8 invariant verification
@@ -95,7 +97,7 @@ print("""
          - Explain(L) = Outcome
          - Field-theoretic evolution
          - Lagrangian optimization
-      
+
       c) Side-by-side comparison
          - Same computation in both paradigms
          - AMOSL shows superior properties
@@ -103,22 +105,22 @@ print("""
 
    2. PERFORMANCE BENCHMARK (amosl/benchmark.py)
       Measure and validate:
-      
+
       - Field evolution performance
         * Lagrangian computation speed
         * Action functional convergence
         * Euler-Lagrange step efficiency
-      
+
       - Multi-substrate overhead
         * Bridge execution latency
         * Cross-domain coupling cost
         * Hybrid scheduling efficiency
-      
+
       - Verification throughput
         * Invariant check speed
         * Modal logic evaluation
         * Belief update performance
-      
+
       - Scalability metrics
         * State dimension scaling
         * Trajectory length scaling
@@ -126,30 +128,30 @@ print("""
 
    3. SYNTHESIS REPORT (docs/CIVILISATIONAL_CLAIM.md)
       Document the successor claim:
-      
+
       - Mathematical rigor comparison
         * AMOSL: 5-lens formal theory
         * Traditional: ad-hoc semantics
-      
+
       - Verification comparison
         * AMOSL: 8 invariant proofs
         * Traditional: testing only
-      
+
       - Auditability comparison
         * AMOSL: Explain(L) = Outcome
         * Traditional: logs
-      
+
       - Multi-substrate comparison
         * AMOSL: C/Q/B/H unified
         * Traditional: single substrate
-      
+
       - Performance comparison
         * AMOSL field evolution metrics
         * Traditional execution metrics
 
    4. INTEGRATION TESTS (tests/test_field_integration.py)
       Validate 5-regime integration:
-      
+
       - Axiom → Modal → Category → Control → Info → Field
       - Consistency across all lenses
       - Constraint preservation
@@ -174,7 +176,8 @@ print("""
    produce measurable, verifiable improvements over traditional
    programming languages, establishing AMOSL as a civilisational
    successor through empirical validation.
-""")
+"""
+)
 
 print("\n✅ Decision: Create unified demo + benchmark + claim documentation")
 print("=" * 70)

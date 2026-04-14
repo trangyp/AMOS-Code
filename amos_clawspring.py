@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS-ClawSpring: Brain-Enhanced Agent Runtime
+"""AMOS-ClawSpring: Brain-Enhanced Agent Runtime
 
 This is the main entry point for running ClawSpring with full AMOS brain integration.
 It wraps the standard clawspring agent with:
@@ -17,8 +16,8 @@ All standard clawspring options are supported.
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Ensure paths are set up
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -83,7 +82,7 @@ def initialize_amos_brain():
         amos = get_amos_integration()
         status = amos.get_status()
 
-        if status['initialized']:
+        if status["initialized"]:
             ok(f"Brain loaded: {status['engines_count']} engines available")
             ok(f"Domains covered: {len(status['domains_covered'])} areas")
             ok(f"Laws active: {', '.join(status['laws_active'])}")
@@ -102,8 +101,7 @@ def run_clawspring():
     import subprocess
 
     clawspring_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'clawspring', 'clawspring.py'
+        os.path.dirname(os.path.abspath(__file__)), "clawspring", "clawspring.py"
     )
 
     # Pass through all command line args except script name

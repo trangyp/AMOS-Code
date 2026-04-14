@@ -1,17 +1,14 @@
-"""
-Code Runner — Execute code in various languages.
+"""Code Runner — Execute code in various languages.
 """
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
 
 
 class Language(Enum):
@@ -23,6 +20,7 @@ class Language(Enum):
 @dataclass
 class CodeRunResult:
     """Result of running code."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     language: str = ""
     code: str = ""
@@ -33,9 +31,7 @@ class CodeRunResult:
 
 
 class CodeRunner:
-    """
-    Run code snippets in various languages safely.
-    """
+    """Run code snippets in various languages safely."""
 
     RUNNERS = {
         Language.PYTHON: {

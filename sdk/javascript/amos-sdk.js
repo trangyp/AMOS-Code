@@ -1,7 +1,7 @@
 /**
  * AMOS SDK - JavaScript Client
  * Official JavaScript/TypeScript SDK for AMOS Brain API
- * 
+ *
  * @example
  * const client = new AmosClient({ apiKey: 'your_key' });
  * const result = await client.think('What is the next step?');
@@ -28,7 +28,7 @@ class AmosClient {
         this.apiKey = config.apiKey || process.env.AMOS_API_KEY;
         this.baseUrl = config.baseUrl || 'https://neurosyncai.tech';
         this.timeout = config.timeout || 30000;
-        
+
         if (!this.apiKey) {
             throw new AmosError('API key is required');
         }
@@ -42,7 +42,7 @@ class AmosClient {
         const url = `${this.baseUrl}${endpoint}`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-        
+
         try {
             const response = await fetch(url, {
                 ...options,
@@ -54,9 +54,9 @@ class AmosClient {
                 },
                 signal: controller.signal
             });
-            
+
             clearTimeout(timeoutId);
-            
+
             if (!response.ok) {
                 if (response.status === 401) {
                     throw new AmosError('Invalid API key', 401);
@@ -68,7 +68,7 @@ class AmosClient {
                     throw new AmosError(`Request error: ${response.statusText}`, response.status);
                 }
             }
-            
+
             return await response.json();
         } catch (error) {
             clearTimeout(timeoutId);

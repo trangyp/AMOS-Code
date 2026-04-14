@@ -1,28 +1,25 @@
-"""
-AMOS CLI — Command-line interface for the organism.
+"""AMOS CLI — Command-line interface for the organism.
 """
 
 from __future__ import annotations
 
-import argparse
 import sys
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Callable
 
 
 @dataclass
 class CommandHandler:
     """A CLI command handler."""
+
     name: str
     description: str
     handler: Callable
-    args: List[tuple] = None  # [(name, type, help), ...]
+    args: list[tuple] = None  # [(name, type, help), ...]
 
 
 class AmosCLI:
-    """
-    Command-line interface for AMOS Organism.
+    """Command-line interface for AMOS Organism.
 
     Commands:
     - status: Show organism status
@@ -35,43 +32,51 @@ class AmosCLI:
 
     def __init__(self, organism=None):
         self.organism = organism
-        self._handlers: Dict[str, CommandHandler] = {}
+        self._handlers: dict[str, CommandHandler] = {}
         self._setup_default_handlers()
 
     def _setup_default_handlers(self):
         """Register default command handlers."""
-        self.register(CommandHandler(
-            name="status",
-            description="Show organism status",
-            handler=self._cmd_status,
-        ))
-        self.register(CommandHandler(
-            name="brain",
-            description="Brain subsystem commands (perceive, think, plan)",
-            handler=self._cmd_brain,
-            args=[("action", str, "Action to perform")],
-        ))
-        self.register(CommandHandler(
-            name="muscle",
-            description="Muscle subsystem commands (exec, code, run)",
-            handler=self._cmd_muscle,
-            args=[("action", str, "Action to perform")],
-        ))
-        self.register(CommandHandler(
-            name="route",
-            description="Route an action through the organism",
-            handler=self._cmd_route,
-            args=[
-                ("action", str, "Action to route"),
-                ("--params", str, "JSON parameters"),
-            ],
-        ))
+        self.register(
+            CommandHandler(
+                name="status",
+                description="Show organism status",
+                handler=self._cmd_status,
+            )
+        )
+        self.register(
+            CommandHandler(
+                name="brain",
+                description="Brain subsystem commands (perceive, think, plan)",
+                handler=self._cmd_brain,
+                args=[("action", str, "Action to perform")],
+            )
+        )
+        self.register(
+            CommandHandler(
+                name="muscle",
+                description="Muscle subsystem commands (exec, code, run)",
+                handler=self._cmd_muscle,
+                args=[("action", str, "Action to perform")],
+            )
+        )
+        self.register(
+            CommandHandler(
+                name="route",
+                description="Route an action through the organism",
+                handler=self._cmd_route,
+                args=[
+                    ("action", str, "Action to route"),
+                    ("--params", str, "JSON parameters"),
+                ],
+            )
+        )
 
     def register(self, handler: CommandHandler):
         """Register a command handler."""
         self._handlers[handler.name] = handler
 
-    def run(self, args: List[str] = None) -> int:
+    def run(self, args: list[str] = None) -> int:
         """Run the CLI."""
         if args is None:
             args = sys.argv[1:]
@@ -104,7 +109,7 @@ class AmosCLI:
         print()
         print("Usage: python -m AMOS_ORGANISM_OS <command> [args...]")
 
-    def _cmd_status(self, args: List[str]) -> int:
+    def _cmd_status(self, args: list[str]) -> int:
         """Show organism status."""
         if not self.organism:
             print("No organism instance connected")
@@ -118,11 +123,11 @@ class AmosCLI:
         print(f"Active Subsystems: {', '.join(status['active_subsystems'])}")
         print()
         print("Subsystem Status:")
-        for sub, info in status['subsystems'].items():
+        for sub, info in status["subsystems"].items():
             print(f"  {sub}: {info}")
         return 0
 
-    def _cmd_brain(self, args: List[str]) -> int:
+    def _cmd_brain(self, args: list[str]) -> int:
         """Brain subsystem commands."""
         if not self.organism or not self.organism.brain:
             print("Brain subsystem not available")
@@ -150,7 +155,7 @@ class AmosCLI:
             return 1
         return 0
 
-    def _cmd_muscle(self, args: List[str]) -> int:
+    def _cmd_muscle(self, args: list[str]) -> int:
         """Muscle subsystem commands."""
         if not self.organism or not self.organism.muscle:
             print("Muscle subsystem not available")
@@ -166,6 +171,7 @@ class AmosCLI:
         action = args[0]
         if action == "exec" and len(args) > 1:
             from AMOS_ORGANISM_OS.MUSCLE.executor import ExecutionContext
+
             ctx = ExecutionContext()
             result = self.organism.muscle.execute(args[1], ctx)
             print(f"Executed: {result.command}")
@@ -176,7 +182,7 @@ class AmosCLI:
             return 1
         return 0
 
-    def _cmd_route(self, args: List[str]) -> int:
+    def _cmd_route(self, args: list[str]) -> int:
         """Route an action."""
         if not self.organism:
             print("No organism instance connected")
@@ -193,6 +199,7 @@ class AmosCLI:
         for i, arg in enumerate(args[1:]):
             if arg == "--params" and i + 1 < len(args[1:]):
                 import json
+
                 try:
                     params = json.loads(args[1:][i + 1])
                 except json.JSONDecodeError:

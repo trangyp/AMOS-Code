@@ -1,5 +1,4 @@
-"""
-Cashflow Tracker — Income and expense monitoring
+"""Cashflow Tracker — Income and expense monitoring
 
 Tracks cash movements, balances, and flow analysis over time.
 """
@@ -8,15 +7,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class CashflowType(Enum):
     """Type of cashflow entry."""
+
     INCOME = "income"
     EXPENSE = "expense"
     TRANSFER = "transfer"
@@ -25,6 +25,7 @@ class CashflowType(Enum):
 
 class CashflowStatus(Enum):
     """Status of a cashflow entry."""
+
     PENDING = "pending"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
@@ -34,6 +35,7 @@ class CashflowStatus(Enum):
 @dataclass
 class CashflowRecord:
     """A single cashflow entry."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     cashflow_type: CashflowType = CashflowType.EXPENSE
     amount: float = 0.0
@@ -44,13 +46,13 @@ class CashflowRecord:
     status: CashflowStatus = CashflowStatus.COMPLETED
     source: str = ""  # Where it came from
     destination: str = ""  # Where it went
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     recurring: bool = False
     recurrence_period: Optional[str] = None  # daily, weekly, monthly
     related_record_id: Optional[str] = None  # For transfers
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "cashflow_type": self.cashflow_type.value,
@@ -61,6 +63,7 @@ class CashflowRecord:
 @dataclass
 class BalanceSnapshot:
     """Balance at a specific point in time."""
+
     timestamp: str
     balance: float
     currency: str
@@ -69,8 +72,7 @@ class BalanceSnapshot:
 
 
 class CashflowTracker:
-    """
-    Tracks cash movements and provides flow analysis.
+    """Tracks cash movements and provides flow analysis.
 
     Monitors income, expenses, transfers, and provides
     trend analysis and forecasting input.
@@ -82,7 +84,7 @@ class CashflowTracker:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.records: List[CashflowRecord] = []
+        self.records: list[CashflowRecord] = []
         self.initial_balance: float = 0.0
         self.currency: str = "USD"
 
@@ -138,7 +140,7 @@ class CashflowTracker:
         category: str = "",
         source: str = "",
         destination: str = "",
-        tags: Optional[List[str]] = None,
+        tags: Optional[list[str]] = None,
     ) -> CashflowRecord:
         """Record a cashflow entry."""
         record = CashflowRecord(
@@ -174,9 +176,11 @@ class CashflowTracker:
         category: str = "expense",
     ) -> CashflowRecord:
         """Record expense."""
-        return self.record(CashflowType.EXPENSE, amount, description, category, destination=destination)
+        return self.record(
+            CashflowType.EXPENSE, amount, description, category, destination=destination
+        )
 
-    def get_balance(self, include_pending: bool = False) -> Dict[str, float]:
+    def get_balance(self, include_pending: bool = False) -> dict[str, float]:
         """Calculate current balance."""
         completed = [r for r in self.records if r.status == CashflowStatus.COMPLETED]
 
@@ -202,10 +206,12 @@ class CashflowTracker:
 
         return result
 
-    def get_flow_summary(self, days: int = 30) -> Dict[str, Any]:
+    def get_flow_summary(self, days: int = 30) -> dict[str, Any]:
         """Get cashflow summary for a period."""
         cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
-        recent = [r for r in self.records if r.timestamp > cutoff and r.status == CashflowStatus.COMPLETED]
+        recent = [
+            r for r in self.records if r.timestamp > cutoff and r.status == CashflowStatus.COMPLETED
+        ]
 
         income_recs = [r for r in recent if r.cashflow_type == CashflowType.INCOME]
         expense_recs = [r for r in recent if r.cashflow_type == CashflowType.EXPENSE]
@@ -234,7 +240,7 @@ class CashflowTracker:
             "by_category": by_category,
         }
 
-    def get_trend(self, periods: int = 6, period_days: int = 30) -> List[Dict[str, Any]]:
+    def get_trend(self, periods: int = 6, period_days: int = 30) -> list[dict[str, Any]]:
         """Get cashflow trend over multiple periods."""
         trends = []
         now = datetime.utcnow()
@@ -244,26 +250,31 @@ class CashflowTracker:
             start = end - timedelta(days=period_days)
 
             period_records = [
-                r for r in self.records
+                r
+                for r in self.records
                 if start.isoformat() <= r.timestamp < end.isoformat()
                 and r.status == CashflowStatus.COMPLETED
             ]
 
             income = sum(r.amount for r in period_records if r.cashflow_type == CashflowType.INCOME)
-            expense = sum(r.amount for r in period_records if r.cashflow_type == CashflowType.EXPENSE)
+            expense = sum(
+                r.amount for r in period_records if r.cashflow_type == CashflowType.EXPENSE
+            )
 
-            trends.append({
-                "period": i,
-                "start": start.isoformat(),
-                "end": end.isoformat(),
-                "income": income,
-                "expense": expense,
-                "net": income - expense,
-            })
+            trends.append(
+                {
+                    "period": i,
+                    "start": start.isoformat(),
+                    "end": end.isoformat(),
+                    "income": income,
+                    "expense": expense,
+                    "net": income - expense,
+                }
+            )
 
         return list(reversed(trends))
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get overall cashflow status."""
         balance = self.get_balance(include_pending=True)
         summary_30 = self.get_flow_summary(30)

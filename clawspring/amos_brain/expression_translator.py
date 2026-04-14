@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 
 @dataclass
 class TranslatedExpression:
     """Result of expression translation."""
+
     original: str
     structured_logic: str
     detected_domains: list[str]
@@ -19,10 +20,10 @@ class TranslatedExpression:
 
 class ExpressionTranslator:
     """Translates human expression into AMOS-compatible structured logic.
-    
+
     Based on AMOS_EXPRESSION_TRANSLATION_vInfinity specification.
     """
-    
+
     # Domain detection patterns
     DOMAIN_PATTERNS = {
         "software": [
@@ -55,7 +56,7 @@ class ExpressionTranslator:
             r"\b(stakeholder|investor|partner|competitor|industry)\b",
         ],
     }
-    
+
     # Emotional tone detection
     EMOTION_PATTERNS = {
         "urgent": [r"\b(urgent|asap|immediately|critical|emergency)\b"],
@@ -65,7 +66,7 @@ class ExpressionTranslator:
         "concerned": [r"\b(worried|concerned|nervous|anxious|afraid)\b"],
         "curious": [r"\b(curious|wondering|interested|learn|know more)\b"],
     }
-    
+
     # Implicit constraint detection
     CONSTRAINT_PATTERNS = {
         "time_limited": r"\b(by|before|until|deadline)\b.*\d+\s*(day|hour|minute|week)",
@@ -74,26 +75,24 @@ class ExpressionTranslator:
         "simple": r"\b(simple|easy|basic|minimal|lightweight|quick)\b",
         "comprehensive": r"\b(comprehensive|complete|thorough|detailed|extensive)\b",
     }
-    
+
     def translate(self, expression: str) -> TranslatedExpression:
         """Translate human expression into structured logic."""
         # Detect domains
         domains = self._detect_domains(expression)
-        
+
         # Detect emotional tone
         emotion = self._detect_emotion(expression)
-        
+
         # Detect implicit constraints
         constraints = self._detect_constraints(expression)
-        
+
         # Build structured logic representation
-        structured = self._build_structured_logic(
-            expression, domains, emotion, constraints
-        )
-        
+        structured = self._build_structured_logic(expression, domains, emotion, constraints)
+
         # Suggest appropriate kernels
         kernels = self._suggest_kernels(domains, constraints)
-        
+
         return TranslatedExpression(
             original=expression,
             structured_logic=structured,
@@ -102,42 +101,42 @@ class ExpressionTranslator:
             implicit_constraints=constraints,
             suggested_kernels=kernels,
         )
-    
+
     def _detect_domains(self, text: str) -> list[str]:
         """Detect relevant cognitive domains."""
         text_lower = text.lower()
         detected = []
-        
+
         for domain, patterns in self.DOMAIN_PATTERNS.items():
             for pattern in patterns:
                 if re.search(pattern, text_lower, re.IGNORECASE):
                     detected.append(domain)
                     break
-        
+
         return detected if detected else ["general"]
-    
+
     def _detect_emotion(self, text: str) -> Optional[str]:
         """Detect emotional tone if present."""
         text_lower = text.lower()
-        
+
         for emotion, patterns in self.EMOTION_PATTERNS.items():
             for pattern in patterns:
                 if re.search(pattern, text_lower, re.IGNORECASE):
                     return emotion
-        
+
         return None
-    
+
     def _detect_constraints(self, text: str) -> list[str]:
         """Detect implicit constraints."""
         text_lower = text.lower()
         constraints = []
-        
+
         for constraint, pattern in self.CONSTRAINT_PATTERNS.items():
             if re.search(pattern, text_lower, re.IGNORECASE):
                 constraints.append(constraint)
-        
+
         return constraints
-    
+
     def _build_structured_logic(
         self,
         original: str,
@@ -147,30 +146,30 @@ class ExpressionTranslator:
     ) -> str:
         """Build structured logic representation."""
         lines = ["# Structured Logic Representation", ""]
-        
+
         # Core intent
         lines.append(f"Input Intent: {original}")
         lines.append("")
-        
+
         # Domains
         lines.append(f"Relevant Domains: {', '.join(domains)}")
-        
+
         # Emotional context (if detected)
         if emotion:
             lines.append(f"Detected Tone: {emotion} (informational only)")
-        
+
         # Constraints
         if constraints:
             lines.append(f"Implicit Constraints: {', '.join(constraints)}")
-        
+
         lines.append("")
         lines.append("# Translation Notes")
         lines.append("- Original meaning preserved")
         lines.append("- Ambiguity flagged where present")
         lines.append("- Structural precision prioritized")
-        
+
         return "\n".join(lines)
-    
+
     def _suggest_kernels(self, domains: list[str], constraints: list[str]) -> list[str]:
         """Suggest appropriate AMOS kernels."""
         kernel_map = {
@@ -182,18 +181,18 @@ class ExpressionTranslator:
             "ubi": "K_BIOLOGY",
             "business": "K_BIZFIN",
         }
-        
+
         kernels = []
         for domain in domains:
             if domain in kernel_map:
                 kernels.append(kernel_map[domain])
-        
+
         # Always include meta logic
         if "K_META_LOGIC" not in kernels:
             kernels.insert(0, "K_META_LOGIC")
-        
+
         return kernels
-    
+
     def quick_translate(self, expression: str) -> str:
         """Quick translation for inline use."""
         result = self.translate(expression)

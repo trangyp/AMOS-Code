@@ -1,5 +1,4 @@
-"""
-AMOS System Health Monitor
+"""AMOS System Health Monitor
 ==========================
 
 Integration health checker for all 14 subsystems.
@@ -16,37 +15,38 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
 class SubsystemStatus:
     """Health status for a single subsystem."""
+
     code: str
     name: str
     folder_exists: bool = False
     init_importable: bool = False
-    core_modules: List[str] = field(default_factory=list)
+    core_modules: list[str] = field(default_factory=list)
     test_passed: bool = False
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 @dataclass
 class SystemHealthReport:
     """Complete system health report."""
+
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     total_subsystems: int = 14
     healthy_count: int = 0
     warning_count: int = 0
     error_count: int = 0
-    subsystems: Dict[str, SubsystemStatus] = field(default_factory=dict)
+    subsystems: dict[str, SubsystemStatus] = field(default_factory=dict)
     overall_health: str = "unknown"  # healthy, degraded, critical
 
 
 class SystemHealthMonitor:
-    """
-    Monitors health of all AMOS organism subsystems.
-    
+    """Monitors health of all AMOS organism subsystems.
+
     Performs integration checks across all 14 subsystems
     and reports overall system health.
     """
@@ -115,9 +115,10 @@ class SystemHealthMonitor:
                     bracket_start = content.find("[", start)
                     bracket_end = content.find("]", bracket_start)
                     if bracket_start > 0 and bracket_end > 0:
-                        all_section = content[bracket_start:bracket_end+1]
+                        all_section = content[bracket_start : bracket_end + 1]
                         # Extract quoted strings
                         import re
+
                         exports = re.findall(r'["\']([a-zA-Z_][a-zA-Z0-9_]*)["\']', all_section)
                         status.core_modules = exports[:10]  # Limit to first 10
             except Exception as e:
@@ -164,7 +165,7 @@ class SystemHealthMonitor:
         else:
             self.report.overall_health = "critical"
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get summary of health check."""
         return {
             "timestamp": self.report.timestamp,
@@ -182,7 +183,7 @@ class SystemHealthMonitor:
         """Save health report to disk."""
         if path is None:
             path = self.organism_root / "system_health_report.json"
-        
+
         data = {
             "summary": self.get_summary(),
             "subsystems": {
@@ -205,7 +206,7 @@ def run_health_check():
     """Run full system health check."""
     monitor = SystemHealthMonitor()
     report = monitor.check_all()
-    
+
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
@@ -215,12 +216,12 @@ def run_health_check():
     print(f"Warnings: {summary['warnings']}")
     print(f"Errors: {summary['errors']}")
     print(f"Completion: {summary['completion_pct']}%")
-    
+
     # Save report
     report_path = monitor.save_report()
     print(f"\nReport saved: {report_path}")
-    
-    return summary['overall_health'] == "healthy"
+
+    return summary["overall_health"] == "healthy"
 
 
 if __name__ == "__main__":

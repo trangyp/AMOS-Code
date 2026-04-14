@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
 
-from amos_runtime import get_runtime
 from amos_execution import get_execution_kernel
 from amos_orchestrator import get_orchestrator
+
+from amos_runtime import get_runtime
 
 
 @dataclass
@@ -52,7 +52,7 @@ class CodingLayer:
         compliance = {law["id"]: True for law in laws[:6]}
 
         # L4: Check for structural integrity
-        has_comments = "#" in code or "\"\"\"" in code
+        has_comments = "#" in code or '"""' in code
         has_types = "def " in code or "class " in code
         l4_pass = has_comments and has_types
 
@@ -85,7 +85,7 @@ class SystemComponent:
     name: str
     purpose: str
     dependencies: list[str]
-    
+
     def validate_structure(self) -> bool:
         """L4: Validate structural integrity."""
         return bool(self.name and self.purpose)
@@ -97,7 +97,9 @@ component = SystemComponent(
     dependencies={spec.inputs_required}
 )
 '''
-        explanation = f"Architecture layer generated for {spec.function_name} with structural constraints."
+        explanation = (
+            f"Architecture layer generated for {spec.function_name} with structural constraints."
+        )
         all_pass, compliance = self._apply_laws(code, explanation)
 
         return CodeResult(
@@ -128,12 +130,12 @@ logger = logging.getLogger(__name__)
 
 class ServiceHandler:
     """Backend service handler."""
-    
+
     def {spec.function_name}(self, {", ".join(spec.inputs_required) or "data: Any"}) -> dict:
         """
         Execute service logic with uncertainty acknowledgment.
-        
-        L1-L6: All reasoning constrained by physical, biological, 
+
+        L1-L6: All reasoning constrained by physical, biological,
         institutional, and legal limits.
         """
         try:
@@ -144,11 +146,11 @@ class ServiceHandler:
             # L4: Explicit error handling, no hidden failures
             logger.error(f"Service error: {{e}}")
             return {{
-                "status": "error", 
+                "status": "error",
                 "message": str(e),
                 "uncertainty": "Error handling is structural, not lived experience"
             }}
-    
+
     def _process(self, data: Any) -> Any:
         """Process data with gap acknowledgment."""
         # GAP: No real-time sensing or embodied knowledge
@@ -188,10 +190,10 @@ class {spec.function_name.title()}Record:
     id: str
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+
     # L4: All fields explicit, no hidden state
     metadata: dict = None
-    
+
     def validate(self) -> bool:
         """Validate record structure."""
         if not self.id:
@@ -241,26 +243,26 @@ import json
 class AIModule:
     """
     AI processing module.
-    
+
     L5: No claims of consciousness or subjective experience.
     L6: All outputs must respect biological and systemic constraints.
     """
-    
+
     def __init__(self):
         self.confidence_threshold = 0.7
         self.uncertainty_declared = True
-    
+
     def {spec.function_name}(self, input_data: Any) -> dict:
         """
         Process through AI with gap acknowledgment.
-        
-        GAP: This module has no embodiment, consciousness, or 
+
+        GAP: This module has no embodiment, consciousness, or
         autonomous action capability. All outputs are structural
         models requiring human verification.
         """
         # Simulate processing with explicit uncertainty
         result = self._model_inference(input_data)
-        
+
         return {{
             "prediction": result,
             "confidence": "unknown",  # L4: Explicit uncertainty
@@ -270,7 +272,7 @@ class AIModule:
             ],
             "gap": "No embodied sensing or real-world interaction"
         }}
-    
+
     def _model_inference(self, data: Any) -> Any:
         """Placeholder for actual model inference."""
         # GAP: Model weights and architecture not included
@@ -284,7 +286,10 @@ class AIModule:
             function_name=spec.function_name,
             code=code,
             explanation=explanation,
-            assumptions=["Model trained on representative data", "Inference infrastructure available"],
+            assumptions=[
+                "Model trained on representative data",
+                "Inference infrastructure available",
+            ],
             gap_acknowledgment="GAP: No model weights, no training data, no inference capability. Structural only.",
             law_compliance=compliance,
             quality_score=0.92 if all_pass else 0.75,

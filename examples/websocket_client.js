@@ -12,21 +12,21 @@ class AMOSWebSocketClient {
 
     connect() {
         this.ws = new WebSocket(this.url);
-        
+
         this.ws.onopen = () => {
             console.log('Connected to AMOS Brain');
         };
-        
+
         this.ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             this.handleMessage(data);
         };
-        
+
         this.ws.onerror = (error) => {
             console.error('WebSocket error:', error);
             if (this.onError) this.onError(error);
         };
-        
+
         this.ws.onclose = () => {
             console.log('Disconnected from AMOS Brain');
         };

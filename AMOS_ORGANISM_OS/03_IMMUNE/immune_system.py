@@ -1,5 +1,4 @@
-"""
-IMMUNE SYSTEM — Core safety and validation engine for AMOS.
+"""IMMUNE SYSTEM — Core safety and validation engine for AMOS.
 
 The immune system acts as a gatekeeper for all organism actions.
 It validates, audits, and can block potentially harmful operations.
@@ -9,47 +8,49 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable
 
 
 class RiskLevel(Enum):
-    SAFE = "safe"           # No risk, auto-approve
-    LOW = "low"             # Minimal risk, log only
-    MEDIUM = "medium"       # Moderate risk, notify
-    HIGH = "high"           # Significant risk, require approval
-    CRITICAL = "critical"   # Severe risk, block without override
+    SAFE = "safe"  # No risk, auto-approve
+    LOW = "low"  # Minimal risk, log only
+    MEDIUM = "medium"  # Moderate risk, notify
+    HIGH = "high"  # Significant risk, require approval
+    CRITICAL = "critical"  # Severe risk, block without override
 
 
 class ActionType(Enum):
-    READ = "read"           # File reads, non-destructive
-    WRITE = "write"         # File writes, destructive
-    EXECUTE = "execute"     # Code/command execution
-    NETWORK = "network"     # Network operations
-    DELETE = "delete"       # File deletion
-    SYSTEM = "system"       # System-level operations
+    READ = "read"  # File reads, non-destructive
+    WRITE = "write"  # File writes, destructive
+    EXECUTE = "execute"  # Code/command execution
+    NETWORK = "network"  # Network operations
+    DELETE = "delete"  # File deletion
+    SYSTEM = "system"  # System-level operations
 
 
 @dataclass
 class SafetyPolicy:
     """A safety policy rule."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    action_types: List[ActionType] = field(default_factory=list)
+    action_types: list[ActionType] = field(default_factory=list)
     allowed: bool = True
     requires_approval: bool = False
     risk_level: RiskLevel = RiskLevel.SAFE
-    conditions: Dict[str, Any] = field(default_factory=dict)
+    conditions: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 
 @dataclass
 class AuditLog:
     """An audit log entry."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     action: str = ""
@@ -57,11 +58,11 @@ class AuditLog:
     target: str = ""
     source: str = ""
     risk_level: RiskLevel = RiskLevel.SAFE
-    decision: str = ""      # approved, blocked, pending
+    decision: str = ""  # approved, blocked, pending
     reason: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "action_type": self.action_type.value,
@@ -72,6 +73,7 @@ class AuditLog:
 @dataclass
 class ValidationResult:
     """Result of a validation check."""
+
     approved: bool = False
     risk_level: RiskLevel = RiskLevel.SAFE
     reason: str = ""
@@ -80,8 +82,7 @@ class ValidationResult:
 
 
 class ImmuneSystem:
-    """
-    The immune system validates all actions before execution.
+    """The immune system validates all actions before execution.
 
     Responsibilities:
     - Validate actions against safety policies
@@ -108,10 +109,10 @@ class ImmuneSystem:
     ]
 
     def __init__(self):
-        self._policies: List[SafetyPolicy] = []
-        self._audit_logs: List[AuditLog] = []
-        self._threat_history: List[Dict] = []
-        self._validators: Dict[ActionType, Callable] = {}
+        self._policies: list[SafetyPolicy] = []
+        self._audit_logs: list[AuditLog] = []
+        self._threat_history: list[dict] = []
+        self._validators: dict[ActionType, Callable] = {}
         self.AUDIT_DIR.mkdir(parents=True, exist_ok=True)
         self._setup_default_policies()
         self._register_validators()
@@ -179,7 +180,7 @@ class ImmuneSystem:
         action_type: ActionType,
         target: str = "",
         source: str = "",
-        metadata: Dict = None,
+        metadata: dict = None,
     ) -> ValidationResult:
         """Validate an action before execution."""
         # Determine risk level
@@ -243,6 +244,7 @@ class ImmuneSystem:
         # Check for dangerous patterns in execute actions
         if action_type == ActionType.EXECUTE:
             import re
+
             for pattern in self.DANGEROUS_PATTERNS:
                 if re.search(pattern, action, re.IGNORECASE):
                     return RiskLevel.CRITICAL
@@ -286,6 +288,7 @@ class ImmuneSystem:
     def _validate_execute(self, action: str, target: str) -> ValidationResult:
         """Validate execute operations."""
         import re
+
         for pattern in self.DANGEROUS_PATTERNS:
             if re.search(pattern, action, re.IGNORECASE):
                 return ValidationResult(
@@ -340,7 +343,7 @@ class ImmuneSystem:
         action_type: ActionType = None,
         risk_level: RiskLevel = None,
         limit: int = 100,
-    ) -> List[AuditLog]:
+    ) -> list[AuditLog]:
         """Get audit logs with filtering."""
         logs = self._audit_logs
         if action_type:
@@ -361,7 +364,7 @@ class ImmuneSystem:
                 return True
         return False
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get immune system status."""
         risk_counts = {r: 0 for r in RiskLevel}
         for log in self._audit_logs:

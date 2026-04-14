@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Production Deployment Script
+"""AMOS Production Deployment Script
 =================================
 
 Deploys the AMOS Organism to production with full health checks,
@@ -14,12 +13,10 @@ Version: 1.0.0
 """
 
 import argparse
-import json
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 
 class AmosDeployer:
@@ -28,8 +25,8 @@ class AmosDeployer:
     def __init__(self, environment: str = "local"):
         self.environment = environment
         self.root = Path(__file__).parent
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def deploy(self) -> bool:
         """Execute full deployment sequence."""
@@ -61,7 +58,7 @@ class AmosDeployer:
         print(" DEPLOYMENT SUCCESSFUL")
         print("=" * 70)
         print(f"AMOS Organism is now operational in {self.environment}")
-        print(f"Activation: python AMOS_ORGANISM_OS/amos_activate.py")
+        print("Activation: python AMOS_ORGANISM_OS/amos_activate.py")
         print()
         return True
 
@@ -174,7 +171,7 @@ def main():
         "--env",
         choices=["local", "staging", "production"],
         default="local",
-        help="Deployment environment"
+        help="Deployment environment",
     )
     args = parser.parse_args()
 

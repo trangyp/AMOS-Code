@@ -1,5 +1,4 @@
-"""
-10_SOCIAL_ENGINE — Multi-Agent Coordination & Communication
+"""10_SOCIAL_ENGINE — Multi-Agent Coordination & Communication
 ==========================================================
 
 The social interaction layer of AMOS.
@@ -16,7 +15,7 @@ Version: 1.0.0
 from .agent_coordinator import AgentCoordinator, AgentPool, AgentTask
 from .communication_bridge import CommunicationBridge, Message, MessageType
 from .human_interface import HumanInterface, InteractionMode
-from .negotiation_engine import NegotiationEngine, Proposal, NegotiationResult
+from .negotiation_engine import NegotiationEngine, NegotiationResult, Proposal
 
 __all__ = [
     # Agent coordination

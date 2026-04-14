@@ -18,15 +18,17 @@ Current State:
 
 Question: How do users actually USE the complete system?
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 24 - Production Integration Analysis")
 print("=" * 70)
 
-print("""
+print(
+    """
 GAP ANALYSIS: Specifications Complete, Integration Missing
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -51,18 +53,20 @@ Users cannot:
 - Integrate with existing infrastructure
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: Build Unified Production Interface")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Production-Ready Integration Layer
 
    ANALYSIS:
    The 5-layer specification and 60+ modules exist but are scattered.
    No unified entry point. No configuration system. No service layer.
-   
+
    This is the difference between "architecturally complete" and
    "production ready." The system needs a unified CLI and service layer
    to make all components accessible to users.
@@ -71,7 +75,7 @@ print("""
 
    1. UNIFIED CLI (amosl/cli.py)
       Single entry point for all AMOSL capabilities:
-      
+
       $ amosl --help
       Commands:
         run <program>       Execute AMOSL program
@@ -84,20 +88,20 @@ print("""
         benchmark           Run performance suite
         status              Check system status
         config <key>        Get/set configuration
-      
+
       $ amosl run --substrate=hybrid --verify my_program.amosl
       $ amosl evolve --steps=100 --dt=0.1 field_config.json
       $ amosl prove --axioms=all grand_admissibility
 
    2. CONFIGURATION SYSTEM (amosl/config.py)
       Production configuration management:
-      
+
       config/
       ├── default.yaml          # Default settings
       ├── production.yaml       # Production overrides
       ├── quantum_backend.yaml  # Quantum provider config
       └── biological_lab.yaml   # Lab equipment config
-      
+
       Settings:
         - Runtime parameters (step size, tolerances)
         - Substrate backends (IBM Q, Google, local)
@@ -108,11 +112,11 @@ print("""
 
    3. SERVICE LAYER (amosl/service.py)
       Daemon/service implementation:
-      
+
       $ amosl service start
       $ amosl service status
       $ amosl service stop
-      
+
       Features:
         - HTTP API for remote execution
         - WebSocket for real-time updates
@@ -123,14 +127,14 @@ print("""
 
    4. MONITORING & TELEMETRY (amosl/telemetry.py)
       Production observability:
-      
+
       Metrics:
         - Field evolution steps/sec
         - Bridge latency histograms
         - Verification pass rates
         - Substrate utilization
         - Ledger growth rate
-      
+
       Exporters:
         - Prometheus metrics endpoint
         - StatsD integration
@@ -155,18 +159,19 @@ print("""
    IMPACT:
    This transforms AMOSL from "architecturally complete" to
    "production ready." Users can:
-   
+
    1. Install: pip install amos-brain
    2. Configure: amosl config --edit
    3. Execute: amosl run my_program.amosl
    4. Monitor: curl localhost:8080/metrics
    5. Verify: amosl prove grand_admissibility
-   
+
    The complete 5-layer, 60+ component system becomes accessible
    through a single, unified, production-ready interface.
 
    This is the final bridge from specification to application.
-""")
+"""
+)
 
 print("\n✅ Decision: Build unified CLI + configuration + service layer")
 print("=" * 70)

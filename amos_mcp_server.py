@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain MCP Server - Exposes cognitive architecture via Model Context Protocol.
+"""AMOS Brain MCP Server - Exposes cognitive architecture via Model Context Protocol.
 
 Tools exposed:
 - amos_reasoning: Apply Rule of 2 and Rule of 4 to analyze problems
@@ -25,24 +24,24 @@ MCP Configuration (add to ~/.clawspring/mcp.json):
 """
 from __future__ import annotations
 
-import sys
-import os
-import json
 import asyncio
-from typing import Any
+import json
+import os
+import sys
 from dataclasses import dataclass
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import AMOS brain
-from amos_brain import get_amos_integration, RuleOfTwo, RuleOfFour, GlobalLaws
-from amos_brain.cognitive_stack import CognitiveStack
+from amos_brain import GlobalLaws, get_amos_integration
 
 
 @dataclass
 class Tool:
     """MCP Tool definition."""
+
     name: str
     description: str
     input_schema: dict[str, Any]
@@ -71,16 +70,16 @@ class AMOSMCPServer:
                     "properties": {
                         "problem": {
                             "type": "string",
-                            "description": "The problem or decision to analyze"
+                            "description": "The problem or decision to analyze",
                         },
                         "context": {
                             "type": "object",
-                            "description": "Optional context for the analysis"
-                        }
+                            "description": "Optional context for the analysis",
+                        },
                     },
-                    "required": ["problem"]
+                    "required": ["problem"],
                 },
-                handler=self._handle_reasoning
+                handler=self._handle_reasoning,
             ),
             "amos_laws_check": Tool(
                 name="amos_laws_check",
@@ -93,22 +92,22 @@ class AMOSMCPServer:
                     "properties": {
                         "text": {
                             "type": "string",
-                            "description": "The text to check for law compliance"
+                            "description": "The text to check for law compliance",
                         },
                         "check_l4": {
                             "type": "boolean",
                             "description": "Check L4 - Structural Integrity",
-                            "default": True
+                            "default": True,
                         },
                         "check_l5": {
                             "type": "boolean",
                             "description": "Check L5 - Communication Style",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["text"]
+                    "required": ["text"],
                 },
-                handler=self._handle_laws_check
+                handler=self._handle_laws_check,
             ),
             "amos_status": Tool(
                 name="amos_status",
@@ -116,11 +115,8 @@ class AMOSMCPServer:
                     "Get AMOS Brain integration status including loaded engines, "
                     "active laws, and domain coverage."
                 ),
-                input_schema={
-                    "type": "object",
-                    "properties": {}
-                },
-                handler=self._handle_status
+                input_schema={"type": "object", "properties": {}},
+                handler=self._handle_status,
             ),
             "amos_decide": Tool(
                 name="amos_decide",
@@ -133,17 +129,17 @@ class AMOSMCPServer:
                     "properties": {
                         "decision": {
                             "type": "string",
-                            "description": "The decision or problem to analyze"
+                            "description": "The decision or problem to analyze",
                         },
                         "options": {
                             "type": "array",
                             "items": {"type": "string"},
-                            "description": "Optional list of options to consider"
-                        }
+                            "description": "Optional list of options to consider",
+                        },
                     },
-                    "required": ["decision"]
+                    "required": ["decision"],
                 },
-                handler=self._handle_decide
+                handler=self._handle_decide,
             ),
             "amosl_compile": Tool(
                 name="amosl_compile",
@@ -155,14 +151,11 @@ class AMOSMCPServer:
                 input_schema={
                     "type": "object",
                     "properties": {
-                        "source": {
-                            "type": "string",
-                            "description": "AMOSL source code to compile"
-                        }
+                        "source": {"type": "string", "description": "AMOSL source code to compile"}
                     },
-                    "required": ["source"]
+                    "required": ["source"],
                 },
-                handler=self._handle_amosl_compile
+                handler=self._handle_amosl_compile,
             ),
         }
 
@@ -184,19 +177,19 @@ class AMOSMCPServer:
                 "perspectives": [
                     {
                         "name": p.name if hasattr(p, "name") else str(p),
-                        "viewpoint": p.viewpoint if hasattr(p, "viewpoint") else str(p)
+                        "viewpoint": p.viewpoint if hasattr(p, "viewpoint") else str(p),
                     }
                     for p in result["rule_of_two"].get("perspectives", [])
-                ]
+                ],
             },
             "rule_of_four": {
                 "quadrants_analyzed": result["rule_of_four"]["quadrants_analyzed"],
-                "completeness_score": result["rule_of_four"]["completeness_score"]
+                "completeness_score": result["rule_of_four"]["completeness_score"],
             },
             "structural_integrity_score": result.get("structural_integrity_score", 0),
             "recommendations": result.get("recommendations", []),
             "assumptions": result.get("assumptions", []),
-            "uncertainty_flags": result.get("uncertainty_flags", [])
+            "uncertainty_flags": result.get("uncertainty_flags", []),
         }
 
     def _handle_laws_check(self, args: dict) -> dict:
@@ -222,12 +215,10 @@ class AMOSMCPServer:
         return {
             "text_preview": text[:100] + "..." if len(text) > 100 else text,
             "checks_performed": [
-                law_id
-                for law_id, enabled in [("L4", check_l4), ("L5", check_l5)]
-                if enabled
+                law_id for law_id, enabled in [("L4", check_l4), ("L5", check_l5)] if enabled
             ],
             "compliant": len(issues) == 0,
-            "issues_found": issues
+            "issues_found": issues,
         }
 
     def _handle_status(self, args: dict) -> dict:
@@ -239,7 +230,7 @@ class AMOSMCPServer:
             "engines_count": status.get("engines_count", 0),
             "laws_active": status.get("laws_active", []),
             "domains_covered": status.get("domains_covered", []),
-            "laws_summary": self.amos.get_laws_summary()
+            "laws_summary": self.amos.get_laws_summary(),
         }
 
     def _handle_decide(self, args: dict) -> dict:
@@ -258,26 +249,28 @@ class AMOSMCPServer:
         if options:
             for opt in options:
                 opt_result = self.amos.analyze_with_rules(f"{decision} - Option: {opt}")
-                option_analysis.append({
-                    "option": opt,
-                    "confidence": opt_result["rule_of_two"]["confidence"],
-                    "recommendation": opt_result["rule_of_two"]["recommendation"]
-                })
+                option_analysis.append(
+                    {
+                        "option": opt,
+                        "confidence": opt_result["rule_of_two"]["confidence"],
+                        "recommendation": opt_result["rule_of_two"]["recommendation"],
+                    }
+                )
 
         return {
             "decision": decision,
             "options_analyzed": option_analysis,
             "rule_of_two": {
                 "confidence": analysis["rule_of_two"]["confidence"],
-                "recommendation": analysis["rule_of_two"]["recommendation"]
+                "recommendation": analysis["rule_of_two"]["recommendation"],
             },
             "rule_of_four": {
                 "completeness": analysis["rule_of_four"]["completeness_score"],
-                "quadrants": analysis["rule_of_four"]["quadrants_analyzed"]
+                "quadrants": analysis["rule_of_four"]["quadrants_analyzed"],
             },
             "recommendations": analysis.get("recommendations", []),
             "assumptions": analysis.get("assumptions", []),
-            "uncertainties": analysis.get("uncertainty_flags", [])
+            "uncertainties": analysis.get("uncertainty_flags", []),
         }
 
     def _handle_amosl_compile(self, args: dict) -> dict:
@@ -288,7 +281,7 @@ class AMOSMCPServer:
             return {"error": "No AMOSL source code provided"}
 
         try:
-            from amosl import parse, compile_program, validate_invariants
+            from amosl import compile_program, parse, validate_invariants
 
             # Parse AMOSL source
             program = parse(source)
@@ -307,14 +300,11 @@ class AMOSMCPServer:
                     "cir_blocks": len(cir.blocks),
                     "qir_registers": len(qir.registers),
                     "bir_species": len(bir.species),
-                    "hir_bridges": len(hir.bridges)
-                }
+                    "hir_bridges": len(hir.bridges),
+                },
             }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     def handle_request(self, request: dict) -> dict:
         """Handle incoming MCP request."""
@@ -325,10 +315,7 @@ class AMOSMCPServer:
             return {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {
-                    "name": "amos-brain-mcp",
-                    "version": "1.0.0"
-                }
+                "serverInfo": {"name": "amos-brain-mcp", "version": "1.0.0"},
             }
 
         elif method == "tools/list":
@@ -337,7 +324,7 @@ class AMOSMCPServer:
                     {
                         "name": tool.name,
                         "description": tool.description,
-                        "inputSchema": tool.input_schema
+                        "inputSchema": tool.input_schema,
                     }
                     for tool in self.tools.values()
                 ]
@@ -349,7 +336,9 @@ class AMOSMCPServer:
 
             if tool_name in self.tools:
                 result = self.tools[tool_name].handler(arguments)
-                return {"result": {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]}}
+                return {
+                    "result": {"content": [{"type": "text", "text": json.dumps(result, indent=2)}]}
+                }
             else:
                 return {"error": {"code": -32601, "message": f"Unknown tool: {tool_name}"}}
 
@@ -391,7 +380,7 @@ class AMOSMCPServer:
                 error_response = {
                     "jsonrpc": "2.0",
                     "id": None,
-                    "error": {"code": -32603, "message": str(e)}
+                    "error": {"code": -32603, "message": str(e)},
                 }
                 print(json.dumps(error_response), flush=True)
 

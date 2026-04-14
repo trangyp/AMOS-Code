@@ -1,15 +1,16 @@
 """AMOS Brain Memory Integration - Persists reasoning to clawspring memory."""
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 # Import clawspring memory if available
 try:
-    from clawspring.memory.store import save_memory, MemoryEntry
+    from clawspring.memory.store import MemoryEntry, save_memory
+
     CLAWSPRING_MEMORY = True
 except ImportError:
     CLAWSPRING_MEMORY = False
@@ -17,8 +18,7 @@ except ImportError:
 
 
 class BrainMemory:
-    """
-    Persists AMOS brain reasoning results to memory.
+    """Persists AMOS brain reasoning results to memory.
 
     Provides:
     - Save reasoning results with metadata
@@ -37,13 +37,9 @@ class BrainMemory:
         self._load_local_entries()
 
     def save_reasoning(
-        self,
-        problem: str,
-        analysis: dict[str, Any],
-        tags: list[str] | None = None
+        self, problem: str, analysis: dict[str, Any], tags: list[str] | None = None
     ) -> str:
-        """
-        Save a reasoning result to memory.
+        """Save a reasoning result to memory.
 
         Args:
             problem: The problem/decision that was analyzed
@@ -92,7 +88,7 @@ class BrainMemory:
                 content=memory_text,
                 scope="user",
                 source="model",
-                confidence=entry['confidence_score']
+                confidence=entry["confidence_score"],
             )
             save_memory(memory_entry, scope="user")
 
@@ -110,26 +106,21 @@ class BrainMemory:
     def _load_local_entries(self) -> None:
         for filepath in self.memory_dir.glob("*.json"):
             try:
-                with open(filepath, "r", encoding="utf-8") as f:
+                with open(filepath, encoding="utf-8") as f:
                     entry = json.load(f)
                 entry_id = entry.get("id")
                 if (
-                    entry_id and
-                    entry.get("namespace") == self.MEMORY_NAMESPACE and
-                    "problem" in entry and
-                    "timestamp" in entry
+                    entry_id
+                    and entry.get("namespace") == self.MEMORY_NAMESPACE
+                    and "problem" in entry
+                    and "timestamp" in entry
                 ):
                     self._local_cache[entry_id] = entry
             except Exception:
                 pass
 
-    def find_similar_reasoning(
-        self,
-        problem: str,
-        threshold: float = 0.6
-    ) -> list[dict[str, Any]]:
-        """
-        Find past reasoning similar to current problem.
+    def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> list[dict[str, Any]]:
+        """Find past reasoning similar to current problem.
 
         Args:
             problem: Current problem to compare
@@ -144,9 +135,35 @@ class BrainMemory:
         similar = []
         problem_lower = problem.lower()
         # Filter out common words
-        stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
-                      'to', 'of', 'and', 'or', 'for', 'in', 'on', 'at', 'with',
-                      'should', 'we', 'our', 'us', 'i', 'you', 'it', 'this', 'that'}
+        stop_words = {
+            "the",
+            "a",
+            "an",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "to",
+            "of",
+            "and",
+            "or",
+            "for",
+            "in",
+            "on",
+            "at",
+            "with",
+            "should",
+            "we",
+            "our",
+            "us",
+            "i",
+            "you",
+            "it",
+            "this",
+            "that",
+        }
         problem_words = set(w for w in problem_lower.split() if w not in stop_words and len(w) > 2)
 
         for entry_id, entry in self._local_cache.items():
@@ -160,23 +177,22 @@ class BrainMemory:
             if union:
                 similarity = len(intersection) / len(union)
                 if similarity >= threshold or len(intersection) >= 2:
-                    similar.append({
-                        "entry": entry,
-                        "similarity": similarity,
-                        "recommendations": entry.get("recommendations", [])
-                    })
+                    similar.append(
+                        {
+                            "entry": entry,
+                            "similarity": similarity,
+                            "recommendations": entry.get("recommendations", []),
+                        }
+                    )
 
         # Sort by similarity descending
         similar.sort(key=lambda x: x["similarity"], reverse=True)
         return similar[:5]  # Top 5
 
     def get_reasoning_history(
-        self,
-        limit: int = 10,
-        tag_filter: str | None = None
+        self, limit: int = 10, tag_filter: str | None = None
     ) -> list[dict[str, Any]]:
-        """
-        Get recent reasoning history.
+        """Get recent reasoning history.
 
         Args:
             limit: Maximum entries to return
@@ -196,12 +212,8 @@ class BrainMemory:
 
         return entries[:limit]
 
-    def get_audit_trail(
-        self,
-        problem_contains: str | None = None
-    ) -> dict[str, Any]:
-        """
-        Get audit trail of brain reasoning.
+    def get_audit_trail(self, problem_contains: str | None = None) -> dict[str, Any]:
+        """Get audit trail of brain reasoning.
 
         Args:
             problem_contains: Optional filter by problem text
@@ -218,7 +230,9 @@ class BrainMemory:
         total = len(entries)
         with_rule2 = sum(1 for e in entries if e.get("rule_of_two_applied"))
         with_rule4 = sum(1 for e in entries if e.get("rule_of_four_applied"))
-        avg_confidence = sum(e.get("confidence_score", 0) for e in entries) / total if total > 0 else 0
+        avg_confidence = (
+            sum(e.get("confidence_score", 0) for e in entries) / total if total > 0 else 0
+        )
 
         return {
             "total_entries": total,
@@ -229,12 +243,11 @@ class BrainMemory:
             "law_compliance": {
                 "L2_compliance_rate": with_rule2 / total if total > 0 else 0,
                 "L3_compliance_rate": with_rule4 / total if total > 0 else 0,
-            }
+            },
         }
 
     def recall_for_problem(self, problem: str) -> dict[str, Any]:
-        """
-        Recall relevant past reasoning and similar analyses for a problem.
+        """Recall relevant past reasoning and similar analyses for a problem.
 
         This is the main interface for using memory during reasoning.
 
@@ -247,11 +260,7 @@ class BrainMemory:
         similar = self.find_similar_reasoning(problem)
 
         if not similar:
-            return {
-                "has_prior_reasoning": False,
-                "context": None,
-                "recommendations": []
-            }
+            return {"has_prior_reasoning": False, "context": None, "recommendations": []}
 
         # Build context from similar reasoning
         contexts = []
@@ -259,20 +268,22 @@ class BrainMemory:
 
         for item in similar:
             entry = item["entry"]
-            contexts.append({
-                "entry": entry,
-                "past_problem": entry["problem_preview"],
-                "similarity": item["similarity"],
-                "timestamp": entry["timestamp"],
-                "past_recommendations": entry.get("recommendations", [])
-            })
+            contexts.append(
+                {
+                    "entry": entry,
+                    "past_problem": entry["problem_preview"],
+                    "similarity": item["similarity"],
+                    "timestamp": entry["timestamp"],
+                    "past_recommendations": entry.get("recommendations", []),
+                }
+            )
             all_recommendations.extend(entry.get("recommendations", []))
 
         return {
             "has_prior_reasoning": True,
             "similar_entries": contexts,
             "context": f"Found {len(similar)} similar past reasoning entries",
-            "recommendations": list(set(all_recommendations))[:5]  # Unique, top 5
+            "recommendations": list(set(all_recommendations))[:5],  # Unique, top 5
         }
 
     def _hash_problem(self, problem: str) -> str:
@@ -293,7 +304,7 @@ class BrainMemory:
             r2 = analysis["rule_of_two"]
             summary["rule_of_two"] = {
                 "confidence": r2.get("confidence", 0.0),
-                "perspective_count": len(r2.get("perspectives", []))
+                "perspective_count": len(r2.get("perspectives", [])),
             }
 
         # Add Rule of 4 summary
@@ -301,7 +312,7 @@ class BrainMemory:
             r4 = analysis["rule_of_four"]
             summary["rule_of_four"] = {
                 "completeness": r4.get("completeness_score", 0.0),
-                "quadrants": r4.get("quadrants_analyzed", [])
+                "quadrants": r4.get("quadrants_analyzed", []),
             }
 
         return summary
@@ -345,9 +356,7 @@ def get_brain_memory() -> BrainMemory:
 
 
 def save_reasoning_result(
-    problem: str,
-    analysis: dict[str, Any],
-    tags: list[str] | None = None
+    problem: str, analysis: dict[str, Any], tags: list[str] | None = None
 ) -> str:
     """Convenience function to save reasoning result."""
     memory = get_brain_memory()

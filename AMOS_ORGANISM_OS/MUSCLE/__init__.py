@@ -1,5 +1,4 @@
-"""
-MUSCLE module — Alias for 06_MUSCLE
+"""MUSCLE module — Alias for 06_MUSCLE
 """
 
 import sys
@@ -11,25 +10,26 @@ if str(muscle_path) not in sys.path:
     sys.path.insert(0, str(muscle_path))
 
 # Import and re-export base components
-from executor import MuscleExecutor, ExecutionResult, ExecutionContext, ExecutionStatus
 from code_runner import CodeRunner, CodeRunResult, Language
-from workflow_engine import WorkflowEngine, Workflow, WorkflowStep, StepStatus
+from executor import ExecutionContext, ExecutionResult, ExecutionStatus, MuscleExecutor
+from workflow_engine import StepStatus, Workflow, WorkflowEngine, WorkflowStep
 
 # Import cognitive integration components
 try:
     from amos_worker_engine import (
         AmosWorkerEngine,
-        WorkerResult,
         CodeWorker,
         FileWorker,
+        WorkerResult,
         get_worker_engine,
     )
     from brain_muscle_bridge import (
         BrainMuscleBridge,
-        CognitiveTask,
         CognitiveExecutionResult,
+        CognitiveTask,
         get_brain_muscle_bridge,
     )
+
     _COGNITIVE_AVAILABLE = True
 except Exception:
     _COGNITIVE_AVAILABLE = False

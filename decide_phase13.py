@@ -12,8 +12,9 @@ Current State (42+ components):
 
 What is the next logical step after formal specification?
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision, ProjectPlanner
@@ -42,8 +43,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must leverage formal specification. Must be executable/verifiable. Must advance the system toward practical use.",
-        "goals": "Bridge formal theory to executable reality. Enable formal verification. Create reference implementation."
-    }
+        "goals": "Bridge formal theory to executable reality. Enable formal verification. Create reference implementation.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -58,8 +59,8 @@ plan = ProjectPlanner.plan(
     constraints={
         "timeline": "3 weeks",
         "team": "2 developers",
-        "requirements": "Execute formal spec, runtime kernel, ledger system, verification engine"
-    }
+        "requirements": "Execute formal spec, runtime kernel, ledger system, verification engine",
+    },
 )
 
 print(f"\n📋 Plan: {plan.confidence}")
@@ -70,7 +71,8 @@ for i, rec in enumerate(plan.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Reference Runtime from Formal Spec")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: AMOSL Reference Runtime
 
    WHY:
@@ -85,26 +87,26 @@ print("""
       - State manifold implementation (Σ_c, Σ_q, Σ_b, Σ_h)
       - Evolution operator T (block matrix)
       - Commit/verification pipeline
-      
+
    2. Ledger System (amosl/ledger.py)
       - Immutable trace recording
       - Auditability theorem implementation
       - Outcome explanation engine
-      
+
    3. Verification Engine (amosl/verify.py)
       - Type verification (Γ ⊢ e:τ)
       - Contract verification
       - Constraint checking (Valid(Σ) = ∧ C_i(Σ))
       - Physics/Biology/Hybrid verification
-      
+
    4. Bridge Execution (amosl/bridge.py)
       - Cross-substrate morphisms
       - B_{i→j} implementations
       - Legality checking
-      
+
    5. Reference Examples
       - Classical computation demo
-      - Quantum circuit demo  
+      - Quantum circuit demo
       - Biological simulation demo
       - Hybrid integration demo
 
@@ -136,6 +138,7 @@ print("""
    • amosl/bridge.py
    • examples/runtime_*.py (demos)
    • docs/runtime_architecture.md
-""")
+"""
+)
 
 print("\n✅ Decision: Build AMOSL Reference Runtime from Formal Spec")

@@ -1,8 +1,8 @@
 """AMOS Brain - Minimal public API surface with lazy loading."""
 
 # Core types (lightweight, no side effects)
-from .facade import BrainResponse, Decision
 from .config import FeatureFlags
+from .facade import BrainResponse, Decision
 
 # Lazy module cache
 _lazy_modules = {}
@@ -14,74 +14,97 @@ def _lazy_import(module_name: str):
         try:
             if module_name == "BrainClient":
                 from .facade import BrainClient as bc
+
                 _lazy_modules[module_name] = bc
             elif module_name == "get_brain":
                 from .loader import get_brain as gb
+
                 _lazy_modules[module_name] = gb
             elif module_name == "BrainLoader":
                 from .loader import BrainLoader as bl
+
                 _lazy_modules[module_name] = bl
             elif module_name == "get_amos_integration":
                 from .integration import get_amos_integration as gai
+
                 _lazy_modules[module_name] = gai
             elif module_name == "think":
                 from .facade import think as t
+
                 _lazy_modules[module_name] = t
             elif module_name == "decide":
                 from .facade import decide as d
+
                 _lazy_modules[module_name] = d
             elif module_name == "validate":
                 from .facade import validate as v
+
                 _lazy_modules[module_name] = v
             elif module_name == "create_local_runtime":
                 from .local_runtime import create_local_runtime as clr
+
                 _lazy_modules[module_name] = clr
             elif module_name == "GlobalLaws":
                 from .laws import GlobalLaws as gl
+
                 _lazy_modules[module_name] = gl
             elif module_name == "RuleOfTwo":
                 from .reasoning import RuleOfTwo as r2
+
                 _lazy_modules[module_name] = r2
             elif module_name == "RuleOfFour":
                 from .reasoning import RuleOfFour as r4
+
                 _lazy_modules[module_name] = r4
             elif module_name == "CognitiveStack":
                 from .cognitive_stack import CognitiveStack as cs
+
                 _lazy_modules[module_name] = cs
             elif module_name == "KernelRouter":
                 from .kernel_router import KernelRouter as kr
+
                 _lazy_modules[module_name] = kr
             elif module_name == "process_task":
                 from .task_processor import process_task as pt
+
                 _lazy_modules[module_name] = pt
             elif module_name == "get_agent_bridge":
                 from .agent_bridge import get_agent_bridge as gab
+
                 _lazy_modules[module_name] = gab
             elif module_name == "get_state_manager":
                 from .state_manager import get_state_manager as gsm
+
                 _lazy_modules[module_name] = gsm
             elif module_name == "get_meta_controller":
                 from .meta_controller import get_meta_controller as gmc
+
                 _lazy_modules[module_name] = gmc
             elif module_name == "orchestrate_goal":
                 from .meta_controller import orchestrate_goal as og
+
                 _lazy_modules[module_name] = og
             elif module_name == "get_metrics":
                 from .metrics import get_metrics as gm
+
                 _lazy_modules[module_name] = gm
             elif module_name == "get_kernel_router":
                 from .kernel_router import get_kernel_router as gkr
+
                 _lazy_modules[module_name] = gkr
             elif module_name == "get_monitor":
                 from .monitor import get_monitor as gmon
+
                 _lazy_modules[module_name] = gmon
             elif module_name == "CognitiveConfig":
                 from .config import CognitiveConfig as cc
+
                 _lazy_modules[module_name] = cc
             elif module_name == "get_config":
                 from .config import get_config as gc
+
                 _lazy_modules[module_name] = gc
-        except Exception as e:
+        except Exception:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
             )
@@ -91,8 +114,9 @@ def _lazy_import(module_name: str):
 # Lazy properties for core entry points
 class _LazyBrainClient:
     """Lazy BrainClient - imports only when first accessed."""
+
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = _lazy_import("BrainClient")()
@@ -189,25 +213,43 @@ def _load_optional_features():
     global SystemPromptBuilder, ArchitectureDecision, CodeReview
     global SecurityAudit, DesignPattern, ProblemDiagnosis
     global ProjectPlanner, TechnologySelection, RiskAssessment, CookbookResult
-    
+
     try:
         from .prompt_builder import SystemPromptBuilder as spb
+
         SystemPromptBuilder = spb
     except Exception:
         pass
-    
+
     try:
         from .cookbook import (
             ArchitectureDecision as ad,
+        )
+        from .cookbook import (
             CodeReview as cr,
-            SecurityAudit as sa,
-            DesignPattern as dp,
-            ProblemDiagnosis as pd,
-            ProjectPlanner as pp,
-            TechnologySelection as ts,
-            RiskAssessment as ra,
+        )
+        from .cookbook import (
             CookbookResult as cbr,
         )
+        from .cookbook import (
+            DesignPattern as dp,
+        )
+        from .cookbook import (
+            ProblemDiagnosis as pd,
+        )
+        from .cookbook import (
+            ProjectPlanner as pp,
+        )
+        from .cookbook import (
+            RiskAssessment as ra,
+        )
+        from .cookbook import (
+            SecurityAudit as sa,
+        )
+        from .cookbook import (
+            TechnologySelection as ts,
+        )
+
         ArchitectureDecision = ad
         CodeReview = cr
         SecurityAudit = sa
@@ -224,8 +266,9 @@ def _load_optional_features():
 # Trigger optional loading on first property access
 class _OptionalLoader:
     """Meta class to trigger optional loading."""
+
     _loaded = False
-    
+
     @classmethod
     def ensure_loaded(cls):
         if not cls._loaded:
@@ -245,13 +288,19 @@ def __getattr__(name: str):
     }
     if name in core_lazy_names:
         return _lazy_import(name)
-    
+
     # Cookbook classes - ensure loaded and return
     cookbook_names = {
         "SystemPromptBuilder",
-        "ArchitectureDecision", "CodeReview", "SecurityAudit",
-        "DesignPattern", "ProblemDiagnosis", "ProjectPlanner",
-        "TechnologySelection", "RiskAssessment", "CookbookResult"
+        "ArchitectureDecision",
+        "CodeReview",
+        "SecurityAudit",
+        "DesignPattern",
+        "ProblemDiagnosis",
+        "ProjectPlanner",
+        "TechnologySelection",
+        "RiskAssessment",
+        "CookbookResult",
     }
     if name in cookbook_names:
         if globals().get(name) is None:
@@ -260,46 +309,31 @@ def __getattr__(name: str):
         if result is None:
             raise ImportError(f"Could not load {name} from cookbook module")
         return result
-    
+
     # Organism bridge - lazy load
-    organism_names = {
-        "get_organism_bridge",
-        "initialize_organism",
-        "execute_organism_task"
-    }
+    organism_names = {"get_organism_bridge", "initialize_organism", "execute_organism_task"}
     if name in organism_names:
-        from .organism_bridge import (
-            get_organism_bridge,
-            initialize_organism,
-            execute_organism_task
-        )
         return locals()[name]
-    
+
     # Knowledge engine - lazy load
     if name in ("get_knowledge_engine", "query_knowledge"):
-        from .knowledge_engine import get_knowledge_engine, query_knowledge
         return locals()[name]
-    
+
     # Multi-agent orchestrator - lazy load
     if name in ("get_multi_agent_orchestrator", "spawn_agent", "orchestrate_task"):
-        from .multi_agent_orchestrator import (
-            get_multi_agent_orchestrator,
-            spawn_agent,
-            orchestrate_task
-        )
         return locals()[name]
-    
+
     # Performance engine - lazy load
     if name in ("get_performance_engine", "cached_think", "cached_decide", "batch_think"):
-        from .performance_engine import (
-            get_performance_engine,
-            cached_think,
-            cached_decide,
-            batch_think
-        )
         return locals()[name]
-    
+
+    # Debugging utilities - lazy load
+    debug_names = {"ic", "pretty_print", "print_table", "trace", "debug_breakpoint", "DebugContext"}
+    if name in debug_names:
+        return locals()[name]
+
     raise AttributeError(f"module 'amos_brain' has no attribute '{name}'")
+
 
 __all__ = [
     # Core public API (minimal, lazy-loaded)
@@ -352,4 +386,11 @@ __all__ = [
     "cached_think",
     "cached_decide",
     "batch_think",
+    # Debugging utilities
+    "ic",
+    "pretty_print",
+    "print_table",
+    "trace",
+    "debug_breakpoint",
+    "DebugContext",
 ]

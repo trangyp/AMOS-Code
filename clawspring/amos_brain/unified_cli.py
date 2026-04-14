@@ -5,11 +5,10 @@ Bridges the new cognitive ecosystem (amos_brain) with existing
 AMOS_ORGANISM_OS components for a single unified interface.
 """
 
-import sys
-import os
 import argparse
-from typing import Dict, List, Any, Optional
+import sys
 from pathlib import Path
+from typing import Any, Optional
 
 # Add paths for both systems
 sys.path.insert(0, str(Path(__file__).parent))
@@ -22,7 +21,7 @@ class UnifiedCLI:
     """Unified command-line interface for AMOS ecosystem."""
 
     def __init__(self):
-        self.commands: Dict[str, Any] = {}
+        self.commands: dict[str, Any] = {}
         self._discover_commands()
 
     def _discover_commands(self) -> None:
@@ -50,10 +49,11 @@ class UnifiedCLI:
             "version": self._cmd_unified_version,
         }
 
-    def _cmd_cognitive_route(self, args: List[str]) -> int:
+    def _cmd_cognitive_route(self, args: list[str]) -> int:
         """Route a task through cognitive system."""
         try:
             from amos_cognitive_router import CognitiveRouter
+
             router = CognitiveRouter()
             task = " ".join(args) if args else "Example task"
             result = router.analyze(task)
@@ -72,10 +72,11 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_validate(self, args: List[str]) -> int:
+    def _cmd_cognitive_validate(self, args: list[str]) -> int:
         """Run system validator."""
         try:
             from system_validator import validate_system
+
             success, summary = validate_system()
 
             print("=" * 60)
@@ -90,15 +91,14 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_orchestrate(self, args: List[str]) -> int:
+    def _cmd_cognitive_orchestrate(self, args: list[str]) -> int:
         """Run master orchestrator."""
         try:
             from master_orchestrator import MasterOrchestrator
+
             orch = MasterOrchestrator()
             task = " ".join(args) if args else "Example orchestration"
-            result = orch.orchestrate_cognitive_task(
-                "cli_task", task, "MEDIUM"
-            )
+            result = orch.orchestrate_cognitive_task("cli_task", task, "MEDIUM")
 
             print("=" * 60)
             print("ORCHESTRATION RESULT")
@@ -112,10 +112,11 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_cognitive_dashboard(self, args: List[str]) -> int:
+    def _cmd_cognitive_dashboard(self, args: list[str]) -> int:
         """Launch cognitive dashboard."""
         try:
             from dashboard_server import DashboardServer
+
             server = DashboardServer(port=8080)
             print("=" * 60)
             print("DASHBOARD SERVER")
@@ -128,7 +129,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_coherence(self, args: List[str]) -> int:
+    def _cmd_organism_coherence(self, args: list[str]) -> int:
         """Run coherence engine check."""
         try:
             # Try to use existing coherence engine
@@ -148,17 +149,16 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_ethics(self, args: List[str]) -> int:
+    def _cmd_organism_ethics(self, args: list[str]) -> int:
         """Run ethics validation."""
         try:
             from ethics_integration import EthicsValidator
+
             ethics = EthicsValidator()
 
             action = " ".join(args) if args else "Test action"
             result = ethics.validate_action(
-                action,
-                {"consent": True, "harm_potential": 0.1},
-                "principlism"
+                action, {"consent": True, "harm_potential": 0.1}, "principlism"
             )
 
             print("=" * 60)
@@ -176,7 +176,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def _cmd_organism_predict(self, args: List[str]) -> int:
+    def _cmd_organism_predict(self, args: list[str]) -> int:
         """Run predictive engine."""
         print("=" * 60)
         print("PREDICTIVE ENGINE")
@@ -186,7 +186,7 @@ class UnifiedCLI:
         print("=" * 60)
         return 0
 
-    def _cmd_organism_execute(self, args: List[str]) -> int:
+    def _cmd_organism_execute(self, args: list[str]) -> int:
         """Run task executor."""
         print("=" * 60)
         print("TASK EXECUTOR")
@@ -196,7 +196,7 @@ class UnifiedCLI:
         print("=" * 60)
         return 0
 
-    def _cmd_unified_status(self, args: List[str]) -> int:
+    def _cmd_unified_status(self, args: list[str]) -> int:
         """Show unified system status."""
         print("=" * 70)
         print("AMOS ECOSYSTEM - UNIFIED STATUS")
@@ -223,7 +223,7 @@ class UnifiedCLI:
         print("=" * 70)
         return 0
 
-    def _cmd_unified_health(self, args: List[str]) -> int:
+    def _cmd_unified_health(self, args: list[str]) -> int:
         """Run unified health check."""
         print("=" * 70)
         print("AMOS ECOSYSTEM - HEALTH CHECK")
@@ -248,7 +248,7 @@ class UnifiedCLI:
         print("=" * 70)
         return 0 if all_healthy else 1
 
-    def _cmd_unified_version(self, args: List[str]) -> int:
+    def _cmd_unified_version(self, args: list[str]) -> int:
         """Show version information."""
         print("=" * 70)
         print("AMOS ECOSYSTEM VERSION")
@@ -265,11 +265,10 @@ class UnifiedCLI:
         print("=" * 70)
         return 0
 
-    def run(self, args: Optional[List[str]] = None) -> int:
+    def run(self, args: Optional[list[str]] = None) -> int:
         """Main CLI entry point."""
         parser = argparse.ArgumentParser(
-            prog="amos-unified",
-            description="AMOS Ecosystem Unified CLI - Cognitive + Organism"
+            prog="amos-unified", description="AMOS Ecosystem Unified CLI - Cognitive + Organism"
         )
 
         subparsers = parser.add_subparsers(dest="system", help="System to interact with")

@@ -7,19 +7,19 @@ with organism components functions correctly.
 
 import sys
 import time
-import traceback
-from typing import Dict, List, Any, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 @dataclass
 class TestResult:
     """Test case result."""
+
     name: str
     passed: bool
     duration_ms: float
@@ -31,11 +31,11 @@ class IntegrationTestSuite:
     """Comprehensive test suite for AMOS v2.8."""
 
     def __init__(self):
-        self.results: List[TestResult] = []
+        self.results: list[TestResult] = []
         self.start_time: float = 0
         self.end_time: float = 0
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Execute complete test suite."""
         print("=" * 70)
         print("AMOS ECOSYSTEM v2.8 - INTEGRATION TEST SUITE")
@@ -44,50 +44,65 @@ class IntegrationTestSuite:
         self.start_time = time.time()
 
         # Phase 1: Core Module Tests
-        self._test_phase("CORE MODULES", [
-            self._test_cognitive_router,
-            self._test_engine_executor,
-            self._test_multi_agent_orchestrator,
-            self._test_master_orchestrator,
-            self._test_system_validator,
-        ])
+        self._test_phase(
+            "CORE MODULES",
+            [
+                self._test_cognitive_router,
+                self._test_engine_executor,
+                self._test_multi_agent_orchestrator,
+                self._test_master_orchestrator,
+                self._test_system_validator,
+            ],
+        )
 
         # Phase 2: Bridge & Integration Tests
-        self._test_phase("BRIDGE & INTEGRATION", [
-            self._test_organism_bridge,
-            self._test_predictive_integration,
-            self._test_task_execution_integration,
-            self._test_deep_integration,
-        ])
+        self._test_phase(
+            "BRIDGE & INTEGRATION",
+            [
+                self._test_organism_bridge,
+                self._test_predictive_integration,
+                self._test_task_execution_integration,
+                self._test_deep_integration,
+            ],
+        )
 
         # Phase 3: Governance & Ethics Tests
-        self._test_phase("GOVERNANCE & ETHICS", [
-            self._test_cognitive_audit,
-            self._test_ethics_integration,
-            self._test_feedback_loop,
-        ])
+        self._test_phase(
+            "GOVERNANCE & ETHICS",
+            [
+                self._test_cognitive_audit,
+                self._test_ethics_integration,
+                self._test_feedback_loop,
+            ],
+        )
 
         # Phase 4: Infrastructure Tests
-        self._test_phase("INFRASTRUCTURE", [
-            self._test_plugin_system,
-            self._test_telemetry_system,
-            self._test_resilience_system,
-            self._test_config_manager,
-        ])
+        self._test_phase(
+            "INFRASTRUCTURE",
+            [
+                self._test_plugin_system,
+                self._test_telemetry_system,
+                self._test_resilience_system,
+                self._test_config_manager,
+            ],
+        )
 
         # Phase 5: Production Readiness Tests
-        self._test_phase("PRODUCTION READINESS", [
-            self._test_lifecycle_manager,
-            self._test_dashboard_server,
-            self._test_unified_cli,
-            self._test_api_gateway,
-        ])
+        self._test_phase(
+            "PRODUCTION READINESS",
+            [
+                self._test_lifecycle_manager,
+                self._test_dashboard_server,
+                self._test_unified_cli,
+                self._test_api_gateway,
+            ],
+        )
 
         self.end_time = time.time()
 
         return self._generate_report()
 
-    def _test_phase(self, phase_name: str, tests: List) -> None:
+    def _test_phase(self, phase_name: str, tests: list) -> None:
         """Run a phase of tests."""
         print(f"\n{'─' * 70}")
         print(f"PHASE: {phase_name}")
@@ -97,13 +112,15 @@ class IntegrationTestSuite:
             try:
                 test()
             except Exception as e:
-                self.results.append(TestResult(
-                    name=test.__name__,
-                    passed=False,
-                    duration_ms=0,
-                    error=str(e),
-                    module=phase_name
-                ))
+                self.results.append(
+                    TestResult(
+                        name=test.__name__,
+                        passed=False,
+                        duration_ms=0,
+                        error=str(e),
+                        module=phase_name,
+                    )
+                )
 
     def _run_test(self, name: str, test_fn, module: str) -> bool:
         """Run a single test with timing."""
@@ -111,17 +128,18 @@ class IntegrationTestSuite:
         try:
             test_fn()
             duration = (time.time() - start) * 1000
-            self.results.append(TestResult(
-                name=name, passed=True, duration_ms=duration, module=module
-            ))
+            self.results.append(
+                TestResult(name=name, passed=True, duration_ms=duration, module=module)
+            )
             print(f"  ✓ {name} ({duration:.1f}ms)")
             return True
         except Exception as e:
             duration = (time.time() - start) * 1000
-            self.results.append(TestResult(
-                name=name, passed=False, duration_ms=duration,
-                error=str(e), module=module
-            ))
+            self.results.append(
+                TestResult(
+                    name=name, passed=False, duration_ms=duration, error=str(e), module=module
+                )
+            )
             print(f"  ✗ {name} - {str(e)[:50]}")
             return False
 
@@ -137,8 +155,13 @@ class IntegrationTestSuite:
         result = router.analyze("Design REST API")
 
         assert result.primary_domain in [
-            "software", "security", "analysis", "design",
-            "infrastructure", "data", "meta"
+            "software",
+            "security",
+            "analysis",
+            "design",
+            "infrastructure",
+            "data",
+            "meta",
         ], f"Invalid domain: {result.primary_domain}"
         assert result.risk_level in ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         assert len(result.suggested_engines) > 0
@@ -162,9 +185,7 @@ class IntegrationTestSuite:
 
         orch = MultiAgentOrchestrator()
         result = orch.execute_parallel(
-            "Test task",
-            ["AMOS_Deterministic_Logic_And_Law_Engine"],
-            require_consensus=False
+            "Test task", ["AMOS_Deterministic_Logic_And_Law_Engine"], require_consensus=False
         )
 
         assert result is not None
@@ -177,9 +198,7 @@ class IntegrationTestSuite:
         from master_orchestrator import MasterOrchestrator
 
         orch = MasterOrchestrator()
-        result = orch.orchestrate_cognitive_task(
-            "test", "Design API", "MEDIUM"
-        )
+        result = orch.orchestrate_cognitive_task("test", "Design API", "MEDIUM")
 
         assert result is not None
         assert result.task_id == "test"
@@ -270,7 +289,7 @@ class IntegrationTestSuite:
             laws=[],
             violations=[],
             exec_time_ms=100.0,
-            recommendation="test"
+            recommendation="test",
         )
 
         assert entry is not None
@@ -284,9 +303,7 @@ class IntegrationTestSuite:
 
         ethics = EthicsValidator()
         result = ethics.validate_action(
-            "Test action",
-            {"consent": True, "harm_potential": 0.1},
-            "principlism"
+            "Test action", {"consent": True, "harm_potential": 0.1}, "principlism"
         )
 
         assert result is not None
@@ -337,7 +354,7 @@ class IntegrationTestSuite:
 
     def _test_resilience_system(self) -> None:
         """Test resilience system."""
-        from resilience import get_resilience, CircuitBreaker
+        from resilience import CircuitBreaker, get_resilience
 
         resilience = get_resilience()
         cb = CircuitBreaker(failure_threshold=3)
@@ -408,7 +425,7 @@ class IntegrationTestSuite:
     # REPORT GENERATION
     # ─────────────────────────────────────────────────────────────────
 
-    def _generate_report(self) -> Dict[str, Any]:
+    def _generate_report(self) -> dict[str, Any]:
         """Generate test report."""
         total = len(self.results)
         passed = sum(1 for r in self.results if r.passed)
@@ -422,24 +439,24 @@ class IntegrationTestSuite:
             "failed": failed,
             "pass_rate": passed / total if total > 0 else 0,
             "duration_ms": duration,
-            "phases": {}
+            "phases": {},
         }
 
         # Group by phase
         for result in self.results:
             phase = result.module
             if phase not in report["phases"]:
-                report["phases"][phase] = {
-                    "total": 0, "passed": 0, "failed": 0, "tests": []
-                }
+                report["phases"][phase] = {"total": 0, "passed": 0, "failed": 0, "tests": []}
 
             report["phases"][phase]["total"] += 1
-            report["phases"][phase]["tests"].append({
-                "name": result.name,
-                "passed": result.passed,
-                "duration_ms": result.duration_ms,
-                "error": result.error
-            })
+            report["phases"][phase]["tests"].append(
+                {
+                    "name": result.name,
+                    "passed": result.passed,
+                    "duration_ms": result.duration_ms,
+                    "error": result.error,
+                }
+            )
 
             if result.passed:
                 report["phases"][phase]["passed"] += 1

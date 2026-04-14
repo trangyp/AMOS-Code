@@ -2,7 +2,7 @@
 
 <div align="center">
   <a href="[https://github.com/SafeRL-Lab/Robust-Gymnasium](https://github.com/SafeRL-Lab/nano-claude-code)">
-    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="ロゴ" width="280"> 
+    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/logo-v1.png" alt="ロゴ" width="280">
   </a>
 
 <h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: あらゆるモデルをサポートする、高速で使いやすい Claude Code の Python 再実装</h1>
@@ -16,7 +16,7 @@
 </div>
 
 <div align=center>
- <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/> 
+ <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" width="850"/>
 </div>
 
 ---

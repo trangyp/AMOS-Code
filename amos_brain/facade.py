@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from .agent_bridge import get_agent_bridge
-from .debug_utils import DebugContext, ic, trace
 from .laws import GlobalLaws
 from .loader import get_brain
 from .meta_controller import get_meta_controller
@@ -17,6 +16,7 @@ from .task_processor import BrainTaskProcessor
 @dataclass
 class BrainResponse:
     """Simple response from brain operations."""
+
     success: bool
     content: str
     reasoning: list[str]
@@ -30,6 +30,7 @@ class BrainResponse:
 @dataclass
 class Decision:
     """Decision result with full audit."""
+
     approved: bool
     decision_id: str
     reasoning: str
@@ -39,8 +40,7 @@ class Decision:
 
 
 class BrainClient:
-    """
-    AMOS Brain SDK Client - Unified interface to all 9 layers.
+    """AMOS Brain SDK Client - Unified interface to all 9 layers.
 
     Usage:
         client = BrainClient()
@@ -68,13 +68,9 @@ class BrainClient:
         self.monitor = get_monitor()
 
     def think(
-        self,
-        query: str,
-        domain: str = "general",
-        require_law_compliance: bool = True
+        self, query: str, domain: str = "general", require_law_compliance: bool = True
     ) -> BrainResponse:
-        """
-        Process a cognitive query through the full brain.
+        """Process a cognitive query through the full brain.
 
         Args:
             query: The question or task to think about
@@ -93,7 +89,7 @@ class BrainClient:
             processing_time_ms=result.processing_time_ms,
             law_violations=len(result.law_violations),
             confidence=result.confidence,
-            kernels_used=result.kernels_used
+            kernels_used=result.kernels_used,
         )
 
         # Check law compliance
@@ -116,17 +112,13 @@ class BrainClient:
                 "rule_of_two": result.rule_of_two_check,
                 "rule_of_four": result.rule_of_four_check,
             },
-            domain=domain
+            domain=domain,
         )
 
     def decide(
-        self,
-        question: str,
-        options: list[str] | None = None,
-        context: str = ""
+        self, question: str, options: list[str] | None = None, context: str = ""
     ) -> Decision:
-        """
-        Make a decision with full cognitive analysis.
+        """Make a decision with full cognitive analysis.
 
         Args:
             question: The decision to make
@@ -173,16 +165,13 @@ class BrainClient:
             reasoning=reasoning,
             risk_level=risk_level,
             law_violations=violations,
-            alternative_actions=alternatives
+            alternative_actions=alternatives,
         )
 
     def validate_action(
-        self,
-        action_description: str,
-        action_type: str = "general"
+        self, action_description: str, action_type: str = "general"
     ) -> tuple[bool, list[str]]:
-        """
-        Quick validation if an action complies with global laws.
+        """Quick validation if an action complies with global laws.
 
         Args:
             action_description: Description of the action
@@ -199,10 +188,7 @@ class BrainClient:
             violations.append(f"L1: {msg}")
 
         # L2: Rule of 2 (need alternative perspective)
-        ok, msg = self.laws.enforce_l2_dual_check(
-            action_description,
-            "Alternative considered"
-        )
+        ok, msg = self.laws.enforce_l2_dual_check(action_description, "Alternative considered")
         if not ok:
             violations.append(f"L2: {msg}")
 
@@ -218,18 +204,13 @@ class BrainClient:
             self.monitor.record_law_compliance(
                 law_id=law_id,
                 compliant=law_id not in [v[:2] for v in violations],
-                context=action_description[:50]
+                context=action_description[:50],
             )
 
         return is_valid, violations
 
-    def orchestrate(
-        self,
-        goal: str,
-        max_iterations: int = 10
-    ) -> dict[str, Any]:
-        """
-        Orchestrate a complex goal through meta-cognitive control.
+    def orchestrate(self, goal: str, max_iterations: int = 10) -> dict[str, Any]:
+        """Orchestrate a complex goal through meta-cognitive control.
 
         Args:
             goal: High-level goal to achieve
@@ -247,13 +228,9 @@ class BrainClient:
             "completed": sum(1 for t in plan.subtasks if t.status.value == "completed"),
             "failed": sum(1 for t in plan.subtasks if t.status.value == "failed"),
             "tasks": [
-                {
-                    "id": t.task_id,
-                    "description": t.description,
-                    "status": t.status.value
-                }
+                {"id": t.task_id, "description": t.description, "status": t.status.value}
                 for t in plan.subtasks[:10]
-            ]
+            ],
         }
 
     def get_status(self) -> dict[str, Any]:
@@ -275,9 +252,14 @@ class BrainClient:
                 "monitor": metrics,
             },
             "law_compliance": compliance,
-            "global_laws": ["L1-Law of Law", "L2-Rule of 2", "L3-Rule of 4",
-                            "L4-Absolute Structural Integrity",
-                            "L5-Communication", "L6-UBI Alignment"]
+            "global_laws": [
+                "L1-Law of Law",
+                "L2-Rule of 2",
+                "L3-Rule of 4",
+                "L4-Absolute Structural Integrity",
+                "L5-Communication",
+                "L6-UBI Alignment",
+            ],
         }
 
 

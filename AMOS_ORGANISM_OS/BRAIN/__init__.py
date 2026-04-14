@@ -1,5 +1,4 @@
-"""
-BRAIN module — Alias for 01_BRAIN
+"""BRAIN module — Alias for 01_BRAIN
 """
 
 # Re-export from 01_BRAIN
@@ -12,9 +11,9 @@ if str(brain_path) not in sys.path:
     sys.path.insert(0, str(brain_path))
 
 # Import and re-export
-from brain_os import BrainOS, BrainState, Thought, Plan, ThoughtType
-from router import SystemRouter, RoutingDecision
-from memory_layer import MemoryLayer, Memory
+from brain_os import BrainOS, BrainState, Plan, Thought, ThoughtType
+from memory_layer import Memory, MemoryLayer
+from router import RoutingDecision, SystemRouter
 
 __all__ = [
     "BrainOS",

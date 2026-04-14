@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Demo: Comprehensive System Test
+"""AMOS Brain Demo: Comprehensive System Test
 ==========================================
 
 Validates all 12 layers of the cognitive OS.
@@ -11,9 +10,16 @@ Usage:
 import sys
 
 from amos_brain import (
-    get_brain, process_task, get_agent_bridge, get_state_manager,
-    get_meta_controller, get_monitor, BrainClient, think,
-    ArchitectureDecision, CodeReview, CognitiveConfig
+    ArchitectureDecision,
+    CodeReview,
+    CognitiveConfig,
+    get_agent_bridge,
+    get_brain,
+    get_meta_controller,
+    get_monitor,
+    get_state_manager,
+    process_task,
+    think,
 )
 
 
@@ -33,7 +39,7 @@ def test_layer_4_processor():
     result = process_task("Test task")
     assert result.rule_of_two_check["compliant"], "Rule of 2 failed"
     assert result.rule_of_four_check["compliant"], "Rule of 4 failed"
-    print(f"✓ (Rule 2/4: compliant)")
+    print("✓ (Rule 2/4: compliant)")
     return True
 
 
@@ -41,10 +47,11 @@ def test_layer_5_laws():
     """Test Layer 5: Global Laws."""
     print("[LAYER 5] Global Laws...", end=" ")
     from amos_brain import GlobalLaws
+
     laws = GlobalLaws()
     l1 = laws.get_law("L1")
     assert l1 is not None, "L1 not found"
-    print(f"✓ (L1-L6 available)")
+    print("✓ (L1-L6 available)")
     return True
 
 
@@ -54,7 +61,7 @@ def test_layer_6_bridge():
     bridge = get_agent_bridge()
     result = bridge.validate_tool_call("Read", {"file_path": "/test.txt"})
     assert "approved" in result, "Bridge validation failed"
-    print(f"✓ (tool validation working)")
+    print("✓ (tool validation working)")
     return True
 
 
@@ -85,7 +92,7 @@ def test_layer_9_monitor():
     monitor = get_monitor()
     monitor.record_reasoning("Test", 100, 0, "high", ["C01"])
     summary = monitor.get_metrics_summary(window_seconds=3600)
-    print(f"✓ (metrics collected)")
+    print("✓ (metrics collected)")
     return True
 
 
@@ -95,7 +102,7 @@ def test_layer_10_facade():
     response = think("Test query")
     assert response.success, "Facade think failed"
     assert response.law_compliant, "Law compliance failed"
-    print(f"✓ (think/validate working)")
+    print("✓ (think/validate working)")
     return True
 
 
@@ -105,7 +112,7 @@ def test_layer_11_config():
     config = CognitiveConfig()
     assert config.environment == "development"
     assert config.is_feature_enabled("rule_of_two")
-    print(f"✓ (config working)")
+    print("✓ (config working)")
     return True
 
 
@@ -116,7 +123,7 @@ def test_layer_12_cookbook():
     assert result.recipe_name == "Architecture Decision Record"
     result = CodeReview.analyze("def test(): pass")
     assert result.confidence in ["high", "medium", "low"]
-    print(f"✓ (recipes working)")
+    print("✓ (recipes working)")
     return True
 
 
@@ -125,7 +132,7 @@ def main():
     print("\n" + "=" * 60)
     print("AMOS BRAIN: 12-LAYER COMPREHENSIVE TEST")
     print("=" * 60)
-    
+
     tests = [
         ("Layer 1", test_layer_1_loader),
         ("Layer 4", test_layer_4_processor),
@@ -138,10 +145,10 @@ def main():
         ("Layer 11", test_layer_11_config),
         ("Layer 12", test_layer_12_cookbook),
     ]
-    
+
     passed = 0
     failed = 0
-    
+
     for name, test_func in tests:
         try:
             test_func()
@@ -149,11 +156,11 @@ def main():
         except Exception as e:
             print(f"✗ FAILED: {e}")
             failed += 1
-    
+
     print("\n" + "=" * 60)
     print(f"RESULTS: {passed} passed, {failed} failed")
     print("=" * 60)
-    
+
     if failed == 0:
         print("\n🎉 ALL 12 LAYERS OPERATIONAL!")
         print("\nAMOS Brain Cognitive OS vInfinity")

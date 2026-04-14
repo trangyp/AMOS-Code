@@ -1,5 +1,4 @@
-"""
-Policy Engine — Policy Management & Enforcement
+"""Policy Engine — Policy Management & Enforcement
 
 Manages organizational policies, rules, and enforcement mechanisms.
 Provides policy validation and compliance checking.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class PolicyStatus(Enum):
     """Status of a policy."""
+
     ACTIVE = "active"
     INACTIVE = "inactive"
     DRAFT = "draft"
@@ -26,6 +26,7 @@ class PolicyStatus(Enum):
 
 class EnforcementLevel(Enum):
     """Level of policy enforcement."""
+
     STRICT = "strict"  # Block on violation
     MODERATE = "moderate"  # Warn on violation
     PERMISSIVE = "permissive"  # Log only
@@ -34,6 +35,7 @@ class EnforcementLevel(Enum):
 @dataclass
 class PolicyRule:
     """A single rule within a policy."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
@@ -41,24 +43,25 @@ class PolicyRule:
     action: str = ""  # allow, deny, warn, log
     severity: int = 1  # 1-5
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class Policy:
     """A policy containing multiple rules."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
     category: str = ""  # security, privacy, operational, legal
-    rules: List[PolicyRule] = field(default_factory=list)
+    rules: list[PolicyRule] = field(default_factory=list)
     status: PolicyStatus = PolicyStatus.DRAFT
     enforcement: EnforcementLevel = EnforcementLevel.MODERATE
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -68,8 +71,7 @@ class Policy:
 
 
 class PolicyEngine:
-    """
-    Manages and enforces organizational policies.
+    """Manages and enforces organizational policies.
 
     Provides policy definition, storage, validation,
     and enforcement mechanisms.
@@ -81,8 +83,8 @@ class PolicyEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.policies: Dict[str, Policy] = {}
-        self.violations: List[Dict[str, Any]] = []
+        self.policies: dict[str, Policy] = {}
+        self.violations: list[dict[str, Any]] = []
 
         self._load_policies()
         self._init_default_policies()
@@ -205,8 +207,8 @@ class PolicyEngine:
     def evaluate_action(
         self,
         action_type: str,
-        context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Evaluate an action against all active policies."""
         violations = []
         allowed = True
@@ -236,11 +238,13 @@ class PolicyEngine:
 
         # Record violations
         if violations:
-            self.violations.append({
-                "timestamp": datetime.utcnow().isoformat(),
-                "action_type": action_type,
-                "violations": violations,
-            })
+            self.violations.append(
+                {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "action_type": action_type,
+                    "violations": violations,
+                }
+            )
 
         return {
             "allowed": allowed,
@@ -248,7 +252,7 @@ class PolicyEngine:
             "max_severity": max((v["severity"] for v in violations), default=0),
         }
 
-    def _check_condition(self, condition: str, context: Dict[str, Any]) -> bool:
+    def _check_condition(self, condition: str, context: dict[str, Any]) -> bool:
         """Check if context matches condition pattern."""
         # Simplified condition checking
         if condition == "contains(password|secret|token|key)":
@@ -285,9 +289,7 @@ class PolicyEngine:
                         created_at=p_data.get("created_at", ""),
                         updated_at=p_data.get("updated_at", ""),
                     )
-                    policy.rules = [
-                        PolicyRule(**r) for r in p_data.get("rules", [])
-                    ]
+                    policy.rules = [PolicyRule(**r) for r in p_data.get("rules", [])]
                     self.policies[policy.id] = policy
             except Exception as e:
                 print(f"[POLICY] Error loading policies: {e}")
@@ -301,11 +303,11 @@ class PolicyEngine:
         }
         policies_file.write_text(json.dumps(data, indent=2))
 
-    def list_policies(self) -> List[Dict[str, Any]]:
+    def list_policies(self) -> list[dict[str, Any]]:
         """List all policies."""
         return [p.to_dict() for p in self.policies.values()]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get engine status."""
         active = sum(1 for p in self.policies.values() if p.status == PolicyStatus.ACTIVE)
         total_rules = sum(len(p.rules) for p in self.policies.values())

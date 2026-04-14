@@ -12,13 +12,13 @@ __system__ = "AMOS"
 # Core exports - conditional to avoid import errors
 # when optional modules are not present
 try:
-    from amos_runtime import get_runtime, AMOSRuntime
+    from amos_runtime import AMOSRuntime, get_runtime
 except ImportError:
     get_runtime = None
     AMOSRuntime = None
 
 try:
-    from amos_execution import full_execute, ExecutionResult
+    from amos_execution import ExecutionResult, full_execute
 except ImportError:
     full_execute = None
     ExecutionResult = None

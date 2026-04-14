@@ -2,7 +2,7 @@
 """AMOS Brain Phase 14: Runtime Completion Decision
 
 Current State (45+ components):
-- Core: AMOS Brain cognitive architecture  
+- Core: AMOS Brain cognitive architecture
 - Language: AMOSL compiler with 9-tuple, 4 IRs, 8 invariants
 - Formal: Complete mathematical specification (16-tuple system)
 - Runtime: Kernel started with state manifold Σ + evolution Φ
@@ -16,8 +16,9 @@ Current State (45+ components):
 
 Runtime needs completion: ledger, verification, bridges, evolution operator
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision, ProjectPlanner
@@ -47,8 +48,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must implement formal spec exactly. Must enable auditability theorem. Must support cross-substrate execution.",
-        "goals": "Complete executable realization of formal mathematics. Enable full program execution with verification."
-    }
+        "goals": "Complete executable realization of formal mathematics. Enable full program execution with verification.",
+    },
 )
 
 print(f"\n📊 Analysis Complete - Confidence: {result.confidence}")
@@ -63,8 +64,8 @@ plan = ProjectPlanner.plan(
     constraints={
         "timeline": "2 weeks",
         "team": "2 developers",
-        "requirements": "Ledger system, VerificationEngine, BridgeExecutor, EvolutionOperator, demos"
-    }
+        "requirements": "Ledger system, VerificationEngine, BridgeExecutor, EvolutionOperator, demos",
+    },
 )
 
 print(f"\n📋 Plan: {plan.confidence}")
@@ -75,7 +76,8 @@ for i, rec in enumerate(plan.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Complete Runtime Stack")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Complete AMOSL Reference Runtime
 
    PRIORITY ORDER:
@@ -87,7 +89,7 @@ print("""
       - Auditability: Explain(trace) = outcome
       - Query and replay capabilities
 
-   2. VERIFICATION ENGINE (amosl/verify.py)  
+   2. VERIFICATION ENGINE (amosl/verify.py)
       Implements: 𝒱 = 𝒱_type ⊕ 𝒱_contract ⊕ 𝒱_constraint ⊕ 𝒱_physics ⊕ 𝒱_biology ⊕ 𝒱_hybrid
       - Type verification: Γ ⊢ e:τ
       - Contract verification: Pre ∧ Exec ⟹ Post
@@ -130,11 +132,12 @@ print("""
 
    DELIVERABLES:
    • amosl/ledger.py - Immutable audit trail
-   • amosl/verify.py - Verification engine  
+   • amosl/verify.py - Verification engine
    • amosl/bridge.py - Cross-substrate execution
    • amosl/evolution.py - Block matrix evolution
    • examples/demo_runtime_*.py - 4 working demos
    • docs/runtime_guide.md - Usage documentation
-""")
+"""
+)
 
 print("\n✅ Decision: Complete runtime with ledger, verification, bridges, evolution")

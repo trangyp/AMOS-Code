@@ -4,15 +4,16 @@
 Current State (30+ components):
 - Core: AMOS Brain + AMOSL Compiler
 - Infrastructure: CI/CD, Docker, API Server
-- Frontend: Dashboard + Admin Dashboard  
+- Frontend: Dashboard + Admin Dashboard
 - Real-Time: WebSocket
 - Persistence: Database + Query History
 - Security: Auth, Rate Limiting
 
 What is the next logical enhancement for production?
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain.cookbook import ArchitectureDecision, ProjectPlanner
@@ -38,8 +39,8 @@ result = ArchitectureDecision.analyze(
     context={
         "current_state": current_state,
         "constraints": "Must enhance existing production system. Should leverage current infrastructure. Must provide immediate user value.",
-        "goals": "Increase user engagement. Improve performance. Add enterprise features. Build developer ecosystem."
-    }
+        "goals": "Increase user engagement. Improve performance. Add enterprise features. Build developer ecosystem.",
+    },
 )
 
 print("\n📊 Analysis Complete")
@@ -55,8 +56,8 @@ plan = ProjectPlanner.plan(
     constraints={
         "timeline": "2 weeks",
         "team": "1 developer",
-        "requirements": "Python SDK, JavaScript client, documentation, examples"
-    }
+        "requirements": "Python SDK, JavaScript client, documentation, examples",
+    },
 )
 
 print(f"\n📋 Plan: {plan.confidence}")
@@ -67,7 +68,8 @@ for i, rec in enumerate(plan.recommendations[:5], 1):
 print("\n" + "=" * 70)
 print("  BRAIN DECISION: Developer SDK & Client Libraries")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Developer SDK
 
    WHY:
@@ -82,17 +84,17 @@ print("""
       - pip install amos-sdk
       - Simple client initialization
       - Async/sync support
-      
+
    2. JavaScript/TypeScript Client
       - npm install @amos/sdk
       - Browser and Node.js support
       - Promise-based API
-      
+
    3. Documentation
       - API reference
       - Quick start guides
       - Code examples
-      
+
    4. CLI Tool
       - amos configure
       - amos think "query"
@@ -103,6 +105,7 @@ print("""
    • sdk/javascript/ - JS/TS client
    • docs/sdk.md - Documentation
    • examples/sdk/ - Usage examples
-""")
+"""
+)
 
 print("\n✅ Decision: Build Developer SDK")

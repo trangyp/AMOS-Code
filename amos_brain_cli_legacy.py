@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain CLI - Interactive command-line interface for brain queries.
+"""AMOS Brain CLI - Interactive command-line interface for brain queries.
 
 Provides commands:
   /decide <problem>    - Analyze decision with Rule of 2 + Rule of 4
@@ -18,16 +17,15 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Setup paths
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from amos_brain import get_amos_integration, RuleOfTwo, RuleOfFour, GlobalLaws
-from amos_brain.memory import get_brain_memory
+from amos_brain import GlobalLaws, get_amos_integration
 from amos_brain.dashboard import print_dashboard
-
+from amos_brain.memory import get_brain_memory
 
 # ANSI colors
 C = {
@@ -96,14 +94,16 @@ def cmd_decide(amos, memory, problem: str):
         print(clr("┌─ Rule of 2: Dual Perspective Analysis ─", "bold"))
 
         for i, p in enumerate(r2.get("perspectives", []), 1):
-            name = p.name if hasattr(p, 'name') else f"Perspective {i}"
-            viewpoint = p.viewpoint if hasattr(p, 'viewpoint') else str(p)
+            name = p.name if hasattr(p, "name") else f"Perspective {i}"
+            viewpoint = p.viewpoint if hasattr(p, "viewpoint") else str(p)
             print(f"│ {clr(name, 'cyan')}")
             print(f"│   View: {viewpoint[:60]}...")
-            if hasattr(p, 'supporting_evidence'):
+            if hasattr(p, "supporting_evidence"):
                 print(f"│   Evidence: {len(p.supporting_evidence)} points")
         print("│")
-        print(f"│ {clr('Synthesis:', 'green')} {r2.get('recommendation', 'No clear recommendation')}")
+        print(
+            f"│ {clr('Synthesis:', 'green')} {r2.get('recommendation', 'No clear recommendation')}"
+        )
         print(f"│ {clr('Confidence:', 'green')} {r2.get('confidence', 0):.0%}")
         print(clr("└─────────────────────────────────────────", "bold"))
         print()
@@ -117,8 +117,12 @@ def cmd_decide(amos, memory, problem: str):
 
         integration = r4.get("integration", {})
         if integration:
-            print(f"│ {clr('Key Quadrants:', 'green')} {', '.join(integration.get('key_quadrants', []))}")
-            print(f"│ {clr('Recommendation:', 'green')} {integration.get('integrated_recommendation', 'N/A')}")
+            print(
+                f"│ {clr('Key Quadrants:', 'green')} {', '.join(integration.get('key_quadrants', []))}"
+            )
+            print(
+                f"│ {clr('Recommendation:', 'green')} {integration.get('integrated_recommendation', 'N/A')}"
+            )
         print(clr("└───────────────────────────────────────", "bold"))
         print()
 
@@ -143,6 +147,7 @@ def cmd_analyze(amos, topic: str):
 
     # Route query
     from amos_brain.cognitive_stack import CognitiveStack
+
     stack = CognitiveStack()
     engines = stack.route_query(topic)
 
@@ -215,14 +220,16 @@ def cmd_history(memory, args: list[str]):
     print(clr(f"\n┌─ Reasoning History (last {len(history)}) ─", "bold"))
 
     for i, entry in enumerate(history, 1):
-        ts = entry.get('timestamp', 'unknown')[:16] if entry.get('timestamp') else 'unknown'
-        problem = entry.get('problem_preview', 'N/A')[:50]
-        r2 = entry.get('rule_of_two_applied', False)
-        r4 = entry.get('rule_of_four_applied', False)
+        ts = entry.get("timestamp", "unknown")[:16] if entry.get("timestamp") else "unknown"
+        problem = entry.get("problem_preview", "N/A")[:50]
+        r2 = entry.get("rule_of_two_applied", False)
+        r4 = entry.get("rule_of_four_applied", False)
 
         print(f"│ {i}. [{ts}] {problem}...")
-        print(f"│    Rule2: {'✓' if r2 else '✗'} | Rule4: {'✓' if r4 else '✗'} | "
-              f"Confidence: {entry.get('confidence_score', 0):.0%}")
+        print(
+            f"│    Rule2: {'✓' if r2 else '✗'} | Rule4: {'✓' if r4 else '✗'} | "
+            f"Confidence: {entry.get('confidence_score', 0):.0%}"
+        )
 
     print(clr("└──────────────────────────────", "bold"))
     print()
@@ -286,7 +293,7 @@ def main():
     memory = get_brain_memory()
 
     status = amos.get_status()
-    if status.get('initialized'):
+    if status.get("initialized"):
         print(clr("✓ Brain initialized", "green"))
         print(f"  {status.get('engines_count', 0)} engines | 6 laws | 12 domains")
     else:

@@ -7,8 +7,8 @@ if str(metabolism_path) not in sys.path:
     sys.path.insert(0, str(metabolism_path))
 
 from pipeline_engine import (
-    PipelineEngine,
     Pipeline,
+    PipelineEngine,
     PipelineStage,
     get_pipeline_engine,
 )

@@ -5,20 +5,22 @@ Dynamic configuration with hot-reload, environment-specific
 settings, and validation for all AMOS components.
 """
 
-import os
 import json
-import yaml
-from typing import Dict, Any, Optional, List
-from pathlib import Path
+import os
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Optional
+
+import yaml
 
 
 @dataclass
 class ComponentConfig:
     """Configuration for a single component."""
+
     enabled: bool
-    settings: Dict[str, Any]
+    settings: dict[str, Any]
     last_updated: datetime
 
 
@@ -29,8 +31,8 @@ class ConfigManager:
     ENV_PREFIX = "AMOS_"
 
     def __init__(self):
-        self.configs: Dict[str, ComponentConfig] = {}
-        self.global_settings: Dict[str, Any] = {}
+        self.configs: dict[str, ComponentConfig] = {}
+        self.global_settings: dict[str, Any] = {}
         self._config_path = Path(self.CONFIG_FILE)
         self._load_default_config()
 
@@ -47,57 +49,49 @@ class ConfigManager:
         self.configs = {
             "cognitive_router": ComponentConfig(
                 enabled=True,
-                settings={
-                    "max_engines": 5,
-                    "min_confidence": 0.6,
-                    "risk_threshold": "MEDIUM"
-                },
-                last_updated=datetime.now()
+                settings={"max_engines": 5, "min_confidence": 0.6, "risk_threshold": "MEDIUM"},
+                last_updated=datetime.now(),
             ),
             "organism_bridge": ComponentConfig(
                 enabled=True,
-                settings={
-                    "auto_reconnect": True,
-                    "timeout_seconds": 30,
-                    "fallback_enabled": True
-                },
-                last_updated=datetime.now()
+                settings={"auto_reconnect": True, "timeout_seconds": 30, "fallback_enabled": True},
+                last_updated=datetime.now(),
             ),
             "master_orchestrator": ComponentConfig(
                 enabled=True,
                 settings={
                     "max_workers": 4,
                     "require_consensus": True,
-                    "default_priority": "MEDIUM"
+                    "default_priority": "MEDIUM",
                 },
-                last_updated=datetime.now()
+                last_updated=datetime.now(),
             ),
             "telemetry": ComponentConfig(
                 enabled=True,
                 settings={
                     "collection_interval": 30,
                     "retention_hours": 24,
-                    "metrics_enabled": True
+                    "metrics_enabled": True,
                 },
-                last_updated=datetime.now()
+                last_updated=datetime.now(),
             ),
             "ethics": ComponentConfig(
                 enabled=True,
                 settings={
                     "default_framework": "principlism",
                     "strict_mode": False,
-                    "log_violations": True
+                    "log_violations": True,
                 },
-                last_updated=datetime.now()
+                last_updated=datetime.now(),
             ),
             "resilience": ComponentConfig(
                 enabled=True,
                 settings={
                     "circuit_breaker_threshold": 5,
                     "retry_max_attempts": 3,
-                    "recovery_timeout": 30
+                    "recovery_timeout": 30,
                 },
-                last_updated=datetime.now()
+                last_updated=datetime.now(),
             ),
         }
 
@@ -118,9 +112,7 @@ class ConfigManager:
             for name, settings in data.get("components", {}).items():
                 if name in self.configs:
                     self.configs[name].enabled = settings.get("enabled", True)
-                    self.configs[name].settings.update(
-                        settings.get("settings", {})
-                    )
+                    self.configs[name].settings.update(settings.get("settings", {}))
                     self.configs[name].last_updated = datetime.now()
 
             return True
@@ -137,12 +129,9 @@ class ConfigManager:
             data = {
                 "global": self.global_settings,
                 "components": {
-                    name: {
-                        "enabled": config.enabled,
-                        "settings": config.settings
-                    }
+                    name: {"enabled": config.enabled, "settings": config.settings}
                     for name, config in self.configs.items()
-                }
+                },
             }
 
             with open(config_path, "w") as f:
@@ -158,7 +147,7 @@ class ConfigManager:
         """Load configuration from environment variables."""
         for key, value in os.environ.items():
             if key.startswith(self.ENV_PREFIX):
-                config_key = key[len(self.ENV_PREFIX):].lower()
+                config_key = key[len(self.ENV_PREFIX) :].lower()
 
                 # Try to parse as JSON for complex values
                 try:
@@ -217,7 +206,7 @@ class ConfigManager:
             return True
         return False
 
-    def get_all_configs(self) -> Dict[str, Any]:
+    def get_all_configs(self) -> dict[str, Any]:
         """Get all configurations."""
         return {
             "global": self.global_settings,
@@ -225,20 +214,18 @@ class ConfigManager:
                 name: {
                     "enabled": config.enabled,
                     "settings": config.settings,
-                    "last_updated": config.last_updated.isoformat()
+                    "last_updated": config.last_updated.isoformat(),
                 }
                 for name, config in self.configs.items()
-            }
+            },
         }
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Validate configuration and return any issues."""
         issues = []
 
         # Check required settings
-        if self.global_settings.get("environment") not in [
-            "development", "staging", "production"
-        ]:
+        if self.global_settings.get("environment") not in ["development", "staging", "production"]:
             issues.append("Invalid environment setting")
 
         # Validate component settings
@@ -286,8 +273,8 @@ def main():
     print(f"Global: {all_configs['global']}")
 
     print("\nComponent Status:")
-    for name, cfg in all_configs['components'].items():
-        status = "enabled" if cfg['enabled'] else "disabled"
+    for name, cfg in all_configs["components"].items():
+        status = "enabled" if cfg["enabled"] else "disabled"
         print(f"  {name}: {status}")
 
     print("\nValidation:")
@@ -315,4 +302,5 @@ def main():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

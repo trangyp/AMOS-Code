@@ -14,15 +14,17 @@ BUILD PLAN:
 4. Update CLI to control organism
 5. Build deployment configuration
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 29 - API-Organism Integration Build")
 print("=" * 70)
 
-print("""
+print(
+    """
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║           AMOS Brain v14.0.0 - 14-Layer Cognitive OS                  ║
 ╠═══════════════════════════════════════════════════════════════════════╣
@@ -53,45 +55,48 @@ print("""
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  FIX REQUIRED: Duplicate Route in amos_api_server.py")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 ANALYSIS:
 
    The API server has a duplicate route definition causing Flask to fail.
-   
-   ERROR: AssertionError: View function mapping is overwriting an 
+
+   ERROR: AssertionError: View function mapping is overwriting an
           existing endpoint function: api_alerts_active
-   
+
    FIX OPTIONS:
-   
+
    Option 1: Find and remove duplicate function
    - Search for 'def api_alerts_active' in amos_api_server.py
    - If found twice, remove or rename one
-   
+
    Option 2: Use explicit endpoint names
    @app.route('/api/alerts/active', endpoint='get_active_alerts')
    def api_alerts_active():
        ...
-   
+
    Option 3: Rename the new endpoint
    @app.route('/api/alerts/active')
    def get_active_alerts():  # Changed name
        ...
 
    DECISION: Apply Option 1 - Remove duplicate
-   
+
    Once fixed, the API server will integrate:
    - Workflow Engine (06_MUSCLE)
    - Pipeline Engine (07_METABOLISM)
    - Alert Manager (03_IMMUNE)
    - Orchestrator (ROOT)
-   
+
    Building AMOS Brain v14.0.0 - Cognitive OS vInfinity
-""")
+"""
+)
 
 print("\n⚠️  ACTION REQUIRED: Fix duplicate route in amos_api_server.py")
 print("=" * 70)

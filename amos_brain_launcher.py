@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Launcher - Unified menu for all brain features.
+"""AMOS Brain Launcher - Unified menu for all brain features.
 
 Discover and launch all AMOS Brain components from one place:
   - Tutorial: Learn brain features interactively
@@ -15,16 +14,15 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import os
 import subprocess
+import sys
 
 # Setup paths
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain import get_amos_integration
 from amos_brain.dashboard import print_dashboard
-
 
 # ANSI colors
 C = {
@@ -56,11 +54,19 @@ def print_menu():
     """Print main menu."""
     print(clr("Available Features:", "bold"))
     print()
-    print(f"  {clr('1', 'cyan', 'bold')}. {clr('Tutorial', 'green')}     - Learn brain features interactively")
-    print(f"  {clr('2', 'cyan', 'bold')}. {clr('CLI', 'green')}          - Brain command interface (/decide, /analyze)")
-    print(f"  {clr('3', 'cyan', 'bold')}. {clr('Tests', 'green')}        - Run integration test suite (32 tests)")
+    print(
+        f"  {clr('1', 'cyan', 'bold')}. {clr('Tutorial', 'green')}     - Learn brain features interactively"
+    )
+    print(
+        f"  {clr('2', 'cyan', 'bold')}. {clr('CLI', 'green')}          - Brain command interface (/decide, /analyze)"
+    )
+    print(
+        f"  {clr('3', 'cyan', 'bold')}. {clr('Tests', 'green')}        - Run integration test suite (32 tests)"
+    )
     print(f"  {clr('4', 'cyan', 'bold')}. {clr('Cookbook', 'green')}     - Demo workflow examples")
-    print(f"  {clr('5', 'cyan', 'bold')}. {clr('Dashboard', 'green')}    - View reasoning analytics")
+    print(
+        f"  {clr('5', 'cyan', 'bold')}. {clr('Dashboard', 'green')}    - View reasoning analytics"
+    )
     print(f"  {clr('6', 'cyan', 'bold')}. {clr('Status', 'green')}       - Show brain status")
     print(f"  {clr('7', 'cyan', 'bold')}. {clr('Guide', 'yellow')}       - Open usage guide")
     print(f"  {clr('0', 'red', 'bold')}. {clr('Exit', 'red')}         - Quit launcher")
@@ -138,15 +144,15 @@ def show_status():
     # Show laws
     print()
     print(clr("Active Laws:", "bold"))
-    for law in status.get('laws_active', []):
+    for law in status.get("laws_active", []):
         print(f"  • {law}")
 
     # Show domains
     print()
     print(clr("Covered Domains:", "bold"))
-    for domain in status.get('domains_covered', [])[:6]:
+    for domain in status.get("domains_covered", [])[:6]:
         print(f"  • {domain}")
-    if len(status.get('domains_covered', [])) > 6:
+    if len(status.get("domains_covered", [])) > 6:
         print(f"  ... and {len(status.get('domains_covered', [])) - 6} more")
 
     print()
@@ -188,7 +194,7 @@ def main():
     amos = get_amos_integration()
     status = amos.get_status()
 
-    if status.get('initialized'):
+    if status.get("initialized"):
         print(clr("✓ Brain ready", "green"))
         print(
             f"  {status.get('engines_count', 0)} engines | "

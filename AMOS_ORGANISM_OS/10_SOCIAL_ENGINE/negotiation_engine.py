@@ -1,5 +1,4 @@
-"""
-Negotiation Engine — Multi-Party Negotiation System
+"""Negotiation Engine — Multi-Party Negotiation System
 
 Manages negotiations between multiple parties (agents, humans, systems).
 Handles proposal generation, offer evaluation, and agreement formation.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class NegotiationStatus(Enum):
     """Status of a negotiation."""
+
     PENDING = "pending"
     ACTIVE = "active"
     ACCEPTED = "accepted"
@@ -27,6 +27,7 @@ class NegotiationStatus(Enum):
 
 class NegotiationStrategy(Enum):
     """Strategy for negotiation."""
+
     COOPERATIVE = "cooperative"  # Win-win focus
     COMPETITIVE = "competitive"  # Win-lose focus
     COMPROMISE = "compromise"  # Middle ground
@@ -36,40 +37,43 @@ class NegotiationStrategy(Enum):
 @dataclass
 class Proposal:
     """A proposal in a negotiation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     party: str = ""
-    terms: Dict[str, Any] = field(default_factory=dict)
+    terms: dict[str, Any] = field(default_factory=dict)
     value_estimate: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     expires_at: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 @dataclass
 class NegotiationResult:
     """Result of a negotiation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     status: NegotiationStatus = NegotiationStatus.PENDING
     accepted_proposal: Optional[Proposal] = None
-    final_terms: Dict[str, Any] = field(default_factory=dict)
-    parties: List[str] = field(default_factory=list)
+    final_terms: dict[str, Any] = field(default_factory=dict)
+    parties: list[str] = field(default_factory=list)
     rounds: int = 0
     started_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     completed_at: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
-            "accepted_proposal": self.accepted_proposal.to_dict() if self.accepted_proposal else None,
+            "accepted_proposal": self.accepted_proposal.to_dict()
+            if self.accepted_proposal
+            else None,
         }
 
 
 class NegotiationEngine:
-    """
-    Manages multi-party negotiations.
+    """Manages multi-party negotiations.
 
     Handles proposal generation, offer evaluation, counter-proposals,
     and agreement formation.
@@ -81,13 +85,13 @@ class NegotiationEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.active_negotiations: Dict[str, NegotiationResult] = {}
-        self.completed_negotiations: Dict[str, NegotiationResult] = {}
-        self.proposal_history: List[Proposal] = []
+        self.active_negotiations: dict[str, NegotiationResult] = {}
+        self.completed_negotiations: dict[str, NegotiationResult] = {}
+        self.proposal_history: list[Proposal] = []
 
     def start_negotiation(
         self,
-        parties: List[str],
+        parties: list[str],
         topic: str,
         strategy: NegotiationStrategy = NegotiationStrategy.COOPERATIVE,
     ) -> NegotiationResult:
@@ -104,7 +108,7 @@ class NegotiationEngine:
         self,
         negotiation_id: str,
         party: str,
-        terms: Dict[str, Any],
+        terms: dict[str, Any],
         value_estimate: float,
     ) -> Optional[Proposal]:
         """Submit a proposal to an active negotiation."""
@@ -157,7 +161,7 @@ class NegotiationEngine:
         negotiation_id: str,
         party: str,
         original_proposal_id: str,
-        counter_terms: Dict[str, Any],
+        counter_terms: dict[str, Any],
         counter_value: float,
     ) -> Optional[Proposal]:
         """Submit a counter-proposal."""
@@ -218,7 +222,7 @@ class NegotiationEngine:
         self._save_negotiations()
         return True
 
-    def get_negotiation_status(self, negotiation_id: str) -> Optional[Dict[str, Any]]:
+    def get_negotiation_status(self, negotiation_id: str) -> Optional[dict[str, Any]]:
         """Get status of a negotiation."""
         negotiation = self.active_negotiations.get(negotiation_id)
         if not negotiation:
@@ -239,7 +243,7 @@ class NegotiationEngine:
         }
         negotiations_file.write_text(json.dumps(data, indent=2))
 
-    def list_negotiations(self, active_only: bool = False) -> List[Dict[str, Any]]:
+    def list_negotiations(self, active_only: bool = False) -> list[dict[str, Any]]:
         """List all negotiations."""
         negotiations = list(self.active_negotiations.values())
         if not active_only:
@@ -247,15 +251,18 @@ class NegotiationEngine:
 
         return [n.to_dict() for n in negotiations]
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get engine status."""
         active = len(self.active_negotiations)
         completed = len(self.completed_negotiations)
         total_rounds = sum(n.rounds for n in self.active_negotiations.values())
         total_rounds += sum(n.rounds for n in self.completed_negotiations.values())
 
-        accepted = sum(1 for n in self.completed_negotiations.values()
-                      if n.status == NegotiationStatus.ACCEPTED)
+        accepted = sum(
+            1
+            for n in self.completed_negotiations.values()
+            if n.status == NegotiationStatus.ACCEPTED
+        )
 
         return {
             "active_negotiations": active,

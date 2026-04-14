@@ -58,9 +58,11 @@ def consolidate_session(messages: list, config: dict) -> list[str]:
         return []
 
     try:
-        from providers import stream, AssistantTurn
-        from .store import MemoryEntry, save_memory, check_conflict
         import json
+
+        from providers import AssistantTurn, stream
+
+        from .store import MemoryEntry, check_conflict, save_memory
 
         # Build condensed transcript from the last 40 messages (≈ 20 turns)
         recent = messages[-40:]

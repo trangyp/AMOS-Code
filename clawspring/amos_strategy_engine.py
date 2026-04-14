@@ -1,7 +1,7 @@
 """AMOS Strategy/Game Theory Engine - Strategic planning and game theory."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -38,11 +38,13 @@ class GameNormalFormKernel:
         for category, terms in game_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "game_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "game_primitives": self._get_primitives(category),
+                    }
+                )
 
         return StrategyAnalysis(
             domain="game_normal_form",
@@ -91,11 +93,13 @@ class GameDynamicalKernel:
         for category, terms in dynamical_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "dynamical_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "dynamical_primitives": self._get_primitives(category),
+                    }
+                )
 
         return StrategyAnalysis(
             domain="game_dynamical",
@@ -150,11 +154,13 @@ class NegotiationKernel:
         for category, terms in negotiation_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "negotiation_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "negotiation_primitives": self._get_primitives(category),
+                    }
+                )
 
         # Add safety warnings
         warnings = []
@@ -162,14 +168,18 @@ class NegotiationKernel:
             warnings.append("SAFETY: Do not design strategies for physical harm")
             warnings.append("SAFETY: Focus on constructive negotiation approaches")
 
-        if any(t in input_data.lower() for t in ["collusion", "cartel", "price_fixing", "monopoly"]):
+        if any(
+            t in input_data.lower() for t in ["collusion", "cartel", "price_fixing", "monopoly"]
+        ):
             warnings.append("SAFETY: Do not support illegal market collusion")
             warnings.append("SAFETY: Comply with antitrust regulations")
 
         return StrategyAnalysis(
             domain="negotiation",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.7 if findings else 0.3,
             limitations=[
                 "No real negotiation simulation",
@@ -249,12 +259,14 @@ class AMOSStrategyEngine:
         ]
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 if finding.get("type") == "safety_warnings":
@@ -263,16 +275,22 @@ class AMOSStrategyEngine:
                 else:
                     cat = finding.get("category", "general")
                     lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                    primitives = finding.get("game_primitives") or finding.get("dynamical_primitives") or finding.get("negotiation_primitives")
+                    primitives = (
+                        finding.get("game_primitives")
+                        or finding.get("dynamical_primitives")
+                        or finding.get("negotiation_primitives")
+                    )
                     if primitives:
                         lines.append(f"  Primitives: {', '.join(primitives[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -280,25 +298,29 @@ class AMOSStrategyEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Strategy/game analysis is structural pattern matching, not game theory research.",
-            "No equilibrium computation. No simulations. No behavioral models.",
-            "DO NOT use for actual strategic decisions without expert review.",
-            "Human strategic expertise required for all decisions.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Strategy/game analysis is structural pattern matching, not game theory research.",
+                "No equilibrium computation. No simulations. No behavioral models.",
+                "DO NOT use for actual strategic decisions without expert review.",
+                "Human strategic expertise required for all decisions.",
+            ]
+        )
 
         return "\n".join(lines)
 

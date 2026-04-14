@@ -8,12 +8,10 @@ from __future__ import annotations
 
 import struct
 import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 # ── Helpers ───────────────────────────────────────────────────────────────
+
 
 def _make_pcm(n_samples: int = 1600) -> bytes:
     """Return silent int16 PCM (all zeros)."""
@@ -22,25 +20,30 @@ def _make_pcm(n_samples: int = 1600) -> bytes:
 
 # ── voice.keyterms ────────────────────────────────────────────────────────
 
+
 class TestSplitIdentifier:
     def test_camel_case(self):
         from voice.keyterms import split_identifier
+
         assert split_identifier("nanoClaudeCode") == ["nano", "Claude", "Code"]
 
     def test_kebab_case(self):
         from voice.keyterms import split_identifier
+
         result = split_identifier("my-webhook-handler")
         assert "webhook" in result
         assert "handler" in result
 
     def test_snake_case(self):
         from voice.keyterms import split_identifier
+
         result = split_identifier("my_project_root")
         assert "project" in result
         assert "root" in result
 
     def test_short_fragments_dropped(self):
         from voice.keyterms import split_identifier
+
         result = split_identifier("a-bb-ccc")
         # "a" and "bb" are ≤2 chars and should be dropped
         assert "a" not in result
@@ -49,6 +52,7 @@ class TestSplitIdentifier:
 
     def test_path_like(self):
         from voice.keyterms import split_identifier
+
         result = split_identifier("src/services/voice.ts")
         assert "services" in result
         assert "voice" in result
@@ -57,37 +61,44 @@ class TestSplitIdentifier:
 class TestGetVoiceKeyterms:
     def test_returns_list(self):
         from voice.keyterms import get_voice_keyterms
+
         terms = get_voice_keyterms()
         assert isinstance(terms, list)
 
     def test_global_terms_present(self):
-        from voice.keyterms import get_voice_keyterms, GLOBAL_KEYTERMS
+        from voice.keyterms import GLOBAL_KEYTERMS, get_voice_keyterms
+
         terms = get_voice_keyterms()
         # At least half of global terms should appear
         overlap = sum(1 for t in GLOBAL_KEYTERMS if t in terms)
         assert overlap >= len(GLOBAL_KEYTERMS) // 2
 
     def test_max_length(self):
-        from voice.keyterms import get_voice_keyterms, MAX_KEYTERMS
+        from voice.keyterms import MAX_KEYTERMS, get_voice_keyterms
+
         terms = get_voice_keyterms()
         assert len(terms) <= MAX_KEYTERMS
 
     def test_deduplication(self):
         from voice.keyterms import get_voice_keyterms
+
         terms = get_voice_keyterms()
         assert len(terms) == len(set(terms)), "Duplicate keyterms found"
 
     def test_recent_files_passed(self):
         from voice.keyterms import get_voice_keyterms
+
         terms = get_voice_keyterms(recent_files=["src/authentication_handler.py"])
         assert "authentication" in terms or "handler" in terms
 
 
 # ── voice.stt ─────────────────────────────────────────────────────────────
 
+
 class TestPcmToWav:
     def test_riff_header(self):
         from voice.stt import _pcm_to_wav
+
         wav = _pcm_to_wav(_make_pcm(1600))
         assert wav[:4] == b"RIFF"
         assert wav[8:12] == b"WAVE"
@@ -95,6 +106,7 @@ class TestPcmToWav:
 
     def test_data_chunk(self):
         from voice.stt import _pcm_to_wav
+
         pcm = _make_pcm(1600)
         wav = _pcm_to_wav(pcm)
         # data chunk starts at byte 36
@@ -104,6 +116,7 @@ class TestPcmToWav:
 
     def test_roundtrip_length(self):
         from voice.stt import _pcm_to_wav
+
         pcm = _make_pcm(800)
         wav = _pcm_to_wav(pcm)
         # WAV = 44-byte header + pcm data
@@ -113,10 +126,12 @@ class TestPcmToWav:
 class TestKeytermsToPrompt:
     def test_empty(self):
         from voice.stt import _keyterms_to_prompt
+
         assert _keyterms_to_prompt([]) == ""
 
     def test_contains_terms(self):
         from voice.stt import _keyterms_to_prompt
+
         p = _keyterms_to_prompt(["grep", "TypeScript", "MCP"])
         assert "grep" in p
         assert "TypeScript" in p
@@ -124,6 +139,7 @@ class TestKeytermsToPrompt:
 
     def test_truncates_at_40(self):
         from voice.stt import _keyterms_to_prompt
+
         terms = [f"term{i}" for i in range(100)]
         prompt = _keyterms_to_prompt(terms)
         # should not contain term40 or beyond
@@ -134,12 +150,14 @@ class TestKeytermsToPrompt:
 class TestSttAvailability:
     def test_returns_tuple(self):
         from voice.stt import check_stt_availability
+
         result = check_stt_availability()
         assert isinstance(result, tuple)
         assert len(result) == 2
 
     def test_backend_name_string(self):
         from voice.stt import get_stt_backend_name
+
         name = get_stt_backend_name()
         assert isinstance(name, str)
 
@@ -148,15 +166,18 @@ class TestSttAvailability:
         # With faster-whisper/openai-whisper absent but key present → available
         with patch.dict(sys.modules, {"faster_whisper": None, "whisper": None}):
             from voice.stt import check_stt_availability
+
             ok, _ = check_stt_availability()
             assert ok is True
 
     @patch.dict("os.environ", {}, clear=True)
     def test_unavailable_without_backends(self):
         with patch.dict(sys.modules, {"faster_whisper": None, "whisper": None}):
-            from voice.stt import check_stt_availability
             # If no key either
             import os
+
+            from voice.stt import check_stt_availability
+
             os.environ.pop("OPENAI_API_KEY", None)
             ok, reason = check_stt_availability()
             if not ok:
@@ -165,9 +186,11 @@ class TestSttAvailability:
 
 # ── voice.recorder ────────────────────────────────────────────────────────
 
+
 class TestRecorderAvailability:
     def test_returns_tuple(self):
         from voice.recorder import check_recording_availability
+
         result = check_recording_availability()
         assert isinstance(result, tuple)
         assert len(result) == 2
@@ -176,6 +199,7 @@ class TestRecorderAvailability:
         sd_mock = MagicMock()
         with patch.dict(sys.modules, {"sounddevice": sd_mock}):
             from voice.recorder import check_recording_availability
+
             ok, reason = check_recording_availability()
             assert ok is True
             assert reason is None
@@ -183,15 +207,18 @@ class TestRecorderAvailability:
 
 # ── voice.__init__ ────────────────────────────────────────────────────────
 
+
 class TestVoiceInit:
     def test_check_voice_deps_returns_tuple(self):
         from voice import check_voice_deps
+
         result = check_voice_deps()
         assert isinstance(result, tuple)
         assert len(result) == 2
 
     def test_exports(self):
         import voice
+
         assert hasattr(voice, "check_voice_deps")
         assert hasattr(voice, "voice_input")
         assert hasattr(voice, "transcribe")
@@ -200,13 +227,16 @@ class TestVoiceInit:
 
 # ── REPL integration ──────────────────────────────────────────────────────
 
+
 class TestReplVoiceIntegration:
     def test_voice_in_commands(self):
         import clawspring
+
         assert "voice" in clawspring.COMMANDS
 
     def test_voice_command_callable(self):
         import clawspring
+
         assert callable(clawspring.COMMANDS["voice"])
 
     def test_handle_slash_voice_sentinel(self):
@@ -224,6 +254,7 @@ class TestReplVoiceIntegration:
     def test_voice_status_no_crash(self, capsys):
         """'/voice status' should not raise even without audio hardware."""
         import clawspring
+
         # Should not raise
         try:
             clawspring.cmd_voice("status", object(), {})
@@ -233,6 +264,7 @@ class TestReplVoiceIntegration:
 
     def test_voice_lang_set(self, capsys):
         import clawspring
+
         clawspring.cmd_voice("lang zh", object(), {})
         assert clawspring._voice_language == "zh"
         # Reset

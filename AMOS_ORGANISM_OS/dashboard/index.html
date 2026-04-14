@@ -80,7 +80,7 @@
 <body>
     <h1>🧠 AMOS Cognitive System Dashboard</h1>
     <p>API Base URL: <span class="endpoint">http://localhost:8765</span></p>
-    
+
     <div class="grid">
         <div class="card">
             <h2>System Status</h2>
@@ -88,7 +88,7 @@
             <button onclick="checkStatus()">Full Status</button>
             <pre id="status-result">Click a button to check system status...</pre>
         </div>
-        
+
         <div class="card">
             <h2>Brain Cognition</h2>
             <input type="text" id="thought-input" placeholder="Enter something to think about...">
@@ -96,7 +96,7 @@
             <button onclick="plan()">POST /brain/plan</button>
             <pre id="brain-result">...</pre>
         </div>
-        
+
         <div class="card">
             <h2>Agents</h2>
             <button onclick="listAgents()">GET /agents/list</button>
@@ -104,7 +104,7 @@
             <button onclick="execute()">POST /agents/execute</button>
             <pre id="agent-result">...</pre>
         </div>
-        
+
         <div class="card">
             <h2>Analysis</h2>
             <input type="text" id="topic-input" placeholder="Enter topic to analyze...">
@@ -115,7 +115,7 @@
 
     <script>
         const API = 'http://localhost:8765';
-        
+
         async function apiCall(endpoint, method = 'GET', body = null) {
             try {
                 const options = {
@@ -123,7 +123,7 @@
                     headers: { 'Content-Type': 'application/json' }
                 };
                 if (body) options.body = JSON.stringify(body);
-                
+
                 const response = await fetch(API + endpoint, options);
                 const data = await response.json();
                 return { ok: response.ok, data };
@@ -131,7 +131,7 @@
                 return { ok: false, error: error.message };
             }
         }
-        
+
         async function checkHealth() {
             const result = await apiCall('/health');
             const el = document.getElementById('status-result');
@@ -141,7 +141,7 @@
                 el.innerHTML = `<span class="status-error">✗ Error: ${result.error}</span>`;
             }
         }
-        
+
         async function checkStatus() {
             const result = await apiCall('/status');
             const el = document.getElementById('status-result');
@@ -151,41 +151,41 @@
                 el.innerHTML = `<span class="status-error">✗ Error: ${result.error}</span>`;
             }
         }
-        
+
         async function think() {
             const content = document.getElementById('thought-input').value || 'Hello AMOS';
             const result = await apiCall('/brain/think', 'POST', { content });
-            document.getElementById('brain-result').textContent = 
+            document.getElementById('brain-result').textContent =
                 JSON.stringify(result.data || result.error, null, 2);
         }
-        
+
         async function plan() {
             const goal = document.getElementById('thought-input').value || 'Create something useful';
             const result = await apiCall('/brain/plan', 'POST', { goal });
-            document.getElementById('brain-result').textContent = 
+            document.getElementById('brain-result').textContent =
                 JSON.stringify(result.data || result.error, null, 2);
         }
-        
+
         async function listAgents() {
             const result = await apiCall('/agents/list');
-            document.getElementById('agent-result').textContent = 
+            document.getElementById('agent-result').textContent =
                 JSON.stringify(result.data || result.error, null, 2);
         }
-        
+
         async function execute() {
             const command = document.getElementById('command-input').value || 'echo "Hello from AMOS"';
             const result = await apiCall('/agents/execute', 'POST', { command });
-            document.getElementById('agent-result').textContent = 
+            document.getElementById('agent-result').textContent =
                 JSON.stringify(result.data || result.error, null, 2);
         }
-        
+
         async function analyze() {
             const topic = document.getElementById('topic-input').value || 'System capabilities';
             const result = await apiCall('/brain/analyze', 'POST', { topic });
-            document.getElementById('analyze-result').textContent = 
+            document.getElementById('analyze-result').textContent =
                 JSON.stringify(result.data || result.error, null, 2);
         }
-        
+
         // Auto-check health on load
         checkHealth();
     </script>

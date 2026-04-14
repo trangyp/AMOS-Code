@@ -1,7 +1,7 @@
 """AMOS Scientific/Research Engine - Domain-specific scientific analysis."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -38,11 +38,13 @@ class BiologyCognitionEngine:
         for category, terms in bio_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "significance": "medium" if len(matches) < 3 else "high",
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "significance": "medium" if len(matches) < 3 else "high",
+                    }
+                )
 
         return ScientificAnalysis(
             domain="biology_cognition",
@@ -80,11 +82,13 @@ class PhysicsCosmosEngine:
         for category, terms in physics_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "physical_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "physical_principles": self._get_principles(category),
+                    }
+                )
 
         return ScientificAnalysis(
             domain="physics_cosmos",
@@ -133,11 +137,13 @@ class MathematicsEngine:
         for category, terms in math_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "mathematical_approach": self._get_approach(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "mathematical_approach": self._get_approach(category),
+                    }
+                )
 
         return ScientificAnalysis(
             domain="mathematics",
@@ -186,11 +192,13 @@ class EngineeringSystemsEngine:
         for category, terms in engineering_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "engineering_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "engineering_principles": self._get_principles(category),
+                    }
+                )
 
         return ScientificAnalysis(
             domain="engineering_systems",
@@ -270,12 +278,14 @@ class AMOSScientificEngine:
         ]
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper()}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len(analysis.findings)}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper()}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len(analysis.findings)}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 cat = finding.get("category", "general")
@@ -284,10 +294,12 @@ class AMOSScientificEngine:
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -295,24 +307,28 @@ class AMOSScientificEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Scientific analysis is pattern matching on text, not scientific research.",
-            "No experiments. No measurements. No peer review. Structural modeling only.",
-            "Human scientific expertise required for validation.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Scientific analysis is pattern matching on text, not scientific research.",
+                "No experiments. No measurements. No peer review. Structural modeling only.",
+                "Human scientific expertise required for validation.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -357,8 +373,10 @@ if __name__ == "__main__":
 
     print(f"\nAnalyzed {len(results)} domains:")
     for domain, analysis in results.items():
-        print(f"  - {domain}: {len(analysis.findings)} findings, "
-              f"confidence={analysis.confidence:.2f}")
+        print(
+            f"  - {domain}: {len(analysis.findings)} findings, "
+            f"confidence={analysis.confidence:.2f}"
+        )
 
     # Full summary
     print("\n" + "=" * 60)

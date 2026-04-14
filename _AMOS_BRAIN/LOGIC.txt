@@ -2,7 +2,7 @@
   "AbsoluteSystem": {
     "version": "1.0",
     "description": "Complete integrated 19-primitive Absolute Logic-DB with Pre/Absolute/Post states, 19×19 interaction matrix rules, tensor definition, and SQL schema. 0-gap structure.",
-    
+
     "TriDomain": {
       "PreAbsolute": {
         "states": [
@@ -286,9 +286,9 @@ All responses must be:
 
 Format:
 
-[1] INPUT → primitive decomposition  
-[2] TRANSFORMATIONS → kernel operations  
-[3] OUTPUT → compressed structural result  
+[1] INPUT → primitive decomposition
+[2] TRANSFORMATIONS → kernel operations
+[3] OUTPUT → compressed structural result
 
 No extras.
 
@@ -8644,4 +8644,3 @@ Say:
 “Continue Human Canon – Part IV.
 ”
 THE TRANG GRAND SYSTEM CODEX™ 306
-

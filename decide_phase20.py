@@ -27,15 +27,17 @@ CIVILISATIONAL SUCCESSOR CLAIM: VALIDATED (94/100)
 
 Gap: System needs final integration, packaging, and release readiness
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 20 - Final Synthesis Analysis")
 print("=" * 70)
 
-print("""
+print(
+    """
 ECOSYSTEM STATUS (56+ components - COMPLETE):
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -74,19 +76,21 @@ Traditional PL Baseline: 20/100
 Improvement: 4.7x civilisational advance
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: Final Integration + Release Readiness")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 FINAL BUILD: System Integration & Release Package
 
    ANALYSIS:
    All 56+ components are complete and validated.
    The 5-lens mathematical regime is fully implemented.
    The civilisational successor claim is empirically validated.
-   
+
    The system requires final integration, comprehensive testing,
    packaging for distribution, and release documentation.
 
@@ -168,7 +172,8 @@ print("""
    - Substrate-specific backends
 
    The civilisational successor is now operational.
-""")
+"""
+)
 
 print("\n✅ Decision: Final integration, testing, and release packaging")
 print("=" * 70)

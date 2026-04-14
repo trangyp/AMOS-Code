@@ -277,4 +277,122 @@ alias amos-debug='PYTHONASYNCIODEBUG=1 python -m pudb'
 
 ---
 
+## 🔒 Open-Source Security Scanning Stack
+
+AMOS uses a fully open-source (Apache-2.0/MIT licensed) security toolchain with no proprietary dependencies.
+
+### Security Tools Overview
+
+| Tool | License | Purpose | Coverage |
+|------|---------|---------|----------|
+| **Semgrep CE** | LGPL-2.1 | Static analysis | 30+ languages, custom rules |
+| **Trivy** | Apache-2.0 | Vulnerability scanning | Code, containers, K8s |
+| **Gitleaks** | MIT | Secret detection | Git history & files |
+| **OSV-Scanner** | Apache-2.0 | Dependency audit | Lockfiles, SBOMs |
+| **Bandit** | Apache-2.0 | Python security | Python-specific issues |
+| **Ruff** | MIT | Python lint/format | Replaces black/flake8/isort |
+
+### Installation
+
+```bash
+# Install all tools at once
+pip install ruff mypy pyright pytest pytest-cov coverage[toml] pre-commit bandit
+
+# Install OSV-Scanner (requires Go)
+go install github.com/google/osv-scanner/cmd/osv-scanner@v1
+
+# Install Trivy (macOS)
+brew install trivy
+
+# Install Gitleaks (macOS)
+brew install gitleaks
+
+# Install Semgrep (all platforms)
+pip install semgrep
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Quick Run Commands
+
+```bash
+# --- Security Scans ---
+semgrep --config=auto --error                      # Static analysis
+semgrep --config=p/security-audit .               # Security audit
+semgrep --config=p/cwe-top-25 .                   # CWE Top 25
+trivy fs .                                         # Filesystem vulnerability scan
+gitleaks detect --source .                         # Secret detection
+osv-scanner -r .                                   # Dependency vulnerability scan
+bandit -r . -ll                                    # Python security scan
+
+# --- Python Quality ---
+ruff check . --fix                                 # Linting with auto-fix
+ruff format .                                      # Code formatting
+mypy . --ignore-missing-imports                    # Type checking
+pyright                                            # Alternative type checker
+
+# --- Testing ---
+pytest -q                                          # Run tests quietly
+pytest --tb=short                                  # Short traceback
+coverage run -m pytest                             # Run with coverage
+coverage report -m                                 # Show missing lines
+coverage html && open htmlcov/index.html           # HTML report
+
+# --- All-in-One Local Scan ---
+ruff check . && mypy . && bandit -r . && pytest -q
+
+# --- Pre-commit (runs all checks) ---
+pre-commit run --all-files                         # Run all hooks
+pre-commit run --all-files --hook-stage pre-push   # Include heavy checks
+```
+
+### CI/CD Integration
+
+All security scans run automatically on:
+- Every push to `main`, `master`, `develop`
+- Every pull request
+- Daily scheduled runs (00:00 UTC)
+
+View results in:
+- **GitHub Security tab** → Code scanning alerts
+- **PR checks** → Security scan summary
+- **Actions tab** → Detailed logs
+
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `.github/workflows/security-scan.yml` | CI workflow for all security tools |
+| `.pre-commit-config.yaml` | Pre-commit hooks (runs locally) |
+| `pyproject.toml` | Ruff, mypy, pytest, coverage settings |
+| `.gitleaks.toml` | (Optional) Custom secret patterns |
+
+### GitHub Actions Local Testing
+
+```bash
+# Install act (run GitHub Actions locally)
+brew install act
+
+# Run security workflow locally
+act -j semgrep
+act -j trivy
+act -j gitleaks
+
+# Run full security scan
+act -j security-summary
+```
+
+### Exit Codes & CI Behavior
+
+| Tool | Exit on Issues | Config Location |
+|------|----------------|-----------------|
+| Semgrep | `--error` | CLI flag |
+| Trivy | `exit-code: 1` | workflow file |
+| Gitleaks | `exit 1` | default |
+| OSV-Scanner | `continue-on-error: true` | workflow file |
+| Bandit | `-ii` | CLI flag |
+
+---
+
 **All tools are installed and ready to use!** Start with `icecream` for quick debugging and `ipdb` for deep investigation.

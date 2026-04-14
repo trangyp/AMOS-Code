@@ -6,12 +6,13 @@ from pathlib import Path
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from amos_cognitive_router import get_router
-from engine_executor import execute_cognitive_task
-from multi_agent_orchestrator import run_cognitive_consensus
-from cognitive_audit import record_cognitive_decision, get_audit_trail
-from feedback_loop import get_feedback_loop
 from audit_exporter import export_audit
+from cognitive_audit import get_audit_trail, record_cognitive_decision
+from engine_executor import execute_cognitive_task
+from feedback_loop import get_feedback_loop
+from multi_agent_orchestrator import run_cognitive_consensus
+
+from amos_cognitive_router import get_router
 
 
 def test_cognitive_router():
@@ -68,7 +69,9 @@ def test_multi_agent_orchestrator():
     assert len(consensus.perspectives) == 3, "Should have 3 perspectives"
     assert 0.0 <= consensus.agreement_score <= 1.0
     assert consensus.total_execution_time_ms > 0
-    print(f"  ✓ {len(consensus.perspectives)} perspectives, agreement: {consensus.agreement_score:.0%}")
+    print(
+        f"  ✓ {len(consensus.perspectives)} perspectives, agreement: {consensus.agreement_score:.0%}"
+    )
 
     return True
 
@@ -87,7 +90,7 @@ def test_audit_trail():
         laws=["RULE_OF_2"],
         violations=[],
         exec_time_ms=5.0,
-        recommendation="Test passed"
+        recommendation="Test passed",
     )
 
     audit = get_audit_trail()
@@ -117,7 +120,7 @@ def test_feedback_loop():
             laws=[],
             violations=[],
             exec_time_ms=10.0,
-            recommendation="Test"
+            recommendation="Test",
         )
 
     insights = loop.analyze_patterns()
@@ -125,7 +128,9 @@ def test_feedback_loop():
     # Should have insight for test_domain
     test_insights = [i for i in insights if i.pattern == "test_domain"]
     if test_insights:
-        print(f"  ✓ Derived insight for test_domain: {len(test_insights[0].recommended_engines)} engines")
+        print(
+            f"  ✓ Derived insight for test_domain: {len(test_insights[0].recommended_engines)} engines"
+        )
     else:
         print(f"  ✓ Feedback loop analyzed {len(insights)} patterns")
 
@@ -170,7 +175,7 @@ def test_full_pipeline():
     recent = audit.get_recent(1)
     assert len(recent) > 0
 
-    print(f"  ✓ Pipeline: analyze → execute → audit → complete")
+    print("  ✓ Pipeline: analyze → execute → audit → complete")
     print(f"    Domain: {analysis.primary_domain}")
     print(f"    Engines: {len(analysis.suggested_engines)}")
 

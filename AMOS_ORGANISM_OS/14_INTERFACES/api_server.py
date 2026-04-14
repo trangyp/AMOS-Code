@@ -1,19 +1,16 @@
-"""
-API Server — REST API for AMOS Organism.
+"""API Server — REST API for AMOS Organism.
 """
 
 from __future__ import annotations
 
 import json
 import sys
-from dataclasses import dataclass
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from typing import Any, Dict, Optional
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Optional
 
 
 class APIServer:
-    """
-    HTTP API server for AMOS Organism.
+    """HTTP API server for AMOS Organism.
 
     Endpoints:
     - GET /status: Organism status
@@ -63,7 +60,7 @@ class APIServer:
                             "name": "TaskExecutor",
                             "type": "execution",
                             "capabilities": ["run_command", "check_status"],
-                            "endpoint": "/agents/execute"
+                            "endpoint": "/agents/execute",
                         }
                     ]
                     self._send_json({"agents": agents, "count": len(agents)})
@@ -71,8 +68,8 @@ class APIServer:
                     self._send_json({"error": "Not found"}, 404)
 
             def do_POST(self):
-                content_len = int(self.headers.get('Content-Length', 0))
-                body = self.rfile.read(content_len).decode('utf-8')
+                content_len = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(content_len).decode("utf-8")
                 try:
                     data = json.loads(body) if body else {}
                 except json.JSONDecodeError:
@@ -94,30 +91,32 @@ class APIServer:
                     content = data.get("content", "")
                     perception = organism.brain.perceive(content)
                     concept = organism.brain.conceptualize(perception, "api_request")
-                    self._send_json({
-                        "perception_id": perception.id,
-                        "perception": perception.content,
-                        "concept_id": concept.id,
-                        "concept": concept.content,
-                        "cognitive_layers": ["perceptual", "conceptual"],
-                        "brain_session": organism.brain.state.session_id,
-                    })
+                    self._send_json(
+                        {
+                            "perception_id": perception.id,
+                            "perception": perception.content,
+                            "concept_id": concept.id,
+                            "concept": concept.content,
+                            "cognitive_layers": ["perceptual", "conceptual"],
+                            "brain_session": organism.brain.state.session_id,
+                        }
+                    )
 
                 elif self.path == "/brain/analyze":
                     # Systemic multi-perspective analysis
                     topic = data.get("topic", "")
                     perception = organism.brain.perceive(topic, source="analysis_request")
-                    
+
                     # Get world model context
                     world_sectors = []
-                    if hasattr(organism, 'knowledge'):
+                    if hasattr(organism, "knowledge"):
                         world_sectors = list(organism.knowledge.nodes.keys())[:5]
-                    
+
                     # Get legal constraints
                     legal_rules = []
-                    if hasattr(organism, 'policy_engine'):
+                    if hasattr(organism, "policy_engine"):
                         legal_rules = ["safety", "compliance", "ethics"]
-                    
+
                     analysis = {
                         "topic": topic,
                         "perception_id": perception.id,
@@ -134,11 +133,13 @@ class APIServer:
                     action = data.get("action", "")
                     params = data.get("params", {})
                     decision = organism.router.route(action, params)
-                    self._send_json({
-                        "target": decision.target,
-                        "action": decision.action,
-                        "reason": decision.reason,
-                    })
+                    self._send_json(
+                        {
+                            "target": decision.target,
+                            "action": decision.action,
+                            "reason": decision.reason,
+                        }
+                    )
 
                 elif self.path == "/agents/execute":
                     # Execute command via TaskExecutor agent
@@ -146,31 +147,34 @@ class APIServer:
                     if not command:
                         self._send_json({"error": "Command required"}, 400)
                         return
-                    
+
                     # Import and use agent
                     try:
-                        sys.path.insert(0, 'agents')
+                        sys.path.insert(0, "agents")
                         from task_executor import create_agent
+
                         agent = create_agent()
                         result = agent.run_command(command)
-                        self._send_json({
-                            "success": result.success,
-                            "stdout": result.stdout,
-                            "stderr": result.stderr,
-                            "exit_code": result.exit_code,
-                            "command": result.command,
-                            "executed_at": result.executed_at,
-                        })
+                        self._send_json(
+                            {
+                                "success": result.success,
+                                "stdout": result.stdout,
+                                "stderr": result.stderr,
+                                "exit_code": result.exit_code,
+                                "command": result.command,
+                                "executed_at": result.executed_at,
+                            }
+                        )
                     except Exception as e:
                         self._send_json({"error": str(e)}, 500)
 
                 else:
                     self._send_json({"error": "Not found"}, 404)
 
-            def _send_json(self, data: Dict, status: int = 200):
+            def _send_json(self, data: dict, status: int = 200):
                 self.send_response(status)
                 self.send_header("Content-Type", "application/json")
                 self.end_headers()
-                self.wfile.write(json.dumps(data).encode('utf-8'))
+                self.wfile.write(json.dumps(data).encode("utf-8"))
 
         return RequestHandler

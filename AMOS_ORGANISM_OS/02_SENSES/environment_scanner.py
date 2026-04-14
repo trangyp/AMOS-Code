@@ -1,22 +1,21 @@
-"""
-Environment Scanner — Filesystem and change detection for AMOS.
+"""Environment Scanner — Filesystem and change detection for AMOS.
 """
 
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional
 
 
 @dataclass
 class FileChange:
     """A detected file change."""
+
     path: str
     change_type: str  # created, modified, deleted, moved
     old_hash: str = ""
@@ -28,17 +27,17 @@ class FileChange:
 @dataclass
 class ScanResult:
     """Result of an environment scan."""
+
     timestamp: str
     files_scanned: int
-    changes: List[FileChange]
-    new_files: List[str]
-    modified_files: List[str]
-    deleted_files: List[str]
+    changes: list[FileChange]
+    new_files: list[str]
+    modified_files: list[str]
+    deleted_files: list[str]
 
 
 class EnvironmentScanner:
-    """
-    Scans the filesystem and detects changes.
+    """Scans the filesystem and detects changes.
 
     Responsibilities:
     - Monitor filesystem for changes
@@ -47,15 +46,22 @@ class EnvironmentScanner:
     - Git status integration
     """
 
-    def __init__(self, watch_paths: List[str] = None):
+    def __init__(self, watch_paths: list[str] = None):
         self._watch_paths = watch_paths or ["."]
-        self._file_hashes: Dict[str, str] = {}
-        self._file_sizes: Dict[str, int] = {}
+        self._file_hashes: dict[str, str] = {}
+        self._file_sizes: dict[str, int] = {}
         self._last_scan: Optional[str] = None
         self._ignore_patterns = [
-            ".git", "__pycache__", "*.pyc", "*.pyo",
-            ".DS_Store", "node_modules", ".env",
-            "*.log", "*.tmp", ".pytest_cache"
+            ".git",
+            "__pycache__",
+            "*.pyc",
+            "*.pyo",
+            ".DS_Store",
+            "node_modules",
+            ".env",
+            "*.log",
+            "*.tmp",
+            ".pytest_cache",
         ]
 
     def _should_ignore(self, path: str) -> bool:
@@ -80,7 +86,7 @@ class EnvironmentScanner:
         new_files = []
         modified_files = []
         deleted_files = []
-        current_files: Set[str] = set()
+        current_files: set[str] = set()
 
         # Walk directory
         files_scanned = 0
@@ -102,22 +108,26 @@ class EnvironmentScanner:
 
                 # Check for changes
                 if filepath not in self._file_hashes:
-                    changes.append(FileChange(
-                        path=filepath,
-                        change_type="created",
-                        new_hash=file_hash,
-                        size_delta=file_size,
-                    ))
+                    changes.append(
+                        FileChange(
+                            path=filepath,
+                            change_type="created",
+                            new_hash=file_hash,
+                            size_delta=file_size,
+                        )
+                    )
                     new_files.append(filepath)
                 elif self._file_hashes[filepath] != file_hash:
                     old_size = self._file_sizes.get(filepath, 0)
-                    changes.append(FileChange(
-                        path=filepath,
-                        change_type="modified",
-                        old_hash=self._file_hashes[filepath],
-                        new_hash=file_hash,
-                        size_delta=file_size - old_size,
-                    ))
+                    changes.append(
+                        FileChange(
+                            path=filepath,
+                            change_type="modified",
+                            old_hash=self._file_hashes[filepath],
+                            new_hash=file_hash,
+                            size_delta=file_size - old_size,
+                        )
+                    )
                     modified_files.append(filepath)
 
                 # Update tracking
@@ -126,12 +136,14 @@ class EnvironmentScanner:
 
         # Check for deletions
         for old_file in set(self._file_hashes.keys()) - current_files:
-            changes.append(FileChange(
-                path=old_file,
-                change_type="deleted",
-                old_hash=self._file_hashes[old_file],
-                size_delta=-self._file_sizes.get(old_file, 0),
-            ))
+            changes.append(
+                FileChange(
+                    path=old_file,
+                    change_type="deleted",
+                    old_hash=self._file_hashes[old_file],
+                    size_delta=-self._file_sizes.get(old_file, 0),
+                )
+            )
             deleted_files.append(old_file)
             del self._file_hashes[old_file]
             if old_file in self._file_sizes:
@@ -148,7 +160,7 @@ class EnvironmentScanner:
             deleted_files=deleted_files,
         )
 
-    def get_git_status(self) -> Dict[str, Any]:
+    def get_git_status(self) -> dict[str, Any]:
         """Get git repository status."""
         try:
             result = subprocess.run(
@@ -199,13 +211,13 @@ class EnvironmentScanner:
         except Exception:
             return "unknown"
 
-    def get_directory_summary(self, path: str = ".") -> Dict[str, Any]:
+    def get_directory_summary(self, path: str = ".") -> dict[str, Any]:
         """Get summary of directory contents."""
         try:
             total_files = 0
             total_dirs = 0
             total_size = 0
-            extensions: Dict[str, int] = {}
+            extensions: dict[str, int] = {}
 
             for root, dirs, files in os.walk(path):
                 if self._should_ignore(root):
@@ -238,7 +250,7 @@ class EnvironmentScanner:
         except Exception as e:
             return {"error": str(e)}
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Get scanner status."""
         return {
             "watch_paths": self._watch_paths,

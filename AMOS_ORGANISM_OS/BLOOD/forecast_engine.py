@@ -6,6 +6,6 @@ blood_path = Path(__file__).parent.parent / "04_BLOOD"
 if str(blood_path) not in sys.path:
     sys.path.insert(0, str(blood_path))
 
-from forecast_engine import ForecastEngine, Forecast, ForecastModel
+from forecast_engine import Forecast, ForecastEngine, ForecastModel
 
 __all__ = ["ForecastEngine", "Forecast", "ForecastModel"]

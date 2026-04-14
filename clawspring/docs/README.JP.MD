@@ -14,7 +14,7 @@
 </div>
 
 <div align=center>
- <img src="demo.gif" width="850"/> 
+ <img src="demo.gif" width="850"/>
 </div>
 
 ---

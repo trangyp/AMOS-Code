@@ -1,5 +1,4 @@
-"""
-Cloud sync for clawspring sessions via GitHub Gist.
+"""Cloud sync for clawspring sessions via GitHub Gist.
 
 Supported provider: GitHub Gist
   - No extra cloud account needed beyond a GitHub Personal Access Token
@@ -12,9 +11,10 @@ Config keys (stored in ~/.clawspring/config.json):
   cloudsave_last_gist_id — last uploaded gist ID (for in-place update)
 """
 from __future__ import annotations
+
 import json
-import urllib.request
 import urllib.error
+import urllib.request
 from datetime import datetime
 
 GIST_TAG = "[clawspring]"
@@ -22,6 +22,7 @@ _API = "https://api.github.com"
 
 
 # ── Low-level Gist API ────────────────────────────────────────────────────────
+
 
 def _request(method: str, path: str, token: str, body: dict | None = None) -> dict:
     url = f"{_API}{path}"
@@ -58,6 +59,7 @@ def _request_safe(method: str, path: str, token: str, body: dict | None = None):
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
+
 def validate_token(token: str) -> tuple[bool, str]:
     """Check token is valid and has gist scope. Returns (ok, message)."""
     result, err = _request_safe("GET", "/user", token)
@@ -76,8 +78,7 @@ def upload_session(
     description: str = "",
     gist_id: str | None = None,
 ) -> tuple[str | None, str | None]:
-    """
-    Create or update a Gist with the session JSON.
+    """Create or update a Gist with the session JSON.
     Returns (gist_id, error). On success gist_id is the Gist ID.
     """
     ts = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -102,8 +103,7 @@ def upload_session(
 
 
 def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str | None]:
-    """
-    List Gists tagged as clawspring sessions.
+    """List Gists tagged as clawspring sessions.
     Returns (list of {id, description, updated_at, url}), error).
     """
     result, err = _request_safe("GET", "/gists?per_page=100", token)
@@ -125,8 +125,7 @@ def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str | 
 
 
 def download_session(token: str, gist_id: str) -> tuple[dict | None, str | None]:
-    """
-    Fetch a Gist and return the parsed session JSON.
+    """Fetch a Gist and return the parsed session JSON.
     Returns (session_data, error).
     """
     result, err = _request_safe("GET", f"/gists/{gist_id}", token)

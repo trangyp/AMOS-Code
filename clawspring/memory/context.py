@@ -7,23 +7,18 @@ Provides:
 """
 from __future__ import annotations
 
-from pathlib import Path
-
+from .scan import memory_freshness_text
 from .store import (
-    USER_MEMORY_DIR,
     INDEX_FILENAME,
-    MAX_INDEX_LINES,
     MAX_INDEX_BYTES,
-    get_memory_dir,
+    MAX_INDEX_LINES,
     get_index_content,
-    load_entries,
     search_memory,
 )
-from .scan import scan_all_memories, format_memory_manifest, memory_freshness_text
 from .types import MEMORY_SYSTEM_PROMPT
 
-
 # ── Index truncation ───────────────────────────────────────────────────────
+
 
 def truncate_index_content(raw: str) -> str:
     """Truncate MEMORY.md content to line AND byte limits, appending a warning.
@@ -68,6 +63,7 @@ def truncate_index_content(raw: str) -> str:
 
 # ── System prompt context ──────────────────────────────────────────────────
 
+
 def get_memory_context(include_guidance: bool = False) -> str:
     """Return memory context for injection into the system prompt.
 
@@ -104,6 +100,7 @@ def get_memory_context(include_guidance: bool = False) -> str:
 
 # ── Relevant memory finder ─────────────────────────────────────────────────
 
+
 def find_relevant_memories(
     query: str,
     max_results: int = 5,
@@ -128,24 +125,27 @@ def find_relevant_memories(
     if not use_ai or not config:
         # Return top max_results by recency (newest first)
         from .scan import scan_all_memories
+
         headers = scan_all_memories()
         path_to_mtime = {h.file_path: h.mtime_s for h in headers}
 
         results = []
-        for entry in keyword_results[:max_results * 3]:
+        for entry in keyword_results[: max_results * 3]:
             mtime_s = path_to_mtime.get(entry.file_path, 0)
-            results.append({
-                "name": entry.name,
-                "description": entry.description,
-                "type": entry.type,
-                "scope": entry.scope,
-                "content": entry.content,
-                "file_path": entry.file_path,
-                "mtime_s": mtime_s,
-                "freshness_text": memory_freshness_text(mtime_s),
-                "confidence": entry.confidence,
-                "source": entry.source,
-            })
+            results.append(
+                {
+                    "name": entry.name,
+                    "description": entry.description,
+                    "type": entry.type,
+                    "scope": entry.scope,
+                    "content": entry.content,
+                    "file_path": entry.file_path,
+                    "mtime_s": mtime_s,
+                    "freshness_text": memory_freshness_text(mtime_s),
+                    "confidence": entry.confidence,
+                    "source": entry.source,
+                }
+            )
         results.sort(key=lambda r: r["mtime_s"], reverse=True)
         return results[:max_results]
 
@@ -164,7 +164,8 @@ def _ai_select_memories(
     Falls back to keyword results on any error.
     """
     try:
-        from providers import stream, AssistantTurn
+        from providers import AssistantTurn, stream
+
         from .scan import scan_all_memories
 
         headers = scan_all_memories()
@@ -180,7 +181,7 @@ def _ai_select_memories(
             "You select memories relevant to a query. "
             "Return a JSON object with key 'indices' containing a list of integer indices "
             f"(0-based) from the provided list. Select at most {max_results} entries. "
-            "Only include indices clearly relevant to the query. Return {\"indices\": []} if none."
+            'Only include indices clearly relevant to the query. Return {"indices": []} if none.'
         )
         messages = [{"role": "user", "content": f"Query: {query}\n\nMemories:\n{manifest}"}]
 
@@ -197,6 +198,7 @@ def _ai_select_memories(
                 break
 
         import json as _json
+
         parsed = _json.loads(result_text)
         selected_indices = [int(i) for i in parsed.get("indices", []) if isinstance(i, int)]
 
@@ -210,16 +212,18 @@ def _ai_select_memories(
             continue
         entry = candidates[i]
         mtime_s = path_to_mtime.get(entry.file_path, 0) if "path_to_mtime" in dir() else 0
-        results.append({
-            "name": entry.name,
-            "description": entry.description,
-            "type": entry.type,
-            "scope": entry.scope,
-            "content": entry.content,
-            "file_path": entry.file_path,
-            "mtime_s": mtime_s,
-            "freshness_text": memory_freshness_text(mtime_s),
-            "confidence": entry.confidence,
-            "source": entry.source,
-        })
+        results.append(
+            {
+                "name": entry.name,
+                "description": entry.description,
+                "type": entry.type,
+                "scope": entry.scope,
+                "content": entry.content,
+                "file_path": entry.file_path,
+                "mtime_s": mtime_s,
+                "freshness_text": memory_freshness_text(mtime_s),
+                "confidence": entry.confidence,
+                "source": entry.source,
+            }
+        )
     return results

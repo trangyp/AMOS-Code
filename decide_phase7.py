@@ -2,6 +2,7 @@
 """AMOS Brain: Phase 7 - Advanced Features Decision"""
 
 from pathlib import Path
+
 from amos_brain import decide
 
 repo = Path(__file__).resolve().parent

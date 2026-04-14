@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Complete System Demonstration
+"""AMOS Complete System Demonstration
 
 Showcases the full AMOS stack working together:
   1. Brain Initialization (12 engines, 6 laws)
@@ -17,29 +16,26 @@ Usage:
 from __future__ import annotations
 
 import sys
-import os
 from pathlib import Path
-from datetime import datetime
 
 # Setup paths
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 from amos_brain import get_amos_integration
-from amos_brain.memory import get_brain_memory
-from amos_brain.dashboard import BrainDashboard
 from amos_brain.cookbook import (
     ArchitectureDecision,
     ProblemDiagnosis,
-    ProjectPlanner,
     TechnologySelection,
-    RiskAssessment,
 )
+from amos_brain.dashboard import BrainDashboard
+from amos_brain.memory import get_brain_memory
 from amos_brain_organism_bridge import BrainOrganismBridge
 
 
 class Colors:
     """ANSI colors for terminal output."""
+
     CYAN = "\033[36m"
     GREEN = "\033[32m"
     YELLOW = "\033[33m"
@@ -81,16 +77,22 @@ def demo_1_brain_initialization():
     amos = get_amos_integration()
     status = amos.get_status()
 
-    print(f"\n✓ Brain Status:")
+    print("\n✓ Brain Status:")
     print(f"  • Initialized: {status.get('initialized')}")
     print(f"  • Engines: {status.get('engines_count')} domain engines")
     print(f"  • Laws: {len(status.get('laws_active', []))} global laws active")
     print(f"  • Domains: {len(status.get('domains_covered', []))} areas covered")
 
-    print(f"\n✓ Active Global Laws:")
-    for law in status.get('laws_active', []):
-        law_info = {"L1": "Law of Law", "L2": "Rule of 2", "L3": "Rule of 4",
-                   "L4": "Structural Integrity", "L5": "Communication", "L6": "UBI Alignment"}.get(law, law)
+    print("\n✓ Active Global Laws:")
+    for law in status.get("laws_active", []):
+        law_info = {
+            "L1": "Law of Law",
+            "L2": "Rule of 2",
+            "L3": "Rule of 4",
+            "L4": "Structural Integrity",
+            "L5": "Communication",
+            "L6": "UBI Alignment",
+        }.get(law, law)
         print(f"  • {color(law, 'yellow')}: {law_info}")
 
     return amos
@@ -111,18 +113,18 @@ def demo_2_cognitive_analysis(amos):
     if "rule_of_two" in analysis:
         r2 = analysis["rule_of_two"]
         print(f"\n✓ {color('Rule of 2', 'green')} (Dual Perspective):")
-        confidence_val = r2.get('confidence', 0)
+        confidence_val = r2.get("confidence", 0)
         print(f"  Confidence: {color(f'{confidence_val:.0%}', 'green')}")
         perspectives = r2.get("perspectives", [])
         for i, p in enumerate(perspectives[:2], 1):
-            viewpoint = p.viewpoint if hasattr(p, 'viewpoint') else str(p)[:60]
+            viewpoint = p.viewpoint if hasattr(p, "viewpoint") else str(p)[:60]
             print(f"  Perspective {i}: {viewpoint}...")
 
     # Rule of 4 results
     if "rule_of_four" in analysis:
         r4 = analysis["rule_of_four"]
         print(f"\n✓ {color('Rule of 4', 'green')} (Four Quadrants):")
-        coverage_val = r4.get('completeness_score', 0)
+        coverage_val = r4.get("completeness_score", 0)
         print(f"  Coverage: {color(f'{coverage_val:.0%}', 'green')}")
         print(f"  Quadrants analyzed: {len(r4.get('quadrants_analyzed', []))}/4")
 
@@ -140,20 +142,29 @@ def demo_3_cookbook_workflows():
     print(color("-" * 70, "cyan"))
 
     workflows = [
-        ("ArchitectureDecision", lambda: ArchitectureDecision.run(
-            "Should we use GraphQL instead of REST?",
-            context={"current_stack": "REST API", "scale": "1M requests/day"}
-        )),
-        ("ProblemDiagnosis", lambda: ProblemDiagnosis.run(
-            "Database query performance degradation",
-            symptoms=["slow queries", "connection timeouts"],
-            checked=["indexes"]
-        )),
-        ("TechnologySelection", lambda: TechnologySelection.run(
-            "Message Queue",
-            options=["RabbitMQ", "Kafka", "SQS"],
-            criteria=["scalability", "cost"]
-        )),
+        (
+            "ArchitectureDecision",
+            lambda: ArchitectureDecision.run(
+                "Should we use GraphQL instead of REST?",
+                context={"current_stack": "REST API", "scale": "1M requests/day"},
+            ),
+        ),
+        (
+            "ProblemDiagnosis",
+            lambda: ProblemDiagnosis.run(
+                "Database query performance degradation",
+                symptoms=["slow queries", "connection timeouts"],
+                checked=["indexes"],
+            ),
+        ),
+        (
+            "TechnologySelection",
+            lambda: TechnologySelection.run(
+                "Message Queue",
+                options=["RabbitMQ", "Kafka", "SQS"],
+                criteria=["scalability", "cost"],
+            ),
+        ),
     ]
 
     for name, workflow_fn in workflows:
@@ -182,12 +193,13 @@ def demo_4_memory_system():
         "recommendations": ["Use microservices for scalability"],
         "structural_integrity_score": 0.85,
         "rule_of_two": {"confidence": 0.8},
-        "rule_of_four": {"completeness_score": 1.0, "quadrants_analyzed": ["bio", "tech", "econ", "env"]}
+        "rule_of_four": {
+            "completeness_score": 1.0,
+            "quadrants_analyzed": ["bio", "tech", "econ", "env"],
+        },
     }
     entry_id = memory.save_reasoning(
-        "Should we migrate to microservices?",
-        analysis,
-        tags=["demo", "architecture"]
+        "Should we migrate to microservices?", analysis, tags=["demo", "architecture"]
     )
     print(f"  ✓ Saved: {entry_id[:16]}...")
 
@@ -196,8 +208,8 @@ def demo_4_memory_system():
     history = memory.get_reasoning_history(limit=5)
     print(f"  ✓ History entries: {len(history)}")
     for entry in history[:2]:
-        ts = entry.get('timestamp', 'unknown')[:16] if entry.get('timestamp') else 'unknown'
-        preview = entry.get('problem_preview', 'N/A')[:50]
+        ts = entry.get("timestamp", "unknown")[:16] if entry.get("timestamp") else "unknown"
+        preview = entry.get("problem_preview", "N/A")[:50]
         print(f"    [{ts}] {preview}...")
 
     # Test recall
@@ -222,13 +234,13 @@ def demo_5_dashboard_analytics():
     report = dashboard.generate_report(days=30)
     summary = report.get("summary", {})
 
-    print(f"\n✓ Decision Analytics (30 days):")
+    print("\n✓ Decision Analytics (30 days):")
     print(f"  • Total decisions: {summary.get('total_decisions', 0)}")
     print(f"  • L2 (Rule of 2) compliance: {summary.get('l2_compliance_rate', 0):.0%}")
     print(f"  • L3 (Rule of 4) compliance: {summary.get('l3_compliance_rate', 0):.0%}")
     print(f"  • Average confidence: {summary.get('average_confidence', 0):.0%}")
 
-    print(f"\n✓ Insights:")
+    print("\n✓ Insights:")
     for insight in report.get("insights", [])[:3]:
         print(f"  💡 {insight}")
 
@@ -242,7 +254,7 @@ def demo_6_bridge_execution():
     bridge = BrainOrganismBridge()
 
     status = bridge.get_system_status()
-    print(f"\n✓ Bridge Status:")
+    print("\n✓ Bridge Status:")
     print(f"  Brain engines: {status['brain']['engines']}")
     print(f"  Organism: {'Connected' if status['organism']['connected'] else 'Stub mode'}")
     print(f"  Bridge: {status['bridge']['status']} v{status['bridge']['version']}")
@@ -285,7 +297,9 @@ def demo_7_cli_commands():
     for cmd, desc in commands:
         print(f"  {color(cmd, 'cyan')} - {desc}")
 
-    print(f"\n✓ All commands available via: {color('AMOS_ORGANISM_OS/14_INTERFACES/amos_cli.py', 'green')}")
+    print(
+        f"\n✓ All commands available via: {color('AMOS_ORGANISM_OS/14_INTERFACES/amos_cli.py', 'green')}"
+    )
 
 
 def print_summary():

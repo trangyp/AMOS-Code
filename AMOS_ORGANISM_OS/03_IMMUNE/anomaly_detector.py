@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Anomaly Detection System
+"""AMOS Anomaly Detection System
 ==============================
 
 Monitors subsystem behavior and detects unusual patterns.
@@ -14,15 +13,16 @@ from __future__ import annotations
 
 import json
 import statistics
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class AnomalySeverity(Enum):
     """Severity levels for anomalies."""
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -30,6 +30,7 @@ class AnomalySeverity(Enum):
 
 class AnomalyType(Enum):
     """Types of anomalies detected."""
+
     HIGH_LOAD = "high_load"
     SLOW_RESPONSE = "slow_response"
     ERROR_SPIKE = "error_spike"
@@ -41,6 +42,7 @@ class AnomalyType(Enum):
 @dataclass
 class Anomaly:
     """Detected anomaly."""
+
     id: str
     anomaly_type: AnomalyType
     severity: AnomalySeverity
@@ -51,7 +53,7 @@ class Anomaly:
     deviation_percent: float
     timestamp: str
     description: str
-    remediation: List[str]
+    remediation: list[str]
     acknowledged: bool = False
     resolved: bool = False
 
@@ -59,6 +61,7 @@ class Anomaly:
 @dataclass
 class MetricBaseline:
     """Baseline metrics for comparison."""
+
     metric_name: str
     mean: float
     std_dev: float
@@ -69,8 +72,7 @@ class MetricBaseline:
 
 
 class AnomalyDetector:
-    """
-    Anomaly detection system for AMOS organism.
+    """Anomaly detection system for AMOS organism.
     Uses statistical methods to identify unusual behavior.
     """
 
@@ -81,14 +83,14 @@ class AnomalyDetector:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Storage
-        self.baselines: Dict[str, MetricBaseline] = {}
-        self.anomalies: List[Anomaly] = []
-        self.recent_metrics: Dict[str, List[float]] = {}
+        self.baselines: dict[str, MetricBaseline] = {}
+        self.anomalies: list[Anomaly] = []
+        self.recent_metrics: dict[str, list[float]] = {}
 
         # Detection thresholds
         self.thresholds = {
-            "warning": 2.0,   # 2 standard deviations
-            "critical": 3.5   # 3.5 standard deviations
+            "warning": 2.0,  # 2 standard deviations
+            "critical": 3.5,  # 3.5 standard deviations
         }
 
         # Load existing data
@@ -100,7 +102,7 @@ class AnomalyDetector:
         baseline_file = self.analytics_dir / "baselines.json"
         if baseline_file.exists():
             try:
-                with open(baseline_file, 'r', encoding='utf-8') as f:
+                with open(baseline_file, encoding="utf-8") as f:
                     data = json.load(f)
                     for metric, baseline_data in data.get("baselines", {}).items():
                         self.baselines[metric] = MetricBaseline(
@@ -110,7 +112,7 @@ class AnomalyDetector:
                             min_value=baseline_data["min_value"],
                             max_value=baseline_data["max_value"],
                             sample_count=baseline_data["sample_count"],
-                            last_updated=baseline_data["last_updated"]
+                            last_updated=baseline_data["last_updated"],
                         )
             except Exception as e:
                 print(f"[ANOMALY] Error loading baselines: {e}")
@@ -127,12 +129,12 @@ class AnomalyDetector:
                     "min_value": b.min_value,
                     "max_value": b.max_value,
                     "sample_count": b.sample_count,
-                    "last_updated": b.last_updated
+                    "last_updated": b.last_updated,
                 }
                 for metric, b in self.baselines.items()
-            }
+            },
         }
-        with open(baseline_file, 'w', encoding='utf-8') as f:
+        with open(baseline_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def _load_anomalies(self) -> None:
@@ -140,24 +142,26 @@ class AnomalyDetector:
         anomalies_file = self.analytics_dir / "anomalies.json"
         if anomalies_file.exists():
             try:
-                with open(anomalies_file, 'r', encoding='utf-8') as f:
+                with open(anomalies_file, encoding="utf-8") as f:
                     data = json.load(f)
                     for anomaly_data in data.get("anomalies", []):
-                        self.anomalies.append(Anomaly(
-                            id=anomaly_data["id"],
-                            anomaly_type=AnomalyType(anomaly_data["anomaly_type"]),
-                            severity=AnomalySeverity(anomaly_data["severity"]),
-                            subsystem=anomaly_data["subsystem"],
-                            metric=anomaly_data["metric"],
-                            expected_value=anomaly_data["expected_value"],
-                            actual_value=anomaly_data["actual_value"],
-                            deviation_percent=anomaly_data["deviation_percent"],
-                            timestamp=anomaly_data["timestamp"],
-                            description=anomaly_data["description"],
-                            remediation=anomaly_data["remediation"],
-                            acknowledged=anomaly_data.get("acknowledged", False),
-                            resolved=anomaly_data.get("resolved", False)
-                        ))
+                        self.anomalies.append(
+                            Anomaly(
+                                id=anomaly_data["id"],
+                                anomaly_type=AnomalyType(anomaly_data["anomaly_type"]),
+                                severity=AnomalySeverity(anomaly_data["severity"]),
+                                subsystem=anomaly_data["subsystem"],
+                                metric=anomaly_data["metric"],
+                                expected_value=anomaly_data["expected_value"],
+                                actual_value=anomaly_data["actual_value"],
+                                deviation_percent=anomaly_data["deviation_percent"],
+                                timestamp=anomaly_data["timestamp"],
+                                description=anomaly_data["description"],
+                                remediation=anomaly_data["remediation"],
+                                acknowledged=anomaly_data.get("acknowledged", False),
+                                resolved=anomaly_data.get("resolved", False),
+                            )
+                        )
             except Exception as e:
                 print(f"[ANOMALY] Error loading anomalies: {e}")
 
@@ -182,12 +186,12 @@ class AnomalyDetector:
                     "description": a.description,
                     "remediation": a.remediation,
                     "acknowledged": a.acknowledged,
-                    "resolved": a.resolved
+                    "resolved": a.resolved,
                 }
                 for a in self.anomalies[-200:]  # Keep last 200
-            ]
+            ],
         }
-        with open(anomalies_file, 'w', encoding='utf-8') as f:
+        with open(anomalies_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def update_baseline(self, metric_name: str, value: float) -> None:
@@ -214,17 +218,12 @@ class AnomalyDetector:
                 min_value=min(samples),
                 max_value=max(samples),
                 sample_count=len(samples),
-                last_updated=datetime.utcnow().isoformat()
+                last_updated=datetime.utcnow().isoformat(),
             )
 
             self._save_baselines()
 
-    def detect_anomaly(
-        self,
-        subsystem: str,
-        metric: str,
-        value: float
-    ) -> Optional[Anomaly]:
+    def detect_anomaly(self, subsystem: str, metric: str, value: float) -> Optional[Anomaly]:
         """Detect if a metric value is anomalous."""
         metric_key = f"{subsystem}.{metric}"
 
@@ -284,9 +283,9 @@ class AnomalyDetector:
             deviation_percent=deviation_percent,
             timestamp=datetime.utcnow().isoformat(),
             description=f"{anomaly_type.value} detected in {subsystem}:{metric} "
-                       f"(expected {baseline.mean:.2f}, got {value:.2f}, "
-                       f"deviation: {deviation:.1f}σ)",
-            remediation=remediation
+            f"(expected {baseline.mean:.2f}, got {value:.2f}, "
+            f"deviation: {deviation:.1f}σ)",
+            remediation=remediation,
         )
 
         self.anomalies.append(anomaly)
@@ -297,62 +296,69 @@ class AnomalyDetector:
         return anomaly
 
     def _generate_remediation(
-        self,
-        anomaly_type: AnomalyType,
-        subsystem: str,
-        metric: str
-    ) -> List[str]:
+        self, anomaly_type: AnomalyType, subsystem: str, metric: str
+    ) -> list[str]:
         """Generate remediation suggestions based on anomaly type."""
         remediation_map = {
             AnomalyType.HIGH_LOAD: [
                 f"Scale up {subsystem} resources",
                 "Distribute load across multiple agents",
-                "Enable request throttling"
+                "Enable request throttling",
             ],
             AnomalyType.SLOW_RESPONSE: [
                 "Check database query performance",
                 "Enable caching layer",
-                "Optimize algorithm complexity"
+                "Optimize algorithm complexity",
             ],
             AnomalyType.ERROR_SPIKE: [
                 "Review recent code changes",
                 "Check external service health",
-                "Enable circuit breaker pattern"
+                "Enable circuit breaker pattern",
             ],
             AnomalyType.RESOURCE_EXHAUSTION: [
                 "Increase resource allocation",
                 "Enable resource cleanup",
-                "Restart subsystem if necessary"
+                "Restart subsystem if necessary",
             ],
             AnomalyType.UNUSUAL_PATTERN: [
                 "Monitor for continued unusual behavior",
                 "Review recent configuration changes",
-                "Check for external factors"
+                "Check for external factors",
             ],
             AnomalyType.SUBSYSTEM_DOWN: [
                 "Attempt automatic restart",
                 "Route traffic to backup subsystem",
-                "Notify operations team"
-            ]
+                "Notify operations team",
+            ],
         }
 
         return remediation_map.get(anomaly_type, ["Investigate root cause"])
 
-    def check_all_subsystems(self) -> List[Anomaly]:
+    def check_all_subsystems(self) -> list[Anomaly]:
         """Run anomaly detection on all subsystems."""
         detected = []
 
         # Simulate checking various metrics for each subsystem
         subsystems = [
-            "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD",
-            "05_SKELETON", "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL",
-            "09_SOCIAL_ENGINE", "10_LIFE_ENGINE", "11_LEGAL_BRAIN",
-            "12_QUANTUM_LAYER", "13_FACTORY"
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "04_BLOOD",
+            "05_SKELETON",
+            "06_MUSCLE",
+            "07_METABOLISM",
+            "08_WORLD_MODEL",
+            "09_SOCIAL_ENGINE",
+            "10_LIFE_ENGINE",
+            "11_LEGAL_BRAIN",
+            "12_QUANTUM_LAYER",
+            "13_FACTORY",
         ]
 
         for subsystem in subsystems:
             # Check load (simulated)
             import random
+
             load = random.gauss(50, 15)  # Normal around 50%
             if random.random() < 0.1:  # 10% chance of anomaly
                 load = random.gauss(85, 10)  # High load
@@ -363,13 +369,10 @@ class AnomalyDetector:
 
         return detected
 
-    def get_active_anomalies(self) -> List[Anomaly]:
+    def get_active_anomalies(self) -> list[Anomaly]:
         """Get all unresolved anomalies."""
         cutoff = (datetime.utcnow() - timedelta(hours=24)).isoformat()
-        return [
-            a for a in self.anomalies
-            if not a.resolved and a.timestamp > cutoff
-        ]
+        return [a for a in self.anomalies if not a.resolved and a.timestamp > cutoff]
 
     def acknowledge_anomaly(self, anomaly_id: str) -> bool:
         """Acknowledge an anomaly."""
@@ -389,7 +392,7 @@ class AnomalyDetector:
                 return True
         return False
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get detector status."""
         active = self.get_active_anomalies()
         critical = sum(1 for a in active if a.severity == AnomalySeverity.CRITICAL)
@@ -401,7 +404,7 @@ class AnomalyDetector:
             "critical": critical,
             "warning": warning,
             "baselines_tracked": len(self.baselines),
-            "total_detected": len(self.anomalies)
+            "total_detected": len(self.anomalies),
         }
 
     def get_health_score(self) -> float:
@@ -411,12 +414,8 @@ class AnomalyDetector:
             return 100.0
 
         # Critical anomalies reduce score more
-        critical_penalty = sum(
-            20 for a in active if a.severity == AnomalySeverity.CRITICAL
-        )
-        warning_penalty = sum(
-            5 for a in active if a.severity == AnomalySeverity.WARNING
-        )
+        critical_penalty = sum(20 for a in active if a.severity == AnomalySeverity.CRITICAL)
+        warning_penalty = sum(5 for a in active if a.severity == AnomalySeverity.WARNING)
 
         return max(0.0, 100.0 - critical_penalty - warning_penalty)
 
@@ -449,7 +448,7 @@ def main() -> int:
     status = detector.get_status()
     health = detector.get_health_score()
 
-    print(f"\nDetector Status:")
+    print("\nDetector Status:")
     print(f"  Health Score: {health:.1f}%")
     print(f"  Active: {status['active_anomalies']}")
     print(f"  Critical: {status['critical']}")
@@ -461,5 +460,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
-    import random
+
     sys.exit(main())

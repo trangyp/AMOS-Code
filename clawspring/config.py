@@ -1,30 +1,30 @@
 """Configuration management for ClawSpring (multi-provider)."""
-import os
 import json
+import os
 from pathlib import Path
 
-CONFIG_DIR        = Path.home() / ".clawspring"
-CONFIG_FILE       = CONFIG_DIR  / "config.json"
-HISTORY_FILE      = CONFIG_DIR  / "input_history.txt"
-SESSIONS_DIR      = CONFIG_DIR  / "sessions"
-DAILY_DIR         = SESSIONS_DIR / "daily"       # daily/YYYY-MM-DD/session_*.json
-SESSION_HIST_FILE = SESSIONS_DIR / "history.json" # master: all sessions ever
+CONFIG_DIR = Path.home() / ".clawspring"
+CONFIG_FILE = CONFIG_DIR / "config.json"
+HISTORY_FILE = CONFIG_DIR / "input_history.txt"
+SESSIONS_DIR = CONFIG_DIR / "sessions"
+DAILY_DIR = SESSIONS_DIR / "daily"  # daily/YYYY-MM-DD/session_*.json
+SESSION_HIST_FILE = SESSIONS_DIR / "history.json"  # master: all sessions ever
 
 # kept for backward-compat (/resume still reads from here)
 MR_SESSION_DIR = SESSIONS_DIR / "mr_sessions"
 
 DEFAULTS = {
-    "model":            "ollama/gemma4:e4b",
-    "max_tokens":       40000,
-    "permission_mode":  "auto",   # auto | accept-all | manual
-    "verbose":          False,
-    "thinking":         False,
-    "thinking_budget":  10000,
-    "custom_base_url":  "",       # for "custom" provider
-    "max_tool_output":  32000,
-    "max_agent_depth":  3,
+    "model": "ollama/gemma4:e4b",
+    "max_tokens": 40000,
+    "permission_mode": "auto",  # auto | accept-all | manual
+    "verbose": False,
+    "thinking": False,
+    "thinking_budget": 10000,
+    "custom_base_url": "",  # for "custom" provider
+    "max_tool_output": 32000,
+    "max_agent_depth": 3,
     "max_concurrent_agents": 3,
-    "session_daily_limit":   10,    # max sessions kept per day in daily/
+    "session_daily_limit": 10,  # max sessions kept per day in daily/
     "session_history_limit": 200,  # max sessions kept in history.json
     # Per-provider API keys (optional; env vars take priority)
     # "anthropic_api_key": "sk-ant-..."
@@ -64,12 +64,14 @@ def save_config(cfg: dict):
 
 def current_provider(cfg: dict) -> str:
     from providers import detect_provider
+
     return detect_provider(cfg.get("model", "claude-opus-4-6"))
 
 
 def has_api_key(cfg: dict) -> bool:
     """Check whether the active provider has an API key configured."""
     from providers import get_api_key
+
     pname = current_provider(cfg)
     key = get_api_key(pname, cfg)
     return bool(key)
@@ -77,4 +79,5 @@ def has_api_key(cfg: dict) -> bool:
 
 def calc_cost(model: str, in_tokens: int, out_tokens: int) -> float:
     from providers import calc_cost as _cc
+
     return _cc(model, in_tokens, out_tokens)

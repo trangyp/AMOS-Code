@@ -107,12 +107,12 @@
 </head>
 <body>
     <div id="root"></div>
-    
+
     <script type="text/babel">
         const { useState, useEffect } = React;
-        
+
         const API_BASE = 'https://neurosyncai.tech';
-        
+
         function Dashboard() {
             const [activeTab, setActiveTab] = useState('overview');
             const [stats, setStats] = useState({
@@ -121,7 +121,7 @@
                 successRate: 100,
                 activeKeys: 0
             });
-            
+
             useEffect(() => {
                 // Simulate fetching stats
                 setStats({
@@ -131,7 +131,7 @@
                     activeKeys: 47
                 });
             }, []);
-            
+
             const renderOverview = () => (
                 <div>
                     <div className="stats-grid">
@@ -152,19 +152,19 @@
                             <div className="stat-label">Active API Keys</div>
                         </div>
                     </div>
-                    
+
                     <div className="card">
                         <h3>Request Volume (Last 7 Days)</h3>
                         <canvas id="requestsChart" className="chart-container"></canvas>
                     </div>
-                    
+
                     <div className="card">
                         <h3>Response Time Trends</h3>
                         <canvas id="responseChart" className="chart-container"></canvas>
                     </div>
                 </div>
             );
-            
+
             const renderQueryHistory = () => (
                 <div className="card">
                     <h3>Recent Queries</h3>
@@ -208,7 +208,7 @@
                     </table>
                 </div>
             );
-            
+
             const renderAPIKeys = () => (
                 <div className="card">
                     <h3>API Keys</h3>
@@ -244,7 +244,7 @@
                     </button>
                 </div>
             );
-            
+
             useEffect(() => {
                 if (activeTab === 'overview') {
                     // Initialize charts
@@ -269,7 +269,7 @@
                                 }
                             });
                         }
-                        
+
                         const ctx2 = document.getElementById('responseChart');
                         if (ctx2) {
                             new Chart(ctx2, {
@@ -293,31 +293,31 @@
                     }, 100);
                 }
             }, [activeTab]);
-            
+
             return (
                 <div className="dashboard">
                     <div className="sidebar">
                         <h1>🧠 AMOS Brain</h1>
                         <nav>
-                            <div 
+                            <div
                                 className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('overview')}
                             >
                                 📊 Overview
                             </div>
-                            <div 
+                            <div
                                 className={`nav-item ${activeTab === 'queries' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('queries')}
                             >
                                 📝 Query History
                             </div>
-                            <div 
+                            <div
                                 className={`nav-item ${activeTab === 'keys' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('keys')}
                             >
                                 🔑 API Keys
                             </div>
-                            <div 
+                            <div
                                 className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('analytics')}
                             >
@@ -325,7 +325,7 @@
                             </div>
                         </nav>
                     </div>
-                    
+
                     <div className="main">
                         <div className="header">
                             <h2>
@@ -338,7 +338,7 @@
                                 <span style={{color: '#4CAF50'}}>●</span> System Operational
                             </div>
                         </div>
-                        
+
                         {activeTab === 'overview' && renderOverview()}
                         {activeTab === 'queries' && renderQueryHistory()}
                         {activeTab === 'keys' && renderAPIKeys()}
@@ -352,7 +352,7 @@
                 </div>
             );
         }
-        
+
         ReactDOM.render(<Dashboard />, document.getElementById('root'));
     </script>
 </body>

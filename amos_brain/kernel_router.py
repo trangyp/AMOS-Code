@@ -7,6 +7,7 @@ from dataclasses import dataclass
 @dataclass
 class TaskIntent:
     """Parsed task intent for routing decisions."""
+
     primary_domain: str
     secondary_domains: list[str]
     risk_level: str
@@ -81,7 +82,17 @@ class KernelRouter:
         # Determine requirements
         requires_code = any(
             kw in task_lower
-            for kw in ["code", "implement", "write", "bug", "fix", "refactor", "debug", "function", "class"]
+            for kw in [
+                "code",
+                "implement",
+                "write",
+                "bug",
+                "fix",
+                "refactor",
+                "debug",
+                "function",
+                "class",
+            ]
         )
         requires_reasoning = any(
             kw in task_lower
@@ -111,11 +122,13 @@ class KernelRouter:
         for domain in [intent.primary_domain] + intent.secondary_domains:
             for engine_name in self.DOMAIN_ENGINE_HINTS.get(domain, []):
                 if engine_name in engine_set and engine_name not in seen:
-                    active_engines.append({
-                        "id": engine_name,
-                        "name": engine_name,
-                        "domain": domain,
-                    })
+                    active_engines.append(
+                        {
+                            "id": engine_name,
+                            "name": engine_name,
+                            "domain": domain,
+                        }
+                    )
                     seen.add(engine_name)
 
         # Fallback to logic-safe engines if nothing matched
@@ -126,11 +139,13 @@ class KernelRouter:
                 "AMOS_Design_Language_Engine",
             ]:
                 if engine_name in engine_set and engine_name not in seen:
-                    active_engines.append({
-                        "id": engine_name,
-                        "name": engine_name,
-                        "domain": intent.primary_domain,
-                    })
+                    active_engines.append(
+                        {
+                            "id": engine_name,
+                            "name": engine_name,
+                            "domain": intent.primary_domain,
+                        }
+                    )
                     seen.add(engine_name)
 
         return active_engines
@@ -151,7 +166,7 @@ class KernelRouter:
             f"Risk Level: {intent.risk_level}",
             f"Requires Code: {intent.requires_code}",
             f"Requires Reasoning: {intent.requires_reasoning}",
-            f"",
+            "",
             f"Active Engines ({len(engines)}):",
         ]
 
@@ -173,5 +188,6 @@ def get_kernel_router() -> KernelRouter:
     global _router_instance
     if _router_instance is None:
         from .loader import get_brain
+
         _router_instance = KernelRouter(get_brain())
     return _router_instance

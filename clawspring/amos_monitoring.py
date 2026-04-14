@@ -1,10 +1,9 @@
 """AMOS Performance Monitoring & Telemetry - System observability layer."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
-from datetime import datetime
 import time
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from amos_runtime import get_runtime
 
@@ -65,7 +64,7 @@ class TelemetryCollector:
 
         # Trim old events
         if len(self.events) > self.MAX_EVENTS:
-            self.events = self.events[-self.MAX_EVENTS:]
+            self.events = self.events[-self.MAX_EVENTS :]
 
         # Update metrics
         self._update_metrics(event)
@@ -169,6 +168,7 @@ class SystemHealthMonitor:
         """Check engine availability."""
         try:
             from amos_execution import full_execute
+
             result = full_execute("test", "test")
             return result.content is not None
         except Exception:
@@ -178,6 +178,7 @@ class SystemHealthMonitor:
         """Check tool registration."""
         try:
             from amos_tools import AMOS_TOOLS
+
             return len(AMOS_TOOLS) > 0
         except Exception:
             return False
@@ -186,6 +187,7 @@ class SystemHealthMonitor:
         """Check memory availability."""
         try:
             from amos_memory import get_memory_manager
+
             mm = get_memory_manager()
             return mm is not None
         except Exception:
@@ -260,50 +262,60 @@ class AMOSMonitoring:
             "",
         ]
 
-        for check, result in status['health']['checks'].items():
+        for check, result in status["health"]["checks"].items():
             symbol = "✓" if result else "✗"
             lines.append(f"{symbol} {check}: {'healthy' if result else 'failed'}")
 
-        lines.extend([
-            "",
-            "## Component Metrics",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Component Metrics",
+                "",
+            ]
+        )
 
-        if status['metrics']:
-            for name, metric in status['metrics'].items():
-                lines.extend([
-                    f"### {name}",
-                    f"- Calls: {metric['total_calls']}",
-                    f"- Avg Duration: {metric['avg_duration_ms']}ms",
-                    f"- Success Rate: {metric['success_rate']:.0%}",
-                    f"- Errors: {metric['error_count']}",
-                    "",
-                ])
+        if status["metrics"]:
+            for name, metric in status["metrics"].items():
+                lines.extend(
+                    [
+                        f"### {name}",
+                        f"- Calls: {metric['total_calls']}",
+                        f"- Avg Duration: {metric['avg_duration_ms']}ms",
+                        f"- Success Rate: {metric['success_rate']:.0%}",
+                        f"- Errors: {metric['error_count']}",
+                        "",
+                    ]
+                )
         else:
             lines.append("No metrics collected yet.")
 
-        lines.extend([
-            "",
-            "## Recent Events",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Recent Events",
+                "",
+            ]
+        )
 
-        if status['recent_events']:
-            for event in status['recent_events']:
-                status_symbol = "✓" if event['status'] == 'success' else "✗"
-                duration = f" ({event['duration_ms']:.1f}ms)" if event['duration_ms'] else ""
-                lines.append(f"{status_symbol} {event['timestamp']}: {event['component']}{duration}")
+        if status["recent_events"]:
+            for event in status["recent_events"]:
+                status_symbol = "✓" if event["status"] == "success" else "✗"
+                duration = f" ({event['duration_ms']:.1f}ms)" if event["duration_ms"] else ""
+                lines.append(
+                    f"{status_symbol} {event['timestamp']}: {event['component']}{duration}"
+                )
         else:
             lines.append("No events recorded yet.")
 
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Monitoring is telemetry collection only, not observability platform.",
-            "No distributed tracing. No metrics aggregation. Not APM.",
-            "Production monitoring requires external tools (Prometheus, Grafana, etc.).",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Monitoring is telemetry collection only, not observability platform.",
+                "No distributed tracing. No metrics aggregation. Not APM.",
+                "Production monitoring requires external tools (Prometheus, Grafana, etc.).",
+            ]
+        )
 
         return "\n".join(lines)
 

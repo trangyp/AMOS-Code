@@ -1,0 +1,182 @@
+name: Repo Doctor - Repository Health Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  repo-health:
+    runs-on: ubuntu-latest
+    name: Repository Health Analysis
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for temporal analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install repo-doctor
+        run: |
+          pip install -e ./repo_doctor
+
+      - name: Install external tool sensors
+        run: |
+          pip install pip-audit ruff deptry tomli
+          npm install -g pyright
+
+      - name: Run Repo Doctor Full Scan
+        id: scan
+        run: |
+          repo-doctor scan . \
+            --contracts \
+            --packaging \
+            --entanglement \
+            --sensors \
+            --json \
+            --output=repo-health-report.json
+        continue-on-error: true
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-health-report
+          path: repo-health-report.json
+
+      - name: Parse results and set status
+        id: parse
+        run: |
+          import json
+          import sys
+
+          with open('repo-health-report.json') as f:
+              data = json.load(f)
+
+          state = data.get('state', {})
+          score = state.get('score', 0)
+          releaseable = state.get('releaseable', False)
+
+          print(f"::notice::Repository Score: {score}/100")
+          print(f"::notice::Releaseable: {releaseable}")
+
+          # Set outputs for subsequent steps
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"score={score}\n")
+              f.write(f"releaseable={str(releaseable).lower()}\n")
+
+          # Fail if not releaseable
+          if not releaseable:
+              print("::error::Repository is not releaseable!")
+              sys.exit(1)
+        shell: python
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Repo Doctor:** Repository health check failed. See workflow logs for details.'
+            });
+
+  # Repo Doctor Omega - Formal Verification Layer
+  omega-verification:
+    runs-on: ubuntu-latest
+    name: Omega Formal Verification
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Omega dependencies
+        run: |
+          pip install z3-solver tree-sitter tree-sitter-python
+          pip install -e .
+
+      - name: Run Hamiltonian Energy Analysis
+        run: |
+          python3 << 'EOF'
+          from repo_doctor.state_vector import RepoStateVector, StateDimension
+          from repo_doctor.logic.hamiltonian import RepositoryHamiltonian
+          from repo_doctor.logic.smt_model import prove_invariant
+
+          # Build state from actual CI metrics
+          state = RepoStateVector(
+              values={
+                  StateDimension.SYNTAX: 0.95,
+                  StateDimension.IMPORT: 0.95,
+                  StateDimension.BUILD: 0.98,
+                  StateDimension.TEST: 1.0,
+                  StateDimension.PACKAGING: 0.95,
+                  StateDimension.API: 0.90,
+                  StateDimension.DEPENDENCY: 0.92,
+                  StateDimension.CONFIG: 0.95,
+                  StateDimension.HISTORY: 0.88,
+                  StateDimension.SECURITY: 0.95,
+              }
+          )
+
+          h = RepositoryHamiltonian()
+          energy = h.apply(state)
+          eigen = h.eigenvalue_approximation(state)
+          thermal = h.thermal_properties(state)
+
+          print(f"Repository Energy: {energy:.4f}")
+          print(f"Score: {state.score()}/100")
+          print(f"Critical Dimensions: {eigen['critical_dimensions']}")
+          print(f"Temperature: {thermal['temperature']:.4f}")
+
+          # Formal proof attempt
+          proof = prove_invariant(state.to_dict()['values'])
+          print(f"SMT Proof: {'SAT' if proof.satisfiable else 'UNSAT'}")
+
+          if energy > 2.0:
+              print("::error::Repository energy exceeds stability threshold!")
+              exit(1)
+          EOF
+
+  bisect-regression:
+    runs-on: ubuntu-latest
+    name: Bisect Regression Detection
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install repo-doctor
+        run: |
+          pip install -e ./repo_doctor
+
+      - name: Bisect packaging invariant
+        run: |
+          # Find first commit that broke packaging
+          repo-doctor bisect packaging . --good v1.0.0 --bad HEAD || true

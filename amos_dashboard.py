@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain Dashboard - Real-time visualization and monitoring.
+"""AMOS Brain Dashboard - Real-time visualization and monitoring.
 
 Features:
 - Brain status (engines, laws, domains)
@@ -21,20 +20,18 @@ Access:
 from __future__ import annotations
 
 import sys
-import os
-import json
 from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from amos_brain import get_amos_integration
 from amos_brain.memory import get_brain_memory
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+app = Flask(__name__, template_folder="templates", static_folder="static")
 CORS(app)
 
 # AMOS instance
@@ -206,7 +203,7 @@ DASHBOARD_HTML = """
         <h1>AMOS Brain Dashboard</h1>
         <p>Real-time cognitive architecture monitoring</p>
     </div>
-    
+
     <div class="container">
         <div class="grid">
             <!-- Status Card -->
@@ -231,7 +228,7 @@ DASHBOARD_HTML = """
                     <span class="metric-value">{{ status.laws_count }}</span>
                 </div>
             </div>
-            
+
             <!-- Laws Card -->
             <div class="card">
                 <h2>⚖️ Global Laws</h2>
@@ -242,7 +239,7 @@ DASHBOARD_HTML = """
                 </div>
                 {% endfor %}
             </div>
-            
+
             <!-- Domains Card -->
             <div class="card">
                 <h2>🌐 Domain Coverage</h2>
@@ -252,7 +249,7 @@ DASHBOARD_HTML = """
                     {% endfor %}
                 </div>
             </div>
-            
+
             <!-- Reasoning Card -->
             <div class="card reasoning-card">
                 <h2>🔄 Rule of 2 / Rule of 4</h2>
@@ -269,7 +266,7 @@ DASHBOARD_HTML = """
                     <span class="metric-value">L4</span>
                 </div>
             </div>
-            
+
             <!-- Quadrants Card -->
             <div class="card">
                 <h2>📊 Four Quadrants</h2>
@@ -292,7 +289,7 @@ DASHBOARD_HTML = """
                     </div>
                 </div>
             </div>
-            
+
             <!-- Memory Card -->
             <div class="card">
                 <h2>💾 Memory</h2>
@@ -306,10 +303,10 @@ DASHBOARD_HTML = """
                 </div>
             </div>
         </div>
-        
+
         <p class="timestamp">Last updated: {{ timestamp }}</p>
     </div>
-    
+
     <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
 </body>
 </html>
@@ -318,12 +315,13 @@ DASHBOARD_HTML = """
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
-@app.route('/')
+
+@app.route("/")
 def dashboard():
     """Main dashboard UI."""
     amos = get_amos()
     status = amos.get_status()
-    
+
     # Parse laws summary
     laws_text = amos.get_laws_summary()
     laws = [
@@ -334,7 +332,7 @@ def dashboard():
         {"id": "L5", "name": "Communication"},
         {"id": "L6", "name": "UBI Alignment"},
     ]
-    
+
     # Get memory count
     try:
         mem = get_brain_memory()
@@ -342,86 +340,92 @@ def dashboard():
         memory_count = len(history)
     except:
         memory_count = 0
-    
+
     return render_template_string(
         DASHBOARD_HTML,
         status={
-            "initialized": "Active" if status['initialized'] else "Inactive",
-            "engines_count": status['engines_count'],
-            "domains_count": len(status['domains_covered']),
-            "laws_count": len(status['laws_active'])
+            "initialized": "Active" if status["initialized"] else "Inactive",
+            "engines_count": status["engines_count"],
+            "domains_count": len(status["domains_covered"]),
+            "laws_count": len(status["laws_active"]),
         },
         laws=laws,
-        domains=status['domains_covered'][:12],
+        domains=status["domains_covered"][:12],
         memory_count=memory_count,
-        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
 
 
-@app.route('/api/status')
+@app.route("/api/status")
 def api_status():
     """API endpoint for brain status."""
     amos = get_amos()
     status = amos.get_status()
-    
-    return jsonify({
-        "brain": {
-            "initialized": status['initialized'],
-            "engines_count": status['engines_count'],
-            "laws_active": status['laws_active'],
-            "domains_covered": status['domains_covered'],
-        },
-        "laws_summary": amos.get_laws_summary(),
-        "timestamp": datetime.utcnow().isoformat(),
-    })
+
+    return jsonify(
+        {
+            "brain": {
+                "initialized": status["initialized"],
+                "engines_count": status["engines_count"],
+                "laws_active": status["laws_active"],
+                "domains_covered": status["domains_covered"],
+            },
+            "laws_summary": amos.get_laws_summary(),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
 
 
-@app.route('/api/reasoning', methods=['POST'])
+@app.route("/api/reasoning", methods=["POST"])
 def api_reasoning():
     """API endpoint for reasoning analysis."""
     from flask import request
-    
+
     data = request.get_json()
-    problem = data.get('problem', '')
-    
+    problem = data.get("problem", "")
+
     if not problem:
         return jsonify({"error": "No problem specified"}), 400
-    
+
     amos = get_amos()
     result = amos.analyze_with_rules(problem)
-    
-    return jsonify({
-        "problem": problem,
-        "rule_of_two": {
-            "confidence": result['rule_of_two']['confidence'],
-            "recommendation": result['rule_of_two']['recommendation'],
-        },
-        "rule_of_four": {
-            "quadrants": result['rule_of_four']['quadrants_analyzed'],
-            "completeness": result['rule_of_four']['completeness_score'],
-        },
-        "recommendations": result.get('recommendations', []),
-        "timestamp": datetime.utcnow().isoformat(),
-    })
+
+    return jsonify(
+        {
+            "problem": problem,
+            "rule_of_two": {
+                "confidence": result["rule_of_two"]["confidence"],
+                "recommendation": result["rule_of_two"]["recommendation"],
+            },
+            "rule_of_four": {
+                "quadrants": result["rule_of_four"]["quadrants_analyzed"],
+                "completeness": result["rule_of_four"]["completeness_score"],
+            },
+            "recommendations": result.get("recommendations", []),
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
 
 
-@app.route('/api/memory')
+@app.route("/api/memory")
 def api_memory():
     """API endpoint for memory query."""
     try:
         mem = get_brain_memory()
         history = mem.get_reasoning_history(limit=100)
-        return jsonify({
-            "count": len(history),
-            "decisions": [
-                {
-                    "problem": h.get('problem', 'Unknown')[:100],
-                    "timestamp": h.get('timestamp'),
-                    "tags": h.get('tags', []),
-                }
-                for h in history[:20]
-            ]
-        })
+        return jsonify(
+            {
+                "count": len(history),
+                "decisions": [
+                    {
+                        "problem": h.get("problem", "Unknown")[:100],
+                        "timestamp": h.get("timestamp"),
+                        "tags": h.get("tags", []),
+                    }
+                    for h in history[:20]
+                ],
+            }
+        )
     except Exception as e:
         return jsonify({"error": str(e), "count": 0, "decisions": []})
 
@@ -429,31 +433,32 @@ def api_memory():
 def render_template_string(template, **kwargs):
     """Simple template rendering."""
     from jinja2 import Template
+
     return Template(template).render(**kwargs)
 
 
 def main():
     """Start dashboard server."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="AMOS Brain Dashboard")
     parser.add_argument("--port", type=int, default=8080, help="Port to run on")
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind to")
     args = parser.parse_args()
-    
-    print(f"╔════════════════════════════════════════════════════════════╗")
-    print(f"║        AMOS Brain Dashboard                                ║")
-    print(f"╠════════════════════════════════════════════════════════════╣")
+
+    print("╔════════════════════════════════════════════════════════════╗")
+    print("║        AMOS Brain Dashboard                                ║")
+    print("╠════════════════════════════════════════════════════════════╣")
     print(f"║  URL: http://{args.host}:{args.port}                        ║")
     print(f"║  API: http://{args.host}:{args.port}/api/status             ║")
-    print(f"╚════════════════════════════════════════════════════════════╝")
+    print("╚════════════════════════════════════════════════════════════╝")
     print()
-    
+
     # Pre-load AMOS
     get_amos()
     print("✓ AMOS brain initialized")
     print()
-    
+
     app.run(host=args.host, port=args.port, debug=False)
 
 

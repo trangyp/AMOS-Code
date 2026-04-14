@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
-"""
-Generate animated GIF demo of clawspring proactive / background-event feature.
+"""Generate animated GIF demo of clawspring proactive / background-event feature.
 Shows: timer reminder set → idle at prompt → [Background Event Triggered] →
 Claude fires reminder → user asks again → second reminder fires.
 """
-from PIL import Image, ImageDraw, ImageFont
 import os
 
+from PIL import Image, ImageDraw, ImageFont
+
 # ── Catppuccin Mocha palette ─────────────────────────────────────────────
-BG      = (30,  30,  46)
-SURFACE = (49,  50,  68)
-TEXT    = (205, 214, 244)
+BG = (30, 30, 46)
+SURFACE = (49, 50, 68)
+TEXT = (205, 214, 244)
 SUBTEXT = (108, 112, 134)
-CYAN    = (137, 220, 235)
-GREEN   = (166, 227, 161)
-YELLOW  = (249, 226, 175)
-RED     = (243, 139, 168)
-MAUVE   = (203, 166, 247)
-BLUE    = (137, 180, 250)
-PEACH   = (250, 179, 135)
+CYAN = (137, 220, 235)
+GREEN = (166, 227, 161)
+YELLOW = (249, 226, 175)
+RED = (243, 139, 168)
+MAUVE = (203, 166, 247)
+BLUE = (137, 180, 250)
+PEACH = (250, 179, 135)
 
 W, H = 960, 720
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
 FONT_SIZE = 14
-LINE_H    = 20
-PAD_X     = 18
-PAD_Y     = 16
+LINE_H = 20
+PAD_X = 18
+PAD_Y = 16
 
 
 def make_font(size=FONT_SIZE, bold=False):
@@ -37,7 +37,7 @@ def make_font(size=FONT_SIZE, bold=False):
         return ImageFont.load_default()
 
 
-FONT   = make_font()
+FONT = make_font()
 FONT_B = make_font(bold=True)
 
 
@@ -60,8 +60,8 @@ def blank_frame():
 
 def draw_frame(lines_segments):
     img = blank_frame()
-    d   = ImageDraw.Draw(img)
-    y   = PAD_Y
+    d = ImageDraw.Draw(img)
+    y = PAD_Y
     for item in lines_segments:
         if item is None:
             y += LINE_H
@@ -134,6 +134,7 @@ def bg_event_line():
 
 # ── Scene builder ─────────────────────────────────────────────────────────
 
+
 def build_scenes():
     scenes = []
 
@@ -152,9 +153,16 @@ def build_scenes():
     # ── 2: Claude responds with SleepTimer ───────────────────────────────
     pre1 = BANNER + [prompt_line(msg1)]
     add(pre1 + [None, claude_header(), tool_line("⚙", "SleepTimer", "60")], 600)
-    add(pre1 + [None, claude_header(),
-                tool_line("⚙", "SleepTimer", "60"),
-                tool_ok("→ 1 lines (134 chars)")], 500)
+    add(
+        pre1
+        + [
+            None,
+            claude_header(),
+            tool_line("⚙", "SleepTimer", "60"),
+            tool_ok("→ 1 lines (134 chars)"),
+        ],
+        500,
+    )
 
     resp1 = [
         "Got it! I've set a 1-minute reminder for you.",
@@ -171,26 +179,41 @@ def build_scenes():
     for line in resp1:
         streamed1.append(text_line(line, 2))
         add(pre1 + [None, claude_header()] + tool1 + streamed1, 70 if line else 30)
-    add(pre1 + [None, claude_header()] + tool1 +
-        [text_line(l, 2) for l in resp1] + [claude_sep()], 600)
+    add(
+        pre1 + [None, claude_header()] + tool1 + [text_line(l, 2) for l in resp1] + [claude_sep()],
+        600,
+    )
 
     # ── 3: New prompt — user idle ────────────────────────────────────────
-    after1 = (pre1 + [None, claude_header()] + tool1 +
-               [text_line(l, 2) for l in resp1] + [claude_sep(), None])
+    after1 = (
+        pre1
+        + [None, claude_header()]
+        + tool1
+        + [text_line(l, 2) for l in resp1]
+        + [claude_sep(), None]
+    )
     add(after1 + [prompt_line(cursor=True)], 2500)
 
     # ── 4: Background event fires ────────────────────────────────────────
-    add(after1 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-    ], 800)
+    add(
+        after1
+        + [
+            [seg("", SUBTEXT)],
+            [seg("[Background Event Triggered]", YELLOW, True)],
+        ],
+        800,
+    )
 
-    add(after1 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-        None,
-        claude_header(),
-    ], 400)
+    add(
+        after1
+        + [
+            [seg("", SUBTEXT)],
+            [seg("[Background Event Triggered]", YELLOW, True)],
+            None,
+            claude_header(),
+        ],
+        400,
+    )
 
     fire1 = [
         "The 1-minute timer has finished.",
@@ -202,27 +225,41 @@ def build_scenes():
     streamed2 = []
     for line in fire1:
         streamed2.append(text_line(line, 2))
-        add(after1 + [
+        add(
+            after1
+            + [
+                [seg("", SUBTEXT)],
+                [seg("[Background Event Triggered]", YELLOW, True)],
+                None,
+                claude_header(),
+            ]
+            + streamed2,
+            70 if line else 30,
+        )
+
+    fired1_base = (
+        after1
+        + [
             [seg("", SUBTEXT)],
             [seg("[Background Event Triggered]", YELLOW, True)],
             None,
             claude_header(),
-        ] + streamed2, 70 if line else 30)
-
-    fired1_base = (after1 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-        None,
-        claude_header(),
-    ] + [text_line(l, 2) for l in fire1] + [claude_sep()])
+        ]
+        + [text_line(l, 2) for l in fire1]
+        + [claude_sep()]
+    )
 
     add(fired1_base, 600)
 
     # ── 5: Prompt redrawn after background event ─────────────────────────
-    add(fired1_base + [
-        None,
-        prompt_line(cursor=True),
-    ], 1200)
+    add(
+        fired1_base
+        + [
+            None,
+            prompt_line(cursor=True),
+        ],
+        1200,
+    )
 
     # ── 6: User types "still busy, remind me again" ──────────────────────
     msg2 = "still busy, remind me again in 1 minute"
@@ -233,9 +270,16 @@ def build_scenes():
     # ── 7: Claude sets another timer ─────────────────────────────────────
     pre2 = fired1_base + [None, prompt_line(msg2)]
     add(pre2 + [None, claude_header(), tool_line("⚙", "SleepTimer", "60")], 500)
-    add(pre2 + [None, claude_header(),
-                tool_line("⚙", "SleepTimer", "60"),
-                tool_ok("→ 1 lines (134 chars)")], 500)
+    add(
+        pre2
+        + [
+            None,
+            claude_header(),
+            tool_line("⚙", "SleepTimer", "60"),
+            tool_ok("→ 1 lines (134 chars)"),
+        ],
+        500,
+    )
 
     resp2 = [
         "No problem! Another 1-minute reminder has been set.",
@@ -252,26 +296,41 @@ def build_scenes():
     for line in resp2:
         streamed3.append(text_line(line, 2))
         add(pre2 + [None, claude_header()] + tool2 + streamed3, 70 if line else 30)
-    add(pre2 + [None, claude_header()] + tool2 +
-        [text_line(l, 2) for l in resp2] + [claude_sep()], 600)
+    add(
+        pre2 + [None, claude_header()] + tool2 + [text_line(l, 2) for l in resp2] + [claude_sep()],
+        600,
+    )
 
     # ── 8: Idle at prompt again ──────────────────────────────────────────
-    after2 = (pre2 + [None, claude_header()] + tool2 +
-               [text_line(l, 2) for l in resp2] + [claude_sep(), None])
+    after2 = (
+        pre2
+        + [None, claude_header()]
+        + tool2
+        + [text_line(l, 2) for l in resp2]
+        + [claude_sep(), None]
+    )
     add(after2 + [prompt_line(cursor=True)], 2000)
 
     # ── 9: Second background event fires ────────────────────────────────
-    add(after2 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-    ], 700)
+    add(
+        after2
+        + [
+            [seg("", SUBTEXT)],
+            [seg("[Background Event Triggered]", YELLOW, True)],
+        ],
+        700,
+    )
 
-    add(after2 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-        None,
-        claude_header(),
-    ], 400)
+    add(
+        after2
+        + [
+            [seg("", SUBTEXT)],
+            [seg("[Background Event Triggered]", YELLOW, True)],
+            None,
+            claude_header(),
+        ],
+        400,
+    )
 
     fire2 = [
         "Timer finished again — time to call your mom!",
@@ -281,19 +340,29 @@ def build_scenes():
     streamed4 = []
     for line in fire2:
         streamed4.append(text_line(line, 2))
-        add(after2 + [
+        add(
+            after2
+            + [
+                [seg("", SUBTEXT)],
+                [seg("[Background Event Triggered]", YELLOW, True)],
+                None,
+                claude_header(),
+            ]
+            + streamed4,
+            70 if line else 30,
+        )
+
+    fired2_base = (
+        after2
+        + [
             [seg("", SUBTEXT)],
             [seg("[Background Event Triggered]", YELLOW, True)],
             None,
             claude_header(),
-        ] + streamed4, 70 if line else 30)
-
-    fired2_base = (after2 + [
-        [seg("", SUBTEXT)],
-        [seg("[Background Event Triggered]", YELLOW, True)],
-        None,
-        claude_header(),
-    ] + [text_line(l, 2) for l in fire2] + [claude_sep()])
+        ]
+        + [text_line(l, 2) for l in fire2]
+        + [claude_sep()]
+    )
 
     add(fired2_base, 600)
 
@@ -305,12 +374,25 @@ def build_scenes():
 
 # ── Palette + render ──────────────────────────────────────────────────────
 
+
 def _build_palette():
     theme = [
-        BG, SURFACE, TEXT, SUBTEXT,
-        CYAN, GREEN, YELLOW, RED, MAUVE, BLUE, PEACH,
-        (255, 255, 255), (0, 0, 0),
-        (50, 55, 80), (90, 95, 120), (160, 166, 200),
+        BG,
+        SURFACE,
+        TEXT,
+        SUBTEXT,
+        CYAN,
+        GREEN,
+        YELLOW,
+        RED,
+        MAUVE,
+        BLUE,
+        PEACH,
+        (255, 255, 255),
+        (0, 0, 0),
+        (50, 55, 80),
+        (90, 95, 120),
+        (160, 166, 200),
     ]
     flat = []
     for c in theme:
@@ -353,7 +435,8 @@ def render_gif(output_path):
 
 
 if __name__ == "__main__":
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                       "..", "docs", "proactive_demo.gif")
+    out = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "docs", "proactive_demo.gif"
+    )
     render_gif(out)
     print(f"\nGIF saved: {out}")

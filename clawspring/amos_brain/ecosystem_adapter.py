@@ -7,19 +7,19 @@ to the new v2.8 ecosystem in clawspring/amos_brain/.
 """
 
 import sys
-from typing import Dict, Any, Optional, List
 from pathlib import Path
+from typing import Any, Optional
 
-sys.path.insert(0, '.')
-sys.path.insert(0, 'clawspring')
-sys.path.insert(0, 'clawspring/amos_brain')
+sys.path.insert(0, ".")
+sys.path.insert(0, "clawspring")
+sys.path.insert(0, "clawspring/amos_brain")
 
 
 class EcosystemAdapter:
     """Adapters for integrating existing AMOS files with v2.8 ecosystem."""
 
     def __init__(self):
-        self.adapters: Dict[str, Any] = {}
+        self.adapters: dict[str, Any] = {}
         self._load_adapters()
 
     def _load_adapters(self) -> None:
@@ -35,7 +35,7 @@ class EcosystemAdapter:
         """Get a specific adapter."""
         return self.adapters.get(name)
 
-    def get_all_status(self) -> Dict[str, str]:
+    def get_all_status(self) -> dict[str, str]:
         """Get status of all adapters."""
         return {
             name: "active" if adapter.is_available() else "unavailable"
@@ -56,6 +56,7 @@ class WorkflowAdapter:
             workflow_path = Path(__file__).parent.parent.parent / "amos_integrated_workflow.py"
             if workflow_path.exists():
                 import importlib.util
+
                 spec = importlib.util.spec_from_file_location(
                     "amos_integrated_workflow", workflow_path
                 )
@@ -70,7 +71,7 @@ class WorkflowAdapter:
         """Check if workflow module is available."""
         return self.workflow_module is not None
 
-    def run_workflow(self, task: str) -> Dict[str, Any]:
+    def run_workflow(self, task: str) -> dict[str, Any]:
         """Run workflow through v2.8 ecosystem."""
         if not self.workflow_module:
             return {"error": "Workflow module not available"}
@@ -78,6 +79,7 @@ class WorkflowAdapter:
         try:
             # Route through cognitive system
             from amos_cognitive_router import CognitiveRouter
+
             router = CognitiveRouter()
             analysis = router.analyze(task)
 
@@ -85,7 +87,7 @@ class WorkflowAdapter:
                 "workflow": "integrated",
                 "routed": True,
                 "domain": analysis.primary_domain,
-                "engines": analysis.suggested_engines
+                "engines": analysis.suggested_engines,
             }
         except Exception as e:
             return {"error": str(e)}
@@ -104,9 +106,8 @@ class TestAdapter:
             test_path = Path(__file__).parent.parent.parent / "amos_integration_test.py"
             if test_path.exists():
                 import importlib.util
-                spec = importlib.util.spec_from_file_location(
-                    "amos_integration_test", test_path
-                )
+
+                spec = importlib.util.spec_from_file_location("amos_integration_test", test_path)
                 if spec and spec.loader:
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
@@ -118,10 +119,11 @@ class TestAdapter:
         """Check if test module is available."""
         return self.test_module is not None
 
-    def run_tests(self) -> Dict[str, Any]:
+    def run_tests(self) -> dict[str, Any]:
         """Run integration tests through v2.8 validator."""
         try:
             from system_health_validator import SystemHealthValidator
+
             validator = SystemHealthValidator()
             result = validator.run_full_validation()
 
@@ -129,7 +131,7 @@ class TestAdapter:
                 "tests": "integrated",
                 "healthy": result.get("healthy", 0),
                 "unhealthy": result.get("unhealthy", 0),
-                "status": result.get("status", "unknown")
+                "status": result.get("status", "unknown"),
             }
         except Exception as e:
             return {"error": str(e)}
@@ -148,6 +150,7 @@ class CoherenceAdapter:
             coherence_path = Path(__file__).parent.parent.parent / "amos_coherence_engine.py"
             if coherence_path.exists():
                 import importlib.util
+
                 spec = importlib.util.spec_from_file_location(
                     "amos_coherence_engine", coherence_path
                 )
@@ -162,10 +165,11 @@ class CoherenceAdapter:
         """Check if coherence engine is available."""
         return self.coherence_module is not None
 
-    def check_coherence(self, state: Dict) -> float:
+    def check_coherence(self, state: dict) -> float:
         """Check coherence using v2.8 integration."""
         try:
             from deep_integration import get_deep_integration
+
             integration = get_deep_integration()
             unified_state = integration.get_unified_state()
             return unified_state.coherence_score
@@ -186,9 +190,8 @@ class ToolsAdapter:
             tools_path = Path(__file__).parent.parent / "amos_tools.py"
             if tools_path.exists():
                 import importlib.util
-                spec = importlib.util.spec_from_file_location(
-                    "amos_tools", tools_path
-                )
+
+                spec = importlib.util.spec_from_file_location("amos_tools", tools_path)
                 if spec and spec.loader:
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)
@@ -200,10 +203,11 @@ class ToolsAdapter:
         """Check if tools module is available."""
         return self.tools_module is not None
 
-    def get_tools(self) -> List[str]:
+    def get_tools(self) -> list[str]:
         """Get available tools through v2.8 system."""
         try:
             from unified_cli import UnifiedCLI
+
             cli = UnifiedCLI()
             return list(cli.commands.keys())
         except Exception:

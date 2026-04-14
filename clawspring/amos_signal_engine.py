@@ -1,7 +1,7 @@
 """AMOS Signal Processing Engine - Multi-domain signal analysis."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -37,11 +37,13 @@ class TimeFrequencyKernel:
         for category, terms in tf_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "signal_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "signal_principles": self._get_principles(category),
+                    }
+                )
 
         return SignalAnalysis(
             domain="time_frequency",
@@ -95,22 +97,28 @@ class BiologicalSignalsKernel:
         for category, terms in bio_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "biomedical_principles": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "biomedical_principles": self._get_primitives(category),
+                    }
+                )
 
         # Safety warnings for biomedical content
         warnings = []
         if any(t in input_data.lower() for t in ["diagnosis", "treatment", "patient", "clinical"]):
             warnings.extend(self.SAFETY_WARNINGS)
-            warnings.append("SAFETY: For medical decisions, consult qualified healthcare professionals")
+            warnings.append(
+                "SAFETY: For medical decisions, consult qualified healthcare professionals"
+            )
 
         return SignalAnalysis(
             domain="biological_signals",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.7 if findings else 0.25,
             limitations=[
                 "No biomedical signal processing",
@@ -155,11 +163,13 @@ class ControlSystemsKernel:
         for category, terms in control_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "control_principles": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "control_principles": self._get_primitives(category),
+                    }
+                )
 
         return SignalAnalysis(
             domain="control_systems",
@@ -208,11 +218,13 @@ class CommunicationSignalsKernel:
         for category, terms in comm_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "communication_primitives": self._get_primitives(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "communication_primitives": self._get_primitives(category),
+                    }
+                )
 
         return SignalAnalysis(
             domain="communication_signals",
@@ -298,12 +310,14 @@ class AMOSSignalEngine:
         ]
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len([f for f in analysis.findings if f.get('type') != 'safety_warnings'])}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 if finding.get("type") == "safety_warnings":
@@ -312,16 +326,23 @@ class AMOSSignalEngine:
                 else:
                     cat = finding.get("category", "general")
                     lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                    principles = finding.get("signal_principles") or finding.get("biomedical_principles") or finding.get("control_principles") or finding.get("communication_principles")
+                    principles = (
+                        finding.get("signal_principles")
+                        or finding.get("biomedical_principles")
+                        or finding.get("control_principles")
+                        or finding.get("communication_principles")
+                    )
                     if principles:
                         lines.append(f"  Principles: {', '.join(principles[:3])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -329,25 +350,29 @@ class AMOSSignalEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Signal analysis is structural pattern matching, not signal processing.",
-            "No DSP. No simulations. No spectral analysis. No clinical validation.",
-            "SUPPORTIVE ANALYSIS ONLY - NOT FOR ENGINEERING OR MEDICAL DECISIONS.",
-            "Domain experts required for all technical implementations.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Signal analysis is structural pattern matching, not signal processing.",
+                "No DSP. No simulations. No spectral analysis. No clinical validation.",
+                "SUPPORTIVE ANALYSIS ONLY - NOT FOR ENGINEERING OR MEDICAL DECISIONS.",
+                "Domain experts required for all technical implementations.",
+            ]
+        )
 
         return "\n".join(lines)
 

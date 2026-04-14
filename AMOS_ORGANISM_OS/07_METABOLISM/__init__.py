@@ -1,5 +1,4 @@
-"""
-07_METABOLISM — Pipeline and Transform Engine
+"""07_METABOLISM — Pipeline and Transform Engine
 ==============================================
 
 The metabolic system of AMOS. Handles data pipelines, transforms,
@@ -12,10 +11,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from .pipeline_engine import PipelineEngine, Pipeline, PipelineStage
-from .transform_engine import TransformEngine, Transform, TransformContext
+from .cleanup_engine import CleanupEngine, CleanupPolicy, CleanupTask
 from .io_router import IORouter, Route, RouteConfig
-from .cleanup_engine import CleanupEngine, CleanupTask, CleanupPolicy
+from .pipeline_engine import Pipeline, PipelineEngine, PipelineStage
+from .transform_engine import Transform, TransformContext, TransformEngine
 
 __all__ = [
     # Pipeline engine

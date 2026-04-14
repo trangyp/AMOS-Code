@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -11,6 +10,7 @@ from typing import Any, Optional
 @dataclass
 class TaskAnalysis:
     """Analysis of an incoming task per AMOS orchestration contract."""
+
     primary_domain: str
     risk_level: str  # low, medium, high, critical
     detected_domains: list[str]
@@ -27,11 +27,47 @@ class CognitiveRouter:
 
     # Domain detection patterns
     DOMAIN_PATTERNS = {
-        "software": ["code", "program", "function", "class", "bug", "fix", "implement", "refactor", "debug"],
-        "ai_ml": ["model", "train", "inference", "llm", "neural", "predict", "embedding", "fine-tune"],
-        "infrastructure": ["deploy", "server", "aws", "azure", "gcp", "docker", "kubernetes", "cloud"],
+        "software": [
+            "code",
+            "program",
+            "function",
+            "class",
+            "bug",
+            "fix",
+            "implement",
+            "refactor",
+            "debug",
+        ],
+        "ai_ml": [
+            "model",
+            "train",
+            "inference",
+            "llm",
+            "neural",
+            "predict",
+            "embedding",
+            "fine-tune",
+        ],
+        "infrastructure": [
+            "deploy",
+            "server",
+            "aws",
+            "azure",
+            "gcp",
+            "docker",
+            "kubernetes",
+            "cloud",
+        ],
         "data": ["database", "sql", "query", "dataset", "csv", "json", "schema", "migration"],
-        "security": ["auth", "encrypt", "vulnerability", "exploit", "penetration", "security", "cve"],
+        "security": [
+            "auth",
+            "encrypt",
+            "vulnerability",
+            "exploit",
+            "penetration",
+            "security",
+            "cve",
+        ],
         "design": ["architecture", "pattern", "structure", "diagram", "component", "interface"],
         "analysis": ["analyze", "review", "audit", "assess", "evaluate", "compare", "benchmark"],
         "documentation": ["readme", "doc", "documentation", "comment", "explain", "tutorial"],
@@ -43,17 +79,40 @@ class CognitiveRouter:
 
     # High-risk terms
     HIGH_RISK_TERMS = [
-        "medical", "clinical", "diagnosis", "treatment", "surgery",
-        "legal advice", "attorney", "court", "lawsuit", "liability",
-        "financial trading", "investment advice", "stock", "crypto trading",
-        "weapon", "explosive", "surveillance", "national security",
-        "production deploy", "live system", "customer data", "payment"
+        "medical",
+        "clinical",
+        "diagnosis",
+        "treatment",
+        "surgery",
+        "legal advice",
+        "attorney",
+        "court",
+        "lawsuit",
+        "liability",
+        "financial trading",
+        "investment advice",
+        "stock",
+        "crypto trading",
+        "weapon",
+        "explosive",
+        "surveillance",
+        "national security",
+        "production deploy",
+        "live system",
+        "customer data",
+        "payment",
     ]
 
     # Critical risk terms
     CRITICAL_RISK_TERMS = [
-        "life support", "medical device", "pacemaker", "insulin pump",
-        "nuclear", "radiation", "missile", "weapon system"
+        "life support",
+        "medical device",
+        "pacemaker",
+        "insulin pump",
+        "nuclear",
+        "radiation",
+        "missile",
+        "weapon system",
     ]
 
     def __init__(self):
@@ -106,22 +165,28 @@ class CognitiveRouter:
             risk_level = "medium"
 
         # 3. Determine requirements
-        requires_code = any(kw in task_lower for kw in [
-            "code", "implement", "write", "function", "class", "script", "program"
-        ])
-        requires_reasoning = any(kw in task_lower for kw in [
-            "analyze", "design", "structure", "plan", "architecture", "review"
-        ])
-        requires_multi_agent = any(kw in task_lower for kw in [
-            "brainstorm", "debate", "multiple", "team", "parallel", "fork"
-        ])
+        requires_code = any(
+            kw in task_lower
+            for kw in ["code", "implement", "write", "function", "class", "script", "program"]
+        )
+        requires_reasoning = any(
+            kw in task_lower
+            for kw in ["analyze", "design", "structure", "plan", "architecture", "review"]
+        )
+        requires_multi_agent = any(
+            kw in task_lower
+            for kw in ["brainstorm", "debate", "multiple", "team", "parallel", "fork"]
+        )
 
         # 4. Suggest engines based on domain
-        suggested_engines = self._suggest_engines(detected_domains, requires_code, requires_reasoning)
+        suggested_engines = self._suggest_engines(
+            detected_domains, requires_code, requires_reasoning
+        )
 
         # 4b. Apply feedback loop enhancement if available
         try:
             from amos_brain.feedback_loop import get_enhanced_engines
+
             primary = detected_domains[0] if detected_domains else "general"
             suggested_engines = get_enhanced_engines(primary, suggested_engines)
         except Exception:
@@ -145,16 +210,20 @@ class CognitiveRouter:
             quadrant_check=quadrant_check,
         )
 
-    def _suggest_engines(self, domains: list[str], requires_code: bool, requires_reasoning: bool) -> list[str]:
+    def _suggest_engines(
+        self, domains: list[str], requires_code: bool, requires_reasoning: bool
+    ) -> list[str]:
         """Suggest cognitive engines based on task characteristics."""
         engines = []
 
         # Always include meta-logic for reasoning
         if requires_reasoning:
-            engines.extend([
-                "AMOS_Deterministic_Logic_And_Law_Engine",
-                "AMOS_Strategy_Game_Engine",
-            ])
+            engines.extend(
+                [
+                    "AMOS_Deterministic_Logic_And_Law_Engine",
+                    "AMOS_Strategy_Game_Engine",
+                ]
+            )
 
         # Domain-specific engines
         domain_engine_map = {
@@ -183,7 +252,8 @@ class CognitiveRouter:
         return {
             "biological": any(d in ["ubi", "medical", "health"] for d in domains),
             "technical": any(d in ["software", "ai_ml", "infrastructure", "data"] for d in domains),
-            "economic": any(d in ["economics", "business"] for d in domains) or "cost" in task_lower,
+            "economic": any(d in ["economics", "business"] for d in domains)
+            or "cost" in task_lower,
             "environmental": "environment" in task_lower or "sustainable" in task_lower,
         }
 
@@ -194,7 +264,9 @@ class CognitiveRouter:
         # L4: Absolute Structural Integrity - check for claims without evidence
         certainty_words = ["definitely", "guaranteed", "100% certain", "impossible to fail"]
         if any(word in task_lower for word in certainty_words):
-            violations.append("L4: Uncertainty not labeled - using certainty language without evidence")
+            violations.append(
+                "L4: Uncertainty not labeled - using certainty language without evidence"
+            )
 
         # L5: Post-Theory Communication - check for ambiguous terms
         ambiguous_terms = ["spiritual", "energy field", "vibration", "quantum healing"]
@@ -209,7 +281,9 @@ class CognitiveRouter:
 
         # L1: Law of Law
         if analysis.risk_level in ["high", "critical"]:
-            guidance.append("L1: High-risk task - verify against all applicable constraints before proceeding")
+            guidance.append(
+                "L1: High-risk task - verify against all applicable constraints before proceeding"
+            )
 
         # L2: Rule of 2
         if analysis.requires_reasoning:
@@ -230,14 +304,14 @@ class CognitiveRouter:
         guidance.append("L5: Use clear, grounded, functionally interpretable language")
 
         # L6: UBI Alignment
-        if analysis.quadrant_check.get("biological") or "organism" in str(analysis.detected_domains):
+        if analysis.quadrant_check.get("biological") or "organism" in str(
+            analysis.detected_domains
+        ):
             guidance.append("L6: Align with Unified Biological Intelligence principles")
 
         return guidance
 
-    def build_cognitive_prompt(
-        self, task_description: str, execute: bool = False
-    ) -> str:
+    def build_cognitive_prompt(self, task_description: str, execute: bool = False) -> str:
         """Build a system prompt augmented with cognitive routing.
 
         Args:
@@ -261,10 +335,12 @@ class CognitiveRouter:
             lines.append(f"- {guidance}")
 
         if analysis.suggested_engines:
-            lines.extend([
-                "",
-                "## Active Cognitive Engines",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Active Cognitive Engines",
+                ]
+            )
             for engine in analysis.suggested_engines[:5]:
                 lines.append(f"- {engine}")
 
@@ -278,38 +354,42 @@ class CognitiveRouter:
                 # Use multi-agent orchestration for complex tasks
                 if analysis.requires_multi_agent or len(analysis.suggested_engines) > 1:
                     from amos_brain.multi_agent_orchestrator import run_cognitive_consensus
+
                     consensus = run_cognitive_consensus(
-                        task_description,
-                        analysis.suggested_engines[:4]
+                        task_description, analysis.suggested_engines[:4]
                     )
                     consensus_score = consensus.agreement_score
                     exec_time_ms = consensus.total_execution_time_ms
                     recommendation = consensus.recommended_action
-                    lines.extend([
-                        "",
-                        "## Multi-Agent Consensus",
-                        f"Agreement: {consensus.agreement_score:.0%} | "
-                        f"Time: {consensus.total_execution_time_ms:.1f}ms | "
-                        f"Perspectives: {len(consensus.perspectives)}",
-                        "",
-                        f"**{consensus.recommended_action}**",
-                    ])
+                    lines.extend(
+                        [
+                            "",
+                            "## Multi-Agent Consensus",
+                            f"Agreement: {consensus.agreement_score:.0%} | "
+                            f"Time: {consensus.total_execution_time_ms:.1f}ms | "
+                            f"Perspectives: {len(consensus.perspectives)}",
+                            "",
+                            f"**{consensus.recommended_action}**",
+                        ]
+                    )
                     if consensus.dissenting_views:
                         lines.append("⚠️ Dissent detected - review perspectives")
                 else:
                     from amos_brain.engine_executor import execute_cognitive_task
+
                     result = execute_cognitive_task(
-                        task_description,
-                        analysis.suggested_engines[:3]
+                        task_description, analysis.suggested_engines[:3]
                     )
                     exec_time_ms = result.execution_time_ms
                     recommendation = f"Executed {len(result.engines_used)} engines"
-                    lines.extend([
-                        "",
-                        "## Pre-execution Analysis",
-                        f"Executed {len(result.engines_used)} engines "
-                        f"in {result.execution_time_ms:.1f}ms",
-                    ])
+                    lines.extend(
+                        [
+                            "",
+                            "## Pre-execution Analysis",
+                            f"Executed {len(result.engines_used)} engines "
+                            f"in {result.execution_time_ms:.1f}ms",
+                        ]
+                    )
                     if result.violations_found:
                         lines.append("⚠️ Law violations detected - review required")
             except Exception:
@@ -318,6 +398,7 @@ class CognitiveRouter:
         # Record to audit trail
         try:
             from amos_brain.cognitive_audit import record_cognitive_decision
+
             record_cognitive_decision(
                 task=task_description,
                 domain=analysis.primary_domain,
@@ -327,25 +408,29 @@ class CognitiveRouter:
                 laws=analysis.law_violations or [],
                 violations=analysis.law_violations or [],
                 exec_time_ms=exec_time_ms,
-                recommendation=recommendation
+                recommendation=recommendation,
             )
         except Exception:
             pass  # Silent fail for non-critical audit
 
         if analysis.requires_multi_agent:
-            lines.extend([
-                "",
-                "## Multi-Agent Recommendation",
-                "Consider using /brainstorm for parallel perspectives",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "## Multi-Agent Recommendation",
+                    "Consider using /brainstorm for parallel perspectives",
+                ]
+            )
 
-        lines.extend([
-            "",
-            "## Task Processing",
-            "Apply the above laws and route through suggested engines.",
-            "---",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Task Processing",
+                "Apply the above laws and route through suggested engines.",
+                "---",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

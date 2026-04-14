@@ -4,13 +4,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .facade import BrainClient, think, decide
+from .facade import BrainClient
 from .state_manager import get_state_manager
 
 
 @dataclass
 class CookbookResult:
     """Result from a cookbook recipe."""
+
     recipe_name: str
     input_data: str
     analysis: str
@@ -41,31 +42,26 @@ def _normalize_confidence(value: object) -> float:
 
 
 class ArchitectureDecision:
-    """
-    Recipe: Architecture Decision Records (ADR).
-    
+    """Recipe: Architecture Decision Records (ADR).
+
     Use for: Technology selection, architectural patterns,
              migration decisions, system design choices.
-    
+
     Example:
         result = ArchitectureDecision.analyze(
             "Should we use microservices or monolith?",
             context={"team_size": 10, "scale": "medium"}
         )
     """
-    
+
     RECIPE_NAME = "Architecture Decision Record (ADR)"
-    
+
     @classmethod
-    def analyze(
-        cls,
-        question: str,
-        context: dict[str, Any] | None = None
-    ) -> CookbookResult:
+    def analyze(cls, question: str, context: dict[str, Any] | None = None) -> CookbookResult:
         """Analyze an architectural decision."""
         client = BrainClient()
         sm = get_state_manager()
-        
+
         # Build enriched prompt
         prompt = f"""Architecture Decision: {question}
 
@@ -82,22 +78,23 @@ Provide:
 3. Pros/cons analysis (Rule of 2 perspectives)
 4. Implementation approach
 5. Rollback strategy"""
-        
+
         if context:
             prompt += f"\n\nContext: {context}"
-        
+
         # Process through brain
         response = client.think(prompt, domain="software")
-        
+
         # Extract recommendations from reasoning
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["recommend", "suggest", "choose", "use"])
         ][:3]
-        
+
         # Create session for audit
         session_id = sm.start_session(goal=f"ADR: {question[:50]}", domain="software")
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=question,
@@ -105,7 +102,7 @@ Provide:
             recommendations=recommendations or ["See full analysis"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=session_id
+            session_id=session_id,
         )
 
     @classmethod
@@ -115,27 +112,23 @@ Provide:
 
 
 class CodeReview:
-    """
-    Recipe: Cognitive Code Review.
-    
+    """Recipe: Cognitive Code Review.
+
     Use for: Code review, quality assessment, refactoring suggestions.
     """
-    
+
     RECIPE_NAME = "Code Review"
-    
+
     @classmethod
     def analyze(
-        cls,
-        code: str,
-        language: str = "python",
-        focus_areas: list[str] | None = None
+        cls, code: str, language: str = "python", focus_areas: list[str] | None = None
     ) -> CookbookResult:
         """Analyze code with cognitive rules."""
         client = BrainClient()
         sm = get_state_manager()
-        
+
         focus = focus_areas or ["security", "maintainability", "performance"]
-        
+
         prompt = f"""Code Review ({language}):
 
 ```
@@ -158,16 +151,17 @@ Identify:
 - Security vulnerabilities
 - Law of Structural Integrity violations
 - UBI alignment issues"""
-        
+
         response = client.think(prompt, domain="software")
-        
+
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["issue", "risk", "improve", "fix", "consider"])
         ][:5]
-        
+
         session_id = sm.start_session(goal=f"Code review: {language}", domain="software")
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=code[:100],
@@ -175,7 +169,7 @@ Identify:
             recommendations=recommendations or ["No major issues found"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=session_id
+            session_id=session_id,
         )
 
     @classmethod
@@ -189,25 +183,20 @@ Identify:
 
 
 class SecurityAudit:
-    """
-    Recipe: Security Compliance Audit.
-    
+    """Recipe: Security Compliance Audit.
+
     Use for: Security analysis, vulnerability assessment,
              compliance checking, threat modeling.
     """
-    
+
     RECIPE_NAME = "Security Audit"
-    
+
     @classmethod
-    def analyze(
-        cls,
-        system_description: str,
-        threat_model: str = "STRIDE"
-    ) -> CookbookResult:
+    def analyze(cls, system_description: str, threat_model: str = "STRIDE") -> CookbookResult:
         """Perform security audit."""
         client = BrainClient()
         sm = get_state_manager()
-        
+
         prompt = f"""Security Audit ({threat_model}):
 
 System: {system_description}
@@ -228,16 +217,17 @@ Check against Global Laws:
 - L4: Structural Integrity (secure by design)
 - L5: Clear communication of risks
 - L6: Universal benefit alignment (privacy, safety)"""
-        
+
         response = client.think(prompt, domain="security")
-        
+
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["risk", "vulnerab", "threat", "mitigate", "protect"])
         ][:5]
-        
+
         session_id = sm.start_session(goal="Security audit", domain="security")
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=system_description[:100],
@@ -245,7 +235,7 @@ Check against Global Laws:
             recommendations=recommendations or ["Review analysis"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=session_id
+            session_id=session_id,
         )
 
     @classmethod
@@ -260,29 +250,30 @@ Check against Global Laws:
 
 
 class DesignPattern:
-    """
-    Recipe: Design Pattern Selection.
-    
+    """Recipe: Design Pattern Selection.
+
     Use for: Choosing design patterns, refactoring decisions,
              pattern implementation guidance.
     """
-    
+
     RECIPE_NAME = "Design Pattern Selection"
-    
+
     @classmethod
-    def select(
-        cls,
-        problem: str,
-        available_patterns: list[str] | None = None
-    ) -> CookbookResult:
+    def select(cls, problem: str, available_patterns: list[str] | None = None) -> CookbookResult:
         """Select appropriate design pattern."""
         client = BrainClient()
-        
+
         patterns = available_patterns or [
-            "Singleton", "Factory", "Observer", "Strategy",
-            "Decorator", "Adapter", "Command", "Repository"
+            "Singleton",
+            "Factory",
+            "Observer",
+            "Strategy",
+            "Decorator",
+            "Adapter",
+            "Command",
+            "Repository",
         ]
-        
+
         prompt = f"""Design Pattern Selection:
 
 Problem: {problem}
@@ -300,14 +291,15 @@ Apply Rule of 4:
 - Environmental: Integration fit
 
 Recommend the best pattern with justification."""
-        
+
         response = client.think(prompt, domain="software")
-        
+
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["pattern", "recommend", "use", "choose"])
         ][:3]
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=problem,
@@ -315,30 +307,24 @@ Recommend the best pattern with justification."""
             recommendations=recommendations or ["See analysis"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=""
+            session_id="",
         )
 
 
 class ProblemDiagnosis:
-    """
-    Recipe: Root Cause Analysis.
-    
+    """Recipe: Root Cause Analysis.
+
     Use for: Debugging, incident analysis, problem investigation,
              root cause identification.
     """
-    
+
     RECIPE_NAME = "Problem Diagnosis & RCA"
-    
+
     @classmethod
-    def diagnose(
-        cls,
-        problem: str,
-        symptoms: list[str],
-        context: str = ""
-    ) -> CookbookResult:
+    def diagnose(cls, problem: str, symptoms: list[str], context: str = "") -> CookbookResult:
         """Diagnose problem root cause."""
         client = BrainClient()
-        
+
         prompt = f"""Root Cause Analysis:
 
 Problem: {problem}
@@ -368,14 +354,15 @@ Identify:
 - Contributing factors
 - Immediate mitigation
 - Long-term prevention"""
-        
+
         response = client.think(prompt, domain="diagnostics")
-        
+
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["cause", "fix", "solution", "prevent", "mitigate"])
         ][:5]
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=problem,
@@ -383,7 +370,7 @@ Identify:
             recommendations=recommendations or ["Investigate further"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=""
+            session_id="",
         )
 
     @classmethod
@@ -410,26 +397,23 @@ Identify:
 
 
 class ProjectPlanner:
-    """
-    Recipe: Project Planner.
-    
+    """Recipe: Project Planner.
+
     Use for: Project scoping, milestone planning, resource allocation,
              risk estimation, timeline design.
     """
-    
+
     RECIPE_NAME = "Project Planning & Estimation"
-    
+
     @classmethod
     def plan(
-        cls,
-        project_description: str,
-        constraints: dict[str, Any] | None = None
+        cls, project_description: str, constraints: dict[str, Any] | None = None
     ) -> CookbookResult:
         """Create project plan with cognitive analysis."""
         client = BrainClient()
-        
+
         cons = constraints or {}
-        
+
         prompt = f"""Project Planning:
 
 Project: {project_description}
@@ -453,14 +437,15 @@ Provide:
 4. Risk register
 5. Milestone schedule
 6. Resource requirements"""
-        
+
         response = client.think(prompt, domain="project")
-        
+
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["task", "milestone", "risk", "estimate", "plan"])
         ][:5]
-        
+
         return CookbookResult(
             recipe_name=cls.RECIPE_NAME,
             input_data=project_description[:100],
@@ -468,7 +453,7 @@ Provide:
             recommendations=recommendations or ["See plan details"],
             confidence=_normalize_confidence(response.confidence),
             law_compliant=response.law_compliant,
-            session_id=""
+            session_id="",
         )
 
     @classmethod
@@ -516,6 +501,7 @@ def diagnose_problem(problem: str, symptoms: list[str], **kwargs) -> CookbookRes
 
 class TechnologySelection:
     """Recipe: Technology Selection."""
+
     RECIPE_NAME = "Technology Selection"
 
     @classmethod
@@ -544,7 +530,8 @@ Return a recommendation, tradeoffs, and selection rationale.
 """
         response = client.think(prompt, domain="software")
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["recommend", "choose", "select", "tradeoff"])
         ][:5]
         return CookbookResult(
@@ -560,6 +547,7 @@ Return a recommendation, tradeoffs, and selection rationale.
 
 class RiskAssessment:
     """Recipe: Risk Assessment."""
+
     RECIPE_NAME = "Risk Assessment"
 
     @classmethod
@@ -585,7 +573,8 @@ Assess the main risks, mitigations, fallback paths, and monitoring signals.
 """
         response = client.think(prompt, domain="risk")
         recommendations = [
-            step for step in response.reasoning
+            step
+            for step in response.reasoning
             if any(k in step.lower() for k in ["risk", "mitigate", "fallback", "monitor"])
         ][:5]
         return CookbookResult(

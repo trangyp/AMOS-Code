@@ -13,14 +13,14 @@ Tests:
     - WebSocket connection
 """
 
-import unittest
-import requests
-import json
-import time
-from pathlib import Path
-
 # Add parent to path
 import sys
+import time
+import unittest
+from pathlib import Path
+
+import requests
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 BASE_URL = "http://localhost:5000"
@@ -35,16 +35,16 @@ class TestHealthEndpoints(unittest.TestCase):
         r = requests.get(f"{BASE_URL}/health", timeout=5)
         self.assertEqual(r.status_code, 200)
         data = r.json()
-        self.assertEqual(data['status'], 'healthy')
-        self.assertEqual(data['domain'], 'neurosyncai.tech')
+        self.assertEqual(data["status"], "healthy")
+        self.assertEqual(data["domain"], "neurosyncai.tech")
 
     def test_status_endpoint(self):
         """Test /status returns brain status."""
         r = requests.get(f"{BASE_URL}/status", timeout=10)
         self.assertEqual(r.status_code, 200)
         data = r.json()
-        self.assertTrue(data['success'])
-        self.assertIn('status', data)
+        self.assertTrue(data["success"])
+        self.assertIn("status", data)
 
 
 class TestThinkEndpoint(unittest.TestCase):
@@ -53,11 +53,7 @@ class TestThinkEndpoint(unittest.TestCase):
     def test_think_without_auth_development(self):
         """Test think endpoint works in dev mode."""
         payload = {"query": "Test query", "domain": "general"}
-        r = requests.post(
-            f"{BASE_URL}/think",
-            json=payload,
-            timeout=30
-        )
+        r = requests.post(f"{BASE_URL}/think", json=payload, timeout=30)
         # In dev mode, should work without auth
         self.assertIn(r.status_code, [200, 401])
 
@@ -72,10 +68,7 @@ class TestDecideEndpoint(unittest.TestCase):
 
     def test_decide_with_options(self):
         """Test decide with options."""
-        payload = {
-            "question": "Which to choose?",
-            "options": ["A", "B", "C"]
-        }
+        payload = {"question": "Which to choose?", "options": ["A", "B", "C"]}
         r = requests.post(f"{BASE_URL}/decide", json=payload, timeout=30)
         self.assertIn(r.status_code, [200, 401])
 
@@ -100,11 +93,7 @@ class TestAdminEndpoints(unittest.TestCase):
 
     def test_admin_with_master_key(self):
         """Test admin with valid master key."""
-        r = requests.get(
-            f"{BASE_URL}/admin/keys",
-            headers={"X-Master-Key": MASTER_KEY},
-            timeout=5
-        )
+        r = requests.get(f"{BASE_URL}/admin/keys", headers={"X-Master-Key": MASTER_KEY}, timeout=5)
         self.assertIn(r.status_code, [200, 404])
 
 
@@ -118,7 +107,7 @@ class TestRateLimiting(unittest.TestCase):
             r = requests.get(f"{BASE_URL}/health", timeout=5)
             responses.append(r.status_code)
             time.sleep(0.1)
-        
+
         # Most should succeed
         success_count = sum(1 for s in responses if s == 200)
         self.assertGreaterEqual(success_count, 3)
@@ -131,19 +120,20 @@ def run_tests():
         requests.get(f"{BASE_URL}/health", timeout=2)
     except requests.exceptions.ConnectionError:
         print("❌ Error: API server not running")
-        print(f"   Start with: python amos_api_server.py")
+        print("   Start with: python amos_api_server.py")
         sys.exit(1)
-    
+
     # Run tests
     loader = unittest.TestLoader()
     suite = loader.loadTestsFromModule(sys.modules[__name__])
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
-    
+
     return result.wasSuccessful()
 
 
 if __name__ == "__main__":
     import sys
+
     success = run_tests()
     sys.exit(0 if success else 1)

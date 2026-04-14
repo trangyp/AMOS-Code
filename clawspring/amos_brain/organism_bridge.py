@@ -2,10 +2,12 @@
 
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Optional
 
 # Add organism OS to path
-ORGANISM_PATH = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS")
+ORGANISM_PATH = Path(
+    "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS"
+)
 if str(ORGANISM_PATH) not in sys.path:
     sys.path.insert(0, str(ORGANISM_PATH))
 
@@ -17,18 +19,17 @@ class OrganismBridge:
         self._coherence_engine = None
         self._predictive_engine = None
         self._task_executor = None
-        self._bridge_status = {
-            "coherence": False,
-            "predictive": False,
-            "task_executor": False
-        }
+        self._bridge_status = {"coherence": False, "predictive": False, "task_executor": False}
 
     def _load_coherence_engine(self):
         """Load coherence engine from AMOS_ORGANISM_OS."""
         try:
             # Try to import from the open file location
             import importlib.util
-            coherence_path = Path("/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_coherence_engine.py")
+
+            coherence_path = Path(
+                "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_coherence_engine.py"
+            )
             if coherence_path.exists():
                 spec = importlib.util.spec_from_file_location("coherence_engine", coherence_path)
                 module = importlib.util.module_from_spec(spec)
@@ -44,6 +45,7 @@ class OrganismBridge:
         """Load predictive engine from quantum layer."""
         try:
             from predictive_integration import get_predictive_integration
+
             self._predictive_engine = get_predictive_integration()
             self._bridge_status["predictive"] = True
             return True
@@ -55,6 +57,7 @@ class OrganismBridge:
         """Load task executor from muscle layer."""
         try:
             from task_execution_integration import get_task_execution_integration
+
             self._task_executor = get_task_execution_integration()
             self._bridge_status["task_executor"] = True
             return True
@@ -69,21 +72,18 @@ class OrganismBridge:
         self._load_task_executor()
         return self._bridge_status
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get bridge connection status."""
         return {
             "organism_path": str(ORGANISM_PATH),
             "components": self._bridge_status,
             "total_connected": sum(self._bridge_status.values()),
-            "total_available": 3
+            "total_available": 3,
         }
 
-    def enhance_cognitive_analysis(self, task: str) -> Dict[str, Any]:
+    def enhance_cognitive_analysis(self, task: str) -> dict[str, Any]:
         """Use organism components to enhance cognitive task analysis."""
-        enhancement = {
-            "task": task,
-            "organism_enhancements": {}
-        }
+        enhancement = {"task": task, "organism_enhancements": {}}
 
         # Use coherence engine if available
         if self._bridge_status["coherence"] and self._coherence_engine:
@@ -91,7 +91,7 @@ class OrganismBridge:
                 # Check for coherence in task context
                 enhancement["organism_enhancements"]["coherence_check"] = {
                     "status": "available",
-                    "message": "Coherence engine ready for task validation"
+                    "message": "Coherence engine ready for task validation",
                 }
             except Exception as e:
                 enhancement["organism_enhancements"]["coherence_error"] = str(e)
@@ -101,7 +101,7 @@ class OrganismBridge:
             try:
                 enhancement["organism_enhancements"]["predictive_insights"] = {
                     "status": "available",
-                    "message": "Predictive engine ready for outcome forecasting"
+                    "message": "Predictive engine ready for outcome forecasting",
                 }
             except Exception as e:
                 enhancement["organism_enhancements"]["predictive_error"] = str(e)
@@ -111,7 +111,7 @@ class OrganismBridge:
             try:
                 enhancement["organism_enhancements"]["execution_ready"] = {
                     "status": "available",
-                    "message": "Organism task executor ready for action"
+                    "message": "Organism task executor ready for action",
                 }
             except Exception as e:
                 enhancement["organism_enhancements"]["executor_error"] = str(e)
@@ -141,18 +141,18 @@ def print_organism_status():
     print("AMOS ORGANISM OS BRIDGE - INTEGRATION STATUS")
     print("=" * 70)
     print(f"\n📁 Organism Path: {status['organism_path']}")
-    print(f"\n🔗 Components:")
+    print("\n🔗 Components:")
 
-    for component, connected in status['components'].items():
+    for component, connected in status["components"].items():
         icon = "✓" if connected else "✗"
         print(f"  {icon} {component}: {'connected' if connected else 'not available'}")
 
     print(f"\n  Total: {status['total_connected']}/{status['total_available']} connected")
 
-    if status['total_connected'] == status['total_available']:
+    if status["total_connected"] == status["total_available"]:
         print("\n✅ ORGANISM BRIDGE: FULLY OPERATIONAL")
         print("   All organism OS components integrated")
-    elif status['total_connected'] > 0:
+    elif status["total_connected"] > 0:
         print("\n⚠️  ORGANISM BRIDGE: PARTIALLY OPERATIONAL")
         print(f"   {status['total_connected']} of {status['total_available']} components available")
     else:

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""
-AMOS Subsystem Fix Script
+"""AMOS Subsystem Fix Script
 =========================
 
 Fixes path errors for 5 remaining subsystems:
 - 09_SOCIAL_ENGINE
-- 10_LEGAL_BRAIN  
+- 10_LEGAL_BRAIN
 - 11_FACTORY
 - 12_WORKERS
 - 13_SECURITY
@@ -20,13 +19,11 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any
 
 
 def fix_subsystem(subsystem_name: str, module_name: str, functions: list[str]) -> bool:
-    """
-    Create or fix a subsystem module.
-    
+    """Create or fix a subsystem module.
+
     Args:
         subsystem_name: Name like "09_SOCIAL_ENGINE"
         module_name: Module file name like "social_graph"
@@ -35,10 +32,10 @@ def fix_subsystem(subsystem_name: str, module_name: str, functions: list[str]) -
     base_path = Path(__file__).parent / "AMOS_ORGANISM_OS" / subsystem_name
     init_file = base_path / "__init__.py"
     module_file = base_path / f"{module_name}.py"
-    
+
     # Create directory if missing
     base_path.mkdir(parents=True, exist_ok=True)
-    
+
     # Create __init__.py
     init_content = f'''"""{subsystem_name} - AMOS Organism Subsystem
 
@@ -51,7 +48,7 @@ from .{module_name} import {", ".join(functions)}
 __all__ = [{", ".join(f'"{f}"' for f in functions)}]
 '''
     init_file.write_text(init_content)
-    
+
     # Create main module with stub implementation
     module_content = f'''"""{module_name} - {subsystem_name}
 
@@ -65,7 +62,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 '''
-    
+
     # Add class definition
     class_name = "".join(word.capitalize() for word in module_name.split("_"))
     module_content += f'''
@@ -81,16 +78,16 @@ class {class_name}:
     {class_name} - {subsystem_name} subsystem.
     Auto-generated minimal implementation.
     """
-    
+
     def __init__(self):
         self.state = {class_name}State()
-    
+
     def initialize(self) -> bool:
         """Initialize the subsystem."""
         self.state.initialized = True
         self.state.last_check = datetime.utcnow().isoformat()
         return True
-    
+
     def get_status(self) -> dict[str, Any]:
         """Get subsystem status."""
         return {{
@@ -100,7 +97,7 @@ class {class_name}:
         }}
 
 '''
-    
+
     # Add standalone functions
     for func_name in functions:
         module_content += f'''
@@ -108,7 +105,7 @@ def {func_name}(*args, **kwargs) -> Any:
     """Stub implementation of {func_name}."""
     return {{"status": "stub", "function": "{func_name}"}}
 '''
-    
+
     module_file.write_text(module_content)
     return True
 
@@ -118,7 +115,7 @@ def main() -> int:
     print("\n" + "=" * 60)
     print("AMOS SUBSYSTEM FIX SCRIPT")
     print("=" * 60)
-    
+
     fixes = [
         ("09_SOCIAL_ENGINE", "social_graph", ["get_collaborators", "share_context"]),
         ("10_LEGAL_BRAIN", "legal_engine", ["check_compliance", "validate_contract"]),
@@ -126,9 +123,9 @@ def main() -> int:
         ("12_WORKERS", "worker_registry", ["register_worker", "schedule_task"]),
         ("13_SECURITY", "vault_manager", ["store_secret", "encrypt_data"]),
     ]
-    
+
     fixed_count = 0
-    
+
     for subsystem, module, functions in fixes:
         print(f"\nFixing {subsystem}...")
         try:
@@ -137,11 +134,11 @@ def main() -> int:
                 fixed_count += 1
         except Exception as e:
             print(f"  ✗ Error: {e}")
-    
+
     print("\n" + "=" * 60)
     print(f"FIX COMPLETE: {fixed_count}/{len(fixes)} subsystems repaired")
     print("=" * 60)
-    
+
     if fixed_count == len(fixes):
         print("\n🎉 ALL SUBSYSTEMS NOW OPERATIONAL")
         print("\nRun: python amos_unified_orchestrator.py")

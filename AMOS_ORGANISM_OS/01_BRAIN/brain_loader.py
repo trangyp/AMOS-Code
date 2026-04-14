@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Brain JSON Loader (01_BRAIN)
+"""AMOS Brain JSON Loader (01_BRAIN)
 =================================
 
 Efficiently loads and queries the massive AMOS brain JSON files.
@@ -15,37 +14,39 @@ from __future__ import annotations
 import asyncio
 import json
 import mmap
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Iterator
+from typing import Any, Optional
 
 
 @dataclass
 class BrainEngine:
     """Represents a loaded brain engine."""
+
     name: str
     version: str
     file_path: Path
     size_bytes: int
-    data: Dict[str, Any]
-    loaded_at: str = field(
-        default_factory=lambda: datetime.utcnow().isoformat()
-    )
+    data: dict[str, Any]
+    loaded_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     access_count: int = 0
 
 
 @dataclass
 class BrainQuery:
     """A query against the brain."""
+
     term: str
-    engine_filter: Optional[List[str]] = None
+    engine_filter: Optional[list[str]] = None
     max_results: int = 10
 
 
 @dataclass
 class BrainResult:
     """Result from a brain query."""
+
     engine_name: str
     path: str  # JSON path to the result
     content: Any
@@ -53,16 +54,15 @@ class BrainResult:
 
 
 class StreamingJSONLoader:
-    """
-    Memory-efficient JSON loader for large files.
+    """Memory-efficient JSON loader for large files.
     Uses mmap for files > 10MB.
     """
 
     def __init__(self, chunk_size: int = 65536) -> None:
         self.chunk_size = chunk_size
-        self._cache: Dict[Path, Dict] = {}
+        self._cache: dict[Path, dict] = {}
 
-    def load(self, path: Path, use_mmap: bool = True) -> Dict[str, Any]:
+    def load(self, path: Path, use_mmap: bool = True) -> dict[str, Any]:
         """Load JSON file, using mmap for large files."""
         if path in self._cache:
             return self._cache[path]
@@ -74,19 +74,19 @@ class StreamingJSONLoader:
         else:
             return self._load_standard(path)
 
-    def _load_standard(self, path: Path) -> Dict[str, Any]:
+    def _load_standard(self, path: Path) -> dict[str, Any]:
         """Standard JSON load."""
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
         self._cache[path] = data
         return data
 
-    def _load_mmap(self, path: Path) -> Dict[str, Any]:
+    def _load_mmap(self, path: Path) -> dict[str, Any]:
         """Memory-mapped JSON load for large files."""
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             # Use mmap for files > 10MB to reduce memory pressure
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
-                data = json.loads(mm.read().decode('utf-8'))
+                data = json.loads(mm.read().decode("utf-8"))
         self._cache[path] = data
         return data
 
@@ -96,22 +96,20 @@ class StreamingJSONLoader:
 
 
 class BrainQueryEngine:
-    """
-    Query engine for searching across all brain engines.
-    """
+    """Query engine for searching across all brain engines."""
 
     def __init__(self, loader: StreamingJSONLoader) -> None:
         self.loader = loader
-        self.engines: Dict[str, BrainEngine] = {}
-        self._index: Dict[str, List[BrainResult]] = {}
+        self.engines: dict[str, BrainEngine] = {}
+        self._index: dict[str, list[BrainResult]] = {}
 
     def register_engine(self, engine: BrainEngine) -> None:
         """Register a brain engine."""
         self.engines[engine.name] = engine
 
-    def query(self, query: BrainQuery) -> List[BrainResult]:
+    def query(self, query: BrainQuery) -> list[BrainResult]:
         """Query across all registered engines."""
-        results: List[BrainResult] = []
+        results: list[BrainResult] = []
 
         engines_to_search = self._get_engines_to_search(query)
 
@@ -128,24 +126,20 @@ class BrainQueryEngine:
 
         # Sort by relevance
         results.sort(key=lambda r: r.relevance_score, reverse=True)
-        return results[:query.max_results]
+        return results[: query.max_results]
 
-    def _get_engines_to_search(self, query: BrainQuery) -> List[str]:
+    def _get_engines_to_search(self, query: BrainQuery) -> list[str]:
         """Determine which engines to search."""
         if query.engine_filter:
             return [e for e in query.engine_filter if e in self.engines]
         return list(self.engines.keys())
 
-    def _search_engine(
-        self, engine: BrainEngine, query: BrainQuery
-    ) -> List[BrainResult]:
+    def _search_engine(self, engine: BrainEngine, query: BrainQuery) -> list[BrainResult]:
         """Search within a single engine."""
-        results: List[BrainResult] = []
+        results: list[BrainResult] = []
         term_lower = query.term.lower()
 
-        def search_recursive(
-            obj: Any, path: str = ""
-        ) -> Iterator[BrainResult]:
+        def search_recursive(obj: Any, path: str = "") -> Iterator[BrainResult]:
             """Recursively search through JSON structure."""
             if isinstance(obj, dict):
                 for key, value in obj.items():
@@ -157,7 +151,7 @@ class BrainQueryEngine:
                             engine_name=engine.name,
                             path=new_path,
                             content=value,
-                            relevance_score=0.9
+                            relevance_score=0.9,
                         )
 
                     # Check string value
@@ -166,7 +160,7 @@ class BrainQueryEngine:
                             engine_name=engine.name,
                             path=new_path,
                             content=value,
-                            relevance_score=0.7
+                            relevance_score=0.7,
                         )
 
                     # Recurse
@@ -183,7 +177,7 @@ class BrainQueryEngine:
 
         return results
 
-    def get_engine_info(self, engine_name: str) -> Optional[Dict[str, Any]]:
+    def get_engine_info(self, engine_name: str) -> Optional[dict[str, Any]]:
         """Get information about a registered engine."""
         engine = self.engines.get(engine_name)
         if not engine:
@@ -195,18 +189,16 @@ class BrainQueryEngine:
             "size_mb": round(engine.size_bytes / (1024 * 1024), 2),
             "loaded_at": engine.loaded_at,
             "access_count": engine.access_count,
-            "top_level_keys": list(engine.data.keys())[:10]
+            "top_level_keys": list(engine.data.keys())[:10],
         }
 
-    def list_engines(self) -> List[str]:
+    def list_engines(self) -> list[str]:
         """List all registered engines."""
         return list(self.engines.keys())
 
 
 class AmosBrainLoader:
-    """
-    Main interface for loading and querying AMOS brain.
-    """
+    """Main interface for loading and querying AMOS brain."""
 
     def __init__(self, brain_root: Path) -> None:
         self.brain_root = brain_root
@@ -214,9 +206,9 @@ class AmosBrainLoader:
         self.query_engine = BrainQueryEngine(self.loader)
         self._loaded = False
 
-    def load_all_engines(self) -> Dict[str, BrainEngine]:
+    def load_all_engines(self) -> dict[str, BrainEngine]:
         """Load all brain engines from the brain root."""
-        engines: Dict[str, BrainEngine] = {}
+        engines: dict[str, BrainEngine] = {}
 
         # Core engines
         core_dir = self.brain_root / "Core"
@@ -248,7 +240,7 @@ class AmosBrainLoader:
         self._loaded = True
         return engines
 
-    async def load_all_engines_async(self, timeout_seconds: float = 10.0) -> Dict[str, BrainEngine]:
+    async def load_all_engines_async(self, timeout_seconds: float = 10.0) -> dict[str, BrainEngine]:
         """Async load with timeout to prevent UI hanging on large JSON files.
 
         Args:
@@ -260,8 +252,7 @@ class AmosBrainLoader:
         loop = asyncio.get_event_loop()
         try:
             return await asyncio.wait_for(
-                loop.run_in_executor(None, self.load_all_engines),
-                timeout=timeout_seconds
+                loop.run_in_executor(None, self.load_all_engines), timeout=timeout_seconds
             )
         except asyncio.TimeoutError:
             # Return partial results on timeout
@@ -288,14 +279,14 @@ class AmosBrainLoader:
                 version=version,
                 file_path=path,
                 size_bytes=path.stat().st_size,
-                data=data
+                data=data,
             )
 
         except Exception as e:
             print(f"[BRAIN] Failed to load {path}: {e}")
             return None
 
-    def search(self, term: str, max_results: int = 10) -> List[BrainResult]:
+    def search(self, term: str, max_results: int = 10) -> list[BrainResult]:
         """Search the brain for a term."""
         if not self._loaded:
             self.load_all_engines()
@@ -307,19 +298,17 @@ class AmosBrainLoader:
         """Get a specific engine by name."""
         return self.query_engine.engines.get(engine_name)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get loader status."""
         engines = self.query_engine.list_engines()
-        total_size = sum(
-            e.size_bytes for e in self.query_engine.engines.values()
-        )
+        total_size = sum(e.size_bytes for e in self.query_engine.engines.values())
 
         return {
             "loaded": self._loaded,
             "engines_count": len(engines),
             "engines": engines,
             "total_size_mb": round(total_size / (1024 * 1024), 2),
-            "cache_size": len(self.loader._cache)
+            "cache_size": len(self.loader._cache),
         }
 
 
@@ -349,8 +338,7 @@ def get_brain_loader(brain_root: Optional[Path] = None) -> AmosBrainLoader:
 
 
 async def get_brain_loader_async(
-    brain_root: Optional[Path] = None,
-    timeout_seconds: float = 10.0
+    brain_root: Optional[Path] = None, timeout_seconds: float = 10.0
 ) -> AmosBrainLoader:
     """Get or create global brain loader asynchronously with timeout.
 
@@ -379,6 +367,7 @@ def main() -> int:
     print("=" * 50)
 
     import sys
+
     if len(sys.argv) > 1:
         brain_root = Path(sys.argv[1])
     else:
@@ -409,4 +398,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

@@ -1,5 +1,4 @@
-"""
-Budget Manager — Financial planning and category tracking
+"""Budget Manager — Financial planning and category tracking
 
 Handles budgeting across categories, expense tracking, and
 budget variance analysis.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class BudgetCategory(Enum):
     """Budget categories for the organism."""
+
     INFRASTRUCTURE = "infrastructure"  # Servers, compute
     TOKENS = "tokens"  # AI API costs
     DEVELOPMENT = "development"  # Dev tools, licenses
@@ -30,6 +30,7 @@ class BudgetCategory(Enum):
 @dataclass
 class Budget:
     """A budget for a specific category."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     category: BudgetCategory = BudgetCategory.OPERATIONS
     name: str = ""
@@ -72,7 +73,7 @@ class Budget:
         """Adjust budget allocation."""
         self.allocated = new_amount
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -85,6 +86,7 @@ class Budget:
 @dataclass
 class Expense:
     """A single expense record."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     amount: float = 0.0
     currency: str = "USD"
@@ -93,11 +95,11 @@ class Expense:
     description: str = ""
     vendor: str = ""
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     approved: bool = False
     approved_by: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -105,8 +107,7 @@ class Expense:
 
 
 class BudgetManager:
-    """
-    Manages budgets across categories for the AMOS organism.
+    """Manages budgets across categories for the AMOS organism.
 
     Tracks allocations, expenses, and provides variance analysis.
     Integrates with the resource engine for unified resource management.
@@ -118,8 +119,8 @@ class BudgetManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.budgets: Dict[str, Budget] = {}
-        self.expenses: List[Expense] = []
+        self.budgets: dict[str, Budget] = {}
+        self.expenses: list[Expense] = []
 
         self._load_data()
 
@@ -245,7 +246,7 @@ class BudgetManager:
         description: str,
         budget_id: Optional[str] = None,
         vendor: str = "",
-        tags: Optional[List[str]] = None,
+        tags: Optional[list[str]] = None,
     ) -> Optional[Expense]:
         """Record an expense against a budget."""
         # Find matching budget if not specified
@@ -279,16 +280,14 @@ class BudgetManager:
 
         return expense
 
-    def get_budget_status(self, budget_id: str) -> Optional[Dict[str, Any]]:
+    def get_budget_status(self, budget_id: str) -> Optional[dict[str, Any]]:
         """Get detailed status for a budget."""
         budget = self.budgets.get(budget_id)
         if not budget:
             return None
 
         # Get related expenses
-        related_expenses = [
-            e.to_dict() for e in self.expenses if e.budget_id == budget_id
-        ]
+        related_expenses = [e.to_dict() for e in self.expenses if e.budget_id == budget_id]
 
         return {
             "budget": budget.to_dict(),
@@ -296,7 +295,7 @@ class BudgetManager:
             "expense_count": len(related_expenses),
         }
 
-    def get_overview(self) -> Dict[str, Any]:
+    def get_overview(self) -> dict[str, Any]:
         """Get overview of all budgets."""
         total_allocated = sum(b.allocated for b in self.budgets.values())
         total_spent = sum(b.spent for b in self.budgets.values())
@@ -327,7 +326,7 @@ class BudgetManager:
             "alerts": alerts,
         }
 
-    def get_category_report(self, category: BudgetCategory) -> Dict[str, Any]:
+    def get_category_report(self, category: BudgetCategory) -> dict[str, Any]:
         """Get report for a specific category."""
         category_budgets = [b for b in self.budgets.values() if b.category == category]
         category_expenses = [e for e in self.expenses if e.category == category]

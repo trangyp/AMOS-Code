@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Analytics & Monitoring Dashboard (Layer 26)
+"""AMOS Analytics & Monitoring Dashboard (Layer 26)
 =================================================
 
 Real-time analytics and monitoring for AMOS Brain v20.
@@ -28,15 +27,15 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from datetime import datetime
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
-from collections import defaultdict
+from datetime import datetime
+from typing import Any, Optional
 
 
 @dataclass
 class LayerMetrics:
     """Metrics for a single layer."""
+
     layer_id: int
     name: str
     requests: int = 0
@@ -49,6 +48,7 @@ class LayerMetrics:
 @dataclass
 class SystemMetrics:
     """System-wide metrics."""
+
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     uptime_seconds: float = 0.0
     total_requests: int = 0
@@ -61,9 +61,8 @@ class SystemMetrics:
 
 
 class AnalyticsDashboard:
-    """
-    Analytics & Monitoring Dashboard - Layer 26.
-    
+    """Analytics & Monitoring Dashboard - Layer 26.
+
     Provides comprehensive observability:
     - Real-time layer performance tracking
     - Cognitive analytics (think/decide patterns)
@@ -72,20 +71,20 @@ class AnalyticsDashboard:
     - Multi-agent coordination stats
     - Knowledge engine usage analytics
     - Historical trend analysis
-    
+
     Integrates with all 25 previous layers for full visibility.
     """
-    
+
     VERSION = "26.0.0"
     LAYERS_SUPPORTED = 25
-    
+
     def __init__(self):
         self.start_time = time.time()
-        self.layer_metrics: Dict[int, LayerMetrics] = {}
+        self.layer_metrics: dict[int, LayerMetrics] = {}
         self.system_metrics = SystemMetrics()
-        self.historical_data: List[SystemMetrics] = []
+        self.historical_data: list[SystemMetrics] = []
         self._initialize_layer_tracking()
-        
+
     def _initialize_layer_tracking(self) -> None:
         """Initialize tracking for all 25 layers."""
         layer_names = {
@@ -113,15 +112,12 @@ class AnalyticsDashboard:
             22: "Final Validation",
             23: "Knowledge Engine",
             24: "Multi-Agent Orchestrator",
-            25: "Performance Engine"
+            25: "Performance Engine",
         }
-        
+
         for i in range(1, self.LAYERS_SUPPORTED + 1):
-            self.layer_metrics[i] = LayerMetrics(
-                layer_id=i,
-                name=layer_names.get(i, f"Layer {i}")
-            )
-    
+            self.layer_metrics[i] = LayerMetrics(layer_id=i, name=layer_names.get(i, f"Layer {i}"))
+
     def record_request(self, layer: int, response_time: float, error: bool = False) -> None:
         """Record a request for a specific layer."""
         if layer in self.layer_metrics:
@@ -131,39 +127,39 @@ class AnalyticsDashboard:
                 metric.errors += 1
             # Update average response time
             metric.avg_response_time = (
-                (metric.avg_response_time * (metric.requests - 1) + response_time)
-                / metric.requests
-            )
+                metric.avg_response_time * (metric.requests - 1) + response_time
+            ) / metric.requests
             metric.last_active = datetime.utcnow().isoformat()
-            
+
         self.system_metrics.total_requests += 1
         if error:
             self.system_metrics.total_errors += 1
-    
+
     def record_law_violation(self) -> None:
         """Record a law compliance violation."""
         self.system_metrics.law_violations += 1
-    
+
     def update_cache_metrics(self, hit_rate: float) -> None:
         """Update cache performance metrics."""
         self.system_metrics.cache_hit_rate = hit_rate
-    
+
     def update_agent_count(self, count: int) -> None:
         """Update active agent count."""
         self.system_metrics.active_agents = count
-    
+
     def update_engine_count(self, count: int) -> None:
         """Update loaded engine count."""
         self.system_metrics.engines_loaded = count
-    
-    def get_system_health(self) -> Dict[str, Any]:
+
+    def get_system_health(self) -> dict[str, Any]:
         """Get overall system health status."""
         uptime = time.time() - self.start_time
         error_rate = (
             self.system_metrics.total_errors / self.system_metrics.total_requests
-            if self.system_metrics.total_requests > 0 else 0
+            if self.system_metrics.total_requests > 0
+            else 0
         )
-        
+
         # Determine health status
         if error_rate < 0.01 and uptime > 60:
             status = "healthy"
@@ -171,7 +167,7 @@ class AnalyticsDashboard:
             status = "warning"
         else:
             status = "critical"
-            
+
         return {
             "status": status,
             "uptime_seconds": uptime,
@@ -182,17 +178,17 @@ class AnalyticsDashboard:
             "cache_hit_rate": f"{self.system_metrics.cache_hit_rate:.1%}",
             "law_violations": self.system_metrics.law_violations,
             "active_agents": self.system_metrics.active_agents,
-            "engines_loaded": self.system_metrics.engines_loaded
+            "engines_loaded": self.system_metrics.engines_loaded,
         }
-    
+
     def _format_uptime(self, seconds: float) -> str:
         """Format uptime in human-readable format."""
         hours = int(seconds // 3600)
         minutes = int((seconds % 3600) // 60)
         secs = int(seconds % 60)
         return f"{hours}h {minutes}m {secs}s"
-    
-    def get_layer_performance(self) -> List[Dict[str, Any]]:
+
+    def get_layer_performance(self) -> list[dict[str, Any]]:
         """Get performance metrics for all layers."""
         return [
             {
@@ -202,52 +198,49 @@ class AnalyticsDashboard:
                 "errors": m.errors,
                 "error_rate": f"{m.errors / m.requests:.2%}" if m.requests > 0 else "0%",
                 "avg_response_ms": f"{m.avg_response_time * 1000:.2f}",
-                "status": m.status
+                "status": m.status,
             }
             for m in self.layer_metrics.values()
         ]
-    
-    def get_cognitive_analytics(self) -> Dict[str, Any]:
+
+    def get_cognitive_analytics(self) -> dict[str, Any]:
         """Get cognitive operation analytics."""
         # Aggregate cognitive layer metrics (L10)
         cognitive = self.layer_metrics.get(10)
-        
+
         return {
             "total_think_operations": cognitive.requests if cognitive else 0,
             "think_error_rate": (
                 f"{cognitive.errors / cognitive.requests:.2%}"
-                if cognitive and cognitive.requests > 0 else "0%"
+                if cognitive and cognitive.requests > 0
+                else "0%"
             ),
             "avg_think_time_ms": (
-                f"{cognitive.avg_response_time * 1000:.2f}"
-                if cognitive else "0"
+                f"{cognitive.avg_response_time * 1000:.2f}" if cognitive else "0"
             ),
             "law_compliance_rate": (
                 f"{1 - self.system_metrics.law_violations / max(cognitive.requests, 1):.2%}"
-                if cognitive else "N/A"
+                if cognitive
+                else "N/A"
             ),
-            "cache_efficiency": f"{self.system_metrics.cache_hit_rate:.1%}"
+            "cache_efficiency": f"{self.system_metrics.cache_hit_rate:.1%}",
         }
-    
-    def get_top_performers(self, n: int = 5) -> List[Dict[str, Any]]:
+
+    def get_top_performers(self, n: int = 5) -> list[dict[str, Any]]:
         """Get top N performing layers by request count."""
-        sorted_layers = sorted(
-            self.layer_metrics.values(),
-            key=lambda m: m.requests,
-            reverse=True
-        )
-        
+        sorted_layers = sorted(self.layer_metrics.values(), key=lambda m: m.requests, reverse=True)
+
         return [
             {
                 "layer": m.layer_id,
                 "name": m.name,
                 "requests": m.requests,
-                "avg_response_ms": f"{m.avg_response_time * 1000:.2f}"
+                "avg_response_ms": f"{m.avg_response_time * 1000:.2f}",
             }
             for m in sorted_layers[:n]
         ]
-    
-    def generate_report(self) -> Dict[str, Any]:
+
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive analytics report."""
         return {
             "report_id": f"RPT-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
@@ -257,20 +250,20 @@ class AnalyticsDashboard:
             "layers": self.get_layer_performance(),
             "top_performers": self.get_top_performers(),
             "version": self.VERSION,
-            "layer": 26
+            "layer": 26,
         }
-    
+
     def export_metrics(self, filepath: str) -> bool:
         """Export metrics to JSON file."""
         try:
             report = self.generate_report()
-            with open(filepath, 'w') as f:
+            with open(filepath, "w") as f:
                 json.dump(report, f, indent=2)
             return True
         except Exception as e:
             print(f"Export error: {e}")
             return False
-    
+
     def snapshot(self) -> None:
         """Take a metrics snapshot for historical tracking."""
         snapshot = SystemMetrics(
@@ -282,27 +275,27 @@ class AnalyticsDashboard:
             cache_hit_rate=self.system_metrics.cache_hit_rate,
             law_violations=self.system_metrics.law_violations,
             active_agents=self.system_metrics.active_agents,
-            engines_loaded=self.system_metrics.engines_loaded
+            engines_loaded=self.system_metrics.engines_loaded,
         )
         self.historical_data.append(snapshot)
-        
+
         # Keep only last 100 snapshots
         if len(self.historical_data) > 100:
             self.historical_data = self.historical_data[-100:]
-    
-    def get_trends(self) -> Dict[str, List[Any]]:
+
+    def get_trends(self) -> dict[str, list[Any]]:
         """Get metric trends over time."""
         if not self.historical_data:
             return {}
-            
+
         return {
             "timestamps": [s.timestamp for s in self.historical_data],
             "requests": [s.total_requests for s in self.historical_data],
             "errors": [s.total_errors for s in self.historical_data],
-            "active_layers": [s.active_layers for s in self.historical_data]
+            "active_layers": [s.active_layers for s in self.historical_data],
         }
-    
-    def status(self) -> Dict[str, Any]:
+
+    def status(self) -> dict[str, Any]:
         """Get dashboard status."""
         return {
             "dashboard": "AnalyticsDashboard",
@@ -310,7 +303,7 @@ class AnalyticsDashboard:
             "layer": 26,
             "uptime": self._format_uptime(time.time() - self.start_time),
             "snapshots": len(self.historical_data),
-            "status": "active"
+            "status": "active",
         }
 
 
@@ -331,74 +324,61 @@ def record_metric(layer: int, response_time: float, error: bool = False) -> None
     get_dashboard().record_request(layer, response_time, error)
 
 
-def get_health_report() -> Dict[str, Any]:
+def get_health_report() -> dict[str, Any]:
     """Quick health report."""
     return get_dashboard().get_system_health()
 
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(
-        description="AMOS Analytics Dashboard (Layer 26)"
-    )
-    parser.add_argument(
-        "--start",
-        action="store_true",
-        help="Start dashboard monitoring"
-    )
-    parser.add_argument(
-        "--metrics",
-        action="store_true",
-        help="Show current metrics"
-    )
-    parser.add_argument(
-        "--report",
-        action="store_true",
-        help="Generate full report"
-    )
-    parser.add_argument(
-        "--health",
-        action="store_true",
-        help="Show health status"
-    )
-    
+    parser = argparse.ArgumentParser(description="AMOS Analytics Dashboard (Layer 26)")
+    parser.add_argument("--start", action="store_true", help="Start dashboard monitoring")
+    parser.add_argument("--metrics", action="store_true", help="Show current metrics")
+    parser.add_argument("--report", action="store_true", help="Generate full report")
+    parser.add_argument("--health", action="store_true", help="Show health status")
+
     args = parser.parse_args()
-    
+
     dashboard = AnalyticsDashboard()
-    
+
     if args.start:
         print("=" * 70)
         print("AMOS Analytics Dashboard (Layer 26)")
         print("=" * 70)
         print("\nMonitoring 25 layers...")
         print("Press Ctrl+C to stop\n")
-        
+
         try:
             while True:
                 dashboard.snapshot()
                 health = dashboard.get_system_health()
-                print(f"\r[{health['status'].upper()}] "
-                      f"Uptime: {health['uptime_formatted']} | "
-                      f"Requests: {health['total_requests']} | "
-                      f"Error Rate: {health['error_rate']}",
-                      end="", flush=True)
+                print(
+                    f"\r[{health['status'].upper()}] "
+                    f"Uptime: {health['uptime_formatted']} | "
+                    f"Requests: {health['total_requests']} | "
+                    f"Error Rate: {health['error_rate']}",
+                    end="",
+                    flush=True,
+                )
                 time.sleep(5)
         except KeyboardInterrupt:
             print("\n\nDashboard stopped.")
-            
+
     elif args.metrics:
         report = dashboard.get_layer_performance()
         print("\nLayer Performance:")
         print("-" * 70)
         for layer in report[:10]:  # Top 10
-            print(f"  L{layer['layer']:02d} {layer['name'][:25]:25s} | "
-                  f"Requests: {layer['requests']:5d} | "
-                  f"Errors: {layer['errors']:3d}")
-                  
+            print(
+                f"  L{layer['layer']:02d} {layer['name'][:25]:25s} | "
+                f"Requests: {layer['requests']:5d} | "
+                f"Errors: {layer['errors']:3d}"
+            )
+
     elif args.report:
         report = dashboard.generate_report()
         print(json.dumps(report, indent=2))
-        
+
     elif args.health:
         health = dashboard.get_system_health()
         print(f"\nSystem Health: {health['status'].upper()}")

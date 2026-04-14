@@ -16,12 +16,12 @@ __version__ = "1.0.0"
 __author__ = "Trang Phan"
 
 from .kernel import (
+    BiologicalState,
+    ClassicalState,
+    HybridState,
+    QuantumState,
     RuntimeKernel,
     StateManifold,
-    ClassicalState,
-    QuantumState,
-    BiologicalState,
-    HybridState,
 )
 
 __all__ = [

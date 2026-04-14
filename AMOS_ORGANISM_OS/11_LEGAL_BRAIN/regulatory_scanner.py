@@ -1,5 +1,4 @@
-"""
-Regulatory Scanner — Regulatory compliance monitoring
+"""Regulatory Scanner — Regulatory compliance monitoring
 
 Scans for relevant regulations, compliance requirements,
 and tracks regulatory changes affecting AMOS operations.
@@ -9,15 +8,16 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class RegulationType(Enum):
     """Type of regulation."""
+
     DATA_PRIVACY = "data_privacy"
     AI_ETHICS = "ai_ethics"
     CYBERSECURITY = "cybersecurity"
@@ -30,6 +30,7 @@ class RegulationType(Enum):
 
 class ComplianceLevel(Enum):
     """Compliance level for regulations."""
+
     NON_COMPLIANT = "non_compliant"
     PARTIAL = "partial"
     COMPLIANT = "compliant"
@@ -38,6 +39,7 @@ class ComplianceLevel(Enum):
 
 class ImpactLevel(Enum):
     """Impact level of regulation."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -47,6 +49,7 @@ class ImpactLevel(Enum):
 @dataclass
 class Regulation:
     """A regulation or compliance requirement."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     title: str = ""
     regulation_type: RegulationType = RegulationType.AI_ETHICS
@@ -54,14 +57,14 @@ class Regulation:
     description: str = ""
     effective_date: str = ""
     compliance_deadline: Optional[str] = None
-    requirements: List[str] = field(default_factory=list)
+    requirements: list[str] = field(default_factory=list)
     impact_level: ImpactLevel = ImpactLevel.MEDIUM
     applicable: bool = True
     notes: str = ""
     source_url: str = ""
     last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "regulation_type": self.regulation_type.value,
@@ -72,16 +75,17 @@ class Regulation:
 @dataclass
 class ComplianceAssessment:
     """Assessment of compliance with a regulation."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     regulation_id: str = ""
     compliance_level: ComplianceLevel = ComplianceLevel.NON_COMPLIANT
-    gaps: List[str] = field(default_factory=list)
-    actions_required: List[str] = field(default_factory=list)
+    gaps: list[str] = field(default_factory=list)
+    actions_required: list[str] = field(default_factory=list)
     assessed_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     assessed_by: str = ""
     next_review: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "compliance_level": self.compliance_level.value,
@@ -89,8 +93,7 @@ class ComplianceAssessment:
 
 
 class RegulatoryScanner:
-    """
-    Scans and monitors regulatory landscape.
+    """Scans and monitors regulatory landscape.
 
     Tracks regulations, assesses compliance, and
     alerts on regulatory changes.
@@ -102,8 +105,8 @@ class RegulatoryScanner:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.regulations: List[Regulation] = []
-        self.assessments: List[ComplianceAssessment] = []
+        self.regulations: list[Regulation] = []
+        self.assessments: list[ComplianceAssessment] = []
 
         self._load_data()
 
@@ -226,8 +229,8 @@ class RegulatoryScanner:
         self,
         regulation_id: str,
         level: ComplianceLevel,
-        gaps: List[str],
-        actions: List[str],
+        gaps: list[str],
+        actions: list[str],
     ) -> Optional[ComplianceAssessment]:
         """Record a compliance assessment."""
         reg = self.get_regulation(regulation_id)
@@ -248,21 +251,25 @@ class RegulatoryScanner:
         self.save()
         return assessment
 
-    def get_upcoming_deadlines(self, days: int = 30) -> List[Dict[str, Any]]:
+    def get_upcoming_deadlines(self, days: int = 30) -> list[dict[str, Any]]:
         """Get regulations with upcoming compliance deadlines."""
         cutoff = (datetime.utcnow() + timedelta(days=days)).isoformat()
-        
+
         upcoming = []
         for reg in self.regulations:
             if reg.applicable and reg.compliance_deadline and reg.compliance_deadline < cutoff:
-                upcoming.append({
-                    "regulation": reg.to_dict(),
-                    "days_until": (datetime.fromisoformat(reg.compliance_deadline) - datetime.utcnow()).days,
-                })
+                upcoming.append(
+                    {
+                        "regulation": reg.to_dict(),
+                        "days_until": (
+                            datetime.fromisoformat(reg.compliance_deadline) - datetime.utcnow()
+                        ).days,
+                    }
+                )
 
         return sorted(upcoming, key=lambda x: x["days_until"])
 
-    def get_compliance_summary(self) -> Dict[str, Any]:
+    def get_compliance_summary(self) -> dict[str, Any]:
         """Get overall compliance summary."""
         by_level = {
             "compliant": 0,
@@ -288,44 +295,49 @@ class RegulatoryScanner:
             "applicable_regulations": total_applicable,
             "assessed": len(latest),
             "by_compliance_level": by_level,
-            "overall_compliance_rate": by_level["compliant"] / total_applicable if total_applicable > 0 else 0,
-            "high_impact_regulations": len([
-                r for r in self.regulations
-                if r.impact_level == ImpactLevel.HIGH and r.applicable
-            ]),
+            "overall_compliance_rate": by_level["compliant"] / total_applicable
+            if total_applicable > 0
+            else 0,
+            "high_impact_regulations": len(
+                [r for r in self.regulations if r.impact_level == ImpactLevel.HIGH and r.applicable]
+            ),
         }
 
     def get_applicable_regulations(
         self,
         jurisdiction: Optional[str] = None,
         reg_type: Optional[RegulationType] = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get applicable regulations."""
         regs = [r for r in self.regulations if r.applicable]
-        
+
         if jurisdiction:
             regs = [r for r in regs if r.jurisdiction == jurisdiction]
-        
+
         if reg_type:
             regs = [r for r in regs if r.regulation_type == reg_type]
 
         return [r.to_dict() for r in regs]
 
-    def check_action_compliance(self, action_description: str) -> Dict[str, Any]:
+    def check_action_compliance(self, action_description: str) -> dict[str, Any]:
         """Check if an action might violate regulations."""
         risks = []
-        
+
         # Check for data privacy risks
         privacy_keywords = ["personal data", "user data", "private information"]
         if any(kw in action_description.lower() for kw in privacy_keywords):
-            privacy_regs = [r for r in self.regulations if r.regulation_type == RegulationType.DATA_PRIVACY]
+            privacy_regs = [
+                r for r in self.regulations if r.regulation_type == RegulationType.DATA_PRIVACY
+            ]
             for reg in privacy_regs:
                 risks.append(f"Potential GDPR/privacy impact - review {reg.title}")
 
         # Check for AI ethics risks
         ai_keywords = ["automated decision", "AI model", "algorithmic"]
         if any(kw in action_description.lower() for kw in ai_keywords):
-            ethics_regs = [r for r in self.regulations if r.regulation_type == RegulationType.AI_ETHICS]
+            ethics_regs = [
+                r for r in self.regulations if r.regulation_type == RegulationType.AI_ETHICS
+            ]
             for reg in ethics_regs:
                 risks.append(f"AI ethics consideration - review {reg.title}")
 

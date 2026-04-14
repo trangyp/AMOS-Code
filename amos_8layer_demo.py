@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS 8-Layer Live Demonstration
+"""AMOS 8-Layer Live Demonstration
 
 Flows through all 8 layers of AMOS architecture:
     Layer 8 (∞): AMOS Infinite - Hyperbundle formalism
@@ -14,7 +13,7 @@ Flows through all 8 layers of AMOS architecture:
     Layer 0 (X): Executable Reality - Production runtime
 
 Demonstrates the complete flow:
-    Human Intent → Coherence Ω → Hyperbundle State → Axiom Validation → 
+    Human Intent → Coherence Ω → Hyperbundle State → Axiom Validation →
     Operational Execution → Economic Decision → Real World Action
 
 Usage:
@@ -23,30 +22,32 @@ Usage:
     python amos_8layer_demo.py --layer 7    # Demo specific layer
 """
 
-import time
 import argparse
+import time
 from dataclasses import dataclass
-from typing import Any, List
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 
 class Layer(Enum):
     """AMOS architecture layers."""
-    INFINITE = 8    # ∞ - Hyperbundle formalism
-    OMEGA = 7       # Ω - 32 axioms
-    INTEGRATION = 6 # Λ - Brain, Organism, ClawSpring
-    CODE_INTEL = 5    # Λ - Repo, Self-coding
-    META = 4        # Λ - Meta-cognition
-    MEMORY = 3      # Λ - Memory systems
-    CORE = 2        # Λ - Core cognitive
-    ECONOMIC = 1    # Λ - Economic organism
+
+    INFINITE = 8  # ∞ - Hyperbundle formalism
+    OMEGA = 7  # Ω - 32 axioms
+    INTEGRATION = 6  # Λ - Brain, Organism, ClawSpring
+    CODE_INTEL = 5  # Λ - Repo, Self-coding
+    META = 4  # Λ - Meta-cognition
+    MEMORY = 3  # Λ - Memory systems
+    CORE = 2  # Λ - Core cognitive
+    ECONOMIC = 1  # Λ - Economic organism
     EXECUTABLE = 0  # X - Production runtime
 
 
 @dataclass
 class LayerResult:
     """Result from processing at a specific layer."""
+
     layer: Layer
     success: bool
     duration_ms: float
@@ -56,8 +57,7 @@ class LayerResult:
 
 
 class AMOS8LayerDemonstration:
-    """
-    Live demonstration of complete 8-layer AMOS architecture.
+    """Live demonstration of complete 8-layer AMOS architecture.
 
     Shows the full stack working together from deepest formalism
     to executable reality.
@@ -65,7 +65,7 @@ class AMOS8LayerDemonstration:
 
     def __init__(self, quick: bool = False):
         self.quick = quick
-        self.results: List[LayerResult] = []
+        self.results: list[LayerResult] = []
         self.start_time = datetime.utcnow()
 
         # Component availability tracking
@@ -79,6 +79,7 @@ class AMOS8LayerDemonstration:
         # Layer 8: AMOS Infinite
         try:
             from amos_infinite import AMOSInfinite
+
             self.available_layers[Layer.INFINITE] = True
             print("  ✓ Layer 8 (∞): AMOS Infinite")
         except ImportError:
@@ -87,9 +88,10 @@ class AMOS8LayerDemonstration:
 
         # Layer 7: Ω Axiomatic
         try:
-            from amos_omega import AMOSOmega
             from amos_axiom_validator import AxiomValidator
             from amos_coherence_omega import CoherenceOmega
+            from amos_omega import AMOSOmega
+
             self.available_layers[Layer.OMEGA] = True
             print("  ✓ Layer 7 (Ω): Ω Axiomatic")
         except ImportError:
@@ -99,6 +101,7 @@ class AMOS8LayerDemonstration:
         # Layer 6: Integration
         try:
             from amos_unified import AMOSUnifiedRuntime
+
             self.available_layers[Layer.INTEGRATION] = True
             print("  ✓ Layer 6 (Λ): Integration")
         except ImportError:
@@ -108,6 +111,7 @@ class AMOS8LayerDemonstration:
         # Layer 5: Code Intelligence
         try:
             from amos_repo import RepoIntelligence
+
             self.available_layers[Layer.CODE_INTEL] = True
             print("  ✓ Layer 5 (Λ): Code Intelligence")
         except ImportError:
@@ -117,6 +121,7 @@ class AMOS8LayerDemonstration:
         # Layer 4: Meta-cognition
         try:
             from amos_meta import AMOSMeta
+
             self.available_layers[Layer.META] = True
             print("  ✓ Layer 4 (Λ): Meta-cognition")
         except ImportError:
@@ -126,6 +131,7 @@ class AMOS8LayerDemonstration:
         # Layer 3: Memory
         try:
             from amos_memory import AMOSMemorySystem
+
             self.available_layers[Layer.MEMORY] = True
             print("  ✓ Layer 3 (Λ): Memory Systems")
         except ImportError:
@@ -135,6 +141,7 @@ class AMOS8LayerDemonstration:
         # Layer 2: Core
         try:
             from amos_core import AMOSCore
+
             self.available_layers[Layer.CORE] = True
             print("  ✓ Layer 2 (Λ): Core Cognitive")
         except ImportError:
@@ -144,6 +151,7 @@ class AMOS8LayerDemonstration:
         # Layer 1: Economic
         try:
             from amos_v4 import AMOSv4
+
             self.available_layers[Layer.ECONOMIC] = True
             print("  ✓ Layer 1 (Λ): Economic Organism")
         except ImportError:
@@ -153,6 +161,7 @@ class AMOS8LayerDemonstration:
         # Layer 0: Executable
         try:
             from amos_operational import AMOSOperational
+
             self.available_layers[Layer.EXECUTABLE] = True
             print("  ✓ Layer 0 (X): Executable Runtime")
         except ImportError:
@@ -180,13 +189,10 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=intent,
                 output_data=None,
-                message="Layer 8 not available"
+                message="Layer 8 not available",
             )
 
-        from amos_infinite import (
-            AMOSInfinite, HyperState, ClassicalFiber, 
-            IdentityFiber, ScaleParams, EpistemicState
-        )
+        from amos_infinite import AMOSInfinite
 
         # Initialize AMOS Infinite
         amos_inf = AMOSInfinite()
@@ -195,12 +201,12 @@ class AMOS8LayerDemonstration:
         print("Creating Hyperbundle State (Section 4)...")
         hyperstate = amos_inf.create_hyperstate(
             classical_data={
-                'energy': 100.0,
-                'structure': {'intent': intent},
-                'policy': {'goal': intent}
+                "energy": 100.0,
+                "structure": {"intent": intent},
+                "policy": {"goal": intent},
             },
             identity_marker="AMOS_Demo_Agent",
-            scale="classical"
+            scale="classical",
         )
 
         n_fields = len(hyperstate.classical.structure)
@@ -226,7 +232,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=intent,
             output_data=hyperstate,
-            message=f"Hyperstate created, Z* admissible: {admissible}"
+            message=f"Hyperstate created, Z* admissible: {admissible}",
         )
 
     def demo_layer_7_omega(self, hyperstate: Any) -> LayerResult:
@@ -246,7 +252,7 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=hyperstate,
                 output_data=None,
-                message="Layer 7 not available"
+                message="Layer 7 not available",
             )
 
         from amos_axiom_validator import AxiomValidator
@@ -277,9 +283,9 @@ class AMOS8LayerDemonstration:
         print(f"  Detected state: {detected}")
         intervention = coherence_result.coherence_result.intervention_mode.name
         print(f"  Intervention: {intervention}")
-        compliant = '✓' if coherence_result.master_law_compliant else '✗'
+        compliant = "✓" if coherence_result.master_law_compliant else "✗"
         print(f"  Master Law compliant: {compliant}")
-        omega_valid = '✓' if coherence_result.is_valid else '✗'
+        omega_valid = "✓" if coherence_result.is_valid else "✗"
         print(f"  Ω Valid: {omega_valid}")
 
         duration = (time.time() - start) * 1000
@@ -290,10 +296,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=hyperstate,
             output_data=coherence_result,
-            message=(
-                f"Axioms: {passed}/{len(report.checks)} passed, "
-                f"Coherence Ω valid"
-            )
+            message=(f"Axioms: {passed}/{len(report.checks)} passed, " f"Coherence Ω valid"),
         )
 
     def demo_layer_6_integration(self, coherence_result: Any) -> LayerResult:
@@ -313,7 +316,7 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=coherence_result,
                 output_data=None,
-                message="Layer 6 not available"
+                message="Layer 6 not available",
             )
 
         from amos_unified import AMOSUnifiedRuntime
@@ -343,7 +346,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=coherence_result,
             output_data=runtime,
-            message="Unified runtime initialized, all layers linked"
+            message="Unified runtime initialized, all layers linked",
         )
 
     def demo_layer_5_code_intel(self) -> LayerResult:
@@ -363,10 +366,8 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=None,
                 output_data=None,
-                message="Layer 5 not available"
+                message="Layer 5 not available",
             )
-
-        from amos_repo import RepoIntelligence
 
         print("Repo Intelligence capabilities:")
         capabilities = [
@@ -374,7 +375,7 @@ class AMOS8LayerDemonstration:
             "Dependency graph construction",
             "Change impact analysis",
             "Code quality assessment",
-            "Self-modification planning"
+            "Self-modification planning",
         ]
         for cap in capabilities:
             print(f"  • {cap}")
@@ -387,7 +388,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=None,
             output_data=None,
-            message="5 code intelligence capabilities available"
+            message="5 code intelligence capabilities available",
         )
 
     def demo_layer_4_meta(self) -> LayerResult:
@@ -407,10 +408,8 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=None,
                 output_data=None,
-                message="Layer 4 not available"
+                message="Layer 4 not available",
             )
-
-        from amos_meta import AMOSMeta
 
         print("Meta-cognitive capabilities:")
         capabilities = [
@@ -418,7 +417,7 @@ class AMOS8LayerDemonstration:
             "Branch efficiency analysis",
             "Failure pattern detection",
             "Cognitive budget management",
-            "Strategy effectiveness scoring"
+            "Strategy effectiveness scoring",
         ]
         for cap in capabilities:
             print(f"  • {cap}")
@@ -431,7 +430,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=None,
             output_data=None,
-            message="5 meta-cognitive capabilities available"
+            message="5 meta-cognitive capabilities available",
         )
 
     def demo_layer_3_memory(self) -> LayerResult:
@@ -451,7 +450,7 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=None,
                 output_data=None,
-                message="Layer 3 not available"
+                message="Layer 3 not available",
             )
 
         print("Memory systems:")
@@ -460,7 +459,7 @@ class AMOS8LayerDemonstration:
             ("Episodic Memory", "Timeline of experiences"),
             ("Semantic Memory", "Facts and relationships"),
             ("Procedural Memory", "Skills and procedures"),
-            ("Self Memory", "Identity and autobiography")
+            ("Self Memory", "Identity and autobiography"),
         ]
         for name, desc in memories:
             print(f"  • {name}: {desc}")
@@ -473,7 +472,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=None,
             output_data=None,
-            message="5 memory systems available"
+            message="5 memory systems available",
         )
 
     def demo_layer_2_core(self) -> LayerResult:
@@ -493,10 +492,8 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=None,
                 output_data=None,
-                message="Layer 2 not available"
+                message="Layer 2 not available",
             )
-
-        from amos_core import AMOSCore
 
         print("Core cognitive engines:")
         engines = [
@@ -504,7 +501,7 @@ class AMOS8LayerDemonstration:
             ("Collapse", "Decision commitment"),
             ("Morph", "Dynamic structure evolution"),
             ("Time Engine", "Temporal reasoning"),
-            ("Energy System", "Resource allocation")
+            ("Energy System", "Resource allocation"),
         ]
         for name, desc in engines:
             print(f"  • {name}: {desc}")
@@ -517,7 +514,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=None,
             output_data=None,
-            message="5 core engines available"
+            message="5 core engines available",
         )
 
     def demo_layer_1_economic(self) -> LayerResult:
@@ -537,7 +534,7 @@ class AMOS8LayerDemonstration:
                 duration_ms=0,
                 input_data=None,
                 output_data=None,
-                message="Layer 1 not available"
+                message="Layer 1 not available",
             )
 
         from amos_v4 import AMOSv4
@@ -561,14 +558,14 @@ class AMOS8LayerDemonstration:
         duration = (time.time() - start) * 1000
 
         msg_cash = f"${amos.economics.cash:.2f}"
-        msg_decisions = len(result['decisions'])
+        msg_decisions = len(result["decisions"])
         return LayerResult(
             layer=Layer.ECONOMIC,
             success=True,
             duration_ms=duration,
             input_data=None,
             output_data=result,
-            message=f"Economic cycle: {msg_cash}, {msg_decisions} decisions"
+            message=f"Economic cycle: {msg_cash}, {msg_decisions} decisions",
         )
 
     def demo_layer_0_executable(self) -> LayerResult:
@@ -587,7 +584,7 @@ class AMOS8LayerDemonstration:
             "Health monitoring & recovery",
             "Real-world data ingestion",
             "External system execution",
-            "Notification & persistence"
+            "Notification & persistence",
         ]
         for cap in capabilities:
             print(f"  • {cap}")
@@ -602,7 +599,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=None,
             output_data=None,
-            message="Production runtime ready"
+            message="Production runtime ready",
         )
 
     def run_full_demonstration(self):
@@ -676,12 +673,20 @@ class AMOS8LayerDemonstration:
         for result in self.results:
             icon = "✓" if result.success else "✗"
             layer_name = result.layer.name
-            zoom = "∞" if result.layer == Layer.INFINITE else \
-                   "Ω" if result.layer == Layer.OMEGA else \
-                   "Λ" if result.layer.value >= 1 else "X"
+            zoom = (
+                "∞"
+                if result.layer == Layer.INFINITE
+                else "Ω"
+                if result.layer == Layer.OMEGA
+                else "Λ"
+                if result.layer.value >= 1
+                else "X"
+            )
             layer_num = result.layer.value
-            print(f"  {icon} Layer {layer_num} ({zoom}): {layer_name:20} "
-                  f"{result.duration_ms:6.1f}ms")
+            print(
+                f"  {icon} Layer {layer_num} ({zoom}): {layer_name:20} "
+                f"{result.duration_ms:6.1f}ms"
+            )
 
         print("\nStatistics:")
         print(f"  Total time: {total_time:.1f}ms")

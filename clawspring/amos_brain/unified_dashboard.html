@@ -225,11 +225,11 @@
 
         function updateDashboard(data) {
             if (data.cognitive) {
-                document.getElementById('cognitive-modules').textContent = 
+                document.getElementById('cognitive-modules').textContent =
                     `${data.cognitive.present}/${data.cognitive.total}`;
             }
             if (data.organism) {
-                document.getElementById('organism-components').textContent = 
+                document.getElementById('organism-components').textContent =
                     `${data.organism.connected}/${data.organism.total}`;
             }
             if (data.decisions) {

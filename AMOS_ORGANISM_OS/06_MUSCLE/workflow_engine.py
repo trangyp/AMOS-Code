@@ -1,16 +1,15 @@
-"""
-Workflow Engine — Orchestrate multi-step workflows.
+"""Workflow Engine — Orchestrate multi-step workflows.
 """
 
 from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any, Callable, Optional
 
 
 class StepStatus(Enum):
@@ -24,38 +23,40 @@ class StepStatus(Enum):
 @dataclass
 class WorkflowStep:
     """A single step in a workflow."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     action: str = ""
-    params: Dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
     status: StepStatus = StepStatus.PENDING
     result: Any = None
     error: str = ""
     start_time: str = ""
     end_time: str = ""
-    depends_on: List[str] = field(default_factory=list)
+    depends_on: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {**asdict(self), "status": self.status.value}
 
 
 @dataclass
 class Workflow:
     """A workflow definition."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    steps: List[WorkflowStep] = field(default_factory=list)
+    steps: list[WorkflowStep] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     status: str = "draft"  # draft, running, completed, failed
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
     def add_step(
         self,
         name: str,
         action: str,
-        params: Dict[str, Any] = None,
-        depends_on: List[str] = None,
+        params: dict[str, Any] = None,
+        depends_on: list[str] = None,
     ) -> WorkflowStep:
         """Add a step to the workflow."""
         step = WorkflowStep(
@@ -67,7 +68,7 @@ class Workflow:
         self.steps.append(step)
         return step
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             "steps": [s.to_dict() for s in self.steps],
@@ -75,15 +76,13 @@ class Workflow:
 
 
 class WorkflowEngine:
-    """
-    Orchestrate multi-step workflows with dependency management.
-    """
+    """Orchestrate multi-step workflows with dependency management."""
 
     WORKFLOW_DIR = Path(__file__).parent / "workflows"
 
     def __init__(self):
-        self._workflows: Dict[str, Workflow] = {}
-        self._handlers: Dict[str, Callable] = {}
+        self._workflows: dict[str, Workflow] = {}
+        self._handlers: dict[str, Callable] = {}
         self.WORKFLOW_DIR.mkdir(parents=True, exist_ok=True)
 
     def register_handler(self, action: str, handler: Callable):
@@ -176,6 +175,6 @@ class WorkflowEngine:
         self._workflows[workflow_id] = workflow
         return workflow
 
-    def list_workflows(self) -> List[Workflow]:
+    def list_workflows(self) -> list[Workflow]:
         """List all workflows."""
         return list(self._workflows.values())

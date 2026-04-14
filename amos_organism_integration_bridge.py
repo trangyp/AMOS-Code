@@ -3,14 +3,15 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Optional
 
 
 @dataclass
 class SubsystemBridge:
     """Bridge connection between orchestrator and subsystem."""
+
     subsystem_id: str
     subsystem_name: str
     status: str = "disconnected"
@@ -19,20 +20,19 @@ class SubsystemBridge:
 
 
 class OrganismIntegrationBridge:
-    """
-    Integration bridge between Master Orchestrator and AMOS_ORGANISM_OS.
-    
+    """Integration bridge between Master Orchestrator and AMOS_ORGANISM_OS.
+
     Connects:
     - Master Orchestrator (251 engines, 659 knowledge files)
     - Original AMOS_MASTER_ORCHESTRATOR (15 subsystems)
-    
+
     Enables:
     - 15 subsystems → access to 251 cognitive engines
-    - 15 subsystems → access to 659 knowledge files  
+    - 15 subsystems → access to 659 knowledge files
     - Master orchestrator → control 15 subsystems
     - Unified ecosystem: 1 cohesive organism
     """
-    
+
     SUBSYSTEMS = {
         "01_BRAIN": ("brain_os", "Brain core cognition"),
         "02_SENSES": ("environment_scanner", "Perception & data collection"),
@@ -50,43 +50,42 @@ class OrganismIntegrationBridge:
         "14_WORKERS": ("worker_registry", "Task allocation & management"),
         "15_INTERFACES": ("amos_cli", "API & CLI interfaces"),
     }
-    
+
     def __init__(self, master_orchestrator=None, organism_orchestrator=None):
         self.master = master_orchestrator
         self.organism = organism_orchestrator
         self.bridges: dict[str, SubsystemBridge] = {}
         self.integration_active = False
         self._initialize_bridges()
-    
+
     def _initialize_bridges(self):
         """Initialize bridge connections for all 15 subsystems."""
         for sub_id, (module, description) in self.SUBSYSTEMS.items():
             self.bridges[sub_id] = SubsystemBridge(
-                subsystem_id=sub_id,
-                subsystem_name=description,
-                status="initialized"
+                subsystem_id=sub_id, subsystem_name=description, status="initialized"
             )
-    
+
     def connect(self) -> dict[str, Any]:
         """Establish connection between orchestrators."""
         print("\n" + "=" * 70)
         print("AMOS ORGANISM INTEGRATION BRIDGE")
         print("=" * 70)
         print("\nConnecting Master Orchestrator ↔ Organism Subsystems...")
-        
+
         # Import and connect Master Orchestrator
         print("\n[1] Loading Master Orchestrator...")
         if not self.master:
             try:
                 from amos_master_cognitive_orchestrator import MasterCognitiveOrchestrator
+
                 self.master = MasterCognitiveOrchestrator()
                 print("  ✓ Master Orchestrator loaded")
-                print(f"    - 251 engines available")
-                print(f"    - 659 knowledge files accessible")
+                print("    - 251 engines available")
+                print("    - 659 knowledge files accessible")
             except Exception as e:
                 print(f"  ✗ Failed to load Master Orchestrator: {e}")
                 return {"error": "Master orchestrator failed"}
-        
+
         # Connect to Organism Orchestrator (if available)
         print("\n[2] Connecting to Organism Subsystems...")
         connected_count = 0
@@ -103,26 +102,27 @@ class OrganismIntegrationBridge:
             except Exception as e:
                 bridge.status = "failed"
                 print(f"  ✗ {sub_id}: Connection failed - {e}")
-        
+
         self.integration_active = connected_count > 0
-        
+
         print("\n[3] Integration Summary...")
         print(f"  Connected: {connected_count}/15 subsystems")
         print(f"  Status: {'ACTIVE' if self.integration_active else 'DEGRADED'}")
-        
+
         return {
             "status": "connected" if self.integration_active else "failed",
             "subsystems_connected": connected_count,
             "total_subsystems": 15,
             "engines_available": 251,
-            "knowledge_files": 659
+            "knowledge_files": 659,
         }
-    
+
     def _assign_engines_to_subsystem(self, subsystem_id: str) -> list[str]:
         """Assign relevant cognitive engines to each subsystem."""
         from amos_cognitive_router import CognitiveRouter
+
         router = CognitiveRouter()
-        
+
         # Map subsystems to relevant engine categories
         subsystem_engine_map = {
             "01_BRAIN": ["brain", "cognition", "ubi"],
@@ -139,49 +139,51 @@ class OrganismIntegrationBridge:
             "12_QUANTUM_LAYER": ["quantum", "prediction", "probability"],
             "13_FACTORY": ["factory", "fabrication", "code", "build"],
             "14_WORKERS": ["workers", "allocation", "management"],
-            "15_INTERFACES": ["interface", "api", "cli", "communication"]
+            "15_INTERFACES": ["interface", "api", "cli", "communication"],
         }
-        
+
         categories = subsystem_engine_map.get(subsystem_id, ["general"])
         assigned = []
-        
+
         for category in categories:
             engines = router.query_engines(category, top_n=5)
             assigned.extend([e.name for e in engines])
-        
+
         return list(set(assigned))[:10]  # Max 10 engines per subsystem
-    
-    def route_to_subsystem(self, subsystem_id: str, task: str, context: Optional[dict] = None) -> dict[str, Any]:
+
+    def route_to_subsystem(
+        self, subsystem_id: str, task: str, context: Optional[dict] = None
+    ) -> dict[str, Any]:
         """Route a task to a specific subsystem with cognitive engine support."""
         if subsystem_id not in self.bridges:
             return {"error": f"Unknown subsystem: {subsystem_id}"}
-        
+
         bridge = self.bridges[subsystem_id]
-        
+
         if bridge.status != "connected":
             return {"error": f"Subsystem {subsystem_id} not connected"}
-        
+
         # Use master orchestrator to process with subsystem's assigned engines
         if self.master:
             # Add subsystem context
             task_with_context = f"[{bridge.subsystem_name}] {task}"
             result = self.master.process(task_with_context, context)
-            
+
             return {
                 "subsystem": subsystem_id,
                 "subsystem_name": bridge.subsystem_name,
                 "engines_used": bridge.engines_available[:3],
                 "result": result,
-                "status": "completed"
+                "status": "completed",
             }
-        
+
         return {"error": "Master orchestrator not available"}
-    
+
     def get_subsystem_status(self, subsystem_id: str) -> dict[str, Any]:
         """Get status of a specific subsystem."""
         if subsystem_id not in self.bridges:
             return {"error": "Unknown subsystem"}
-        
+
         bridge = self.bridges[subsystem_id]
         return {
             "subsystem_id": subsystem_id,
@@ -189,14 +191,14 @@ class OrganismIntegrationBridge:
             "status": bridge.status,
             "engines_assigned": len(bridge.engines_available),
             "engine_categories": list(set([e.split("_")[0] for e in bridge.engines_available[:5]])),
-            "last_sync": bridge.last_sync
+            "last_sync": bridge.last_sync,
         }
-    
+
     def get_full_status(self) -> dict[str, Any]:
         """Get status of all subsystems and integration."""
         connected = sum(1 for b in self.bridges.values() if b.status == "connected")
         total_engines_assigned = sum(len(b.engines_available) for b in self.bridges.values())
-        
+
         return {
             "integration_active": self.integration_active,
             "master_orchestrator": self.master is not None,
@@ -204,7 +206,7 @@ class OrganismIntegrationBridge:
                 sub_id: {
                     "name": b.subsystem_name,
                     "status": b.status,
-                    "engines": len(b.engines_available)
+                    "engines": len(b.engines_available),
                 }
                 for sub_id, b in self.bridges.items()
             },
@@ -212,28 +214,28 @@ class OrganismIntegrationBridge:
                 "connected": connected,
                 "total": 15,
                 "total_engines_assigned": total_engines_assigned,
-                "coverage": f"{connected}/15 ({connected/15*100:.0f}%)"
-            }
+                "coverage": f"{connected}/15 ({connected/15*100:.0f}%)",
+            },
         }
-    
+
     def demo_integration(self):
         """Demonstrate integration capabilities."""
         print("\n" + "=" * 70)
         print("INTEGRATION DEMONSTRATION")
         print("=" * 70)
-        
+
         # Connect first
         self.connect()
-        
+
         print("\n[Demo 1] Routing tasks through integrated subsystems...")
-        
+
         demo_tasks = [
             ("01_BRAIN", "Analyze cognitive requirements"),
             ("06_MUSCLE", "Execute workflow automation"),
             ("11_LEGAL_BRAIN", "Review compliance framework"),
-            ("12_QUANTUM_LAYER", "Optimize decision timing")
+            ("12_QUANTUM_LAYER", "Optimize decision timing"),
         ]
-        
+
         for sub_id, task in demo_tasks:
             if self.bridges[sub_id].status == "connected":
                 result = self.route_to_subsystem(sub_id, task)
@@ -243,22 +245,22 @@ class OrganismIntegrationBridge:
                     print(f"    Engines: {len(self.bridges[sub_id].engines_available)} available")
                 else:
                     print(f"    ✗ Error: {result['error']}")
-        
+
         print("\n[Demo 2] Subsystem status overview...")
         status = self.get_full_status()
         print(f"  Integration Active: {status['integration_active']}")
         print(f"  Subsystems Connected: {status['summary']['coverage']}")
         print(f"  Total Engines Assigned: {status['summary']['total_engines_assigned']}")
-        
+
         print("\n[Demo 3] Individual subsystem details...")
         for sub_id in ["01_BRAIN", "06_MUSCLE", "13_FACTORY"]:
             sub_status = self.get_subsystem_status(sub_id)
             print(f"\n  {sub_id}: {sub_status['name']}")
             print(f"    Status: {sub_status['status']}")
             print(f"    Engines: {sub_status['engines_assigned']}")
-            if sub_status.get('engine_categories'):
+            if sub_status.get("engine_categories"):
                 print(f"    Categories: {', '.join(sub_status['engine_categories'])}")
-        
+
         print("\n" + "=" * 70)
         print("✓ INTEGRATION DEMONSTRATION COMPLETE")
         print("=" * 70)
@@ -270,10 +272,10 @@ def main():
     print("AMOS ORGANISM INTEGRATION BRIDGE")
     print("Unifying Master Orchestrator + 15 Organism Subsystems")
     print("=" * 70)
-    
+
     bridge = OrganismIntegrationBridge()
     bridge.demo_integration()
-    
+
     print("\n" + "=" * 70)
     print("🎉 AMOS ECOSYSTEM FULLY UNIFIED")
     print("=" * 70)

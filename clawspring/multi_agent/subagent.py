@@ -2,32 +2,33 @@
 from __future__ import annotations
 
 import os
-import uuid
 import queue
 import subprocess
 import tempfile
-from concurrent.futures import ThreadPoolExecutor, Future
+import uuid
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-
+from typing import Any, Optional
 
 # ── Agent definition ───────────────────────────────────────────────────────
+
 
 @dataclass
 class AgentDefinition:
     """Definition for a specialized agent type."""
+
     name: str
     description: str = ""
-    system_prompt: str = ""   # extra instructions prepended to the base system prompt
-    model: str = ""            # model override; "" = inherit from parent
-    tools: list = field(default_factory=list)   # empty list = all tools
-    source: str = "user"       # "built-in" | "user" | "project"
+    system_prompt: str = ""  # extra instructions prepended to the base system prompt
+    model: str = ""  # model override; "" = inherit from parent
+    tools: list = field(default_factory=list)  # empty list = all tools
+    source: str = "user"  # "built-in" | "user" | "project"
 
 
 # ── Built-in agent definitions ─────────────────────────────────────────────
 
-_BUILTIN_AGENTS: Dict[str, AgentDefinition] = {
+_BUILTIN_AGENTS: dict[str, AgentDefinition] = {
     "general-purpose": AgentDefinition(
         name="general-purpose",
         description=(
@@ -93,6 +94,7 @@ _BUILTIN_AGENTS: Dict[str, AgentDefinition] = {
 
 # ── Loading agent definitions from .md files ──────────────────────────────
 
+
 def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
     """Parse a .md file with optional YAML frontmatter into an AgentDefinition.
 
@@ -116,9 +118,10 @@ def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
         end = content.find("---", 3)
         if end != -1:
             fm_text = content[3:end].strip()
-            system_prompt_body = content[end + 3:].strip()
+            system_prompt_body = content[end + 3 :].strip()
             try:
                 import yaml as _yaml
+
                 fm = _yaml.safe_load(fm_text) or {}
             except ImportError:
                 # Manual key: value parse (no yaml dependency required)
@@ -147,14 +150,14 @@ def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
     )
 
 
-def load_agent_definitions() -> Dict[str, AgentDefinition]:
+def load_agent_definitions() -> dict[str, AgentDefinition]:
     """Load all agent definitions: built-ins → user-level → project-level.
 
     Search paths:
       ~/.clawspring/agents/*.md   (user-level)
       .clawspring/agents/*.md     (project-level, overrides user)
     """
-    defs: Dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
+    defs: dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
 
     # User-level
     user_dir = Path.home() / ".clawspring" / "agents"
@@ -186,17 +189,19 @@ def get_agent_definition(name: str) -> Optional[AgentDefinition]:
 
 # ── SubAgentTask ───────────────────────────────────────────────────────────
 
+
 @dataclass
 class SubAgentTask:
     """Represents a sub-agent task with lifecycle tracking."""
+
     id: str
     prompt: str
-    status: str = "pending"       # pending | running | completed | failed | cancelled
+    status: str = "pending"  # pending | running | completed | failed | cancelled
     result: Optional[str] = None
     depth: int = 0
-    name: str = ""                # optional human-readable name (addressable by SendMessage)
-    worktree_path: str = ""       # set if isolation="worktree"
-    worktree_branch: str = ""     # set if isolation="worktree"
+    name: str = ""  # optional human-readable name (addressable by SendMessage)
+    worktree_path: str = ""  # set if isolation="worktree"
+    worktree_branch: str = ""  # set if isolation="worktree"
     _cancel_flag: bool = False
     _future: Optional[Future] = field(default=None, repr=False)
     _inbox: Any = field(default_factory=queue.Queue, repr=False)  # for send_message
@@ -204,12 +209,16 @@ class SubAgentTask:
 
 # ── Worktree helpers ───────────────────────────────────────────────────────
 
+
 def _git_root(cwd: str) -> Optional[str]:
     """Return the git root directory for cwd, or None if not in a git repo."""
     try:
         r = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            cwd=cwd, capture_output=True, text=True, check=True,
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            check=True,
         )
         return r.stdout.strip()
     except Exception:
@@ -221,6 +230,7 @@ def _create_worktree(base_dir: str) -> tuple:
 
     Returns:
         (worktree_path, branch_name)
+
     Raises:
         subprocess.CalledProcessError or OSError on failure.
     """
@@ -230,7 +240,10 @@ def _create_worktree(base_dir: str) -> tuple:
     os.rmdir(wt_path)
     subprocess.run(
         ["git", "worktree", "add", "-b", branch, wt_path],
-        cwd=base_dir, check=True, capture_output=True, text=True,
+        cwd=base_dir,
+        check=True,
+        capture_output=True,
+        text=True,
     )
     return wt_path, branch
 
@@ -240,20 +253,23 @@ def _remove_worktree(wt_path: str, branch: str, base_dir: str) -> None:
     try:
         subprocess.run(
             ["git", "worktree", "remove", "--force", wt_path],
-            cwd=base_dir, capture_output=True,
+            cwd=base_dir,
+            capture_output=True,
         )
     except Exception:
         pass
     try:
         subprocess.run(
             ["git", "branch", "-D", branch],
-            cwd=base_dir, capture_output=True,
+            cwd=base_dir,
+            capture_output=True,
         )
     except Exception:
         pass
 
 
 # ── Internal helpers ───────────────────────────────────────────────────────
+
 
 def _agent_run(prompt, state, config, system_prompt, depth=0, cancel_check=None):
     """Lazy-import wrapper to avoid circular dependency with agent module.
@@ -262,7 +278,10 @@ def _agent_run(prompt, state, config, system_prompt, depth=0, cancel_check=None)
     the multi_agent package (sys.path includes the project root).
     """
     import agent as _agent_mod
-    return _agent_mod.run(prompt, state, config, system_prompt, depth=depth, cancel_check=cancel_check)
+
+    return _agent_mod.run(
+        prompt, state, config, system_prompt, depth=depth, cancel_check=cancel_check
+    )
 
 
 def _extract_final_text(messages):
@@ -275,12 +294,13 @@ def _extract_final_text(messages):
 
 # ── SubAgentManager ────────────────────────────────────────────────────────
 
+
 class SubAgentManager:
     """Manages concurrent sub-agent tasks using a thread pool."""
 
     def __init__(self, max_concurrent: int = 5, max_depth: int = 5):
-        self.tasks: Dict[str, SubAgentTask] = {}
-        self._by_name: Dict[str, str] = {}   # name → task_id
+        self.tasks: dict[str, SubAgentTask] = {}
+        self._by_name: dict[str, str] = {}  # name → task_id
         self.max_concurrent = max_concurrent
         self.max_depth = max_depth
         self._pool = ThreadPoolExecutor(max_workers=max_concurrent)
@@ -292,7 +312,7 @@ class SubAgentManager:
         system_prompt: str,
         depth: int = 0,
         agent_def: Optional[AgentDefinition] = None,
-        isolation: str = "",     # "" | "worktree"
+        isolation: str = "",  # "" | "worktree"
         name: str = "",
     ) -> SubAgentTask:
         """Spawn a new sub-agent task.
@@ -359,7 +379,9 @@ class SubAgentManager:
                 return task
 
         def _run():
-            import agent as _agent_mod; AgentState = _agent_mod.AgentState
+            import agent as _agent_mod
+
+            AgentState = _agent_mod.AgentState
             task.status = "running"
             old_cwd = os.getcwd()
             try:
@@ -368,7 +390,10 @@ class SubAgentManager:
 
                 state = AgentState()
                 gen = _agent_run(
-                    prompt, state, eff_config, eff_system,
+                    prompt,
+                    state,
+                    eff_config,
+                    eff_system,
                     depth=depth + 1,
                     cancel_check=lambda: task._cancel_flag,
                 )
@@ -388,7 +413,10 @@ class SubAgentManager:
                     inbox_msg = task._inbox.get_nowait()
                     task.status = "running"
                     gen2 = _agent_run(
-                        inbox_msg, state, eff_config, eff_system,
+                        inbox_msg,
+                        state,
+                        eff_config,
+                        eff_system,
                         depth=depth + 1,
                         cancel_check=lambda: task._cancel_flag,
                     )
@@ -431,7 +459,7 @@ class SubAgentManager:
         task = self.tasks.get(task_id)
         return task.result if task else None
 
-    def list_tasks(self) -> List[SubAgentTask]:
+    def list_tasks(self) -> list[SubAgentTask]:
         """Return all tracked tasks."""
         return list(self.tasks.values())
 

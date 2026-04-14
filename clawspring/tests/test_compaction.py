@@ -1,22 +1,22 @@
 """Tests for compaction.py — token estimation, context limits, snipping, split point."""
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from compaction import estimate_tokens, get_context_limit, snip_old_tool_results, find_split_point
-
+from compaction import estimate_tokens, find_split_point, get_context_limit, snip_old_tool_results
 
 # ── estimate_tokens ───────────────────────────────────────────────────────
+
 
 class TestEstimateTokens:
     def test_simple_messages(self):
         msgs = [
-            {"role": "user", "content": "Hello world"},          # 11 chars
-            {"role": "assistant", "content": "Hi there!"},       # 9 chars
+            {"role": "user", "content": "Hello world"},  # 11 chars
+            {"role": "assistant", "content": "Hi there!"},  # 9 chars
         ]
         result = estimate_tokens(msgs)
         # (11 + 9) / 3.5 = 5.71 -> 5
@@ -67,6 +67,7 @@ class TestEstimateTokens:
 
 # ── get_context_limit ─────────────────────────────────────────────────────
 
+
 class TestGetContextLimit:
     def test_anthropic(self):
         assert get_context_limit("claude-opus-4-6") == 200000
@@ -92,6 +93,7 @@ class TestGetContextLimit:
 
 
 # ── snip_old_tool_results ─────────────────────────────────────────────────
+
 
 class TestSnipOldToolResults:
     def test_old_tool_results_get_truncated(self):
@@ -153,6 +155,7 @@ class TestSnipOldToolResults:
 
 
 # ── find_split_point ──────────────────────────────────────────────────────
+
 
 class TestFindSplitPoint:
     def test_returns_reasonable_index(self):

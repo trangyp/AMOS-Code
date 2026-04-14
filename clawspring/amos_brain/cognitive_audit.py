@@ -1,26 +1,26 @@
 """AMOS Cognitive Audit Trail - Track reasoning and execution history."""
 
-import json
-import time
 import hashlib
-from dataclasses import dataclass, asdict
+import json
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
 class AuditEntry:
     """Single cognitive decision audit record."""
+
     timestamp: str
     task_hash: str
     task_preview: str
     domain: str
     risk_level: str
-    engines_selected: List[str]
+    engines_selected: list[str]
     consensus_score: Optional[float]
-    laws_checked: List[str]
-    violations_found: List[str]
+    laws_checked: list[str]
+    violations_found: list[str]
     execution_time_ms: float
     final_recommendation: str
 
@@ -30,14 +30,14 @@ class CognitiveAuditTrail:
 
     def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path(".amos_cognitive_audit.jsonl")
-        self._session_entries: List[AuditEntry] = []
+        self._session_entries: list[AuditEntry] = []
         self._load_history()
 
     def _load_history(self):
         """Load previous audit history if exists."""
         if self.storage_path.exists():
             try:
-                with open(self.storage_path, 'r') as f:
+                with open(self.storage_path) as f:
                     for line in f:
                         if line.strip():
                             data = json.loads(line)
@@ -50,12 +50,12 @@ class CognitiveAuditTrail:
         task: str,
         domain: str,
         risk_level: str,
-        engines: List[str],
+        engines: list[str],
         consensus_score: Optional[float],
-        laws: List[str],
-        violations: List[str],
+        laws: list[str],
+        violations: list[str],
         exec_time_ms: float,
-        recommendation: str
+        recommendation: str,
     ) -> AuditEntry:
         """Record a cognitive decision to the audit trail."""
         # Create task hash for deduplication
@@ -73,7 +73,7 @@ class CognitiveAuditTrail:
             laws_checked=laws,
             violations_found=violations,
             execution_time_ms=exec_time_ms,
-            final_recommendation=recommendation
+            final_recommendation=recommendation,
         )
 
         self._session_entries.append(entry)
@@ -83,28 +83,24 @@ class CognitiveAuditTrail:
     def _persist_entry(self, entry: AuditEntry):
         """Append entry to persistent storage."""
         try:
-            with open(self.storage_path, 'a') as f:
+            with open(self.storage_path, "a") as f:
                 f.write(json.dumps(asdict(entry)) + "\n")
         except Exception:
             pass  # Silent fail for audit non-critical path
 
-    def get_recent(self, n: int = 10) -> List[AuditEntry]:
+    def get_recent(self, n: int = 10) -> list[AuditEntry]:
         """Get N most recent audit entries."""
-        return sorted(
-            self._session_entries,
-            key=lambda x: x.timestamp,
-            reverse=True
-        )[:n]
+        return sorted(self._session_entries, key=lambda x: x.timestamp, reverse=True)[:n]
 
-    def get_by_domain(self, domain: str) -> List[AuditEntry]:
+    def get_by_domain(self, domain: str) -> list[AuditEntry]:
         """Get all entries for a specific domain."""
         return [e for e in self._session_entries if e.domain == domain]
 
-    def get_violations(self) -> List[AuditEntry]:
+    def get_violations(self) -> list[AuditEntry]:
         """Get entries with law violations."""
         return [e for e in self._session_entries if e.violations_found]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Generate audit statistics."""
         if not self._session_entries:
             return {"total": 0}
@@ -133,7 +129,7 @@ class CognitiveAuditTrail:
             ),
         }
 
-    def find_similar(self, task: str, threshold: float = 0.7) -> List[AuditEntry]:
+    def find_similar(self, task: str, threshold: float = 0.7) -> list[AuditEntry]:
         """Find audit entries with similar tasks (simple keyword match)."""
         task_words = set(task.lower().split())
         matches = []
@@ -166,19 +162,21 @@ class CognitiveAuditTrail:
             f"- Consensus entries: {stats.get('entries_with_consensus', 0)}",
         ]
 
-        if stats.get('domains'):
+        if stats.get("domains"):
             lines.extend(["", "### Domain Distribution"])
-            for domain, count in sorted(stats['domains'].items(), key=lambda x: -x[1]):
+            for domain, count in sorted(stats["domains"].items(), key=lambda x: -x[1]):
                 lines.append(f"- {domain}: {count}")
 
         if recent:
             lines.extend(["", "## Recent Decisions"])
             for entry in recent:
-                lines.extend([
-                    f"\n**{entry.timestamp[:19]}** | {entry.domain} | {entry.risk_level}",
-                    f"Task: {entry.task_preview[:60]}...",
-                    f"Engines: {', '.join(entry.engines_selected[:2])}",
-                ])
+                lines.extend(
+                    [
+                        f"\n**{entry.timestamp[:19]}** | {entry.domain} | {entry.risk_level}",
+                        f"Task: {entry.task_preview[:60]}...",
+                        f"Engines: {', '.join(entry.engines_selected[:2])}",
+                    ]
+                )
                 if entry.violations_found:
                     lines.append(f"⚠️ Violations: {len(entry.violations_found)}")
 
@@ -213,12 +211,12 @@ def record_cognitive_decision(
     task: str,
     domain: str,
     risk_level: str,
-    engines: List[str],
+    engines: list[str],
     consensus_score: Optional[float] = None,
-    laws: Optional[List[str]] = None,
-    violations: Optional[List[str]] = None,
+    laws: Optional[list[str]] = None,
+    violations: Optional[list[str]] = None,
     exec_time_ms: float = 0.0,
-    recommendation: str = ""
+    recommendation: str = "",
 ) -> AuditEntry:
     """Convenience function to record a decision."""
     trail = get_audit_trail()
@@ -231,7 +229,7 @@ def record_cognitive_decision(
         laws=laws or [],
         violations=violations or [],
         exec_time_ms=exec_time_ms,
-        recommendation=recommendation
+        recommendation=recommendation,
     )
 
 
@@ -253,7 +251,7 @@ if __name__ == "__main__":
         laws=["RULE_OF_2", "RULE_OF_4"],
         violations=[],
         exec_time_ms=12.5,
-        recommendation="Proceed with multi-agent review"
+        recommendation="Proceed with multi-agent review",
     )
 
     record_cognitive_decision(
@@ -265,7 +263,7 @@ if __name__ == "__main__":
         laws=["RULE_OF_2"],
         violations=[],
         exec_time_ms=3.2,
-        recommendation="Proceed with single engine"
+        recommendation="Proceed with single engine",
     )
 
     print("\n" + audit.generate_report())

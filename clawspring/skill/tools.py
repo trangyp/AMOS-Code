@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool
-from .loader import find_skill, load_skills, substitute_arguments
 
+from .loader import find_skill, load_skills, substitute_arguments
 
 _SKILL_SCHEMA = {
     "name": "Skill",
@@ -61,6 +61,7 @@ def _skill_tool(params: dict, config: dict) -> str:
 
     # Run inline via agent and collect text output
     import agent as _agent
+
     system_prompt = config.get("_system_prompt", "")
 
     # Collect output text
@@ -91,20 +92,24 @@ def _skill_list_tool(params: dict, config: dict) -> str:
 
 
 def _register() -> None:
-    register_tool(ToolDef(
-        name="Skill",
-        schema=_SKILL_SCHEMA,
-        func=_skill_tool,
-        read_only=False,
-        concurrent_safe=False,
-    ))
-    register_tool(ToolDef(
-        name="SkillList",
-        schema=_SKILL_LIST_SCHEMA,
-        func=_skill_list_tool,
-        read_only=True,
-        concurrent_safe=True,
-    ))
+    register_tool(
+        ToolDef(
+            name="Skill",
+            schema=_SKILL_SCHEMA,
+            func=_skill_tool,
+            read_only=False,
+            concurrent_safe=False,
+        )
+    )
+    register_tool(
+        ToolDef(
+            name="SkillList",
+            schema=_SKILL_LIST_SCHEMA,
+            func=_skill_list_tool,
+            read_only=True,
+            concurrent_safe=True,
+        )
+    )
 
 
 _register()

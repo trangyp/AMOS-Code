@@ -1,7 +1,7 @@
 """AMOS Economics/Finance Engine - Economic analysis and financial systems."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from amos_runtime import get_runtime
@@ -37,11 +37,13 @@ class MicroEconomicsEngine:
         for category, terms in micro_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "economic_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "economic_principles": self._get_principles(category),
+                    }
+                )
 
         return EconAnalysis(
             domain="microeconomics",
@@ -89,11 +91,13 @@ class MacroEconomicsEngine:
         for category, terms in macro_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "macro_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "macro_principles": self._get_principles(category),
+                    }
+                )
 
         return EconAnalysis(
             domain="macroeconomics",
@@ -141,11 +145,13 @@ class PublicFinanceEngine:
         for category, terms in public_finance_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "public_finance_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "public_finance_principles": self._get_principles(category),
+                    }
+                )
 
         return EconAnalysis(
             domain="public_finance",
@@ -200,11 +206,13 @@ class FinanceMarketsEngine:
         for category, terms in finance_indicators.items():
             matches = [t for t in terms if t in input_data.lower()]
             if matches:
-                findings.append({
-                    "category": category,
-                    "detected_terms": matches,
-                    "finance_principles": self._get_principles(category),
-                })
+                findings.append(
+                    {
+                        "category": category,
+                        "detected_terms": matches,
+                        "finance_principles": self._get_principles(category),
+                    }
+                )
 
         # Add safety warnings if investment-related
         warnings = []
@@ -216,7 +224,9 @@ class FinanceMarketsEngine:
         return EconAnalysis(
             domain="financial_markets",
             input_data=input_data,
-            findings=findings + [{"type": "safety_warnings", "warnings": warnings}] if warnings else findings,
+            findings=findings + [{"type": "safety_warnings", "warnings": warnings}]
+            if warnings
+            else findings,
             confidence=0.65 if findings else 0.2,
             limitations=[
                 "No market data access",
@@ -298,12 +308,14 @@ class AMOSEconEngine:
         ]
 
         for domain, analysis in results.items():
-            lines.extend([
-                f"### {domain.upper().replace('_', ' ')}",
-                f"Confidence: {analysis.confidence:.2f}",
-                f"Findings: {len(analysis.findings)}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain.upper().replace('_', ' ')}",
+                    f"Confidence: {analysis.confidence:.2f}",
+                    f"Findings: {len(analysis.findings)}",
+                    "",
+                ]
+            )
 
             for finding in analysis.findings:
                 if finding.get("type") == "safety_warnings":
@@ -312,16 +324,23 @@ class AMOSEconEngine:
                 else:
                     cat = finding.get("category", "general")
                     lines.append(f"- **{cat}**: {finding.get('detected_terms', [])}")
-                    principles = finding.get("economic_principles") or finding.get("macro_principles") or finding.get("public_finance_principles") or finding.get("finance_principles")
+                    principles = (
+                        finding.get("economic_principles")
+                        or finding.get("macro_principles")
+                        or finding.get("public_finance_principles")
+                        or finding.get("finance_principles")
+                    )
                     if principles:
                         lines.append(f"  Principles: {', '.join(principles[:2])}")
             lines.append("")
 
         # Limitations section
-        lines.extend([
-            "## Limitations",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Limitations",
+                "",
+            ]
+        )
         all_limitations = set()
         for analysis in results.values():
             all_limitations.update(analysis.limitations)
@@ -329,25 +348,29 @@ class AMOSEconEngine:
             lines.append(f"- {limitation}")
 
         # Law compliance
-        lines.extend([
-            "",
-            "## Law Compliance",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Law Compliance",
+                "",
+            ]
+        )
         for domain, analysis in results.items():
             compliant = sum(1 for v in analysis.law_compliance.values() if v)
             total = len(analysis.law_compliance)
             lines.append(f"- {domain}: {compliant}/{total} laws")
 
         # Gap acknowledgment
-        lines.extend([
-            "",
-            "## Gap Acknowledgment",
-            "GAP: Economic/finance analysis is pattern matching on text, not economic research.",
-            "No data access. No econometric models. No forecasting ability.",
-            "NOT SUITABLE for investment or policy decisions.",
-            "Human economic expertise required for all decisions.",
-        ])
+        lines.extend(
+            [
+                "",
+                "## Gap Acknowledgment",
+                "GAP: Economic/finance analysis is pattern matching on text, not economic research.",
+                "No data access. No econometric models. No forecasting ability.",
+                "NOT SUITABLE for investment or policy decisions.",
+                "Human economic expertise required for all decisions.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -392,8 +415,10 @@ if __name__ == "__main__":
 
     print(f"\nAnalyzed {len(results)} economic domains:")
     for domain, analysis in results.items():
-        print(f"  - {domain}: {len(analysis.findings)} findings, "
-              f"confidence={analysis.confidence:.2f}")
+        print(
+            f"  - {domain}: {len(analysis.findings)} findings, "
+            f"confidence={analysis.confidence:.2f}"
+        )
 
     # Full summary
     print("\n" + "=" * 60)

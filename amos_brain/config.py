@@ -11,13 +11,14 @@ from typing import Any
 @dataclass
 class LawEnforcementConfig:
     """Configuration for global law enforcement levels."""
+
     l1_law_of_law: str = "strict"  # strict, standard, lenient
     l2_rule_of_two: str = "strict"
     l3_rule_of_four: str = "standard"
     l4_structural_integrity: str = "strict"
     l5_communication: str = "standard"
     l6_ubi_alignment: str = "lenient"
-    
+
     def get_level(self, law_id: str) -> str:
         """Get enforcement level for a specific law."""
         mapping = {
@@ -34,6 +35,7 @@ class LawEnforcementConfig:
 @dataclass
 class FeatureFlags:
     """Feature flags for cognitive capabilities."""
+
     enable_rule_of_two: bool = True
     enable_rule_of_four: bool = True
     enable_law_enforcement: bool = True
@@ -47,6 +49,7 @@ class FeatureFlags:
 @dataclass
 class EnvironmentProfile:
     """Environment-specific configuration."""
+
     name: str = "development"
     log_level: str = "INFO"
     metrics_retention_hours: int = 24
@@ -59,22 +62,19 @@ class EnvironmentProfile:
 
 @dataclass
 class CognitiveConfig:
-    """
-    AMOS Cognitive Configuration Manager - Layer 11.
-    
+    """AMOS Cognitive Configuration Manager - Layer 11.
+
     Provides enterprise configuration for the cognitive OS:
     - Environment profiles (dev/staging/prod)
     - Law enforcement levels
     - Feature flags
     - Custom kernel registration
     """
-    
+
     environment: str = "development"
-    law_enforcement: LawEnforcementConfig = field(
-        default_factory=LawEnforcementConfig
-    )
+    law_enforcement: LawEnforcementConfig = field(default_factory=LawEnforcementConfig)
     features: FeatureFlags = field(default_factory=FeatureFlags)
-    
+
     def __post_init__(self):
         """Initialize with environment profile."""
         self._profiles = {
@@ -112,33 +112,30 @@ class CognitiveConfig:
         self._custom_kernels: dict[str, dict] = {}
         self._storage_path = Path.home() / ".amos_brain" / "config"
         self._storage_path.mkdir(parents=True, exist_ok=True)
-    
+
     @property
     def profile(self) -> EnvironmentProfile:
         """Get current environment profile."""
-        return self._profiles.get(
-            self.environment,
-            self._profiles["development"]
-        )
-    
+        return self._profiles.get(self.environment, self._profiles["development"])
+
     def set_environment(self, env: str) -> bool:
         """Switch environment profile."""
         if env in self._profiles:
             self.environment = env
             return True
         return False
-    
+
     def get_law_enforcement_level(self, law_id: str) -> str:
         """Get enforcement level for a law."""
         return self.law_enforcement.get_level(law_id)
-    
+
     def is_law_enforced(self, law_id: str) -> bool:
         """Check if a law should be enforced."""
         if not self.features.enable_law_enforcement:
             return False
         level = self.get_law_enforcement_level(law_id)
         return level in ["strict", "standard"]
-    
+
     def is_feature_enabled(self, feature: str) -> bool:
         """Check if a feature is enabled."""
         mapping = {
@@ -152,13 +149,9 @@ class CognitiveConfig:
             "anomaly_detection": self.features.enable_anomaly_detection,
         }
         return mapping.get(feature, False)
-    
+
     def register_custom_kernel(
-        self,
-        kernel_id: str,
-        name: str,
-        description: str,
-        domain: str
+        self, kernel_id: str, name: str, description: str, domain: str
     ) -> bool:
         """Register a custom cognitive kernel."""
         self._custom_kernels[kernel_id] = {
@@ -169,11 +162,11 @@ class CognitiveConfig:
             "custom": True,
         }
         return True
-    
+
     def get_custom_kernels(self) -> list[dict]:
         """Get list of registered custom kernels."""
         return list(self._custom_kernels.values())
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Export configuration to dictionary."""
         return {
@@ -203,25 +196,25 @@ class CognitiveConfig:
             },
             "custom_kernels": len(self._custom_kernels),
         }
-    
+
     def save_to_file(self, filepath: Path | None = None) -> Path:
         """Save configuration to JSON file."""
         if filepath is None:
             filepath = self._storage_path / "brain_config.json"
-        
+
         with open(filepath, "w") as f:
             json.dump(self.to_dict(), f, indent=2)
-        
+
         return filepath
-    
+
     @classmethod
-    def load_from_file(cls, filepath: Path) -> "CognitiveConfig":
+    def load_from_file(cls, filepath: Path) -> CognitiveConfig:
         """Load configuration from JSON file."""
         with open(filepath) as f:
             data = json.load(f)
-        
+
         config = cls(environment=data.get("environment", "development"))
-        
+
         # Load law enforcement
         le_data = data.get("law_enforcement", {})
         config.law_enforcement = LawEnforcementConfig(
@@ -232,7 +225,7 @@ class CognitiveConfig:
             l5_communication=le_data.get("l5", "standard"),
             l6_ubi_alignment=le_data.get("l6", "lenient"),
         )
-        
+
         # Load features
         feat_data = data.get("features", {})
         config.features = FeatureFlags(
@@ -255,24 +248,18 @@ class CognitiveConfig:
                     config._custom_kernels[kernel_id] = kernel
 
         return config
-    
+
     @classmethod
-    def from_env(cls) -> "CognitiveConfig":
+    def from_env(cls) -> CognitiveConfig:
         """Create configuration from environment variables."""
-        config = cls(
-            environment=os.getenv("AMOS_ENV", "development")
-        )
-        
+        config = cls(environment=os.getenv("AMOS_ENV", "development"))
+
         # Feature flags from env
-        config.features.enable_rule_of_two = (
-            os.getenv("AMOS_RULE_OF_TWO", "true").lower() == "true"
-        )
+        config.features.enable_rule_of_two = os.getenv("AMOS_RULE_OF_TWO", "true").lower() == "true"
         config.features.enable_law_enforcement = (
             os.getenv("AMOS_LAW_ENFORCEMENT", "true").lower() == "true"
         )
-        config.features.enable_monitoring = (
-            os.getenv("AMOS_MONITORING", "true").lower() == "true"
-        )
+        config.features.enable_monitoring = os.getenv("AMOS_MONITORING", "true").lower() == "true"
         config.features.enable_rule_of_four = (
             os.getenv("AMOS_RULE_OF_FOUR", "true").lower() == "true"
         )

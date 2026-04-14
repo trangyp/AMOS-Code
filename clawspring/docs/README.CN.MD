@@ -15,7 +15,7 @@
 </div>
 
  <div align=center>
- <img src="demo.gif" width="850"/> 
+ <img src="demo.gif" width="850"/>
  </div>
 <div align=center>
 <center style="color:#000000;text-decoration:underline"> </center>
@@ -505,7 +505,7 @@ nano_claude --model lmstudio/qwen2.5-coder-7b
 
 适用于暴露 OpenAI-compatible API 的自托管推理服务（如 vLLM、TGI、llama.cpp server 等）：
 
-方案 C 快速开始：  
+方案 C 快速开始：
 步骤 1：启动 vllm：
  ```
 CUDA_VISIBLE_DEVICES=7 python -m vllm.entrypoints.openai.api_server \
@@ -774,7 +774,7 @@ export DEEPSEEK_API_KEY=sk-...       # DeepSeek
 - `n` 或直接回车 —— 拒绝
 - `a` —— 批准并将本次会话切换到 `accept-all`
 
-**在 `auto` 模式下始终自动批准的命令：**  
+**在 `auto` 模式下始终自动批准的命令：**
 `ls`、`cat`、`head`、`tail`、`wc`、`pwd`、`echo`、`git status`、`git log`、`git diff`、`git show`、`find`、`grep`、`rg`、`python`、`node`、`pip show`、`npm list` 以及其他只读 shell 命令。
 
 ---
@@ -1965,12 +1965,12 @@ pip install sounddevice faster-whisper numpy
 /voice                 # 直接说出你的 prompt
 ```
 
-首次使用时，`faster-whisper` 会自动下载 `base` 模型（约 150 MB）。  
+首次使用时，`faster-whisper` 会自动下载 `base` 模型（约 150 MB）。
 如需更高准确率，可使用更大的模型：`export NANO_CLAUDE_WHISPER_MODEL=small`
 
 **Q：语音输入转写不准（尤其漏掉代码术语）。**
 
-关键词增强器已经会从你的 git 分支和项目文件中注入编程领域词汇。  
+关键词增强器已经会从你的 git 分支和项目文件中注入编程领域词汇。
 对于长期使用的领域术语，可以把它们写入 `.nano_claude/voice_keyterms.txt`（每行一个词）—— 每次录音前都会自动读取。
 
 **Q：语音输入支持中文 / 日语 / 其他语言吗？**

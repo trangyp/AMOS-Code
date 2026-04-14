@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Hello Quantum - AMOSL Quantum Substrate Demo."""
-import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
+import sys
 
-from amosl.runtime import RuntimeKernel
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
+
 from amosl.bridge import BridgeExecutor, BridgeType
+from amosl.runtime import RuntimeKernel
 
 
 def main():

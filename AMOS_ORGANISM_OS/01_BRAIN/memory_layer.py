@@ -1,5 +1,4 @@
-"""
-Memory Layer — 7-layer memory system for AMOS Brain.
+"""Memory Layer — 7-layer memory system for AMOS Brain.
 
 Based on AMOS cognitive architecture:
 - sensory_memory: Immediate sensory buffer
@@ -15,38 +14,40 @@ from __future__ import annotations
 
 import json
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 @dataclass
 class Memory:
     """A memory entry in the AMOS system."""
+
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
-    layer: str = "short_term"      # sensory, working, short_term, episodic, semantic, procedural, long_term
+    layer: str = (
+        "short_term"  # sensory, working, short_term, episodic, semantic, procedural, long_term
+    )
     content: str = ""
-    source: str = "internal"       # Origin subsystem
-    importance: float = 0.5          # 0.0 to 1.0
+    source: str = "internal"  # Origin subsystem
+    importance: float = 0.5  # 0.0 to 1.0
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    access_count: int = 0          # For LRU eviction
+    access_count: int = 0  # For LRU eviction
     last_accessed: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    tags: List[str] = field(default_factory=list)
-    related: List[str] = field(default_factory=list)  # Related memory IDs
+    tags: list[str] = field(default_factory=list)
+    related: list[str] = field(default_factory=list)  # Related memory IDs
 
     def touch(self):
         """Mark as accessed."""
         self.access_count += 1
         self.last_accessed = datetime.utcnow().isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class MemoryLayer:
-    """
-    7-layer memory system for the AMOS Brain.
+    """7-layer memory system for the AMOS Brain.
 
     Layers (highest to lowest frequency access):
     1. sensory: Raw inputs (100ms retention)
@@ -59,13 +60,13 @@ class MemoryLayer:
     """
 
     LAYERS = [
-        "sensory",      # Immediate buffer
-        "working",      # Active processing
-        "short_term",   # Recent context
-        "episodic",     # Event sequences
-        "semantic",     # Facts/concepts
-        "procedural",   # Skills/how-to
-        "long_term",    # Persistent storage
+        "sensory",  # Immediate buffer
+        "working",  # Active processing
+        "short_term",  # Recent context
+        "episodic",  # Event sequences
+        "semantic",  # Facts/concepts
+        "procedural",  # Skills/how-to
+        "long_term",  # Persistent storage
     ]
 
     CAPACITIES = {
@@ -83,8 +84,8 @@ class MemoryLayer:
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
         # In-memory stores
-        self._memories: Dict[str, List[Memory]] = {layer: [] for layer in self.LAYERS}
-        self._index: Dict[str, Memory] = {}  # ID -> Memory lookup
+        self._memories: dict[str, list[Memory]] = {layer: [] for layer in self.LAYERS}
+        self._index: dict[str, Memory] = {}  # ID -> Memory lookup
 
         # Load persistent layers
         self._load_layer("episodic")
@@ -124,7 +125,7 @@ class MemoryLayer:
         layer: str = "short_term",
         source: str = "brain",
         importance: float = 0.5,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ) -> Memory:
         """Store a new memory."""
         if layer not in self.LAYERS:
@@ -173,7 +174,7 @@ class MemoryLayer:
             mem.touch()
         return mem
 
-    def search(self, query: str, layer: str = None, limit: int = 10) -> List[Memory]:
+    def search(self, query: str, layer: str = None, limit: int = 10) -> list[Memory]:
         """Simple text search across memories."""
         query_lower = query.lower()
         results = []
@@ -223,19 +224,18 @@ class MemoryLayer:
         self._save_layer(mem.layer)
         return True
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Get memory statistics."""
         return {
             "total_memories": sum(len(m) for m in self._memories.values()),
             "by_layer": {layer: len(mems) for layer, mems in self._memories.items()},
             "capacity": self.CAPACITIES,
             "utilization": {
-                layer: len(mems) / self.CAPACITIES[layer]
-                for layer, mems in self._memories.items()
+                layer: len(mems) / self.CAPACITIES[layer] for layer, mems in self._memories.items()
             },
         }
 
-    def dump(self, layer: str = None) -> List[Dict[str, Any]]:
+    def dump(self, layer: str = None) -> list[dict[str, Any]]:
         """Export memories as dicts."""
         layers = [layer] if layer else self.LAYERS
         result = []

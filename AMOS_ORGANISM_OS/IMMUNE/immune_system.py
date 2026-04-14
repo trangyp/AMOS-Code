@@ -7,12 +7,12 @@ if str(immune_path) not in sys.path:
     sys.path.insert(0, str(immune_path))
 
 from immune_system import (
-    ImmuneSystem,
-    SafetyPolicy,
-    AuditLog,
-    ValidationResult,
-    RiskLevel,
     ActionType,
+    AuditLog,
+    ImmuneSystem,
+    RiskLevel,
+    SafetyPolicy,
+    ValidationResult,
 )
 
 __all__ = [

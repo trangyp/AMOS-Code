@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Ecosystem Controller - Unified Interface for Complete System.
+"""AMOS Ecosystem Controller - Unified Interface for Complete System.
 
 Round 10: The Master Controller - One entry point for all 10 tools.
 
@@ -18,12 +17,12 @@ Usage:
 """
 from __future__ import annotations
 
-import sys
 import subprocess
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+import sys
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -31,6 +30,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 class ToolType(Enum):
     """Types of ecosystem tools."""
+
     BRAIN_DEMO = "brain_demo"
     KNOWLEDGE = "knowledge"
     GENERATOR = "generator"
@@ -46,30 +46,30 @@ class ToolType(Enum):
 @dataclass
 class EcosystemTool:
     """Represents an ecosystem tool."""
+
     name: str
     tool_type: ToolType
     description: str
     command: str
     lines: int
-    keywords: List[str]
+    keywords: list[str]
 
 
 class AMOSEcosystemController:
-    """
-    Unified controller for the complete AMOS ecosystem.
-    
+    """Unified controller for the complete AMOS ecosystem.
+
     Provides single entry point to all 10 tools:
     - Intelligent routing based on user intent
     - Multi-tool orchestration
     - Unified CLI experience
     - Complete ecosystem access
     """
-    
+
     def __init__(self):
         self.root = Path(__file__).parent
-        self.tools: Dict[ToolType, EcosystemTool] = {}
+        self.tools: dict[ToolType, EcosystemTool] = {}
         self._register_tools()
-    
+
     def _register_tools(self) -> None:
         """Register all ecosystem tools."""
         self.tools = {
@@ -154,7 +154,7 @@ class AMOSEcosystemController:
                 keywords=["control", "route", "help", "guide", "interface"],
             ),
         }
-    
+
     def show_welcome(self) -> None:
         """Show welcome message."""
         print("=" * 80)
@@ -164,58 +164,57 @@ class AMOSEcosystemController:
         print()
         print("  🧠 10 Tools | ~5,020 Lines | Complete Ecosystem")
         print()
-    
+
     def show_menu(self) -> None:
         """Show tool menu."""
         print("  Available Tools:")
         print("  " + "─" * 76)
-        
+
         for i, (tool_type, tool) in enumerate(self.tools.items(), 1):
             status = "🎯 YOU ARE HERE" if tool_type == ToolType.CONTROLLER else ""
             print(f"  {i}. {tool.name:<25} ({tool.lines} lines) {status}")
             print(f"     └─> {tool.description}")
             print(f"     └─> Keywords: {', '.join(tool.keywords[:4])}")
             print()
-        
+
         print("  " + "=" * 76)
-    
+
     def route_request(self, request: str) -> Optional[EcosystemTool]:
-        """
-        Route user request to appropriate tool.
-        
+        """Route user request to appropriate tool.
+
         Uses keyword matching to determine best tool.
         """
         request_lower = request.lower()
-        
+
         # Score each tool based on keyword matches
-        scores: Dict[ToolType, int] = {}
-        
+        scores: dict[ToolType, int] = {}
+
         for tool_type, tool in self.tools.items():
             if tool_type == ToolType.CONTROLLER:
                 continue  # Don't route to self
-            
+
             score = 0
             for keyword in tool.keywords:
                 if keyword in request_lower:
                     score += 1
             scores[tool_type] = score
-        
+
         # Find best match
         if scores:
             best_tool = max(scores.items(), key=lambda x: x[1])
             if best_tool[1] > 0:
                 return self.tools[best_tool[0]]
-        
+
         return None
-    
+
     def execute_tool(self, tool: EcosystemTool, args: str = "") -> bool:
         """Execute a tool with arguments."""
         print(f"\n🚀 Routing to: {tool.name}")
         print(f"   {tool.description}")
         print()
-        
+
         command = f"{tool.command} {args}".strip()
-        
+
         try:
             result = subprocess.run(
                 command,
@@ -232,12 +231,12 @@ class AMOSEcosystemController:
         except Exception as e:
             print(f"   ❌ Error: {e}")
             return False
-    
+
     def run_interactive(self) -> None:
         """Run interactive mode."""
         self.show_welcome()
         self.show_menu()
-        
+
         while True:
             print("\n" + "─" * 80)
             print("\n  Options:")
@@ -247,23 +246,23 @@ class AMOSEcosystemController:
             print("    menu : Show tool menu again")
             print("    help : Show help")
             print("    quit : Exit")
-            
+
             user_input = input("\n  What do you need? ").strip()
-            
+
             if user_input.lower() in ["quit", "exit", "q"]:
                 print("\n  👋 Goodbye!")
                 break
-            
+
             elif user_input.lower() == "menu":
                 self.show_menu()
-            
+
             elif user_input.lower() == "help":
                 self.show_help()
-            
+
             elif user_input.lower() == "all":
                 print("\n  🎬 Running complete ecosystem showcase...")
                 self.execute_tool(self.tools[ToolType.SHOWCASE])
-            
+
             elif user_input.isdigit():
                 tool_num = int(user_input)
                 if 1 <= tool_num <= len(self.tools):
@@ -275,7 +274,7 @@ class AMOSEcosystemController:
                         self.execute_tool(tool, args)
                 else:
                     print("\n  ❌ Invalid tool number")
-            
+
             else:
                 # Try to route based on text
                 tool = self.route_request(user_input)
@@ -287,7 +286,7 @@ class AMOSEcosystemController:
                     print("    • 'search knowledge' for explorer")
                     print("    • 'build project' for generator")
                     print("    • Type 'menu' to see all options")
-    
+
     def show_help(self) -> None:
         """Show help information."""
         print("\n" + "=" * 80)
@@ -316,11 +315,11 @@ class AMOSEcosystemController:
         print("  most appropriate tool based on your input.")
         print()
         print("  " + "=" * 76)
-    
+
     def run_quick(self, request: str) -> None:
         """Run a quick request."""
         self.show_welcome()
-        
+
         tool = self.route_request(request)
         if tool:
             self.execute_tool(tool, f'"{request}"')
@@ -331,7 +330,7 @@ class AMOSEcosystemController:
             print("    • 'search knowledge'")
             print("    • 'build project'")
             print("\n  Or use --interactive for menu")
-    
+
     def run_all(self) -> None:
         """Run complete ecosystem showcase."""
         self.show_welcome()
@@ -342,35 +341,17 @@ class AMOSEcosystemController:
 def main():
     """CLI entry point."""
     import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="AMOS Ecosystem Controller - Unified Interface"
-    )
-    parser.add_argument(
-        "request",
-        nargs="?",
-        help="What you need (e.g., 'analyze decision')"
-    )
-    parser.add_argument(
-        "--interactive",
-        action="store_true",
-        help="Interactive mode with menu"
-    )
-    parser.add_argument(
-        "--run-all",
-        action="store_true",
-        help="Run complete ecosystem showcase"
-    )
-    parser.add_argument(
-        "--help-tools",
-        action="store_true",
-        help="Show tool descriptions"
-    )
-    
+
+    parser = argparse.ArgumentParser(description="AMOS Ecosystem Controller - Unified Interface")
+    parser.add_argument("request", nargs="?", help="What you need (e.g., 'analyze decision')")
+    parser.add_argument("--interactive", action="store_true", help="Interactive mode with menu")
+    parser.add_argument("--run-all", action="store_true", help="Run complete ecosystem showcase")
+    parser.add_argument("--help-tools", action="store_true", help="Show tool descriptions")
+
     args = parser.parse_args()
-    
+
     controller = AMOSEcosystemController()
-    
+
     if args.help_tools:
         controller.show_welcome()
         controller.show_menu()
@@ -383,7 +364,7 @@ def main():
     else:
         # Default to interactive
         controller.run_interactive()
-    
+
     return 0
 
 

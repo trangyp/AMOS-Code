@@ -22,15 +22,17 @@ Current State (60+ components):
 
 Gap: Need final unification across all 5 specification layers and comprehensive cross-layer validation
 """
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 print("=" * 70)
 print("  AMOS BRAIN: Phase 22 - Specification Hierarchy Analysis")
 print("=" * 70)
 
-print("""
+print(
+    """
 SPECIFICATION HIERARCHY (5 Nested Layers):
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -80,19 +82,21 @@ SPECIFICATION HIERARCHY (5 Nested Layers):
 60+ COMPONENTS ACROSS 5 LAYERS - ALL OPERATIONAL
 
 ---
-""")
+"""
+)
 
 print("=" * 70)
 print("  BRAIN DECISION: Cross-Layer Validation + Omega Documentation")
 print("=" * 70)
-print("""
+print(
+    """
 🧠 NEXT BUILD: Final Unification and Omega Documentation
 
    ANALYSIS:
    All 5 specification layers are complete and operational.
    Each layer builds on the previous, forming a hierarchy from
    language syntax (9-tuple) to formal universe (21-tuple).
-   
+
    The system requires:
    1. Cross-layer validation to ensure consistency
    2. Omega documentation unifying all 5 layers
@@ -103,23 +107,23 @@ print("""
 
    1. CROSS-LAYER VALIDATOR (tests/test_spec_hierarchy.py)
       Validate consistency across all 5 layers:
-      
+
       Layer 1→2: 9-tuple → 16-tuple
         - Verify 9-tuple syntax maps to 16-tuple formal
         - Check type preservation across refinement
-      
+
       Layer 2→3: 16-tuple → Category
         - Verify invariants are category morphisms
         - Check compiler as functor F_s
-      
+
       Layer 3→4: Category → 5-Lens
         - Verify bridges satisfy category laws
         - Check modal logic as category structure
-      
+
       Layer 4→5: 5-Lens → 21-Tuple
         - Verify axioms cover all 5 lenses
         - Check field theory subsumes control theory
-      
+
       Global consistency:
         - All specifications agree on X = X_c × X_q × X_b × X_h
         - Commit semantics consistent across all layers
@@ -127,7 +131,7 @@ print("""
 
    2. OMEGA DOCUMENTATION (docs/AMOSL_OMEGA_SPEC.md)
       The unifying specification:
-      
+
       - Executive summary of all 5 layers
       - Refinement mappings between layers
       - Consistency proofs
@@ -178,7 +182,8 @@ print("""
 
    The denser regime is now fully operational, documented,
    and ready for academic and industrial adoption.
-""")
+"""
+)
 
 print("\n✅ Decision: Cross-layer validation + Omega documentation + Citation")
 print("=" * 70)
