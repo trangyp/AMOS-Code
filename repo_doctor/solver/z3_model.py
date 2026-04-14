@@ -1,5 +1,5 @@
 """
-Repo Doctor Omega - Z3 Model
+Repo Doctor Omega - Z3 Model with Advanced Features.
 
 Encode repository invariants as SMT formulas:
 - Entrypoint satisfiability
@@ -8,6 +8,12 @@ Encode repository invariants as SMT formulas:
 - Persistence roundtrip
 
 Z3 proves or refutes, giving unsat cores when invariants fail.
+
+Advanced features from Z3 research:
+- Core minimization (smt.core.minimize=true)
+- Incremental solving with push/pop
+- Assumption-based reasoning
+- Optimization for multi-objective repairs
 """
 
 from __future__ import annotations

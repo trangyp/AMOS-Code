@@ -104,6 +104,10 @@ def _lazy_import(module_name: str):
                 from .config import get_config as gc
 
                 _lazy_modules[module_name] = gc
+            elif module_name == "get_architecture_bridge":
+                from .architecture_bridge import get_architecture_bridge as gab
+
+                _lazy_modules[module_name] = gab
         except Exception:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
@@ -393,4 +397,6 @@ __all__ = [
     "trace",
     "debug_breakpoint",
     "DebugContext",
+    # Architecture bridge
+    "get_architecture_bridge",
 ]

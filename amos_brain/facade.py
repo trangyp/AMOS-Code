@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from .agent_bridge import get_agent_bridge
@@ -11,6 +12,14 @@ from .meta_controller import get_meta_controller
 from .monitor import get_monitor
 from .state_manager import get_state_manager
 from .task_processor import BrainTaskProcessor
+
+# Architecture bridge integration
+from .architecture_bridge import (
+    ArchitecturalCognitionBridge,
+    ArchitecturalContext,
+    ArchitectureValidationResult,
+    get_architecture_bridge,
+)
 
 
 @dataclass
@@ -58,7 +67,7 @@ class BrainClient:
         valid, issues = client.validate_action("delete production database")
     """
 
-    def __init__(self):
+    def __init__(self, repo_path: str | None = None):
         self.brain = get_brain()
         self.laws = GlobalLaws()
         self.processor = BrainTaskProcessor()
@@ -66,6 +75,33 @@ class BrainClient:
         self.state = get_state_manager()
         self.meta = get_meta_controller()
         self.monitor = get_monitor()
+        self._arch_bridge: ArchitecturalCognitionBridge | None = None
+        self._repo_path = repo_path
+
+    @property
+    def arch_bridge(self) -> ArchitecturalCognitionBridge:
+        """Lazy initialization of architecture bridge."""
+        if self._arch_bridge is None:
+            self._arch_bridge = get_architecture_bridge(self._repo_path)
+        return self._arch_bridge
+
+    def get_architectural_context(self) -> ArchitecturalContext:
+        """Get complete architectural context for the repository."""
+        return self.arch_bridge.get_context()
+
+    def validate_architecture(
+        self, action: str, target_files: list[str]
+    ) -> ArchitectureValidationResult:
+        """Validate a proposed action against architectural constraints.
+
+        Args:
+            action: Type of action (modify, delete, create, refactor)
+            target_files: Files that will be changed
+
+        Returns:
+            Validation result with approval status and constraints
+        """
+        return self.arch_bridge.validate(action, target_files)
 
     def think(
         self, query: str, domain: str = "general", require_law_compliance: bool = True

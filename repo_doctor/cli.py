@@ -14,15 +14,36 @@ import json
 import sys
 from pathlib import Path
 
-from .bisect_engine import BisectEngine
-from .contracts import ContractAnalyzer
-from .entanglement import EntanglementMatrix
-from .entrypoints import EntrypointAnalyzer
-from .invariants_legacy import InvariantEngine
-from .packaging import PackagingAnalyzer
-from .repair_plan import AutoFixRunner, RepairPlanner
-from .sensors import SensorSuite
-from .state_vector import format_state_report
+# Handle both module execution and direct script execution
+try:
+    # Try relative imports first (when run as module: python3 -m repo_doctor.cli)
+    from .bisect_engine import BisectEngine
+    from .contracts import ContractAnalyzer
+    from .entanglement import EntanglementMatrix
+    from .entrypoints import EntrypointAnalyzer
+    from .invariants_legacy import InvariantEngine
+    from .packaging import PackagingAnalyzer
+    from .repair_plan import AutoFixRunner, RepairPlanner
+    from .sensors import SensorSuite
+    from .state_vector import format_state_report
+except ImportError:
+    # Fall back to absolute imports (when run directly: python3 repo_doctor/cli.py)
+    # Add parent directory to path for imports
+    cli_dir = Path(__file__).parent
+    if str(cli_dir) not in sys.path:
+        sys.path.insert(0, str(cli_dir))
+    if str(cli_dir.parent) not in sys.path:
+        sys.path.insert(0, str(cli_dir.parent))
+
+    from bisect_engine import BisectEngine
+    from contracts import ContractAnalyzer
+    from entanglement import EntanglementMatrix
+    from entrypoints import EntrypointAnalyzer
+    from invariants_legacy import InvariantEngine
+    from packaging import PackagingAnalyzer
+    from repair_plan import AutoFixRunner, RepairPlanner
+    from sensors import SensorSuite
+    from state_vector import format_state_report
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
