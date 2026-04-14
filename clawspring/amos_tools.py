@@ -315,19 +315,40 @@ def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
         lines.append(f"Design Levers: {', '.join(result.design_levers[:3])}")
 
     lines.extend([
-        "",
-        "## Safety Constraints",
-        "- No medical diagnosis",
-        "- No therapy protocols",
-        "- No personal predictions",
-        "- Respect human autonomy",
-        "",
-        "## Gap Acknowledgment",
-        "UBI analysis is structural modeling only.",
-        "Human biology is complex. Human judgment required.",
-    ])
-
     return "\n".join(lines)
+
+
+def _amos_memory(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """AMOS memory layer - store and recall brain artifacts."""
+    from amos_memory import get_memory_bridge
+
+    action = params.get("action", "stats")
+
+    bridge = get_memory_bridge()
+
+    if action == "stats":
+        stats = bridge.store.get_memory_stats()
+        return f"""# AMOS Memory Stats
+Total memories: {stats['total_memories']}
+By type: {stats['by_type']}
+Storage: {stats['storage_path']}
+Creator: {stats['creator']}
+Version: {stats['amos_version']}
+"""
+    elif action == "recall":
+        mem_type = params.get("memory_type")
+        limit = params.get("limit", 5)
+        entries = bridge.recall_recent(mem_type, limit)
+
+        lines = ["# Recent AMOS Memories", ""]
+        for entry in entries:
+            dt = datetime.fromtimestamp(entry.timestamp).strftime("%Y-%m-%d %H:%M")
+            lines.append(f"- [{entry.memory_type}] {entry.id[:25]}... ({dt})")
+            lines.append(f"  Source: {entry.source}, Tags: {', '.join(entry.tags[:2])}")
+
+        return "\n".join(lines)
+
+    return f"Unknown action: {action}. Use 'stats' or 'recall'."
 
 
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
