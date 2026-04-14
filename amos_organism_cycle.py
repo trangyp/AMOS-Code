@@ -24,7 +24,7 @@ def run_cycle():
     
     # Execute one full cycle
     print("  Executing cycle...")
-    result = loop.run_cycle(context={"demo": True})
+    result = loop.execute_cycle(context={"demo": True})
     
     print(f"\n  ✅ Cycle Complete")
     print(f"     Status: {result.status}")
