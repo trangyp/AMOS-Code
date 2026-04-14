@@ -434,6 +434,45 @@ AMOS_TOOLS = [
         read_only=True,
         concurrent_safe=True,
     ),
+    ToolDef(
+        name="AMOSDesign",
+        schema={
+            "name": "AMOSDesign",
+            "description": (
+                "Generate UI/UX design with biological constraints. "
+                "Produces design system, copy blocks, interaction flows, "
+                "and accessibility notes with UBI alignment (L6)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "component_type": {
+                        "type": "string",
+                        "enum": ["form", "dialog", "card", "navigation", "dashboard"],
+                        "description": "Type of UI component to design"
+                    },
+                    "purpose": {
+                        "type": "string",
+                        "description": "What the component helps the user accomplish"
+                    },
+                    "user_segments": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Target user segments"
+                    },
+                    "accessibility": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": "Enable accessibility requirements (WCAG AA)"
+                    }
+                },
+                "required": ["component_type", "purpose"]
+            }
+        },
+        func=_amos_design,
+        read_only=True,
+        concurrent_safe=True,
+    ),
 ]
 
 

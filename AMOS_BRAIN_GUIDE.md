@@ -515,7 +515,7 @@ amos> /dashboard 7
 # Check brain path
 from amos_brain.loader import BrainLoader
 loader = BrainLoader()
-print(f"Brain path: {loader.brain_path}")
+print(f"Brain path: {loader.core_path}")
 
 # Re-initialize
 amos = get_amos_integration()
@@ -532,12 +532,12 @@ print(f"Status: {status}")
 **Solution**: Ensure clawspring is installed, or use local cache only.
 
 ```python
-from amos_brain.memory import get_brain_memory
+from amos_brain.memory import get_brain_memory, CLAWSPRING_MEMORY
 memory = get_brain_memory()
 
-# Check if clawspring available
-if memory.memory_dir:
-    print("Using clawspring memory")
+# Check backend
+if CLAWSPRING_MEMORY:
+    print("Using clawspring memory + local cache")
 else:
     print("Using local cache only")
 ```
