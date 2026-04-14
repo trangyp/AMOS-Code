@@ -119,6 +119,14 @@ class CognitiveRouter:
         # 4. Suggest engines based on domain
         suggested_engines = self._suggest_engines(detected_domains, requires_code, requires_reasoning)
 
+        # 4b. Apply feedback loop enhancement if available
+        try:
+            from amos_brain.feedback_loop import get_enhanced_engines
+            primary = detected_domains[0] if detected_domains else "general"
+            suggested_engines = get_enhanced_engines(primary, suggested_engines)
+        except Exception:
+            pass  # Silent fail if feedback not available
+
         # 5. Check Rule of 4 quadrants
         quadrant_check = self._check_quadrants(task_lower, detected_domains)
 

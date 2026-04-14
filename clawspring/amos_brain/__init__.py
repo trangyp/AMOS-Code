@@ -8,6 +8,7 @@ from .integration import AMOSBrainIntegration, get_amos_integration
 from .engine_executor import EngineExecutor, execute_cognitive_task, ExecutionResult
 from .multi_agent_orchestrator import MultiAgentOrchestrator, run_cognitive_consensus, ConsensusResult
 from .cognitive_audit import CognitiveAuditTrail, record_cognitive_decision, AuditEntry
+from .feedback_loop import CognitiveFeedbackLoop, get_enhanced_engines, get_task_advice
 
 __all__ = [
     "BrainLoader",
@@ -28,4 +29,7 @@ __all__ = [
     "CognitiveAuditTrail",
     "record_cognitive_decision",
     "AuditEntry",
+    "CognitiveFeedbackLoop",
+    "get_enhanced_engines",
+    "get_task_advice",
 ]
