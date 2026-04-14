@@ -285,6 +285,51 @@ def _amos_design(params: dict[str, Any], config: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Analyze human factors using UBI (Unified Biological Intelligence)."""
+    from amos_ubi_engine import get_ubi_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["NBI", "NEI", "SI", "BEI"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_ubi_engine()
+    results = engine.analyze(description, domains)
+
+    lines = [
+        f"# AMOS UBI Analysis: Human Factors",
+        f"Input: {description[:60]}...",
+        "",
+        "## Biological Intelligence Domains",
+    ]
+
+    for domain, result in results.items():
+        lines.extend([
+            f"\n### {domain}",
+            f"Key Analysis: {list(result.analysis.keys())[:3]}",
+        ])
+        if result.risk_flags:
+            lines.append(f"Risk Flags: {', '.join(result.risk_flags)}")
+        lines.append(f"Design Levers: {', '.join(result.design_levers[:3])}")
+
+    lines.extend([
+        "",
+        "## Safety Constraints",
+        "- No medical diagnosis",
+        "- No therapy protocols",
+        "- No personal predictions",
+        "- Respect human autonomy",
+        "",
+        "## Gap Acknowledgment",
+        "UBI analysis is structural modeling only.",
+        "Human biology is complex. Human judgment required.",
+    ])
+
+    return "\n".join(lines)
+
+
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
 
 AMOS_TOOLS = [
