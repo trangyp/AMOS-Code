@@ -55,6 +55,7 @@ class AMOSOrganism:
         self._world_model = None
         self._quantum = None
         self._learning = None
+        self._canon = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")
@@ -84,6 +85,7 @@ class AMOSOrganism:
         self._init_world_model()
         self._init_quantum()
         self._init_learning()
+        self._init_canon()
         
         self.state["status"] = "ready"
         logger.info("AMOS Organism ready")
@@ -342,6 +344,30 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize LEARNING: {e}")
     
+    def _init_canon(self):
+        """Initialize the CANON_INTEGRATION subsystem."""
+        try:
+            canon_path = self.root / "11_CANON_INTEGRATION"
+            
+            # Add to path and import directly
+            if str(canon_path) not in sys.path:
+                sys.path.insert(0, str(canon_path))
+            
+            # Clear any cached module
+            if 'canon_integration_kernel' in sys.modules:
+                del sys.modules['canon_integration_kernel']
+            
+            import canon_integration_kernel
+            importlib.reload(canon_integration_kernel)
+            
+            self._canon = canon_integration_kernel.CanonIntegrationKernel(self.root)
+            self._subsystems["11_CANON_INTEGRATION"] = self._canon
+            self.state["active_subsystems"].append("11_CANON_INTEGRATION")
+            
+            logger.info("CANON_INTEGRATION subsystem initialized with protocol adapters")
+        except Exception as e:
+            logger.error(f"Failed to initialize CANON_INTEGRATION: {e}")
+    
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
@@ -458,7 +484,8 @@ class AMOSOrganism:
             "metabolism_state": self._metabolism.get_state() if self._metabolism else None,
             "world_model_state": self._world_model.get_state() if self._world_model else None,
             "quantum_state": self._quantum.get_state() if self._quantum else None,
-            "learning_state": self._learning.get_state() if self._learning else None
+            "learning_state": self._learning.get_state() if self._learning else None,
+            "canon_state": self._canon.get_state() if self._canon else None
         }
     
     def interactive_mode(self):

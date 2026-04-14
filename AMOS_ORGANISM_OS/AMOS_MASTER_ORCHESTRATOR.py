@@ -277,14 +277,15 @@ class QuantumLayerHandler(SubsystemHandler):
 
 
 class MuscleHandler(SubsystemHandler):
-    """06_MUSCLE: Run commands, write code, deploy, execute tasks."""
+    """06_MUSCLE: Run commands, write code, deploy, execute tasks, run workflows."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "check_code_engines",
             "validate_motor_actions",
             "prepare_deployment",
-            "execute_pending_tasks"
+            "execute_pending_tasks",
+            "process_workflows"
         ]
 
         # Check if there are pending code tasks
@@ -303,6 +304,23 @@ class MuscleHandler(SubsystemHandler):
         except Exception as e:
             print(f"[06_MUSCLE] Task execution error: {e}")
 
+        # Process workflow execution
+        workflows_processed = 0
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            from workflow_engine import WorkflowEngine
+            engine = WorkflowEngine()
+            # Check for pending workflows and execute
+            for workflow in engine.list_workflows():
+                if workflow.status == "draft":
+                    engine.run_workflow(workflow.id)
+                    workflows_processed += 1
+                    if workflows_processed >= 2:  # Limit per cycle
+                        break
+        except Exception as e:
+            print(f"[06_MUSCLE] Workflow error: {e}")
+
         return CycleResult(
             subsystem=self.code,
             status="active",
@@ -311,9 +329,11 @@ class MuscleHandler(SubsystemHandler):
                 "coding_engines_ready": True,
                 "pending_code_tasks": len(code_tasks),
                 "tasks_executed": tasks_executed,
+                "workflows_processed": workflows_processed,
                 "motor_actions_allowed": [
                     "generate_plan", "refine_plan", "analyze_text",
-                    "propose_code_change", "log_decision", "simulate_outcome"
+                    "propose_code_change", "log_decision", "simulate_outcome",
+                    "run_workflow", "create_workflow"
                 ]
             },
             next_recommended="07_METABOLISM"

@@ -31,7 +31,7 @@ def run_cycle():
     print("\n  ✅ Cycle Complete")
     status = "success" if result.success else "failed"
     print(f"     Status: {status}")
-    completed = len([r for r in result.subsystem_results if r])
+    completed = len([v for v in result.subsystem_results.values() if v])
     total = len(result.subsystem_results)
     print(f"     Completed: {completed}/{total} subsystems")
 
@@ -41,9 +41,10 @@ def run_cycle():
         print("     ✓ No errors")
 
     print("\n  Flow Verification:")
-    for subsys in result.subsystem_results[:6]:
-        if subsys:
-            print(f"    ✓ {subsys.get('subsystem', 'unknown')}")
+    results_list = list(result.subsystem_results.items())[:6]
+    for key, val in results_list:
+        if val:
+            print(f"    ✓ {key}")
     if len(result.subsystem_results) > 6:
         print(f"    ... and {len(result.subsystem_results) - 6} more")
     

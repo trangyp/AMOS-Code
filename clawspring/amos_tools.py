@@ -350,6 +350,80 @@ Version: {stats['amos_version']}
     return f"Unknown action: {action}. Use 'stats' or 'recall'."
 
 
+def _amos_econ(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run economics/finance analysis across multiple domains."""
+    from amos_econ_engine import get_econ_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["micro", "macro", "public_finance", "finance"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_econ_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_scientific(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run scientific analysis across multiple domains."""
+    from amos_scientific_engine import get_scientific_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["biology", "physics", "mathematics", "engineering"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_scientific_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_multi_agent(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run multi-agent parallel analysis."""
+    from amos_multi_agent import get_multi_agent_coordinator
+
+    analysis_type = params.get("analysis_type", "quadrant")
+    problem = params.get("problem", "")
+
+    if not problem:
+        return "Error: 'problem' parameter is required"
+
+    coord = get_multi_agent_coordinator()
+
+    if analysis_type == "quadrant":
+        return coord.run_quadrant_analysis(problem)
+    elif analysis_type == "dual":
+        return coord.run_dual_perspective(problem)
+    else:
+        return f"Unknown analysis_type: {analysis_type}. Use 'quadrant' or 'dual'."
+
+
+def _amos_audit(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Audit content against AMOS 6 Global Laws."""
+    from amos_cognitive_audit import get_cognitive_audit
+
+    content = params.get("content", "")
+    content_type = params.get("content_type", "general")
+
+    if not content:
+        return "Error: 'content' parameter is required"
+
+    audit = get_cognitive_audit()
+
+    if content_type == "code":
+        result = audit.audit_code(content)
+    elif content_type == "design":
+        result = audit.audit_design(content)
+    else:
+        result = audit.audit(content)
+
+    return audit.get_audit_summary(result)
+
+
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
 
 AMOS_TOOLS = [
@@ -616,6 +690,159 @@ AMOS_TOOLS = [
             }
         },
         func=_amos_ubi,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSEcon",
+        schema={
+            "name": "AMOSEcon",
+            "description": (
+                "Run economics/finance analysis across multiple domains. "
+                "Analyzes Microeconomics, Macroeconomics, Public Finance, and "
+                "Financial Markets with safety constraints (no investment advice)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Economic/financial scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["micro", "macro", "public_finance", "finance"],
+                        "description": "Economic domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_econ,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSScientific",
+        schema={
+            "name": "AMOSScientific",
+            "description": (
+                "Run multi-domain scientific analysis using AMOS research engines. "
+                "Analyzes input across Biology, Physics, Mathematics, and Engineering "
+                "domains with pattern detection and scientific principle mapping."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Description or problem to analyze scientifically"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["biology", "physics", "mathematics", "engineering"],
+                        "description": "Scientific domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_scientific,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSMemory",
+        schema={
+            "name": "AMOSMemory",
+            "description": (
+                "Access AMOS memory layer - view stats or recall "
+                "stored brain artifacts (reasoning, code, design, UBI)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["stats", "recall"],
+                        "default": "stats",
+                        "description": "Action: view stats or recall memories"
+                    },
+                    "memory_type": {
+                        "type": "string",
+                        "enum": ["reasoning", "code", "design", "ubi"],
+                        "description": "Type of memory to recall"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Number of memories to recall"
+                    }
+                }
+            }
+        },
+        func=_amos_memory,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSMultiAgent",
+        schema={
+            "name": "AMOSMultiAgent",
+            "description": (
+                "Run parallel multi-agent cognition using AMOS brain layers. "
+                "Executes Rule of 2 (dual perspective) or Rule of 4 (4-quadrant) "
+                "analysis with multiple sub-agents working in parallel."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "analysis_type": {
+                        "type": "string",
+                        "enum": ["quadrant", "dual"],
+                        "default": "quadrant",
+                        "description": "Type of parallel analysis"
+                    },
+                    "problem": {
+                        "type": "string",
+                        "description": "Problem or question to analyze"
+                    }
+                },
+                "required": ["problem"]
+            }
+        },
+        func=_amos_multi_agent,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSAudit",
+        schema={
+            "name": "AMOSAudit",
+            "description": (
+                "Audit content against AMOS 6 Global Laws (L1-L6) and quality checks. "
+                "Validates law compliance, structural integrity, and gap acknowledgment."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "description": "Content to audit"
+                    },
+                    "content_type": {
+                        "type": "string",
+                        "enum": ["general", "code", "design"],
+                        "default": "general",
+                        "description": "Type of content for specialized auditing"
+                    }
+                },
+                "required": ["content"]
+            }
+        },
+        func=_amos_audit,
         read_only=True,
         concurrent_safe=True,
     ),

@@ -2495,9 +2495,16 @@ def cmd_image(args: str, state, config) -> Union[bool, tuple]:
 def cmd_amos(args: str, state, config) -> bool:
     """AMOS Brain integration — toggle cognitive mode.
 
-    /amos           — show AMOS brain status
-    /amos on        — enable AMOS cognitive mode
-    /amos off       — disable AMOS cognitive mode
+    /amos              — show AMOS brain status
+    /amos on           — enable AMOS cognitive mode
+    /amos off          — disable AMOS cognitive mode
+    /amos status       — show full system status
+    /amos audit        — show cognitive audit report
+    /amos export       — export audit data to file
+    /amos dashboard    — launch dashboard server
+    /amos ecosystem    — open unified ecosystem dashboard
+    /amos orchestrate  — show master orchestrator status
+    /amos validate     — run system validation
     """
     from context import get_amos_status
 
@@ -2601,7 +2608,103 @@ def cmd_amos(args: str, state, config) -> bool:
             err(f"Dashboard failed: {e}")
         return True
 
-    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'audit', 'export', or 'dashboard'.")
+    # Show full system status
+    if args == "status":
+        try:
+            from amos_brain.system_status import print_status_report
+            print_status_report()
+        except Exception as e:
+            err(f"Status check failed: {e}")
+        return True
+
+    # Launch unified ecosystem dashboard
+    if args == "ecosystem":
+        try:
+            import webbrowser
+            from pathlib import Path
+            dashboard_path = Path(__file__).parent / "amos_brain" / "unified_dashboard.html"
+            if dashboard_path.exists():
+                webbrowser.open(f"file://{dashboard_path}")
+                ok("Opening unified ecosystem dashboard...")
+                info("Showing Cognitive System + Organism OS integration")
+            else:
+                err("Unified dashboard not found")
+        except Exception as e:
+            err(f"Ecosystem dashboard failed: {e}")
+        return True
+
+    # Master orchestration
+    if args == "orchestrate":
+        try:
+            from amos_brain.master_orchestrator import get_master_orchestrator
+            orchestrator = get_master_orchestrator()
+            orchestrator.print_status()
+            ok("Master orchestrator ready - 15 modules integrated")
+        except Exception as e:
+            err(f"Orchestrator failed: {e}")
+        return True
+
+    # System validation
+    if args == "validate":
+        try:
+            from amos_brain.system_validator import validate_system
+            ok("Running AMOS System Validator v2.0...")
+            success, summary = validate_system()
+            if success:
+                ok("All 15 components validated successfully!")
+            else:
+                info(f"Validation complete: {summary['passed']}/{summary['total']} passed")
+        except Exception as e:
+            err(f"Validation failed: {e}")
+        return True
+
+    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'status', 'audit', 'export', 'dashboard', 'ecosystem', 'orchestrate', or 'validate'.")
+    return True
+
+
+def cmd_dashboard(args: str, _state, _config) -> bool:
+    """Show AMOS reasoning analytics dashboard."""
+    try:
+        from amos_brain.dashboard import print_dashboard
+    except Exception as e:
+        err(f"Dashboard unavailable: {e}")
+        return True
+
+    raw = args.strip()
+    days = 30
+    if raw:
+        try:
+            days = max(1, int(raw))
+        except ValueError:
+            err("Usage: /dashboard [days]")
+            return True
+
+    print_dashboard(days=days)
+    return True
+
+
+def cmd_audit(args: str, _state, _config) -> bool:
+    """Show AMOS reasoning audit summary, optionally filtered by problem text."""
+    try:
+        from amos_brain.memory import get_brain_memory
+    except Exception as e:
+        err(f"Audit unavailable: {e}")
+        return True
+
+    query = args.strip() or None
+    memory = get_brain_memory()
+    audit = memory.get_audit_trail(problem_contains=query)
+
+    print(clr("\n  ── AMOS Audit ──", "cyan", "bold"))
+    if query:
+        info(f"Filter: {query}")
+    info(f"Total entries: {audit.get('total_entries', 0)}")
+    info(f"Rule of 2 applied: {audit.get('rule_of_two_applied', 0)}")
+    info(f"Rule of 4 applied: {audit.get('rule_of_four_applied', 0)}")
+    info(f"Average confidence: {audit.get('average_confidence', 0):.0%}")
+    compliance = audit.get("law_compliance", {})
+    info(f"L2 compliance: {compliance.get('L2_compliance_rate', 0):.0%}")
+    info(f"L3 compliance: {compliance.get('L3_compliance_rate', 0):.0%}")
     return True
 
 
@@ -2635,6 +2738,9 @@ COMMANDS = {
     "ssj":         cmd_ssj,
     "telegram":    cmd_telegram,
     "amos":        cmd_amos,
+    "status":      cmd_amos,
+    "dashboard":   cmd_dashboard,
+    "audit":       cmd_audit,
     "exit":        cmd_exit,
     "quit":        cmd_exit,
     "resume":      cmd_resume
@@ -2707,6 +2813,9 @@ _CMD_META: dict[str, tuple[str, list[str]]] = {
     "ssj":         ("SSJ Developer Mode — power menu",    []),
     "telegram":    ("Telegram bot bridge",                ["stop", "status"]),
     "amos":        ("AMOS Brain cognitive mode",          ["on", "off"]),
+    "status":      ("Show AMOS Brain status",             []),
+    "dashboard":   ("Show AMOS reasoning dashboard",      []),
+    "audit":       ("Show AMOS reasoning audit summary",  []),
     "exit":        ("Exit clawspring",              []),
     "quit":        ("Exit (alias for /exit)",             []),
     "resume":      ("Resume last session",                []),

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMOS Cognitive Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #1f1f3a 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #2a2a4a;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: #00d4ff;
+        }
+        .stat-card h3 {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        .stat-card.success .stat-value { color: #00ff88; }
+        .stat-card.warning .stat-value { color: #ffaa00; }
+        .stat-card.danger .stat-value { color: #ff4444; }
+        .section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #1f1f3a 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #2a2a4a;
+            margin-bottom: 2rem;
+        }
+        .section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .domain-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .domain-badge {
+            background: linear-gradient(135deg, #2a2a4a, #3a3a6a);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid #4a4a7a;
+        }
+        .entry-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .entry-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a4a;
+            align-items: center;
+        }
+        .entry-item:last-child {
+            border-bottom: none;
+        }
+        .entry-time {
+            font-size: 0.75rem;
+            color: #666;
+            white-space: nowrap;
+        }
+        .entry-task {
+            font-size: 0.9rem;
+            color: #ccc;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .entry-domain {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: #2a2a4a;
+            white-space: nowrap;
+        }
+        .entry-risk {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .risk-low { background: #004d40; color: #00ff88; }
+        .risk-medium { background: #4d4d00; color: #ffaa00; }
+        .risk-high { background: #4d0000; color: #ff4444; }
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .insight-card {
+            background: #252545;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 3px solid #00d4ff;
+        }
+        .insight-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .insight-card p {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .engine-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .engine-tag {
+            font-size: 0.7rem;
+            background: #3a3a6a;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        .refresh-btn {
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a6a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AMOS Cognitive Dashboard</h1>
+        <p>Real-time monitoring of cognitive decision patterns and system insights</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <h3>Total Decisions</h3>
+                <div class="stat-value" id="total-decisions">-</div>
+            </div>
+            <div class="stat-card success">
+                <h3>Violation Rate</h3>
+                <div class="stat-value" id="violation-rate">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Avg Execution</h3>
+                <div class="stat-value" id="avg-execution">-</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Domains Tracked</h3>
+                <div class="stat-value" id="domain-count">-</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Active Domains</h2>
+            <div class="domain-list" id="domains">
+                <span class="no-data">No data available</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Derived Insights</h2>
+            <div class="insights-grid" id="insights">
+                <span class="no-data">Insufficient data for insights (need 3+ decisions per domain)</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Recent Decisions</h2>
+            <div class="entry-list" id="entries">
+                <div class="no-data">No decisions recorded yet</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="refresh-btn" onclick="loadData()">🔄 Refresh Data</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulated data - replace with actual API call
+        async function loadData() {
+            // In production, fetch from: /api/amos/audit
+            const mockData = {
+                stats: {
+                    total_entries: 0,
+                    violation_rate: 0,
+                    avg_execution_time_ms: 0,
+                    domains: {}
+                },
+                entries: [],
+                insights: []
+            };
+
+            try {
+                // Try to load from localStorage or API
+                const response = await fetch('/api/amos/audit').catch(() => null);
+                if (response) {
+                    const data = await response.json();
+                    updateDashboard(data);
+                } else {
+                    showNoData();
+                }
+            } catch (e) {
+                showNoData();
+            }
+        }
+
+        function updateDashboard(data) {
+            // Stats
+            document.getElementById('total-decisions').textContent = data.stats.total_entries;
+            document.getElementById('violation-rate').textContent = 
+                (data.stats.violation_rate * 100).toFixed(1) + '%';
+            document.getElementById('avg-execution').textContent = 
+                data.stats.avg_execution_time_ms.toFixed(1) + 'ms';
+            document.getElementById('domain-count').textContent = 
+                Object.keys(data.stats.domains).length;
+
+            // Domains
+            const domainsContainer = document.getElementById('domains');
+            if (Object.keys(data.stats.domains).length > 0) {
+                domainsContainer.innerHTML = Object.entries(data.stats.domains)
+                    .map(([domain, count]) => 
+                        `<span class="domain-badge">${domain}: ${count}</span>`
+                    ).join('');
+            }
+
+            // Insights
+            const insightsContainer = document.getElementById('insights');
+            if (data.insights && data.insights.length > 0) {
+                insightsContainer.innerHTML = data.insights.map(insight => `
+                    <div class="insight-card">
+                        <h4>${insight.pattern}</h4>
+                        <p>Confidence: ${(insight.confidence * 100).toFixed(0)}%</p>
+                        <div class="engine-list">
+                            ${insight.recommended_engines.map(e => 
+                                `<span class="engine-tag">${e}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Entries
+            const entriesContainer = document.getElementById('entries');
+            if (data.entries && data.entries.length > 0) {
+                entriesContainer.innerHTML = data.entries.slice(0, 20).map(entry => `
+                    <div class="entry-item">
+                        <span class="entry-time">${new Date(entry.timestamp).toLocaleString()}</span>
+                        <span class="entry-task" title="${entry.task_preview}">${entry.task_preview}</span>
+                        <span class="entry-domain">${entry.domain}</span>
+                        <span class="entry-risk risk-${entry.risk_level}">${entry.risk_level}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function showNoData() {
+            document.getElementById('total-decisions').textContent = '0';
+            document.getElementById('violation-rate').textContent = '0%';
+            document.getElementById('avg-execution').textContent = '0ms';
+            document.getElementById('domain-count').textContent = '0';
+        }
+
+        // Load on startup
+        loadData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

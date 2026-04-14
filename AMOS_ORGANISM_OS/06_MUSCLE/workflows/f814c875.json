@@ -1,0 +1,80 @@
+{
+  "id": "f814c875",
+  "name": "Code Quality Workflow",
+  "description": "Analyze, transform, and validate code",
+  "steps": [
+    {
+      "id": "8996cb8f",
+      "name": "Analyze Code",
+      "action": "analyze",
+      "params": {
+        "target": "python"
+      },
+      "status": "success",
+      "result": {
+        "status": "analyzed",
+        "issues_found": 0
+      },
+      "error": "",
+      "start_time": "2026-04-14T09:26:29.534717",
+      "end_time": "2026-04-14T09:26:29.534725",
+      "depends_on": []
+    },
+    {
+      "id": "7aa36ee1",
+      "name": "Auto-fix Issues",
+      "action": "transform",
+      "params": {
+        "type": "refactor"
+      },
+      "status": "success",
+      "result": {
+        "status": "transformed",
+        "changes": 3
+      },
+      "error": "",
+      "start_time": "2026-04-14T09:26:29.534727",
+      "end_time": "2026-04-14T09:26:29.534731",
+      "depends_on": [
+        "8996cb8f"
+      ]
+    },
+    {
+      "id": "997af477",
+      "name": "Validate Changes",
+      "action": "validate",
+      "params": {},
+      "status": "success",
+      "result": {
+        "status": "valid",
+        "errors": 0
+      },
+      "error": "",
+      "start_time": "2026-04-14T09:26:29.534732",
+      "end_time": "2026-04-14T09:26:29.534736",
+      "depends_on": [
+        "7aa36ee1"
+      ]
+    },
+    {
+      "id": "7f56367c",
+      "name": "Generate Report",
+      "action": "generate",
+      "params": {},
+      "status": "success",
+      "result": {
+        "status": "generated",
+        "files": 1
+      },
+      "error": "",
+      "start_time": "2026-04-14T09:26:29.534737",
+      "end_time": "2026-04-14T09:26:29.534740",
+      "depends_on": [
+        "997af477"
+      ]
+    }
+  ],
+  "created_at": "2026-04-14T09:26:29.534307",
+  "status": "completed",
+  "context": {}
+}

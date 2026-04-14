@@ -300,6 +300,69 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_workflow(args) -> int:
+    """Manage workflows."""
+    root = get_organism_root()
+    muscle_dir = root / "06_MUSCLE"
+
+    sys.path.insert(0, str(muscle_dir))
+    from workflow_engine import WorkflowEngine, Workflow, WorkflowStep
+
+    engine = WorkflowEngine()
+
+    if args.action == "list":
+        workflows = engine.list_workflows()
+        print("Workflows")
+        print("=" * 40)
+        if workflows:
+            for wf in workflows:
+                print(f"  {wf.id}: {wf.name} ({wf.status})")
+        else:
+            # Create a demo workflow if none exist
+            print("No workflows found. Creating demo workflow...")
+            wf = engine.create_workflow("Demo Workflow", "Sample workflow")
+            wf.add_step("Step 1: Analyze", "analyze", {"target": "code"})
+            wf.add_step("Step 2: Transform", "transform", {"type": "refactor"})
+            wf.add_step("Step 3: Validate", "validate", {}, depends_on=[wf.steps[1].id])
+            engine._save_workflow(wf)
+            print(f"Created demo workflow: {wf.id}")
+
+    elif args.action == "create":
+        name = args.name or "New Workflow"
+        wf = engine.create_workflow(name, "Created via CLI")
+        print(f"Created workflow: {wf.id}")
+        print(f"Name: {wf.name}")
+        print("\nUse --workflow-id to add steps and run")
+
+    elif args.action == "run":
+        if not args.workflow_id:
+            print("Error: --workflow-id required")
+            return 1
+        wf = engine.load_workflow(args.workflow_id)
+        if not wf:
+            print(f"Workflow not found: {args.workflow_id}")
+            return 1
+        print(f"Running workflow: {wf.name}")
+        result = engine.run_workflow(args.workflow_id)
+        print(f"Status: {result.status}")
+        print(f"Steps: {len(result.steps)}")
+        for step in result.steps:
+            status_icon = "✓" if step.status.value == "success" else "✗" if step.status.value == "failed" else "○"
+            print(f"  {status_icon} {step.name}: {step.status.value}")
+
+    elif args.action == "status":
+        workflows = engine.list_workflows()
+        print("Workflow Status")
+        print("=" * 40)
+        for wf in workflows:
+            step_count = len(wf.steps)
+            completed = sum(1 for s in wf.steps if s.status.value == "success")
+            print(f"{wf.id}: {wf.name}")
+            print(f"  Status: {wf.status} | Steps: {completed}/{step_count}")
+
+    return 0
+
+
 def cmd_predict(args) -> int:
     """Show predictive analytics forecast."""
     root = get_organism_root()
@@ -725,6 +788,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         default="all", help="What to predict"
     )
     predict_parser.set_defaults(func=cmd_predict)
+
+    # Workflow command
+    workflow_parser = subparsers.add_parser(
+        "workflow", help="Workflow management (MUSCLE)"
+    )
+    workflow_parser.add_argument(
+        "action", choices=["list", "create", "run", "status"], nargs="?",
+        default="list", help="Workflow action"
+    )
+    workflow_parser.add_argument(
+        "--name", "-n", help="Workflow name"
+    )
+    workflow_parser.add_argument(
+        "--workflow-id", "-w", help="Workflow ID for run/status"
+    )
+    workflow_parser.set_defaults(func=cmd_workflow)
 
     args = parser.parse_args(argv)
 

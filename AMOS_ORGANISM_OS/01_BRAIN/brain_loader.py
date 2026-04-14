@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import mmap
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -82,10 +83,10 @@ class StreamingJSONLoader:
 
     def _load_mmap(self, path: Path) -> Dict[str, Any]:
         """Memory-mapped JSON load for large files."""
-        with open(path, 'r', encoding='utf-8') as f:
-            # For JSON, mmap doesn't help much with parsing,
-            # but we can use it to avoid loading into Python memory twice
-            data = json.load(f)
+        with open(path, 'rb') as f:
+            # Use mmap for files > 10MB to reduce memory pressure
+            with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+                data = json.loads(mm.read().decode('utf-8'))
         self._cache[path] = data
         return data
 
