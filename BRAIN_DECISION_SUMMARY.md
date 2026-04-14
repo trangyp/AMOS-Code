@@ -69,6 +69,7 @@ Total:                   21 PASS ✅
 ```
 
 ### Files Modified/Created (18 Total)
+
 **Core Architecture:**
 - `amos_brain/model_backend.py`
 - `amos_brain/local_runtime.py`
@@ -79,6 +80,7 @@ Total:                   21 PASS ✅
 - `amos_brain/__init__.py`
 
 **Integration:**
+
 - `amos_coherence_bridge.py`
 
 **CLI/Entry Points:**
@@ -118,13 +120,14 @@ Architecture complete: 8 layers, 31 files, ~20,500 lines of code.
 - `amos_coherence_omega.py` (~600 lines) - Human cognition + axioms
 
 **Key Axioms Implemented:**
+
 1. Substrate Partition - Every entity has a substrate
-4. State Stratification - X = X_c × X_q × X_b × ...
-8. Observation - M : X → Y × Q × Π × X
-10. Commit - Commits(x*) ↔ x* ∈ Z*
-13. Identity - I(x, x') preservation
-21. Multi-Regime - Z* = ∩ Z_i (all regimes)
-29. Runtime - R_t = Commit_Z* ∘ ... ∘ D_t
+2. State Stratification - X = X_c × X_q × X_b × ...
+3. Observation - M : X → Y × Q × Π × X
+4. Commit - Commits(x*) ↔ x* ∈ Z*
+5. Identity - I(x, x') preservation
+6. Multi-Regime - Z* = ∩ Z_i (all regimes)
+7. Runtime - R_t = Commit_Z* ∘ ... ∘ D_t
 
 **Master Law Enforced:** "Change conditions, not human"
 

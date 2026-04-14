@@ -203,7 +203,9 @@ def build_system_prompt(amos_mode: bool = False, task_description: str = "") -> 
     if amos_mode and task_description:
         router = _get_amos_router()
         if router and router is not False:
-            routing_prompt = router.build_cognitive_prompt(task_description)
+            routing_prompt = router.build_cognitive_prompt(
+                task_description, execute=True
+            )
             prompt += f"\n\n{routing_prompt}\n"
     elif amos_mode:
         # Basic AMOS context without routing

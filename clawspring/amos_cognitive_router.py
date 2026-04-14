@@ -227,8 +227,15 @@ class CognitiveRouter:
 
         return guidance
 
-    def build_cognitive_prompt(self, task_description: str) -> str:
-        """Build a system prompt augmented with cognitive routing."""
+    def build_cognitive_prompt(
+        self, task_description: str, execute: bool = False
+    ) -> str:
+        """Build a system prompt augmented with cognitive routing.
+
+        Args:
+            task_description: The task to analyze
+            execute: If True, also execute through cognitive engines
+        """
         analysis = self.analyze(task_description)
         laws_guidance = self.apply_global_laws(analysis)
 
@@ -252,6 +259,24 @@ class CognitiveRouter:
             ])
             for engine in analysis.suggested_engines[:5]:
                 lines.append(f"- {engine}")
+
+        # Execute through engines if requested
+        if execute and analysis.suggested_engines:
+            try:
+                from amos_brain.engine_executor import execute_cognitive_task
+                result = execute_cognitive_task(
+                    task_description,
+                    analysis.suggested_engines[:3]
+                )
+                lines.extend([
+                    "",
+                    "## Pre-execution Analysis",
+                    f"Executed {len(result.engines_used)} engines in {result.execution_time_ms:.1f}ms",
+                ])
+                if result.violations_found:
+                    lines.append("⚠️ Law violations detected - review required")
+            except Exception:
+                pass  # Silent fail if executor not available
 
         if analysis.requires_multi_agent:
             lines.extend([
