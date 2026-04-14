@@ -17,6 +17,8 @@ paths = [
     '''\.log$''',
     '''\.json$''',
     '''_AMOS_BRAIN/_Archive''',
+    '''original-source-code''',
+    '''claude-code-source-code''',
     '''tests/''',
     '''test_.*\.py$''',
     '''demo.*\.py$''',
