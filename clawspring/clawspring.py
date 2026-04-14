@@ -453,17 +453,17 @@ def _interactive_ollama_picker(config: dict) -> bool:
     from providers import PROVIDERS, list_ollama_models
     prov = PROVIDERS.get("ollama", {})
     base_url = prov.get("base_url", "http://localhost:11434")
-    
+
     models = list_ollama_models(base_url)
     if not models:
         err(f"No local Ollama models found at {base_url}.")
         return False
-        
+
     print(clr("\n  ── Local Ollama Models ──", "dim"))
     for i, m in enumerate(models):
         print(clr(f"  [{i+1:2d}] ", "yellow") + m)
     print()
-    
+
     try:
         ans = input(clr("  Select a model number or Enter to cancel > ", "cyan")).strip()
         if not ans: return False
@@ -483,39 +483,38 @@ def _interactive_ollama_picker(config: dict) -> bool:
 
 def cmd_brainstorm(args: str, state, config) -> bool:
     """Run a multi-persona iterative brainstorming session on the project.
-    
+
     Usage: /brainstorm [topic]
     With AMOS cognitive orchestration when cognitive mode is enabled.
     """
     from providers import stream
     import time
     from pathlib import Path
-    
+
     # ── AMOS Cognitive Routing (if enabled) ───────────────────────────────
     amos_enabled = config.get("_amos_mode", False)
     if amos_enabled:
         try:
-            from amos_brain.multi_agent_orchestrator import run_cognitive_consensus
             from amos_brain.cognitive_audit import record_cognitive_decision
             info(clr("[AMOS] Cognitive orchestration active for brainstorm...", "cyan"))
         except Exception:
             amos_enabled = False
-    
+
     # ── Context Snapshot ──────────────────────────────────────────────────
     readme_path = Path("README.md")
     readme_content = ""
     if readme_path.exists():
         readme_content = readme_path.read_text("utf-8", errors="replace")
-    
+
     claude_md = Path("CLAUDE.md")
     claude_content = ""
     if claude_md.exists():
         claude_content = claude_md.read_text("utf-8", errors="replace")
-        
+
     project_files = "\n".join([f.name for f in Path(".").glob("*") if f.is_file() and not f.name.startswith(".")])
-    
+
     user_topic = args.strip() or "general project improvement and architectural evolution"
-    
+
     # Record brainstorm to audit trail if AMOS enabled
     if amos_enabled:
         try:
@@ -538,12 +537,12 @@ def cmd_brainstorm(args: str, state, config) -> bool:
         agent_count = 5  # skip interactive input when called from Telegram
     else:
         try:
-            ans = input(clr(f"  How many agents? (2-100, default 5) > ", "cyan")).strip()
+            ans = input(clr("  How many agents? (2-100, default 5) > ", "cyan")).strip()
             agent_count = int(ans) if ans else 5
             agent_count = max(2, min(agent_count, 100))
         except (ValueError, KeyboardInterrupt, EOFError):
             agent_count = 5
-    
+
     snapshot = f"""PROJECT CONTEXT:
 README:
 {readme_content[:3000]}
@@ -564,27 +563,27 @@ USER FOCUS: {user_topic}
     if not personas:
         info(clr("(persona generation failed, using default tech personas)", "dim"))
         personas = dict(list(_TECH_PERSONAS.items())[:agent_count])
-    
+
     # ── Identity Generator ────────────────────────────────────────────────
     def get_identity(letter):
         try:
             from faker import Faker
             fake = Faker()
             return f"{letter}", fake.name()
-        except:
+        except Exception:
             first = ["Alex", "Sam", "Taylor", "Jordan", "Casey", "Riley", "Drew", "Avery"]
             last = ["Garcia", "Martinez", "Lopez", "Hernandez", "Gonzalez", "Sanchez", "Ramirez", "Torres"]
             import random
             return f"{letter}", f"{random.choice(first)} {random.choice(last)}"
-            
+
     # ── Debate Loop ───────────────────────────────────────────────────────
     outputs_dir = Path("brainstorm_outputs")
     outputs_dir.mkdir(exist_ok=True)
     ts = time.strftime("%Y%m%d_%H%M%S")
     out_file = outputs_dir / f"brainstorm_{ts}.md"
-    
+
     brainstorm_history = []
-    
+
     ok(f"Starting {agent_count}-Agent Brainstorming Session on: {clr(user_topic, 'bold')}")
     info(clr("Generating diverse perspectives...", "dim"))
 
@@ -608,12 +607,12 @@ INSTRUCTIONS:
 5. Output your response in clean Markdown.
 """
         user_msg = f"TOPIC: {user_topic}\n\nPRIOR IDEAS FROM DEBATE:\n{history or 'No previous ideas yet. You are the first to speak.'}"
-        
+
         full_response = []
         # Internal calls should not include tools (tool_schemas already passed as [])
         internal_config = config.copy()
         internal_config["no_tools"] = True
-        
+
         try:
             from providers import TextChunk
             for event in stream(curr_model, system_prompt, [{"role": "user", "content": user_msg}], [], internal_config):
@@ -621,11 +620,11 @@ INSTRUCTIONS:
                     full_response.append(event.text)
         except Exception as e:
             return f"Error from Agent {letter}: {e}"
-            
+
         return "".join(full_response).strip()
 
     full_log = [f"# Brainstorming Session: {user_topic}", f"**Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}", f"**Model:** {curr_model}", "---"]
-    
+
     for p_name, p_data in personas.items():
         icon = p_data.get("icon", "🤖")
         info(f"{icon} {clr(p_data['role'], 'yellow')} is thinking...")
@@ -645,9 +644,9 @@ INSTRUCTIONS:
     # Save to file
     final_output = "\n\n".join(full_log)
     out_file.write_text(final_output, encoding="utf-8")
-    
+
     ok(f"Brainstorming complete! Results saved to {clr(str(out_file), 'bold')}")
-    
+
     # ── Synthetic Injection ──────────────────────────────────────────────
     info(clr("Injecting debate results into current session for final analysis...", "dim"))
 
@@ -836,7 +835,7 @@ def cmd_load(args: str, state, _config) -> bool:
                 hist_meta = json.loads(SESSION_HIST_FILE.read_text())
                 n_sess  = len(hist_meta.get("sessions", []))
                 n_turns = hist_meta.get("total_turns", 0)
-                print(clr(f"\n  ── Complete History ──", "dim"))
+                print(clr("\n  ── Complete History ──", "dim"))
                 print(clr("  [ H] ", "yellow") +
                       f"Load ALL history  ({n_sess} sessions / {n_turns} total turns)  {SESSION_HIST_FILE}")
             except Exception:
@@ -927,7 +926,7 @@ def cmd_load(args: str, state, _config) -> bool:
         if not path.exists():
             err(f"File not found: {path}")
             return True
-        
+
     data = json.loads(path.read_text())
     state.messages = data.get("messages", [])
     state.turn_count = data.get("turn_count", 0)
@@ -988,7 +987,6 @@ def cmd_history(_args: str, state, _config) -> bool:
     return True
 
 def cmd_context(_args: str, state, config) -> bool:
-    import anthropic
     # Rough token estimate: 4 chars ≈ 1 token
     msg_chars = sum(
         len(str(m.get("content", ""))) for m in state.messages
@@ -1054,7 +1052,7 @@ def cmd_permissions(args: str, _state, config) -> bool:
             save_config(config)
             ok(f"Permission mode set to: {m}")
         else:
-            err(f"Invalid selection.")
+            err("Invalid selection.")
     else:
         m = args.strip()
         if m not in modes:
@@ -1236,8 +1234,8 @@ def cmd_exit(_args: str, _state, _config) -> bool:
     sys.exit(0)
 
 def cmd_memory(args: str, _state, _config) -> bool:
-    from memory import search_memory, load_index
-    from memory.scan import scan_all_memories, format_memory_manifest, memory_freshness_text
+    from memory import search_memory
+    from memory.scan import scan_all_memories, memory_freshness_text
 
     stripped = args.strip()
 
@@ -1358,7 +1356,7 @@ def cmd_mcp(args: str, _state, _config) -> bool:
     from mcp.client import get_mcp_manager
     from mcp.config import (load_mcp_configs, add_server_to_user_config,
                              remove_server_from_user_config, list_config_files)
-    from mcp.tools import initialize_mcp, reload_mcp, refresh_server
+    from mcp.tools import reload_mcp, refresh_server
 
     parts = args.split() if args.strip() else []
     subcmd = parts[0].lower() if parts else ""
@@ -1919,7 +1917,6 @@ def cmd_worker(args: str, state, config) -> bool:
       --tasks 1,4,6                        — explicit task selection flag
       --workers N                          — run at most N tasks this session
     """
-    import shlex
     from pathlib import Path
 
     # ── Arg parsing ───────────────────────────────────────────────────────
@@ -2053,7 +2050,8 @@ _telegram_stop = threading.Event()
 
 def _tg_api(token: str, method: str, params: dict = None):
     """Call Telegram Bot API. Returns parsed JSON or None on error."""
-    import urllib.request, urllib.parse
+    import urllib.request
+    import urllib.parse
     url = f"https://api.telegram.org/bot{token}/{method}"
     if params:
         data = json.dumps(params).encode("utf-8")
@@ -2241,7 +2239,7 @@ def cmd_telegram(args: str, _state, config) -> bool:
         if running:
             ok(f"Telegram bridge is running. Chat ID: {chat_id}")
         elif token:
-            info(f"Configured but not running. Use /telegram to start.")
+            info("Configured but not running. Use /telegram to start.")
         else:
             info("Not configured. Use /telegram <bot_token> <chat_id>")
         return True
@@ -2456,7 +2454,8 @@ def cmd_image(args: str, state, config) -> Union[bool, tuple]:
     import sys as _sys
     try:
         from PIL import ImageGrab
-        import io, base64
+        import io
+        import base64
     except ImportError:
         err("Pillow is required for /image. Install with: pip install clawspring[vision]")
         if _sys.platform == "linux":
@@ -2952,17 +2951,17 @@ def repl(config: dict, initial_prompt: str = None):
         t = threading.Thread(target=_proactive_watcher_loop, args=(config,), daemon=True)
         config["_proactive_thread"] = t
         t.start()
-    
+
     def run_query(user_input: str, is_background: bool = False):
         nonlocal verbose
-        
+
         with query_lock:
             verbose = config.get("verbose", False)
-    
+
             # Rebuild system prompt each turn (picks up cwd changes, etc.)
             amos_mode = config.get("_amos_mode", False)
             system_prompt = build_system_prompt(amos_mode=amos_mode, task_description=user_input)
-            
+
             if is_background and not config.get("_telegram_incoming"):
                 print(clr("\n\n[Background Event Triggered]", "yellow"))
             config.pop("_telegram_incoming", None)
@@ -3084,7 +3083,7 @@ def repl(config: dict, initial_prompt: str = None):
             flush_response()  # stop Live, commit any remaining text
             print(clr("╰──────────────────────────────────────────────", "dim"))
             print()
-            
+
             # If this was a background task, we redraw the prompt for the user
             if is_background:
                 print(clr("\n[claude-code-local] » ", "yellow"), end="", flush=True)
@@ -3092,7 +3091,7 @@ def repl(config: dict, initial_prompt: str = None):
         # Drain any AskUserQuestion prompts raised during this turn
         from tools import drain_pending_questions
         drain_pending_questions()
-        
+
         config["_last_interaction_time"] = time.time()
 
     config["_run_query_callback"] = lambda msg: run_query(msg, is_background=True)
@@ -3562,7 +3561,7 @@ def main():
         print(__doc__)
         sys.exit(0)
 
-    from config import load_config, save_config, has_api_key
+    from config import load_config, has_api_key
     from providers import detect_provider, PROVIDERS
 
     config = load_config()
