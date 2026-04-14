@@ -58,3 +58,40 @@ CREATE INDEX IF NOT EXISTS idx_queries_endpoint ON queries(endpoint);
 CREATE INDEX IF NOT EXISTS idx_metrics_time ON metrics(timestamp);
 CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(metric_type);
 CREATE INDEX IF NOT EXISTS idx_health_time ON health_history(timestamp);
+
+-- Query History (Extended)
+CREATE TABLE IF NOT EXISTS query_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL,
+    context TEXT,
+    response TEXT,
+    timestamp TEXT NOT NULL,
+    latency_ms REAL,
+    user_id TEXT,
+    session_id TEXT
+);
+
+-- Metrics Snapshots
+CREATE TABLE IF NOT EXISTS metrics_snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    metric_type TEXT NOT NULL,
+    value REAL NOT NULL,
+    tags TEXT
+);
+
+-- System Events
+CREATE TABLE IF NOT EXISTS system_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    message TEXT NOT NULL,
+    timestamp TEXT NOT NULL,
+    metadata TEXT
+);
+
+-- Additional indexes
+CREATE INDEX IF NOT EXISTS idx_query_timestamp ON query_history(timestamp);
+CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics_snapshots(metric_type, timestamp);
+CREATE INDEX IF NOT EXISTS idx_events_timestamp ON system_events(timestamp);
+CREATE INDEX IF NOT EXISTS idx_events_severity ON system_events(severity);

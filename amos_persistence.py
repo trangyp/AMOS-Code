@@ -1,256 +1,178 @@
-#!/usr/bin/env python3
-"""AMOS Persistence Bridge - Integrate Database with Monitoring
+"""AMOS Persistence - Data persistence and archival system.
 
-Connects the monitoring system to persistent storage:
-- Auto-save metrics to database
-- Persist alerts for historical analysis
-- Query analytics aggregation
-- Background data retention cleanup
+Manages long-term data storage, archival, and retrieval for the AMOS system.
 """
 
-import asyncio
-import logging
-from datetime import datetime
-from typing import Optional
-from contextlib import asynccontextmanager
+import json
+import gzip
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from amos_database import get_database, QueryRecord, MetricRecord
-from amos_metrics_collector import get_metrics_collector
-from amos_health_monitor import get_health_monitor
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from amos_database import get_database
 
 
-class AMOSPersistence:
-    """Persistence bridge for AMOS monitoring data."""
+class PersistenceManager:
+    """Manages data persistence and archival."""
     
-    def __init__(self, flush_interval: int = 60):
-        self.db = get_database()
-        self.metrics = get_metrics_collector()
-        self.flush_interval = flush_interval
-        self._running = False
-        self._task: Optional[asyncio.Task] = None
+    def __init__(self, base_path: str = "AMOS_ORGANISM_OS/memory"):
+        self.base_path = Path(base_path)
+        self.archive_path = self.base_path / "archives"
+        self.archive_path.mkdir(parents=True, exist_ok=True)
     
-    async def start(self):
-        """Start background persistence task."""
-        self._running = True
-        self._task = asyncio.create_task(self._persistence_loop())
-        logger.info("Persistence bridge started")
-    
-    async def stop(self):
-        """Stop background persistence task."""
-        self._running = False
-        if self._task:
-            self._task.cancel()
-            try:
-                await self._task
-            except asyncio.CancelledError:
-                pass
-        logger.info("Persistence bridge stopped")
-    
-    async def _persistence_loop(self):
-        """Background loop to flush metrics to database."""
-        while self._running:
-            try:
-                await self._flush_metrics()
-                await asyncio.sleep(self.flush_interval)
-            except Exception as e:
-                logger.error(f"Persistence error: {e}")
-                await asyncio.sleep(5)  # Short retry on error
-    
-    async def _flush_metrics(self):
-        """Flush current metrics to database."""
-        # Get current summary
-        summary = self.metrics.get_summary(minutes=self.flush_interval // 60)
+    def archive_old_data(self, days: int = 30) -> Dict[str, int]:
+        """Archive data older than specified days."""
+        db = get_database()
+        stats = {"queries": 0, "metrics": 0, "events": 0}
         
-        # Store key metrics
-        timestamp = datetime.utcnow().isoformat()
+        cutoff = datetime.now() - timedelta(days=days)
         
-        # Request count
-        await self.db.store_metric(MetricRecord(
-            timestamp=timestamp,
-            metric_type='request_count',
-            value=summary.get('total_requests', 0),
-            period_seconds=self.flush_interval
-        ))
-        
-        # Error rate
-        await self.db.store_metric(MetricRecord(
-            timestamp=timestamp,
-            metric_type='error_rate',
-            value=summary.get('error_rate', 0),
-            period_seconds=self.flush_interval
-        ))
-        
-        # Response time
-        response_time = summary.get('response_time_ms', {})
-        if response_time.get('avg'):
-            await self.db.store_metric(MetricRecord(
-                timestamp=timestamp,
-                metric_type='avg_response_time_ms',
-                value=response_time['avg'],
-                period_seconds=self.flush_interval
-            ))
-        
-        if response_time.get('p95'):
-            await self.db.store_metric(MetricRecord(
-                timestamp=timestamp,
-                metric_type='p95_response_time_ms',
-                value=response_time['p95'],
-                period_seconds=self.flush_interval
-            ))
-        
-        # RPS
-        await self.db.store_metric(MetricRecord(
-            timestamp=timestamp,
-            metric_type='requests_per_second',
-            value=summary.get('requests_per_second', 0),
-            period_seconds=self.flush_interval
-        ))
-        
-        logger.debug(f"Flushed metrics to database: {self.flush_interval}s period")
-    
-    async def log_api_query(self, endpoint: str, query: str, domain: str,
-                            response_summary: str, confidence: str, 
-                            law_compliant: bool, processing_time_ms: int,
-                            api_key_hash: str = '', client_ip: str = '',
-                            user_agent: str = '') -> int:
-        """Log an API query to database."""
-        record = QueryRecord(
-            timestamp=datetime.utcnow().isoformat(),
-            api_key_hash=api_key_hash,
-            endpoint=endpoint,
-            query=query,
-            domain=domain,
-            response_summary=response_summary,
-            confidence=confidence,
-            law_compliant=law_compliant,
-            processing_time_ms=processing_time_ms,
-            client_ip=client_ip,
-            user_agent=user_agent
-        )
-        return await self.db.log_query(record)
-    
-    async def store_health_snapshot(self, health_monitor):
-        """Store current health status."""
-        try:
-            health = await health_monitor.check_health()
-            checks = [
-                {
-                    'name': c.name,
-                    'status': c.status.value,
-                    'response_time_ms': c.response_time_ms,
-                    'message': c.message
-                }
-                for c in health.checks
-            ]
+        with db.get_connection() as conn:
+            # Archive old queries
+            cursor = conn.execute("""
+                SELECT * FROM query_history 
+                WHERE timestamp < ?
+            """, (cutoff.isoformat(),))
             
-            await self.db.store_health(
-                overall_status=health.overall.value,
-                checks=checks,
-                uptime_seconds=health.uptime_seconds
-            )
+            old_queries = cursor.fetchall()
+            if old_queries:
+                archive_file = self.archive_path / f"queries_{cutoff.date()}.json.gz"
+                with gzip.open(archive_file, 'wt') as f:
+                    json.dump([dict(row) for row in old_queries], f)
+                
+                conn.execute("""
+                    DELETE FROM query_history WHERE timestamp < ?
+                """, (cutoff.isoformat(),))
+                stats["queries"] = len(old_queries)
             
-            logger.debug("Health snapshot stored")
-        except Exception as e:
-            logger.error(f"Failed to store health: {e}")
-    
-    async def store_alert(self, alert):
-        """Store an alert to database."""
-        try:
-            await self.db.store_alert(
-                alert_id=alert.id,
-                rule_name=alert.rule_name,
-                severity=alert.severity.value,
-                status=alert.status.value,
-                message=alert.message,
-                value=alert.value,
-                threshold=alert.threshold
-            )
+            # Archive old metrics
+            cursor = conn.execute("""
+                SELECT * FROM metrics_snapshots 
+                WHERE timestamp < ?
+            """, (cutoff.isoformat(),))
             
-            logger.debug(f"Alert stored: {alert.id}")
-        except Exception as e:
-            logger.error(f"Failed to store alert: {e}")
-    
-    async def run_cleanup(self, retention_days: int = 30):
-        """Run data cleanup for old records."""
-        result = await self.db.cleanup_old_data(retention_days)
-        logger.info(f"Cleanup complete: {result}")
-        return result
-    
-    async def get_analytics_report(self, days: int = 7) -> dict:
-        """Generate comprehensive analytics report."""
-        # Get usage stats
-        usage = await self.db.get_usage_stats(days=days)
+            old_metrics = cursor.fetchall()
+            if old_metrics:
+                archive_file = self.archive_path / f"metrics_{cutoff.date()}.json.gz"
+                with gzip.open(archive_file, 'wt') as f:
+                    json.dump([dict(row) for row in old_metrics], f)
+                
+                conn.execute("""
+                    DELETE FROM metrics_snapshots WHERE timestamp < ?
+                """, (cutoff.isoformat(),))
+                stats["metrics"] = len(old_metrics)
+            
+            conn.commit()
         
-        # Get metrics summary
-        metrics = await self.db.get_metrics_summary(hours=days * 24)
+        return stats
+    
+    def restore_archived_data(self, date: str, data_type: str = "all") -> int:
+        """Restore archived data for a specific date."""
+        restored = 0
+        db = get_database()
         
-        # Get recent query sample
-        queries = await self.db.get_query_history(limit=5, hours=24)
+        for archive_file in self.archive_path.glob(f"*_{date}.json.gz"):
+            with gzip.open(archive_file, 'rt') as f:
+                data = json.load(f)
+            
+            with db.get_connection() as conn:
+                if "queries" in str(archive_file):
+                    for item in data:
+                        conn.execute("""
+                            INSERT OR IGNORE INTO query_history 
+                            (id, query, context, response, timestamp, latency_ms, user_id, session_id)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """, tuple(item.values()))
+                    restored += len(data)
+                
+                conn.commit()
+        
+        return restored
+    
+    def get_archive_summary(self) -> Dict[str, Any]:
+        """Get summary of archived data."""
+        archives = list(self.archive_path.glob("*.json.gz"))
+        
+        by_type = {}
+        total_size = 0
+        
+        for archive in archives:
+            size = archive.stat().st_size
+            total_size += size
+            
+            data_type = archive.stem.split('_')[0]
+            if data_type not in by_type:
+                by_type[data_type] = {"count": 0, "size": 0}
+            
+            by_type[data_type]["count"] += 1
+            by_type[data_type]["size"] += size
         
         return {
-            'period_days': days,
-            'generated_at': datetime.utcnow().isoformat(),
-            'usage': usage,
-            'metrics': metrics,
-            'recent_queries_sample': len(queries),
-            'summary': {
-                'total_queries': usage.get('total_queries', 0),
-                'avg_processing_time_ms': usage.get('avg_processing_time_ms', 0),
-                'law_compliance_rate': usage.get('law_compliance_rate', 0),
-                'top_endpoint': max(usage.get('by_endpoint', {}).items(), 
-                                   key=lambda x: x[1])[0] if usage.get('by_endpoint') else None
-            }
+            "total_archives": len(archives),
+            "total_size_mb": round(total_size / 1024 / 1024, 2),
+            "by_type": by_type
         }
+    
+    def export_data(self, start_date: str, end_date: str,
+                   data_type: str = "all") -> List[Dict[str, Any]]:
+        """Export data for a date range."""
+        db = get_database()
+        results = []
+        
+        with db.get_connection() as conn:
+            if data_type in ["all", "queries"]:
+                cursor = conn.execute("""
+                    SELECT * FROM query_history 
+                    WHERE timestamp BETWEEN ? AND ?
+                """, (start_date, end_date))
+                
+                for row in cursor.fetchall():
+                    results.append({
+                        "type": "query",
+                        "data": dict(row)
+                    })
+        
+        return results
+    
+    def cleanup_orphaned_data(self) -> Dict[str, int]:
+        """Clean up orphaned or corrupted data."""
+        db = get_database()
+        stats = {"queries_removed": 0, "events_removed": 0}
+        
+        with db.get_connection() as conn:
+            # Remove queries with null timestamps
+            cursor = conn.execute("""
+                DELETE FROM query_history WHERE timestamp IS NULL
+            """)
+            stats["queries_removed"] = cursor.rowcount
+            
+            # Remove empty events
+            cursor = conn.execute("""
+                DELETE FROM system_events WHERE message IS NULL OR message = ''
+            """)
+            stats["events_removed"] = cursor.rowcount
+            
+            conn.commit()
+        
+        return stats
 
 
-# Global persistence instance
-_persistence: Optional[AMOSPersistence] = None
+# Global persistence manager
+_persistence: Optional[PersistenceManager] = None
 
 
-def get_persistence() -> AMOSPersistence:
-    """Get or create global persistence instance."""
+def get_persistence() -> PersistenceManager:
+    """Get global persistence manager."""
     global _persistence
     if _persistence is None:
-        _persistence = AMOSPersistence()
+        _persistence = PersistenceManager()
     return _persistence
 
 
-@asynccontextmanager
-async def persistence_context():
-    """Async context manager for persistence."""
-    p = get_persistence()
-    await p.start()
-    try:
-        yield p
-    finally:
-        await p.stop()
-
-
-if __name__ == '__main__':
-    # Test persistence
-    async def test():
-        async with persistence_context() as p:
-            # Log some queries
-            for i in range(5):
-                await p.log_api_query(
-                    endpoint='think',
-                    query=f'Test query {i}',
-                    domain='test',
-                    response_summary=f'Response {i}',
-                    confidence='high',
-                    law_compliant=True,
-                    processing_time_ms=100 + i * 10
-                )
-            
-            # Wait for flush
-            await asyncio.sleep(2)
-            
-            # Get analytics
-            report = await p.get_analytics_report(days=1)
-            import json
-            print(json.dumps(report, indent=2))
+if __name__ == "__main__":
+    # Demo
+    persistence = get_persistence()
     
-    asyncio.run(test())
+    # Get archive summary
+    summary = persistence.get_archive_summary()
+    print(json.dumps(summary, indent=2))
