@@ -1,0 +1,23 @@
+{
+  "id": "design_form_1776150411",
+  "content": {
+    "component_type": "form",
+    "design_system": {
+      "structure": "hierarchical"
+    },
+    "biological_constraints": [
+      "respect_attention_span"
+    ]
+  },
+  "memory_type": "design",
+  "timestamp": 1776150411.239447,
+  "tags": [
+    "design_engine",
+    "ubi_aligned"
+  ],
+  "source": "amos_design_engine",
+  "law_compliance": {
+    "L6": true
+  },
+  "gap_acknowledged": true
+}
