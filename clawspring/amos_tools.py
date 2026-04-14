@@ -314,7 +314,6 @@ def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
             lines.append(f"Risk Flags: {', '.join(result.risk_flags)}")
         lines.append(f"Design Levers: {', '.join(result.design_levers[:3])}")
 
-    lines.extend([
     return "\n".join(lines)
 
 

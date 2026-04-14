@@ -24,23 +24,28 @@ def run_cycle():
     
     # Execute one full cycle
     print("  Executing cycle...")
-    result = loop.execute_cycle(task="Demonstrate AMOS Organism cycle", context={"demo": True})
-    
-    print(f"\n  ✅ Cycle Complete")
-    print(f"     Status: {result.status}")
-    print(f"     Completed: {len(result.completed_stages)}/{len(result.stages)} stages")
-    print(f"     Duration: {result.duration_ms}ms")
-    
+    result = loop.execute_cycle(
+        task="Demonstrate AMOS Organism cycle", context={"demo": True}
+    )
+
+    print("\n  ✅ Cycle Complete")
+    status = "success" if result.success else "failed"
+    print(f"     Status: {status}")
+    completed = len([r for r in result.subsystem_results if r])
+    total = len(result.subsystem_results)
+    print(f"     Completed: {completed}/{total} subsystems")
+
     if result.errors:
         print(f"     ⚠️  Errors: {len(result.errors)}")
     else:
-        print(f"     ✓ No errors")
-    
-    print(f"\n  Flow Verification:")
-    for stage in result.completed_stages[:6]:
-        print(f"    ✓ {stage}")
-    if len(result.completed_stages) > 6:
-        print(f"    ... and {len(result.completed_stages) - 6} more")
+        print("     ✓ No errors")
+
+    print("\n  Flow Verification:")
+    for subsys in result.subsystem_results[:6]:
+        if subsys:
+            print(f"    ✓ {subsys.get('subsystem', 'unknown')}")
+    if len(result.subsystem_results) > 6:
+        print(f"    ... and {len(result.subsystem_results) - 6} more")
     
     print("\n" + "=" * 70)
     print("  🧬 BIOLOGICAL CIRCULATION DEMONSTRATED")
