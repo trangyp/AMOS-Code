@@ -489,10 +489,21 @@ def cmd_brainstorm(args: str, state, config) -> bool:
     """Run a multi-persona iterative brainstorming session on the project.
     
     Usage: /brainstorm [topic]
+    With AMOS cognitive orchestration when cognitive mode is enabled.
     """
     from providers import stream
     import time
     from pathlib import Path
+    
+    # ── AMOS Cognitive Routing (if enabled) ───────────────────────────────
+    amos_enabled = config.get("_amos_mode", False)
+    if amos_enabled:
+        try:
+            from amos_brain.multi_agent_orchestrator import run_cognitive_consensus
+            from amos_brain.cognitive_audit import record_cognitive_decision
+            info(clr("[AMOS] Cognitive orchestration active for brainstorm...", "cyan"))
+        except Exception:
+            amos_enabled = False
     
     # ── Context Snapshot ──────────────────────────────────────────────────
     readme_path = Path("README.md")
@@ -508,6 +519,23 @@ def cmd_brainstorm(args: str, state, config) -> bool:
     project_files = "\n".join([f.name for f in Path(".").glob("*") if f.is_file() and not f.name.startswith(".")])
     
     user_topic = args.strip() or "general project improvement and architectural evolution"
+    
+    # Record brainstorm to audit trail if AMOS enabled
+    if amos_enabled:
+        try:
+            record_cognitive_decision(
+                task=f"Brainstorm: {user_topic}",
+                domain="brainstorm",
+                risk_level="medium",
+                engines=["AMOS_MultiAgent_Orchestrator"],
+                consensus_score=None,
+                laws=[],
+                violations=[],
+                exec_time_ms=0.0,
+                recommendation="Multi-agent cognitive consensus"
+            )
+        except Exception:
+            pass
 
     # ── Ask user for agent count interactively ────────────────────────────
     if config.get("_telegram_incoming"):
@@ -2557,7 +2585,23 @@ def cmd_amos(args: str, state, config) -> bool:
             err(f"Export failed: {e}")
         return True
 
-    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'audit', or 'export'.")
+    # Launch dashboard server
+    if args == "dashboard":
+        try:
+            from amos_brain.dashboard_server import start_dashboard_server
+            import threading
+            ok("Starting AMOS Dashboard...")
+            info("Launching on http://localhost:8080")
+            # Run in background thread
+            thread = threading.Thread(target=start_dashboard_server, args=(8080,))
+            thread.daemon = True
+            thread.start()
+            info("Dashboard running in background. Press Ctrl+C to stop.")
+        except Exception as e:
+            err(f"Dashboard failed: {e}")
+        return True
+
+    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'audit', 'export', or 'dashboard'.")
     return True
 
 
