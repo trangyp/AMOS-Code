@@ -250,6 +250,12 @@ async def check_health() -> SystemHealth:
     return await monitor.check_all()
 
 
+def init_default_health_checks() -> HealthMonitor:
+    """Initialize health monitor with default checks."""
+    monitor = get_health_monitor()
+    return monitor
+
+
 if __name__ == "__main__":
     # Run health check
     health = asyncio.run(check_health())

@@ -918,6 +918,49 @@ def cmd_social(args) -> int:
     return 0
 
 
+def cmd_orchestrator(args) -> int:
+    """Orchestrator management (00_ROOT)."""
+    organism_root = get_organism_root()
+
+    if args.action == "cycle":
+        # Trigger orchestrator cycle
+        sys.path.insert(0, str(organism_root))
+        try:
+            from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+            orch = AmosMasterOrchestrator()
+            if not orch.initialize():
+                print("✗ Orchestrator initialization failed")
+                return 1
+            results = orch.run_cycle()
+            print("✓ Orchestrator cycle completed")
+            print(f"  Subsystems processed: {len(results)}")
+            for result in results:
+                print(f"    - {result.subsystem}: {result.status}")
+        except Exception as e:
+            print(f"✗ Cycle failed: {e}")
+            return 1
+
+    elif args.action == "status":
+        # Check orchestrator status
+        sys.path.insert(0, str(organism_root))
+        try:
+            from AMOS_MASTER_ORCHESTRATOR import AmosMasterOrchestrator
+            orch = AmosMasterOrchestrator()
+            status = orch.get_status()
+            print("Orchestrator Status")
+            print("=" * 40)
+            print(f"Cycle count: {status['cycle_count']}")
+            print(f"Current position: {status['current_position']}")
+            print(f"Active subsystems: {len(status['active_subsystems'])}")
+            print(f"Last cycle time: {status['last_cycle_time']:.3f}s" if status['last_cycle_time'] else "N/A")
+            print(f"Error count: {status['error_count']}")
+        except Exception as e:
+            print(f"✗ Status check failed: {e}")
+            return 1
+
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -1139,6 +1182,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--value", "-v", type=float, default=85.0, help="Metric value"
     )
     alert_parser.set_defaults(func=cmd_alert)
+
+    # Orchestrator command
+    orchestrator_parser = subparsers.add_parser(
+        "orchestrator", help="Orchestrator control (00_ROOT)"
+    )
+    orchestrator_parser.add_argument(
+        "action", choices=["cycle", "status"], nargs="?",
+        default="status", help="Orchestrator action"
+    )
+    orchestrator_parser.set_defaults(func=cmd_orchestrator)
 
     # Cognitive engine command
     cognitive_parser = subparsers.add_parser(

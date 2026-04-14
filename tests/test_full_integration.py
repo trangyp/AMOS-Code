@@ -9,6 +9,7 @@ as an integrated system.
 
 Usage:
   python tests/test_full_integration.py
+  python -m pytest tests/test_full_integration.py -v
 
 This test validates:
 - All 14 functional layers operate correctly
@@ -20,175 +21,204 @@ This test validates:
 """
 import sys
 import os
+import unittest
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-def test_layer_1_brain_loader():
+class TestLayer1BrainLoader(unittest.TestCase):
     """Layer 1: Brain loads 26 engines from 17MB spec."""
-    from amos_brain import get_brain
-    brain = get_brain()
-    engines = brain.list_engines()
-    assert len(engines) >= 26, f"Expected 26+ engines, got {len(engines)}"
-    print("  [L1] Brain Loader: 26 engines loaded")
-    return True
+    
+    def test_brain_loads_engines(self):
+        """Brain loads 26+ engines."""
+        from amos_brain import get_brain
+        brain = get_brain()
+        engines = brain.list_engines()
+        self.assertGreaterEqual(len(engines), 26, f"Expected 26+ engines, got {len(engines)}")
+        print("  [L1] Brain Loader: 26 engines loaded")
 
 
-def test_layer_2_cognitive_stack():
+class TestLayer2CognitiveStack(unittest.TestCase):
     """Layer 2: Domain management."""
-    from amos_brain import get_brain
-    brain = get_brain()
-    # Stack is internal to brain
-    print("  [L2] Cognitive Stack: domain management ready")
-    return True
+    
+    def test_cognitive_stack(self):
+        """Domain management ready."""
+        from amos_brain import get_brain
+        brain = get_brain()
+        self.assertIsNotNone(brain)
+        print("  [L2] Cognitive Stack: domain management ready")
 
 
-def test_layer_3_kernel_router():
+class TestLayer3KernelRouter(unittest.TestCase):
     """Layer 3: Task routing and risk assessment."""
-    from amos_brain import get_kernel_router
-    router = get_kernel_router()
-    print("  [L3] Kernel Router: routing ready")
-    return True
+    
+    def test_kernel_router(self):
+        """Routing ready."""
+        from amos_brain import get_kernel_router
+        router = get_kernel_router()
+        self.assertIsNotNone(router)
+        print("  [L3] Kernel Router: routing ready")
 
 
-def test_layer_4_task_processor():
+class TestLayer4TaskProcessor(unittest.TestCase):
     """Layer 4: Rule of 2/4 reasoning."""
-    from amos_brain import process_task
-    result = process_task("Test integration")
-    assert result.rule_of_two_check["compliant"], "Rule of 2 failed"
-    assert result.rule_of_four_check["compliant"], "Rule of 4 failed"
-    print("  [L4] Task Processor: Rule 2/4 compliant")
-    return True
+    
+    def test_rule_of_two_four(self):
+        """Rule of 2/4 compliant."""
+        from amos_brain import process_task
+        result = process_task("Test integration")
+        self.assertTrue(result.rule_of_two_check["compliant"], "Rule of 2 failed")
+        self.assertTrue(result.rule_of_four_check["compliant"], "Rule of 4 failed")
+        print("  [L4] Task Processor: Rule 2/4 compliant")
 
 
-def test_layer_5_global_laws():
+class TestLayer5GlobalLaws(unittest.TestCase):
     """Layer 5: L1-L6 enforcement."""
-    from amos_brain import GlobalLaws
-    laws = GlobalLaws()
-    l1 = laws.get_law("L1")
-    assert l1 is not None, "L1 not found"
-    print("  [L5] Global Laws: L1-L6 available")
-    return True
+    
+    def test_global_laws_available(self):
+        """L1-L6 available."""
+        from amos_brain import GlobalLaws
+        laws = GlobalLaws()
+        l1 = laws.get_law("L1")
+        self.assertIsNotNone(l1, "L1 not found")
+        print("  [L5] Global Laws: L1-L6 available")
 
 
-def test_layer_6_agent_bridge():
+class TestLayer6AgentBridge(unittest.TestCase):
     """Layer 6: Pre/post tool validation."""
-    from amos_brain import get_agent_bridge
-    bridge = get_agent_bridge()
-    result = bridge.validate_tool_call("Read", {"file_path": "/test.txt"})
-    assert "approved" in result, "Bridge validation failed"
-    print("  [L6] Agent Bridge: validation working")
-    return True
+    
+    def test_agent_bridge_validation(self):
+        """Validation working."""
+        from amos_brain import get_agent_bridge
+        bridge = get_agent_bridge()
+        result = bridge.validate_tool_call("Read", {"file_path": "/test.txt"})
+        self.assertIn("approved", result, "Bridge validation failed")
+        print("  [L6] Agent Bridge: validation working")
 
 
-def test_layer_7_state_manager():
+class TestLayer7StateManager(unittest.TestCase):
     """Layer 7: Persistent reasoning memory."""
-    from amos_brain import get_state_manager
-    sm = get_state_manager()
-    session_id = sm.start_session(goal="Integration test", domain="test")
-    assert session_id, "Session creation failed"
-    print(f"  [L7] State Manager: session {session_id[:8]}...")
-    return True
+    
+    def test_state_manager_session(self):
+        """Session creation working."""
+        from amos_brain import get_state_manager
+        sm = get_state_manager()
+        session_id = sm.start_session(goal="Integration test", domain="test")
+        self.assertTrue(session_id, "Session creation failed")
+        print(f"  [L7] State Manager: session {session_id[:8]}...")
 
 
-def test_layer_8_meta_controller():
+class TestLayer8MetaController(unittest.TestCase):
     """Layer 8: Self-directed orchestration."""
-    from amos_brain import get_meta_controller
-    mc = get_meta_controller()
-    plan = mc.orchestrate("Integration test goal", auto_execute=False)
-    assert plan.plan_id, "Plan creation failed"
-    print(f"  [L8] Meta-Cognitive Controller: {len(plan.subtasks)} subtasks")
-    return True
+    
+    def test_meta_controller_orchestrate(self):
+        """Orchestration working."""
+        from amos_brain import get_meta_controller
+        mc = get_meta_controller()
+        plan = mc.orchestrate("Integration test goal", auto_execute=False)
+        self.assertTrue(plan.plan_id, "Plan creation failed")
+        print(f"  [L8] Meta-Cognitive Controller: {len(plan.subtasks)} subtasks")
 
 
-def test_layer_9_cognitive_monitor():
+class TestLayer9CognitiveMonitor(unittest.TestCase):
     """Layer 9: Observability and alerting."""
-    from amos_brain.monitor import get_monitor
-    monitor = get_monitor()
-    monitor.record_reasoning(
-        task_description="Integration test",
-        processing_time_ms=100,
-        law_violations=0,
-        confidence="high",
-        kernels_used=["test"]
-    )
-    print("  [L9] Cognitive Monitor: metrics recorded")
-    return True
+    
+    def test_monitor_records_reasoning(self):
+        """Metrics recording working."""
+        from amos_brain.monitor import get_monitor
+        monitor = get_monitor()
+        monitor.record_reasoning(
+            task_description="Integration test",
+            processing_time_ms=100,
+            law_violations=0,
+            confidence="high",
+            kernels_used=["test"]
+        )
+        print("  [L9] Cognitive Monitor: metrics recorded")
 
 
-def test_layer_10_cognitive_facade():
+class TestLayer10CognitiveFacade(unittest.TestCase):
     """Layer 10: Simple SDK for developers."""
-    from amos_brain import think, decide, validate
-    response = think("Integration test query")
-    assert response.success, "Think failed"
-    assert response.law_compliant, "Law compliance failed"
-    print("  [L10] Cognitive Facade: SDK working")
-    return True
+    
+    def test_sdk_think(self):
+        """SDK think method working."""
+        from amos_brain import think
+        response = think("Integration test query")
+        self.assertTrue(response.success, "Think failed")
+        self.assertTrue(response.law_compliant, "Law compliance failed")
+        print("  [L10] Cognitive Facade: SDK working")
 
 
-def test_layer_11_cognitive_config():
+class TestLayer11CognitiveConfig(unittest.TestCase):
     """Layer 11: Enterprise configuration."""
-    from amos_brain import CognitiveConfig
-    config = CognitiveConfig()
-    assert config.environment == "development"
-    assert config.is_feature_enabled("rule_of_two")
-    print("  [L11] Cognitive Config: enterprise ready")
-    return True
+    
+    def test_config_defaults(self):
+        """Configuration defaults working."""
+        from amos_brain import CognitiveConfig
+        config = CognitiveConfig()
+        self.assertEqual(config.environment, "development")
+        self.assertTrue(config.is_feature_enabled("rule_of_two"))
+        print("  [L11] Cognitive Config: enterprise ready")
 
 
-def test_layer_12_cognitive_cookbook():
+class TestLayer12CognitiveCookbook(unittest.TestCase):
     """Layer 12: Pre-built recipes."""
-    try:
-        from amos_brain import ArchitectureDecision, CodeReview
+    
+    def test_architecture_decision(self):
+        """Architecture decision recipe working."""
+        from amos_brain import ArchitectureDecision
         result = ArchitectureDecision.analyze("Integration test architecture")
-        assert "Architecture Decision" in result.recipe_name
+        self.assertIn("Architecture Decision", result.recipe_name)
+    
+    def test_code_review(self):
+        """Code review recipe working."""
+        from amos_brain import CodeReview
         result = CodeReview.analyze("def test(): pass")
-        # Confidence can be float (0.0-1.0) or string (high/medium/low)
-        assert isinstance(result.confidence, (int, float, str))
+        self.assertIsInstance(result.confidence, (int, float, str))
         if isinstance(result.confidence, (int, float)):
-            assert 0.0 <= result.confidence <= 1.0
-        print("  [L12] Cognitive Cookbook: 3 recipes tested")
-        return True
-    except Exception as e:
-        print(f"  [L12] FAILED: {e}")
-        import traceback
-        traceback.print_exc()
-        raise
+            self.assertTrue(0.0 <= result.confidence <= 1.0)
+        print("  [L12] Cognitive Cookbook: 2 recipes tested")
 
 
-def test_layer_13_demos():
+class TestLayer13Demos(unittest.TestCase):
     """Layer 13: Working demonstrations."""
-    demos_exist = os.path.exists("amos_brain/demos/basic_thinking.py")
-    assert demos_exist, "Demos missing"
-    readme_exists = os.path.exists("amos_brain/demos/README.md")
-    assert readme_exists, "Demo README missing"
-    print("  [L13] Demos: available with documentation")
-    return True
+    
+    def test_demos_exist(self):
+        """Demo files present."""
+        demos_exist = os.path.exists("amos_brain/demos/basic_thinking.py")
+        self.assertTrue(demos_exist, "Demos missing")
+        readme_exists = os.path.exists("amos_brain/demos/README.md")
+        self.assertTrue(readme_exists, "Demo README missing")
+        print("  [L13] Demos: available with documentation")
 
 
-def test_layer_14_clawspring_integration():
+class TestLayer14ClawSpringIntegration(unittest.TestCase):
     """Layer 14: Runtime agent integration."""
-    from clawspring.amos_brain_integration import BrainClawSpringBridge
-    bridge = BrainClawSpringBridge()
-    init_result = bridge.init_agent("TestAgent", "Integration test")
-    assert init_result["session_id"], "Agent init failed"
-    think_result = bridge.think("Test query")
-    assert think_result["confidence"], "Think failed"
-    shutdown_result = bridge.shutdown_agent()
-    assert shutdown_result["status"] == "brain_shutdown"
-    print("  [L14] ClawSpring Integration: full lifecycle tested")
-    return True
+    
+    def test_bridge_lifecycle(self):
+        """Full bridge lifecycle working."""
+        from clawspring.amos_brain_integration import BrainClawSpringBridge
+        bridge = BrainClawSpringBridge()
+        init_result = bridge.init_agent("TestAgent", "Integration test")
+        self.assertTrue(init_result["session_id"], "Agent init failed")
+        think_result = bridge.think("Test query")
+        self.assertTrue(think_result["confidence"], "Think failed")
+        shutdown_result = bridge.shutdown_agent()
+        self.assertEqual(shutdown_result["status"], "brain_shutdown")
+        print("  [L14] ClawSpring Integration: full lifecycle tested")
 
 
-def test_layer_15_documentation():
+class TestLayer15Documentation(unittest.TestCase):
     """Layer 15: Project documentation."""
-    readme_exists = os.path.exists("README.md")
-    assert readme_exists, "Main README missing"
-    pyproject_exists = os.path.exists("pyproject.toml")
-    assert pyproject_exists, "pyproject.toml missing"
-    print("  [L15] Documentation: README and packaging ready")
-    return True
+    
+    def test_documentation_files(self):
+        """Documentation files present."""
+        readme_exists = os.path.exists("README.md")
+        self.assertTrue(readme_exists, "Main README missing")
+        pyproject_exists = os.path.exists("pyproject.toml")
+        self.assertTrue(pyproject_exists, "pyproject.toml missing")
+        print("  [L15] Documentation: README and packaging ready")
 
 
 def test_layer_18_organism_bridge():
@@ -263,7 +293,7 @@ def test_end_to_end_workflow():
 
 
 def main():
-    """Run full integration test suite."""
+    """Run full integration test suite using unittest."""
     print("\n" + "=" * 66)
     print("AMOS BRAIN: LAYER 16 - FINAL INTEGRATION TEST")
     print("=" * 66)
@@ -271,51 +301,38 @@ def main():
     print("Validating all 17 layers as an integrated system...")
     print()
     
-    tests = [
-        ("Layer 1", test_layer_1_brain_loader),
-        ("Layer 2", test_layer_2_cognitive_stack),
-        ("Layer 3", test_layer_3_kernel_router),
-        ("Layer 4", test_layer_4_task_processor),
-        ("Layer 5", test_layer_5_global_laws),
-        ("Layer 6", test_layer_6_agent_bridge),
-        ("Layer 7", test_layer_7_state_manager),
-        ("Layer 8", test_layer_8_meta_controller),
-        ("Layer 9", test_layer_9_cognitive_monitor),
-        ("Layer 10", test_layer_10_cognitive_facade),
-        ("Layer 11", test_layer_11_cognitive_config),
-        ("Layer 12", test_layer_12_cognitive_cookbook),
-        ("Layer 13", test_layer_13_demos),
-        ("Layer 14", test_layer_14_clawspring_integration),
-        ("Layer 15", test_layer_15_documentation),
-        ("Layer 18", test_layer_18_organism_bridge),
+    # Use unittest to run all TestCase classes
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    
+    # Load all test classes
+    test_classes = [
+        TestLayer1BrainLoader,
+        TestLayer2CognitiveStack,
+        TestLayer3KernelRouter,
+        TestLayer4TaskProcessor,
+        TestLayer5GlobalLaws,
+        TestLayer6AgentBridge,
+        TestLayer7StateManager,
+        TestLayer8MetaController,
+        TestLayer9CognitiveMonitor,
+        TestLayer10CognitiveFacade,
+        TestLayer11CognitiveConfig,
+        TestLayer12CognitiveCookbook,
+        TestLayer13Demos,
+        TestLayer14ClawSpringIntegration,
+        TestLayer15Documentation,
+        TestLayer18OrganismBridge,
+        TestEndToEndWorkflow,
     ]
     
-    passed = 0
-    failed = 0
+    for test_class in test_classes:
+        suite.addTests(loader.loadTestsFromTestCase(test_class))
     
-    for name, test_func in tests:
-        try:
-            test_func()
-            passed += 1
-        except Exception as e:
-            print(f"  [{name}] FAILED: {e}")
-            failed += 1
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
     
-    # End-to-end test
-    print()
-    try:
-        test_end_to_end_workflow()
-        passed += 1
-    except Exception as e:
-        print(f"  [E2E] FAILED: {e}")
-        failed += 1
-    
-    print()
-    print("=" * 66)
-    print(f"RESULTS: {passed} passed, {failed} failed")
-    print("=" * 66)
-    
-    if failed == 0:
+    if result.wasSuccessful():
         print()
         print("╔══════════════════════════════════════════════════════════════════╗")
         print("║                                                                  ║")

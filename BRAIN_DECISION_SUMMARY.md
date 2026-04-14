@@ -113,9 +113,15 @@ Total:                   21 PASS ✅
 - `amos_local.py`
 - `clawspring/clawspring.py` (shell commands + lint fixes)
 
+**Organism System (New Build 101-103):**
+- `amos_organism_runner.py` - 8-layer execution engine (~400 lines)
+- `amos_organism_integration.py` - Orchestrator + ethics integration (~350 lines)
+- `amos_organism_cli.py` - Command-line interface with 7 commands (~380 lines)
+
 **Tests:**
 - `tests/test_model_backends.py`
 - `tests/test_coherence_bridge.py`
+- `demo_organism_integration.py` - Integration test for organism system
 
 **Documentation:**
 - `README.MD`
