@@ -191,7 +191,10 @@ class TestGlobalInvariants(unittest.TestCase):
         components = verifier.verify_model(model)
         
         # Commit logic verified
-        self.assertTrue(components.get('CONSTR', AdmissibilityResult('CONSTR', False, False)).verified)
+        from amosl.admissibility import AdmissibilityComponent
+        constr_result = components.get(AdmissibilityComponent.CONSTR)
+        self.assertIsNotNone(constr_result)
+        self.assertTrue(constr_result.verified)
     
     def test_bridge_laws_preserved(self):
         """Bridge laws consistent through refinement."""

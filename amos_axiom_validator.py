@@ -65,10 +65,14 @@ class ValidationReport:
                 "total": len(self.checks),
                 "passed": sum(1 for c in self.checks if c.passed),
                 "failed": sum(1 for c in self.checks if not c.passed),
-                "critical": sum(1 for c in self.checks 
-                             if c.level == ValidationLevel.CRITICAL and not c.passed),
-                "warnings": sum(1 for c in self.checks 
-                               if c.level == ValidationLevel.WARNING and not c.passed),
+                "critical": sum(
+                1 for c in self.checks
+                if c.level == ValidationLevel.CRITICAL and not c.passed
+            ),
+                "warnings": sum(
+                1 for c in self.checks
+                if c.level == ValidationLevel.WARNING and not c.passed
+            ),
             }
     
     def is_valid(self) -> bool:
@@ -230,7 +234,8 @@ class AxiomValidator:
                 axiom_name="Effect Explicitness",
                 level=ValidationLevel.ERROR,
                 passed=False,
-                message=f"Action {type(action).__name__} lacks effect annotation",
+                action_type = type(action).__name__
+                message=f"Action {action_type} lacks effect annotation",
                 details={}
             )
         
