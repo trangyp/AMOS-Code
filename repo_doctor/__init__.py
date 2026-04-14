@@ -40,7 +40,7 @@ from .bisect_engine import BisectEngine, BisectResult
 from .cli import main
 from .contracts import ContractAnalyzer
 from .entrypoints import EntrypointAnalyzer
-from .history import HistoryAnalyzer
+from .history import DriftAnalyzer
 from .invariants_legacy import InvariantEngine, InvariantResult
 from .packaging import PackagingAnalyzer
 from .persistence import PersistenceAnalyzer
@@ -79,7 +79,7 @@ __all__ = [
     "PackagingAnalyzer",
     "EntrypointAnalyzer",
     "PersistenceAnalyzer",
-    "HistoryAnalyzer",
+    "DriftAnalyzer",
     # Tools
     "BisectEngine",
     "BisectResult",

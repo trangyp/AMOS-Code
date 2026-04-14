@@ -11,7 +11,10 @@ RepoValid = ∧n I_n (3 invariants currently)
 from .api import APIInvariant
 from .base import Invariant, InvariantResult, InvariantSeverity
 from .imports import ImportInvariant
+from .migration import MigrationInvariant
+from .observability import ObservabilityInvariant
 from .parse import ParseInvariant
+from .performance import PerformanceInvariant
 
 __all__ = [
     "Invariant",
