@@ -229,12 +229,12 @@ class AxiomValidator:
         Every transformation has explicit effect annotation.
         """
         if not hasattr(action, 'effect'):
+            action_type = type(action).__name__
             return AxiomCheck(
                 axiom_number=3,
                 axiom_name="Effect Explicitness",
                 level=ValidationLevel.ERROR,
                 passed=False,
-                action_type = type(action).__name__
                 message=f"Action {action_type} lacks effect annotation",
                 details={}
             )
