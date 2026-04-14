@@ -679,7 +679,9 @@ class AMOS8LayerDemonstration:
             zoom = "∞" if result.layer == Layer.INFINITE else \
                    "Ω" if result.layer == Layer.OMEGA else \
                    "Λ" if result.layer.value >= 1 else "X"
-            print(f"  {icon} Layer {result.layer.value} ({zoom}): {layer_name:20} {result.duration_ms:6.1f}ms")
+            layer_num = result.layer.value
+            print(f"  {icon} Layer {layer_num} ({zoom}): {layer_name:20} "
+                  f"{result.duration_ms:6.1f}ms")
         
         print("\nStatistics:")
         print(f"  Total time: {total_time:.1f}ms")
@@ -713,7 +715,8 @@ class AMOS8LayerDemonstration:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(description="AMOS 8-Layer Live Demonstration")
+    desc = "AMOS 8-Layer Live Demonstration"
+    parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--quick", action="store_true", help="Fast mode")
     parser.add_argument("--layer", type=int, choices=range(0, 9), help="Demo specific layer")
     

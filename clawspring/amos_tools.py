@@ -173,11 +173,24 @@ def _amos_enhance_prompt(params: dict[str, Any], config: dict[str, Any]) -> str:
     amos_section = f"""# AMOS Brain (vInfinity)
 System: {identity.get('system_name', 'AMOS')}
 Creator: {identity.get('creator', 'Trang Phan')}
-Laws: {', '.join(l['name'] for l in laws[:4])}
+Laws: {', '.join(law['name'] for law in laws[:4])}
 Gap: No embodiment, consciousness, or autonomous action
 """
     enhanced = f"{base_prompt}\n\n{amos_section}"
     return f"# Enhanced System Prompt\n\n{enhanced}"
+
+
+def _amos_workflow(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run full AMOS workflow: cognitive → execution → validation → output."""
+    from amos_orchestrator import run_amos_workflow
+
+    task = params.get("task", "")
+    output_type = params.get("output_type", "structured_explanation")
+
+    if not task:
+        return "Error: 'task' parameter is required"
+
+    return run_amos_workflow(task, output_type)
 
 
 # ── Tool Schemas ─────────────────────────────────────────────────────────────
@@ -306,6 +319,35 @@ AMOS_TOOLS = [
             }
         },
         func=_amos_enhance_prompt,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSWorkflow",
+        schema={
+            "name": "AMOSWorkflow",
+            "description": (
+            "Run full AMOS 4-step workflow: cognitive analysis → execution → "
+            "law validation → final output. Most comprehensive AMOS tool."
+        ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "The task or question to process through full AMOS workflow"
+                    },
+                    "output_type": {
+                        "type": "string",
+                        "enum": ["structured_explanation", "decision_recommendation",
+                                 "framework_design", "research_analysis", "diagnostic"],
+                        "description": "Type of output to produce"
+                    }
+                },
+                "required": ["task"]
+            }
+        },
+        func=_amos_workflow,
         read_only=True,
         concurrent_safe=True,
     ),
