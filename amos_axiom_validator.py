@@ -292,10 +292,10 @@ class AxiomValidator:
             )
         
         # Check projections are accessible
+        projections_ok = True
         try:
             _ = state.project(Substrate.CLASSICAL)
-            projections_ok = True
-        except:
+        except Exception:
             projections_ok = False
         
         return AxiomCheck(
@@ -342,7 +342,7 @@ class AxiomValidator:
                 try:
                     if not c(state):
                         failed.append(str(c))
-                except:
+                except Exception:
                     failed.append(f"error_in_{c}")
         
         if failed:

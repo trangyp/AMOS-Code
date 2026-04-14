@@ -12,7 +12,8 @@ Run: python amos_unified_demo.py
 """
 
 import sys
-sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code')
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from amos_meta_ontological import (
     AMOSMetaOntological, EnergyBudget, WorldState,

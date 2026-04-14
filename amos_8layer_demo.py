@@ -36,7 +36,7 @@ class Layer(Enum):
     INFINITE = 8    # ∞ - Hyperbundle formalism
     OMEGA = 7       # Ω - 32 axioms
     INTEGRATION = 6 # Λ - Brain, Organism, ClawSpring
-    CODE_INTEL = 5  # Λ - Repo, Self-coding
+    CODE_INTEL = 5    # Λ - Repo, Self-coding
     META = 4        # Λ - Meta-cognition
     MEMORY = 3      # Λ - Memory systems
     CORE = 2        # Λ - Core cognitive
@@ -203,7 +203,8 @@ class AMOS8LayerDemonstration:
             scale="classical"
         )
         
-        print(f"  ✓ Hyperstate created: {len(hyperstate.classical.structure)} fields")
+        n_fields = len(hyperstate.classical.structure)
+        print(f"  ✓ Hyperstate created: {n_fields} fields")
         
         # Check admissibility in Z*
         print("\nChecking Z* Admissibility (Section 3)...")
@@ -272,10 +273,14 @@ class AMOS8LayerDemonstration:
         coherence_result = coh_omega.process_message(test_msg, validate=True)
         
         print(f"  Input: '{test_msg}'")
-        print(f"  Detected state: {coherence_result.coherence_result.detected_state.name}")
-        print(f"  Intervention: {coherence_result.coherence_result.intervention_mode.name}")
-        print(f"  Master Law compliant: {'✓' if coherence_result.master_law_compliant else '✗'}")
-        print(f"  Ω Valid: {'✓' if coherence_result.is_valid else '✗'}")
+        detected = coherence_result.coherence_result.detected_state.name
+        print(f"  Detected state: {detected}")
+        intervention = coherence_result.coherence_result.intervention_mode.name
+        print(f"  Intervention: {intervention}")
+        compliant = '✓' if coherence_result.master_law_compliant else '✗'
+        print(f"  Master Law compliant: {compliant}")
+        omega_valid = '✓' if coherence_result.is_valid else '✗'
+        print(f"  Ω Valid: {omega_valid}")
         
         duration = (time.time() - start) * 1000
         
@@ -285,7 +290,10 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=hyperstate,
             output_data=coherence_result,
-            message=f"Axioms: {passed}/{len(report.checks)} passed, Coherence Ω valid"
+            message=(
+                f"Axioms: {passed}/{len(report.checks)} passed, "
+                f"Coherence Ω valid"
+            )
         )
     
     def demo_layer_6_integration(self, coherence_result: Any) -> LayerResult:
@@ -537,7 +545,7 @@ class AMOS8LayerDemonstration:
         print("Initializing AMOS v4 Economic Organism...")
         amos = AMOSv4(name="DemoOrganism")
         
-        print(f"\nInitial Economic State:")
+        print("\nInitial Economic State:")
         print(f"  Cash: ${amos.economics.cash:.2f}")
         print(f"  Runway: {amos.economics.runway_months:.1f} months")
         print(f"  Health: {amos.economics.health_score:.2f}")
@@ -546,19 +554,21 @@ class AMOS8LayerDemonstration:
         print("\nRunning Economic Cycle...")
         result = amos.cycle()
         
-        print(f"  ✓ Cycle complete")
+        print("  ✓ Cycle complete")
         print(f"  Decisions: {len(result['decisions'])}")
         print(f"  Energy allocated: {result['energy_allocated']:.2f}")
         
         duration = (time.time() - start) * 1000
         
+        msg_cash = f"${amos.economics.cash:.2f}"
+        msg_decisions = len(result['decisions'])
         return LayerResult(
             layer=Layer.ECONOMIC,
             success=True,
             duration_ms=duration,
             input_data=None,
             output_data=result,
-            message=f"Economic cycle: ${amos.economics.cash:.2f}, {len(result['decisions'])} decisions"
+            message=f"Economic cycle: {msg_cash}, {msg_decisions} decisions"
         )
     
     def demo_layer_0_executable(self) -> LayerResult:
@@ -671,7 +681,7 @@ class AMOS8LayerDemonstration:
                    "Λ" if result.layer.value >= 1 else "X"
             print(f"  {icon} Layer {result.layer.value} ({zoom}): {layer_name:20} {result.duration_ms:6.1f}ms")
         
-        print(f"\nStatistics:")
+        print("\nStatistics:")
         print(f"  Total time: {total_time:.1f}ms")
         print(f"  Successful: {success_count}/8")
         print(f"  Success rate: {success_count/8:.0%}")
