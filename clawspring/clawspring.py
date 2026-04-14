@@ -2545,7 +2545,19 @@ def cmd_amos(args: str, state, config) -> bool:
             err(f"Audit error: {e}")
         return True
 
-    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', or 'audit'.")
+    # Export audit data
+    if args.startswith("export"):
+        try:
+            from amos_brain.audit_exporter import export_audit
+            parts = args.split()
+            fmt = parts[1] if len(parts) > 1 else "json"
+            path = export_audit(format=fmt)
+            ok(f"Audit exported: {path}")
+        except Exception as e:
+            err(f"Export failed: {e}")
+        return True
+
+    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'audit', or 'export'.")
     return True
 
 

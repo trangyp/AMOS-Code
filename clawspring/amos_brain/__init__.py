@@ -9,6 +9,7 @@ from .engine_executor import EngineExecutor, execute_cognitive_task, ExecutionRe
 from .multi_agent_orchestrator import MultiAgentOrchestrator, run_cognitive_consensus, ConsensusResult
 from .cognitive_audit import CognitiveAuditTrail, record_cognitive_decision, AuditEntry
 from .feedback_loop import CognitiveFeedbackLoop, get_enhanced_engines, get_task_advice
+from .audit_exporter import AuditExporter, export_audit
 
 __all__ = [
     "BrainLoader",
@@ -32,4 +33,6 @@ __all__ = [
     "CognitiveFeedbackLoop",
     "get_enhanced_engines",
     "get_task_advice",
+    "AuditExporter",
+    "export_audit",
 ]

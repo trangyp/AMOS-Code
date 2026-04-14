@@ -19,12 +19,12 @@ def run_cycle():
     loop = PrimaryLoop()
     
     print(f"\n  Primary Sequence: {' → '.join(loop.PRIMARY_SEQUENCE)}")
-    print(f"  Supporting Systems: {', '.join(loop.SUPPORTING_SYSTEMS[:5])}...")
+    print(f"  Total Stages: {len(loop.PRIMARY_SEQUENCE)}")
     print()
     
     # Execute one full cycle
     print("  Executing cycle...")
-    result = loop.execute_cycle(context={"demo": True})
+    result = loop.execute_cycle(task="Demonstrate AMOS Organism cycle", context={"demo": True})
     
     print(f"\n  ✅ Cycle Complete")
     print(f"     Status: {result.status}")
