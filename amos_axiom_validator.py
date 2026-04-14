@@ -77,7 +77,9 @@ class ValidationReport:
     
     def is_valid(self) -> bool:
         """System is valid if no critical errors and all required axioms pass."""
-        return self.summary.get("critical", 0) == 0 and self.summary.get("failed", 0) == 0
+        critical = self.summary.get("critical", 0)
+        failed = self.summary.get("failed", 0)
+        return critical == 0 and failed == 0
     
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
@@ -129,22 +131,24 @@ class AxiomValidator:
         substrates = self._detect_substrates(entity)
         
         if not substrates:
+            entity_type = type(entity).__name__
             return AxiomCheck(
                 axiom_number=1,
                 axiom_name="Substrate Partition",
                 level=ValidationLevel.ERROR,
                 passed=False,
-                message=f"Entity has no detectable substrate: {type(entity).__name__}",
-                details={"entity_type": type(entity).__name__}
+                message=f"Entity has no detectable substrate: {entity_type}",
+                details={"entity_type": entity_type}
             )
         
+        substrate_names = [s.name for s in substrates]
         return AxiomCheck(
             axiom_number=1,
             axiom_name="Substrate Partition",
             level=ValidationLevel.PASS,
             passed=True,
-            message=f"Entity belongs to substrate(s): {[s.name for s in substrates]}",
-            details={"substrates": [s.name for s in substrates]}
+            message=f"Entity belongs to substrate(s): {substrate_names}",
+            details={"substrates": substrate_names}
         )
     
     def _detect_substrates(self, entity: Any) -> Set[Substrate]:
@@ -197,13 +201,17 @@ class AxiomValidator:
             "BranchEnergyBudget", "dict", "list", "str", "float", "int"
         ]
         
-        has_type = entity_type in valid_types or hasattr(entity, '__dataclass_fields__')
+        has_dataclass = hasattr(entity, '__dataclass_fields__')
+        has_type = entity_type in valid_types or has_dataclass
         
         if not has_type:
             return AxiomCheck(
                 axiom_number=2,
                 axiom_name="Typedness",
-                level=ValidationLevel.ERROR if self.strict else ValidationLevel.WARNING,
+                level = (
+                    ValidationLevel.ERROR if self.strict
+                    else ValidationLevel.WARNING
+                ),
                 passed=False,
                 message=f"Entity lacks proper type: {entity_type}",
                 details={"detected_type": entity_type}
@@ -426,12 +434,13 @@ class AxiomValidator:
             identity_preserved = state.identity == previous.identity
             
             if not identity_preserved:
+                identity_change = f"{previous.identity} → {state.identity}"
                 return AxiomCheck(
                     axiom_number=13,
                     axiom_name="Identity",
                     level=ValidationLevel.ERROR,
                     passed=False,
-                    message=f"Identity changed: {previous.identity} → {state.identity}",
+                    message=f"Identity changed: {identity_change}",
                     details={
                         "previous": previous.identity,
                         "current": state.identity,
