@@ -64,7 +64,9 @@ class MessageAnalysis:
     pattern: str = ""
     context: str = ""
     signal: str = ""  # Sig_t - structurally real
-    noise_components: Dict[str, float] = field(default_factory=dict)  # Noi_t decomposition
+    noise_components: Dict[str, float] = field(
+        default_factory=dict
+    )  # Noi_t decomposition
     clarity_score: float = 0.0
 
 
@@ -99,12 +101,18 @@ class SignalDetectionEngine:
         'fear_failure': ['fail', 'scared', 'afraid', 'terrified', 'panic'],
         'shame_defense': ['embarrassing', 'ashamed', 'humiliating', 'stupid'],
         'helplessness': ['cant', 'unable', 'impossible', 'never', 'nothing'],
-        'narrative_loop': ['always', 'every time', 'constantly', 'keeps happening'],
+        'narrative_loop': [
+            'always', 'every time', 'constantly', 'keeps happening'
+        ],
         'overload': ['too much', 'overwhelmed', 'drowning', 'breaking'],
-        'false_binary': ['either or', 'only two', 'must choose', 'no other way'],
+        'false_binary': [
+            'either or', 'only two', 'must choose', 'no other way'
+        ],
     }
     
-    def analyze(self, message: str, history: List[str] = None) -> MessageAnalysis:
+    def analyze(
+        self, message: str, history: List[str] = None
+    ) -> MessageAnalysis:
         """Extract signal from noise in message."""
         analysis = MessageAnalysis(surface_text=message)
         
@@ -116,7 +124,9 @@ class SignalDetectionEngine:
                     detected_patterns.append(pattern_name)
                     break
         
-        analysis.pattern = detected_patterns[0] if detected_patterns else "unknown"
+        analysis.pattern = (
+            detected_patterns[0] if detected_patterns else "unknown"
+        )
         
         # Estimate noise components (L2, L3)
         analysis.noise_components = {
