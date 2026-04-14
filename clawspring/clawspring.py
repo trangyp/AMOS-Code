@@ -2511,7 +2511,41 @@ def cmd_amos(args: str, state, config) -> bool:
         info("Using standard ClawSpring mode")
         return True
 
-    err(f"Unknown /amos subcommand: '{args}'. Use 'on' or 'off'.")
+    # Show audit report
+    if args == "audit":
+        try:
+            from amos_brain.cognitive_audit import get_audit_trail
+            from amos_brain.feedback_loop import get_feedback_loop
+            audit = get_audit_trail()
+            loop = get_feedback_loop()
+
+            stats = audit.get_statistics()
+            if stats["total_entries"] == 0:
+                info("No cognitive decisions recorded yet.")
+                info("Enable AMOS mode with '/amos on' and run some tasks.")
+                return True
+
+            ok(f"Cognitive Audit: {stats['total_entries']} decisions")
+            info(f"  Violation rate: {stats['violation_rate']:.1%}")
+            info(f"  Avg execution: {stats['avg_execution_time_ms']:.1f}ms")
+            info(f"  Domains: {', '.join(stats['domains'].keys())}")
+
+            # Show feedback insights if available
+            insights = loop.analyze_patterns()
+            if insights:
+                info(f"  Insights derived: {len(insights)}")
+                for insight in insights:
+                    info(f"    {insight.pattern}: {len(insight.recommended_engines)} engines")
+
+            # Show recent violations
+            violations = audit.get_violations()
+            if violations:
+                warn(f"  ⚠️ {len(violations)} violations found")
+        except Exception as e:
+            err(f"Audit error: {e}")
+        return True
+
+    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', or 'audit'.")
     return True
 
 

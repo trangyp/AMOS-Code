@@ -569,6 +569,36 @@ AMOS_TOOLS = [
         read_only=True,
         concurrent_safe=True,
     ),
+    ToolDef(
+        name="AMOSUBI",
+        schema={
+            "name": "AMOSUBI",
+            "description": (
+                "Analyze human factors using Unified Biological Intelligence. "
+                "Analyzes NBI (cognitive), NEI (emotional), SI (somatic), "
+                "BEI (environmental) dimensions with safety constraints."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Description of scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["NBI", "NEI", "SI", "BEI"],
+                        "description": "UBI domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_ubi,
+        read_only=True,
+        concurrent_safe=True,
+    ),
 ]
 
 
