@@ -79,6 +79,11 @@ class LedgerEntry:
         """Compute cryptographic hash of entry."""
         content = json.dumps(self.to_dict(), sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()[:32]
+    
+    @property
+    def hash(self) -> str:
+        """Get entry hash (alias for compute_hash)."""
+        return self.compute_hash()
 
 
 class StateLedger:

@@ -14,10 +14,10 @@ from __future__ import annotations
 
 import json
 import statistics
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -40,6 +40,7 @@ class TaskPrediction:
     priority: str
     predicted_duration_ms: float
     confidence: float
+    std_dev: float = 0.0
     assigned_agent: Optional[str] = None
     recommended_start: str = ""
     estimated_completion: str = ""
@@ -173,6 +174,7 @@ class PredictiveEngine:
             priority=priority,
             predicted_duration_ms=predicted_duration,
             confidence=confidence,
+            std_dev=std_dev,
             assigned_agent=agent_id,
             recommended_start=recommended_start,
             estimated_completion=estimated_completion

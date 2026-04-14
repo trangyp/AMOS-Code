@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clawspring"
-version = "3.05.5"
-description = "ClawSpring: A Fast, Hackable Python AI Coding Assistant"
+version = "3.06.0-amos-v2.8"
+description = "ClawSpring + AMOS Ecosystem v2.8: AI Coding Assistant with Cognitive Architecture, Deep Integration, and Ethics"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -14,14 +14,22 @@ dependencies = [
     "openai>=1.30.0",
     "httpx>=0.27.0",
     "rich>=13.0.0",
+    "psutil>=5.9.0",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 voice  = ["sounddevice"]
 vision = ["Pillow"]
+api = ["fastapi>=0.100.0", "uvicorn>=0.23.0", "pydantic>=2.0.0"]
 
 [project.scripts]
 clawspring = "clawspring:main"
+amos = "amos_brain.__main__:main"
+amos-validate = "amos_brain.system_validator:validate_system"
+amos-unified = "amos_brain.unified_cli:main"
+amos-api = "amos_brain.api_gateway:main"
+amos-test = "amos_brain.test_integration_suite:main"
 
 [tool.setuptools]
 py-modules = [
@@ -37,4 +45,4 @@ py-modules = [
     "tool_registry",
     "tools",
 ]
-packages = ["mcp", "memory", "multi_agent", "plugin", "skill", "task", "voice"]
+packages = ["mcp", "memory", "multi_agent", "plugin", "skill", "task", "voice", "amos_brain"]

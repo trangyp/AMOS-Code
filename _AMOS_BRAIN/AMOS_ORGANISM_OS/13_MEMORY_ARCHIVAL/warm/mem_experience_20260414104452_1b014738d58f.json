@@ -1,0 +1,20 @@
+{
+  "memory_id": "mem_experience_20260414104452_1b014738d58f",
+  "memory_type": "EXPERIENCE",
+  "content": {
+    "event": "learned_python",
+    "skill": "programming",
+    "difficulty": "medium",
+    "outcome": "success"
+  },
+  "priority": "MEDIUM",
+  "created_at": "2026-04-14T10:44:52.866559",
+  "last_accessed": "2026-04-14T10:44:52.866560",
+  "access_count": 0,
+  "tags": [
+    "learning",
+    "python"
+  ],
+  "associations": [],
+  "embedding": null
+}

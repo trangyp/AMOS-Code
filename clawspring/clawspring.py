@@ -73,19 +73,15 @@ except ImportError:
     readline = None  # Windows compatibility
 import atexit
 import argparse
-import textwrap
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Union
+from typing import Union
 import threading
 # ── Optional rich for markdown rendering ──────────────────────────────────
 try:
     from rich.console import Console
     from rich.markdown import Markdown
     from rich.live import Live
-    from rich.syntax import Syntax
-    from rich.panel import Panel
-    from rich import print as rprint
     _RICH = True
     console = Console()
 except ImportError:
@@ -2378,7 +2374,10 @@ def cmd_voice(args: str, state, config) -> bool:
     # ── /voice status ──
     if subcmd == "status":
         try:
-            from voice import check_voice_deps, check_recording_availability, check_stt_availability
+            from voice import (
+                check_recording_availability,
+                check_stt_availability,
+            )
             from voice.stt import get_stt_backend_name
         except ImportError as e:
             err(f"voice package not available: {e}")
@@ -2522,8 +2521,9 @@ def cmd_amos(args: str, state, config) -> bool:
             info(f"  Domains: {status.get('domains', 0)}")
             mode = "ON" if config.get("_amos_mode", False) else "OFF"
             info(f"  Cognitive mode: {mode} (use '/amos on' to enable)")
-            env_mode = os.environ.get("AMOS_BRAIN_ENABLED", "").lower() in ("1", "true", "yes", "on")
-            info(f"  Env handoff: {'ON' if env_mode else 'OFF'}")
+            env_mode = os.environ.get("AMOS_BRAIN_ENABLED", "")
+            env_on = env_mode.lower() in ("1", "true", "yes", "on")
+            info(f"  Env handoff: {'ON' if env_on else 'OFF'}")
         else:
             err(f"AMOS Brain not available: {status.get('error', 'Unknown error')}")
         return True
@@ -2658,7 +2658,9 @@ def cmd_amos(args: str, state, config) -> bool:
             err(f"Validation failed: {e}")
         return True
 
-    err(f"Unknown /amos subcommand: '{args}'. Use 'on', 'off', 'status', 'audit', 'export', 'dashboard', 'ecosystem', 'orchestrate', or 'validate'.")
+    err(f"Unknown /amos subcommand: '{args}'.")
+    info("Available: on, off, status, audit, export")
+    info("           dashboard, ecosystem, orchestrate, validate")
     return True
 
 
@@ -3572,7 +3574,6 @@ def main():
         # (e.g. "ollama:llama3.3" → "ollama/llama3.3"), but leave version tags intact
         # (e.g. "ollama/qwen3.5:35b" must NOT become "ollama/qwen3.5/35b")
         if "/" not in m and ":" in m:
-            from providers import PROVIDERS
             left, _ = m.split(":", 1)
             if left in PROVIDERS:
                 m = m.replace(":", "/", 1)

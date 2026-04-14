@@ -168,6 +168,73 @@ class BrainWorkerBridge:
             "reference_engines": list(set(r.engine_name for r in results))
         }
 
+    def route_task_to_worker(self, task: str, task_type: str = "general") -> Dict[str, Any]:
+        """
+        Route a task to the appropriate worker subsystem.
+        
+        Uses brain query results to determine optimal routing.
+        """
+        # Query brain for task context
+        brain_result = self.query_brain_for_task(task)
+
+        # Determine optimal worker based on task type and brain results
+        worker_routing = {
+            "code": ["06_MUSCLE", "13_FACTORY"],
+            "design": ["01_BRAIN", "06_MUSCLE"],
+            "analysis": ["01_BRAIN", "12_QUANTUM_LAYER"],
+            "workflow": ["06_MUSCLE"],
+            "pipeline": ["07_METABOLISM"],
+            "alert": ["03_IMMUNE"],
+            "memory": ["13_MEMORY_ARCHIVAL"],
+            "knowledge": ["15_KNOWLEDGE_CORE"],
+            "general": ["01_BRAIN", "06_MUSCLE"]
+        }
+
+        # Get recommended workers for this task type
+        recommended_workers = worker_routing.get(task_type, worker_routing["general"])
+
+        # Select primary worker (first in list, could be enhanced with load balancing)
+        primary_worker = recommended_workers[0]
+
+        return {
+            "task": task,
+            "task_type": task_type,
+            "primary_worker": primary_worker,
+            "fallback_workers": recommended_workers[1:] if len(recommended_workers) > 1 else [],
+            "brain_results_count": brain_result["results_count"],
+            "reference_engines": brain_result["reference_engines"],
+            "routing_confidence": 0.85 if brain_result["results_count"] > 0 else 0.5
+        }
+
+    def optimize_task_execution(self, tasks: List[str]) -> Dict[str, Any]:
+        """
+        Optimize execution order and routing for multiple tasks.
+        """
+        optimized = []
+        total_brain_refs = 0
+
+        for task in tasks:
+            routing = self.route_task_to_worker(task)
+            optimized.append(routing)
+            total_brain_refs += routing["brain_results_count"]
+
+        return {
+            "tasks": optimized,
+            "total_tasks": len(tasks),
+            "total_brain_references": total_brain_refs,
+            "average_confidence": sum(t["routing_confidence"] for t in optimized) / len(optimized) if optimized else 0
+        }
+
+    def get_bridge_status(self) -> Dict[str, Any]:
+        """Get bridge operational status."""
+        return {
+            "status": "operational",
+            "brain_connected": self.brain_root.exists(),
+            "cognitive_engines_available": len(list(self.cognitive_dir.glob("*.json"))) if self.cognitive_dir.exists() else 0,
+            "routing_enabled": True,
+            "optimization_enabled": True
+        }
+
 
 def main() -> int:
     """CLI for brain-worker bridge."""

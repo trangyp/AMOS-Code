@@ -23,7 +23,20 @@ from amosl import parse, compile_program, validate_invariants
 from amos_monitoring_middleware import init_monitoring
 from amos_coherence_engine import AMOSCoherenceEngine
 import os
+import sys
 import logging
+from pathlib import Path
+
+
+def get_organism_root() -> Path:
+    """Get the AMOS organism root directory."""
+    # Try environment variable first
+    env_root = os.environ.get('AMOS_ROOT')
+    if env_root:
+        return Path(env_root)
+    # Default to AMOS_ORGANISM_OS in repo root
+    current = Path(__file__).parent
+    return current / "AMOS_ORGANISM_OS"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -341,9 +354,128 @@ def get_history():
 def get_stats():
     """Get API usage statistics."""
     from database import db
-    days = request.args.get('days', 7, type=int)
     stats = db.get_usage_stats(days=days)
     return jsonify({'success': True, 'stats': stats})
+
+
+@app.route('/api/workflows', methods=['GET'])
+def api_workflows_list():
+    """List all workflows."""
+    try:
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+        from workflow_engine import WorkflowEngine
+        engine = WorkflowEngine()
+        workflows = [
+            {"id": w.id, "name": w.name, "status": w.status, "steps": len(w.steps)}
+            for w in engine.list_workflows()
+        ]
+        return jsonify({"workflows": workflows, "count": len(workflows)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/workflows/<workflow_id>/run', methods=['POST'])
+def api_workflow_run(workflow_id):
+    """Run a specific workflow."""
+    try:
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+        from workflow_engine import WorkflowEngine
+        engine = WorkflowEngine()
+        result = engine.run_workflow(workflow_id)
+        return jsonify({
+            "success": True,
+            "workflow_id": workflow_id,
+            "status": result.status,
+            "steps_completed": len([s for s in result.steps if s.status.value == "success"])
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Extended API: Pipeline Engine
+@app.route('/api/pipelines', methods=['GET'])
+def api_pipelines_list():
+    """List all pipelines."""
+    try:
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "07_METABOLISM"))
+        from pipeline_engine import PipelineEngine
+        engine = PipelineEngine()
+        pipelines = [
+            {"id": p.id, "name": p.name, "status": p.status, "stages": len(p.stages)}
+            for p in engine.pipelines.values()
+        ]
+        return jsonify({"pipelines": pipelines, "count": len(pipelines)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/pipelines/<pipeline_id>/run', methods=['POST'])
+def api_pipeline_run(pipeline_id):
+    """Run a specific pipeline."""
+    try:
+        data = request.get_json() or {}
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "07_METABOLISM"))
+        from pipeline_engine import PipelineEngine
+        engine = PipelineEngine()
+        result = engine.execute_pipeline(pipeline_id, initial_data=data.get("data"))
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Extended API: Alerting System (Organism Integration)
+@app.route('/api/alerts/active', methods=['GET'], endpoint='organism_alerts_active')
+def organism_alerts_active():
+    """Get active alerts from organism immune system."""
+    try:
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "03_IMMUNE"))
+        from alert_manager import AlertManager
+        manager = AlertManager(organism_root)
+        alerts = manager.get_active_alerts()
+        return jsonify({"alerts": alerts, "count": len(alerts)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/alerts/evaluate', methods=['POST'])
+def api_alerts_evaluate():
+    """Evaluate metrics and trigger alerts."""
+    try:
+        data = request.get_json() or {}
+        metrics = data.get("metrics", {})
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root / "03_IMMUNE"))
+        from alert_manager import AlertManager
+        manager = AlertManager(organism_root)
+        alerts = manager.evaluate_and_alert(metrics)
+        return jsonify({"alerts_triggered": alerts, "count": len(alerts)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Extended API: Orchestrator
+@app.route('/api/orchestrator/cycle', methods=['POST'])
+def api_orchestrator_cycle():
+    """Trigger orchestrator cycle."""
+    try:
+        organism_root = get_organism_root()
+        sys.path.insert(0, str(organism_root))
+        from AMOS_MASTER_ORCHESTRATOR import AMOSOrganismOrchestrator
+        orch = AMOSOrganismOrchestrator(organism_root)
+        result = orch.cycle()
+        return jsonify({
+            "success": True,
+            "cycle": result.cycle_number,
+            "status": result.global_state.status,
+            "processed": len(result.processed_handlers)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/', methods=['GET'])
@@ -352,7 +484,7 @@ def root():
     return jsonify({
         'service': 'AMOS Brain API',
         'domain': 'neurosyncai.tech',
-        'version': '1.0.0',
+        'version': '1.1.0',
         'dashboard': '/dashboard',
         'admin': '/admin',
         'monitoring': '/monitoring',
@@ -369,7 +501,10 @@ def root():
             'Production Monitoring (monitoring)',
             'Health Checks (api/health)',
             'Metrics Export (api/metrics)',
-            'Alert Management (api/alerts)'
+            'Alert Management (api/alerts)',
+            'Workflow Engine (api/workflows)',
+            'Pipeline Engine (api/pipelines)',
+            'Orchestrator Control (api/orchestrator)'
         ],
         'endpoints': {
             'health': '/health',
@@ -386,7 +521,12 @@ def root():
             'monitoring': '/monitoring',
             'api_health': '/api/health',
             'api_metrics': '/api/metrics',
-            'api_alerts': '/api/alerts/active'
+            'api_alerts': '/api/alerts/active',
+            'api_workflows': 'GET /api/workflows',
+            'api_workflow_run': 'POST /api/workflows/<id>/run',
+            'api_pipelines': 'GET /api/pipelines',
+            'api_pipeline_run': 'POST /api/pipelines/<id>/run',
+            'api_orchestrator_cycle': 'POST /api/orchestrator/cycle'
         }
     })
 

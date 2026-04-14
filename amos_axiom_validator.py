@@ -6,29 +6,29 @@ Validates that any AMOS runtime state satisfies the axiomatic constraints.
 
 Usage:
     from amos_axiom_validator import AxiomValidator
-    
+
     validator = AxiomValidator()
-    
+
     # Validate a state
     result = validator.validate_state(state, context)
-    
+
     # Check specific axiom
     ax1_ok = validator.check_axiom_1_substrate(state)
-    
+
     # Full system validation
     report = validator.validate_system(amos_instance)
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple, Any, Union
+from typing import Dict, List, Optional, Set, Any
 from enum import Enum
 from datetime import datetime
 import json
 
 # Import AMOS components to validate
-from amos_omega import State, Action, Substrate, Sort, Observation, Bridge
+from amos_omega import State, Action, Substrate
 from amos_v4 import Goal
-from amos_memory import MemoryEntry, EpisodicMemory
+from amos_memory import MemoryEntry
 from amos_energy import BranchEnergyBudget
 
 
@@ -58,7 +58,7 @@ class ValidationReport:
     target: str
     checks: List[AxiomCheck]
     summary: Dict[str, int] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         if not self.summary:
             self.summary = {
@@ -66,21 +66,21 @@ class ValidationReport:
                 "passed": sum(1 for c in self.checks if c.passed),
                 "failed": sum(1 for c in self.checks if not c.passed),
                 "critical": sum(
-                1 for c in self.checks
-                if c.level == ValidationLevel.CRITICAL and not c.passed
-            ),
+                    1 for c in self.checks
+                    if c.level == ValidationLevel.CRITICAL and not c.passed
+                ),
                 "warnings": sum(
-                1 for c in self.checks
-                if c.level == ValidationLevel.WARNING and not c.passed
-            ),
+                    1 for c in self.checks
+                    if c.level == ValidationLevel.WARNING and not c.passed
+                ),
             }
-    
+
     def is_valid(self) -> bool:
-        """System is valid if no critical errors and all required axioms pass."""
+        """System is valid if no critical errors and axioms pass."""
         critical = self.summary.get("critical", 0)
         failed = self.summary.get("failed", 0)
         return critical == 0 and failed == 0
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -100,7 +100,7 @@ class ValidationReport:
             ],
             "valid": self.is_valid()
         }
-    
+
     def to_json(self) -> str:
         """Convert to JSON string."""
         return json.dumps(self.to_dict(), indent=2)
@@ -109,27 +109,27 @@ class ValidationReport:
 class AxiomValidator:
     """
     Validates AMOS implementation against Ω axioms.
-    
+
     Bridges the gap between formal specification and implementation
     by checking that runtime states satisfy axiomatic constraints.
     """
-    
+
     def __init__(self, strict: bool = False):
         self.strict = strict
         self.violations: List[AxiomCheck] = []
-        
+
     # ========================================================================
     # AXIOM 1: Substrate Partition
     # ========================================================================
-    
+
     def check_axiom_1_substrate(self, entity: Any) -> AxiomCheck:
         """
         Axiom 1: ∀x (Meaningful(x) → Classical(x) ∨ Quantum(x) ∨ ...)
-        
+
         Every meaningful entity belongs to at least one substrate.
         """
         substrates = self._detect_substrates(entity)
-        
+
         if not substrates:
             entity_type = type(entity).__name__
             return AxiomCheck(
@@ -140,7 +140,7 @@ class AxiomValidator:
                 message=f"Entity has no detectable substrate: {entity_type}",
                 details={"entity_type": entity_type}
             )
-        
+
         substrate_names = [s.name for s in substrates]
         return AxiomCheck(
             axiom_number=1,
@@ -150,11 +150,11 @@ class AxiomValidator:
             message=f"Entity belongs to substrate(s): {substrate_names}",
             details={"substrates": substrate_names}
         )
-    
+
     def _detect_substrates(self, entity: Any) -> Set[Substrate]:
         """Detect which substrates an entity belongs to."""
         substrates = set()
-        
+
         if isinstance(entity, State):
             if entity.classical is not None:
                 substrates.add(Substrate.CLASSICAL)
@@ -164,46 +164,46 @@ class AxiomValidator:
                 substrates.add(Substrate.BIOLOGICAL)
             if entity.hybrid is not None:
                 substrates.add(Substrate.HYBRID)
-                
+
         elif isinstance(entity, Goal):
             # Goals are classical terms
             substrates.add(Substrate.CLASSICAL)
-            
+
         elif isinstance(entity, MemoryEntry):
             # Memory is stored classically
             substrates.add(Substrate.CLASSICAL)
-            
+
         elif isinstance(entity, BranchEnergyBudget):
             # Energy is a classical resource
             substrates.add(Substrate.CLASSICAL)
-            
+
         else:
             # Default: assume classical substrate
             substrates.add(Substrate.CLASSICAL)
-            
+
         return substrates
-    
+
     # ========================================================================
     # AXIOM 2: Typedness
     # ========================================================================
-    
+
     def check_axiom_2_typedness(self, entity: Any) -> AxiomCheck:
         """
         Axiom 2: AdmissibleTerm(e) → ∃τ HasType(e, τ)
-        
+
         Every admissible term has a type.
         """
         entity_type = type(entity).__name__
-        
+
         # Check if entity has a valid type
         valid_types = [
             "State", "Action", "Goal", "MemoryEntry",
             "BranchEnergyBudget", "dict", "list", "str", "float", "int"
         ]
-        
+
         has_dataclass = hasattr(entity, '__dataclass_fields__')
         has_type = entity_type in valid_types or has_dataclass
-        
+
         if not has_type:
             return AxiomCheck(
                 axiom_number=2,
@@ -216,7 +216,7 @@ class AxiomValidator:
                 message=f"Entity lacks proper type: {entity_type}",
                 details={"detected_type": entity_type}
             )
-        
+
         return AxiomCheck(
             axiom_number=2,
             axiom_name="Typedness",
@@ -225,15 +225,15 @@ class AxiomValidator:
             message=f"Entity has type: {entity_type}",
             details={"type": entity_type}
         )
-    
+
     # ========================================================================
     # AXIOM 3: Effect Explicitness
     # ========================================================================
-    
+
     def check_axiom_3_effect_explicit(self, action: Any) -> AxiomCheck:
         """
         Axiom 3: Transforms(f) → ∃ε Eff(f) = ε
-        
+
         Every transformation has explicit effect annotation.
         """
         if not hasattr(action, 'effect'):
@@ -246,9 +246,9 @@ class AxiomValidator:
                 message=f"Action {action_type} lacks effect annotation",
                 details={}
             )
-        
+
         effect = getattr(action, 'effect', None)
-        
+
         if effect is None:
             return AxiomCheck(
                 axiom_number=3,
@@ -258,7 +258,7 @@ class AxiomValidator:
                 message="Action effect is None (implicit pure)",
                 details={"effect": None}
             )
-        
+
         return AxiomCheck(
             axiom_number=3,
             axiom_name="Effect Explicitness",
@@ -267,15 +267,15 @@ class AxiomValidator:
             message=f"Action has explicit effect: {effect}",
             details={"effect": str(effect)[:100]}
         )
-    
+
     # ========================================================================
     # AXIOM 4: State Stratification
     # ========================================================================
-    
+
     def check_axiom_4_state_stratification(self, state: State) -> AxiomCheck:
         """
         Axiom 4: X = X_c × X_q × X_b × X_h × ...
-        
+
         State is a stratified product with projections.
         """
         components = {
@@ -288,12 +288,12 @@ class AxiomValidator:
             "utility": state.utility,
             "identity": state.identity
         }
-        
+
         # Check that at least one substrate has data
         substrate_data = sum(1 for v in [state.classical, state.quantum, 
                                          state.biological, state.hybrid] 
                           if v is not None)
-        
+
         if substrate_data == 0:
             return AxiomCheck(
                 axiom_number=4,
@@ -303,14 +303,14 @@ class AxiomValidator:
                 message="State has no substrate components",
                 details={"components": components}
             )
-        
+
         # Check projections are accessible
         projections_ok = True
         try:
             _ = state.project(Substrate.CLASSICAL)
         except Exception:
             projections_ok = False
-        
+
         return AxiomCheck(
             axiom_number=4,
             axiom_name="State Stratification",
@@ -324,16 +324,16 @@ class AxiomValidator:
                 "has_time": state.time is not None
             }
         )
-    
+
     # ========================================================================
     # AXIOM 9: Constraint
     # ========================================================================
-    
+
     def check_axiom_9_constraints(self, state: State, 
                                    constraints: List[Any]) -> AxiomCheck:
         """
         Axiom 9: Valid(x) ↔ ∀α ∈ Hard, c_α(x) = ⊤
-        
+
         State satisfies all hard constraints.
         """
         if not constraints:
@@ -345,7 +345,7 @@ class AxiomValidator:
                 message="No constraints defined (vacuously valid)",
                 details={"constraint_count": 0}
             )
-        
+
         failed = []
         for c in constraints:
             if hasattr(c, 'evaluate'):
@@ -357,7 +357,7 @@ class AxiomValidator:
                         failed.append(str(c))
                 except Exception:
                     failed.append(f"error_in_{c}")
-        
+
         if failed:
             return AxiomCheck(
                 axiom_number=9,
@@ -367,7 +367,7 @@ class AxiomValidator:
                 message=f"State violates {len(failed)} constraint(s)",
                 details={"failed_constraints": failed}
             )
-        
+
         return AxiomCheck(
             axiom_number=9,
             axiom_name="Constraint Satisfaction",
@@ -376,20 +376,20 @@ class AxiomValidator:
             message=f"All {len(constraints)} constraint(s) satisfied",
             details={"constraint_count": len(constraints)}
         )
-    
+
     # ========================================================================
     # AXIOM 10 & 21: Commit and Multi-Regime Admissibility (Z*)
     # ========================================================================
-    
+
     def check_axiom_10_commit(self, state: State, 
                                checks: Dict[str, bool]) -> AxiomCheck:
         """
         Axiom 10: Commits(x*) ↔ Valid(x*) ∧ Verified(x*) ∧ Feasible(x*)
-        
+
         Axiom 21: Z* = Z_type ∩ Z_logic ∩ Z_physical ∩ ...
         """
         failed_checks = [k for k, v in checks.items() if not v]
-        
+
         if failed_checks:
             return AxiomCheck(
                 axiom_number=21,
@@ -399,7 +399,7 @@ class AxiomValidator:
                 message=f"State not in Z*: failed {failed_checks}",
                 details={"failed_regimes": failed_checks, "all_checks": checks}
             )
-        
+
         return AxiomCheck(
             axiom_number=21,
             axiom_name="Multi-Regime Admissibility (Z*)",
@@ -408,16 +408,16 @@ class AxiomValidator:
             message="State belongs to Z* (all regimes admissible)",
             details={"checks": checks}
         )
-    
+
     # ========================================================================
     # AXIOM 13: Identity
     # ========================================================================
-    
+
     def check_axiom_13_identity(self, state: State, 
                                  previous: Optional[State] = None) -> AxiomCheck:
         """
         Axiom 13: I(x, x') — identity preservation predicate
-        
+
         Identity is not equality: I(x, x') ⊬ x = x'
         """
         if state.identity is None:
@@ -429,10 +429,10 @@ class AxiomValidator:
                 message="State lacks identity annotation",
                 details={"has_identity": False}
             )
-        
+
         if previous and previous.identity:
             identity_preserved = state.identity == previous.identity
-            
+
             if not identity_preserved:
                 identity_change = f"{previous.identity} → {state.identity}"
                 return AxiomCheck(
@@ -447,7 +447,7 @@ class AxiomValidator:
                         "preserved": False
                     }
                 )
-        
+
         return AxiomCheck(
             axiom_number=13,
             axiom_name="Identity",
@@ -456,16 +456,16 @@ class AxiomValidator:
             message=f"Identity valid: {state.identity}",
             details={"identity": state.identity, "preserved": True}
         )
-    
+
     # ========================================================================
     # AXIOM 14: Energy
     # ========================================================================
-    
+
     def check_axiom_14_energy(self, energy_budget: Any,
                                consumed: float) -> AxiomCheck:
         """
         Axiom 14: ∀χ ∈ {Action, Obs, Bridge, Adapt}: Occurs(χ) → ∃e ≥ 0 Consumes(χ, e)
-        
+
         Σ e_i ≤ E_budget
         """
         if not hasattr(energy_budget, 'available'):
@@ -477,10 +477,10 @@ class AxiomValidator:
                 message="Energy budget lacks proper structure",
                 details={}
             )
-        
+
         available = getattr(energy_budget, 'available', 0)
         total = getattr(energy_budget, 'total_capacity', available + consumed)
-        
+
         if consumed > total:
             return AxiomCheck(
                 axiom_number=14,
@@ -490,7 +490,7 @@ class AxiomValidator:
                 message=f"Energy OVERFLOW: consumed {consumed} > budget {total}",
                 details={"consumed": consumed, "budget": total, "overflow": consumed - total}
             )
-        
+
         if consumed > available:
             return AxiomCheck(
                 axiom_number=14,
@@ -500,7 +500,7 @@ class AxiomValidator:
                 message=f"Energy exhausted: {consumed} / {total}",
                 details={"consumed": consumed, "total": total, "remaining": total - consumed}
             )
-        
+
         return AxiomCheck(
             axiom_number=14,
             axiom_name="Energy",
@@ -514,30 +514,30 @@ class AxiomValidator:
                 "efficiency": consumed / total if total > 0 else 0
             }
         )
-    
+
     # ========================================================================
     # FULL VALIDATION
     # ========================================================================
-    
+
     def validate_state(self, state: State, 
                        context: Optional[Dict] = None) -> ValidationReport:
         """Validate a single state against all applicable axioms."""
         context = context or {}
         checks = []
-        
+
         # Run all applicable axiom checks
         checks.append(self.check_axiom_1_substrate(state))
         checks.append(self.check_axiom_2_typedness(state))
         checks.append(self.check_axiom_4_state_stratification(state))
-        
+
         # Constraint check
         constraints = context.get('constraints', [])
         checks.append(self.check_axiom_9_constraints(state, constraints))
-        
+
         # Identity check
         previous = context.get('previous_state')
         checks.append(self.check_axiom_13_identity(state, previous))
-        
+
         # Z* check (multi-regime admissibility)
         z_checks = {
             "type": checks[1].passed,  # typedness
@@ -547,38 +547,38 @@ class AxiomValidator:
             "identity": checks[4].passed,  # identity
         }
         checks.append(self.check_axiom_10_commit(state, z_checks))
-        
+
         return ValidationReport(
             timestamp=datetime.utcnow(),
             target=f"State({state.identity or 'anonymous'})",
             checks=checks
         )
-    
+
     def validate_action(self, action: Action,
                         context: Optional[Dict] = None) -> ValidationReport:
         """Validate an action against axioms."""
         checks = []
-        
+
         checks.append(self.check_axiom_1_substrate(action))
         checks.append(self.check_axiom_2_typedness(action))
         checks.append(self.check_axiom_3_effect_explicit(action))
-        
+
         # Energy check if available
         energy_budget = context.get('energy_budget') if context else None
         energy_cost = getattr(action, 'energy_cost', 0)
         if energy_budget:
             checks.append(self.check_axiom_14_energy(energy_budget, energy_cost))
-        
+
         return ValidationReport(
             timestamp=datetime.utcnow(),
             target=f"Action({action.name})",
             checks=checks
         )
-    
+
     def validate_system(self, amos_instance: Any) -> ValidationReport:
         """Validate a complete AMOS system instance."""
         checks = []
-        
+
         # Check that system has required components
         required_attrs = ['state', 'memory', 'energy']
         for attr in required_attrs:
@@ -591,12 +591,12 @@ class AxiomValidator:
                 message=f"System {'has' if has_attr else 'MISSING'} required component: {attr}",
                 details={"component": attr, "present": has_attr}
             ))
-        
+
         # Validate current state if available
         if hasattr(amos_instance, 'state') and amos_instance.state:
             state_report = self.validate_state(amos_instance.state)
             checks.extend(state_report.checks)
-        
+
         return ValidationReport(
             timestamp=datetime.utcnow(),
             target=f"AMOS({type(amos_instance).__name__})",
@@ -609,9 +609,9 @@ def demo_axiom_validator():
     print("=" * 70)
     print("AMOS Axiom Validator — Ω Axioms → Implementation Bridge")
     print("=" * 70)
-    
+
     validator = AxiomValidator()
-    
+
     # Test 1: Valid state
     print("\n[Test 1: Valid State]")
     valid_state = State(
@@ -619,28 +619,28 @@ def demo_axiom_validator():
         identity="test_agent",
         time=0.0
     )
-    
+
     report1 = validator.validate_state(valid_state)
     print(f"  Target: {report1.target}")
     print(f"  Total checks: {report1.summary['total']}")
     print(f"  Passed: {report1.summary['passed']}")
     print(f"  Failed: {report1.summary['failed']}")
     print(f"  Valid: {report1.is_valid()}")
-    
+
     # Test 2: Invalid state (no substrate)
     print("\n[Test 2: Invalid State (empty)]")
     empty_state = State()
-    
+
     report2 = validator.validate_state(empty_state)
     print(f"  Target: {report2.target}")
     print(f"  Critical errors: {report2.summary.get('critical', 0)}")
     print(f"  Valid: {report2.is_valid()}")
-    
+
     # Show failed checks
     for check in report2.checks:
         if not check.passed:
             print(f"    ✗ Axiom {check.axiom_number}: {check.message}")
-    
+
     # Test 3: Valid action
     print("\n[Test 3: Valid Action]")
     valid_action = Action(
@@ -650,34 +650,34 @@ def demo_axiom_validator():
         energy_cost=0.1,
         pure=False
     )
-    
+
     report3 = validator.validate_action(valid_action)
     print(f"  Target: {report3.target}")
     print(f"  Valid: {report3.is_valid()}")
-    
+
     # Test 4: Invalid action (no effect)
     print("\n[Test 4: Invalid Action (no effect)]")
     class BadAction:
         name = "bad_action"
         substrate = Substrate.CLASSICAL
         # Missing 'effect' attribute
-    
+
     bad_action = BadAction()
     report4 = validator.validate_action(bad_action)
     print(f"  Target: {report4.target}")
     print(f"  Valid: {report4.is_valid()}")
-    
+
     for check in report4.checks:
         if not check.passed:
             print(f"    ✗ Axiom {check.axiom_number}: {check.message}")
-    
+
     # Test 5: Energy overflow
     print("\n[Test 5: Energy Overflow]")
     from amos_energy import EnergyPool
 
     energy = EnergyPool(name="test", total_capacity=100.0)
     energy.allocated = 95.0  # Almost exhausted
-    
+
     expensive_action = Action(
         name="expensive",
         substrate=Substrate.CLASSICAL,
@@ -685,24 +685,24 @@ def demo_axiom_validator():
         energy_cost=20.0,  # Exceeds available
         pure=False
     )
-    
+
     report5 = validator.validate_action(
         expensive_action, 
         context={'energy_budget': energy}
     )
     print(f"  Target: {report5.target}")
     print(f"  Energy critical: {report5.summary.get('critical', 0) > 0}")
-    
+
     for check in report5.checks:
         if check.axiom_number == 14:
             print(f"    Energy check: {check.message}")
-    
+
     # Test 6: Full JSON report
     print("\n[Test 6: JSON Export]")
     json_report = report1.to_json()
     print(f"  Report size: {len(json_report)} chars")
     print(f"  First 200 chars:\n{json_report[:200]}...")
-    
+
     print("\n" + "=" * 70)
     print("✓ Axiom validator demonstration complete")
     print("=" * 70)

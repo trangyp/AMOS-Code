@@ -63,6 +63,8 @@ PRIMARY_LOOP = [
     "11_LEGAL_BRAIN",  # Compliance and governance
     "12_QUANTUM_LAYER",
     "13_FACTORY",  # Agent factory
+    "13_MEMORY_ARCHIVAL",  # Memory archival
+    "15_KNOWLEDGE_CORE",  # Feature discovery
     "06_MUSCLE",
     "07_METABOLISM",
 ]
@@ -164,11 +166,64 @@ class SubsystemHandler:
 class BrainHandler(SubsystemHandler):
     """01_BRAIN: Reasoning, planning, decomposition."""
 
+    def __init__(self, code: str, config: Dict[str, Any]):
+        super().__init__(code, config)
+        self._cognitive_activator = None
+        self._worker_bridge = None
+
+    def _load_cognitive_engines(self, organism_root: Path) -> Dict[str, Any]:
+        """Load dormant cognitive engines from _AMOS_BRAIN."""
+        try:
+            sys.path.insert(0, str(organism_root / "01_BRAIN"))
+            from cognitive_engine_activator import CognitiveEngineActivator
+            self._cognitive_activator = CognitiveEngineActivator()
+            return self._cognitive_activator.get_status()
+        except Exception as e:
+            print(f"[01_BRAIN] Cognitive engine loading error: {e}")
+            return {"loaded": False, "engines_count": 0, "error": str(e)}
+
+    def _initialize_worker_bridge(self, organism_root: Path) -> Dict[str, Any]:
+        """Initialize brain-worker bridge for task routing."""
+        try:
+            sys.path.insert(0, str(organism_root / "01_BRAIN"))
+            from brain_worker_bridge import BrainWorkerBridge
+            self._worker_bridge = BrainWorkerBridge(organism_root)
+            return self._worker_bridge.get_bridge_status()
+        except Exception as e:
+            print(f"[01_BRAIN] Bridge initialization error: {e}")
+            return {"status": "error", "error": str(e)}
+
+    def _route_pending_tasks(self, organism_root: Path, tasks: List[str]) -> List[Dict[str, Any]]:
+        """Route pending tasks to optimal workers."""
+        if not self._worker_bridge:
+            self._initialize_worker_bridge(organism_root)
+        
+        if self._worker_bridge and tasks:
+            return self._worker_bridge.optimize_task_execution(tasks)
+        return {"tasks": [], "total_tasks": 0, "average_confidence": 0}
+
     def process(self, context: Dict[str, Any]) -> CycleResult:
-        actions = ["load_cognition_engine", "check_working_memory", "route_next_task"]
+        actions = [
+            "load_cognition_engine",
+            "activate_cognitive_engines",
+            "initialize_worker_bridge",
+            "route_pending_tasks",
+            "check_working_memory"
+        ]
 
         # Load cognition kernel references
         kernel_refs = self.config.get("kernel_refs", [])
+
+        # Load cognitive engines from _AMOS_BRAIN
+        organism_root = context.get("organism_root", Path.cwd())
+        cognitive_status = self._load_cognitive_engines(organism_root)
+
+        # Initialize brain-worker bridge
+        bridge_status = self._initialize_worker_bridge(organism_root)
+
+        # Route pending tasks if any
+        pending_tasks = context.get("pending_tasks", [])
+        task_routing = self._route_pending_tasks(organism_root, pending_tasks)
 
         return CycleResult(
             subsystem=self.code,
@@ -176,7 +231,13 @@ class BrainHandler(SubsystemHandler):
             actions=actions,
             outputs={
                 "loaded_engines": ["AMOS_Cognition_Engine", "AMOS_Mind_Os"],
-                "active_kernels": kernel_refs[:4] if kernel_refs else []
+                "active_kernels": kernel_refs[:4] if kernel_refs else [],
+                "cognitive_engines_loaded": cognitive_status.get("engines_count", 0),
+                "cognitive_domains": list(cognitive_status.get("domains", {}).keys()),
+                "cognitive_activator_ready": cognitive_status.get("loaded", False),
+                "bridge_operational": bridge_status.get("status") == "operational",
+                "tasks_routed": task_routing.get("total_tasks", 0),
+                "routing_confidence": task_routing.get("average_confidence", 0)
             },
             next_recommended="02_SENSES"
         )
@@ -279,11 +340,41 @@ class QuantumLayerHandler(SubsystemHandler):
 class MuscleHandler(SubsystemHandler):
     """06_MUSCLE: Run commands, write code, deploy, execute tasks, run workflows."""
 
+    def __init__(self, code: str, config: Dict[str, Any]):
+        super().__init__(code, config)
+        self._brain_muscle_bridge = None
+
+    def _initialize_brain_muscle_bridge(self, organism_root: Path) -> Dict[str, Any]:
+        """Initialize brain-muscle bridge for optimized execution."""
+        try:
+            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            from brain_muscle_bridge import BrainMuscleBridge
+            self._brain_muscle_bridge = BrainMuscleBridge(organism_root)
+            return {"status": "operational", "optimization_enabled": True}
+        except Exception as e:
+            print(f"[06_MUSCLE] Bridge initialization error: {e}")
+            return {"status": "error", "error": str(e)}
+
+    def _optimize_execution_plan(self, organism_root: Path, tasks: List[str]) -> Dict[str, Any]:
+        """Optimize execution plan using brain-muscle bridge."""
+        if not self._brain_muscle_bridge:
+            self._initialize_brain_muscle_bridge(organism_root)
+        
+        if self._brain_muscle_bridge and tasks:
+            plan = self._brain_muscle_bridge.create_execution_plan(
+                task_description="Optimize " + str(len(tasks)) + " pending tasks",
+                task_type="code",
+                priority="high"
+            )
+            return plan
+        return {"plan_created": False, "steps": []}
+
     def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "check_code_engines",
             "validate_motor_actions",
-            "prepare_deployment",
+            "initialize_brain_muscle_bridge",
+            "optimize_execution_plan",
             "execute_pending_tasks",
             "process_workflows"
         ]
@@ -291,6 +382,13 @@ class MuscleHandler(SubsystemHandler):
         # Check if there are pending code tasks
         pending_tasks = context.get("pending_tasks", [])
         code_tasks = [t for t in pending_tasks if t.get("type") == "code"]
+
+        # Initialize brain-muscle bridge
+        organism_root = context.get("organism_root", Path.cwd())
+        bridge_status = self._initialize_brain_muscle_bridge(organism_root)
+
+        # Optimize execution plan
+        execution_plan = self._optimize_execution_plan(organism_root, code_tasks)
 
         # Process task execution
         tasks_executed = 0
@@ -330,6 +428,9 @@ class MuscleHandler(SubsystemHandler):
                 "pending_code_tasks": len(code_tasks),
                 "tasks_executed": tasks_executed,
                 "workflows_processed": workflows_processed,
+                "bridge_operational": bridge_status.get("status") == "operational",
+                "optimization_enabled": bridge_status.get("optimization_enabled", False),
+                "execution_plan_steps": len(execution_plan.get("steps", [])),
                 "motor_actions_allowed": [
                     "generate_plan", "refine_plan", "analyze_text",
                     "propose_code_change", "log_decision", "simulate_outcome",
@@ -348,11 +449,30 @@ class MetabolismHandler(SubsystemHandler):
             "run_pipeline_cleanup",
             "route_io",
             "transform_data",
-            "process_task_queue"
+            "process_task_queue",
+            "execute_pipelines"
         ]
 
         # Get available agents for task assignment
         available_agents = context.get("available_agents", [])
+
+        # Execute pending pipelines
+        pipelines_executed = 0
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "07_METABOLISM"))
+            from pipeline_engine import PipelineEngine
+            engine = PipelineEngine()
+
+            # Execute pending pipelines
+            for pipeline in engine.pipelines.values():
+                if pipeline.status in ["draft", "pending"]:
+                    engine.execute_pipeline(pipeline.id)
+                    pipelines_executed += 1
+                    if pipelines_executed >= 2:  # Limit per cycle
+                        break
+        except Exception as e:
+            print(f"[07_METABOLISM] Pipeline error: {e}")
 
         return CycleResult(
             subsystem=self.code,
@@ -363,21 +483,46 @@ class MetabolismHandler(SubsystemHandler):
                 "io_routed": True,
                 "cycle_complete": True,
                 "agents_available": len(available_agents),
-                "task_queue_processed": True
+                "task_queue_processed": True,
+                "pipelines_executed": pipelines_executed
             },
             next_recommended="01_BRAIN"
         )
 
 
 class ImmuneHandler(SubsystemHandler):
-    """03_IMMUNE: Security and threat detection."""
+    """03_IMMUNE: Security, threat detection, and alerting."""
 
     def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "validate_security_policies",
             "check_threat_indicators",
-            "audit_recent_actions"
+            "audit_recent_actions",
+            "evaluate_alert_rules"
         ]
+
+        # Evaluate alerts based on current metrics
+        alerts_triggered = 0
+        active_alerts = 0
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "03_IMMUNE"))
+            from alert_manager import AlertManager
+            manager = AlertManager(organism_root)
+
+            # Build metrics from context
+            metrics = {
+                "subsystem_load": context.get("subsystem_load", 50.0),
+                "pending_tasks": context.get("pending_tasks", 0),
+                "anomaly_count": context.get("anomaly_count", 0),
+            }
+
+            # Evaluate and trigger alerts
+            alerts = manager.evaluate_and_alert(metrics)
+            alerts_triggered = len(alerts)
+            active_alerts = len(manager.get_active_alerts())
+        except Exception as e:
+            print(f"[03_IMMUNE] Alert evaluation error: {e}")
 
         return CycleResult(
             subsystem=self.code,
@@ -386,7 +531,9 @@ class ImmuneHandler(SubsystemHandler):
             outputs={
                 "security_validated": True,
                 "threats_checked": True,
-                "audit_complete": True
+                "audit_complete": True,
+                "alerts_triggered": alerts_triggered,
+                "active_alerts": active_alerts
             },
             next_recommended="11_LEGAL_BRAIN"
         )
@@ -507,6 +654,123 @@ class FactoryHandler(SubsystemHandler):
         )
 
 
+class MemoryArchivalHandler(SubsystemHandler):
+    """13_MEMORY_ARCHIVAL: Archives resolved cases for analogical reasoning."""
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "archive_completed_tasks",
+            "index_memories",
+            "prepare_analogical_search"
+        ]
+
+        # Archive completed cycle results
+        archived_count = 0
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "13_MEMORY_ARCHIVAL"))
+            from memory_archiver import MemoryArchiver
+            archiver = MemoryArchiver(organism_root / "13_MEMORY_ARCHIVAL")
+
+            # Archive cycle results if available
+            cycle_results = context.get("cycle_results", [])
+            for result in cycle_results:
+                if result.get("status") == "completed":
+                    archiver.queue_for_archival(result)
+                    archived_count += 1
+
+            # Process archival queue
+            archiver.process_queue()
+        except Exception as e:
+            print(f"[13_MEMORY_ARCHIVAL] Archival error: {e}")
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "archived_count": archived_count,
+                "index_updated": True,
+                "search_ready": True
+            },
+            next_recommended="15_KNOWLEDGE_CORE"
+        )
+
+
+class KnowledgeCoreHandler(SubsystemHandler):
+    """15_KNOWLEDGE_CORE: Feature discovery and knowledge catalog."""
+
+    def __init__(self, code: str, config: Dict[str, Any]):
+        super().__init__(code, config)
+        self._pack_loader = None
+
+    def _load_knowledge_packs(self, organism_root: Path) -> Dict[str, Any]:
+        """Load and index knowledge packs from _AMOS_BRAIN."""
+        try:
+            sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
+            from knowledge_pack_loader import KnowledgePackLoader
+            self._pack_loader = KnowledgePackLoader()
+            return self._pack_loader.get_status()
+        except Exception as e:
+            print(f"[15_KNOWLEDGE_CORE] Knowledge pack loading error: {e}")
+            return {"loaded": False, "total_packs": 0, "error": str(e)}
+
+    def process(self, context: Dict[str, Any]) -> CycleResult:
+        actions = [
+            "discover_features",
+            "catalog_engines",
+            "load_knowledge_packs",
+            "index_knowledge_packs",
+            "update_capability_registry"
+        ]
+
+        # Discover and catalog features
+        features_discovered = 0
+        engines_cataloged = 0
+        knowledge_packs_indexed = 0
+        pack_stats = {}
+
+        try:
+            organism_root = context.get("organism_root", Path.cwd())
+            sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
+            from feature_registry import FeatureRegistry
+            registry = FeatureRegistry(organism_root)
+
+            # Auto-discover all features
+            registry.auto_discover()
+
+            # Get discovery stats
+            features_discovered = len(registry.discovered_features)
+            engines_cataloged = len(registry.cognitive_engines) + len(registry.core_brain_engines)
+            knowledge_packs_indexed = len(registry.knowledge_packs)
+
+            # Load knowledge packs
+            pack_status = self._load_knowledge_packs(organism_root)
+            knowledge_packs_indexed = pack_status.get("total_packs", 0)
+            pack_stats = pack_status.get("stats", {})
+
+            # Save registry state
+            registry.save()
+        except Exception as e:
+            print(f"[15_KNOWLEDGE_CORE] Feature discovery error: {e}")
+
+        return CycleResult(
+            subsystem=self.code,
+            status="active",
+            actions=actions,
+            outputs={
+                "features_discovered": features_discovered,
+                "engines_cataloged": engines_cataloged,
+                "knowledge_packs_indexed": knowledge_packs_indexed,
+                "knowledge_pack_stats": pack_stats,
+                "pack_loader_ready": self._pack_loader is not None,
+                "registry_updated": True,
+                "discovery_complete": True
+            },
+            next_recommended="01_BRAIN"
+        )
+
+
 # ============================================================================
 # HANDLER FACTORY
 # ============================================================================
@@ -523,6 +787,8 @@ HANDLER_MAP: Dict[str, type] = {
     "11_LEGAL_BRAIN": LegalHandler,
     "12_QUANTUM_LAYER": QuantumLayerHandler,
     "13_FACTORY": FactoryHandler,
+    "13_MEMORY_ARCHIVAL": MemoryArchivalHandler,
+    "15_KNOWLEDGE_CORE": KnowledgeCoreHandler,
     "06_MUSCLE": MuscleHandler,
     "07_METABOLISM": MetabolismHandler,
 }

@@ -88,15 +88,22 @@ def check_ecosystem() -> dict[str, Any]:
     except Exception as e:
         print_component("Core Brain", "error", str(e)[:30])
     
-    # Check 2: Tools
+    # Check 2: Tools (register first)
     try:
+        # Import and register AMOS tools first
+        try:
+            from amos_tools import register_amos_tools
+            register_amos_tools()
+        except Exception:
+            pass
+        
         from tool_registry import _registry
         amos_tools = [k for k in _registry.keys() if "AMOS" in k]
         if len(amos_tools) >= 5:
             components["Tools (5)"] = True
-            print_component("Tools (5)", "ok", f"{len(amos_tools)} registered")
+            print_component("Tools", "ok", f"{len(amos_tools)} registered")
         else:
-            print_component("Tools (5)", "warn", f"only {len(amos_tools)}")
+            print_component("Tools", "warn", f"only {len(amos_tools)}")
     except Exception as e:
         print_component("Tools (5)", "error", str(e)[:30])
     
@@ -139,14 +146,14 @@ def check_ecosystem() -> dict[str, Any]:
     # Check 6: CLI
     try:
         result = subprocess.run(
-            ["python3", "clawspring/clawspring.py", "--help"],
+            ["python3", "clawspring/clawspring.py", "--amos", "--version"],
             capture_output=True, text=True, timeout=5
         )
-        if "--amos" in result.stdout:
+        if result.returncode == 0 and "clawspring" in result.stdout:
             components["CLI --amos"] = True
-            print_component("CLI --amos", "ok", "flag available")
+            print_component("CLI --amos", "ok", "flag working")
         else:
-            print_component("CLI --amos", "warn", "flag missing")
+            print_component("CLI --amos", "warn", "flag not working")
     except Exception as e:
         print_component("CLI --amos", "error", str(e)[:30])
     

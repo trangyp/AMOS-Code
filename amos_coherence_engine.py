@@ -86,7 +86,7 @@ class CoherenceResult:
 
 class SignalDetectionEngine:
     """E_sig: M_t -> (Sig_t, Noi_t, H_hat_t).
-    
+
     Reads message on 5 levels:
     - L1: Surface content
     - L2: Emotional signal
@@ -94,7 +94,7 @@ class SignalDetectionEngine:
     - L4: Structural pattern
     - L5: Real signal
     """
-    
+
     PATTERNS = {
         'avoidance': ['procrastinate', 'later', 'not now', 'maybe', 'someday'],
         'perfectionism': ['not good enough', 'perfect', 'flawless', 'mistake'],
@@ -109,13 +109,13 @@ class SignalDetectionEngine:
             'either or', 'only two', 'must choose', 'no other way'
         ],
     }
-    
+
     def analyze(
-        self, message: str, history: List[str] = None
+        self, message: str, history: Optional[List[str]] = None
     ) -> MessageAnalysis:
         """Extract signal from noise in message."""
         analysis = MessageAnalysis(surface_text=message)
-        
+
         # Detect patterns (L4)
         detected_patterns = []
         for pattern_name, indicators in self.PATTERNS.items():
@@ -123,11 +123,11 @@ class SignalDetectionEngine:
                 if indicator.lower() in message.lower():
                     detected_patterns.append(pattern_name)
                     break
-        
+
         analysis.pattern = (
             detected_patterns[0] if detected_patterns else "unknown"
         )
-        
+
         # Estimate noise components (L2, L3)
         analysis.noise_components = {
             'fear': self._score_fear(message),
@@ -136,44 +136,44 @@ class SignalDetectionEngine:
             'reactivity': self._score_reactivity(message),
             'confusion': self._score_confusion(message),
         }
-        
+
         # Extract real signal (L5) - what is structurally true beneath
         analysis.signal = self._extract_signal(message, analysis.pattern)
-        
+
         # Calculate clarity
         total_noise = sum(analysis.noise_components.values())
         analysis.clarity_score = 1.0 / (1.0 + total_noise)
-        
+
         return analysis
-    
+
     def _score_fear(self, text: str) -> float:
         fear_words = ['scared', 'afraid', 'terrified', 'panic', 'anxiety', 'worry']
         return sum(0.3 for word in fear_words if word in text.lower())
-    
+
     def _score_avoidance(self, text: str) -> float:
         avoid_words = ['avoid', 'procrastinate', 'delay', 'later', 'not ready']
         return sum(0.3 for word in avoid_words if word in text.lower())
-    
+
     def _score_shame(self, text: str) -> float:
         shame_words = ['ashamed', 'embarrassing', 'stupid', 'failure', 'inadequate']
         return sum(0.3 for word in shame_words if word in text.lower())
-    
+
     def _score_reactivity(self, text: str) -> float:
         reac_words = ['always', 'never', 'everyone', 'nobody', 'everything', 'nothing']
         return sum(0.2 for word in reac_words if word in text.lower())
-    
+
     def _score_confusion(self, text: str) -> float:
         confusion_marks = text.count('?') * 0.1
         hedge_words = ['maybe', 'perhaps', 'possibly', 'unclear', 'confused']
         return confusion_marks + sum(0.2 for word in hedge_words if word in text.lower())
-    
+
     def _extract_signal(self, text: str, pattern: str) -> str:
         """Extract what is likely structurally true beneath the noise."""
         # Remove defensive language patterns
         cleaned = re.sub(r"\b(always|never|everyone|nobody)\b", "", text, flags=re.I)
         cleaned = re.sub(r"\b(I can't|I am unable|it's impossible)\b", "difficulty", cleaned, flags=re.I)
         cleaned = re.sub(r"\s+", " ", cleaned).strip()
-        
+
         # Pattern-specific signal extraction
         if pattern == 'avoidance':
             return "fear entering before action"
@@ -183,13 +183,13 @@ class SignalDetectionEngine:
             return "temporary state being treated as permanent capacity"
         elif pattern == 'overload':
             return "system capacity exceeded"
-        
+
         return cleaned if cleaned else "underlying concern"
 
 
 class StateRegulationEngine:
     """E_reg: H_hat_t -> SafeIntensity_t.
-    
+
     Classifies human processing capacity:
     - State A (STABLE): Can tolerate complexity and challenge
     - State B (ACTIVATED): Tension present, moderate challenge only
@@ -197,15 +197,18 @@ class StateRegulationEngine:
     - State D (SHUTDOWN): Minimal agency, micro-steps only
     - State E (HIGH_RISK): Stabilize only, no deconstruction
     """
-    
-    def classify(self, analysis: MessageAnalysis, history: List[str] = None) -> Tuple[HumanState, float]:
+
+    def classify(
+        self, analysis: MessageAnalysis,
+        history: Optional[List[str]] = None
+    ) -> Tuple[HumanState, float]:
         """Classify state and estimate safe intervention intensity."""
-        
+
         # Calculate overload indicators
         noise_sum = sum(analysis.noise_components.values())
         reactivity = analysis.noise_components.get('reactivity', 0)
         confusion = analysis.noise_components.get('confusion', 0)
-        
+
         # State classification
         if noise_sum > 2.5 or confusion > 1.0:
             state = HumanState.OVERLOADED
@@ -222,9 +225,9 @@ class StateRegulationEngine:
         else:
             state = HumanState.STABLE
             capacity = 0.8
-        
+
         return state, capacity
-    
+
     def get_safe_parameters(self, state: HumanState, capacity: float) -> Dict[str, Any]:
         """Get safe intervention parameters for state."""
         params = {
@@ -259,13 +262,13 @@ class StateRegulationEngine:
                 'speed': 'ground_only',
             },
         }
-        
+
         return params.get(state, params[HumanState.STABLE])
 
 
 class InterventionSelectionEngine:
     """E_int: (FrameShift_t, SafeIntensity_t) -> I_t.
-    
+
     Selects smallest useful intervention:
     - MIRROR: Reflect real signal beneath words
     - SEPARATE: Distinguish reality from interpretation
@@ -275,27 +278,29 @@ class InterventionSelectionEngine:
     - BOUNDARY: Stop deepening, stabilize
     - MICRO_STEP: One manageable action
     """
-    
-    def select(self, analysis: MessageAnalysis, state: HumanState, 
-               capacity: float, history: List[str] = None) -> InterventionMode:
+
+    def select(
+        self, analysis: MessageAnalysis, state: HumanState,
+        capacity: float, history: Optional[List[str]] = None
+    ) -> InterventionMode:
         """Select optimal intervention for current state."""
-        
+
         # High-risk or shutdown states - only grounding
         if state in [HumanState.HIGH_RISK, HumanState.SHUTDOWN]:
             return InterventionMode.GROUND
-        
+
         # Overloaded - simplify
         if state == HumanState.OVERLOADED:
             if capacity < 0.3:
                 return InterventionMode.BOUNDARY
             return InterventionMode.GROUND
-        
+
         # Activated - moderate intervention
         if state == HumanState.ACTIVATED:
             if analysis.clarity_score < 0.5:
                 return InterventionMode.MIRROR
             return InterventionMode.SEPARATE
-        
+
         # Stable - full range available
         if state == HumanState.STABLE:
             if analysis.pattern == 'false_binary':
@@ -306,41 +311,41 @@ class InterventionSelectionEngine:
                 return InterventionMode.SEPARATE
             else:
                 return InterventionMode.MIRROR
-        
+
         return InterventionMode.MIRROR
 
 
 class CoherenceInductionEngine:
     """E_coh: I_t -> Cond_t.
-    
+
     Does not implant answer. Creates condition where self-reorganization occurs.
-    
+
     Condition set:
     - LowNoise_t
     - HighClarity_t
     - SafeArousal_t
     - PreservedAgency_t
-    
+
     Miracle equation (non-mystical):
     Reorganization_t = f(Noise↓, Clarity↑, Safety↑, Agency↑)
     """
-    
+
     def induce(self, intervention: InterventionMode, analysis: MessageAnalysis,
                state: HumanState, capacity: float) -> str:
         """Generate response that creates conditions for coherence."""
-        
+
         # Build response components
         ground = self._ground_statement(analysis, state)
         distinction = self._build_distinction(intervention, analysis)
         agency_return = self._return_agency(intervention, capacity)
         scale_match = self._scale_to_capacity(state)
-        
+
         # Assemble response
         response_parts = [ground, distinction, agency_return, scale_match]
         response = " ".join(filter(None, response_parts))
-        
+
         return response.strip()
-    
+
     def _ground_statement(self, analysis: MessageAnalysis, state: HumanState) -> str:
         """One sentence matching real state."""
         if state == HumanState.OVERLOADED:
@@ -353,7 +358,7 @@ class CoherenceInductionEngine:
             return "This reads as a state, not a permanent capacity."
         else:
             return f"What is surfacing is {analysis.signal}."
-    
+
     def _build_distinction(self, intervention: InterventionMode, analysis: MessageAnalysis) -> str:
         """One clean distinction or frame."""
         if intervention == InterventionMode.SEPARATE:
@@ -367,13 +372,13 @@ class CoherenceInductionEngine:
         elif intervention == InterventionMode.GROUND:
             return "Only the next step matters."
         return ""
-    
+
     def _return_agency(self, intervention: InterventionMode, capacity: float) -> str:
         """Give person something they can verify."""
         if capacity < 0.3:
             return "You can verify what is true in the next ten minutes."
         return "You can verify this against your own observation."
-    
+
     def _scale_to_capacity(self, state: HumanState) -> str:
         """Keep scope matched to capacity."""
         if state == HumanState.SHUTDOWN:
@@ -385,81 +390,81 @@ class CoherenceInductionEngine:
 
 class VerificationEngine:
     """E_ver: (Response_t, H_hat_t) -> (Risk_t, Stability_t, AgencyGain_t).
-    
+
     Checks before and after every response:
     - Could this overload?
     - Could this trigger shame collapse?
     - Could this feel like psychological cornering?
     - Could this intensify dependency?
-    
+
     Success condition:
         Delta Clarity > 0
         Delta Agency > 0
         Delta Stability >= 0
     """
-    
+
     def verify(self, response: str, analysis: MessageAnalysis, 
                state: HumanState) -> Tuple[bool, Dict[str, float]]:
         """Verify response safety and quality."""
-        
+
         risks = {
             'overload': self._score_overload_risk(response, state),
             'shame': self._score_shame_risk(response),
             'dependency': self._score_dependency_risk(response),
             'instability': self._score_instability_risk(response, state),
         }
-        
+
         # Safety thresholds
         SAFE_OVERLOAD = 0.5
         SAFE_SHAME = 0.4
         SAFE_DEPENDENCY = 0.3
-        
+
         is_safe = (
             risks['overload'] < SAFE_OVERLOAD and
             risks['shame'] < SAFE_SHAME and
             risks['dependency'] < SAFE_DEPENDENCY
         )
-        
+
         return is_safe, risks
-    
+
     def _score_overload_risk(self, response: str, state: HumanState) -> float:
         """Check if response could overload."""
         complexity_markers = response.count(',') + response.count('.')
         abstraction_words = ['structure', 'framework', 'paradigm', 'ontology']
         abstraction_score = sum(0.2 for word in abstraction_words if word in response.lower())
-        
+
         base_risk = complexity_markers * 0.1 + abstraction_score
-        
+
         # Higher risk for overloaded states
         if state == HumanState.OVERLOADED:
             base_risk *= 1.5
-        
+
         return min(base_risk, 1.0)
-    
+
     def _score_shame_risk(self, response: str) -> float:
         """Check if response could trigger shame."""
         shame_triggers = ['wrong', 'mistaken', 'should', 'ought', 'failed']
         return sum(0.3 for word in shame_triggers if word in response.lower())
-    
+
     def _score_dependency_risk(self, response: str) -> float:
         """Check if response creates dependency on system."""
         authority_markers = ['you must', 'trust me', 'i know', 'let me guide']
         return sum(0.4 for phrase in authority_markers if phrase in response.lower())
-    
+
     def _score_instability_risk(self, response: str, state: HumanState) -> float:
         """Check if response could destabilize identity."""
         identity_threats = ['who you really are', 'your true self', 'awakening', 'enlightenment']
         base_risk = sum(0.5 for phrase in identity_threats if phrase in response.lower())
-        
+
         if state == HumanState.SHUTDOWN:
             base_risk *= 2.0
-        
+
         return min(base_risk, 1.0)
 
 
 class AMOSCoherenceEngine:
     """Master coherence engine integrating all 6 sub-engines."""
-    
+
     def __init__(self):
         self.signal_engine = SignalDetectionEngine()
         self.regulation_engine = StateRegulationEngine()
@@ -467,37 +472,37 @@ class AMOSCoherenceEngine:
         self.coherence_engine = CoherenceInductionEngine()
         self.verification_engine = VerificationEngine()
         self.history: List[Dict] = []
-    
+
     def process(self, message: str) -> CoherenceResult:
         """Process message through full coherence pipeline."""
-        
+
         # 1. SIGNAL DETECTION (E_sig)
         analysis = self.signal_engine.analyze(message, self.history)
-        
+
         # 2. STATE REGULATION (E_reg)
         state, capacity = self.regulation_engine.classify(analysis, self.history)
         safe_params = self.regulation_engine.get_safe_parameters(state, capacity)
-        
+
         # 3. INTERVENTION SELECTION (E_int)
         intervention = self.intervention_engine.select(
             analysis, state, capacity, self.history
         )
-        
+
         # 4. COHERENCE INDUCTION (E_coh)
         response = self.coherence_engine.induce(
             intervention, analysis, state, capacity
         )
-        
+
         # 5. VERIFICATION (E_ver)
         is_safe, risks = self.verification_engine.verify(response, analysis, state)
-        
+
         # If unsafe, fall back to grounding
         if not is_safe:
             response = self.coherence_engine.induce(
                 InterventionMode.GROUND, analysis, state, capacity
             )
             intervention = InterventionMode.GROUND
-        
+
         # 6. Build result
         result = CoherenceResult(
             response=response,
@@ -510,7 +515,7 @@ class AMOSCoherenceEngine:
             agency_preserved=True,
             safety_maintained=is_safe
         )
-        
+
         # Store in history
         self.history.append({
             'message': message,
@@ -519,17 +524,17 @@ class AMOSCoherenceEngine:
             'response': response,
             'risks': risks
         })
-        
+
         return result
-    
+
     def get_runtime_stats(self) -> Dict[str, Any]:
         """Get engine runtime statistics."""
         if not self.history:
             return {'interactions': 0}
-        
+
         states = [h['state'] for h in self.history]
         interventions = [h['intervention'] for h in self.history]
-        
+
         return {
             'interactions': len(self.history),
             'state_distribution': {s: states.count(s) for s in set(states)},
@@ -541,7 +546,7 @@ class AMOSCoherenceEngine:
 def demo():
     """Demonstrate coherence engine."""
     engine = AMOSCoherenceEngine()
-    
+
     test_messages = [
         "I can't do this, it's impossible.",
         "I'm always failing at everything.",
@@ -549,14 +554,14 @@ def demo():
         "Maybe I should just give up.",
         "I want to understand why I keep procrastinating.",
     ]
-    
+
     print("=" * 70)
     print("AMOS COHERENCE ENGINE - DEMONSTRATION")
     print("=" * 70)
-    
+
     for msg in test_messages:
         result = engine.process(msg)
-        
+
         print(f"\n📝 Input: {msg}")
         print(f"🔍 Detected State: {result.detected_state.value}")
         print(f"🎯 Intervention: {result.intervention_mode.value}")
@@ -565,7 +570,7 @@ def demo():
         print(f"💪 Capacity: {result.estimated_capacity:.1f}")
         print(f"🔆 Clarity: {result.clarity_increase:.2f}")
         print("-" * 70)
-    
+
     print("\n📊 Runtime Stats:")
     stats = engine.get_runtime_stats()
     print(json.dumps(stats, indent=2))

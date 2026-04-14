@@ -144,6 +144,64 @@ class AmosRuntime:
         print(f"Status: {self.status.upper()}")
         print()
 
+    # Interface methods for AMOS Brain integration
+    def get_identity(self) -> dict:
+        """Get AMOS identity information."""
+        return {
+            "system_name": "AMOS",
+            "version": "1.0.0",
+            "creator": "Trang Phan",
+            "status": self.status
+        }
+
+    def get_law_summary(self) -> list:
+        """Get summary of global laws L1-L6."""
+        return [
+            {"id": "L1", "name": "Law of Law", "desc": "All reasoning obeys highest constraints"},
+            {"id": "L2", "name": "Rule of 2", "desc": "Check at least two contrasting perspectives"},
+            {"id": "L3", "name": "Rule of 4", "desc": "Consider four quadrants"},
+            {"id": "L4", "name": "Absolute Structural Integrity", "desc": "Outputs must be consistent"},
+            {"id": "L5", "name": "Post-Theory Communication", "desc": "Clear, grounded language"},
+            {"id": "L6", "name": "UBI Alignment", "desc": "Protect biological integrity"}
+        ]
+
+    def execute_cognitive_task(self, problem: str, context: dict = None) -> dict:
+        """Execute a cognitive task using AMOS Brain."""
+        # Use the brain integration if available
+        try:
+            from amos_brain import get_amos_integration
+            amos = get_amos_integration()
+            if hasattr(amos, 'reasoning') and amos.reasoning:
+                result = amos.reasoning.full_analysis(problem)
+                return result
+        except Exception:
+            pass
+        
+        # Fallback response
+        return {
+            "problem": problem,
+            "recommendation": "AMOS analysis not available",
+            "rule_of_two": {"confidence": 0.5},
+            "rule_of_four": {"quadrants": {}}
+        }
+
+
+# Global runtime instance for singleton pattern
+_runtime_instance = None
+
+
+def get_runtime() -> AmosRuntime:
+    """Get or create the global AMOS runtime instance."""
+    global _runtime_instance
+    if _runtime_instance is None:
+        _runtime_instance = AmosRuntime(mode="minimal")
+        _runtime_instance.initialize()
+    return _runtime_instance
+
+
+# Alias for compatibility
+AMOSRuntime = AmosRuntime
+
 
 def main():
     parser = argparse.ArgumentParser(description="AMOS Runtime - Master Execution Engine")

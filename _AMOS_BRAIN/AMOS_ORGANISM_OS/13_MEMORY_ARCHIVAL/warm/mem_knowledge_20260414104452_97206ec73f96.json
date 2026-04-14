@@ -1,0 +1,20 @@
+{
+  "memory_id": "mem_knowledge_20260414104452_97206ec73f96",
+  "memory_type": "KNOWLEDGE",
+  "content": {
+    "fact": "Python uses indentation",
+    "category": "syntax",
+    "verified": true
+  },
+  "priority": "MEDIUM",
+  "created_at": "2026-04-14T10:44:52.866024",
+  "last_accessed": "2026-04-14T10:44:52.866026",
+  "access_count": 0,
+  "tags": [
+    "python",
+    "syntax",
+    "facts"
+  ],
+  "associations": [],
+  "embedding": null
+}

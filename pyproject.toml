@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "amos-brain"
-version = "4.0.0"
-description = "AMOS Brain + AMOSL - Field-Theoretic Programming System. 5-lens mathematical regime: Axiomatic, Logical, Category, Control, InfoGeo, Field. Multi-substrate computation across classical, quantum, and biological domains."
-readme = "README_AMOSL_RELEASE.md"
+version = "14.0.0"
+description = "AMOS Brain Cognitive OS vInfinity - 14-layer deterministic cognitive architecture for AI agents with structured reasoning, law enforcement (L1-L6), and multi-agent orchestration."
+readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
 authors = [

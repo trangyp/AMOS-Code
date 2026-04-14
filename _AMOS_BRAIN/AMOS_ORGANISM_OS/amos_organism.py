@@ -56,6 +56,10 @@ class AMOSOrganism:
         self._quantum = None
         self._learning = None
         self._canon = None
+        self._ethics = None
+        self._memory = None
+        self._interfaces = None
+        self._engine_activation = None
         self._subsystems: Dict[str, Any] = {}
         
         logger.info(f"AMOS Organism initializing at {self.root}")
@@ -86,7 +90,11 @@ class AMOSOrganism:
         self._init_quantum()
         self._init_learning()
         self._init_canon()
-        
+        self._init_ethics()
+        self._init_memory()
+        self._init_interfaces()
+        self._init_engine_activation()
+
         self.state["status"] = "ready"
         logger.info("AMOS Organism ready")
     
@@ -368,16 +376,141 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize CANON_INTEGRATION: {e}")
     
+    def _init_ethics(self):
+        """Initialize the ETHICS_VALIDATION subsystem."""
+        try:
+            ethics_path = self.root / "12_ETHICS_VALIDATION"
+            
+            # Add to path and import directly
+            if str(ethics_path) not in sys.path:
+                sys.path.insert(0, str(ethics_path))
+            
+            # Clear any cached module
+            if 'ethics_validation_kernel' in sys.modules:
+                del sys.modules['ethics_validation_kernel']
+            
+            import ethics_validation_kernel
+            importlib.reload(ethics_validation_kernel)
+            
+            self._ethics = ethics_validation_kernel.EthicsValidationKernel(
+                self.root
+            )
+            self._subsystems["12_ETHICS_VALIDATION"] = self._ethics
+            self.state["active_subsystems"].append("12_ETHICS_VALIDATION")
+            
+            logger.info(
+                "ETHICS_VALIDATION initialized with ethical constraints"
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize ETHICS_VALIDATION: {e}")
+    
+    def _init_memory(self):
+        """Initialize the MEMORY_ARCHIVAL subsystem."""
+        try:
+            memory_path = self.root / "13_MEMORY_ARCHIVAL"
+            
+            # Add to path and import directly
+            if str(memory_path) not in sys.path:
+                sys.path.insert(0, str(memory_path))
+            
+            # Clear any cached module
+            if 'memory_archival_kernel' in sys.modules:
+                del sys.modules['memory_archival_kernel']
+            
+            import memory_archival_kernel
+            importlib.reload(memory_archival_kernel)
+            
+            self._memory = memory_archival_kernel.MemoryArchivalKernel(self.root)
+            self._subsystems["13_MEMORY_ARCHIVAL"] = self._memory
+            self.state["active_subsystems"].append("13_MEMORY_ARCHIVAL")
+            
+            logger.info(
+                "MEMORY_ARCHIVAL initialized with long-term storage"
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize MEMORY_ARCHIVAL: {e}")
+    
+    def _init_interfaces(self):
+        """Initialize the INTERFACE_LAYER subsystem."""
+        try:
+            interfaces_path = self.root / "14_INTERFACES"
+            
+            # Add to path and import directly
+            if str(interfaces_path) not in sys.path:
+                sys.path.insert(0, str(interfaces_path))
+            
+            # Clear any cached module
+            if 'interface_layer_kernel' in sys.modules:
+                del sys.modules['interface_layer_kernel']
+            
+            import interface_layer_kernel
+            importlib.reload(interface_layer_kernel)
+            
+            self._interfaces = interface_layer_kernel.InterfaceLayerKernel(
+                self.root, self
+            )
+            self._subsystems["14_INTERFACE_LAYER"] = self._interfaces
+            self.state["active_subsystems"].append("14_INTERFACE_LAYER")
+            
+            logger.info(
+                "INTERFACE_LAYER initialized with CLI/API/Dashboard"
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize INTERFACE_LAYER: {e}")
+
+    def _init_engine_activation(self):
+        """Initialize the ENGINE_ACTIVATION subsystem."""
+        try:
+            activation_path = self.root / "15_ENGINE_ACTIVATION"
+
+            # Add to path and import directly
+            if str(activation_path) not in sys.path:
+                sys.path.insert(0, str(activation_path))
+
+            # Clear any cached module
+            if 'engine_activation_kernel' in sys.modules:
+                del sys.modules['engine_activation_kernel']
+
+            import engine_activation_kernel
+            importlib.reload(engine_activation_kernel)
+
+            self._engine_activation = engine_activation_kernel.EngineActivationKernel(
+                self.root, self._brain
+            )
+
+            # Scan and activate engines
+            discovery = self._engine_activation.scan_and_discover()
+            logger.info(f"Engine discovery: {discovery['discovered']} engines found")
+
+            # Activate cognitive engines by default
+            activated = self._engine_activation.activate_by_category("cognitive")
+            activated += self._engine_activation.activate_by_category("tech")
+            activated += self._engine_activation.activate_by_category("core")
+
+            self._subsystems["15_ENGINE_ACTIVATION"] = self._engine_activation
+            self.state["active_subsystems"].append("15_ENGINE_ACTIVATION")
+
+            logger.info(
+                f"ENGINE_ACTIVATION initialized with {activated} engines active"
+            )
+        except Exception as e:
+            logger.error(f"Failed to initialize ENGINE_ACTIVATION: {e}")
+
     def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
             return {"error": "SENSES not initialized"}
         
         perception = self._senses.sense_all()
-        logger.info(f"Perception complete: {perception.get('buffered_inputs', 0)} buffered inputs")
+        logger.info(
+            f"Perception complete: {perception.get('buffered_inputs', 0)} "
+            f"buffered inputs"
+        )
         return perception
     
-    def think(self, input_data: Dict[str, Any], mode: str = "exploratory") -> Dict[str, Any]:
+    def think(
+        self, input_data: Dict[str, Any], mode: str = "exploratory"
+    ) -> Dict[str, Any]:
         """Run the BRAIN subsystem to process input."""
         if self._brain is None:
             return {"error": "BRAIN not initialized"}
@@ -485,7 +618,11 @@ class AMOSOrganism:
             "world_model_state": self._world_model.get_state() if self._world_model else None,
             "quantum_state": self._quantum.get_state() if self._quantum else None,
             "learning_state": self._learning.get_state() if self._learning else None,
-            "canon_state": self._canon.get_state() if self._canon else None
+            "canon_state": self._canon.get_state() if self._canon else None,
+            "ethics_state": self._ethics.get_state() if self._ethics else None,
+            "memory_state": self._memory.get_state() if self._memory else None,
+            "interfaces_state": self._interfaces.get_state() if self._interfaces else None,
+            "engine_activation_state": self._engine_activation.get_state() if self._engine_activation else None
         }
     
     def interactive_mode(self):

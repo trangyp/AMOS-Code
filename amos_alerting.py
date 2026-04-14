@@ -1,24 +1,17 @@
-#!/usr/bin/env python3
-"""AMOS Alerting System - Production Alerts and Notifications
+"""AMOS Alerting - Production alerting system.
 
-Features:
-- Alert rules based on metrics thresholds
-- Multiple notification channels (webhook, email, slack)
-- Alert history and acknowledgment
-- Escalation policies
+Monitors system health and metrics, sends alerts when thresholds are exceeded.
 """
 
 import asyncio
 import json
-import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Callable, Any
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
-import aiohttp
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from amos_health_monitor import HealthStatus, SystemHealth
 
 
 class AlertSeverity(Enum):
@@ -27,334 +20,191 @@ class AlertSeverity(Enum):
     CRITICAL = "critical"
 
 
-class AlertStatus(Enum):
-    ACTIVE = "active"
-    ACKNOWLEDGED = "acknowledged"
-    RESOLVED = "resolved"
-
-
-@dataclass
-class AlertRule:
-    name: str
-    metric: str
-    condition: str
-    threshold: float
-    severity: AlertSeverity
-    duration_seconds: int
-    description: str
-    enabled: bool = True
-
-
 @dataclass
 class Alert:
+    """An alert notification."""
     id: str
-    rule_name: str
     severity: AlertSeverity
-    status: AlertStatus
+    component: str
     message: str
-    value: float
-    threshold: float
     timestamp: datetime
-    acknowledged_by: Optional[str] = None
-    acknowledged_at: Optional[datetime] = None
-    resolved_at: Optional[datetime] = None
-
-
-class NotificationChannel:
-    """Base class for notification channels."""
+    acknowledged: bool = False
+    resolved: bool = False
     
-    async def send(self, alert: Alert) -> bool:
-        raise NotImplementedError
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "severity": self.severity.value,
+            "component": self.component,
+            "message": self.message,
+            "timestamp": self.timestamp.isoformat(),
+            "acknowledged": self.acknowledged,
+            "resolved": self.resolved
+        }
 
 
-class WebhookChannel(NotificationChannel):
-    """Send alerts via HTTP webhook."""
+class AlertRule:
+    """A rule that triggers alerts."""
     
-    def __init__(self, url: str, headers: Optional[Dict] = None):
-        self.url = url
-        self.headers = headers or {}
+    def __init__(
+        self,
+        name: str,
+        severity: AlertSeverity,
+        condition: Callable[[Any], bool],
+        message_template: str
+    ):
+        self.name = name
+        self.severity = severity
+        self.condition = condition
+        self.message_template = message_template
     
-    async def send(self, alert: Alert) -> bool:
-        try:
-            payload = {
-                "alert_id": alert.id,
-                "rule": alert.rule_name,
-                "severity": alert.severity.value,
-                "message": alert.message,
-                "value": alert.value,
-                "threshold": alert.threshold,
-                "timestamp": alert.timestamp.isoformat(),
-                "status": alert.status.value
-            }
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.url,
-                    json=payload,
-                    headers=self.headers,
-                    timeout=aiohttp.ClientTimeout(total=10)
-                ) as response:
-                    return response.status == 200
-        except Exception as e:
-            logger.error(f"Webhook notification failed: {e}")
-            return False
+    def check(self, data: Any) -> Optional[Alert]:
+        """Check if alert should be triggered."""
+        if self.condition(data):
+            return Alert(
+                id=f"{self.name}_{datetime.now().timestamp()}",
+                severity=self.severity,
+                component=self.name,
+                message=self.message_template.format(data),
+                timestamp=datetime.now()
+            )
+        return None
 
 
-class SlackChannel(NotificationChannel):
-    """Send alerts to Slack."""
+class AlertManager:
+    """Manages alerts and notifications."""
     
-    def __init__(self, webhook_url: str, channel: Optional[str] = None):
-        self.webhook_url = webhook_url
-        self.channel = channel
-    
-    async def send(self, alert: Alert) -> bool:
-        try:
-            color = {
-                AlertSeverity.INFO: "#36a64f",
-                AlertSeverity.WARNING: "#ff9900",
-                AlertSeverity.CRITICAL: "#ff0000"
-            }.get(alert.severity, "#808080")
-            
-            payload = {
-                "attachments": [{
-                    "color": color,
-                    "title": f"AMOS Alert: {alert.rule_name}",
-                    "text": alert.message,
-                    "fields": [
-                        {"title": "Severity", "value": alert.severity.value, "short": True},
-                        {"title": "Value", "value": str(alert.value), "short": True},
-                        {"title": "Threshold", "value": str(alert.threshold), "short": True},
-                        {"title": "Status", "value": alert.status.value, "short": True}
-                    ],
-                    "footer": "AMOS Monitoring",
-                    "ts": int(alert.timestamp.timestamp())
-                }]
-            }
-            
-            if self.channel:
-                payload["channel"] = self.channel
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.webhook_url,
-                    json=payload,
-                    timeout=aiohttp.ClientTimeout(total=10)
-                ) as response:
-                    return response.status == 200
-        except Exception as e:
-            logger.error(f"Slack notification failed: {e}")
-            return False
-
-
-class AMOSAlerting:
-    """Production alerting system for AMOS Brain."""
-    
-    def __init__(self):
+    def __init__(self, alert_file: str = "AMOS_ORGANISM_OS/alerts.json"):
+        self.alert_file = Path(alert_file)
         self.rules: List[AlertRule] = []
-        self.channels: Dict[str, NotificationChannel] = {}
         self.active_alerts: Dict[str, Alert] = {}
         self.alert_history: List[Alert] = []
-        self.max_history = 1000
-        self._alert_counter = 0
-        self._rule_states: Dict[str, Dict] = {}
+        self._setup_default_rules()
+    
+    def _setup_default_rules(self):
+        """Setup default alerting rules."""
+        # Health check rules
+        self.add_rule(AlertRule(
+            name="component_unhealthy",
+            severity=AlertSeverity.CRITICAL,
+            condition=lambda health: any(
+                c.status == "unhealthy" for c in health.components
+            ),
+            message_template="Component is unhealthy: {}"
+        ))
+        
+        self.add_rule(AlertRule(
+            name="high_error_rate",
+            severity=AlertSeverity.WARNING,
+            condition=lambda metrics: metrics.get("error_rate", 0) > 5,
+            message_template="High error rate detected: {}%"
+        ))
+        
+        self.add_rule(AlertRule(
+            name="slow_response_time",
+            severity=AlertSeverity.WARNING,
+            condition=lambda metrics: metrics.get("avg_response_time_ms", 0) > 1000,
+            message_template="Slow response time: {}ms average"
+        ))
     
     def add_rule(self, rule: AlertRule):
         """Add an alert rule."""
         self.rules.append(rule)
-        logger.info(f"Added alert rule: {rule.name}")
     
-    def add_channel(self, name: str, channel: NotificationChannel):
-        """Add a notification channel."""
-        self.channels[name] = channel
-        logger.info(f"Added notification channel: {name}")
-    
-    def evaluate_rules(self, metrics: Dict[str, float]) -> List[Alert]:
-        """Evaluate all rules against current metrics."""
-        new_alerts = []
+    def check_health(self, health: SystemHealth) -> List[Alert]:
+        """Check health data against rules."""
+        triggered = []
         
         for rule in self.rules:
-            if not rule.enabled:
-                continue
-            
-            value = metrics.get(rule.metric)
-            if value is None:
-                continue
-            
-            triggered = self._check_condition(value, rule.condition, rule.threshold)
-            
-            if triggered:
-                # Check if this is a new alert or continuing
-                existing = self.active_alerts.get(rule.name)
-                
-                if existing is None:
-                    # New alert
-                    self._alert_counter += 1
-                    alert = Alert(
-                        id=f"ALT-{self._alert_counter:04d}",
-                        rule_name=rule.name,
-                        severity=rule.severity,
-                        status=AlertStatus.ACTIVE,
-                        message=f"{rule.description}: {value} (threshold: {rule.threshold})",
-                        value=value,
-                        threshold=rule.threshold,
-                        timestamp=datetime.utcnow()
-                    )
-                    
-                    self.active_alerts[rule.name] = alert
-                    new_alerts.append(alert)
-                    logger.warning(f"Alert triggered: {rule.name}")
+            alert = rule.check(health)
+            if alert and alert.id not in self.active_alerts:
+                self.active_alerts[alert.id] = alert
+                triggered.append(alert)
         
-        # Check for resolved alerts
-        resolved = []
-        for rule_name, alert in list(self.active_alerts.items()):
-            rule = next((r for r in self.rules if r.name == rule_name), None)
-            if rule:
-                value = metrics.get(rule.metric)
-                if value is not None:
-                    still_triggered = self._check_condition(value, rule.condition, rule.threshold)
-                    if not still_triggered:
-                        alert.status = AlertStatus.RESOLVED
-                        alert.resolved_at = datetime.utcnow()
-                        resolved.append(alert)
-                        del self.active_alerts[rule_name]
-                        self.alert_history.append(alert)
-                        logger.info(f"Alert resolved: {rule_name}")
-        
-        # Cleanup history
-        if len(self.alert_history) > self.max_history:
-            self.alert_history = self.alert_history[-self.max_history:]
-        
-        return new_alerts
+        return triggered
     
-    def _check_condition(self, value: float, condition: str, threshold: float) -> bool:
-        """Check if condition is met."""
-        if condition == ">":
-            return value > threshold
-        elif condition == ">=":
-            return value >= threshold
-        elif condition == "<":
-            return value < threshold
-        elif condition == "<=":
-            return value <= threshold
-        elif condition == "==":
-            return value == threshold
-        return False
-    
-    async def send_notifications(self, alerts: List[Alert]):
-        """Send notifications for alerts."""
-        for alert in alerts:
-            for name, channel in self.channels.items():
-                success = await channel.send(alert)
-                if success:
-                    logger.info(f"Alert {alert.id} sent via {name}")
-                else:
-                    logger.error(f"Failed to send alert {alert.id} via {name}")
-    
-    def acknowledge_alert(self, alert_id: str, user: str) -> bool:
+    def acknowledge_alert(self, alert_id: str):
         """Acknowledge an alert."""
-        for alert in self.active_alerts.values():
-            if alert.id == alert_id:
-                alert.status = AlertStatus.ACKNOWLEDGED
-                alert.acknowledged_by = user
-                alert.acknowledged_at = datetime.utcnow()
-                logger.info(f"Alert {alert_id} acknowledged by {user}")
-                return True
-        return False
+        if alert_id in self.active_alerts:
+            self.active_alerts[alert_id].acknowledged = True
     
-    def get_active_alerts(self) -> List[Alert]:
-        """Get all active alerts."""
-        return list(self.active_alerts.values())
+    def resolve_alert(self, alert_id: str):
+        """Resolve an alert."""
+        if alert_id in self.active_alerts:
+            alert = self.active_alerts.pop(alert_id)
+            alert.resolved = True
+            self.alert_history.append(alert)
+            self._save_alerts()
     
-    def get_alert_history(self, hours: int = 24) -> List[Alert]:
-        """Get alert history."""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
-        return [a for a in self.alert_history if a.timestamp > cutoff]
+    def get_active_alerts(self, severity: Optional[AlertSeverity] = None) -> List[Alert]:
+        """Get active alerts, optionally filtered by severity."""
+        alerts = list(self.active_alerts.values())
+        if severity:
+            alerts = [a for a in alerts if a.severity == severity]
+        return sorted(alerts, key=lambda a: a.timestamp, reverse=True)
     
-    def to_dict(self) -> Dict:
-        """Convert alerting state to dict."""
+    def get_alert_summary(self) -> Dict[str, Any]:
+        """Get summary of alert status."""
+        active = self.get_active_alerts()
         return {
-            "rules_count": len(self.rules),
-            "channels_count": len(self.channels),
-            "active_alerts": len(self.active_alerts),
-            "total_history": len(self.alert_history),
-            "active": [
-                {
-                    "id": a.id,
-                    "rule": a.rule_name,
-                    "severity": a.severity.value,
-                    "status": a.status.value,
-                    "message": a.message,
-                    "timestamp": a.timestamp.isoformat()
-                }
-                for a in self.active_alerts.values()
-            ]
+            "total_active": len(active),
+            "critical": sum(1 for a in active if a.severity == AlertSeverity.CRITICAL),
+            "warning": sum(1 for a in active if a.severity == AlertSeverity.WARNING),
+            "info": sum(1 for a in active if a.severity == AlertSeverity.INFO),
+            "alerts": [a.to_dict() for a in active[:10]]
         }
+    
+    def _save_alerts(self):
+        """Save alert history to file."""
+        data = {
+            "active": [a.to_dict() for a in self.active_alerts.values()],
+            "history": [a.to_dict() for a in self.alert_history[-100:]]
+        }
+        with open(self.alert_file, "w") as f:
+            json.dump(data, f, indent=2)
 
 
-def init_default_alerting() -> AMOSAlerting:
-    """Initialize default alerting configuration."""
-    alerting = AMOSAlerting()
+# Global alert manager
+_alert_manager: Optional[AlertManager] = None
+
+
+def get_alert_manager() -> AlertManager:
+    """Get global alert manager."""
+    global _alert_manager
+    if _alert_manager is None:
+        _alert_manager = AlertManager()
+    return _alert_manager
+
+
+async def monitor_loop(check_interval: int = 60):
+    """Run continuous monitoring loop."""
+    from amos_health_monitor import get_health_monitor
+    from amos_metrics_collector import get_collector
     
-    # Default alert rules
-    alerting.add_rule(AlertRule(
-        name="high_error_rate",
-        metric="error_rate",
-        condition=">",
-        threshold=5.0,
-        severity=AlertSeverity.WARNING,
-        duration_seconds=300,
-        description="Error rate exceeds 5%"
-    ))
+    health_monitor = get_health_monitor()
+    alert_manager = get_alert_manager()
+    collector = get_collector()
     
-    alerting.add_rule(AlertRule(
-        name="critical_error_rate",
-        metric="error_rate",
-        condition=">",
-        threshold=10.0,
-        severity=AlertSeverity.CRITICAL,
-        duration_seconds=60,
-        description="Critical: Error rate exceeds 10%"
-    ))
-    
-    alerting.add_rule(AlertRule(
-        name="high_latency",
-        metric="avg_response_time_ms",
-        condition=">",
-        threshold=1000.0,
-        severity=AlertSeverity.WARNING,
-        duration_seconds=180,
-        description="Average response time exceeds 1 second"
-    ))
-    
-    alerting.add_rule(AlertRule(
-        name="memory_critical",
-        metric="memory_usage_percent",
-        condition=">",
-        threshold=90.0,
-        severity=AlertSeverity.CRITICAL,
-        duration_seconds=60,
-        description="Memory usage exceeds 90%"
-    ))
-    
-    return alerting
+    while True:
+        try:
+            # Check health
+            health = await health_monitor.check_all()
+            alerts = alert_manager.check_health(health)
+            
+            if alerts:
+                for alert in alerts:
+                    print(f"🚨 ALERT: [{alert.severity.value.upper()}] {alert.message}")
+            
+            # Save health report
+            health_monitor.save_report()
+            
+        except Exception as e:
+            print(f"Monitor loop error: {e}")
+        
+        await asyncio.sleep(check_interval)
 
 
 if __name__ == "__main__":
-    # Test alerting
-    alerting = init_default_alerting()
-    
-    # Simulate metrics
-    test_metrics = {
-        "error_rate": 12.5,
-        "avg_response_time_ms": 500,
-        "memory_usage_percent": 85
-    }
-    
-    alerts = alerting.evaluate_rules(test_metrics)
-    print(f"Triggered {len(alerts)} alerts")
-    
-    for alert in alerts:
-        print(f"  - {alert.id}: {alert.rule_name} ({alert.severity.value})")
-    
-    print("\nAlerting state:")
-    print(json.dumps(alerting.to_dict(), indent=2))
+    # Run monitoring loop
+    print("Starting AMOS Alert Monitor...")
+    asyncio.run(monitor_loop())

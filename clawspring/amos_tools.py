@@ -1,7 +1,7 @@
 """AMOS Brain tools for ClawSpring - integrates AMOS cognitive architecture."""
 from __future__ import annotations
 
-import json
+from datetime import datetime
 from typing import Any
 
 from tool_registry import ToolDef, register_tool
@@ -285,6 +285,22 @@ def _amos_design(params: dict[str, Any], config: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _amos_signal(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run signal processing analysis across multiple domains."""
+    from amos_signal_engine import get_signal_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["time_frequency", "biological", "control", "communication"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_signal_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
 def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
     """Analyze human factors using UBI (Unified Biological Intelligence)."""
     from amos_ubi_engine import get_ubi_engine
@@ -299,7 +315,7 @@ def _amos_ubi(params: dict[str, Any], config: dict[str, Any]) -> str:
     results = engine.analyze(description, domains)
 
     lines = [
-        f"# AMOS UBI Analysis: Human Factors",
+        "# AMOS UBI Analysis: Human Factors",
         f"Input: {description[:60]}...",
         "",
         "## Biological Intelligence Domains",
@@ -348,6 +364,38 @@ Version: {stats['amos_version']}
         return "\n".join(lines)
 
     return f"Unknown action: {action}. Use 'stats' or 'recall'."
+
+
+def _amos_strategy(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run strategy/game theory analysis."""
+    from amos_strategy_engine import get_strategy_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["game_normal", "game_dynamical", "negotiation"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_strategy_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_society(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run society/culture analysis across multiple domains."""
+    from amos_society_engine import get_society_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["institutional", "cultural", "demographic", "media"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_society_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
 
 
 def _amos_econ(params: dict[str, Any], config: dict[str, Any]) -> str:
@@ -400,6 +448,167 @@ def _amos_multi_agent(params: dict[str, Any], config: dict[str, Any]) -> str:
         return coord.run_dual_perspective(problem)
     else:
         return f"Unknown analysis_type: {analysis_type}. Use 'quadrant' or 'dual'."
+
+
+def _amos_knowledge(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Query knowledge graph and external data sources."""
+    from amos_knowledge_connector import get_knowledge_connector
+
+    query = params.get("query", "")
+    domain = params.get("domain", "general")
+
+    if not query:
+        return "Error: 'query' parameter is required"
+
+    connector = get_knowledge_connector()
+    result = connector.query_knowledge(query, domain)
+
+    return connector.get_findings_summary(result)
+
+
+def _amos_personality(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run personality/character analysis."""
+    from amos_personality_engine import get_personality_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["traits", "identity", "behavioral_patterns", "cognitive_style"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_personality_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_emotion(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run emotion/affective analysis across multiple domains."""
+    from amos_emotion_engine import get_emotion_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["affective", "somatic", "motivation", "empathy"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_emotion_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_biology_cognition(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run biology and cognition analysis."""
+    from amos_biology_cognition_engine import get_biology_cognition_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["molecular", "cellular", "organ", "cognition", "pathology"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_biology_cognition_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_design_language(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run design language and UX analysis."""
+    from amos_design_language_engine import get_design_language_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["ia", "visual", "language", "accessibility"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_design_language_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_logic_law(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run deterministic logic and legal analysis."""
+    from amos_logic_law_engine import get_logic_law_engine
+
+    query = params.get("query", "")
+    domains = params.get("domains", ["logic", "legal", "argumentation", "policy"])
+
+    if not query:
+        return "Error: 'query' parameter is required"
+
+    engine = get_logic_law_engine()
+    results = engine.analyze(query, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_engineering_math(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run engineering and mathematics analysis."""
+    from amos_engineering_math_engine import get_engineering_math_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["pure_math", "applied_math", "numerical", "mechanical", "electrical", "control"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_engineering_math_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_physics(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run physics and cosmology analysis."""
+    from amos_physics_engine import get_physics_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["classical", "electromagnetism", "quantum", "statistical", "cosmology"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_physics_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_consciousness(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Run consciousness and meta-cognitive analysis."""
+    from amos_consciousness_engine import get_consciousness_engine
+
+    description = params.get("description", "")
+    domains = params.get("domains", ["self_modeling", "attention", "narrative", "embodiment"])
+
+    if not description:
+        return "Error: 'description' parameter is required"
+
+    engine = get_consciousness_engine()
+    results = engine.analyze(description, domains)
+
+    return engine.get_findings_summary(results)
+
+
+def _amos_monitoring(params: dict[str, Any], config: dict[str, Any]) -> str:
+    """Get system monitoring and telemetry status."""
+    from amos_monitoring import get_monitoring
+
+    action = params.get("action", "status")
+
+    monitoring = get_monitoring()
+
+    if action == "status":
+        return monitoring.get_findings_summary()
+    elif action == "health":
+        health = monitoring.health.check_health()
+        return f"System Health: {health['status']}\nUptime: {health['uptime_seconds']}s"
+    else:
+        return f"Unknown action: {action}. Use 'status' or 'health'."
 
 
 def _amos_audit(params: dict[str, Any], config: dict[str, Any]) -> str:
@@ -664,6 +873,36 @@ AMOS_TOOLS = [
         concurrent_safe=True,
     ),
     ToolDef(
+        name="AMOSSignal",
+        schema={
+            "name": "AMOSSignal",
+            "description": (
+                "Run signal processing analysis across multiple domains. "
+                "Analyzes Time/Frequency, Biological, Control Systems, and "
+                "Communication signals with safety constraints (non-clinical)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Signal processing scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["time_frequency", "biological", "control", "communication"],
+                        "description": "Signal domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_signal,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
         name="AMOSUBI",
         schema={
             "name": "AMOSUBI",
@@ -690,6 +929,66 @@ AMOS_TOOLS = [
             }
         },
         func=_amos_ubi,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSStrategy",
+        schema={
+            "name": "AMOSStrategy",
+            "description": (
+                "Run strategy/game theory analysis across multiple domains. "
+                "Analyzes Normal Form Games, Dynamical Games, and Negotiation "
+                "with safety constraints (no harm strategies, no illegal collusion)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Strategic scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["game_normal", "game_dynamical", "negotiation"],
+                        "description": "Strategy domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_strategy,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSSociety",
+        schema={
+            "name": "AMOSSociety",
+            "description": (
+                "Run society/culture analysis across multiple domains. "
+                "Analyzes Institutional, Cultural Norms, Demographic, and "
+                "Media/Information systems with cultural sensitivity and safety constraints."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Social/cultural scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["institutional", "cultural", "demographic", "media"],
+                        "description": "Society/culture domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_society,
         read_only=True,
         concurrent_safe=True,
     ),
@@ -754,6 +1053,37 @@ AMOS_TOOLS = [
         concurrent_safe=True,
     ),
     ToolDef(
+        name="AMOSBiologyCognition",
+        schema={
+            "name": "AMOSBiologyCognition",
+            "description": (
+                "Run biology and cognition analysis across 5 levels: "
+                "molecular/genetic, cellular/tissue, organ/system, "
+                "cognition/behavior, and pathology/recovery. "
+                "Safety: NOT medical advice - informational only."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Biological or cognitive system to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["molecular", "cellular", "organ", "cognition", "pathology"],
+                        "description": "Biology/cognition domains to include"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_biology_cognition,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
         name="AMOSMemory",
         schema={
             "name": "AMOSMemory",
@@ -814,6 +1144,241 @@ AMOS_TOOLS = [
             }
         },
         func=_amos_multi_agent,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSKnowledge",
+        schema={
+            "name": "AMOSKnowledge",
+            "description": (
+                "Query knowledge graph and external data sources. "
+                "Supports entity extraction, semantic search, and data connection "
+                "with gap acknowledgment (simulated operations only)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Knowledge query to execute"
+                    },
+                    "domain": {
+                        "type": "string",
+                        "default": "general",
+                        "description": "Knowledge domain to query"
+                    }
+                },
+                "required": ["query"]
+            }
+        },
+        func=_amos_knowledge,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSPersonality",
+        schema={
+            "name": "AMOSPersonality",
+            "description": (
+                "Run personality and character analysis with AMOS identity awareness. "
+                "Analyzes Traits, Identity, Behavioral Patterns, and Cognitive Style. "
+                "Includes AMOS core identity: creator Trang Phan, INTJ-ENTP hybrid, "
+                "values truth, protection, coherence."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Personality/character scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["traits", "identity", "behavioral_patterns", "cognitive_style"],
+                        "description": "Personality domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_personality,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSEmotion",
+        schema={
+            "name": "AMOSEmotion",
+            "description": (
+                "Run emotion/affective analysis across multiple domains. "
+                "Analyzes Affective States, Somatic Markers, Motivation, and Empathy "
+                "with CRITICAL safety constraints (NOT real emotion recognition, lexical only)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Emotion-related scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["affective", "somatic", "motivation", "empathy"],
+                        "description": "Emotion domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_emotion,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSConsciousness",
+        schema={
+            "name": "AMOSConsciousness",
+            "description": (
+                "Run consciousness and meta-cognitive analysis across multiple domains. "
+                "Analyzes Self-Modeling, Attention, Narrative, and Embodiment with "
+                "CRITICAL safety constraints (NOT real consciousness, pattern simulation only)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Consciousness-related scenario to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["self_modeling", "attention", "narrative", "embodiment"],
+                        "description": "Consciousness domains to analyze"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_consciousness,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSLogicLaw",
+        schema={
+            "name": "AMOSLogicLaw",
+            "description": (
+                "Run deterministic logic and legal analysis. "
+                "Analyzes formal logic, legal entities/relations, argumentation, "
+                "and policy design with CRITICAL safety constraints "
+                "(NOT legal advice, informational only)."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Logic or legal query to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["logic", "legal", "argumentation", "policy"],
+                        "description": "Analysis domains to include"
+                    }
+                },
+                "required": ["query"]
+            }
+        },
+        func=_amos_logic_law,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSPhysics",
+        schema={
+            "name": "AMOSPhysics",
+            "description": (
+                "Run physics and cosmology analysis across 5 domains: "
+                "classical mechanics, electromagnetism, quantum mechanics, "
+                "statistical physics, and cosmology. Safety: NO new laws claimed."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Physical system or phenomenon to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["classical", "electromagnetism", "quantum", "statistical", "cosmology"],
+                        "description": "Physics domains to include"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_physics,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSEngineeringMath",
+        schema={
+            "name": "AMOSEngineeringMath",
+            "description": (
+                "Run engineering and mathematics analysis across 6 domains: "
+                "pure math, applied math, numerical methods, mechanical, "
+                "electrical, and control systems. Safety: NO real-time control."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "description": "Engineering or mathematical system to analyze"
+                    },
+                    "domains": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "default": ["pure_math", "applied_math", "numerical", "mechanical", "electrical", "control"],
+                        "description": "Engineering/math domains to include"
+                    }
+                },
+                "required": ["description"]
+            }
+        },
+        func=_amos_engineering_math,
+        read_only=True,
+        concurrent_safe=True,
+    ),
+    ToolDef(
+        name="AMOSMonitoring",
+        schema={
+            "name": "AMOSMonitoring",
+            "description": (
+                "Get system monitoring and telemetry status. "
+                "Provides performance metrics, health checks, and execution telemetry."
+            ),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "type": "string",
+                        "enum": ["status", "health"],
+                        "default": "status",
+                        "description": "Monitoring action to perform"
+                    }
+                }
+            }
+        },
+        func=_amos_monitoring,
         read_only=True,
         concurrent_safe=True,
     ),

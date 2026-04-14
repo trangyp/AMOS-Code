@@ -162,3 +162,16 @@ class KernelRouter:
             lines.append(f"  ... and {len(engines) - 10} more")
 
         return "\n".join(lines)
+
+
+# Global router instance
+_router_instance: KernelRouter | None = None
+
+
+def get_kernel_router() -> KernelRouter:
+    """Get or create global kernel router instance."""
+    global _router_instance
+    if _router_instance is None:
+        from .loader import get_brain
+        _router_instance = KernelRouter(get_brain())
+    return _router_instance

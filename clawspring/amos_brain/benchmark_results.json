@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-04-14T18:28:47.303143",
+  "python_version": "3.9.6 (default, Mar  6 2026, 16:22:43) \n[Clang 21.0.0 (clang-2100.0.123.102)]",
+  "platform": "darwin",
+  "results": [
+    {
+      "name": "Organism Bridge",
+      "iterations": 50,
+      "total_time_ms": 0.03291499999992509,
+      "avg_time_ms": 0.0006582999999985018,
+      "min_time_ms": 0.0005829999999984459,
+      "max_time_ms": 0.0009159999999897028,
+      "std_dev_ms": 4.366488805491214e-05,
+      "memory_mb": 0.0,
+      "throughput_ops_sec": 1519064.2564215038
+    },
+    {
+      "name": "Master Orchestrator",
+      "iterations": 20,
+      "total_time_ms": 233.1544580000002,
+      "avg_time_ms": 11.657722900000012,
+      "min_time_ms": 10.065832999999996,
+      "max_time_ms": 13.169125000000005,
+      "std_dev_ms": 0.9203203168220069,
+      "memory_mb": 0.046875,
+      "throughput_ops_sec": 85.78004543237162
+    },
+    {
+      "name": "System Validator",
+      "iterations": 10,
+      "total_time_ms": 119.53358400000025,
+      "avg_time_ms": 11.953358400000024,
+      "min_time_ms": 10.746707999999995,
+      "max_time_ms": 13.022500000000047,
+      "std_dev_ms": 0.9349329440582121,
+      "memory_mb": 0.0,
+      "throughput_ops_sec": 83.65849718017306
+    }
+  ]
+}

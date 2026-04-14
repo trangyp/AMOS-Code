@@ -1,0 +1,46 @@
+[
+  {
+    "memory_id": "mem_experience_20260414104452_1b014738d58f",
+    "memory_type": "EXPERIENCE",
+    "priority": "MEDIUM",
+    "storage_tier": "WARM",
+    "tags": [
+      "python",
+      "learning"
+    ],
+    "created_at": "2026-04-14T10:44:52.866559",
+    "last_accessed": "2026-04-14T10:44:52.866560",
+    "size_bytes": 97,
+    "checksum": "bf3cb3f4191239ed0689e8bbfaa461d7255b1449db78ce492bae8d80279a6564"
+  },
+  {
+    "memory_id": "mem_knowledge_20260414104452_97206ec73f96",
+    "memory_type": "KNOWLEDGE",
+    "priority": "MEDIUM",
+    "storage_tier": "WARM",
+    "tags": [
+      "syntax",
+      "python",
+      "facts"
+    ],
+    "created_at": "2026-04-14T10:44:52.866024",
+    "last_accessed": "2026-04-14T10:44:52.866026",
+    "size_bytes": 75,
+    "checksum": "91963c162e8f942b06b1442558accc3eb773911e8955090dceded2f0cd9ed445"
+  },
+  {
+    "memory_id": "mem_experience_20260414104452_c3f7a72b170e",
+    "memory_type": "EXPERIENCE",
+    "priority": "HIGH",
+    "storage_tier": "WARM",
+    "tags": [
+      "python",
+      "learning",
+      "debugging"
+    ],
+    "created_at": "2026-04-14T10:44:52.866302",
+    "last_accessed": "2026-04-14T10:44:52.866303",
+    "size_bytes": 84,
+    "checksum": "060b1123d19d98a8432e988e66d22e38e47c2327561a85b1d42173d9cae7ef2d"
+  }
+]

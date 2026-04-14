@@ -300,6 +300,309 @@ def cmd_blood(args) -> int:
     return 0
 
 
+def cmd_knowledge(args) -> int:
+    """Manage knowledge packs (15_KNOWLEDGE_CORE)."""
+    root = get_organism_root()
+    knowledge_dir = root / "15_KNOWLEDGE_CORE"
+
+    sys.path.insert(0, str(knowledge_dir))
+    from knowledge_pack_loader import KnowledgePackLoader
+
+    loader = KnowledgePackLoader()
+
+    if args.action == "status":
+        status = loader.get_status()
+        print("Knowledge Pack Status (15_KNOWLEDGE_CORE)")
+        print("=" * 50)
+        print(f"Total packs: {status['total_packs']}")
+        print(f"Total size: {status['total_size_mb']} MB")
+        print(f"Loader ready: {status['loaded']}")
+        print("\nPack Distribution:")
+        for pack_type, count in status['stats'].items():
+            if count > 0:
+                print(f"  - {pack_type}: {count}")
+
+    elif args.action == "list":
+        status = loader.get_status()
+        print("Knowledge Packs")
+        print("=" * 50)
+        for name in status['pack_names']:
+            pack = loader.get_pack(name)
+            if pack:
+                size_kb = round(pack.size_bytes / 1024, 1)
+                print(f"  ✓ {name}")
+                print(f"    Type: {pack.pack_type}")
+                print(f"    Size: {size_kb} KB")
+                print()
+
+    elif args.action == "query":
+        if args.type:
+            packs = loader.query_packs_by_type(args.type)
+            print(f"Query: type='{args.type}'")
+            print("=" * 50)
+            print(f"Found {len(packs)} packs")
+            for pack in packs[:5]:
+                print(f"  - {pack.name} ({pack.pack_type})")
+        else:
+            print("Usage: amos knowledge query --type country")
+
+    return 0
+
+
+def cmd_api(args) -> int:
+    """Manage API server."""
+    import subprocess
+    import signal
+    import time
+
+    root = get_organism_root()
+    repo_root = root.parent
+    pid_file = root / ".api_server.pid"
+
+    if args.action == "start":
+        if pid_file.exists():
+            print("API server already running")
+            return 1
+
+        print(f"Starting API server on {args.host}:{args.port}")
+        print(f"  Repository: {repo_root}")
+
+        # Start server in background
+        env = os.environ.copy()
+        env['FLASK_APP'] = str(repo_root / 'amos_api_server.py')
+        env['AMOS_ROOT'] = str(root)
+
+        cmd = [
+            sys.executable, "-m", "flask", "run",
+            "--host", args.host,
+            "--port", str(args.port)
+        ]
+        if args.debug:
+            cmd.append("--debug")
+
+        try:
+            proc = subprocess.Popen(
+                cmd, cwd=str(repo_root), env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            pid_file.write_text(str(proc.pid))
+            time.sleep(2)  # Wait for startup
+
+            print(f"✓ API server started (PID: {proc.pid})")
+            print(f"  URL: http://{args.host}:{args.port}")
+            print(f"  Health: http://{args.host}:{args.port}/health")
+            print(f"  API Docs: http://{args.host}:{args.port}/")
+        except Exception as e:
+            print(f"Failed to start: {e}")
+            return 1
+
+    elif args.action == "stop":
+        if not pid_file.exists():
+            print("API server not running")
+            return 1
+
+        pid = int(pid_file.read_text())
+        try:
+            os.kill(pid, signal.SIGTERM)
+            pid_file.unlink()
+            print(f"✓ API server stopped (PID: {pid})")
+        except ProcessLookupError:
+            pid_file.unlink()
+            print("API server not running (stale PID file)")
+        except Exception as e:
+            print(f"Error stopping: {e}")
+            return 1
+
+    elif args.action == "status":
+        if pid_file.exists():
+            pid = pid_file.read_text().strip()
+            print(f"API server: running (PID: {pid})")
+            print(f"  PID file: {pid_file}")
+        else:
+            print("API server: not running")
+        print(f"  Default URL: http://127.0.0.1:5000")
+        print(f"  API endpoints:")
+        print(f"    GET  /api/workflows      - List workflows")
+        print(f"    POST /api/workflows/<id>/run - Run workflow")
+        print(f"    GET  /api/pipelines      - List pipelines")
+        print(f"    POST /api/pipelines/<id>/run - Run pipeline")
+        print(f"    GET  /api/alerts/active  - Active alerts")
+        print(f"    POST /api/alerts/evaluate - Evaluate metrics")
+        print(f"    POST /api/orchestrator/cycle - Trigger cycle")
+
+    return 0
+
+def cmd_cognitive(args) -> int:
+    """Manage cognitive engines (01_BRAIN)."""
+    root = get_organism_root()
+    brain_dir = root / "01_BRAIN"
+
+    sys.path.insert(0, str(brain_dir))
+    from cognitive_engine_activator import CognitiveEngineActivator
+
+    activator = CognitiveEngineActivator()
+
+    if args.action == "status":
+        status = activator.get_status()
+        print("Cognitive Engine Status")
+        print("=" * 50)
+        print(f"Engines loaded: {status['engines_count']}")
+        print(f"Total size: {status['total_size_mb']} MB")
+        print(f"Domains covered: {len(status['domains'])}")
+        print("\nDomain Distribution:")
+        for domain, count in sorted(status['domains'].items()):
+            print(f"  - {domain}: {count} engines")
+
+    elif args.action == "list":
+        status = activator.get_status()
+        print("Active Cognitive Engines")
+        print("=" * 50)
+        for name in status['engine_names']:
+            engine = activator.get_engine(name)
+            if engine:
+                size_kb = round(engine.size_bytes / 1024, 1)
+                print(f"  ✓ {engine.name}")
+                print(f"    Domain: {engine.domain}")
+                print(f"    Size: {size_kb} KB")
+                print()
+
+    elif args.action == "query":
+        domain = args.domain or "Design"
+        query = args.engine or "general"
+        result = activator.query_domain(domain, query)
+        print(f"Query: '{query}' in domain '{domain}'")
+        print("=" * 50)
+        print(f"Matching engines: {result['matching_engines']}")
+        for eng in result['engines']:
+            print(f"  - {eng['engine']}")
+            print(f"    {eng['description']}")
+
+    return 0
+
+
+def cmd_alert(args) -> int:
+    """Manage alerts and notifications."""
+    root = get_organism_root()
+    immune_dir = root / "03_IMMUNE"
+
+    sys.path.insert(0, str(immune_dir))
+    from alert_manager import AlertManager
+
+    manager = AlertManager(root)
+
+    if args.action == "status":
+        status = manager.get_status()
+        print("Alert System Status")
+        print("=" * 40)
+        print(f"Rules configured: {status['rules_configured']}")
+        print(f"Channels configured: {status['channels_configured']}")
+        print(f"Active alerts: {status['active_alerts']}")
+        print(f"Total alerts (all time): {status['total_alerts_ever']}")
+
+    elif args.action == "list":
+        active = manager.get_active_alerts()
+        history = manager.get_alert_history(limit=10)
+        print("Active Alerts")
+        print("=" * 40)
+        if active:
+            for alert in active:
+                icon = "🔴" if alert['severity'] == "critical" else "⚠️" if alert['severity'] == "warning" else "ℹ️"
+                print(f"{icon} {alert['id']}: {alert['rule_name']}")
+                print(f"   {alert['message']}")
+        else:
+            print("  No active alerts")
+
+        print("\nRecent Alert History (last 10)")
+        print("=" * 40)
+        if history:
+            for alert in history:
+                print(f"  {alert['id']}: {alert['rule_name']} ({alert['status']})")
+        else:
+            print("  No alert history")
+
+    elif args.action == "test":
+        metric = args.metric or "subsystem_load"
+        value = args.value
+        print(f"Testing alert rule for {metric} = {value}")
+        print("=" * 40)
+
+        metrics = {metric: value}
+        alerts = manager.evaluate_and_alert(metrics)
+
+        if alerts:
+            print(f"\n✓ Generated {len(alerts)} alerts:")
+            for alert in alerts:
+                print(f"  - {alert['rule_name']} ({alert['severity']})")
+                print(f"    {alert['message']}")
+        else:
+            print("\n✓ No alerts triggered (metric within threshold)")
+
+    return 0
+
+
+def cmd_pipeline(args) -> int:
+    """Manage data pipelines."""
+    root = get_organism_root()
+    metabolism_dir = root / "07_METABOLISM"
+
+    sys.path.insert(0, str(metabolism_dir))
+    from pipeline_engine import PipelineEngine, Pipeline, PipelineStage
+
+    engine = PipelineEngine()
+
+    if args.action == "list":
+        pipelines = list(engine.pipelines.values())
+        print("Data Pipelines")
+        print("=" * 40)
+        if pipelines:
+            for pipe in pipelines:
+                print(f"  {pipe.id}: {pipe.name} ({pipe.status})")
+        else:
+            print("  No pipelines found")
+            print("\nCreate one with: amos pipeline create --name 'My Pipeline'")
+
+    elif args.action == "create":
+        name = args.name or "New Pipeline"
+        pipe = engine.create_pipeline(name, "Created via CLI")
+        # Add demo stages
+        pipe.add_stage(PipelineStage(name="Transform", stage_type="transform", config={"transform": "uppercase"}))
+        pipe.add_stage(PipelineStage(name="Validate", stage_type="validate", config={"required_fields": ["data"]}))
+        pipe.add_stage(PipelineStage(name="Log", stage_type="log", config={"message": "Pipeline complete"}))
+        engine.save()
+        print(f"Created pipeline: {pipe.id}")
+        print(f"Name: {pipe.name}")
+        print(f"Stages: {len(pipe.stages)}")
+
+    elif args.action == "run":
+        if not args.pipeline_id:
+            print("Error: --pipeline-id required")
+            return 1
+        pipe = engine.pipelines.get(args.pipeline_id)
+        if not pipe:
+            print(f"Pipeline not found: {args.pipeline_id}")
+            return 1
+        print(f"Running pipeline: {pipe.name}")
+        result = engine.execute_pipeline(args.pipeline_id, initial_data="Hello World")
+        print(f"Success: {result['success']}")
+        print(f"Stages executed: {len(result['results'])}")
+        for stage_id, res in result['results'].items():
+            status = res.get('status', 'unknown')
+            icon = "✓" if status == "completed" else "✗" if status == "failed" else "○"
+            print(f"  {icon} {stage_id}: {status}")
+
+    elif args.action == "status":
+        pipelines = list(engine.pipelines.values())
+        print("Pipeline Status")
+        print("=" * 40)
+        for pipe in pipelines:
+            stage_count = len(pipe.stages)
+            completed = sum(1 for s in pipe.stages if s.status.value == "completed")
+            print(f"{pipe.id}: {pipe.name}")
+            print(f"  Status: {pipe.status} | Stages: {completed}/{stage_count}")
+
+    return 0
+
+
 def cmd_workflow(args) -> int:
     """Manage workflows."""
     root = get_organism_root()
@@ -804,6 +1107,73 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--workflow-id", "-w", help="Workflow ID for run/status"
     )
     workflow_parser.set_defaults(func=cmd_workflow)
+
+    # Pipeline command
+    pipeline_parser = subparsers.add_parser(
+        "pipeline", help="Pipeline management (METABOLISM)"
+    )
+    pipeline_parser.add_argument(
+        "action", choices=["list", "create", "run", "status"], nargs="?",
+        default="list", help="Pipeline action"
+    )
+    pipeline_parser.add_argument(
+        "--name", "-n", help="Pipeline name"
+    )
+    pipeline_parser.add_argument(
+        "--pipeline-id", "-p", help="Pipeline ID for run/status"
+    )
+    pipeline_parser.set_defaults(func=cmd_pipeline)
+
+    # Alert command
+    alert_parser = subparsers.add_parser(
+        "alert", help="Alert management (IMMUNE)"
+    )
+    alert_parser.add_argument(
+        "action", choices=["status", "list", "test"], nargs="?",
+        default="status", help="Alert action"
+    )
+    alert_parser.add_argument(
+        "--metric", "-m", help="Metric to test (for test action)"
+    )
+    alert_parser.add_argument(
+        "--value", "-v", type=float, default=85.0, help="Metric value"
+    )
+    alert_parser.set_defaults(func=cmd_alert)
+
+    # Cognitive engine command
+    cognitive_parser = subparsers.add_parser(
+        "cognitive", help="Cognitive engine management (01_BRAIN)"
+    )
+    cognitive_parser.add_argument(
+        "action", choices=["list", "status", "query"], nargs="?",
+        default="status", help="Cognitive engine action"
+    )
+    cognitive_parser.add_argument(
+        "--domain", "-d", help="Domain to query (for query action)"
+    )
+    cognitive_parser.add_argument(
+        "--engine", "-e", help="Specific engine name"
+    )
+    cognitive_parser.set_defaults(func=cmd_cognitive)
+
+    # API server command
+    api_parser = subparsers.add_parser(
+        "api", help="API server management (14_INTERFACES)"
+    )
+    api_parser.add_argument(
+        "action", choices=["start", "stop", "status"], nargs="?",
+        default="status", help="API server action"
+    )
+    api_parser.add_argument(
+        "--port", "-p", type=int, default=5000, help="Server port"
+    )
+    api_parser.add_argument(
+        "--host", default="127.0.0.1", help="Server host"
+    )
+    api_parser.add_argument(
+        "--debug", action="store_true", help="Enable debug mode"
+    )
+    api_parser.set_defaults(func=cmd_api)
 
     args = parser.parse_args(argv)
 

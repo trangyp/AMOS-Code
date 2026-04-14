@@ -1,9 +1,30 @@
 <div align="center">
-  <img src="docs/amos-logo.svg" alt="AMOS Brain Logo" width="180">
   <h1>AMOS Brain</h1>
-  <p><strong>Absolute Meta Operating System</strong></p>
-  <p>A comprehensive AI agent framework with structured reasoning, cognitive compliance, and multi-agent orchestration.</p>
+  <p><strong>Absolute Meta Operating System - Cognitive OS vInfinity</strong></p>
+  <p>A 14-layer deterministic cognitive architecture for AI agents with structured reasoning, law enforcement, and multi-agent orchestration.</p>
+  <p><em>Creator: Trang Phan | Status: Production Ready</em></p>
 </div>
+
+---
+
+## 🏗️ 14-Layer Cognitive Architecture
+
+| Layer | Component | Purpose |
+|-------|-----------|---------|
+| 1 | **Brain Loader** | Parse 17MB spec, 26 engines, 6 laws |
+| 2 | **Cognitive Stack** | Domain management |
+| 3 | **Kernel Router** | Task routing & risk assessment |
+| 4 | **Task Processor** | Rule of 2/4 reasoning |
+| 5 | **Global Laws** | L1-L6 enforcement |
+| 6 | **Agent Bridge** | Pre/post tool validation |
+| 7 | **State Manager** | Persistent reasoning memory |
+| 8 | **Meta-Cognitive Controller** | Self-directed orchestration |
+| 9 | **Cognitive Monitor** | Observability & alerting |
+| 10 | **Cognitive Facade** | Simple SDK for developers |
+| 11 | **Cognitive Config** | Enterprise configuration |
+| 12 | **Cognitive Cookbook** | Pre-built recipes |
+| 13 | **Demos & Examples** | Working demonstrations |
+| 14 | **ClawSpring Integration** | Runtime agent integration |
 
 ---
 

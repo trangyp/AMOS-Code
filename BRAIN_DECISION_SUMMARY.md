@@ -61,6 +61,26 @@ The AMOS Brain analyzed the current repository state and identified:
 | 79 | `amos_brain/kernel_router.py` | Explicit domain-to-engine mapping + fallback |
 | 80 | `amos_brain_tutorial.py` | Fixed wording to match CLI commands |
 
+**ClawSpring Shell Fixes (94-98):**
+| Fix | File | Description |
+|-----|------|-------------|
+| 94-96 | `clawspring/clawspring.py` | Added `/dashboard`, `/audit`, `/status` commands |
+| 97 | `clawspring/clawspring.py` | Removed unused imports (textwrap, Optional, rich.*) |
+| 98 | `clawspring/clawspring.py` | Fixed import redefinitions (PROVIDERS, check_voice_deps) |
+| 98 | `clawspring/clawspring.py` | Fixed line length violations (8 locations) |
+| 98 | `amos_organism.py` | Fixed line length violations (4 locations) |
+
+**Type Hint Fixes (99-100):**
+| Fix | File | Description |
+|-----|------|-------------|
+| 99 | `amos_coherence_engine.py` | Fixed 3 type hints: `history: Optional[List[str]]` |
+| 100 | `amos_coherence_engine.py` | Fixed line length in method signatures (2 locations) |
+
+**Infrastructure Fixes:**
+| Fix | File/Component | Description |
+|-----|----------------|-------------|
+| N/A | `biologic-prometheus` container | Stopped stuck container (restart loop) |
+
 ### Test Results
 
 ```text
@@ -91,6 +111,7 @@ Total:                   21 PASS ✅
 - `amos.py`
 - `amos_clawspring.py`
 - `amos_local.py`
+- `clawspring/clawspring.py` (shell commands + lint fixes)
 
 **Tests:**
 - `tests/test_model_backends.py`

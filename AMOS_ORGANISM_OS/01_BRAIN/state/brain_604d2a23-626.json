@@ -1,0 +1,78 @@
+{
+  "session_id": "604d2a23-626",
+  "current_focus": "",
+  "cycle_count": 1,
+  "last_update": "2026-04-14T12:34:48.078673",
+  "thoughts": [
+    {
+      "id": "ca107d52",
+      "type": "perceptual",
+      "content": "System initialized",
+      "source": "bootstrap",
+      "timestamp": "2026-04-14T12:34:48.078592",
+      "confidence": 0.8,
+      "tags": [
+        "raw_input",
+        "bootstrap"
+      ],
+      "references": []
+    },
+    {
+      "id": "4c5553ce",
+      "type": "perceptual",
+      "content": "Organism is ready for operation",
+      "source": "senses",
+      "timestamp": "2026-04-14T12:34:48.078610",
+      "confidence": 0.8,
+      "tags": [
+        "raw_input",
+        "senses"
+      ],
+      "references": []
+    },
+    {
+      "id": "c27901cb",
+      "type": "conceptual",
+      "content": "Pattern 'manual_input' detected in: Organism is ready for operation...",
+      "source": "01_BRAIN",
+      "timestamp": "2026-04-14T12:34:48.078621",
+      "confidence": 0.8,
+      "tags": [
+        "pattern",
+        "concept"
+      ],
+      "references": [
+        "4c5553ce"
+      ]
+    }
+  ],
+  "active_plans": [
+    {
+      "id": "52ee447d",
+      "goal": "Demonstrate organism capabilities",
+      "horizon": "short-term",
+      "steps": [
+        {
+          "id": "85cec774",
+          "order": 1,
+          "action": "Show status",
+          "subsystem": "14_INTERFACES",
+          "params": {},
+          "status": "pending"
+        },
+        {
+          "id": "7bd3360a",
+          "order": 2,
+          "action": "Run cycle",
+          "subsystem": "01_BRAIN",
+          "params": {},
+          "status": "pending"
+        }
+      ],
+      "created_at": "2026-04-14T12:34:48.078632",
+      "status": "draft",
+      "audit_trail": []
+    }
+  ],
+  "completed_plans": []
+}

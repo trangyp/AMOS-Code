@@ -69,6 +69,18 @@ def _lazy_import(module_name: str):
             elif module_name == "get_metrics":
                 from .metrics import get_metrics as gm
                 _lazy_modules[module_name] = gm
+            elif module_name == "get_kernel_router":
+                from .kernel_router import get_kernel_router as gkr
+                _lazy_modules[module_name] = gkr
+            elif module_name == "get_monitor":
+                from .monitor import get_monitor as gmon
+                _lazy_modules[module_name] = gmon
+            elif module_name == "CognitiveConfig":
+                from .config import CognitiveConfig as cc
+                _lazy_modules[module_name] = cc
+            elif module_name == "get_config":
+                from .config import get_config as gc
+                _lazy_modules[module_name] = gc
         except Exception as e:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
@@ -147,15 +159,29 @@ def get_metrics():
     return _lazy_import("get_metrics")()
 
 
+def get_kernel_router():
+    """Get kernel router (lazy import)."""
+    return _lazy_import("get_kernel_router")()
+
+
+def get_monitor():
+    """Get cognitive monitor (lazy import)."""
+    return _lazy_import("get_monitor")()
+
+
+def CognitiveConfig():
+    """Get cognitive config (lazy import)."""
+    return _lazy_import("CognitiveConfig")()
+
+
+def get_config():
+    """Get config instance (lazy import)."""
+    return _lazy_import("get_config")()
+
+
 # Optional features - deferred to avoid import-time failures
-SystemPromptBuilder = None
-ArchitectureDecision = None
-CodeReview = None
-SecurityAudit = None
-DesignPattern = None
-ProblemDiagnosis = None
-ProjectPlanner = None
-CookbookResult = None
+# These are loaded lazily via __getattr__ below
+# DO NOT assign None here - it prevents __getattr__ from triggering
 
 
 def _load_optional_features():
@@ -219,14 +245,60 @@ def __getattr__(name: str):
     }
     if name in core_lazy_names:
         return _lazy_import(name)
-    if name in (
+    
+    # Cookbook classes - ensure loaded and return
+    cookbook_names = {
         "SystemPromptBuilder",
         "ArchitectureDecision", "CodeReview", "SecurityAudit",
         "DesignPattern", "ProblemDiagnosis", "ProjectPlanner",
         "TechnologySelection", "RiskAssessment", "CookbookResult"
-    ):
-        _OptionalLoader.ensure_loaded()
-        return globals()[name]
+    }
+    if name in cookbook_names:
+        if globals().get(name) is None:
+            _load_optional_features()
+        result = globals().get(name)
+        if result is None:
+            raise ImportError(f"Could not load {name} from cookbook module")
+        return result
+    
+    # Organism bridge - lazy load
+    organism_names = {
+        "get_organism_bridge",
+        "initialize_organism",
+        "execute_organism_task"
+    }
+    if name in organism_names:
+        from .organism_bridge import (
+            get_organism_bridge,
+            initialize_organism,
+            execute_organism_task
+        )
+        return locals()[name]
+    
+    # Knowledge engine - lazy load
+    if name in ("get_knowledge_engine", "query_knowledge"):
+        from .knowledge_engine import get_knowledge_engine, query_knowledge
+        return locals()[name]
+    
+    # Multi-agent orchestrator - lazy load
+    if name in ("get_multi_agent_orchestrator", "spawn_agent", "orchestrate_task"):
+        from .multi_agent_orchestrator import (
+            get_multi_agent_orchestrator,
+            spawn_agent,
+            orchestrate_task
+        )
+        return locals()[name]
+    
+    # Performance engine - lazy load
+    if name in ("get_performance_engine", "cached_think", "cached_decide", "batch_think"):
+        from .performance_engine import (
+            get_performance_engine,
+            cached_think,
+            cached_decide,
+            batch_think
+        )
+        return locals()[name]
+    
     raise AttributeError(f"module 'amos_brain' has no attribute '{name}'")
 
 __all__ = [
@@ -264,4 +336,20 @@ __all__ = [
     "TechnologySelection",
     "RiskAssessment",
     "CookbookResult",
+    # Organism bridge
+    "get_organism_bridge",
+    "initialize_organism",
+    "execute_organism_task",
+    # Knowledge engine
+    "get_knowledge_engine",
+    "query_knowledge",
+    # Multi-agent orchestrator
+    "get_multi_agent_orchestrator",
+    "spawn_agent",
+    "orchestrate_task",
+    # Performance engine
+    "get_performance_engine",
+    "cached_think",
+    "cached_decide",
+    "batch_think",
 ]
