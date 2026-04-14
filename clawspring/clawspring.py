@@ -530,8 +530,8 @@ def cmd_brainstorm(args: str, state, config) -> bool:
                 exec_time_ms=0.0,
                 recommendation="Multi-agent cognitive consensus"
             )
-        except Exception:
-            pass
+        except Exception as e:
+            info(clr(f"[AMOS] Audit recording skipped: {e}", "dim"))
 
     # ── Ask user for agent count interactively ────────────────────────────
     if config.get("_telegram_incoming"):
