@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import subprocess
 import threading
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 from .types import (
     INIT_PARAMS,
@@ -123,7 +126,7 @@ class StdioTransport:
                 self._process.terminate()
                 self._process.wait(timeout=3)
             except Exception:
-                pass
+                logger.debug("Failed to terminate MCP process")
             self._process = None
 
     @property
@@ -216,7 +219,7 @@ class HttpTransport:
                                         holder["result"] = msg
                                         holder["event"].set()
                                 except Exception:
-                                    pass
+                                    logger.debug("Failed to process SSE message")
             except Exception as e:
                 endpoint_holder["error"] = str(e)
                 endpoint_event.set()
@@ -269,7 +272,7 @@ class HttpTransport:
         try:
             client.post(url, json=msg)
         except Exception:
-            pass
+            logger.debug("Failed to send termination message")
 
     def stop(self) -> None:
         self._running = False
@@ -277,7 +280,7 @@ class HttpTransport:
             try:
                 self._client.close()
             except Exception:
-                pass
+                logger.debug("Failed to close MCP client")
             self._client = None
 
     @property
@@ -465,7 +468,7 @@ class MCPManager:
             try:
                 self._clients[config.name].disconnect()
             except Exception:
-                pass
+                logger.debug(f"Failed to disconnect MCP client: {config.name}")
         client = MCPClient(config)
         self._clients[config.name] = client
         return client
@@ -538,7 +541,7 @@ class MCPManager:
             try:
                 client.disconnect()
             except Exception:
-                pass
+                logger.debug("Failed to disconnect client during shutdown")
 
     def reload_server(self, name: str) -> None:
         client = self._clients.get(name)
