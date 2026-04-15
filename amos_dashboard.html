@@ -408,11 +408,21 @@
         async function checkConnection() {
             try {
                 const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+
                 if (response.ok) {
-                    document.getElementById('connection-status').textContent = 'Connected to AMOS API';
-                    loadStats();
-                    loadCountries();
-                    loadSectors();
+                    if (data.status === 'initializing') {
+                        document.getElementById('connection-status').textContent = 'AMOS Initializing... Please wait';
+                        // Retry in 3 seconds
+                        setTimeout(checkConnection, 3000);
+                    } else if (data.status === 'healthy') {
+                        document.getElementById('connection-status').textContent = 'Connected to AMOS API';
+                        loadStats();
+                        loadCountries();
+                        loadSectors();
+                    } else {
+                        document.getElementById('connection-status').textContent = 'API Degraded - Check server logs';
+                    }
                 } else {
                     document.getElementById('connection-status').textContent = 'API Error - Check server';
                 }

@@ -176,15 +176,26 @@ def system_status():
 
 @app.route("/health", methods=["GET"])
 def health_check():
-    """Quick health check."""
-    amos = get_amos()
-    healthy = amos is not None and amos._initialized
+    """Quick health check - returns immediately without blocking."""
+    global amos_system
+
+    # Return quick response without triggering full initialization
+    if amos_system is None:
+        return jsonify(
+            {
+                "status": "initializing",
+                "service": "amos-api-enhanced",
+                "message": "AMOS system starting up...",
+            }
+        )
+
+    healthy = amos_system is not None and getattr(amos_system, '_initialized', False)
 
     return jsonify(
         {
             "status": "healthy" if healthy else "degraded",
             "service": "amos-api-enhanced",
-            "timestamp": str(Path(__file__).stat().st_mtime),
+            "initialized": healthy,
         }
     )
 
