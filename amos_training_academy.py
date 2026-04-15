@@ -121,7 +121,7 @@ class TrainingAcademy:
             try:
                 with open(self.progress_file) as f:
                     return json.load(f)
-            except:
+            except Exception:
                 pass
         return {"completed": [], "in_progress": {}, "started": datetime.now().isoformat()}
 
@@ -318,7 +318,7 @@ class TrainingAcademy:
         try:
             subprocess.run(["open", str(module.path)], check=False)
             print("✅ PDF opened in default viewer")
-        except:
+        except Exception:
             print(f"📄 PDF location: {module.path}")
 
         # Mark as completed

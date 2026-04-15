@@ -118,7 +118,7 @@ class Ledger:
             else:
                 data = str(state)
             return hashlib.sha256(data.encode()).hexdigest()[:16]
-        except:
+        except Exception:
             return "hash_error_" + str(len(self.entries))
 
     def explain(self, outcome: Any) -> Optional[dict]:

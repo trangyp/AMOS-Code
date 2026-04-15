@@ -42,7 +42,7 @@ class ProbabilityEngine:
                             created_at=d["created_at"],
                         )
                     )
-            except:
+            except Exception:
                 pass
 
     def save(self):

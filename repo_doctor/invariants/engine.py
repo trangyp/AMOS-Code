@@ -9,12 +9,18 @@ from pathlib import Path
 from typing import Any
 
 from .api import APIInvariant
+from .artifact import ArtifactInvariant
+from .authorization import AuthorizationInvariant
 from .base import InvariantResult
 from .entrypoints import EntrypointInvariant
+from .environment import EnvironmentInvariant
 from .history import HistoryInvariant
 from .imports import ImportInvariant
+from .migration import MigrationInvariant
+from .observability import ObservabilityInvariant
 from .packaging import PackagingInvariant
 from .parse import ParseInvariant
+from .performance import PerformanceInvariant
 from .persistence import PersistenceInvariant
 from .runtime import RuntimeInvariant
 from .security import SecurityInvariant
@@ -25,12 +31,13 @@ from .types import TypeInvariant
 
 class InvariantEngine:
     """
-    The Invariant Engine runs all 12 hard invariants.
+    The Invariant Engine runs all 18 hard invariants.
 
-    RepoValid = ∧n I_n for n in 12 dimensions
+    RepoValid = ∧n I_n for n in 18 dimensions
     """
 
     INVARIANT_CLASSES = [
+        # Original 12
         ParseInvariant,
         ImportInvariant,
         TypeInvariant,
@@ -43,6 +50,13 @@ class InvariantEngine:
         TestsInvariant,
         SecurityInvariant,
         HistoryInvariant,
+        # Phase 1-2 additions
+        MigrationInvariant,
+        PerformanceInvariant,
+        ObservabilityInvariant,
+        AuthorizationInvariant,
+        EnvironmentInvariant,
+        ArtifactInvariant,
     ]
 
     def __init__(self, repo_path: str | Path):

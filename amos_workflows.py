@@ -143,7 +143,7 @@ if py_files:
         try:
             with open(pf, 'r') as file:
                 total_lines += len(file.readlines())
-        except:
+        except Exception:
             pass
     print(f"Estimated total lines: {total_lines * (len(py_files)/20):.0f}")
 """

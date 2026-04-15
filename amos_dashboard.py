@@ -338,7 +338,7 @@ def dashboard():
         mem = get_brain_memory()
         history = mem.get_reasoning_history(limit=1000)
         memory_count = len(history)
-    except:
+    except Exception:
         memory_count = 0
 
     return render_template_string(

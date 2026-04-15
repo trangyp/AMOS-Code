@@ -38,63 +38,84 @@ from typing import Any
 
 
 class StateDimension(Enum):
-    """The 12 dimensions of repository state (10 local + 2 architectural)."""
+    """The 15 dimensions of repository state per Ω∞∞∞∞∞ specification.
+    
+    H_repo = H_S ⊗ H_I ⊗ H_Ty ⊗ H_A ⊗ H_E ⊗ H_Pk ⊗ H_Rt ⊗ H_Ps ⊗ H_St ⊗ H_T ⊗ H_D ⊗ H_Sec ⊗ H_H ⊗ H_Gc ⊗ H_Env
+    """
 
-    SYNTAX = "s"  # s(t) - syntax integrity
-    IMPORT = "i"  # i(t) - import/module integrity
-    BUILD = "b"  # b(t) - build integrity
-    TEST = "tau"  # τ(t) - test integrity
-    PACKAGING = "p"  # p(t) - packaging integrity
-    API = "a"  # a(t) - API contract integrity
-    DEPENDENCY = "d"  # d(t) - dependency integrity
-    CONFIG = "c"  # c(t) - config/entrypoint integrity
-    HISTORY = "h"  # h(t) - history stability
-    SECURITY = "sigma"  # σ(t) - security integrity
-    ARCHITECTURE = "arch"  # αArch(t) - architectural integrity
-    HIDDEN_STATE = "hs"  # αHidden(t) - hidden state integrity
+    # Core surfaces (8)
+    SYNTAX = "s"           # H_S - syntax / parse integrity
+    IMPORT = "i"           # H_I - import / symbol resolution integrity
+    TYPE = "ty"            # H_Ty - type / callable-signature integrity
+    API = "a"              # H_A - public API contract integrity
+    ENTRYPOINT = "e"       # H_E - entrypoint / launcher integrity
+    PACKAGING = "pk"       # H_Pk - packaging / build / distribution integrity
+    RUNTIME = "rt"         # H_Rt - runtime behavior integrity
+    PERSISTENCE = "ps"     # H_Ps - persistence / schema / state integrity
+    
+    # Operational surfaces (4)
+    STATUS = "st"          # H_St - status-truth integrity
+    TEST = "t"             # H_T - test / oracle integrity
+    DOCS = "d"             # H_D - docs / demos / tutorials integrity
+    SECURITY = "sec"       # H_Sec - security integrity
+    
+    # Temporal and environment surfaces (3)
+    HISTORY = "h"          # H_H - history / temporal / drift integrity
+    GENERATED_CODE = "gc"  # H_Gc - generated code / codegen integrity
+    ENVIRONMENT = "env"    # H_Env - environment compatibility integrity
 
 
 STATE_DIMENSIONS = list(StateDimension)
 
-# Default weights for energy calculation
+# Default weights for energy calculation (Ω∞∞∞∞∞ specification)
 DEFAULT_WEIGHTS: dict[StateDimension, float] = {
     StateDimension.SYNTAX: 1.0,
     StateDimension.IMPORT: 1.0,
-    StateDimension.BUILD: 0.9,
-    StateDimension.TEST: 0.8,
-    StateDimension.PACKAGING: 1.0,
+    StateDimension.TYPE: 0.9,
     StateDimension.API: 0.9,
-    StateDimension.DEPENDENCY: 0.7,
-    StateDimension.CONFIG: 0.8,
-    StateDimension.HISTORY: 0.5,
+    StateDimension.ENTRYPOINT: 1.0,
+    StateDimension.PACKAGING: 1.0,
+    StateDimension.RUNTIME: 0.8,
+    StateDimension.PERSISTENCE: 0.8,
+    StateDimension.STATUS: 0.9,
+    StateDimension.TEST: 0.8,
+    StateDimension.DOCS: 0.6,
     StateDimension.SECURITY: 1.0,
-    StateDimension.ARCHITECTURE: 0.85,  # Architectural integrity
-    StateDimension.HIDDEN_STATE: 0.6,  # Hidden state modeling
+    StateDimension.HISTORY: 0.5,
+    StateDimension.GENERATED_CODE: 0.7,
+    StateDimension.ENVIRONMENT: 0.6,
 }
 
-# Scoring penalties (from spec)
+# Scoring penalties (Ω∞∞∞∞∞ specification)
 SCORE_PENALTIES = {
     StateDimension.SYNTAX: 20,
     StateDimension.IMPORT: 20,
-    StateDimension.BUILD: 0,  # Build failures cascade to other dimensions
-    StateDimension.TEST: 0,
+    StateDimension.TYPE: 15,
+    StateDimension.API: 20,
+    StateDimension.ENTRYPOINT: 20,
     StateDimension.PACKAGING: 20,
-    StateDimension.API: 15,
-    StateDimension.DEPENDENCY: 0,
-    StateDimension.CONFIG: 10,
+    StateDimension.RUNTIME: 15,
+    StateDimension.PERSISTENCE: 15,
+    StateDimension.STATUS: 20,
+    StateDimension.TEST: 0,  # Test failures cascade
+    StateDimension.DOCS: 10,
+    StateDimension.SECURITY: 25,
     StateDimension.HISTORY: 0,
-    StateDimension.SECURITY: 10,
-    StateDimension.ARCHITECTURE: 15,  # Architectural failures are significant
-    StateDimension.HIDDEN_STATE: 5,  # Hidden state issues are warnings
+    StateDimension.GENERATED_CODE: 10,
+    StateDimension.ENVIRONMENT: 5,
 }
 
-# Hard-fail classes (release blocking)
+# Hard-fail classes (release blocking) - Ω∞∞∞∞∞ specification
 HARD_FAIL_DIMENSIONS = {
     StateDimension.SYNTAX,
     StateDimension.IMPORT,
-    StateDimension.PACKAGING,
+    StateDimension.TYPE,
     StateDimension.API,
-    StateDimension.CONFIG,
+    StateDimension.ENTRYPOINT,
+    StateDimension.PACKAGING,
+    StateDimension.PERSISTENCE,
+    StateDimension.STATUS,
+    StateDimension.SECURITY,
 }
 
 
@@ -250,20 +271,23 @@ def collapse_failure(state: RepoStateVector) -> str | None:
 
     Returns the smallest failing subsystem category.
     """
-    # Map dimensions to subsystems
+    # Map dimensions to subsystems (Ω∞∞∞∞∞ specification)
     subsystem_map = {
         StateDimension.SYNTAX: "syntax",
         StateDimension.IMPORT: "imports",
-        StateDimension.BUILD: "build",
-        StateDimension.TEST: "tests",
-        StateDimension.PACKAGING: "packaging",
+        StateDimension.TYPE: "types",
         StateDimension.API: "api_contracts",
-        StateDimension.DEPENDENCY: "dependencies",
-        StateDimension.CONFIG: "entrypoints",
-        StateDimension.HISTORY: "history",
+        StateDimension.ENTRYPOINT: "entrypoints",
+        StateDimension.PACKAGING: "packaging",
+        StateDimension.RUNTIME: "runtime",
+        StateDimension.PERSISTENCE: "persistence",
+        StateDimension.STATUS: "status",
+        StateDimension.TEST: "tests",
+        StateDimension.DOCS: "docs",
         StateDimension.SECURITY: "security",
-        StateDimension.ARCHITECTURE: "architecture",
-        StateDimension.HIDDEN_STATE: "hidden_state",
+        StateDimension.HISTORY: "history",
+        StateDimension.GENERATED_CODE: "generated_code",
+        StateDimension.ENVIRONMENT: "environment",
     }
 
     # Find failing dimensions
@@ -272,20 +296,23 @@ def collapse_failure(state: RepoStateVector) -> str | None:
     if not failing:
         return None
 
-    # Priority order for collapse (most specific first)
+    # Priority order for collapse (most specific first) - Ω∞∞∞∞∞
     priority = [
         StateDimension.PACKAGING,
-        StateDimension.CONFIG,
+        StateDimension.ENTRYPOINT,
         StateDimension.API,
-        StateDimension.ARCHITECTURE,
+        StateDimension.STATUS,
         StateDimension.IMPORT,
         StateDimension.SYNTAX,
-        StateDimension.BUILD,
+        StateDimension.TYPE,
         StateDimension.TEST,
-        StateDimension.DEPENDENCY,
+        StateDimension.RUNTIME,
+        StateDimension.PERSISTENCE,
         StateDimension.SECURITY,
-        StateDimension.HIDDEN_STATE,
+        StateDimension.DOCS,
+        StateDimension.GENERATED_CODE,
         StateDimension.HISTORY,
+        StateDimension.ENVIRONMENT,
     ]
 
     for dim in priority:

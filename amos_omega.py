@@ -165,7 +165,7 @@ class Constraint:
         """c_α(x) ∈ 𝔹_Q"""
         try:
             return self.check(state)
-        except:
+        except Exception:
             return False
 
 

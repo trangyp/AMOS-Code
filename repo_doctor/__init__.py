@@ -41,21 +41,70 @@ from .cli import main
 from .contracts import ContractAnalyzer
 from .entrypoints import EntrypointAnalyzer
 from .history import DriftAnalyzer
-from .invariants_legacy import InvariantEngine, InvariantResult
+# Modular invariants (18 total)
+from .invariants import (
+    APIInvariant,
+    ArtifactInvariant,
+    AuthorizationInvariant,
+    EntrypointInvariant,
+    EnvironmentInvariant,
+    HistoryInvariant,
+    ImportInvariant,
+    Invariant,
+    InvariantEngine,
+    InvariantResult,
+    InvariantSeverity,
+    MigrationInvariant,
+    ObservabilityInvariant,
+    PackagingInvariant,
+    ParseInvariant,
+    PerformanceInvariant,
+    PersistenceInvariant,
+    RuntimeInvariant,
+    SecurityInvariant,
+    StatusInvariant,
+    TestsInvariant,
+    TypeInvariant,
+)
 from .packaging import PackagingAnalyzer
 from .persistence import PersistenceAnalyzer
+from .repair_optimizer import (
+    RepairPlan,
+)
 from .repair_plan import RepairPlan, RepairPlanner
 from .sensors import SensorResult, SensorSuite
 from .state_vector import RepoStateVector, StateDimension
+
+# Ω∞∞∞ Triple-Infinity modules
 
 __version__ = "0.2.0-arch"
 __all__ = [
     # Core state
     "RepoStateVector",
     "StateDimension",
-    # Legacy invariants
-    "InvariantEngine",
+    # Modular invariants (Ω∞ system)
+    "Invariant",
     "InvariantResult",
+    "InvariantSeverity",
+    "InvariantEngine",
+    "ParseInvariant",
+    "ImportInvariant",
+    "TypeInvariant",
+    "APIInvariant",
+    "EntrypointInvariant",
+    "PackagingInvariant",
+    "RuntimeInvariant",
+    "PersistenceInvariant",
+    "StatusInvariant",
+    "TestsInvariant",
+    "SecurityInvariant",
+    "HistoryInvariant",
+    "ArtifactInvariant",
+    "AuthorizationInvariant",
+    "EnvironmentInvariant",
+    "MigrationInvariant",
+    "ObservabilityInvariant",
+    "PerformanceInvariant",
     # Architectural layer
     "ArchInvariantResult",
     "ArchitectureInvariantEngine",

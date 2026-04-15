@@ -2,16 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
 from .agent_bridge import get_agent_bridge
-from .laws import GlobalLaws
-from .loader import get_brain
-from .meta_controller import get_meta_controller
-from .monitor import get_monitor
-from .state_manager import get_state_manager
-from .task_processor import BrainTaskProcessor
 
 # Architecture bridge integration
 from .architecture_bridge import (
@@ -20,6 +13,12 @@ from .architecture_bridge import (
     ArchitectureValidationResult,
     get_architecture_bridge,
 )
+from .laws import GlobalLaws
+from .loader import get_brain
+from .meta_controller import get_meta_controller
+from .monitor import get_monitor
+from .state_manager import get_state_manager
+from .task_processor import BrainTaskProcessor
 
 
 @dataclass
@@ -268,6 +267,51 @@ class BrainClient:
                 for t in plan.subtasks[:10]
             ],
         }
+
+    def generate_repair_plan(self) -> Any | None:
+        """Generate automated repair plan from all detections."""
+        try:
+            from .repair_bridge import get_repair_bridge
+            bridge = get_repair_bridge(self._repo_path)
+            return bridge.generate_complete_repair_plan()
+        except ImportError:
+            return None
+
+    def get_auto_fixes(self, max_fixes: int = 10) -> list[Any]:
+        """Get repairs that can be safely applied automatically."""
+        try:
+            from .repair_bridge import get_repair_bridge
+            bridge = get_repair_bridge(self._repo_path)
+            return bridge.get_safe_auto_fixes(max_fixes)
+        except ImportError:
+            return []
+
+    def get_meta_architecture_context(self) -> Any | None:
+        """Get complete meta-architecture context with all failure classes."""
+        try:
+            from .meta_architecture_bridge import get_meta_architecture_bridge
+            bridge = get_meta_architecture_bridge(self._repo_path)
+            return bridge.get_meta_context()
+        except ImportError:
+            return None
+
+    def check_meta_invariants(self) -> dict[str, bool]:
+        """Check all meta-architecture invariants (semantic, temporal, trust, recovery, self-integrity)."""
+        try:
+            from .meta_architecture_bridge import get_meta_architecture_bridge
+            bridge = get_meta_architecture_bridge(self._repo_path)
+            return bridge.check_meta_invariants()
+        except ImportError:
+            return {}
+
+    def get_critical_meta_issues(self) -> list[Any]:
+        """Get critical meta-architecture issues (failures of meaning, time, trust, recovery)."""
+        try:
+            from .meta_architecture_bridge import get_meta_architecture_bridge
+            bridge = get_meta_architecture_bridge(self._repo_path)
+            return bridge.get_critical_meta_issues()
+        except ImportError:
+            return []
 
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""

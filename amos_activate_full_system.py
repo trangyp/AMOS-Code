@@ -68,7 +68,7 @@ class FullSystemActivator:
 
                 orchestrator = AmosMasterOrchestrator()
                 orchestrator_active = True
-            except:
+            except Exception:
                 orchestrator_active = False
 
             # Load Primary Loop
@@ -130,21 +130,21 @@ class FullSystemActivator:
         try:
             integrations.append("Coherent Organism")
             print("    ✓ Coherent Organism: Ready")
-        except:
+        except Exception:
             print("    ⚠️  Coherent Organism: Not available")
 
         # Knowledge Query
         try:
             integrations.append("Knowledge Query")
             print("    ✓ Knowledge Query: Ready")
-        except:
+        except Exception:
             print("    ⚠️  Knowledge Query: Not available")
 
         # Integrated Workflow
         try:
             integrations.append("Integrated Workflow")
             print("    ✓ Integrated Workflow: Ready")
-        except:
+        except Exception:
             print("    ⚠️  Integrated Workflow: Not available")
 
         self.status["integrations"] = integrations

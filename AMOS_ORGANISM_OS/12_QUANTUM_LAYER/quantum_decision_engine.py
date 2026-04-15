@@ -36,7 +36,7 @@ class QuantumDecisionEngine:
         if f.exists():
             try:
                 self.decisions = json.loads(f.read_text()).get("decisions", [])
-            except:
+            except Exception:
                 pass
 
     def save(self):

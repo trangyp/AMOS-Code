@@ -248,7 +248,7 @@ def integrate_with_amos_orchestrator(
 
     # Calculate energy
     weights = [100, 90, 70, 95, 90, 90, 80, 70, 65, 35, 100, 55]
-    energy = sum(w * (1 - a) ** 2 for w, a in zip(weights, state_vector.values(), strict=False))
+    energy = sum(w * (1 - a) ** 2 for w, a in zip(weights, state_vector.values()))
 
     # Step 2: Cognitive analysis
     amos = AMOSBrainIntegration(repo_path)

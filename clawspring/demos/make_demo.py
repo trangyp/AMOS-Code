@@ -32,7 +32,7 @@ def make_font(size=FONT_SIZE, bold=False):
     path = FONT_BOLD if bold else FONT_PATH
     try:
         return ImageFont.truetype(path, size)
-    except:
+    except Exception:
         return ImageFont.load_default()
 
 

@@ -3,6 +3,8 @@ External Tool Sensors - Integration with state-of-the-art tools.
 
 Sensors:
 - pip-audit: Security vulnerability scanner
+- bandit: Python security linter
+- safety: Dependency vulnerability scanner
 - ruff: Fast Python linter
 - pyright: Type checker
 - deptry: Dependency checker
@@ -13,6 +15,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -349,6 +352,197 @@ class DeptrySensor(ExternalSensor):
             )
 
 
+class BanditSensor(ExternalSensor):
+    """
+    Bandit sensor - finds common security issues in Python code.
+    Checks for hardcoded passwords, SQL injection, unsafe eval, etc.
+    """
+
+    def __init__(self, repo_path: str | Path):
+        super().__init__(repo_path)
+        self.tool_name = "bandit"
+
+    def is_available(self) -> bool:
+        try:
+            subprocess.run(
+                ["bandit", "--version"],
+                capture_output=True,
+                timeout=5,
+            )
+            return True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return False
+
+    def run(self) -> SensorResult:
+        start_time = time.time()
+
+        if not self.is_available():
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=True,  # Soft-fail if not installed
+                available=False,
+                error_message="bandit not installed (pip install bandit)",
+            )
+
+        try:
+            result = subprocess.run(
+                [
+                    "bandit",
+                    "-r",
+                    str(self.repo_path),
+                    "-f", "json",
+                    "-ll",  # Low severity and above
+                ],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+
+            execution_time = (time.time() - start_time) * 1000
+
+            # Bandit returns non-zero if issues found
+            findings = []
+            try:
+                output = json.loads(result.stdout) if result.stdout else {}
+                for issue in output.get("results", []):
+                    findings.append({
+                        "file": issue.get("filename"),
+                        "line": issue.get("line_number"),
+                        "code": issue.get("test_id"),
+                        "severity": issue.get("issue_severity"),
+                        "message": issue.get("issue_text"),
+                        "confidence": issue.get("issue_confidence"),
+                    })
+            except json.JSONDecodeError:
+                pass
+
+            passed = len(findings) == 0
+
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=passed,
+                available=True,
+                findings=findings,
+                execution_time_ms=execution_time,
+            )
+
+        except subprocess.TimeoutExpired:
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=False,
+                available=True,
+                error_message="bandit timed out after 120s",
+            )
+        except Exception as e:
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=False,
+                available=True,
+                error_message=str(e),
+            )
+
+
+class SafetySensor(ExternalSensor):
+    """
+    Safety sensor - checks Python dependencies for known security vulnerabilities.
+    Uses comprehensive vulnerability database from Safety DB.
+    """
+
+    def __init__(self, repo_path: str | Path):
+        super().__init__(repo_path)
+        self.tool_name = "safety"
+
+    def is_available(self) -> bool:
+        try:
+            subprocess.run(
+                ["safety", "--version"],
+                capture_output=True,
+                timeout=5,
+            )
+            return True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return False
+
+    def run(self) -> SensorResult:
+        start_time = time.time()
+
+        if not self.is_available():
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=True,  # Soft-fail if not installed
+                available=False,
+                error_message="safety not installed (pip install safety)",
+            )
+
+        try:
+            # Check if requirements.txt or pyproject.toml exists
+            req_file = self.repo_path / "requirements.txt"
+            pyproject_file = self.repo_path / "pyproject.toml"
+
+            if not req_file.exists() and not pyproject_file.exists():
+                return SensorResult(
+                    tool_name=self.tool_name,
+                    passed=True,
+                    available=True,
+                    findings=[],
+                    error_message="No requirements.txt or pyproject.toml found",
+                )
+
+            # Run safety check
+            cmd = ["safety", "check", "--json"]
+            if req_file.exists():
+                cmd.extend(["-r", str(req_file)])
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                cwd=str(self.repo_path),
+            )
+
+            execution_time = (time.time() - start_time) * 1000
+
+            findings = []
+            try:
+                output = json.loads(result.stdout) if result.stdout else {}
+                for vuln in output.get("vulnerabilities", []):
+                    findings.append({
+                        "package": vuln.get("package_name"),
+                        "affected": vuln.get("affected_specifications"),
+                        "vulnerability": vuln.get("vulnerability_id"),
+                        "severity": vuln.get("severity"),
+                        "message": vuln.get("advisory"),
+                    })
+            except json.JSONDecodeError:
+                pass
+
+            passed = len(findings) == 0
+
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=passed,
+                available=True,
+                findings=findings,
+                execution_time_ms=execution_time,
+            )
+
+        except subprocess.TimeoutExpired:
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=False,
+                available=True,
+                error_message="safety timed out after 120s",
+            )
+        except Exception as e:
+            return SensorResult(
+                tool_name=self.tool_name,
+                passed=False,
+                available=True,
+                error_message=str(e),
+            )
+
+
 class SensorSuite:
     """Runs all available external sensors and aggregates results."""
 
@@ -356,6 +550,8 @@ class SensorSuite:
         self.repo_path = Path(repo_path).resolve()
         self.sensors: list[ExternalSensor] = [
             PipAuditSensor(self.repo_path),
+            BanditSensor(self.repo_path),
+            SafetySensor(self.repo_path),
             RuffSensor(self.repo_path),
             PyrightSensor(self.repo_path),
             DeptrySensor(self.repo_path),

@@ -1,0 +1,133 @@
+{
+  "name": "repo-doctor",
+  "displayName": "Repo Doctor",
+  "description": "Repository verification and control system with quantum-inspired state modeling",
+  "version": "0.1.0",
+  "publisher": "amos-team",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Testing",
+    "Debuggers",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "repository",
+    "verification",
+    "invariants",
+    "quality",
+    "health"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "workspaceContains:pyproject.toml",
+    "workspaceContains:setup.py",
+    "workspaceContains:package.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "repoDoctor.scan",
+        "title": "Repo Doctor: Scan Repository",
+        "icon": "$(search)"
+      },
+      {
+        "command": "repoDoctor.scanWithSensors",
+        "title": "Repo Doctor: Full Scan with External Sensors"
+      },
+      {
+        "command": "repoDoctor.fix",
+        "title": "Repo Doctor: Apply Auto-Fixes"
+      },
+      {
+        "command": "repoDoctor.bisect",
+        "title": "Repo Doctor: Bisect Regression"
+      },
+      {
+        "command": "repoDoctor.showState",
+        "title": "Repo Doctor: Show State Vector"
+      },
+      {
+        "command": "repoDoctor.repairPlan",
+        "title": "Repo Doctor: Generate Repair Plan"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "repoDoctor.scan",
+          "group": "repoDoctor@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "repoDoctor.scan",
+          "group": "navigation",
+          "when": "resourceExtname == .py"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "repoDoctor",
+          "title": "Repo Doctor",
+          "icon": "$(pulse)"
+        }
+      ]
+    },
+    "views": {
+      "repoDoctor": [
+        {
+          "id": "repoDoctor.stateView",
+          "name": "Repository State"
+        },
+        {
+          "id": "repoDoctor.invariantsView",
+          "name": "Hard Invariants"
+        },
+        {
+          "id": "repoDoctor.repairsView",
+          "name": "Repair Plan"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Repo Doctor",
+      "properties": {
+        "repoDoctor.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Path to Python interpreter"
+        },
+        "repoDoctor.autoScanOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically scan on file save"
+        },
+        "repoDoctor.externalSensors": {
+          "type": "array",
+          "default": ["ruff", "pyright", "pip-audit", "deptry"],
+          "description": "External sensor tools to run"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4",
+    "eslint": "^8.28.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0"
+  }
+}

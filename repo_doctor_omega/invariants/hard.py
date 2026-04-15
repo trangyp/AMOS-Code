@@ -402,18 +402,69 @@ class TestInvariant(HardInvariant):
 
     def __init__(self):
         super().__init__(InvariantKind.TEST, BasisVector.TEST)
+        self._substrate: Any | None = None
+    
+    def _get_substrate(self, repo_path: str) -> Any:
+        """Lazy-load Test substrate."""
+        if self._substrate is None:
+            try:
+                from ..ingest.test_substrate import TestSubstrate
+                self._substrate = TestSubstrate(repo_path)
+            except ImportError:
+                self._substrate = None
+        return self._substrate
 
     def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
         """Check test integrity."""
         violations = []
-
+        
+        substrate = self._get_substrate(repo_path)
+        
+        if substrate is None:
+            return InvariantResult(
+                invariant=self.name,
+                passed=True,
+                basis=self.basis,
+                violations=[],
+                metadata={"substrate": "test", "status": "unavailable"},
+            )
+        
         # Run hard contract tests
-        # Integration with pytest
-
+        results = substrate.run_hard_contract_tests()
+        failed = [r for r in results if not r.passed]
+        
+        # Create violations for failed hard contract tests
+        for result in failed:
+            test = result.test
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message=(
+                        f"Hard contract test failed: {test.name} "
+                        f"({test.file}:{test.line})"
+                    ),
+                    location=f"{test.file}:{test.line}",
+                    severity=1.0,  # Maximum severity - blocks release
+                    remediation=result.error_message or "Fix test failure",
+                )
+            )
+        
+        # Also collect overall test suite statistics
+        analysis = substrate.analyze_repository()
+        
         return InvariantResult(
             invariant=self.name,
             passed=len(violations) == 0,
             basis=self.basis,
             violations=violations,
-            metadata={"check": "test_execution"},
+            metadata={
+                "substrate": "test",
+                "has_tests": analysis.get("has_tests", False),
+                "total_tests": analysis.get("total", 0),
+                "hard_contract_tests": analysis.get("hard_contract", 0),
+                "hard_failed": len(failed),
+                "quarantined": analysis.get("quarantined", 0),
+                "flaky": analysis.get("flaky", 0),
+                "releaseable": len(failed) == 0,
+            },
         )

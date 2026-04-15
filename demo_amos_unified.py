@@ -379,7 +379,7 @@ def generate_summary(org):
             print("\n  📈 System Metrics:")
             print(f"     Active Subsystems: {len(status.get('active_subsystems', []))}")
             print(f"     Session ID: {status.get('session_id', 'N/A')[:16]}...")
-        except:
+        except Exception:
             pass
 
     print("\n  🎉 AMOS UNIFIED ECOSYSTEM IS FULLY OPERATIONAL!")

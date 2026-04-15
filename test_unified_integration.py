@@ -425,7 +425,7 @@ class UnifiedIntegrationTestSuite:
                     obj = self.runtime.get_subsystem(subsys)
                     if obj:
                         accessible.append(subsys)
-                except:
+                except Exception:
                     pass
 
             self.results.append(

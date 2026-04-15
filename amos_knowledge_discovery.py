@@ -173,7 +173,7 @@ class KnowledgeDiscovery:
                             content = f.read()
                             if query_lower in content.lower():
                                 results.append(item)
-                    except:
+                    except Exception:
                         pass
 
         return results

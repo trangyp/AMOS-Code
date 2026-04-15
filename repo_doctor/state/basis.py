@@ -1,10 +1,16 @@
 """
-Repo Doctor Ω∞ - State Basis
+Repo Doctor Ω∞∞∞∞∞ - State Basis
 
-The 12 basis states for repository state space:
-|S⟩ syntax |I⟩ imports |T⟩ types |A⟩ API |E⟩ entrypoints |Pk⟩ packaging
-|Rt⟩ runtime |D⟩ docs/demos/tests |Ps⟩ persistence |St⟩ status |Sec⟩ security |H⟩ history
+The 15 basis states for repository state space per Ω∞∞∞∞∞ specification:
+H_repo = H_S ⊗ H_I ⊗ H_Ty ⊗ H_A ⊗ H_E ⊗ H_Pk ⊗ H_Rt ⊗ H_Ps ⊗ H_St ⊗ H_T ⊗ H_D ⊗ H_Sec ⊗ H_H ⊗ H_Gc ⊗ H_Env
+
+|S⟩   syntax            |I⟩   imports        |Ty⟩  types/signatures
+|A⟩   API contracts      |E⟩   entrypoints    |Pk⟩  packaging
+|Rt⟩  runtime            |Ps⟩  persistence    |St⟩  status
+|T⟩   tests              |D⟩   docs           |Sec⟩ security
+|H⟩   history            |Gc⟩  generated code |Env⟩ environment
 """
+
 
 from __future__ import annotations
 
@@ -12,20 +18,36 @@ from enum import Enum
 
 
 class StateDimension(Enum):
-    """12 dimensions of repository state space."""
+    """18 dimensions of repository state space (Ω∞∞∞∞∞).
 
+    Original 12 + 6 Phase 1-2 additions.
+    """
+
+    # Original 12 dimensions
     SYNTAX = "syntax"  # |S⟩ parse integrity
-    IMPORTS = "imports"  # |I⟩ import resolution
-    TYPES = "types"  # |T⟩ type/signature integrity
-    API = "api"  # |A⟩ public API contract
-    ENTRYPOINTS = "entrypoints"  # |E⟩ entrypoint/launcher integrity
-    PACKAGING = "packaging"  # |Pk⟩ build/packaging integrity
-    RUNTIME = "runtime"  # |Rt⟩ runtime behavior
-    DOCS_TESTS_DEMOS = "docs_tests_demos"  # |D⟩ documentation alignment
-    PERSISTENCE = "persistence"  # |Ps⟩ serialization roundtrip
-    STATUS = "status"  # |St⟩ status truthfulness
-    SECURITY = "security"  # |Sec⟩ security posture
-    HISTORY = "history"  # |H⟩ temporal stability
+    IMPORT = "import"  # |I⟩ import resolution (singular form for observables)
+    IMPORTS = "imports"  # |I⟩ import resolution (plural form for compatibility)
+    TYPE = "type"  # |T⟩ type/signature integrity (singular)
+    TYPES = "types"  # |T⟩ type/signature integrity (plural)
+    API = "api"  # |A⟩ public API contract integrity
+    ENTRYPOINT = "entrypoint"  # |E⟩ entrypoint / launcher integrity
+    PACKAGING = "packaging"  # |Pk⟩ packaging / build / distribution integrity
+    RUNTIME = "runtime"  # |Rt⟩ runtime behavior integrity
+    PERSISTENCE = "persistence"  # |Ps⟩ persistence / schema / state integrity
+    STATUS = "status"  # |St⟩ status-truth integrity
+    TEST = "test"  # |T⟩ test / oracle integrity
+    DOCS = "docs"  # |D⟩ docs / demos / tutorials integrity
+    SECURITY = "security"  # |Sec⟩ security integrity
+
+    # Temporal and environment surfaces (3)
+    HISTORY = "history"  # |H⟩ history / temporal / drift integrity
+    GENERATED_CODE = "generated_code"  # |Gc⟩ generated code / codegen integrity
+    ENVIRONMENT = "environment"  # |Env⟩ environment compatibility integrity
+
+    # Additional dimensions for future expansion
+    CODE_QUALITY = "code_quality"  # |C⟩ code quality
+    MAINTAINABILITY = "maintainability"  # |M⟩ maintainability
+    LICENSING = "licensing"  # |L⟩ licensing
 
 
 class StateBasis:
@@ -33,36 +55,42 @@ class StateBasis:
     Basis state management for repository Hilbert space.
     """
 
-    # Severity weights for Hamiltonian (λk)
+    # Severity weights for Hamiltonian (λk) per Ω∞∞∞∞∞
     WEIGHTS: dict[StateDimension, float] = {
         StateDimension.SYNTAX: 100.0,
-        StateDimension.IMPORTS: 90.0,
-        StateDimension.TYPES: 70.0,
+        StateDimension.IMPORT: 90.0,
+        StateDimension.TYPE: 70.0,
         StateDimension.API: 95.0,
-        StateDimension.ENTRYPOINTS: 90.0,
+        StateDimension.ENTRYPOINT: 90.0,
         StateDimension.PACKAGING: 90.0,
         StateDimension.RUNTIME: 80.0,
         StateDimension.PERSISTENCE: 70.0,
         StateDimension.STATUS: 65.0,
+        StateDimension.TEST: 50.0,
         StateDimension.SECURITY: 100.0,
-        StateDimension.DOCS_TESTS_DEMOS: 35.0,
+        StateDimension.DOCS: 35.0,
         StateDimension.HISTORY: 55.0,
+        StateDimension.GENERATED_CODE: 60.0,
+        StateDimension.ENVIRONMENT: 45.0,
     }
 
-    # Collapse thresholds (θk)
+    # Collapse thresholds (θk) per Ω∞∞∞∞∞
     THRESHOLDS: dict[StateDimension, float] = {
         StateDimension.SYNTAX: 0.95,
-        StateDimension.IMPORTS: 0.90,
-        StateDimension.TYPES: 0.80,
+        StateDimension.IMPORT: 0.90,
+        StateDimension.TYPE: 0.80,
         StateDimension.API: 0.95,
-        StateDimension.ENTRYPOINTS: 0.90,
+        StateDimension.ENTRYPOINT: 0.90,
         StateDimension.PACKAGING: 0.90,
         StateDimension.RUNTIME: 0.80,
         StateDimension.PERSISTENCE: 0.80,
         StateDimension.STATUS: 0.85,
+        StateDimension.TEST: 0.75,
         StateDimension.SECURITY: 0.95,
-        StateDimension.DOCS_TESTS_DEMOS: 0.50,
+        StateDimension.DOCS: 0.50,
         StateDimension.HISTORY: 0.60,
+        StateDimension.GENERATED_CODE: 0.70,
+        StateDimension.ENVIRONMENT: 0.65,
     }
 
     @classmethod
@@ -85,9 +113,12 @@ class StateBasis:
         """Dimensions that cause hard failure when collapsed."""
         return [
             StateDimension.SYNTAX,
-            StateDimension.IMPORTS,
+            StateDimension.IMPORT,
+            StateDimension.TYPE,
             StateDimension.API,
-            StateDimension.ENTRYPOINTS,
+            StateDimension.ENTRYPOINT,
             StateDimension.PACKAGING,
+            StateDimension.PERSISTENCE,
+            StateDimension.STATUS,
             StateDimension.SECURITY,
         ]

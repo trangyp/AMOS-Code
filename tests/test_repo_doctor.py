@@ -173,7 +173,7 @@ def main():
             sensor_results = suite.run_all()
 
             # Verify workflow completed
-            self.assertIsNotNone(state)
+            self.assertIsNotNone(_state)
             self.assertGreater(len(results), 0)
             self.assertEqual(len(sensor_results), 4)
 

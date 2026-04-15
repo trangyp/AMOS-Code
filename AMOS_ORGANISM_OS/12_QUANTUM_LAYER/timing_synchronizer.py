@@ -36,7 +36,7 @@ class TimingSynchronizer:
                 data = json.loads(f.read_text())
                 for e in data.get("events", []):
                     self.events.append(SynchronicityEvent(**e))
-            except:
+            except Exception:
                 pass
 
     def save(self):

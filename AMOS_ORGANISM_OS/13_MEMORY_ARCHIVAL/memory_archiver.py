@@ -101,7 +101,7 @@ class MemoryArchiver:
 
         try:
             return len(json.dumps(content).encode("utf-8"))
-        except:
+        except Exception:
             return 1024  # Default estimate
 
     def archive(self, memory_id: str) -> bool:

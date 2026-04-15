@@ -182,7 +182,7 @@ class KnowledgePersistence:
                 with open(self.METADATA_FILE) as f:
                     metadata = json.load(f)
                 status.update(metadata)
-            except:
+            except Exception:
                 pass
 
         if self.CACHE_FILE.exists():

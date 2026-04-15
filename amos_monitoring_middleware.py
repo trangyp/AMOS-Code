@@ -115,7 +115,7 @@ class MonitoringMiddleware:
             try:
                 health = asyncio.get_event_loop().run_until_complete(self.health.check_health())
                 return jsonify(self.health.to_dict(health))
-            except:
+            except Exception:
                 # Fallback to cached health
                 health = self.health.get_health()
                 return jsonify(self.health.to_dict(health))

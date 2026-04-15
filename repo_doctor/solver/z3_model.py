@@ -66,13 +66,19 @@ class Z3Model:
     - Serialize(x) = y ∧ Deserialize(y) = z -> Equivalent(x, z)
     """
 
-    def __init__(self):
+    def __init__(self, enable_core_minimization: bool = True):
         self.solver = None
         self.variables: dict[str, Any] = {}
         self.invariants: list[InvariantFormula] = []
+        self.enable_core_minimization = enable_core_minimization
+        self._assumptions: list[Any] = []  # Track assumptions for unsat cores
 
         if Z3_AVAILABLE and z3:
             self.solver = z3.Solver()
+            # Enable core minimization for minimal unsat cores
+            if enable_core_minimization:
+                self.solver.set("smt.core.minimize", "true")
+                self.solver.set("sat.core.minimize", "true")
 
     def is_available(self) -> bool:
         """Check if Z3 is available."""
@@ -141,7 +147,7 @@ class Z3Model:
             try:
                 val = z3_model.evaluate(var, model_completion=True)
                 model_dict[name] = str(val)
-            except:
+            except Exception:
                 model_dict[name] = "unknown"
         return model_dict
 

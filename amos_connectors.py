@@ -117,7 +117,7 @@ class DataIngestionEngine:
         try:
             with open(source.endpoint) as f:
                 return json.load(f)
-        except:
+        except Exception:
             return {}
 
     def _query_database_source(self, source: DataSource) -> dict:
@@ -128,7 +128,7 @@ class DataIngestionEngine:
             # Would execute actual queries here
             conn.close()
             return {"status": "connected"}
-        except:
+        except Exception:
             return {}
 
     def start_continuous_ingestion(self):

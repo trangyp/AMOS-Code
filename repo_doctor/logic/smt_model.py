@@ -201,7 +201,7 @@ class SMTModel:
                 val = z3_model.evaluate(var, model_completion=True)
                 try:
                     model_dict[dim] = float(val.as_decimal(4))
-                except:
+                except Exception:
                     model_dict[dim] = str(val)
         return model_dict
 

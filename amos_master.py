@@ -43,7 +43,7 @@ def start_api_server():
             if resp.status == 200:
                 print("    ✓ API Server running at http://localhost:8765")
                 return proc
-    except:
+    except Exception:
         pass
 
     print("    ⚠ Server starting (may take a moment)")
