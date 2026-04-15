@@ -32,15 +32,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-# Import repair planning
+# Import repair planning from repo_doctor_omega
 try:
-    from repo_doctor.repair_plan import RepairPlanner, RepairPlan, RepairAction
-    from repo_doctor.state_vector import RepoStateVector, StateDimension
+    from repo_doctor_omega.solver import RepairOptimizer, RepairPlan
+    from repo_doctor_omega.state.basis import BasisVector, RepositoryState
     REPAIR_AVAILABLE = True
 except ImportError:
     REPAIR_AVAILABLE = False
 
-# Import pathology detection
+# Import pathology detection (fallback to old for compatibility)
 try:
     from repo_doctor.arch_pathologies import (
         ArchitecturalPathology,
@@ -126,18 +126,18 @@ class RepairSynthesisBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._planner: RepairPlanner | None = None
+        self._optimizer: Any | None = None
 
         # Risk thresholds
         self.auto_fix_threshold = 0.8  # Confidence needed for auto-fix
         self.human_review_threshold = 0.5  # Below this requires human review
 
     @property
-    def planner(self) -> RepairPlanner | None:
-        """Lazy initialization of repair planner."""
-        if self._planner is None and REPAIR_AVAILABLE:
-            self._planner = RepairPlanner(self.repo_path)
-        return self._planner
+    def optimizer(self) -> Any | None:
+        """Lazy initialization of repair optimizer."""
+        if self._optimizer is None and REPAIR_AVAILABLE:
+            self._optimizer = RepairOptimizer()
+        return self._optimizer
 
     def synthesize_from_pathologies(
         self,
