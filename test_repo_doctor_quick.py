@@ -2,7 +2,8 @@
 """Quick diagnostic test for Repo Doctor."""
 
 import sys
-sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code')
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
 
 print("=" * 60)
 print("REPO DOCTOR Ω∞∞∞∞ - Quick Diagnostic")

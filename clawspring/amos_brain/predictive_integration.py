@@ -5,10 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-# Add organism OS to path
-ORGANISM_PATH = Path(
-    "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/AMOS_ORGANISM_OS"
-)
+# Add organism OS to path - use relative path from this file
+ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
 if str(ORGANISM_PATH) not in sys.path:
     sys.path.insert(0, str(ORGANISM_PATH))
 
