@@ -1,0 +1,156 @@
+name: AMOS Self-Evolution
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily at 2 AM UTC for continuous self-monitoring
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      max_evolutions:
+        description: 'Max evolutions to detect'
+        required: false
+        default: '5'
+
+jobs:
+  self-analysis:
+    name: Self-Evolution Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -e . 2>/dev/null || pip install .
+          pip install pytest ruff
+
+      - name: Run Self-Evolution Engine
+        id: self_evolution
+        run: |
+          python3 << 'EOF'
+          import json
+          import sys
+          sys.path.insert(0, '.')
+
+          from repo_doctor.self_evolution import SelfEvolutionEngine
+
+          print("="*70)
+          print("AMOS SELF-EVOLUTION ANALYSIS")
+          print("="*70)
+
+          engine = SelfEvolutionEngine('.')
+          report = engine.evolve(max_evolutions=${{ github.event.inputs.max_evolutions || 5 }})
+
+          # Output summary
+          print(f"\n📊 DETECTION RESULTS:")
+          print(f"   Hotspots detected: {report.hotspots_detected}")
+          print(f"   Evolution contracts: {report.contracts_created}")
+          print(f"   Patches planned: {report.patches_planned}")
+
+          # Output details
+          if report.details:
+              print(f"\n🔍 TOP OPPORTUNITIES:")
+              for i, detail in enumerate(report.details[:3], 1):
+                  print(f"   {i}. {detail.get('evolution_id', 'unknown')}: {detail.get('status', 'unknown')}")
+                  pattern = detail.get('pattern', '')[:50]
+                  print(f"      Pattern: {pattern}...")
+
+          print("\n" + "="*70)
+
+          # Set outputs for GitHub Actions
+          import os
+          with open(os.environ.get('GITHUB_OUTPUT', '/dev/null'), 'a') as f:
+              f.write(f"hotspots={report.hotspots_detected}\n")
+              f.write(f"contracts={report.contracts_created}\n")
+              f.write(f"patches={report.patches_planned}\n")
+
+          # Exit with warning if too many hotspots
+          if report.hotspots_detected > 100:
+              print("⚠️ WARNING: High number of structural hotspots detected")
+              sys.exit(1)
+
+          print("✅ Self-evolution analysis complete")
+          EOF
+
+      - name: Upload Evolution Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: self-evolution-report
+          path: |
+            *.json
+            evolution_*.md
+          if-no-files-found: ignore
+
+  invariant-check:
+    name: Hard Invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -e . 2>/dev/null || pip install .
+
+      - name: Run All 18 Hard Invariants
+        run: |
+          python3 << 'EOF'
+          import sys
+          sys.path.insert(0, '.')
+
+          from repo_doctor.invariants import InvariantEngine
+
+          print("="*70)
+          print("RUNNING 18 HARD INVARIANTS")
+          print("="*70)
+
+          engine = InvariantEngine('.')
+          results = engine.run_all()
+
+          passed = sum(1 for r in results if r.passed)
+          failed = sum(1 for r in results if not r.passed)
+
+          print(f"\n✅ Passed: {passed}/{len(results)}")
+          if failed > 0:
+              print(f"❌ Failed: {failed}/{len(results)}")
+              for r in results:
+                  if not r.passed:
+                      print(f"   - {r.name}: {r.message}")
+
+          print("\n" + "="*70)
+
+          if failed > 0:
+              sys.exit(1)
+
+          print("✅ All hard invariants satisfied")
+          EOF
+
+  evolution-health:
+    name: Evolution Health Metrics
+    runs-on: ubuntu-latest
+    needs: [self-analysis, invariant-check]
+    if: always()
+    steps:
+      - name: Report Health
+        run: |
+          echo "## AMOS Self-Evolution Health Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Self-Analysis | ${{ needs.self-analysis.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Hard Invariants | ${{ needs.invariant-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The Self-Evolution Engine is monitoring structural health." >> $GITHUB_STEP_SUMMARY

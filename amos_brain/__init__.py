@@ -410,4 +410,13 @@ __all__ = [
     # Tracing
     "Tracer",
     "configure_tracing",
+    # Real Learning Engine
+    "RealLearningEngine",
+    "Procedure",
+    "Pattern",
+    "Decision",
+    "FailurePattern",
+    "learn_from_task",
+    "attempt_procedure_reuse",
+    "get_learning_engine",
 ]

@@ -1,0 +1,61 @@
+{
+  "procedures": {
+    "proc_optimize_performance_5dda9cfe": {
+      "procedure_id": "proc_optimize_performance_5dda9cfe",
+      "name": "optimize_performance",
+      "trigger_condition": "Response time > threshold",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "Analyze query plan",
+        "Add index",
+        "Verify improvement"
+      ],
+      "expected_outcome": "Query optimized",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "5dda9cfe37094e32",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1000,
+      "created_at": "2026-04-15T07:32:38.245763",
+      "last_used": "2026-04-15T07:32:38.245763",
+      "evolution_history": []
+    }
+  },
+  "patterns": {
+    "pat_performance_issue_5dda9cfe": {
+      "pattern_id": "pat_performance_issue_5dda9cfe",
+      "pattern_type": "performance_issue",
+      "signature": "5dda9cfe37094e32",
+      "detection_rules": [
+        "contains: fix",
+        "contains: slow",
+        "contains: performance"
+      ],
+      "indicators": [
+        "fix",
+        "slow",
+        "performance"
+      ],
+      "related_procedures": [
+        "proc_optimize_performance_5dda9cfe"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-15T07:32:38.245774",
+      "last_seen": "2026-04-15T07:32:38.245774"
+    }
+  },
+  "decisions": {},
+  "failures": {},
+  "stats": {
+    "procedures_learned": 1,
+    "patterns_detected": 1,
+    "decisions_recorded": 0,
+    "failures_avoided": 0,
+    "procedures_reused": 0,
+    "time_saved_ms": 0,
+    "learning_start": "2026-04-15T07:32:38.245581"
+  },
+  "saved_at": "2026-04-15T07:32:38.245824"
+}
