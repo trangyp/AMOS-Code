@@ -2,7 +2,9 @@
 
 # Core types (lightweight, no side effects)
 from .config import FeatureFlags
-from .facade import BrainResponse, Decision
+
+# NOTE: BrainResponse and Decision are lazy-loaded via __getattr__ below
+# to avoid 56ms facade import at startup
 
 # Lazy module cache
 _lazy_modules = {}
@@ -332,6 +334,14 @@ def __getattr__(name: str):
     }
     if name in core_lazy_names:
         return _lazy_import(name)
+
+    # Types from facade - lazy loaded to avoid 56ms import at startup
+    facade_types = {"BrainResponse", "Decision"}
+    if name in facade_types:
+        from .facade import BrainResponse, Decision
+        if name == "BrainResponse":
+            return BrainResponse
+        return Decision
 
     # Cookbook classes - ensure loaded and return
     cookbook_names = {

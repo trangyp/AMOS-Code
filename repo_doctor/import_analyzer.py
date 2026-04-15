@@ -22,11 +22,13 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Optional
 
-import tree_sitter_python as tspython
+# NOTE: tree_sitter imports are lazy-loaded in _ensure_parser() to avoid
+# ~70ms import time when the module is imported but not used
 
-# Tree-sitter imports
-from tree_sitter import Language, Parser, Query
+if TYPE_CHECKING:
+    from tree_sitter import Language, Parser, Query
 
 
 @dataclass
@@ -108,14 +110,28 @@ class ImportAnalyzer:
     def __init__(self, repo_path: str = "."):
         self.repo_path = Path(repo_path).resolve()
 
+        # Lazy-loaded Tree-sitter resources (48ms initialization deferred)
+        self._parser: Optional[Parser] = None
+        self._import_query: Optional[Query] = None
+        self._py_language: Optional[Language] = None
+
+    def _ensure_parser(self) -> None:
+        """Lazy initialize tree-sitter parser on first use."""
+        if self._parser is not None:
+            return
+
+        # Lazy import tree-sitter (expensive - ~70ms at module level)
+        import tree_sitter_python as tspython
+        from tree_sitter import Language, Parser, Query
+
         # Initialize Tree-sitter
-        PY_LANGUAGE = Language(tspython.language())
-        self.parser = Parser(PY_LANGUAGE)
+        self._py_language = Language(tspython.language())
+        self._parser = Parser(self._py_language)
 
         # Tree-sitter query for import statements
         # Matches: import x, from x import y
-        self.import_query = Query(
-            PY_LANGUAGE,
+        self._import_query = Query(
+            self._py_language,
             """
             (import_statement
               name: (dotted_name) @import.name)
@@ -127,6 +143,20 @@ class ImportAnalyzer:
               module_name: (relative_import) @from.relative)
         """,
         )
+
+    @property
+    def parser(self) -> "Parser":
+        """Lazy-loaded parser."""
+        if self._parser is None:
+            self._ensure_parser()
+        return self._parser
+
+    @property
+    def import_query(self) -> "Query":
+        """Lazy-loaded import query."""
+        if self._import_query is None:
+            self._ensure_parser()
+        return self._import_query
 
     def _find_python_files(self) -> list[Path]:
         """Find all Python files in the repository."""
@@ -219,7 +249,7 @@ class ImportAnalyzer:
 
         return graph
 
-    def find_cycles(self, graph: DependencyGraph | None = None) -> list[list[str]]:
+    def find_cycles(self, graph: Optional[DependencyGraph] = None) -> list[list[str]]:
         """Find circular dependencies in the graph."""
         if graph is None:
             graph = self.build_dependency_graph()
@@ -263,7 +293,7 @@ class ImportAnalyzer:
         return unique_cycles
 
     def calculate_coupling_metrics(
-        self, graph: DependencyGraph | None = None
+        self, graph: Optional[DependencyGraph] = None
     ) -> dict[str, CouplingMetrics]:
         """Calculate coupling metrics for all modules."""
         if graph is None:
