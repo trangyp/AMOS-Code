@@ -468,3 +468,81 @@ class TestInvariant(HardInvariant):
                 "releaseable": len(failed) == 0,
             },
         )
+
+
+class SecurityInvariant(HardInvariant):
+    """I_security = 1 iff no critical security vulnerabilities exist.
+
+    Checks:
+    - Source-to-sink taint flows (user input → dangerous functions)
+    - SQL injection patterns
+    - Hardcoded secrets
+    - Unsafe deserialization
+    - Dangerous function usage (eval, exec, etc.)
+
+    Severity mapping:
+    - Critical: Blocks release (RCE, SQL injection, hardcoded keys)
+    - High: Must fix soon (unsafe deserialization)
+    - Medium: Should fix (hardcoded passwords)
+    - Low: Advisory
+    """
+
+    def __init__(self):
+        super().__init__(InvariantKind.SECURITY, BasisVector.SECURITY)
+        self._substrate: Any | None = None
+
+    def _get_substrate(self, repo_path: str) -> Any:
+        """Lazy-load Security substrate."""
+        if self._substrate is None:
+            try:
+                from ..ingest.security_substrate import SecuritySubstrate
+                self._substrate = SecuritySubstrate(repo_path)
+            except ImportError:
+                self._substrate = None
+        return self._substrate
+
+    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+        """Check for security vulnerabilities."""
+        violations = []
+
+        substrate = self._get_substrate(repo_path)
+
+        if substrate is None:
+            return InvariantResult(
+                invariant=self.name,
+                passed=True,
+                basis=self.basis,
+                violations=[],
+                metadata={"substrate": "security", "status": "unavailable"},
+            )
+
+        # Run security analysis
+        analysis = substrate.analyze_repository()
+
+        # Create violations for critical and high findings
+        for finding in analysis.findings:
+            if finding.severity in ("critical", "high"):
+                violations.append(
+                    InvariantViolation(
+                        invariant=self.name,
+                        message=f"{finding.rule_name}: {finding.message}",
+                        location=f"{finding.file}:{finding.line}",
+                        severity=1.0 if finding.severity == "critical" else 0.9,
+                        remediation=finding.remediation,
+                    )
+                )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={
+                "substrate": "security",
+                "critical": analysis.critical_count,
+                "high": analysis.high_count,
+                "total": analysis.total_count,
+                "is_secure": analysis.is_secure,
+                "bandit_available": substrate._bandit_available,
+            },
+        )

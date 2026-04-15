@@ -1,0 +1,36 @@
+{
+  "evolution_id": "E001",
+  "owner": "AMOS Brain (Canonical Runtime)",
+  "created_at": "2026-04-15T05:06:45.620513",
+  "target_files": [
+    "amos_self_evolution/evolution_contract_registry.py"
+  ],
+  "target_modules": [
+    "evolution_contract_registry"
+  ],
+  "problem_pattern": "Missing foundational self-evolution subsystem",
+  "evidence": [
+    "Directive requires evolution_contract_registry",
+    "Grep search found no existing implementation",
+    "All safe self-evolution requires contracts",
+    "No contracts possible without registry"
+  ],
+  "recurrence_count": 0,
+  "expected_improvement": "Enables all safe self-evolution with formal contracts",
+  "success_condition": "Registry can create, store, and retrieve evolution contracts",
+  "mutation_budget_lines": 200,
+  "mutation_budget_files": 1,
+  "proof_budget_tests": 5,
+  "rollback_condition": "Contract system fails to validate or corrupts data",
+  "verification_steps": [
+    "Import evolution_contract_registry successfully",
+    "Create EvolutionContract instance",
+    "Create EvolutionContractRegistry instance",
+    "Register a contract",
+    "Retrieve contract by ID",
+    "Verify contract persistence to storage"
+  ],
+  "status": "DRAFT",
+  "actual_changes": [],
+  "measured_improvement": null
+}

@@ -108,7 +108,15 @@ def _lazy_import(module_name: str):
                 from .architecture_bridge import get_architecture_bridge as gab
 
                 _lazy_modules[module_name] = gab
-        except Exception:
+            elif module_name == "configure_tracing":
+                from .tracing import configure_tracing as ct
+
+                _lazy_modules[module_name] = ct
+            elif module_name == "Tracer":
+                from .tracing import Tracer as tr
+
+                _lazy_modules[module_name] = tr
+        except Exception as e:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
             )
@@ -399,4 +407,7 @@ __all__ = [
     "DebugContext",
     # Architecture bridge
     "get_architecture_bridge",
+    # Tracing
+    "Tracer",
+    "configure_tracing",
 ]

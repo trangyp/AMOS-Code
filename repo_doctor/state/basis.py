@@ -52,10 +52,46 @@ class StateDimension(Enum):
     ARCHITECTURE = "architecture"  # |Arch⟩ architectural integrity
     HIDDEN_STATE = "hidden_state"  # |Hs⟩ hidden state integrity
 
+    # Phase 3: Control System Dimensions (18 new dimensions)
+    # Time and temporal semantics
+    CLOCK_SEMANTICS = "clock_semantics"  # |Clk⟩ clock/temporal semantics
+    TEMPORAL_ORDER = "temporal_order"  # |Ord⟩ event ordering integrity
+
+    # State and consistency
+    CONSISTENCY_MODEL = "consistency_model"  # |Cons⟩ consistency semantics
+    CACHE_COHERENCE = "cache_coherence"  # |Cache⟩ cache architecture
+    PROVENANCE = "provenance"  # |Prov⟩ data lineage/provenance
+
+    # Identity and security
+    IDENTITY_LIFECYCLE = "identity_lifecycle"  # |Id⟩ identity/credential lifecycle
+    CAPABILITY_DISCIPLINE = "capability_discipline"  # |Cap⟩ capability discipline
+
+    # Flow control and resilience
+    QUEUE_BACKPRESSURE = "queue_backpressure"  # |Queue⟩ queue/retry/backpressure
+    FALLBACK_TOPOLOGY = "fallback_topology"  # |Fallback⟩ fallback paths
+    IDEMPOTENCY_BOUNDARY = "idempotency_boundary"  # |Idem⟩ idempotency semantics
+    CONTROL_LOOP_STABILITY = "control_loop_stability"  # |Ctrl⟩ control loop stability
+
+    # Data lifecycle
+    DATA_LINEAGE = "data_lineage"  # |Lineage⟩ data lineage/deletion
+    DEPRECATION_LIFECYCLE = "deprecation_lifecycle"  # |Dep⟩ deprecation lifecycle
+
+    # Governance and operations
+    FORENSIC_AUDITABILITY = "forensic_auditability"  # |Audit⟩ auditability
+    ESCALATION_GRAPH = "escalation_graph"  # |Esc⟩ escalation paths
+    FAILURE_DOMAINS = "failure_domains"  # |Iso⟩ failure domain isolation
+    NEGATIVE_CAPABILITY = "negative_capability"  # |Neg⟩ forbidden states/transitions
+    ARCHITECTURAL_DEBT = "architectural_debt"  # |Debt⟩ architectural debt
+
     # Additional dimensions for future expansion
     CODE_QUALITY = "code_quality"  # |C⟩ code quality
     MAINTAINABILITY = "maintainability"  # |M⟩ maintainability
     LICENSING = "licensing"  # |L⟩ licensing
+    MIGRATION = "migration"  # |Mg⟩ migration integrity
+    PERFORMANCE = "performance"  # |Perf⟩ performance
+    OBSERVABILITY = "observability"  # |Obs⟩ observability
+    SEMANTIC_INTEGRITY = "semantic_integrity"  # |Sem⟩ semantic integrity
+    RECOVERY = "recovery"  # |Rec⟩ recovery integrity
 
 
 class StateBasis:
@@ -82,6 +118,31 @@ class StateBasis:
         StateDimension.CONFIG: 70.0,
         StateDimension.ARCHITECTURE: 85.0,
         StateDimension.HIDDEN_STATE: 75.0,
+        # Phase 3: Control system dimensions
+        StateDimension.CLOCK_SEMANTICS: 90.0,
+        StateDimension.TEMPORAL_ORDER: 85.0,
+        StateDimension.CONSISTENCY_MODEL: 95.0,
+        StateDimension.CACHE_COHERENCE: 80.0,
+        StateDimension.PROVENANCE: 75.0,
+        StateDimension.IDENTITY_LIFECYCLE: 100.0,
+        StateDimension.CAPABILITY_DISCIPLINE: 95.0,
+        StateDimension.QUEUE_BACKPRESSURE: 85.0,
+        StateDimension.FALLBACK_TOPOLOGY: 90.0,
+        StateDimension.IDEMPOTENCY_BOUNDARY: 95.0,
+        StateDimension.CONTROL_LOOP_STABILITY: 100.0,
+        StateDimension.DATA_LINEAGE: 80.0,
+        StateDimension.DEPRECATION_LIFECYCLE: 70.0,
+        StateDimension.FORENSIC_AUDITABILITY: 75.0,
+        StateDimension.ESCALATION_GRAPH: 85.0,
+        StateDimension.FAILURE_DOMAINS: 90.0,
+        StateDimension.NEGATIVE_CAPABILITY: 95.0,
+        StateDimension.ARCHITECTURAL_DEBT: 60.0,
+        # Expansion dimensions
+        StateDimension.MIGRATION: 80.0,
+        StateDimension.PERFORMANCE: 50.0,
+        StateDimension.OBSERVABILITY: 65.0,
+        StateDimension.SEMANTIC_INTEGRITY: 90.0,
+        StateDimension.RECOVERY: 85.0,
     }
 
     # Collapse thresholds (θk) per Ω∞∞∞∞∞
@@ -102,8 +163,34 @@ class StateBasis:
         StateDimension.GENERATED_CODE: 0.70,
         StateDimension.ENVIRONMENT: 0.65,
         StateDimension.BUILD: 0.85,
+        StateDimension.CONFIG: 0.80,
         StateDimension.ARCHITECTURE: 0.85,
         StateDimension.HIDDEN_STATE: 0.80,
+        # Phase 3: Control system thresholds
+        StateDimension.CLOCK_SEMANTICS: 0.90,
+        StateDimension.TEMPORAL_ORDER: 0.85,
+        StateDimension.CONSISTENCY_MODEL: 0.95,
+        StateDimension.CACHE_COHERENCE: 0.85,
+        StateDimension.PROVENANCE: 0.75,
+        StateDimension.IDENTITY_LIFECYCLE: 0.95,
+        StateDimension.CAPABILITY_DISCIPLINE: 0.95,
+        StateDimension.QUEUE_BACKPRESSURE: 0.85,
+        StateDimension.FALLBACK_TOPOLOGY: 0.90,
+        StateDimension.IDEMPOTENCY_BOUNDARY: 0.95,
+        StateDimension.CONTROL_LOOP_STABILITY: 0.95,
+        StateDimension.DATA_LINEAGE: 0.80,
+        StateDimension.DEPRECATION_LIFECYCLE: 0.70,
+        StateDimension.FORENSIC_AUDITABILITY: 0.75,
+        StateDimension.ESCALATION_GRAPH: 0.85,
+        StateDimension.FAILURE_DOMAINS: 0.90,
+        StateDimension.NEGATIVE_CAPABILITY: 0.90,
+        StateDimension.ARCHITECTURAL_DEBT: 0.60,
+        # Expansion thresholds
+        StateDimension.MIGRATION: 0.85,
+        StateDimension.PERFORMANCE: 0.50,
+        StateDimension.OBSERVABILITY: 0.70,
+        StateDimension.SEMANTIC_INTEGRITY: 0.90,
+        StateDimension.RECOVERY: 0.85,
     }
 
     @classmethod

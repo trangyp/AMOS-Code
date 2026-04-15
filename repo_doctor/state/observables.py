@@ -327,12 +327,6 @@ class ObservableSet:
         dimension=StateDimension.PERSISTENCE,
         weight=0.8,
     )
-    O_CODEGEN_SCHEMA_MISMATCH = Observable(
-        name="o_codegen_schema_mismatch",
-        severity=1.0,
-        dimension=StateDimension.PERSISTENCE,
-        weight=0.7,
-    )
 
     # ============================================
     # 4.5 Contract-Surface Observables
@@ -577,6 +571,186 @@ class ObservableSet:
         name="o_test_selection_unsoundness",
         severity=1.0,
         dimension=StateDimension.TEST,
+        weight=0.6,
+    )
+
+    # ============================================
+    # Phase 3: Control System Observables
+    # ============================================
+
+    # 5.1 Clock and Temporal Semantics
+    O_CLOCK_SKEW_DETECTED = Observable(
+        name="o_clock_skew_detected",
+        severity=1.0,
+        dimension=StateDimension.CLOCK_SEMANTICS,
+        weight=0.9,
+    )
+    O_TIMESTAMP_AMBIGUITY = Observable(
+        name="o_timestamp_ambiguity",
+        severity=0.9,
+        dimension=StateDimension.CLOCK_SEMANTICS,
+        weight=0.8,
+    )
+    O_EXPIRY_LOGIC_INCONSISTENT = Observable(
+        name="o_expiry_logic_inconsistent",
+        severity=1.0,
+        dimension=StateDimension.CLOCK_SEMANTICS,
+        weight=0.9,
+    )
+    O_TEMPORAL_ORDER_VIOLATION = Observable(
+        name="o_temporal_order_violation",
+        severity=1.0,
+        dimension=StateDimension.TEMPORAL_ORDER,
+        weight=0.9,
+    )
+
+    # 5.2 Cache Coherence
+    O_CACHE_INVALIDATION_MISSING = Observable(
+        name="o_cache_invalidation_missing",
+        severity=0.9,
+        dimension=StateDimension.CACHE_COHERENCE,
+        weight=0.9,
+    )
+    O_CACHE_STALE_OVERRIDE = Observable(
+        name="o_cache_stale_override",
+        severity=1.0,
+        dimension=StateDimension.CACHE_COHERENCE,
+        weight=1.0,
+    )
+    O_CACHE_KEY_SEMANTICS_DRIFT = Observable(
+        name="o_cache_key_semantics_drift",
+        severity=0.8,
+        dimension=StateDimension.CACHE_COHERENCE,
+        weight=0.8,
+    )
+
+    # 5.3 Consistency Model
+    O_CONSISTENCY_MODEL_UNDECLARED = Observable(
+        name="o_consistency_model_undeclared",
+        severity=0.9,
+        dimension=StateDimension.CONSISTENCY_MODEL,
+        weight=0.9,
+    )
+    O_STRONG_CONSISTENCY_ASSUMPTION_INVALID = Observable(
+        name="o_strong_consistency_assumption_invalid",
+        severity=1.0,
+        dimension=StateDimension.CONSISTENCY_MODEL,
+        weight=1.0,
+    )
+    O_READ_AFTER_WRITE_FAILURE = Observable(
+        name="o_read_after_write_failure",
+        severity=1.0,
+        dimension=StateDimension.CONSISTENCY_MODEL,
+        weight=0.9,
+    )
+
+    # 5.4 Identity and Capability
+    O_CREDENTIAL_ROTATION_FAILURE = Observable(
+        name="o_credential_rotation_failure",
+        severity=1.0,
+        dimension=StateDimension.IDENTITY_LIFECYCLE,
+        weight=1.0,
+    )
+    O_AMBIENT_AUTHORITY_DETECTED = Observable(
+        name="o_ambient_authority_detected",
+        severity=0.9,
+        dimension=StateDimension.CAPABILITY_DISCIPLINE,
+        weight=0.9,
+    )
+    O_CAPABILITY_LEAKAGE_PATH = Observable(
+        name="o_capability_leakage_path",
+        severity=1.0,
+        dimension=StateDimension.CAPABILITY_DISCIPLINE,
+        weight=1.0,
+    )
+
+    # 5.5 Queue and Backpressure
+    O_RETRY_AMPLIFICATION_LOOP = Observable(
+        name="o_retry_amplification_loop",
+        severity=1.0,
+        dimension=StateDimension.QUEUE_BACKPRESSURE,
+        weight=1.0,
+    )
+    O_UNBOUNDED_QUEUE_GROWTH = Observable(
+        name="o_unbounded_queue_growth",
+        severity=0.9,
+        dimension=StateDimension.QUEUE_BACKPRESSURE,
+        weight=0.9,
+    )
+    O_BACKPRESSURE_MISSING = Observable(
+        name="o_backpressure_missing",
+        severity=0.9,
+        dimension=StateDimension.QUEUE_BACKPRESSURE,
+        weight=0.9,
+    )
+
+    # 5.6 Fallback and Idempotency
+    O_FALLBACK_BYPASSES_AUTH = Observable(
+        name="o_fallback_bypasses_auth",
+        severity=1.0,
+        dimension=StateDimension.FALLBACK_TOPOLOGY,
+        weight=1.0,
+    )
+    O_IDEMPOTENCY_BOUNDARY_VIOLATION = Observable(
+        name="o_idempotency_boundary_violation",
+        severity=1.0,
+        dimension=StateDimension.IDEMPOTENCY_BOUNDARY,
+        weight=1.0,
+    )
+
+    # 5.7 Lineage and Deprecation
+    O_DERIVED_ARTIFACT_OUTLIVES_SOURCE = Observable(
+        name="o_derived_artifact_outlives_source",
+        severity=0.8,
+        dimension=StateDimension.DATA_LINEAGE,
+        weight=0.8,
+    )
+    O_DEPRECATION_WITHOUT_SUNSET = Observable(
+        name="o_deprecation_without_sunset",
+        severity=0.7,
+        dimension=StateDimension.DEPRECATION_LIFECYCLE,
+        weight=0.7,
+    )
+
+    # 5.8 Audit and Escalation
+    O_FORENSIC_GAP_DETECTED = Observable(
+        name="o_forensic_gap_detected",
+        severity=0.8,
+        dimension=StateDimension.FORENSIC_AUDITABILITY,
+        weight=0.8,
+    )
+    O_ESCALATION_PATH_UNDEFINED = Observable(
+        name="o_escalation_path_undefined",
+        severity=0.9,
+        dimension=StateDimension.ESCALATION_GRAPH,
+        weight=0.9,
+    )
+
+    # 5.9 Control Loop and Failure Domains
+    O_CONTROL_LOOP_OSCILLATION = Observable(
+        name="o_control_loop_oscillation",
+        severity=1.0,
+        dimension=StateDimension.CONTROL_LOOP_STABILITY,
+        weight=1.0,
+    )
+    O_FAILURE_DOMAIN_OVERLAP = Observable(
+        name="o_failure_domain_overlap",
+        severity=0.9,
+        dimension=StateDimension.FAILURE_DOMAINS,
+        weight=0.9,
+    )
+
+    # 5.10 Negative Capability and Debt
+    O_FORBIDDEN_STATE_NOT_BLOCKED = Observable(
+        name="o_forbidden_state_not_blocked",
+        severity=1.0,
+        dimension=StateDimension.NEGATIVE_CAPABILITY,
+        weight=1.0,
+    )
+    O_ARCHITECTURAL_DEBT_UNBOUNDED = Observable(
+        name="o_architectural_debt_unbounded",
+        severity=0.6,
+        dimension=StateDimension.ARCHITECTURAL_DEBT,
         weight=0.6,
     )
 

@@ -17,14 +17,14 @@ import unittest
 
 
 class TestStateVector(unittest.TestCase):
-    """Test 12-dimensional state space model."""
+    """Test 24-dimensional state space model."""
 
     def test_all_dimensions_present(self):
-        """All 12 basis states must be present."""
+        """All 24 basis states must be present."""
         from repo_doctor.omega_infinity import StateDimension, StateVector
 
         sv = StateVector()
-        self.assertEqual(len(sv.amplitudes), 12)
+        self.assertEqual(len(sv.amplitudes), 24)
         for dim in StateDimension:
             self.assertIn(dim, sv.amplitudes)
 
@@ -581,7 +581,8 @@ version = "1.0.0"
 
         doctor = RepoDoctorOmegaInfinity(self.repo_path)
 
-        self.assertEqual(doctor.repo_path, self.repo_path)
+        # Compare resolved paths (macOS /private/var vs /var issue)
+        self.assertEqual(doctor.repo_path.resolve(), self.repo_path.resolve())
         self.assertIsNotNone(doctor.graph)
         self.assertIsNotNone(doctor.hamiltonian)
 

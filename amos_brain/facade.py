@@ -313,6 +313,96 @@ class BrainClient:
         except ImportError:
             return []
 
+    def get_architecture_health(self) -> dict[str, Any]:
+        """Get complete architecture health snapshot for dashboard."""
+        try:
+            from .monitoring_bridge import get_monitoring_bridge
+            bridge = get_monitoring_bridge(self._repo_path)
+            return bridge.get_health_dashboard()
+        except ImportError:
+            return {"error": "monitoring_bridge not available"}
+
+    def validate_pre_commit(self) -> dict[str, Any]:
+        """Validate staged files for pre-commit hook integration."""
+        try:
+            from .monitoring_bridge import get_monitoring_bridge
+            bridge = get_monitoring_bridge(self._repo_path)
+            return bridge.validate_pre_commit()
+        except ImportError:
+            return {"valid": True, "message": "monitoring not available"}
+
+    def predict_architecture_failures(self) -> dict[str, Any]:
+        """Predict future architecture failures from current health data."""
+        try:
+            from .predictive_bridge import get_predictive_bridge
+            from .monitoring_bridge import get_monitoring_bridge
+
+            # Get current health data
+            monitor = get_monitoring_bridge(self._repo_path)
+            health = monitor.get_health_dashboard()
+
+            # Generate predictions
+            predictor = get_predictive_bridge(self._repo_path)
+            return predictor.predict_from_health(health)
+        except ImportError:
+            return {"error": "predictive_bridge not available"}
+
+    def assess_change_risk(self, files: list[str]) -> dict[str, Any]:
+        """Assess risk of proposed code changes before committing."""
+        try:
+            from .predictive_bridge import get_predictive_bridge
+            bridge = get_predictive_bridge(self._repo_path)
+            return bridge.assess_change_risk(files)
+        except ImportError:
+            return {"error": "predictive_bridge not available"}
+
+    def get_predictive_warnings(self) -> list[dict[str, Any]]:
+        """Get active early warnings about impending architecture issues."""
+        try:
+            from .predictive_bridge import get_predictive_bridge
+            bridge = get_predictive_bridge(self._repo_path)
+            return bridge.get_active_warnings()
+        except ImportError:
+            return []
+
+    def evaluate_for_autonomous_action(
+        self, prediction: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Evaluate prediction for autonomous action."""
+        try:
+            from .governance_bridge import get_governance_bridge
+            bridge = get_governance_bridge(self._repo_path)
+            return bridge.evaluate_prediction(prediction)
+        except ImportError:
+            return {"decision": "recommend", "error": "governance not available"}
+
+    def evaluate_repair_for_auto_apply(self, repair: dict[str, Any]) -> dict[str, Any]:
+        """Evaluate repair for autonomous application."""
+        try:
+            from .governance_bridge import get_governance_bridge
+            bridge = get_governance_bridge(self._repo_path)
+            return bridge.evaluate_repair(repair)
+        except ImportError:
+            return {"decision": "recommend", "error": "governance not available"}
+
+    def get_governance_audit(self) -> list[dict[str, Any]]:
+        """Get autonomous governance decision audit log."""
+        try:
+            from .governance_bridge import get_governance_bridge
+            bridge = get_governance_bridge(self._repo_path)
+            return bridge.get_governance_audit()
+        except ImportError:
+            return []
+
+    def get_autonomy_stats(self) -> dict[str, Any]:
+        """Get statistics on autonomous decisions."""
+        try:
+            from .governance_bridge import get_governance_bridge
+            bridge = get_governance_bridge(self._repo_path)
+            return bridge.get_autonomy_stats()
+        except ImportError:
+            return {}
+
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()

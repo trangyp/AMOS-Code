@@ -14,6 +14,7 @@ from .config_validator import validate_config
 from .integration import AMOSBrainIntegration, get_amos_integration
 from .metrics import get_metrics
 from .model_backend import ModelBackend, build_backend_from_env
+from .tracing import Tracer, configure_tracing, get_tracer
 
 
 class AMOSLocalRuntime:
@@ -93,64 +94,71 @@ class AMOSLocalRuntime:
         Returns:
             Response dict with text, routing info, and status
         """
-        if not self._ready:
-            return {
-                "ok": False,
-                "error": "Runtime not initialized. Call initialize() first.",
-            }
+        # Start tracing span for request
+        tracer = get_tracer()
+        with tracer.span("amos.request", {"user_message_length": len(user_message)}):
+            if not self._ready:
+                return {
+                    "ok": False,
+                    "error": "Runtime not initialized. Call initialize() first.",
+                }
 
-        # AMOS pre-processing: enforce laws, route to engines
-        pre = self.amos.pre_process(user_message, context)
-        if pre.get("blocked"):
-            return {
-                "ok": False,
-                "blocked": True,
-                "reason": pre["reason"],
-                "law": pre.get("law"),
-            }
+            # AMOS pre-processing: enforce laws, route to engines
+            with tracer.span("amos.pre_process"):
+                pre = self.amos.pre_process(user_message, context)
+            if pre.get("blocked"):
+                return {
+                    "ok": False,
+                    "blocked": True,
+                    "reason": pre["reason"],
+                    "law": pre.get("law"),
+                }
 
-        # Build enhanced system prompt with AMOS context
-        base_system = (
-            "You are AMOS Brain, a deterministic cognitive operating system. "
-            "You provide structured reasoning with Rule of 2 and Rule of 4. "
-            "You acknowledge your limits: no embodiment, no consciousness, "
-            "no autonomous action."
-        )
-        system_prompt = self.amos.enhance_system_prompt(base_system)
+            # Build enhanced system prompt with AMOS context
+            with tracer.span("amos.enhance_prompt"):
+                base_system = (
+                    "You are AMOS Brain, a deterministic cognitive operating system. "
+                    "You provide structured reasoning with Rule of 2 and Rule of 4. "
+                    "You acknowledge your limits: no embodiment, no consciousness, "
+                    "no autonomous action."
+                )
+                system_prompt = self.amos.enhance_system_prompt(base_system)
 
-        # Start metrics tracking
-        metrics = get_metrics()
-        req_metrics = metrics.start_request(
-            backend=getattr(self.backend, "base_url", "unknown"),
-            model=getattr(self.backend, "model", "unknown"),
-        )
-
-        # Call local LLM backend
-        try:
-            result = self.backend.generate(
-                system_prompt=system_prompt,
-                user_prompt=user_message,
-                temperature=0.2,
-                max_tokens=1200,
+            # Start metrics tracking
+            metrics = get_metrics()
+            req_metrics = metrics.start_request(
+                backend=getattr(self.backend, "base_url", "unknown"),
+                model=getattr(self.backend, "model", "unknown"),
             )
-            metrics.end_request(req_metrics, success=True)
-        except Exception as e:
-            metrics.end_request(req_metrics, success=False, error_type=type(e).__name__)
+
+            # Call local LLM backend
+            with tracer.span("llm.generate", {"model": getattr(self.backend, "model", "unknown")}):
+                try:
+                    result = self.backend.generate(
+                        system_prompt=system_prompt,
+                        user_prompt=user_message,
+                        temperature=0.2,
+                        max_tokens=1200,
+                    )
+                    metrics.end_request(req_metrics, success=True)
+                except Exception as e:
+                    metrics.end_request(req_metrics, success=False, error_type=type(e).__name__)
+                    return {
+                        "ok": False,
+                        "error": f"Model generation failed: {e}",
+                    }
+
+            # Optional: AMOS post-processing validation
+            with tracer.span("amos.post_process"):
+                post = self.amos.post_process(result.text, user_message)
+
             return {
-                "ok": False,
-                "error": f"Model generation failed: {e}",
+                "ok": True,
+                "text": result.text,
+                "routing": pre.get("routing"),
+                "validation": post if post.get("structural_issues") else None,
+                "raw": result.raw,
             }
-
-        # Optional: AMOS post-processing validation
-        post = self.amos.post_process(result.text, user_message)
-
-        return {
-            "ok": True,
-            "text": result.text,
-            "routing": pre.get("routing"),
-            "validation": post if post.get("structural_issues") else None,
-            "raw": result.raw,
-        }
 
     def reply_stream(self, user_message: str, context: dict | None = None):
         """Stream response from AMOS + local LLM pipeline.

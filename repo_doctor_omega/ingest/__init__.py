@@ -9,6 +9,7 @@ from .entrypoint_substrate import (
 )
 from .import_substrate import ImportResolution, ImportStatement, ImportSubstrate
 from .packaging_substrate import PackagingIssue, PackagingSubstrate, PackagingValidation
+from .security_substrate import SecurityAnalysis, SecurityFinding, SecuritySubstrate
 from .status_substrate import StatusClaim, StatusSubstrate, StatusValidation
 from .test_substrate import TestCase, TestResult, TestSubstrate
 from .treesitter_substrate import FileParseResult, ParseError, TreeSitterSubstrate
@@ -26,6 +27,9 @@ __all__ = [
     "PackagingSubstrate",
     "PackagingIssue",
     "PackagingValidation",
+    "SecuritySubstrate",
+    "SecurityFinding",
+    "SecurityAnalysis",
     "StatusSubstrate",
     "StatusClaim",
     "StatusValidation",

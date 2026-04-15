@@ -3,10 +3,10 @@ Repo Doctor Ω∞ - Maximum Strength Repository Mechanics Engine
 
 The complete implementation of the formal architecture:
 - 8 coupled strata (C, K, B, X, P, T, D, G)
-- 12 basis states |S⟩, |I⟩, |Ty⟩, |A⟩, |E⟩, |Pk⟩, |Rt⟩, |D⟩, |Ps⟩, |St⟩, |Sec⟩, |H⟩
+- 24 basis states including 18 invariant dimensions
 - Mixed-state realism with density matrix ρ_repo
 - Repository Hamiltonian H_repo = Σk λk Hk
-- 12 hard invariants RepoValid = ∧n I_n
+- 18 hard invariants RepoValid = ∧n I_n
 - Unified repository graph G_repo = (V, E, Φ, Τ)
 - Entanglement matrix M_ij
 - Collapse operator C_fail
@@ -34,6 +34,9 @@ from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
+# Import expanded 24-dimensional state space
+from .state.basis import StateDimension, StateBasis
+
 # =============================================================================
 # 1. ONTOLOGY - 8 Coupled Strata
 # =============================================================================
@@ -53,40 +56,8 @@ class RepositoryStratum(Enum):
 
 
 # =============================================================================
-# 2. STATE SPACE - 12 Basis States
+# 2. STATE SPACE - 18 Dimensions (Ω∞∞∞∞∞)
 # =============================================================================
-
-
-class StateDimension(Enum):
-    """
-    12 orthogonal basis states for repository Hilbert space.
-
-    |S⟩    syntax / parse integrity
-    |I⟩    import / symbol resolution integrity
-    |Ty⟩   type / callable signature integrity
-    |A⟩    public API integrity
-    |E⟩    entrypoint / launcher integrity
-    |Pk⟩   packaging / build integrity
-    |Rt⟩   runtime behavior integrity
-    |D⟩    docs / demos / tests contract integrity
-    |Ps⟩   persistence / schema integrity
-    |St⟩   status truth integrity
-    |Sec⟩  security integrity
-    |H⟩    temporal / history integrity
-    """
-
-    SYNTAX = "syntax"
-    IMPORTS = "imports"
-    TYPES = "types"
-    API = "api"
-    ENTRYPOINTS = "entrypoints"
-    PACKAGING = "packaging"
-    RUNTIME = "runtime"
-    DOCS_TESTS_DEMOS = "docs_tests_demos"
-    PERSISTENCE = "persistence"
-    STATUS = "status"
-    SECURITY = "security"
-    HISTORY = "history"
 
 
 @dataclass
@@ -103,29 +74,37 @@ class StateVector:
     amplitudes: dict[StateDimension, float] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
 
-    # Severity weights for Hamiltonian
+    # Severity weights for Hamiltonian (18 dimensions)
     WEIGHTS: dict[StateDimension, float] = field(
         default_factory=lambda: {
             StateDimension.SYNTAX: 100.0,
-            StateDimension.IMPORTS: 95.0,
-            StateDimension.TYPES: 75.0,
+            StateDimension.IMPORT: 95.0,
+            StateDimension.TYPE: 75.0,
             StateDimension.API: 95.0,
-            StateDimension.ENTRYPOINTS: 90.0,
+            StateDimension.ENTRYPOINT: 90.0,
             StateDimension.PACKAGING: 90.0,
             StateDimension.RUNTIME: 85.0,
-            StateDimension.DOCS_TESTS_DEMOS: 40.0,
+            StateDimension.TEST: 50.0,
+            StateDimension.DOCS: 35.0,
             StateDimension.PERSISTENCE: 70.0,
-            StateDimension.STATUS: 70.0,
+            StateDimension.STATUS: 65.0,
             StateDimension.SECURITY: 100.0,
-            StateDimension.HISTORY: 60.0,
+            StateDimension.HISTORY: 55.0,
+            StateDimension.GENERATED_CODE: 60.0,
+            StateDimension.ENVIRONMENT: 45.0,
         }
     )
 
     def __post_init__(self):
-        """Ensure all dimensions have amplitudes."""
+        """Ensure all dimensions have amplitudes and clamp to [0, 1]."""
+        # Clamp provided amplitudes to [0, 1]
+        for dim in list(self.amplitudes.keys()):
+            self.amplitudes[dim] = max(0.0, min(1.0, self.amplitudes[dim]))
+
+        # Initialize missing dimensions to 1.0 (intact)
         for dim in StateDimension:
             if dim not in self.amplitudes:
-                self.amplitudes[dim] = 1.0  # Default to intact
+                self.amplitudes[dim] = 1.0
 
     @property
     def is_healthy(self) -> bool:
