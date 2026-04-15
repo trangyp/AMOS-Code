@@ -78,21 +78,18 @@ class GovernancePolicy:
 class GovernanceDecision:
     """Record of a governance decision."""
 
+    # Required fields (no defaults)
     decision_id: str
     timestamp: float
     policy_id: str
-
-    # What triggered the decision
     trigger_type: str  # "prediction", "monitoring", "manual"
-    trigger_data: dict[str, Any] = field(default_factory=dict)
-
-    # The decision made
     action_type: ActionType
+    decision: str  # "auto_execute", "notify_human", "recommend", "escalate", "reject"
+
+    # Optional fields (with defaults)
+    trigger_data: dict[str, Any] = field(default_factory=dict)
     action_params: dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
-
-    # Outcome
-    decision: str  # "auto_execute", "notify_human", "recommend", "escalate", "reject"
     executed: bool = False
     execution_time: float | None = None
     outcome: str = "pending"  # "success", "failure", "pending", "rejected"

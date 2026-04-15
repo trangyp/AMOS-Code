@@ -56,6 +56,13 @@ try:
     EVOLUTION_AVAILABLE = True
 except ImportError:
     EVOLUTION_AVAILABLE = False
+    # Define fallback BridgeMode for when evolution is not available
+    class BridgeMode(Enum):  # type: ignore
+        """Fallback BridgeMode when evolution not available."""
+        AUTONOMOUS = auto()
+        ASSISTED = auto()
+        SUPERVISED = auto()
+        OBSERVE = auto()
 
 
 class StateTriggerThreshold(Enum):

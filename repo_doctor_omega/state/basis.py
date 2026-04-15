@@ -91,6 +91,47 @@ class BasisVector(Enum):
     PROOF_TRANSPORT = auto()  # |ProofTr⟩ - assumption preservation across contexts
     ASSUMPTION_VISIBILITY = auto()  # |Assump⟩ - assumption metadata preservation
 
+    # Ultimate meta-architecture: Modality system
+    MODAL_INTEGRITY = auto()  # |Modal⟩ - required/allowed/forbidden/optional distinction
+    MODAL_COLLAPSE = auto()  # |ModCol⟩ - modality confusion prevention
+
+    # Ultimate meta-architecture: Obligation system
+    OBLIGATION_LIFECYCLE = auto()  # |Obl⟩ - duty creation/maturity/discharge
+    OBLIGATION_TRANSFER = auto()  # |OblTr⟩ - duty transfer integrity
+    PROMISE_INTEGRITY = auto()  # |Prom⟩ - promise creation and fulfillment
+
+    # Ultimate meta-architecture: Memory and forgetting
+    MEMORY_DISCIPLINE = auto()  # |Mem⟩ - what must be remembered
+    FORGETTING_SAFETY = auto()  # |Forget⟩ - safe forgetting with tombstones
+    TOMBSTONE_INTEGRITY = auto()  # |Tomb⟩ - deletion evidence preservation
+
+    # Ultimate meta-architecture: Substitution
+    SUBSTITUTION_INTEGRITY = auto()  # |Subst⟩ - semantic preservation under substitution
+
+    # Ultimate meta-architecture: Counterparty and externality
+    COUNTERPARTY_INTEGRITY = auto()  # |Cpty⟩ - external obligation representation
+    EXTERNALITY_BOUNDEDNESS = auto()  # |Ext⟩ - irretractable emission control
+    RECIPROCITY_INTEGRITY = auto()  # |Recip⟩ - bilateral obligation preservation
+
+    # Ultimate meta-architecture: Narrative and explanation
+    NARRATIVE_COHERENCE = auto()  # |Narr⟩ - story consistency across surfaces
+    EXPLAINABILITY = auto()  # |Expl⟩ - decision attribution and explanation
+
+    # Ultimate meta-architecture: Undecidability and incompleteness
+    UNDECIDABILITY_AWARENESS = auto()  # |Undec⟩ - explicit handling of unprovable claims
+    SPECIFICATION_COMPLETENESS = auto()  # |Spec⟩ - explicit incompleteness marking
+
+    # Ultimate meta-architecture: Bootstrap and genesis
+    BOOTSTRAP_INTEGRITY = auto()  # |Boot⟩ - first-law and anchor semantics
+    ANCHOR_SUCCESSION = auto()  # |Anchor⟩ - truth anchor rotation safety
+
+    # Ultimate meta-architecture: Ecology and adaptation
+    ECOLOGICAL_AWARENESS = auto()  # |Ecol⟩ - external participant modeling
+    MORAL_HAZARD_RESISTANCE = auto()  # |Moral⟩ - incentive alignment protection
+
+    # Ultimate meta-architecture: Retroactivity and time
+    RETROACTIVITY_SAFETY = auto()  # |Retro⟩ - backward change safety
+
 
 @dataclass
 class Amplitude:
@@ -260,6 +301,47 @@ class RepositoryState:
             # Meta-architecture: Proof and assumption
             BasisVector.PROOF_TRANSPORT: 50.0,
             BasisVector.ASSUMPTION_VISIBILITY: 30.0,
+
+            # Ultimate meta-architecture: Modality (high - governs what is allowed)
+            BasisVector.MODAL_INTEGRITY: 88.0,
+            BasisVector.MODAL_COLLAPSE: 82.0,
+
+            # Ultimate meta-architecture: Obligation (high - duties through time)
+            BasisVector.OBLIGATION_LIFECYCLE: 87.0,
+            BasisVector.OBLIGATION_TRANSFER: 78.0,
+            BasisVector.PROMISE_INTEGRITY: 85.0,
+
+            # Ultimate meta-architecture: Memory (medium-high - what must be remembered)
+            BasisVector.MEMORY_DISCIPLINE: 76.0,
+            BasisVector.FORGETTING_SAFETY: 74.0,
+            BasisVector.TOMBSTONE_INTEGRITY: 72.0,
+
+            # Ultimate meta-architecture: Substitution (medium - semantic preservation)
+            BasisVector.SUBSTITUTION_INTEGRITY: 68.0,
+
+            # Ultimate meta-architecture: Counterparty (high - external obligations)
+            BasisVector.COUNTERPARTY_INTEGRITY: 86.0,
+            BasisVector.EXTERNALITY_BOUNDEDNESS: 84.0,
+            BasisVector.RECIPROCITY_INTEGRITY: 80.0,
+
+            # Ultimate meta-architecture: Narrative (medium - story coherence)
+            BasisVector.NARRATIVE_COHERENCE: 62.0,
+            BasisVector.EXPLAINABILITY: 64.0,
+
+            # Ultimate meta-architecture: Undecidability (medium - truth bounds)
+            BasisVector.UNDECIDABILITY_AWARENESS: 58.0,
+            BasisVector.SPECIFICATION_COMPLETENESS: 56.0,
+
+            # Ultimate meta-architecture: Bootstrap (high - foundation integrity)
+            BasisVector.BOOTSTRAP_INTEGRITY: 92.0,
+            BasisVector.ANCHOR_SUCCESSION: 88.0,
+
+            # Ultimate meta-architecture: Ecology (medium - external adaptation)
+            BasisVector.ECOLOGICAL_AWARENESS: 54.0,
+            BasisVector.MORAL_HAZARD_RESISTANCE: 52.0,
+
+            # Ultimate meta-architecture: Retroactivity (high - backward change safety)
+            BasisVector.RETROACTIVITY_SAFETY: 90.0,
         }
 
     def to_dict(self) -> dict:
