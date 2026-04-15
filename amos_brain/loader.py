@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -179,20 +180,27 @@ class BrainLoader:
         return []
 
 
-# Global singleton
+# Global singleton with proper caching
 _brain_loader: BrainLoader | None = None
 
 
+@lru_cache(maxsize=1)
+def _get_brain_cached() -> BrainLoader:
+    """Cached brain loader instance."""
+    loader = BrainLoader()
+    loader.load()
+    return loader
+
+
 def get_brain() -> BrainLoader:
-    """Get or create global brain loader instance.
+    """Get or create global brain loader instance (singleton).
 
     Returns:
-        BrainLoader instance
+        BrainLoader instance (cached)
     """
     global _brain_loader
     if _brain_loader is None:
-        _brain_loader = BrainLoader()
-        _brain_loader.load()
+        _brain_loader = _get_brain_cached()
     return _brain_loader
 
 
