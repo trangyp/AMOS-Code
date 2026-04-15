@@ -80,8 +80,15 @@ class SelfEvolutionEngine:
         # Phase 1: Detect opportunities
         hotspots = self.detector.detect_all()
 
-        # Phase 2: Create contracts for high-priority hotspots
+        # Phase 2: Create contracts with learning predictions
         contracts = self._create_contracts(hotspots[:max_evolutions])
+        
+        # Add learning predictions to each contract
+        for contract in contracts:
+            prediction = self.learning.predict_success(contract)
+            contract.predicted_success = prediction
+            recommendations = self.learning.suggest_optimization(contract)
+            contract.learning_recommendations = recommendations
 
         # Phase 3-6: Plan, verify, apply/rollback for each contract
         for contract in contracts:
@@ -93,6 +100,9 @@ class SelfEvolutionEngine:
             elif detail["status"] == "rolled_back":
                 patches_rolled_back += detail.get("patches_count", 0)
 
+        # Get memory statistics
+        memory_stats = self.memory.get_statistics()
+        
         return EvolutionReport(
             hotspots_detected=len(hotspots),
             contracts_created=len(contracts),
@@ -101,6 +111,8 @@ class SelfEvolutionEngine:
             patches_rolled_back=patches_rolled_back,
             success_rate=self.registry.get_success_rate(),
             details=details,
+            learned_patterns=len(self.memory.patterns),
+            memory_stats=memory_stats,
         )
 
     def _create_contracts(self, hotspots: list[StructuralHotspot]) -> list[EvolutionContract]:
@@ -178,19 +190,27 @@ class SelfEvolutionEngine:
             self.registry.rollback(contract.evolution_id, "Verification failed")
             detail["status"] = "rolled_back"
             detail["reason"] = verification.message
+            # Record failure to memory
+            self.memory.record(contract, patches_applied=0, lessons="Verification failed - rollback executed")
         else:
             self.registry.complete(contract.evolution_id, f"Applied {len(patches)} patches")
             detail["status"] = "completed"
             detail["actual_improvement"] = f"Planned {len(patches)} improvements"
+            # Record success to memory
+            self.memory.record(contract, patches_applied=len(patches), lessons="Successfully applied patches")
 
         return detail
 
     def get_status(self) -> dict[str, Any]:
-        """Get current evolution status."""
+        """Get current evolution status including memory."""
+        memory_stats = self.memory.get_statistics()
         return {
             "active_contracts": len(self.registry.get_active()),
             "completed_evolutions": len(self.registry.completed),
             "rolled_back": len(self.registry.rolled_back),
             "success_rate": self.registry.get_success_rate(),
             "can_evolve": True,
+            "learned_patterns": len(self.memory.patterns),
+            "total_memories": memory_stats.get("total_evolutions", 0),
+            "memory_success_rate": memory_stats.get("success_rate", 0.0),
         }

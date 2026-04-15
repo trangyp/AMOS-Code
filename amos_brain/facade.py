@@ -847,6 +847,92 @@ class BrainClient:
         except ImportError:
             return {"error": "operational_bridge not available"}
 
+    def assess_resilience(self) -> dict[str, Any]:
+        """Assess recovery and resilience architecture."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.assess_resilience()
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
+    def validate_recovery_path(
+        self, path_id: str, failure_scenario: str, recovery_type: str,
+        estimated_rto_minutes: int, automated: bool = False, tested: bool = False
+    ) -> dict[str, Any]:
+        """Validate recovery path (I_recovery)."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.validate_recovery_path(
+                path_id, failure_scenario, recovery_type, estimated_rto_minutes,
+                automated, tested
+            )
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
+    def validate_dr_capability(
+        self, service_id: str, dr_enabled: bool, multi_region: bool,
+        backup_frequency_hours: int, failover_automated: bool,
+        estimated_failover_minutes: int, estimated_rpo_minutes: int,
+        data_sync_mode: str, last_dr_test: str | None = None
+    ) -> dict[str, Any]:
+        """Validate disaster recovery capability (I_disaster_recovery)."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.validate_dr_capability(
+                service_id, dr_enabled, multi_region, backup_frequency_hours,
+                failover_automated, estimated_failover_minutes, estimated_rpo_minutes,
+                data_sync_mode, last_dr_test
+            )
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
+    def validate_blast_containment(
+        self, component_id: str, max_blast_radius: float, blast_unit: str,
+        containment_measures: list[str], isolation_domain: str
+    ) -> dict[str, Any]:
+        """Validate blast containment (I_blast)."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.validate_blast_containment(
+                component_id, max_blast_radius, blast_unit,
+                containment_measures, isolation_domain
+            )
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
+    def validate_failure_domain(
+        self, domain_id: str, domain_type: str, components: list[str],
+        isolation_score: float, dependencies: list[str] | None = None
+    ) -> dict[str, Any]:
+        """Validate failure domain isolation (I_isolation)."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.validate_failure_domain(
+                domain_id, domain_type, components, isolation_score, dependencies
+            )
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
+    def get_resilience_insights(self) -> dict[str, Any]:
+        """Get recovery and resilience insights."""
+        try:
+            from .recovery_resilience_bridge import get_recovery_resilience_bridge
+
+            bridge = get_recovery_resilience_bridge(self._repo_path)
+            return bridge.get_resilience_insights()
+        except ImportError:
+            return {"error": "resilience_bridge not available"}
+
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()

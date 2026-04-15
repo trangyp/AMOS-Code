@@ -1267,6 +1267,288 @@ class ObservableSet:
         weight=0.85,
     )
 
+    # =========================================================================
+    # PHASE 5: LEASE, TRANSACTION, AND META-STABILITY (40+ new)
+    # =========================================================================
+
+    # 7.1 Lease and Revocation
+    O_LEASE_SEMANTICS_UNDEFINED = Observable(
+        name="o_lease_semantics_undefined",
+        severity=0.9,
+        dimension=StateDimension.LEASE_INTEGRITY,
+        weight=0.9,
+    )
+    O_ZOMBIE_LEASE_ACTIVE = Observable(
+        name="o_zombie_lease_active",
+        severity=1.0,
+        dimension=StateDimension.ZOMBIE_LEASE,
+        weight=1.0,
+    )
+    O_LEASE_CLOCK_SKEW_UNBOUNDED = Observable(
+        name="o_lease_clock_skew_unbounded",
+        severity=0.85,
+        dimension=StateDimension.LEASE_CLOCK_COUPLING,
+        weight=0.85,
+    )
+
+    # 7.2 Transaction Boundaries
+    O_TRANSACTION_SCOPE_AMBIGUOUS = Observable(
+        name="o_transaction_scope_ambiguous",
+        severity=0.85,
+        dimension=StateDimension.TRANSACTION_SCOPE,
+        weight=0.85,
+    )
+    O_CROSS_PLANE_COMMIT_FAILURE = Observable(
+        name="o_cross_plane_commit_failure",
+        severity=0.9,
+        dimension=StateDimension.CROSS_PLANE_COMMIT,
+        weight=0.9,
+    )
+    O_COMPENSATION_INCOMPLETE = Observable(
+        name="o_compensation_incomplete",
+        severity=0.85,
+        dimension=StateDimension.COMPENSATION_CLOSURE,
+        weight=0.85,
+    )
+
+    # 7.3 Saturation and Overload
+    O_CORRECTNESS_UNDER_SATURATION_VIOLATED = Observable(
+        name="o_correctness_under_saturation_violated",
+        severity=0.8,
+        dimension=StateDimension.SATURATION_SAFETY,
+        weight=0.8,
+    )
+    O_OVERLOAD_SHEDDING_ORDER_IMPLICIT = Observable(
+        name="o_overload_shedding_order_implicit",
+        severity=0.75,
+        dimension=StateDimension.OVERLOAD_POLICY,
+        weight=0.75,
+    )
+    O_SATURATION_AUTHORITY_DRIFT_DETECTED = Observable(
+        name="o_saturation_authority_drift_detected",
+        severity=0.9,
+        dimension=StateDimension.SATURATION_AUTHORITY_DRIFT,
+        weight=0.9,
+    )
+
+    # 7.4 Hysteresis and State Memory
+    O_HYSTERESIS_ABSENT_CAUSES_OSCILLATION = Observable(
+        name="o_hysteresis_absent_causes_oscillation",
+        severity=0.7,
+        dimension=StateDimension.HYSTERESIS_SAFETY,
+        weight=0.7,
+    )
+    O_STATE_MEMORY_DEPENDENCE_HIDDEN = Observable(
+        name="o_state_memory_dependence_hidden",
+        severity=0.75,
+        dimension=StateDimension.STATE_MEMORY,
+        weight=0.75,
+    )
+
+    # 7.5 Symmetry and Symmetry Breaking
+    O_FALSE_SYMMETRY_ASSUMED = Observable(
+        name="o_false_symmetry_assumed",
+        severity=0.8,
+        dimension=StateDimension.FALSE_SYMMETRY,
+        weight=0.8,
+    )
+    O_HIDDEN_SYMMETRY_BREAKING = Observable(
+        name="o_hidden_symmetry_breaking",
+        severity=0.75,
+        dimension=StateDimension.SYMMETRY_BREAKING,
+        weight=0.75,
+    )
+
+    # 7.6 Trust Domains
+    O_TRUST_DOMAIN_COLLAPSE = Observable(
+        name="o_trust_domain_collapse",
+        severity=0.95,
+        dimension=StateDimension.TRUST_DOMAIN_INTEGRITY,
+        weight=0.95,
+    )
+    O_TRUST_TRANSITIVITY_ILLUSION = Observable(
+        name="o_trust_transitivity_illusion",
+        severity=0.85,
+        dimension=StateDimension.TRUST_TRANSITIVITY,
+        weight=0.85,
+    )
+    O_CROSS_DOMAIN_CACHE_BLEED = Observable(
+        name="o_cross_domain_cache_bleed",
+        severity=0.9,
+        dimension=StateDimension.TRUST_CACHE_BLEED,
+        weight=0.9,
+    )
+
+    # 7.7 Hermeticity
+    O_BUILD_NONHERMETIC = Observable(
+        name="o_build_nonhermetic",
+        severity=0.8,
+        dimension=StateDimension.BUILD_HERMETICITY,
+        weight=0.8,
+    )
+    O_TEST_NONHERMETIC = Observable(
+        name="o_test_nonhermetic",
+        severity=0.75,
+        dimension=StateDimension.TEST_HERMETICITY,
+        weight=0.75,
+    )
+    O_DOCTOR_NONHERMETIC = Observable(
+        name="o_doctor_nonhermetic",
+        severity=0.85,
+        dimension=StateDimension.DOCTOR_HERMETICITY,
+        weight=0.85,
+    )
+
+    # 7.8 Impossibility Boundaries
+    O_IMPOSSIBLE_GUARANTEE_BUNDLE = Observable(
+        name="o_impossible_guarantee_bundle",
+        severity=0.9,
+        dimension=StateDimension.IMPOSSIBILITY_AWARENESS,
+        weight=0.9,
+    )
+    O_SILENT_IMPOSSIBILITY_COMPENSATION = Observable(
+        name="o_silent_impossibility_compensation",
+        severity=0.85,
+        dimension=StateDimension.IMPOSSIBILITY_HONESTY,
+        weight=0.85,
+    )
+
+    # 7.9 Dark-State and Nullspace
+    O_DARK_STATE_UNOBSERVED = Observable(
+        name="o_dark_state_unobserved",
+        severity=0.8,
+        dimension=StateDimension.DARK_STATE_DETECTABILITY,
+        weight=0.8,
+    )
+    O_NULLSPACE_COLLAPSE = Observable(
+        name="o_nullspace_collapse",
+        severity=0.75,
+        dimension=StateDimension.NULLSPACE_BEHAVIOR,
+        weight=0.75,
+    )
+
+    # 7.10 Non-Local and Global Invariants
+    O_NONLOCAL_INVARIANT_VIOLATED = Observable(
+        name="o_nonlocal_invariant_violated",
+        severity=0.9,
+        dimension=StateDimension.NONLOCAL_INVARIANT,
+        weight=0.9,
+    )
+    O_GLOBAL_CONSERVATION_FAILURE = Observable(
+        name="o_global_conservation_failure",
+        severity=0.85,
+        dimension=StateDimension.GLOBAL_CONSERVATION,
+        weight=0.85,
+    )
+
+    # 7.11 Truth and Distributed Systems
+    O_TRUTH_ARBITRATION_UNRESOLVED = Observable(
+        name="o_truth_arbitration_unresolved",
+        severity=0.95,
+        dimension=StateDimension.TRUTH_ARBITRATION,
+        weight=0.95,
+    )
+    O_IRREVERSIBLE_ACTION_UNBOUNDED = Observable(
+        name="o_irreversible_action_unbounded",
+        severity=0.9,
+        dimension=StateDimension.IRREVERSIBILITY_MANAGEMENT,
+        weight=0.9,
+    )
+    O_QUIESCENCE_UNSAFE = Observable(
+        name="o_quiescence_unsafe",
+        severity=0.85,
+        dimension=StateDimension.QUIESCENCE_INTEGRITY,
+        weight=0.85,
+    )
+
+    # 7.12 Liveness and Fairness
+    O_LIVENESS_GUARANTEE_ABSENT = Observable(
+        name="o_liveness_guarantee_absent",
+        severity=0.8,
+        dimension=StateDimension.LIVENESS,
+        weight=0.8,
+    )
+    O_FAIRNESS_VIOLATION = Observable(
+        name="o_fairness_violation",
+        severity=0.75,
+        dimension=StateDimension.FAIRNESS,
+        weight=0.75,
+    )
+    O_SCHEDULER_UNSAFE = Observable(
+        name="o_scheduler_unsafe",
+        severity=0.8,
+        dimension=StateDimension.SCHEDULER_ROBUSTNESS,
+        weight=0.8,
+    )
+
+    # 7.13 Partition and Convergence
+    O_PARTITION_HANDLING_INCORRECT = Observable(
+        name="o_partition_handling_incorrect",
+        severity=0.85,
+        dimension=StateDimension.PARTITION_BEHAVIOR,
+        weight=0.85,
+    )
+    O_CONVERGENCE_FAILURE = Observable(
+        name="o_convergence_failure",
+        severity=0.8,
+        dimension=StateDimension.CONVERGENCE,
+        weight=0.8,
+    )
+    O_CAUSAL_ATTRIBUTION_LOST = Observable(
+        name="o_causal_attribution_lost",
+        severity=0.85,
+        dimension=StateDimension.CAUSAL_ATTRIBUTION,
+        weight=0.85,
+    )
+
+    # 7.14 Compositional and Observer Effects
+    O_COMPOSITIONAL_INVALIDITY = Observable(
+        name="o_compositional_invalidity",
+        severity=0.9,
+        dimension=StateDimension.COMPOSITIONAL_VALIDITY,
+        weight=0.9,
+    )
+    O_OBSERVER_EFFECT_UNBOUNDED = Observable(
+        name="o_observer_effect_unbounded",
+        severity=0.75,
+        dimension=StateDimension.OBSERVER_EFFECT_BOUND,
+        weight=0.75,
+    )
+    O_ARCHITECTURAL_ENTROPY_UNCHECKED = Observable(
+        name="o_architectural_entropy_unchecked",
+        severity=0.7,
+        dimension=StateDimension.ARCHITECTURAL_ENTROPY,
+        weight=0.7,
+    )
+
+    # 7.15 Loss and Boundedness
+    O_LOSS_UNBOUNDED = Observable(
+        name="o_loss_unbounded",
+        severity=0.85,
+        dimension=StateDimension.LOSS_BOUNDEDNESS,
+        weight=0.85,
+    )
+    O_SEMANTIC_LOSS_UNDETECTED = Observable(
+        name="o_semantic_loss_undetected",
+        severity=0.8,
+        dimension=StateDimension.SEMANTIC_LOSS,
+        weight=0.8,
+    )
+
+    # 7.16 Policy and Adaptation
+    O_POLICY_PRECEDENCE_AMBIGUOUS = Observable(
+        name="o_policy_precedence_ambiguous",
+        severity=0.85,
+        dimension=StateDimension.POLICY_PRECEDENCE,
+        weight=0.85,
+    )
+    O_ADAPTIVE_INSTABILITY = Observable(
+        name="o_adaptive_instability",
+        severity=0.8,
+        dimension=StateDimension.ADAPTIVE_STABILITY,
+        weight=0.8,
+    )
+
     # Dimension weights for amplitude calculation
     DIMENSION_WEIGHTS: dict[StateDimension, dict[str, float]] = {
         StateDimension.SYNTAX: {

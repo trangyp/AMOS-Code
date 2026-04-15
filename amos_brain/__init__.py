@@ -116,6 +116,38 @@ def _lazy_import(module_name: str):
                 from .tracing import Tracer as tr
 
                 _lazy_modules[module_name] = tr
+            elif module_name == "RealLearningEngine":
+                from .real_learning_engine import RealLearningEngine as rle
+
+                _lazy_modules[module_name] = rle
+            elif module_name == "Procedure":
+                from .real_learning_engine import Procedure as proc
+
+                _lazy_modules[module_name] = proc
+            elif module_name == "Pattern":
+                from .real_learning_engine import Pattern as pat
+
+                _lazy_modules[module_name] = pat
+            elif module_name == "Decision":
+                from .real_learning_engine import Decision as dec
+
+                _lazy_modules[module_name] = dec
+            elif module_name == "FailurePattern":
+                from .real_learning_engine import FailurePattern as fp
+
+                _lazy_modules[module_name] = fp
+            elif module_name == "learn_from_task":
+                from .real_learning_engine import learn_from_task as lft
+
+                _lazy_modules[module_name] = lft
+            elif module_name == "attempt_procedure_reuse":
+                from .real_learning_engine import attempt_procedure_reuse as apr
+
+                _lazy_modules[module_name] = apr
+            elif module_name == "get_learning_engine":
+                from .real_learning_engine import get_learning_engine as gle
+
+                _lazy_modules[module_name] = gle
         except Exception:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")

@@ -71,6 +71,9 @@ class EvolutionContract:
     patched_files: list[str] = field(default_factory=list)
     pre_state_hash: str | None = None
     post_state_hash: str | None = None
+    # Learning layer fields
+    predicted_success: float = 0.5  # 0.0-1.0 probability
+    learning_recommendations: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert contract to dictionary."""
