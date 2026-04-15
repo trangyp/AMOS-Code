@@ -241,7 +241,7 @@ class EthicsValidationKernel:
 
         # Initialize evaluation
         eval_id = f"eval_{len(self.evaluations)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
-        principle_scores = {p: 0.0 for p in EthicalPrinciple}
+        principle_scores = dict.fromkeys(EthicalPrinciple, 0.0)
         harm_assessments = []
         concerns = []
         recommendations = []

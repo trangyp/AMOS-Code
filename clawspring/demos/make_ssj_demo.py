@@ -2,6 +2,7 @@
 """Generate animated GIF demo of clawspring SSJ Developer Mode.
 Shows: /ssj menu → Brainstorm → TODO viewer → Worker → Exit
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont

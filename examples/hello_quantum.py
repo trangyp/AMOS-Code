@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Hello Quantum - AMOSL Quantum Substrate Demo."""
+
 import os
 import sys
 

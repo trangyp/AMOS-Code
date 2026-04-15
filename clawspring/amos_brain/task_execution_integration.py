@@ -193,4 +193,4 @@ if __name__ == "__main__":
     for tid, desc, domain, engines, priority in test_tasks:
         result = execute_task(tid, desc, domain, engines, priority)
         status_icon = "✓" if result.success else "✗"
-        print(f"  {status_icon} {tid}: {result.execution_type} " f"({result.duration_ms:.1f}ms)")
+        print(f"  {status_icon} {tid}: {result.execution_type} ({result.duration_ms:.1f}ms)")

@@ -21,6 +21,7 @@ Commands:
     quiz <topic>    Take knowledge quiz
     progress        Show learning progress
 """
+
 from __future__ import annotations
 
 import argparse
@@ -434,7 +435,7 @@ class TrainingAcademy:
             else:
                 print(f"✗ Expected: {answer}")
 
-        print(f"\nScore: {score}/{len(questions)} ({score/len(questions)*100:.0f}%)")
+        print(f"\nScore: {score}/{len(questions)} ({score / len(questions) * 100:.0f}%)")
 
 
 def main():

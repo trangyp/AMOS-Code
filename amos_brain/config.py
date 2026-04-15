@@ -1,4 +1,5 @@
 """AMOS Brain Configuration System - Layer 11."""
+
 from __future__ import annotations
 
 import json

@@ -11,6 +11,7 @@ Examples:
 - healthy = true implies no hard invariant false
 - active_plan = true implies plan not terminal
 """
+
 from __future__ import annotations
 
 import ast
@@ -170,9 +171,7 @@ class StatusSubstrate:
 
     def _extract_value(self, node: ast.expr) -> Any:
         """Extract constant value from AST node."""
-        if isinstance(node, ast.Constant):
-            return node.value
-        elif isinstance(node, ast.NameConstant):  # Python < 3.8
+        if isinstance(node, ast.Constant) or isinstance(node, ast.NameConstant):
             return node.value
         elif isinstance(node, ast.Name):
             return f"variable:{node.id}"

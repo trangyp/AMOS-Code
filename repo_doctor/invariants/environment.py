@@ -14,6 +14,7 @@ Invariant checks:
 
 Based on 2024 cross-platform Python deployment best practices.
 """
+
 from __future__ import annotations
 
 import ast

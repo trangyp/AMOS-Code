@@ -3,6 +3,7 @@
 Validates environment variables and settings before runtime initialization
 to provide early, actionable error messages.
 """
+
 from __future__ import annotations
 
 import os
@@ -14,6 +15,7 @@ from typing import Any
 @dataclass
 class ValidationResult:
     """Result of configuration validation."""
+
     valid: bool
     errors: list[str]
     warnings: list[str]
@@ -92,9 +94,7 @@ class ConfigValidator:
 
         # Check for common typos
         if backend == "ollama" and os.getenv("AMOS_LLM_BACKEND") == "Ollama":
-            self.warnings.append(
-                "AMOS_LLM_BACKEND should be lowercase 'ollama', not 'Ollama'"
-            )
+            self.warnings.append("AMOS_LLM_BACKEND should be lowercase 'ollama', not 'Ollama'")
 
     def _validate_model(self) -> None:
         """Validate the model name setting."""
@@ -111,9 +111,7 @@ class ConfigValidator:
                 "openai-local": "local-model",
             }
             default_model = defaults.get(backend, "default")
-            self.warnings.append(
-                f"AMOS_MODEL not set. Using default: '{default_model}'"
-            )
+            self.warnings.append(f"AMOS_MODEL not set. Using default: '{default_model}'")
             self.config["model"] = default_model
             return
 
@@ -127,7 +125,7 @@ class ConfigValidator:
             self.warnings.append(msg)
 
         # Check for dangerous characters
-        if re.search(r'[<>&|;$]', model):
+        if re.search(r"[<>&|;$]", model):
             self.errors.append(
                 f"AMOS_MODEL contains invalid characters: '{model}'. "
                 "Model name should be alphanumeric with -, _, /, :, ."
@@ -149,10 +147,7 @@ class ConfigValidator:
 
         # Validate URL format
         if not base_url.startswith(("http://", "https://")):
-            err = (
-                f"AMOS_BASE_URL must start with http:// "
-                f"or https://: '{base_url}'"
-            )
+            err = f"AMOS_BASE_URL must start with http:// or https://: '{base_url}'"
             self.errors.append(err)
             return
 
@@ -164,7 +159,7 @@ class ConfigValidator:
             )
 
         # Check port consistency
-        port_match = re.search(r':(\d+)', base_url)
+        port_match = re.search(r":(\d+)", base_url)
         if port_match:
             port = int(port_match.group(1))
             expected_ports = {
@@ -191,18 +186,13 @@ class ConfigValidator:
         # Only OpenAI-compatible backends need API keys
         if backend in {"ollama"}:
             if api_key:
-                self.warnings.append(
-                    f"AMOS_API_KEY is set but not needed for {backend} backend"
-                )
+                self.warnings.append(f"AMOS_API_KEY is set but not needed for {backend} backend")
             self.config["api_key"] = None
             return
 
         # For OpenAI-compatible backends
         if not api_key:
-            self.warnings.append(
-                f"AMOS_API_KEY not set for {backend}. "
-                "Using 'local' as default."
-            )
+            self.warnings.append(f"AMOS_API_KEY not set for {backend}. Using 'local' as default.")
             self.config["api_key"] = "local"
         else:
             self.config["api_key"] = api_key
@@ -225,9 +215,7 @@ class ConfigValidator:
                 self.warnings.append(msg)
             self.config["temperature"] = temp
         except ValueError:
-            self.errors.append(
-                f"AMOS_TEMPERATURE must be a number, got: '{temp_str}'"
-            )
+            self.errors.append(f"AMOS_TEMPERATURE must be a number, got: '{temp_str}'")
 
     def get_help_message(self, validation_result: ValidationResult) -> str:
         """Generate help message based on validation errors.

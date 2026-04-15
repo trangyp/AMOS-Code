@@ -203,6 +203,5 @@ if __name__ == "__main__":
     for task, domain, priority in test_tasks:
         pred = predict_task(task, domain, priority)
         print(
-            f"  {task[:30]:<30} -> {pred.predicted_duration_ms:.0f}ms "
-            f"(conf: {pred.confidence:.0%})"
+            f"  {task[:30]:<30} -> {pred.predicted_duration_ms:.0f}ms (conf: {pred.confidence:.0%})"
         )

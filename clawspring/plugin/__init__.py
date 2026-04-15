@@ -1,4 +1,5 @@
 """Plugin system for clawspring."""
+
 from .loader import (
     load_all_plugins,
     load_plugin_mcp_configs,

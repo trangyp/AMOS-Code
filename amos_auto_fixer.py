@@ -14,6 +14,7 @@ Usage:
     python amos_auto_fixer.py --imports-only     # Fix imports only
     python amos_auto_fixer.py --lines-only       # Fix line length only
 """
+
 from __future__ import annotations
 
 import ast

@@ -1,4 +1,5 @@
 """Threaded sub-agent system for spawning nested agent loops."""
+
 from __future__ import annotations
 
 import os

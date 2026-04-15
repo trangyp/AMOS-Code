@@ -35,7 +35,7 @@ from pathlib import Path
 from typing import Any
 
 # Import expanded 24-dimensional state space
-from .state.basis import StateDimension, StateBasis
+from .state.basis import StateDimension
 
 # =============================================================================
 # 1. ONTOLOGY - 8 Coupled Strata
@@ -159,6 +159,7 @@ class PureStateHypothesis:
     - p1: packaging mismatch is structural
     - p2: packaging mismatch is environment-induced
     - p3: entrypoint target exists but installed artifact omits it
+
     """
 
     label: str
@@ -235,6 +236,7 @@ class Observable:
     - signature_kwarg_mismatch
     - entrypoint_wrong_target
     - status_false_claim
+
     """
 
     kind: str
@@ -593,6 +595,7 @@ class HardInvariantChecker:
         --------
         - initialized = true implies specs loaded
         - healthy = true implies no hard-fail invariant false
+
         """
         return InvariantResult(
             name="I_status",

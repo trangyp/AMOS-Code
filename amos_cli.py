@@ -159,7 +159,7 @@ def cmd_features():
         for item in items:
             print(f"  • {item}")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("Total: 15 Subsystems + 100+ Engines + 83 Knowledge Packs")
 
 

@@ -1,4 +1,5 @@
 """QUANTUM_LAYER decision_optimizer stub — Re-exports from 09_QUANTUM_LAYER"""
+
 import sys
 from pathlib import Path
 

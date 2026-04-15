@@ -12,6 +12,7 @@ Usage:
   from amos_brain.cookbook import ArchitectureDecision
   result = ArchitectureDecision.run("Should we use microservices?")
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

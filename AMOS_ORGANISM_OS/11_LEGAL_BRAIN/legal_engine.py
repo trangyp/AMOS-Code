@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Legal Engine (11_LEGAL_BRAIN)
+"""AMOS Legal Engine (11_LEGAL_BRAIN)
 ====================================
 
 Legal compliance, governance enforcement, and risk assessment.
@@ -23,6 +22,7 @@ from typing import Any, Dict, List
 @dataclass
 class ComplianceRule:
     """A compliance rule to check against."""
+
     id: str
     category: str  # legal, governance, ethical, technical
     description: str
@@ -35,6 +35,7 @@ class ComplianceRule:
 @dataclass
 class ComplianceCheck:
     """Result of a compliance check."""
+
     rule_id: str
     passed: bool
     severity: str
@@ -45,6 +46,7 @@ class ComplianceCheck:
 @dataclass
 class RiskAssessment:
     """Risk assessment for an action or document."""
+
     id: str
     target: str
     risk_level: str  # low, medium, high, critical
@@ -54,8 +56,7 @@ class RiskAssessment:
 
 
 class LegalEngine:
-    """
-    Legal Brain subsystem - compliance and governance enforcement.
+    """Legal Brain subsystem - compliance and governance enforcement.
     Validates actions against legal rules and operator governance.
     """
 
@@ -78,7 +79,7 @@ class LegalEngine:
         profile_path = self.root / "operator_profile_trang.json"
         if profile_path.exists():
             try:
-                with open(profile_path, 'r', encoding='utf-8') as f:
+                with open(profile_path, encoding="utf-8") as f:
                     self.operator_profile = json.load(f)
             except Exception:
                 self.operator_profile = {}
@@ -94,7 +95,7 @@ class LegalEngine:
                 description="No IP infringement in generated code",
                 check_type="keyword",
                 check_value=["copyright", "trademark", "proprietary"],
-                severity="critical"
+                severity="critical",
             ),
             ComplianceRule(
                 id="LEGAL_002",
@@ -102,7 +103,7 @@ class LegalEngine:
                 description="Respect software licenses",
                 check_type="keyword",
                 check_value=["GPL violation", "license breach"],
-                severity="error"
+                severity="error",
             ),
             ComplianceRule(
                 id="GOV_003",
@@ -110,7 +111,7 @@ class LegalEngine:
                 description="No unauthorized data export",
                 check_type="keyword",
                 check_value=["export data", "leak data"],
-                severity="critical"
+                severity="critical",
             ),
             ComplianceRule(
                 id="GOV_001",
@@ -118,7 +119,7 @@ class LegalEngine:
                 description="Trang's explicit consent required for external sharing",
                 check_type="pattern",
                 check_value=r"share.*external|publish.*public",
-                severity="error"
+                severity="error",
             ),
             ComplianceRule(
                 id="GOV_004",
@@ -126,7 +127,7 @@ class LegalEngine:
                 description="Protect IP and sensitive info",
                 check_type="keyword",
                 check_value=["expose secrets", "leak credentials"],
-                severity="critical"
+                severity="critical",
             ),
             ComplianceRule(
                 id="GOV_002",
@@ -134,7 +135,7 @@ class LegalEngine:
                 description="No deletion of core canon files",
                 check_type="keyword",
                 check_value=["delete canon", "remove canon", "overwrite canon"],
-                severity="critical"
+                severity="critical",
             ),
             ComplianceRule(
                 id="ETHIC_001",
@@ -142,7 +143,7 @@ class LegalEngine:
                 description="No harmful code generation",
                 check_type="keyword",
                 check_value=["malware", "virus", "exploit", "hack"],
-                severity="critical"
+                severity="critical",
             ),
             ComplianceRule(
                 id="TECH_001",
@@ -150,7 +151,7 @@ class LegalEngine:
                 description="Python 3.9+ compatibility required",
                 check_type="keyword",
                 check_value=["python 3.8", "python 3.7", "python 2"],
-                severity="warning"
+                severity="warning",
             ),
         ]
 
@@ -160,7 +161,7 @@ class LegalEngine:
         rules_file = self.data_dir / "custom_rules.json"
         if rules_file.exists():
             try:
-                with open(rules_file, 'r', encoding='utf-8') as f:
+                with open(rules_file, encoding="utf-8") as f:
                     custom_rules = json.load(f)
                     for r in custom_rules:
                         self.rules.append(ComplianceRule(**r))
@@ -172,7 +173,7 @@ class LegalEngine:
         state_file = self.data_dir / "legal_state.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r', encoding='utf-8') as f:
+                with open(state_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for check_data in data.get("checks", []):
@@ -198,7 +199,7 @@ class LegalEngine:
                     "passed": c.passed,
                     "severity": c.severity,
                     "message": c.message,
-                    "timestamp": c.timestamp
+                    "timestamp": c.timestamp,
                 }
                 for c in self.checks[-100:]  # Keep last 100
             ],
@@ -209,20 +210,16 @@ class LegalEngine:
                     "risk_level": r.risk_level,
                     "risk_factors": r.risk_factors,
                     "mitigations": r.mitigations,
-                    "assessed_at": r.assessed_at
+                    "assessed_at": r.assessed_at,
                 }
                 for r in self.risk_assessments[-50:]
-            ]
+            ],
         }
 
-        with open(state_file, 'w', encoding='utf-8') as f:
+        with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
-    def check_compliance(
-        self,
-        content: str,
-        context: str = "general"
-    ) -> List[ComplianceCheck]:
+    def check_compliance(self, content: str, context: str = "general") -> List[ComplianceCheck]:
         """Check content against all compliance rules."""
         results: List[ComplianceCheck] = []
 
@@ -239,7 +236,7 @@ class LegalEngine:
                 passed=passed,
                 severity=severity,
                 message=msg,
-                timestamp=datetime.utcnow().isoformat() + "Z"
+                timestamp=datetime.utcnow().isoformat() + "Z",
             )
 
             results.append(check)
@@ -258,21 +255,14 @@ class LegalEngine:
                 return not any(kw.lower() in content_lower for kw in keywords)
             return keywords.lower() not in content_lower
 
-        elif rule.check_type == "regex":
-            pattern = rule.check_value
-            return not re.search(pattern, content, re.IGNORECASE)
-
-        elif rule.check_type == "pattern":
+        elif rule.check_type == "regex" or rule.check_type == "pattern":
             pattern = rule.check_value
             return not re.search(pattern, content, re.IGNORECASE)
 
         return True
 
     def assess_risk(
-        self,
-        target: str,
-        action_type: str,
-        parameters: Dict[str, Any]
+        self, target: str, action_type: str, parameters: Dict[str, Any]
     ) -> RiskAssessment:
         """Assess risk of an action."""
         risk_factors: List[str] = []
@@ -314,7 +304,7 @@ class LegalEngine:
             risk_level=risk_level,
             risk_factors=risk_factors,
             mitigations=mitigations,
-            assessed_at=datetime.utcnow().isoformat() + "Z"
+            assessed_at=datetime.utcnow().isoformat() + "Z",
         )
 
         self.risk_assessments.append(assessment)
@@ -335,10 +325,11 @@ class LegalEngine:
 
         # Check permission level
         permissions = governance.get("permissions", {})
-        needs_approval = (
-            permissions.get("can_override_safety") is False and
-            action in ["execute", "deploy", "share_external"]
-        )
+        needs_approval = permissions.get("can_override_safety") is False and action in [
+            "execute",
+            "deploy",
+            "share_external",
+        ]
 
         reasoning_pref = governance.get("reasoning_preferences", {})
         reasoning_style = reasoning_pref.get("style", "pragmatic")
@@ -348,7 +339,7 @@ class LegalEngine:
             "needs_approval": needs_approval,
             "requires_consent": "share" in action.lower(),
             "communication_style": communication.get("style", "formal"),
-            "reasoning_preference": reasoning_style
+            "reasoning_preference": reasoning_style,
         }
 
     def generate_compliance_report(self) -> Dict[str, Any]:
@@ -374,7 +365,7 @@ class LegalEngine:
             "pass_rate": passed / len(recent_checks) if recent_checks else 0,
             "failures_by_severity": by_severity,
             "active_rules": len([r for r in self.rules if r.enabled]),
-            "total_risk_assessments": len(self.risk_assessments)
+            "total_risk_assessments": len(self.risk_assessments),
         }
 
     def get_status(self) -> Dict[str, Any]:
@@ -385,7 +376,7 @@ class LegalEngine:
             "total_checks_performed": len(self.checks),
             "total_risk_assessments": len(self.risk_assessments),
             "recent_pass_rate": self._calculate_recent_pass_rate(),
-            "operator_governance_loaded": bool(self.operator_profile)
+            "operator_governance_loaded": bool(self.operator_profile),
         }
 
     def _calculate_recent_pass_rate(self) -> float:
@@ -426,7 +417,7 @@ def main() -> int:
     risk = engine.assess_risk(
         "test_module.py",
         "code_generation",
-        {"external_libs": ["requests"], "file_operations": True}
+        {"external_libs": ["requests"], "file_operations": True},
     )
 
     print(f"Risk Level: {risk.risk_level.upper()}")
@@ -453,4 +444,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

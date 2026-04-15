@@ -14,6 +14,7 @@ Current State (46+ components):
 
 What is the highest-value synthesis after category theory?
 """
+
 import os
 import sys
 

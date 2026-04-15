@@ -6,6 +6,7 @@ that weren't in the main Cognitive directory.
 
 Usage: python amos_extended_knowledge.py
 """
+
 import sys
 from pathlib import Path
 
@@ -194,7 +195,7 @@ def print_extended_knowledge():
 
     print("\n  📍 Location: _AMOS_BRAIN/_LEGACY BRAIN/")
     print(f"  📦 Total Additional Engines: {len(legacy) + len(monogram)}")
-    print(f"  💾 Total Size: {total_size:,} KB ({total_size/1024:.1f} MB)")
+    print(f"  💾 Total Size: {total_size:,} KB ({total_size / 1024:.1f} MB)")
 
     # Group by size (largest first)
     print("\n  🔥 MASSIVE ENGINES (3MB+):")
@@ -242,7 +243,7 @@ def print_extended_knowledge():
 
     print("\n" + "=" * 70)
     print(f"  🎯 TOTAL ADDITIONAL KNOWLEDGE: {len(legacy) + len(monogram)} engines")
-    print(f"  💾 Total Size: {total_size:,} KB ({total_size/1024:.1f} MB)")
+    print(f"  💾 Total Size: {total_size:,} KB ({total_size / 1024:.1f} MB)")
     print("=" * 70)
 
     # Compare to main cognitive engines
@@ -250,7 +251,7 @@ def print_extended_knowledge():
     print("\n  📊 COMPARISON:")
     print("     Main Cognitive Engines: 13 engines, 328 KB")
     print(f"     Extended Legacy Engines: {len(legacy)} engines, {total_size:,} KB")
-    print(f"     Ratio: Extended is {total_size/main_kb:.1f}x larger than main!")
+    print(f"     Ratio: Extended is {total_size / main_kb:.1f}x larger than main!")
 
 
 if __name__ == "__main__":

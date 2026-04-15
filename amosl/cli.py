@@ -9,6 +9,7 @@ Single entry point for all 60+ AMOSL capabilities:
     $ amosl benchmark
     $ amosl service start
 """
+
 from __future__ import annotations
 
 import argparse

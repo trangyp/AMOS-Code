@@ -1,4 +1,5 @@
-"""I_perf = 1 iff critical workflows stay within declared performance envelopes.
+"""
+I_perf = 1 iff critical workflows stay within declared performance envelopes.
 
 Performance state decomposition:
     αPerf = f(
@@ -20,11 +21,11 @@ Invariant checks:
 
 Based on 2024 Python performance monitoring best practices.
 """
+
 from __future__ import annotations
 
 import ast
-import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -79,19 +80,19 @@ class PerformanceInvariant(Invariant):
 
         # Static analysis for performance anti-patterns
         py_files = list(repo.rglob("*.py"))
-        
+
         for file_path in py_files:
             if ".venv" in str(file_path) or "__pycache__" in str(file_path):
                 continue
-                
+
             try:
                 content = file_path.read_text()
                 tree = ast.parse(content)
-                
+
                 # Check for performance issues
                 file_issues = self._analyze_file(file_path, tree, content)
                 issues.extend(file_issues)
-                
+
             except SyntaxError:
                 continue
             except Exception:
@@ -123,27 +124,27 @@ class PerformanceInvariant(Invariant):
                 "critical": len(critical),
                 "errors": len(errors),
                 "warnings": len(warnings),
-                "issues": [{"type": i.type, "location": i.location, "message": i.message}
-                          for i in issues[:20]],
+                "issues": [
+                    {"type": i.type, "location": i.location, "message": i.message}
+                    for i in issues[:20]
+                ],
             },
         )
 
-    def _analyze_file(
-        self, file_path: Path, tree: ast.AST, content: str
-    ) -> list[PerformanceIssue]:
+    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> list[PerformanceIssue]:
         """Analyze a single file for performance issues."""
         issues: list[PerformanceIssue] = []
         relative_path = str(file_path.relative_to(file_path.parent.parent))
 
         # Check for quadratic patterns
         issues.extend(self._find_quadratic_patterns(tree, relative_path))
-        
+
         # Check for unbounded growth
         issues.extend(self._find_unbounded_growth(tree, relative_path))
-        
+
         # Check for blocking I/O
         issues.extend(self._find_blocking_io(tree, relative_path, content))
-        
+
         # Check for memory issues
         issues.extend(self._find_memory_issues(tree, relative_path, content))
 

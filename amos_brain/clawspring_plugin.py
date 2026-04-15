@@ -1,4 +1,5 @@
 """ClawSpring Plugin - Auto-registers AMOS brain with clawspring runtime."""
+
 from __future__ import annotations
 
 

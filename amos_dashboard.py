@@ -17,6 +17,7 @@ Access:
     http://localhost:8080 - Dashboard UI
     http://localhost:8080/api/status - JSON status
 """
+
 from __future__ import annotations
 
 import sys

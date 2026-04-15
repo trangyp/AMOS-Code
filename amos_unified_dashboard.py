@@ -13,6 +13,7 @@ Usage:
     python amos_unified_dashboard.py --web
     python amos_unified_dashboard.py --export
 """
+
 from __future__ import annotations
 
 import sys
@@ -267,7 +268,7 @@ class AMOSUnifiedDashboard:
         """Export ecosystem summary to markdown."""
         content = f"""# AMOS Cognitive Ecosystem Summary
 
-**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Executive Summary
 

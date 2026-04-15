@@ -92,15 +92,15 @@ class Analytics:
 AMOS Brain API - Usage Report
 =============================
 Period: Last {days} days
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
 Summary
 -------
-Total Requests: {stats['total_requests']:,}
-Success Rate: {stats['success_rate_percent']:.2f}%
-Avg Response Time: {stats['avg_response_time_ms']:.2f}ms
+Total Requests: {stats["total_requests"]:,}
+Success Rate: {stats["success_rate_percent"]:.2f}%
+Avg Response Time: {stats["avg_response_time_ms"]:.2f}ms
 
-Performance Grade: {self._calculate_grade(stats['success_rate_percent'])}
+Performance Grade: {self._calculate_grade(stats["success_rate_percent"])}
 
 Top Query Domains
 -----------------

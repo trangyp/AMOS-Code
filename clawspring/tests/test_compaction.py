@@ -1,4 +1,5 @@
 """Tests for compaction.py — token estimation, context limits, snipping, split point."""
+
 from __future__ import annotations
 
 import os

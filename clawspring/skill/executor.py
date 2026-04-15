@@ -1,7 +1,8 @@
 """Skill execution: inline (current conversation) or forked (sub-agent)."""
+
 from __future__ import annotations
 
-from typing import Generator
+from collections.abc import Generator
 
 from .loader import SkillDef, substitute_arguments
 
@@ -39,6 +40,7 @@ def execute_skill(
 def _execute_inline(message: str, state, config: dict, system_prompt: str) -> Generator:
     """Run skill prompt inline in the current conversation."""
     import agent as _agent
+
     yield from _agent.run(message, state, config, system_prompt)
 
 

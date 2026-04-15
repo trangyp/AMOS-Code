@@ -261,7 +261,7 @@ class TimeEngine:
         paths = []
 
         for i, action in enumerate(possible_actions[:n_paths]):
-            path = self._project_single_path(action, path_id=f"future_{i+1}")
+            path = self._project_single_path(action, path_id=f"future_{i + 1}")
             paths.append(path)
 
         self.future_projections = paths

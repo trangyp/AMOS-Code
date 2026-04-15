@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Life Engine (10_LIFE_ENGINE)
+"""AMOS Life Engine (10_LIFE_ENGINE)
 ===================================
 
 Personal life management for the operator (Trang).
@@ -22,6 +21,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class Routine:
     """A daily/weekly routine."""
+
     id: str
     name: str
     frequency: str  # daily, weekly, monthly
@@ -36,6 +36,7 @@ class Routine:
 @dataclass
 class Habit:
     """A habit being tracked."""
+
     id: str
     name: str
     target_frequency: str  # daily, 3x_week, weekly
@@ -49,6 +50,7 @@ class Habit:
 @dataclass
 class LifeGoal:
     """A life goal with milestones."""
+
     id: str
     title: str
     category: str  # career, health, learning, relationships
@@ -61,6 +63,7 @@ class LifeGoal:
 @dataclass
 class DaySummary:
     """Summary of a day's activities."""
+
     date: str
     routines_completed: int = 0
     routines_total: int = 0
@@ -72,8 +75,7 @@ class DaySummary:
 
 
 class LifeEngine:
-    """
-    Life management engine for operator productivity and wellness.
+    """Life management engine for operator productivity and wellness.
     Tracks routines, habits, goals, and life balance.
     """
 
@@ -101,7 +103,7 @@ class LifeEngine:
                     frequency="daily",
                     time_slot="07:00-07:15",
                     category="health",
-                    priority=8
+                    priority=8,
                 ),
                 Routine(
                     id="routine_002",
@@ -109,7 +111,7 @@ class LifeEngine:
                     frequency="daily",
                     time_slot="07:30-08:30",
                     category="health",
-                    priority=9
+                    priority=9,
                 ),
                 Routine(
                     id="routine_003",
@@ -117,7 +119,7 @@ class LifeEngine:
                     frequency="daily",
                     time_slot="09:00-12:00",
                     category="work",
-                    priority=10
+                    priority=10,
                 ),
                 Routine(
                     id="routine_004",
@@ -125,7 +127,7 @@ class LifeEngine:
                     frequency="daily",
                     time_slot="14:00-15:00",
                     category="learning",
-                    priority=7
+                    priority=7,
                 ),
                 Routine(
                     id="routine_005",
@@ -133,7 +135,7 @@ class LifeEngine:
                     frequency="daily",
                     time_slot="20:00-20:30",
                     category="rest",
-                    priority=6
+                    priority=6,
                 ),
             ]
             self.routines.extend(default_routines)
@@ -141,21 +143,9 @@ class LifeEngine:
 
         if not self.habits:
             default_habits = [
-                Habit(
-                    id="habit_001",
-                    name="Read 30 minutes",
-                    target_frequency="daily"
-                ),
-                Habit(
-                    id="habit_002",
-                    name="Drink 8 glasses water",
-                    target_frequency="daily"
-                ),
-                Habit(
-                    id="habit_003",
-                    name="No screen after 22:00",
-                    target_frequency="daily"
-                ),
+                Habit(id="habit_001", name="Read 30 minutes", target_frequency="daily"),
+                Habit(id="habit_002", name="Drink 8 glasses water", target_frequency="daily"),
+                Habit(id="habit_003", name="No screen after 22:00", target_frequency="daily"),
             ]
             self.habits.extend(default_habits)
             self._save_state()
@@ -165,7 +155,7 @@ class LifeEngine:
         state_file = self.data_dir / "life_state.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r', encoding='utf-8') as f:
+                with open(state_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for r in data.get("routines", []):
@@ -188,47 +178,59 @@ class LifeEngine:
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "routines": [
                 {
-                    "id": r.id, "name": r.name, "frequency": r.frequency,
-                    "time_slot": r.time_slot, "category": r.category,
-                    "priority": r.priority, "completed": r.completed,
-                    "streak": r.streak, "last_completed": r.last_completed
+                    "id": r.id,
+                    "name": r.name,
+                    "frequency": r.frequency,
+                    "time_slot": r.time_slot,
+                    "category": r.category,
+                    "priority": r.priority,
+                    "completed": r.completed,
+                    "streak": r.streak,
+                    "last_completed": r.last_completed,
                 }
                 for r in self.routines
             ],
             "habits": [
                 {
-                    "id": h.id, "name": h.name,
+                    "id": h.id,
+                    "name": h.name,
                     "target_frequency": h.target_frequency,
                     "current_streak": h.current_streak,
                     "longest_streak": h.longest_streak,
                     "total_completions": h.total_completions,
                     "created_at": h.created_at,
-                    "last_completed": h.last_completed
+                    "last_completed": h.last_completed,
                 }
                 for h in self.habits
             ],
             "goals": [
                 {
-                    "id": g.id, "title": g.title, "category": g.category,
-                    "deadline": g.deadline, "milestones": g.milestones,
-                    "progress": g.progress, "status": g.status
+                    "id": g.id,
+                    "title": g.title,
+                    "category": g.category,
+                    "deadline": g.deadline,
+                    "milestones": g.milestones,
+                    "progress": g.progress,
+                    "status": g.status,
                 }
                 for g in self.goals
             ],
             "day_summaries": [
                 {
-                    "date": d.date, "routines_completed": d.routines_completed,
+                    "date": d.date,
+                    "routines_completed": d.routines_completed,
                     "routines_total": d.routines_total,
                     "habits_done": d.habits_done,
                     "habits_total": d.habits_total,
                     "energy_level": d.energy_level,
-                    "focus_hours": d.focus_hours, "notes": d.notes
+                    "focus_hours": d.focus_hours,
+                    "notes": d.notes,
                 }
                 for d in self.day_summaries[-30:]  # Keep last 30 days
-            ]
+            ],
         }
 
-        with open(state_file, 'w', encoding='utf-8') as f:
+        with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def complete_routine(self, routine_id: str) -> bool:
@@ -240,9 +242,7 @@ class LifeEngine:
 
                 # Update streak
                 if routine.last_completed:
-                    last = datetime.fromisoformat(
-                        routine.last_completed.replace('Z', '+00:00')
-                    )
+                    last = datetime.fromisoformat(routine.last_completed.replace("Z", "+00:00"))
                     today = datetime.utcnow()
                     if (today - last).days <= 1:
                         routine.streak += 1
@@ -264,9 +264,7 @@ class LifeEngine:
 
                 # Update streak
                 if habit.last_completed:
-                    last = datetime.fromisoformat(
-                        habit.last_completed.replace('Z', '+00:00')
-                    )
+                    last = datetime.fromisoformat(habit.last_completed.replace("Z", "+00:00"))
                     today = datetime.utcnow()
                     if (today - last).days <= 1:
                         habit.current_streak += 1
@@ -288,14 +286,16 @@ class LifeEngine:
         schedule = []
         for routine in self.routines:
             if routine.frequency == "daily":
-                schedule.append({
-                    "time": routine.time_slot,
-                    "activity": routine.name,
-                    "category": routine.category,
-                    "priority": routine.priority,
-                    "completed": routine.completed,
-                    "streak": routine.streak
-                })
+                schedule.append(
+                    {
+                        "time": routine.time_slot,
+                        "activity": routine.name,
+                        "category": routine.category,
+                        "priority": routine.priority,
+                        "completed": routine.completed,
+                        "streak": routine.streak,
+                    }
+                )
 
         return sorted(schedule, key=lambda x: x["time"])
 
@@ -313,13 +313,13 @@ class LifeEngine:
             "avg_streak": round(avg_streak, 1),
             "strongest_habit": strongest.name,
             "strongest_streak": strongest.current_streak,
-            "total_completions_all": sum(h.total_completions for h in self.habits)
+            "total_completions_all": sum(h.total_completions for h in self.habits),
         }
 
     def calculate_life_balance(self) -> Dict[str, float]:
         """Calculate life balance across categories."""
         categories = ["health", "work", "learning", "rest", "relationships"]
-        balance = {cat: 5.0 for cat in categories}  # Default middle score
+        balance = dict.fromkeys(categories, 5.0)  # Default middle score
 
         # Score based on routine completion
         for routine in self.routines:
@@ -334,10 +334,7 @@ class LifeEngine:
     def add_goal(self, title: str, category: str, deadline: Optional[str] = None) -> LifeGoal:
         """Add a new life goal."""
         goal = LifeGoal(
-            id=f"goal_{len(self.goals) + 1:03d}",
-            title=title,
-            category=category,
-            deadline=deadline
+            id=f"goal_{len(self.goals) + 1:03d}", title=title, category=category, deadline=deadline
         )
         self.goals.append(goal)
         self._save_state()
@@ -356,14 +353,14 @@ class LifeEngine:
             "routines": {
                 "total": len(self.routines),
                 "completed_today": routines_done,
-                "pending": len(self.routines) - routines_done
+                "pending": len(self.routines) - routines_done,
             },
             "habits": self.get_habit_stats(),
             "goals": {
                 "total": len(self.goals),
-                "active": len([g for g in self.goals if g.status == "active"])
+                "active": len([g for g in self.goals if g.status == "active"]),
             },
-            "life_balance": self.calculate_life_balance()
+            "life_balance": self.calculate_life_balance(),
         }
 
 
@@ -381,8 +378,8 @@ def main() -> int:
     schedule = engine.get_today_schedule()
     for item in schedule:
         status = "✓" if item["completed"] else "○"
-        time = item['time']
-        activity = item['activity']
+        time = item["time"]
+        activity = item["activity"]
         print(f"  {status} [{time}] {activity}")
 
     # Show habit stats
@@ -390,7 +387,7 @@ def main() -> int:
     stats = engine.get_habit_stats()
     print(f"  Total habits: {stats['total']}")
     print(f"  Average streak: {stats['avg_streak']} days")
-    if stats['strongest_habit']:
+    if stats["strongest_habit"]:
         print(f"  Strongest: {stats['strongest_habit']}")
 
     # Show life balance
@@ -405,9 +402,9 @@ def main() -> int:
     # Show status
     print("\nLife Engine Status:")
     status = engine.get_status()
-    routines = status['routines']
-    completed = routines['completed_today']
-    total = routines['total']
+    routines = status["routines"]
+    completed = routines["completed_today"]
+    total = routines["total"]
     print(f"  Routines: {completed}/{total} completed")
     print(f"  Active goals: {status['goals']['active']}")
 
@@ -416,4 +413,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

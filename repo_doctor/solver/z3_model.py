@@ -161,6 +161,7 @@ class Z3Model:
         - "api": ClaimedCall -> Compatible(signatures)
         - "status": Initialized -> LoadedSpecs > 0
         - "persistence": Serialize/Deserialize roundtrip
+
         """
         if not self.is_available():
             return Z3Result(satisfiable=True)

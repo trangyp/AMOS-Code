@@ -1,4 +1,5 @@
 """AMOS Knowledge Graph Connector - External data and knowledge integration."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

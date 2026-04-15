@@ -26,7 +26,6 @@ from typing import Any
 from .architecture_bridge import (
     ArchitecturalCognitionBridge,
     ArchitecturalContext,
-    ArchitectureValidationResult,
     get_architecture_bridge,
 )
 
@@ -38,6 +37,7 @@ try:
         PathologyType,
         get_pathology_engine,
     )
+
     PATHOLOGY_AVAILABLE = True
 except ImportError:
     PATHOLOGY_AVAILABLE = False
@@ -77,10 +77,10 @@ class PathologyAwareContext:
         if self.total_pathologies > 0:
             # Weight by severity
             weighted_count = (
-                self.critical_pathologies * 4 +
-                self.high_pathologies * 2 +
-                self.medium_pathologies * 1 +
-                self.low_pathologies * 0.5
+                self.critical_pathologies * 4
+                + self.high_pathologies * 2
+                + self.medium_pathologies * 1
+                + self.low_pathologies * 0.5
             )
             self.pathology_score = max(0.0, 1.0 - (weighted_count / 10))
 
@@ -113,8 +113,7 @@ class PathologyValidationResult:
 
 
 class PathologyAwareArchitectureBridge:
-    """
-    Enhanced architecture bridge with pathology awareness.
+    """Enhanced architecture bridge with pathology awareness.
 
     Provides:
     - Pre-decision pathology validation
@@ -166,47 +165,51 @@ class PathologyAwareArchitectureBridge:
 
         # Categorize by type
         authority_issues = [
-            p for p in all_pathologies
-            if p.pathology_type in [
+            p
+            for p in all_pathologies
+            if p.pathology_type
+            in [
                 PathologyType.AUTHORITY_INVERSION,
                 PathologyType.AUTHORITY_DUPLICATION,
             ]
         ]
 
         layer_leakage = [
-            p for p in all_pathologies
-            if p.pathology_type == PathologyType.LAYER_LEAKAGE
+            p for p in all_pathologies if p.pathology_type == PathologyType.LAYER_LEAKAGE
         ]
 
         bootstrap_issues = [
-            p for p in all_pathologies
-            if p.pathology_type == PathologyType.BOOTSTRAP_FAILURE
+            p for p in all_pathologies if p.pathology_type == PathologyType.BOOTSTRAP_FAILURE
         ]
 
         shadow_deps = [
-            p for p in all_pathologies
-            if p.pathology_type in [
+            p
+            for p in all_pathologies
+            if p.pathology_type
+            in [
                 PathologyType.SHADOW_DEPENDENCY,
                 PathologyType.FOLKLORE_OPERATION,
             ]
         ]
 
         artifact_issues = [
-            p for p in all_pathologies
-            if p.pathology_type in [
+            p
+            for p in all_pathologies
+            if p.pathology_type
+            in [
                 PathologyType.ARTIFACT_DISCONTINUITY,
                 PathologyType.DERIVATION_DRIFT,
             ]
         ]
 
         migration_issues = [
-            p for p in all_pathologies
+            p
+            for p in all_pathologies
             if p.pathology_type == PathologyType.MIGRATION_GEOMETRY_FAILURE
         ]
 
         mode_issues = [
-            p for p in all_pathologies
-            if p.pathology_type == PathologyType.MODE_LATTICE_DRIFT
+            p for p in all_pathologies if p.pathology_type == PathologyType.MODE_LATTICE_DRIFT
         ]
 
         return PathologyAwareContext(
@@ -231,8 +234,7 @@ class PathologyAwareArchitectureBridge:
         target_files: list[str],
         context: dict[str, Any] | None = None,
     ) -> PathologyValidationResult:
-        """
-        Validate an action against both architecture and pathologies.
+        """Validate an action against both architecture and pathologies.
 
         Args:
             action: Type of action (modify, delete, create, refactor, migrate)
@@ -268,9 +270,7 @@ class PathologyAwareArchitectureBridge:
             # Check for migration geometry issues
             if pathology_context.migration_issues:
                 mig_count = len(pathology_context.migration_issues)
-                issues.append(
-                    f"Found {mig_count} migration geometry issues"
-                )
+                issues.append(f"Found {mig_count} migration geometry issues")
                 for p in pathology_context.migration_issues[:3]:
                     issues.append(f"  - {p.message}")
 
@@ -286,9 +286,7 @@ class PathologyAwareArchitectureBridge:
         elif action == "create":
             # Check for bootstrap issues (new files may need manual setup)
             if pathology_context.bootstrap_issues:
-                constraints.append(
-                    "Ensure new files don't require manual bootstrap steps"
-                )
+                constraints.append("Ensure new files don't require manual bootstrap steps")
 
         elif action == "refactor":
             # Check for layer leakage (refactoring may worsen leakage)
@@ -312,16 +310,14 @@ class PathologyAwareArchitectureBridge:
 
         # Require human review for high pathology count
         requires_review = (
-            pathology_context.critical_pathologies > 0 or
-            pathology_context.high_pathologies > 2 or
-            pathology_context.pathology_score < 0.7
+            pathology_context.critical_pathologies > 0
+            or pathology_context.high_pathologies > 2
+            or pathology_context.pathology_score < 0.7
         )
 
         # If approved but has warnings, add constraint
         if approved and (warnings or risks):
-            constraints.append(
-                "Monitor for architectural pathology increase after change"
-            )
+            constraints.append("Monitor for architectural pathology increase after change")
 
         return PathologyValidationResult(
             approved=approved,
@@ -338,9 +334,7 @@ class PathologyAwareArchitectureBridge:
             },
         )
 
-    def get_repair_recommendations(
-        self, max_recommendations: int = 5
-    ) -> list[dict[str, Any]]:
+    def get_repair_recommendations(self, max_recommendations: int = 5) -> list[dict[str, Any]]:
         """Get prioritized pathology repair recommendations."""
         if not PATHOLOGY_AVAILABLE or self.pathology_engine is None:
             return []
@@ -351,43 +345,51 @@ class PathologyAwareArchitectureBridge:
         # Priority 1: Critical pathologies
         for p in pathology_context.authority_issues:
             if p.severity == "critical":
-                recommendations.append({
-                    "priority": "critical",
-                    "type": "authority",
-                    "description": p.message,
-                    "location": p.location,
-                    "remediation": p.remediation,
-                })
+                recommendations.append(
+                    {
+                        "priority": "critical",
+                        "type": "authority",
+                        "description": p.message,
+                        "location": p.location,
+                        "remediation": p.remediation,
+                    }
+                )
 
         # Priority 2: Bootstrap issues
         for p in pathology_context.bootstrap_issues:
-            recommendations.append({
-                "priority": "high",
-                "type": "bootstrap",
-                "description": p.message,
-                "location": p.location,
-                "remediation": p.remediation,
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "type": "bootstrap",
+                    "description": p.message,
+                    "location": p.location,
+                    "remediation": p.remediation,
+                }
+            )
 
         # Priority 3: Artifact issues
         for p in pathology_context.artifact_issues:
-            recommendations.append({
-                "priority": "high",
-                "type": "artifact",
-                "description": p.message,
-                "location": p.location,
-                "remediation": p.remediation,
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "type": "artifact",
+                    "description": p.message,
+                    "location": p.location,
+                    "remediation": p.remediation,
+                }
+            )
 
         # Priority 4: Migration issues
         for p in pathology_context.migration_issues:
-            recommendations.append({
-                "priority": "medium",
-                "type": "migration",
-                "description": p.message,
-                "location": p.location,
-                "remediation": p.remediation,
-            })
+            recommendations.append(
+                {
+                    "priority": "medium",
+                    "type": "migration",
+                    "description": p.message,
+                    "location": p.location,
+                    "remediation": p.remediation,
+                }
+            )
 
         return recommendations[:max_recommendations]
 

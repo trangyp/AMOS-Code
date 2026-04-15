@@ -1,4 +1,5 @@
 """Plugin loader: discover and load tools/skills/mcp from installed plugins."""
+
 from __future__ import annotations
 
 import importlib.util

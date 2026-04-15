@@ -13,6 +13,7 @@ Test partition:
 
 Only hard contract tests gate release.
 """
+
 from __future__ import annotations
 
 import subprocess

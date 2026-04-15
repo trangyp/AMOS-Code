@@ -3,6 +3,7 @@
 Main orchestration engine that coordinates substrate integration
 and computes repository state.
 """
+
 from __future__ import annotations
 
 import time

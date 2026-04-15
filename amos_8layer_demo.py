@@ -296,7 +296,7 @@ class AMOS8LayerDemonstration:
             duration_ms=duration,
             input_data=hyperstate,
             output_data=coherence_result,
-            message=(f"Axioms: {passed}/{len(report.checks)} passed, " f"Coherence Ω valid"),
+            message=(f"Axioms: {passed}/{len(report.checks)} passed, Coherence Ω valid"),
         )
 
     def demo_layer_6_integration(self, coherence_result: Any) -> LayerResult:
@@ -684,14 +684,13 @@ class AMOS8LayerDemonstration:
             )
             layer_num = result.layer.value
             print(
-                f"  {icon} Layer {layer_num} ({zoom}): {layer_name:20} "
-                f"{result.duration_ms:6.1f}ms"
+                f"  {icon} Layer {layer_num} ({zoom}): {layer_name:20} {result.duration_ms:6.1f}ms"
             )
 
         print("\nStatistics:")
         print(f"  Total time: {total_time:.1f}ms")
         print(f"  Successful: {success_count}/8")
-        print(f"  Success rate: {success_count/8:.0%}")
+        print(f"  Success rate: {success_count / 8:.0%}")
 
         available = sum(self.available_layers.values())
         print(f"  Layers available: {available}/8")

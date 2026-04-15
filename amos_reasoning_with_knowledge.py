@@ -19,6 +19,7 @@ Commands:
     augment <text>      Augment text with relevant knowledge
     demo                Demonstrate knowledge-enhanced reasoning
 """
+
 from __future__ import annotations
 
 import argparse
@@ -314,19 +315,19 @@ class KnowledgeIntegratedReasoning:
         # Calculate confidence based on knowledge availability
         if len(relevant) >= 3:
             conclusion["confidence"] = 0.85
-            conclusion[
-                "recommendation"
-            ] = "High confidence: Multiple knowledge sources aligned. Proceed with integrated approach."
+            conclusion["recommendation"] = (
+                "High confidence: Multiple knowledge sources aligned. Proceed with integrated approach."
+            )
         elif len(relevant) >= 1:
             conclusion["confidence"] = 0.65
-            conclusion[
-                "recommendation"
-            ] = "Moderate confidence: Limited knowledge sources available. Consider activating more engines."
+            conclusion["recommendation"] = (
+                "Moderate confidence: Limited knowledge sources available. Consider activating more engines."
+            )
         else:
             conclusion["confidence"] = 0.45
-            conclusion[
-                "recommendation"
-            ] = "Low confidence: No relevant knowledge activated. Activate appropriate engines first."
+            conclusion["recommendation"] = (
+                "Low confidence: No relevant knowledge activated. Activate appropriate engines first."
+            )
 
         print(f"\n  Summary: {conclusion['summary']}")
         print(f"  Frameworks: {', '.join(conclusion['frameworks_used'])}")

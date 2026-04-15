@@ -1,4 +1,5 @@
 """AMOS Brain built-in skill for cognitive analysis."""
+
 from __future__ import annotations
 
 from .loader import SkillDef, register_builtin_skill
@@ -118,50 +119,56 @@ User request: $ARGUMENTS
 
 def _register_amos_skills() -> None:
     """Register AMOS brain built-in skills."""
-    register_builtin_skill(SkillDef(
-        name="amos-analyze",
-        description="Analyze a problem using AMOS Brain's Rule of 2 and Rule of 4 cognitive architecture",
-        triggers=["/amos", "/amos-analyze", "/analyze"],
-        tools=["Read", "Grep"],
-        prompt=_AMOS_ANALYZE_PROMPT,
-        file_path="<builtin:amos>",
-        when_to_use="When user needs structured cognitive analysis with dual perspectives and four-quadrant evaluation",
-        argument_hint="[problem or question to analyze]",
-        arguments=[],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="amos-analyze",
+            description="Analyze a problem using AMOS Brain's Rule of 2 and Rule of 4 cognitive architecture",
+            triggers=["/amos", "/amos-analyze", "/analyze"],
+            tools=["Read", "Grep"],
+            prompt=_AMOS_ANALYZE_PROMPT,
+            file_path="<builtin:amos>",
+            when_to_use="When user needs structured cognitive analysis with dual perspectives and four-quadrant evaluation",
+            argument_hint="[problem or question to analyze]",
+            arguments=[],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
-    register_builtin_skill(SkillDef(
-        name="amos-laws",
-        description="Display AMOS Global Laws, UBI principles, and irreducible limits",
-        triggers=["/amos-laws", "/laws"],
-        tools=[],
-        prompt=_AMOS_LAWS_PROMPT,
-        file_path="<builtin:amos>",
-        when_to_use="When user wants to understand AMOS governance framework",
-        argument_hint="[optional context]",
-        arguments=[],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="amos-laws",
+            description="Display AMOS Global Laws, UBI principles, and irreducible limits",
+            triggers=["/amos-laws", "/laws"],
+            tools=[],
+            prompt=_AMOS_LAWS_PROMPT,
+            file_path="<builtin:amos>",
+            when_to_use="When user wants to understand AMOS governance framework",
+            argument_hint="[optional context]",
+            arguments=[],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
-    register_builtin_skill(SkillDef(
-        name="amos-status",
-        description="Report AMOS Brain operational status and loaded engines",
-        triggers=["/amos-status", "/brain-status"],
-        tools=[],
-        prompt=_AMOS_STATUS_PROMPT,
-        file_path="<builtin:amos>",
-        when_to_use="When user wants to verify brain initialization and available capabilities",
-        argument_hint="[optional context]",
-        arguments=[],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="amos-status",
+            description="Report AMOS Brain operational status and loaded engines",
+            triggers=["/amos-status", "/brain-status"],
+            tools=[],
+            prompt=_AMOS_STATUS_PROMPT,
+            file_path="<builtin:amos>",
+            when_to_use="When user wants to verify brain initialization and available capabilities",
+            argument_hint="[optional context]",
+            arguments=[],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
 
 _register_amos_skills()

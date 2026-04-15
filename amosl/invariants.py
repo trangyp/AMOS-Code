@@ -2,6 +2,7 @@
 
 Validates the 8 invariant laws across all substrates.
 """
+
 from __future__ import annotations
 
 from .ast_nodes import Program
@@ -139,7 +140,7 @@ class InvariantChecker:
         for evo in program.dynamics.evolutions:
             if not evo.target:
                 self.violations.append(
-                    "Invariant 6 (Evolution first-class): " "Evolution rule has no target"
+                    "Invariant 6 (Evolution first-class): Evolution rule has no target"
                 )
 
     def check_hybrid_legality(self, program: Program) -> None:

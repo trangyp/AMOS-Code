@@ -1,5 +1,4 @@
-"""MUSCLE module — Alias for 06_MUSCLE
-"""
+"""MUSCLE module — Alias for 06_MUSCLE"""
 
 import sys
 from pathlib import Path

@@ -7,6 +7,7 @@ Validates all 12 layers of the cognitive OS.
 Usage:
   python comprehensive_test.py
 """
+
 import sys
 
 from amos_brain import (

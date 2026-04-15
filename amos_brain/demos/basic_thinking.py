@@ -7,6 +7,7 @@ Simple demonstration of core brain capabilities.
 Usage:
   python basic_thinking.py
 """
+
 from amos_brain import BrainClient, decide, think, validate
 
 

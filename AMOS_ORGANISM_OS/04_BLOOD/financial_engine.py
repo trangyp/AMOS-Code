@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Financial Engine (04_BLOOD)
+"""AMOS Financial Engine (04_BLOOD)
 ================================
 
 Economic circulatory system for the AMOS Organism.
@@ -22,6 +21,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class BudgetLine:
     """Single budget allocation."""
+
     category: str
     allocated: float
     spent: float = 0.0
@@ -32,6 +32,7 @@ class BudgetLine:
 @dataclass
 class CashflowEntry:
     """Single cashflow transaction."""
+
     id: str
     timestamp: str
     direction: str  # inflow, outflow
@@ -44,19 +45,17 @@ class CashflowEntry:
 @dataclass
 class ResourceAllocation:
     """Resource allocation for a task."""
+
     task_id: str
     cpu_units: float
     memory_mb: float
     cost_estimate: float
     priority: int
-    allocated_at: str = field(
-        default_factory=lambda: datetime.utcnow().isoformat()
-    )
+    allocated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
 
 class FinancialEngine:
-    """
-    Blood subsystem - manages economic circulation.
+    """Blood subsystem - manages economic circulation.
     Tracks budgets, cashflow, and resource allocation.
     """
 
@@ -77,7 +76,7 @@ class FinancialEngine:
         state_file = self.data_dir / "financial_state.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r', encoding='utf-8') as f:
+                with open(state_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 # Load budgets
@@ -103,7 +102,7 @@ class FinancialEngine:
                     "allocated": b.allocated,
                     "spent": b.spent,
                     "currency": b.currency,
-                    "period": b.period
+                    "period": b.period,
                 }
                 for cat, b in self.budgets.items()
             },
@@ -115,35 +114,24 @@ class FinancialEngine:
                     "amount": c.amount,
                     "category": c.category,
                     "description": c.description,
-                    "source": c.source
+                    "source": c.source,
                 }
                 for c in self.cashflow[-1000:]  # Keep last 1000
             ],
-            "total_allocations": len(self.allocations)
+            "total_allocations": len(self.allocations),
         }
 
-        with open(state_file, 'w', encoding='utf-8') as f:
+        with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
-    def set_budget(
-        self, category: str, amount: float, period: str = "monthly"
-    ) -> BudgetLine:
+    def set_budget(self, category: str, amount: float, period: str = "monthly") -> BudgetLine:
         """Set budget for a category."""
-        self.budgets[category] = BudgetLine(
-            category=category,
-            allocated=amount,
-            period=period
-        )
+        self.budgets[category] = BudgetLine(category=category, allocated=amount, period=period)
         self._save_state()
         return self.budgets[category]
 
     def record_transaction(
-        self,
-        direction: str,
-        amount: float,
-        category: str,
-        description: str,
-        source: str = "system"
+        self, direction: str, amount: float, category: str, description: str, source: str = "system"
     ) -> CashflowEntry:
         """Record a cashflow transaction."""
         import uuid
@@ -155,7 +143,7 @@ class FinancialEngine:
             amount=amount,
             category=category,
             description=description,
-            source=source
+            source=source,
         )
 
         self.cashflow.append(entry)
@@ -168,11 +156,7 @@ class FinancialEngine:
         return entry
 
     def allocate_resources(
-        self,
-        task_id: str,
-        cpu_units: float = 1.0,
-        memory_mb: float = 512.0,
-        priority: int = 5
+        self, task_id: str, cpu_units: float = 1.0, memory_mb: float = 512.0, priority: int = 5
     ) -> ResourceAllocation:
         """Allocate resources for a task with cost estimation."""
         # Cost estimation: $0.001 per CPU unit per hour, $0.0001 per MB
@@ -183,7 +167,7 @@ class FinancialEngine:
             cpu_units=cpu_units,
             memory_mb=memory_mb,
             cost_estimate=cost_estimate,
-            priority=priority
+            priority=priority,
         )
 
         self.allocations[task_id] = allocation
@@ -204,7 +188,7 @@ class FinancialEngine:
             amount=actual_cost,
             category="compute",
             description=f"Task {task_id} resource usage",
-            source="04_BLOOD"
+            source="04_BLOOD",
         )
 
         return actual_cost
@@ -228,10 +212,8 @@ class FinancialEngine:
             "remaining": remaining,
             "utilization_rate": utilization,
             "status": (
-                "healthy" if utilization < 0.8
-                else "warning" if utilization < 1.0
-                else "exhausted"
-            )
+                "healthy" if utilization < 0.8 else "warning" if utilization < 1.0 else "exhausted"
+            ),
         }
 
     def get_cashflow_summary(self, days: int = 30) -> Dict[str, Any]:
@@ -241,12 +223,8 @@ class FinancialEngine:
 
         recent = [c for c in self.cashflow if c.timestamp > cutoff_str]
 
-        inflows = sum(
-            c.amount for c in recent if c.direction == "inflow"
-        )
-        outflows = sum(
-            c.amount for c in recent if c.direction == "outflow"
-        )
+        inflows = sum(c.amount for c in recent if c.direction == "inflow")
+        outflows = sum(c.amount for c in recent if c.direction == "outflow")
 
         return {
             "period_days": days,
@@ -254,22 +232,15 @@ class FinancialEngine:
             "total_inflow": inflows,
             "total_outflow": outflows,
             "net_flow": inflows - outflows,
-            "categories": list(set(c.category for c in recent))
+            "categories": list(set(c.category for c in recent)),
         }
 
     def estimate_task_cost(
-        self,
-        complexity: str = "medium",
-        duration_minutes: float = 5.0
+        self, complexity: str = "medium", duration_minutes: float = 5.0
     ) -> Dict[str, float]:
         """Estimate cost for a task."""
         # Complexity multipliers
-        multipliers = {
-            "low": 0.5,
-            "medium": 1.0,
-            "high": 2.0,
-            "very_high": 4.0
-        }
+        multipliers = {"low": 0.5, "medium": 1.0, "high": 2.0, "very_high": 4.0}
 
         multiplier = multipliers.get(complexity, 1.0)
         base_rate = 0.01  # $0.01 per minute base
@@ -280,15 +251,12 @@ class FinancialEngine:
             "estimated_cost": estimated_cost,
             "base_rate": base_rate,
             "multiplier": multiplier,
-            "duration_minutes": duration_minutes
+            "duration_minutes": duration_minutes,
         }
 
     def get_status(self) -> Dict[str, Any]:
         """Get overall financial status."""
-        budget_statuses = {
-            cat: self.get_budget_status(cat)
-            for cat in self.budgets.keys()
-        }
+        budget_statuses = {cat: self.get_budget_status(cat) for cat in self.budgets.keys()}
 
         cashflow = self.get_cashflow_summary(days=30)
 
@@ -298,7 +266,7 @@ class FinancialEngine:
             "budget_status": budget_statuses,
             "cashflow_30d": cashflow,
             "active_allocations": len(self.allocations),
-            "total_transactions": len(self.cashflow)
+            "total_transactions": len(self.cashflow),
         }
 
 
@@ -323,9 +291,7 @@ def main() -> int:
 
     # Test allocation
     print("\nAllocating resources for task...")
-    alloc = engine.allocate_resources(
-        "test_task_001", cpu_units=2.0, memory_mb=1024
-    )
+    alloc = engine.allocate_resources("test_task_001", cpu_units=2.0, memory_mb=1024)
     print(f"  Task ID: {alloc.task_id}")
     print(f"  Estimated cost: ${alloc.cost_estimate:.4f}")
 
@@ -340,4 +306,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

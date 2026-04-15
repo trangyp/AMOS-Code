@@ -116,7 +116,7 @@ def _lazy_import(module_name: str):
                 from .tracing import Tracer as tr
 
                 _lazy_modules[module_name] = tr
-        except Exception as e:
+        except Exception:
             _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
                 ImportError(f"Could not load {module_name}: {e}")
             )

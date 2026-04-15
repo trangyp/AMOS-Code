@@ -1,4 +1,5 @@
 """Thread-safe task store: in-memory dict persisted to .clawspring/tasks.json."""
+
 from __future__ import annotations
 
 import json

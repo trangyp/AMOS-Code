@@ -62,7 +62,7 @@ class AMOSWorkflows:
         ]
 
         for name, workflow_func in workflows:
-            print(f"\n{'='*70}")
+            print(f"\n{'=' * 70}")
             print(f"WORKFLOW: {name}")
             print("=" * 70)
 
@@ -392,7 +392,7 @@ if py_files:
         print(f"\nTotal Workflows: {total}")
         print(f"Passed: {passed}")
         print(f"Failed: {failed}")
-        print(f"Success Rate: {(passed/total*100):.0f}%")
+        print(f"Success Rate: {(passed / total * 100):.0f}%")
 
         print("\nWorkflow Details:")
         for r in self.results:

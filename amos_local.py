@@ -17,6 +17,7 @@ Environment:
     AMOS_BASE_URL=<custom-endpoint>
     AMOS_API_KEY=<api-key-for-compatible-servers>
 """
+
 from __future__ import annotations
 
 import argparse

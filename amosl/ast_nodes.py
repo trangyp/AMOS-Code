@@ -3,6 +3,7 @@
 Implements the 9-tuple language structure:
 (O, S, D, C, E, M, U, V, A, R)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

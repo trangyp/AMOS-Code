@@ -5,6 +5,7 @@ C_fail(|Ψ_repo⟩) = argmin_S { S | I_S = 0 and repair_cost(S) minimal }
 
 Finds the minimal failing cut - the smallest broken subspace.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -44,6 +45,7 @@ class CollapseOperator:
         --------
         - launcher -> shell -> missing /dashboard command
         - guide -> tutorial -> stale interactive contract
+
         """
         # Simple strategy: find longest chain leading to failure
         max_chain = []

@@ -1,4 +1,5 @@
 """AMOS Economics/Finance Engine - Economic analysis and financial systems."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -296,7 +297,7 @@ class AMOSEconEngine:
             "# AMOS Economics/Finance Analysis Summary",
             "",
             f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+            f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
             "",
             "⚠️ SAFETY NOTICE: This is conceptual analysis only.",
             "⚠️ NO personalized investment advice.",
@@ -416,8 +417,7 @@ if __name__ == "__main__":
     print(f"\nAnalyzed {len(results)} economic domains:")
     for domain, analysis in results.items():
         print(
-            f"  - {domain}: {len(analysis.findings)} findings, "
-            f"confidence={analysis.confidence:.2f}"
+            f"  - {domain}: {len(analysis.findings)} findings, confidence={analysis.confidence:.2f}"
         )
 
     # Full summary

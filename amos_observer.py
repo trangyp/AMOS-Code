@@ -13,6 +13,7 @@ Commands:
     trace       Trace a thought process
     dashboard   Run interactive dashboard
 """
+
 from __future__ import annotations
 
 import argparse

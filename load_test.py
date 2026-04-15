@@ -87,14 +87,14 @@ async def run_load_test(endpoint, payload, total_requests, concurrent):
     print("\n📊 Results:")
     print(f"   Total time: {total_time:.2f}s")
     print(f"   Successful: {len(success)}/{total_requests}")
-    print(f"   Error rate: {len(errors)/total_requests*100:.1f}%")
+    print(f"   Error rate: {len(errors) / total_requests * 100:.1f}%")
 
     if times:
-        print(f"   RPS: {len(success)/total_time:.1f}")
-        print(f"   Avg time: {mean(times)*1000:.0f}ms")
-        print(f"   Median time: {median(times)*1000:.0f}ms")
-        print(f"   Min time: {min(times)*1000:.0f}ms")
-        print(f"   Max time: {max(times)*1000:.0f}ms")
+        print(f"   RPS: {len(success) / total_time:.1f}")
+        print(f"   Avg time: {mean(times) * 1000:.0f}ms")
+        print(f"   Median time: {median(times) * 1000:.0f}ms")
+        print(f"   Min time: {min(times) * 1000:.0f}ms")
+        print(f"   Max time: {max(times) * 1000:.0f}ms")
 
     if errors:
         print("\n⚠️  First 3 errors:")

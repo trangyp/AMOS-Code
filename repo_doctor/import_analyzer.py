@@ -22,7 +22,6 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import tree_sitter_python as tspython
 
@@ -220,7 +219,7 @@ class ImportAnalyzer:
 
         return graph
 
-    def find_cycles(self, graph: Optional[DependencyGraph] = None) -> list[list[str]]:
+    def find_cycles(self, graph: DependencyGraph | None = None) -> list[list[str]]:
         """Find circular dependencies in the graph."""
         if graph is None:
             graph = self.build_dependency_graph()
@@ -264,7 +263,7 @@ class ImportAnalyzer:
         return unique_cycles
 
     def calculate_coupling_metrics(
-        self, graph: Optional[DependencyGraph] = None
+        self, graph: DependencyGraph | None = None
     ) -> dict[str, CouplingMetrics]:
         """Calculate coupling metrics for all modules."""
         if graph is None:

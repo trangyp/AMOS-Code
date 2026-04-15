@@ -1,4 +1,5 @@
 """AMOS Brain Agent Execution Bridge - Bidirectional brain-agent integration."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -14,6 +15,7 @@ from .task_processor import BrainTaskProcessor
 @dataclass
 class ToolDecision:
     """Record of a tool execution decision."""
+
     timestamp: str
     tool_name: str
     arguments: dict
@@ -26,6 +28,7 @@ class ToolDecision:
 @dataclass
 class ExecutionContext:
     """Context for agent execution with brain oversight."""
+
     task_id: str
     active_kernels: list[str]
     reasoning_steps: list[str]
@@ -34,8 +37,7 @@ class ExecutionContext:
 
 
 class AMOSAgentBridge:
-    """
-    Bridge connecting AMOS brain to agent execution runtime.
+    """Bridge connecting AMOS brain to agent execution runtime.
 
     Provides:
     - Pre-tool law validation (block unsafe operations)
@@ -47,13 +49,18 @@ class AMOSAgentBridge:
     # Risk categories for tools
     RISK_CATEGORIES = {
         "high": [
-            "Bash", "Write", "Edit",  # Destructive file operations
+            "Bash",
+            "Write",
+            "Edit",  # Destructive file operations
         ],
         "medium": [
-            "WebFetch", "WebSearch",  # External data
+            "WebFetch",
+            "WebSearch",  # External data
         ],
         "low": [
-            "Read", "Grep", "Glob",  # Read-only operations
+            "Read",
+            "Grep",
+            "Glob",  # Read-only operations
         ],
     }
 
@@ -77,8 +84,7 @@ class AMOSAgentBridge:
         arguments: dict,
         context: ExecutionContext | None = None,
     ) -> dict:
-        """
-        Validate a tool call against AMOS global laws.
+        """Validate a tool call against AMOS global laws.
 
         Returns:
             dict with keys: approved, reason, violations, alternatives, risk_level
@@ -103,26 +109,28 @@ class AMOSAgentBridge:
             # Check for dangerous patterns
             args_str = str(arguments).lower()
             dangerous_patterns = [
-                "rm -rf /", "rm -rf *", "mkfs", "dd if=/dev/zero",
-                "> /dev/sda", "format c:", "del /f /s /q",
+                "rm -rf /",
+                "rm -rf *",
+                "mkfs",
+                "dd if=/dev/zero",
+                "> /dev/sda",
+                "format c:",
+                "del /f /s /q",
             ]
             for pattern in dangerous_patterns:
                 if pattern in args_str:
                     result["approved"] = False
                     result["reason"] = f"L1: Dangerous pattern detected: {pattern}"
-                    result["violations"].append({
-                        "law": "L1",
-                        "message": f"Operation exceeds safe scope: {pattern}"
-                    })
+                    result["violations"].append(
+                        {"law": "L1", "message": f"Operation exceeds safe scope: {pattern}"}
+                    )
                     result["alternatives"].append(f"Use safer alternative to: {pattern}")
 
         # L5: Post-Theory Communication - Check for prohibited terms
         args_str = str(arguments)
         l5_ok, violations = self.global_laws.l5_communication_check(args_str)
         if not l5_ok:
-            result["violations"].extend([
-                {"law": "L5", "message": v} for v in violations
-            ])
+            result["violations"].extend([{"law": "L5", "message": v} for v in violations])
 
         # If violations found but not critical, flag as warning
         if result["violations"] and result["approved"]:
@@ -158,8 +166,7 @@ class AMOSAgentBridge:
         result: Any,
         context: ExecutionContext | None = None,
     ) -> dict:
-        """
-        Post-execution audit of tool result.
+        """Post-execution audit of tool result.
 
         Returns:
             dict with keys: valid, issues, recommendations
@@ -184,7 +191,7 @@ class AMOSAgentBridge:
         # Structural integrity check
         if isinstance(result, str):
             # Check for contradictions in text output
-            statements = [s.strip() for s in result.split('.') if s.strip()]
+            statements = [s.strip() for s in result.split(".") if s.strip()]
             if len(statements) > 1:
                 ok, contradictions = self.global_laws.check_l4_integrity(statements[:20])
                 if not ok:
@@ -202,14 +209,14 @@ class AMOSAgentBridge:
         enhancement = f"""
 # AMOS BRAIN COGNITIVE CONTEXT
 
-Active Kernels: {', '.join(result.kernels_used[:3])}
+Active Kernels: {", ".join(result.kernels_used[:3])}
 Reasoning Compliance:
-- Rule of 2: {'✓' if result.rule_of_two_check['compliant'] else '○'} ({result.rule_of_two_check['perspectives_checked']} perspectives)
-- Rule of 4: {'✓' if result.rule_of_four_check['compliant'] else '○'} ({result.rule_of_four_check['coverage']} quadrants)
+- Rule of 2: {"✓" if result.rule_of_two_check["compliant"] else "○"} ({result.rule_of_two_check["perspectives_checked"]} perspectives)
+- Rule of 4: {"✓" if result.rule_of_four_check["compliant"] else "○"} ({result.rule_of_four_check["coverage"]} quadrants)
 - Confidence: {result.confidence}
 
 ## Reasoning Chain
-{chr(10).join(['- ' + step for step in result.reasoning_steps[:5]])}
+{chr(10).join(["- " + step for step in result.reasoning_steps[:5]])}
 
 ## Global Laws Active
 L1: Law of Law - Obey highest applicable constraints
@@ -273,9 +280,8 @@ Execute with AMOS cognitive discipline.
             except Exception as e:
                 # Log hook error but don't break execution
                 import logging
-                logging.getLogger(__name__).warning(
-                    f"Hook failed for event '{event}': {e}"
-                )
+
+                logging.getLogger(__name__).warning(f"Hook failed for event '{event}': {e}")
 
 
 # Global bridge instance

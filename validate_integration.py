@@ -2,7 +2,6 @@
 """Validate that all integrations are working correctly."""
 
 import sys
-from pathlib import Path
 
 
 def validate_integration():

@@ -22,6 +22,7 @@ MCP Configuration (add to ~/.clawspring/mcp.json):
   }
 }
 """
+
 from __future__ import annotations
 
 import asyncio

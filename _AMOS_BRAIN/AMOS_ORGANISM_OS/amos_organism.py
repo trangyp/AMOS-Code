@@ -505,9 +505,7 @@ class AMOSOrganism:
             return {"error": "SENSES not initialized"}
 
         perception = self._senses.sense_all()
-        logger.info(
-            f"Perception complete: {perception.get('buffered_inputs', 0)} " f"buffered inputs"
-        )
+        logger.info(f"Perception complete: {perception.get('buffered_inputs', 0)} buffered inputs")
         return perception
 
     def think(self, input_data: dict[str, Any], mode: str = "exploratory") -> dict[str, Any]:

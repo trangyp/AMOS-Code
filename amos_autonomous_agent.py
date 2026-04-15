@@ -15,6 +15,7 @@ Usage:
     python amos_autonomous_agent.py "Build me an API for brain analytics"
     python amos_autonomous_agent.py --interactive
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -160,7 +161,7 @@ class AMOSAutonomousAgent:
         plan.steps.append(
             ExecutionStep(
                 tool="knowledge_explorer",
-                command=f"python amos_knowledge_explorer.py recommend \"{understanding['original_goal']}\"",
+                command=f'python amos_knowledge_explorer.py recommend "{understanding["original_goal"]}"',
                 description="Search for relevant cognitive engines",
             )
         )
@@ -169,7 +170,7 @@ class AMOSAutonomousAgent:
         plan.steps.append(
             ExecutionStep(
                 tool="brain_demo",
-                command=f"python amos_brain_live_demo.py \"{understanding['original_goal']}\"",
+                command=f'python amos_brain_live_demo.py "{understanding["original_goal"]}"',
                 description="Run structured brain analysis",
             )
         )
@@ -179,7 +180,7 @@ class AMOSAutonomousAgent:
         plan.steps.append(
             ExecutionStep(
                 tool="project_generator",
-                command=f"python amos_project_generator.py create \"{project_name}\" \"{understanding['original_goal']}\"",
+                command=f'python amos_project_generator.py create "{project_name}" "{understanding["original_goal"]}"',
                 description="Generate AMOS-powered project scaffold",
             )
         )
@@ -188,7 +189,7 @@ class AMOSAutonomousAgent:
         plan.steps.append(
             ExecutionStep(
                 tool="master_workflow",
-                command=f"python amos_master_workflow.py run \"{understanding['original_goal']}\"",
+                command=f'python amos_master_workflow.py run "{understanding["original_goal"]}"',
                 description="Run complete cognitive pipeline",
             )
         )

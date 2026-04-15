@@ -1,4 +1,5 @@
 """Cognitive Stack - Domain engine management and orchestration."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

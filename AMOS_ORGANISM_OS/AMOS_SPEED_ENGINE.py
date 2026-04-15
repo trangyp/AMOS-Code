@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS SPEED ENGINE
+"""AMOS SPEED ENGINE
 ===============
 
 Optimization and performance monitoring for the AMOS Organism.
@@ -38,8 +37,7 @@ class SpeedProfile:
 
 
 class AmosSpeedEngine:
-    """
-    Performance optimization engine for AMOS.
+    """Performance optimization engine for AMOS.
     Monitors and accelerates subsystem execution.
     """
 
@@ -49,9 +47,7 @@ class AmosSpeedEngine:
         self.memory_dir = organism_root / "memory"
         self.benchmarks: List[BenchmarkResult] = []
 
-    def benchmark_cycle(
-        self, cycle_func, context: Optional[Dict] = None
-    ) -> BenchmarkResult:
+    def benchmark_cycle(self, cycle_func, context: Optional[Dict] = None) -> BenchmarkResult:
         """Benchmark a single orchestrator cycle."""
         start = time.perf_counter()
 
@@ -69,7 +65,7 @@ class AmosSpeedEngine:
             duration_ms=duration,
             memory_bytes=0,
             status=status,
-            metadata={"result_count": len(result) if result else 0}
+            metadata={"result_count": len(result) if result else 0},
         )
         self.benchmarks.append(benchmark)
         return benchmark
@@ -89,7 +85,7 @@ class AmosSpeedEngine:
             if f.exists():
                 total_size += f.stat().st_size
                 try:
-                    with open(f, 'r', encoding='utf-8') as fp:
+                    with open(f, encoding="utf-8") as fp:
                         json.load(fp)
                 except Exception:
                     pass
@@ -101,7 +97,7 @@ class AmosSpeedEngine:
             duration_ms=duration,
             memory_bytes=total_size,
             status="success",
-            metadata={"files_loaded": len(registry_files)}
+            metadata={"files_loaded": len(registry_files)},
         )
         self.benchmarks.append(benchmark)
         return benchmark
@@ -113,13 +109,11 @@ class AmosSpeedEngine:
                 timestamp=datetime.utcnow().isoformat() + "Z",
                 overall_score=0.0,
                 benchmarks=[],
-                recommendations=["No benchmarks run yet"]
+                recommendations=["No benchmarks run yet"],
             )
 
         # Calculate overall score (lower is better, normalized to 100)
-        avg_duration = sum(b.duration_ms for b in self.benchmarks) / len(
-            self.benchmarks
-        )
+        avg_duration = sum(b.duration_ms for b in self.benchmarks) / len(self.benchmarks)
         score = max(0, 100 - avg_duration / 10)
 
         recommendations: List[str] = []
@@ -127,9 +121,7 @@ class AmosSpeedEngine:
         # Analyze benchmarks for recommendations
         slow_benchmarks = [b for b in self.benchmarks if b.duration_ms > 1000]
         if slow_benchmarks:
-            recommendations.append(
-                f"Optimize {len(slow_benchmarks)} slow operations (>1s)"
-            )
+            recommendations.append(f"Optimize {len(slow_benchmarks)} slow operations (>1s)")
 
         failed = [b for b in self.benchmarks if not b.status == "success"]
         if failed:
@@ -142,7 +134,7 @@ class AmosSpeedEngine:
             timestamp=datetime.utcnow().isoformat() + "Z",
             overall_score=round(score, 2),
             benchmarks=self.benchmarks,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
     def save_profile(self) -> Path:
@@ -161,14 +153,14 @@ class AmosSpeedEngine:
                     "duration_ms": b.duration_ms,
                     "memory_bytes": b.memory_bytes,
                     "status": b.status,
-                    "metadata": b.metadata
+                    "metadata": b.metadata,
                 }
                 for b in profile.benchmarks
             ],
-            "recommendations": profile.recommendations
+            "recommendations": profile.recommendations,
         }
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
         return output_path
@@ -220,4 +212,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

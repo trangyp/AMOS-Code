@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .state_vector_omega import BasisState, Hamiltonian, StateVector
 
@@ -30,7 +30,7 @@ class RepoFleetMember:
     name: str
     path: Path
     criticality: float  # Weight ωr (0.0 to 1.0)
-    state_vector: Optional[StateVector] = None
+    state_vector: StateVector | None = None
     tags: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -55,7 +55,7 @@ class InvariantCluster:
     invariant: BasisState
     affected_repos: list[str]
     severity: float
-    shared_root_cause: Optional[str] = None
+    shared_root_cause: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -119,7 +119,7 @@ class FleetState:
         total_weight = sum(r.criticality for r in self.repos.values())
 
         if total_weight == 0:
-            return {state: 1.0 for state in BasisState}
+            return dict.fromkeys(BasisState, 1.0)
 
         aggregate = {}
         for state in BasisState:
@@ -186,7 +186,7 @@ class FleetState:
         clusters.sort(key=lambda c: c.severity, reverse=True)
         return clusters
 
-    def _infer_shared_cause(self, invariant: BasisState, repos: list[str]) -> Optional[str]:
+    def _infer_shared_cause(self, invariant: BasisState, repos: list[str]) -> str | None:
         """Infer possible shared root cause for invariant failures."""
         # Simple heuristics based on invariant type
         cause_map = {

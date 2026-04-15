@@ -15,6 +15,7 @@ Usage:
     python amos_performance_benchmark.py --memory   # Memory analysis
     python amos_performance_benchmark.py --report     # Generate report
 """
+
 from __future__ import annotations
 
 import sys

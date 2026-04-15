@@ -17,6 +17,7 @@ Public API (backward-compatible with the old memory.py module):
   search_memory()  — keyword search across entries
   get_memory_context() — MEMORY.md content for system prompt injection
 """
+
 from .consolidator import consolidate_session  # noqa: F401
 from .context import (  # noqa: F401
     find_relevant_memories,

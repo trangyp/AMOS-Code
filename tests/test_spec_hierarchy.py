@@ -8,6 +8,7 @@ Validates consistency across all 5 specification layers:
 - Layer 4: 5-Lens Mathematical Regime
 - Layer 5: 21-Tuple Maximal Specification
 """
+
 import os
 import sys
 

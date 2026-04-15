@@ -12,6 +12,7 @@ Discover and launch all AMOS Brain components from one place:
 Usage:
     python amos_brain_launcher.py
 """
+
 from __future__ import annotations
 
 import os

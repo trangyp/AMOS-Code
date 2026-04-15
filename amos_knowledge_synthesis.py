@@ -20,6 +20,7 @@ Commands:
     live <topic>        Enable live knowledge monitoring
     report              Generate synthesis report
 """
+
 from __future__ import annotations
 
 import argparse

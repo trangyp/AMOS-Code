@@ -8,6 +8,7 @@ Drift: ΔΨ(t) = |Ψ_repo(t)⟩ - |Ψ_repo(t-1)⟩
 
 First bad commit: t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

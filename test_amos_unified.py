@@ -714,7 +714,9 @@ class AMOSUnifiedTest:
         lines.append(f"Total Cases: {total_cases}")
         lines.append(f"Passed: {total_passed}")
         lines.append(f"Failed: {total_failed}")
-        lines.append(f"Success Rate: {total_passed/total_cases:.1%}" if total_cases > 0 else "N/A")
+        lines.append(
+            f"Success Rate: {total_passed / total_cases:.1%}" if total_cases > 0 else "N/A"
+        )
         lines.append(f"Total Time: {total_time:.1f}ms")
         lines.append("")
 

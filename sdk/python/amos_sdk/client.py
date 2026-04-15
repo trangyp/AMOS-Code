@@ -2,6 +2,7 @@
 
 Synchronous and asynchronous clients for AMOS Brain API.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

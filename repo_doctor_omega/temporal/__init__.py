@@ -6,11 +6,12 @@ Tracks repository state across commits:
 - Path-integral blame model
 - git bisect integration
 """
+
 from __future__ import annotations
 
-from .bisect_runner import BisectRunner, BisectResult
+from .bisect_runner import BisectResult, BisectRunner
 from .drift_tracker import DriftTracker
-from .temporal_substrate import TemporalSubstrate, CommitState, DriftMeasurement
+from .temporal_substrate import CommitState, DriftMeasurement, TemporalSubstrate
 
 __all__ = [
     "BisectRunner",

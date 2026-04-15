@@ -1,4 +1,5 @@
 """Tests for the MCP package (mcp/)."""
+
 from __future__ import annotations
 
 import json

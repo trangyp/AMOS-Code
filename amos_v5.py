@@ -200,7 +200,7 @@ class NegotiationEngine:
             negotiation_id=neg_id,
             counterparty=counterparty,
             amos_position=amos_position,
-            counterparty_position={issue: "unknown" for issue in issues},
+            counterparty_position=dict.fromkeys(issues, "unknown"),
             issues=issues,
         )
 
@@ -346,7 +346,7 @@ class NarrativeEngine:
             core_message=core_message,
             supporting_points=supporting,
             target_audiences=target_audiences,
-            framing={obj: "opportunity" for obj in [objective]},
+            framing=dict.fromkeys([objective], "opportunity"),
         )
 
         self.active_narratives[narrative_id] = narrative

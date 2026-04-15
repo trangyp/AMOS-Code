@@ -7,6 +7,7 @@ Registers the following tools into the central tool_registry:
   ListAgentTasks   — list all active/finished agent tasks
   ListAgentTypes   — list available agent type definitions
 """
+
 from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool
@@ -202,8 +203,7 @@ register_tool(
                     "wait": {
                         "type": "boolean",
                         "description": (
-                            "Block until complete (default: true). "
-                            "Set false to run in background."
+                            "Block until complete (default: true). Set false to run in background."
                         ),
                     },
                     "isolation": {

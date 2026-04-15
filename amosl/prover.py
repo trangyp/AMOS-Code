@@ -10,6 +10,7 @@ Implements verification for the 8 AMOSL invariants:
 7. Traceability: Outcome => Explain(L)
 8. Adaptation Bounded: Adapt(X) s.t. Λ(X') = ⊤
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

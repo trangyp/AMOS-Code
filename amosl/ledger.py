@@ -7,6 +7,7 @@ With auditability theorem:
     Explain(L) = Outcome
     Replay(ℓ_0,...,ℓ_n) = X_n
 """
+
 from __future__ import annotations
 
 import hashlib

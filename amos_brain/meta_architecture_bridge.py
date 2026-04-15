@@ -32,16 +32,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 # Import meta-pathology detection
 try:
     from repo_doctor.meta_pathologies import (
-        MetaPathologyEngine,
         MetaPathology,
+        MetaPathologyEngine,
         MetaPathologyType,
         get_meta_pathology_engine,
     )
+
     META_PATHOLOGY_AVAILABLE = True
 except ImportError:
     META_PATHOLOGY_AVAILABLE = False
@@ -96,8 +96,7 @@ class MetaArchitectureContext:
 
 
 class MetaArchitectureBridge:
-    """
-    Bridge between meta-pathology detection and AMOS Brain cognition.
+    """Bridge between meta-pathology detection and AMOS Brain cognition.
 
     Provides:
     - Meta-architecture context with all failure classes
@@ -134,12 +133,24 @@ class MetaArchitectureBridge:
 
         # Calculate scores
         ctx.total_issues = sum(len(pathologies) for pathologies in results.values())
-        ctx.semantic_score = self._calculate_score(ctx.ontology_issues, ctx.alias_explosions, ctx.false_equivalences)
-        ctx.temporal_score = self._calculate_score(ctx.partial_order_failures, ctx.plane_skews, ctx.eventuality_traps)
-        ctx.provenance_score = self._calculate_score(ctx.provenance_gaps, ctx.supply_chain_issues, ctx.reproducibility_issues)
-        ctx.recovery_score = self._calculate_score(ctx.recovery_gaps, ctx.non_idempotent_recovers, ctx.blast_containment_failures)
-        ctx.isolation_score = self._calculate_score(ctx.isolation_failures, ctx.namespace_collisions, [])
-        ctx.diagnostic_score = self._calculate_score(ctx.blind_spots, ctx.false_proofs, ctx.oracle_issues, ctx.repair_unsoundness)
+        ctx.semantic_score = self._calculate_score(
+            ctx.ontology_issues, ctx.alias_explosions, ctx.false_equivalences
+        )
+        ctx.temporal_score = self._calculate_score(
+            ctx.partial_order_failures, ctx.plane_skews, ctx.eventuality_traps
+        )
+        ctx.provenance_score = self._calculate_score(
+            ctx.provenance_gaps, ctx.supply_chain_issues, ctx.reproducibility_issues
+        )
+        ctx.recovery_score = self._calculate_score(
+            ctx.recovery_gaps, ctx.non_idempotent_recovers, ctx.blast_containment_failures
+        )
+        ctx.isolation_score = self._calculate_score(
+            ctx.isolation_failures, ctx.namespace_collisions, []
+        )
+        ctx.diagnostic_score = self._calculate_score(
+            ctx.blind_spots, ctx.false_proofs, ctx.oracle_issues, ctx.repair_unsoundness
+        )
 
         return ctx
 
@@ -154,24 +165,70 @@ class MetaArchitectureBridge:
             all_pathologies.extend(pathologies)
 
         return {
-            "I_ontology": not any(p.pathology_type == MetaPathologyType.ONTOLOGY_DRIFT for p in all_pathologies),
-            "I_semantic_alias": not any(p.pathology_type == MetaPathologyType.SEMANTIC_ALIAS_EXPLOSION for p in all_pathologies),
-            "I_false_equivalence": not any(p.pathology_type == MetaPathologyType.FALSE_SEMANTIC_EQUIVALENCE for p in all_pathologies),
-            "I_partial_order": not any(p.pathology_type == MetaPathologyType.PARTIAL_ORDER_FAILURE for p in all_pathologies),
-            "I_plane_skew": not any(p.pathology_type == MetaPathologyType.TEMPORAL_PLANE_SKEW for p in all_pathologies),
-            "I_eventuality": not any(p.pathology_type == MetaPathologyType.EVENTUAL_VALIDITY_TRAP for p in all_pathologies),
-            "I_provenance": not any(p.pathology_type == MetaPathologyType.PROVENANCE_GAP for p in all_pathologies),
-            "I_supply_semantic": not any(p.pathology_type == MetaPathologyType.SUPPLY_CHAIN_SEMANTIC_TRUST_FAILURE for p in all_pathologies),
-            "I_reproducible": not any(p.pathology_type == MetaPathologyType.REPRODUCIBILITY_FAILURE for p in all_pathologies),
-            "I_recovery": not any(p.pathology_type == MetaPathologyType.RECOVERY_PATH_INCOMPLETENESS for p in all_pathologies),
-            "I_recovery_idempotent": not any(p.pathology_type == MetaPathologyType.NON_IDEMPOTENT_RECOVERY for p in all_pathologies),
-            "I_blast": not any(p.pathology_type == MetaPathologyType.BLAST_CONTAINMENT_FAILURE for p in all_pathologies),
-            "I_isolation": not any(p.pathology_type == MetaPathologyType.ISOLATION_FAILURE for p in all_pathologies),
-            "I_namespace": not any(p.pathology_type == MetaPathologyType.NAMESPACE_COLLISION for p in all_pathologies),
-            "I_measurement_complete": not any(p.pathology_type == MetaPathologyType.MEASUREMENT_BLIND_SPOT for p in all_pathologies),
-            "I_proof_strength": not any(p.pathology_type == MetaPathologyType.FALSE_PROOF_SURFACE for p in all_pathologies),
-            "I_oracle_sound": not any(p.pathology_type == MetaPathologyType.ORACLE_UNSOUNDNESS for p in all_pathologies),
-            "I_repair_sound": not any(p.pathology_type == MetaPathologyType.REPAIR_RECOMMENDATION_UNSOUNDNESS for p in all_pathologies),
+            "I_ontology": not any(
+                p.pathology_type == MetaPathologyType.ONTOLOGY_DRIFT for p in all_pathologies
+            ),
+            "I_semantic_alias": not any(
+                p.pathology_type == MetaPathologyType.SEMANTIC_ALIAS_EXPLOSION
+                for p in all_pathologies
+            ),
+            "I_false_equivalence": not any(
+                p.pathology_type == MetaPathologyType.FALSE_SEMANTIC_EQUIVALENCE
+                for p in all_pathologies
+            ),
+            "I_partial_order": not any(
+                p.pathology_type == MetaPathologyType.PARTIAL_ORDER_FAILURE for p in all_pathologies
+            ),
+            "I_plane_skew": not any(
+                p.pathology_type == MetaPathologyType.TEMPORAL_PLANE_SKEW for p in all_pathologies
+            ),
+            "I_eventuality": not any(
+                p.pathology_type == MetaPathologyType.EVENTUAL_VALIDITY_TRAP
+                for p in all_pathologies
+            ),
+            "I_provenance": not any(
+                p.pathology_type == MetaPathologyType.PROVENANCE_GAP for p in all_pathologies
+            ),
+            "I_supply_semantic": not any(
+                p.pathology_type == MetaPathologyType.SUPPLY_CHAIN_SEMANTIC_TRUST_FAILURE
+                for p in all_pathologies
+            ),
+            "I_reproducible": not any(
+                p.pathology_type == MetaPathologyType.REPRODUCIBILITY_FAILURE
+                for p in all_pathologies
+            ),
+            "I_recovery": not any(
+                p.pathology_type == MetaPathologyType.RECOVERY_PATH_INCOMPLETENESS
+                for p in all_pathologies
+            ),
+            "I_recovery_idempotent": not any(
+                p.pathology_type == MetaPathologyType.NON_IDEMPOTENT_RECOVERY
+                for p in all_pathologies
+            ),
+            "I_blast": not any(
+                p.pathology_type == MetaPathologyType.BLAST_CONTAINMENT_FAILURE
+                for p in all_pathologies
+            ),
+            "I_isolation": not any(
+                p.pathology_type == MetaPathologyType.ISOLATION_FAILURE for p in all_pathologies
+            ),
+            "I_namespace": not any(
+                p.pathology_type == MetaPathologyType.NAMESPACE_COLLISION for p in all_pathologies
+            ),
+            "I_measurement_complete": not any(
+                p.pathology_type == MetaPathologyType.MEASUREMENT_BLIND_SPOT
+                for p in all_pathologies
+            ),
+            "I_proof_strength": not any(
+                p.pathology_type == MetaPathologyType.FALSE_PROOF_SURFACE for p in all_pathologies
+            ),
+            "I_oracle_sound": not any(
+                p.pathology_type == MetaPathologyType.ORACLE_UNSOUNDNESS for p in all_pathologies
+            ),
+            "I_repair_sound": not any(
+                p.pathology_type == MetaPathologyType.REPAIR_RECOMMENDATION_UNSOUNDNESS
+                for p in all_pathologies
+            ),
         }
 
     def get_critical_meta_issues(self) -> list[MetaPathology]:

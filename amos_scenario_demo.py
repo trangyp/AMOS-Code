@@ -100,9 +100,9 @@ class AMOSScenarioDemo:
         opportunities = scenario["opportunities"]
         constraints = scenario["constraints"]
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"DAY {day} - AMOS Decision Cycle")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         # Simulate AMOS evaluation for each opportunity
         evaluated = []
@@ -321,7 +321,7 @@ class AMOSScenarioDemo:
         print(f"  Total expected value: ${total_value:.0f}")
         print(f"  Total hours allocated: {total_hours:.0f}")
         print(f"  Survival rate: {survival_rate:.0%}")
-        print(f"  Identity health: {(1-avg_drift)*100:.0f}%")
+        print(f"  Identity health: {(1 - avg_drift) * 100:.0f}%")
 
         print("\n[AMOS v4 Production Achievements]")
         print("  ✓ Did NOT choose single path (survival vs compounding)")

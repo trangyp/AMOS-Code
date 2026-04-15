@@ -1,4 +1,5 @@
 """I_tests = 1 iff designated contract-critical tests pass."""
+
 from __future__ import annotations
 
 from typing import Any

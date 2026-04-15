@@ -13,6 +13,7 @@ Integration points:
 3. Predictive drift analysis
 4. Fleet-level organism coherence
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

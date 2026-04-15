@@ -28,6 +28,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity - Layer 25
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -313,6 +313,7 @@ class ArchitectureGraph:
         --------
         - Launcher (execution) deciding policy (control)
         - Persistence layer (data) enforcing business logic (control)
+
         """
         violations = []
 
@@ -379,6 +380,7 @@ class ArchitectureGraph:
         - "run migration script before starting app"
         - "export env var or shell mode breaks"
         - "build step must be manual"
+
         """
         folklore = []
 

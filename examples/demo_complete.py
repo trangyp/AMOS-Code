@@ -12,6 +12,7 @@ Ultimate showcase of all 56+ components working together:
 
 This is the definitive demonstration of AMOSL as a civilisational successor.
 """
+
 import os
 import sys
 

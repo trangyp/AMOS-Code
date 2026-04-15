@@ -1,4 +1,5 @@
-"""Autonomous Architecture Governance Engine.
+"""
+Autonomous Architecture Governance Engine.
 
 Enables self-healing, self-optimizing, autonomous architecture management.
 
@@ -15,22 +16,21 @@ The governance engine closes the loop: Predict → Decide → Act → Learn.
 
 from __future__ import annotations
 
-import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 class AutonomyLevel(Enum):
     """Levels of system autonomy."""
 
-    FULL = auto()        # Auto-execute all safe actions
-    ASSISTED = auto()    # Auto-execute high confidence, notify human
+    FULL = auto()  # Auto-execute all safe actions
+    ASSISTED = auto()  # Auto-execute high confidence, notify human
     SUPERVISED = auto()  # Recommend only, human approval required
-    OBSERVE = auto()     # Monitor and report only, no action
+    OBSERVE = auto()  # Monitor and report only, no action
 
 
 class ActionType(Enum):
@@ -132,9 +132,7 @@ class ConfidenceThresholdOptimizer:
         self.threshold_history: dict[str, list[tuple[float, float]]] = {}
         # metric -> [(threshold, accuracy)]
 
-    def record_outcome(
-        self, metric: str, threshold: float, was_true_positive: bool
-    ):
+    def record_outcome(self, metric: str, threshold: float, was_true_positive: bool):
         """Record whether a threshold-based detection was accurate."""
         if metric not in self.threshold_history:
             self.threshold_history[metric] = []
@@ -250,9 +248,7 @@ class AutonomousGovernanceEngine:
         severity = prediction.get("severity", "medium")
 
         # Determine action based on policy and confidence
-        decision = self._determine_decision(
-            confidence, severity, ActionType.REPAIR_APPLY
-        )
+        decision = self._determine_decision(confidence, severity, ActionType.REPAIR_APPLY)
 
         gov_decision = GovernanceDecision(
             decision_id=f"gov_{int(time.time())}",
@@ -290,9 +286,7 @@ class AutonomousGovernanceEngine:
         if self._should_require_human(severity, repair):
             decision = "recommend"
         else:
-            decision = self._determine_decision(
-                confidence, severity, ActionType.REPAIR_APPLY
-            )
+            decision = self._determine_decision(confidence, severity, ActionType.REPAIR_APPLY)
 
         gov_decision = GovernanceDecision(
             decision_id=f"gov_{int(time.time())}",
@@ -313,9 +307,7 @@ class AutonomousGovernanceEngine:
 
         return gov_decision
 
-    def evaluate_change_risk(
-        self, risk_assessment: dict[str, Any]
-    ) -> GovernanceDecision:
+    def evaluate_change_risk(self, risk_assessment: dict[str, Any]) -> GovernanceDecision:
         """Evaluate code change risk and decide on action."""
         risk_score = risk_assessment.get("overall_risk", 0.0)
         safe_to_proceed = risk_assessment.get("safe_to_proceed", False)
@@ -351,9 +343,7 @@ class AutonomousGovernanceEngine:
 
         return gov_decision
 
-    def _determine_decision(
-        self, confidence: float, severity: str, action_type: ActionType
-    ) -> str:
+    def _determine_decision(self, confidence: float, severity: str, action_type: ActionType) -> str:
         """Determine governance decision based on policy and confidence."""
         # Get autonomy level for this action type
         autonomy = self._get_autonomy_level(action_type)
@@ -362,15 +352,7 @@ class AutonomousGovernanceEngine:
         if severity == "critical" and self.policy.require_human_for_critical:
             return "recommend"
 
-        if autonomy == AutonomyLevel.FULL:
-            if confidence >= self.policy.auto_execute_threshold:
-                return "auto_execute"
-            elif confidence >= self.policy.notify_threshold:
-                return "notify_human"
-            else:
-                return "recommend"
-
-        elif autonomy == AutonomyLevel.ASSISTED:
+        if autonomy == AutonomyLevel.FULL or autonomy == AutonomyLevel.ASSISTED:
             if confidence >= self.policy.auto_execute_threshold:
                 return "auto_execute"
             elif confidence >= self.policy.notify_threshold:

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Agent Factory (13_FACTORY)
+"""AMOS Agent Factory (13_FACTORY)
 ===============================
 
 Creates, monitors, and manages AMOS agents.
@@ -23,6 +22,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class AgentSpec:
     """Specification for creating an agent."""
+
     name: str
     agent_type: str
     kernel_refs: List[str]
@@ -33,6 +33,7 @@ class AgentSpec:
 @dataclass
 class AgentInstance:
     """Running agent instance."""
+
     id: str
     spec: AgentSpec
     status: str
@@ -43,8 +44,7 @@ class AgentInstance:
 
 
 class AgentFactory:
-    """
-    Factory for creating and managing AMOS agents.
+    """Factory for creating and managing AMOS agents.
     Implements quality monitoring and lifecycle management.
     """
 
@@ -61,7 +61,7 @@ class AgentFactory:
         registry_file = self.agents_dir / "registry.json"
         if registry_file.exists():
             try:
-                with open(registry_file, 'r', encoding='utf-8') as f:
+                with open(registry_file, encoding="utf-8") as f:
                     data = json.load(f)
                     for agent_data in data.get("agents", []):
                         spec = AgentSpec(**agent_data["spec"])
@@ -74,7 +74,7 @@ class AgentFactory:
                             created_at=agent_data["created_at"],
                             last_active=agent_data["last_active"],
                             execution_count=exec_count,
-                            error_count=err_count
+                            error_count=err_count,
                         )
                         self._registry[instance.id] = instance
             except Exception:
@@ -89,7 +89,7 @@ class AgentFactory:
             spec=spec,
             status="idle",
             created_at=datetime.utcnow().isoformat() + "Z",
-            last_active=datetime.utcnow().isoformat() + "Z"
+            last_active=datetime.utcnow().isoformat() + "Z",
         )
 
         self._registry[agent_id] = instance
@@ -110,16 +110,16 @@ class AgentFactory:
                 "agent_type": instance.spec.agent_type,
                 "kernel_refs": instance.spec.kernel_refs,
                 "capabilities": instance.spec.capabilities,
-                "constraints": instance.spec.constraints
+                "constraints": instance.spec.constraints,
             },
             "status": instance.status,
             "created_at": instance.created_at,
             "last_active": instance.last_active,
             "execution_count": instance.execution_count,
-            "error_count": instance.error_count
+            "error_count": instance.error_count,
         }
 
-        with open(agent_file, 'w', encoding='utf-8') as f:
+        with open(agent_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def _persist_registry(self) -> None:
@@ -138,19 +138,19 @@ class AgentFactory:
                         "agent_type": a.spec.agent_type,
                         "kernel_refs": a.spec.kernel_refs,
                         "capabilities": a.spec.capabilities,
-                        "constraints": a.spec.constraints
+                        "constraints": a.spec.constraints,
                     },
                     "status": a.status,
                     "created_at": a.created_at,
                     "last_active": a.last_active,
                     "execution_count": a.execution_count,
-                    "error_count": a.error_count
+                    "error_count": a.error_count,
                 }
                 for a in self._registry.values()
-            ]
+            ],
         }
 
-        with open(registry_file, 'w', encoding='utf-8') as f:
+        with open(registry_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def get_agent(self, agent_id: str) -> Optional[AgentInstance]:
@@ -170,17 +170,13 @@ class AgentFactory:
             return False
 
         self._registry[agent_id].status = status
-        self._registry[agent_id].last_active = (
-            datetime.utcnow().isoformat() + "Z"
-        )
+        self._registry[agent_id].last_active = datetime.utcnow().isoformat() + "Z"
 
         self._save_agent_file(self._registry[agent_id])
         self._persist_registry()
         return True
 
-    def record_execution(
-        self, agent_id: str, success: bool
-    ) -> None:
+    def record_execution(self, agent_id: str, success: bool) -> None:
         """Record execution result for quality monitoring."""
         if agent_id not in self._registry:
             return
@@ -211,14 +207,11 @@ class AgentFactory:
 
         return {
             "total_agents": len(self._registry),
-            "active_agents": len([a for a in self._registry.values()
-                                  if a.status == "idle"]),
+            "active_agents": len([a for a in self._registry.values() if a.status == "idle"]),
             "total_executions": total_execs,
             "total_errors": total_errors,
-            "overall_error_rate": (
-                total_errors / total_execs if total_execs > 0 else 0
-            ),
-            "agents_by_type": self._count_by_type()
+            "overall_error_rate": (total_errors / total_execs if total_execs > 0 else 0),
+            "agents_by_type": self._count_by_type(),
         }
 
     def _count_by_type(self) -> Dict[str, int]:
@@ -236,7 +229,7 @@ class AgentFactory:
         agents = []
         if registry_path.exists():
             try:
-                with open(registry_path, 'r', encoding='utf-8') as f:
+                with open(registry_path, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for agent_id, agent_data in data.get("agents", {}).items():
@@ -244,7 +237,7 @@ class AgentFactory:
                         name=agent_data.get("name", agent_id),
                         agent_type=agent_data.get("type", "worker"),
                         kernel_refs=agent_data.get("kernel_refs", []),
-                        capabilities=agent_data.get("functions", [])
+                        capabilities=agent_data.get("functions", []),
                     )
                     agents.append(self.create_agent(spec))
             except Exception as e:
@@ -282,4 +275,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

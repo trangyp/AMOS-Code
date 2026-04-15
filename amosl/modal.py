@@ -6,6 +6,7 @@ Implements the logical regime:
     - Observational modality O_m
     - Evolution modality E
 """
+
 from __future__ import annotations
 
 import math

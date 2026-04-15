@@ -1,5 +1,4 @@
-"""Constraint Engine — Structural constraints for AMOS.
-"""
+"""Constraint Engine — Structural constraints for AMOS."""
 
 import re
 from dataclasses import dataclass, field

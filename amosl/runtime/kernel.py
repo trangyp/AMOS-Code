@@ -8,6 +8,7 @@ State Manifold:
 Evolution Rule:
     Σ_{t+1} = Φ(Σ_t, a_t, o_t, e_t, θ_t) subject to Λ(Σ_{t+1}) = ⊤
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

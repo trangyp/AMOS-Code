@@ -524,8 +524,7 @@ def demo_energy_system():
         used = pool_data["total"] - pool_data["current"]
         pct = used / pool_data["total"] * 100
         print(
-            f"  {pool_name}: {pool_data['current']:.0f}/{pool_data['total']:.0f} "
-            f"({pct:.1f}% used)"
+            f"  {pool_name}: {pool_data['current']:.0f}/{pool_data['total']:.0f} ({pct:.1f}% used)"
         )
 
     # 8. Efficiency report

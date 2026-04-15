@@ -15,6 +15,7 @@ Usage:
     python amos_unified_cli.py health --watch
     python amos_unified_cli.py self-drive "Evolve the system"
 """
+
 import subprocess
 import sys
 from pathlib import Path
@@ -145,7 +146,7 @@ def main():
     else:
         print(f"Unknown command: {command}")
         print("\nAvailable commands:")
-        for cmd in COMMANDS.keys():
+        for cmd in COMMANDS:
             print(f"  {cmd}")
         print("  think, decide, help")
         return 1

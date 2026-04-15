@@ -1,4 +1,5 @@
 """Context window management: two-layer compression for long conversations."""
+
 from __future__ import annotations
 
 import providers

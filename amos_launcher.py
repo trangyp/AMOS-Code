@@ -25,6 +25,7 @@ Examples:
     python amos_launcher.py api --port 8080
     python amos_launcher.py status
 """
+
 from __future__ import annotations
 
 import argparse

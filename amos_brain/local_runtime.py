@@ -5,6 +5,7 @@ This module implements the reversed architecture where:
 - Local LLM (Ollama/LM Studio/vLLM) serves as the execution boundary
 - Health checks verify actual model reachability
 """
+
 from __future__ import annotations
 
 import sys
@@ -14,7 +15,7 @@ from .config_validator import validate_config
 from .integration import AMOSBrainIntegration, get_amos_integration
 from .metrics import get_metrics
 from .model_backend import ModelBackend, build_backend_from_env
-from .tracing import Tracer, configure_tracing, get_tracer
+from .tracing import get_tracer
 
 
 class AMOSLocalRuntime:

@@ -1,4 +1,5 @@
 """FACTORY agent_factory stub — Re-exports from 13_FACTORY"""
+
 import sys
 from pathlib import Path
 

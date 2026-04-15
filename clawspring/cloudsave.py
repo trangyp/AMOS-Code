@@ -10,6 +10,7 @@ Config keys (stored in ~/.clawspring/config.json):
   cloudsave_auto  — bool: auto-upload on /exit
   cloudsave_last_gist_id — last uploaded gist ID (for in-place update)
 """
+
 from __future__ import annotations
 
 import json

@@ -3,6 +3,7 @@ InvariantEngine - runs all invariants and produces state vectors.
 
 A simplified version for the Ω∞ module.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

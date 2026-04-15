@@ -3,6 +3,7 @@
 Shows: timer reminder set → idle at prompt → [Background Event Triggered] →
 Claude fires reminder → user asks again → second reminder fires.
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont

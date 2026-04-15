@@ -1,4 +1,5 @@
 """Plugin recommendation engine: match installed + marketplace plugins to context."""
+
 from __future__ import annotations
 
 import re

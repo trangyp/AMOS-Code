@@ -117,7 +117,7 @@ class QualityChecker:
                 ):
                     non_import_after_import = True
                 if i in import_lines and non_import_after_import:
-                    issues.append(f"Import at line {i+1} not at top of file")
+                    issues.append(f"Import at line {i + 1} not at top of file")
                     break
 
         return issues
@@ -132,9 +132,9 @@ class QualityChecker:
         # Count branches
         branches = 0
         for node in ast.walk(tree):
-            if isinstance(node, (ast.If, ast.For, ast.While, ast.With)):
-                branches += 1
-            elif isinstance(node, (ast.Try, ast.ExceptHandler)):
+            if isinstance(node, (ast.If, ast.For, ast.While, ast.With)) or isinstance(
+                node, (ast.Try, ast.ExceptHandler)
+            ):
                 branches += 1
 
         # Normalize: 0-5 branches = 0.0-0.5, 10+ branches = 1.0

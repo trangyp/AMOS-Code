@@ -20,7 +20,8 @@ from typing import Any
 
 # Import entanglement matrix
 try:
-    from repo_doctor.entanglement import EntanglementMatrix, EntanglementEdge
+    from repo_doctor.entanglement import EntanglementEdge, EntanglementMatrix
+
     ENTANGLEMENT_AVAILABLE = True
 except ImportError:
     ENTANGLEMENT_AVAILABLE = False
@@ -77,8 +78,7 @@ class EntanglementAlert:
 
 
 class EntanglementCognitionBridge:
-    """
-    Bridge between entanglement analysis and AMOS Brain cognition.
+    """Bridge between entanglement analysis and AMOS Brain cognition.
 
     Provides:
     - Coupling-aware impact prediction
@@ -110,8 +110,7 @@ class EntanglementCognitionBridge:
 
         # Find all edges involving this module
         module_edges = [
-            e for e in self._edges
-            if e.module_a == module_name or e.module_b == module_name
+            e for e in self._edges if e.module_a == module_name or e.module_b == module_name
         ]
 
         if not module_edges:
@@ -159,8 +158,7 @@ class EntanglementCognitionBridge:
         target_module: str,
         include_secondary: bool = True,
     ) -> ChangeImpactPrediction | None:
-        """
-        Predict impact of changing a module.
+        """Predict impact of changing a module.
 
         Args:
             target_module: Module to be changed
@@ -293,8 +291,7 @@ class EntanglementCognitionBridge:
                 module_entanglement[module].append(edge.total_weight)
 
         avg_entanglements = [
-            (module, sum(weights) / len(weights))
-            for module, weights in module_entanglement.items()
+            (module, sum(weights) / len(weights)) for module, weights in module_entanglement.items()
         ]
 
         return sorted(avg_entanglements, key=lambda x: -x[1])[:n]
@@ -312,7 +309,9 @@ class EntanglementCognitionBridge:
             recs.append("Run integration tests covering entangled modules")
 
         if len(affected_modules) > 5:
-            recs.append(f"Consider full regression test (high impact: {len(affected_modules)} modules)")
+            recs.append(
+                f"Consider full regression test (high impact: {len(affected_modules)} modules)"
+            )
 
         return recs
 

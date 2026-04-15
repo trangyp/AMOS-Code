@@ -10,6 +10,7 @@ which provides:
 - 32 integration tests
 - Cookbook workflows
 """
+
 from __future__ import annotations
 
 import sys

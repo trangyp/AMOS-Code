@@ -43,7 +43,7 @@ for cat, files in components.items():
     status = "✅" if count == len(files) else "⚠️"
     print(f"  {status} {cat}: {count}/{len(files)}")
 
-print(f"\n📦 System Completion: {built}/{total} ({built/total*100:.1f}%)")
+print(f"\n📦 System Completion: {built}/{total} ({built / total * 100:.1f}%)")
 
 print("\n" + "=" * 70)
 print("AMOS BRAIN: What Should Be Built Next?")

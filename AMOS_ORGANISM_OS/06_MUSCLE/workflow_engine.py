@@ -1,5 +1,4 @@
-"""Workflow Engine — Orchestrate multi-step workflows.
-"""
+"""Workflow Engine — Orchestrate multi-step workflows."""
 
 from __future__ import annotations
 

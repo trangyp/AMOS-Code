@@ -9,6 +9,7 @@ Usage:
     python amos_master_workflow.py run "I want to build a medical decision system"
     python amos_master_workflow.py batch goals.txt
 """
+
 from __future__ import annotations
 
 import sys
@@ -330,7 +331,7 @@ class AMOSMasterWorkflow:
 **Workflow ID:** {self.current_run.id}
 **Goal:** {self.current_run.goal}
 **Started:** {self.current_run.start_time}
-**Completed:** {self.current_run.end_time or 'N/A'}
+**Completed:** {self.current_run.end_time or "N/A"}
 **Status:** {self.current_run.status}
 
 ## Execution Summary

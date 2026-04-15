@@ -11,6 +11,7 @@ Demonstrates:
 Usage:
   python demo_cookbook.py
 """
+
 from __future__ import annotations
 
 import os

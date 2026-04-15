@@ -1,4 +1,5 @@
 """I_persist = 1 iff serialize -> deserialize preserves operational semantics."""
+
 from __future__ import annotations
 
 from typing import Any

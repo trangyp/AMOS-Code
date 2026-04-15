@@ -243,7 +243,7 @@ class BranchFieldEngine:
             score, confidence = self._score_branch(plan, predicted)
 
             branch = Branch(
-                branch_id=f"B_{i+1}",
+                branch_id=f"B_{i + 1}",
                 plan=plan,
                 predicted_state=predicted,
                 score=score,
@@ -499,9 +499,9 @@ class AMOSKernel:
         """Execute one complete kernel cycle."""
         self.cycle_count += 1
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"AMOS Kernel Cycle #{self.cycle_count}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         # 1. Observe
         obs = self.observe()
@@ -580,9 +580,9 @@ class AMOSKernel:
             results.append(result)
 
         # Summary
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("SUMMARY")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(f"Total Cycles: {n_cycles}")
         print(f"Successful Executions: {sum(1 for r in results if r['executed'])}")
         print(f"Branches Generated: {sum(r['branches_generated'] for r in results)}")

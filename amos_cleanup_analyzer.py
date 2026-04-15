@@ -13,6 +13,7 @@ Usage:
     python amos_cleanup_analyzer.py --fix-suggestions
     python amos_cleanup_analyzer.py --generate-report
 """
+
 from __future__ import annotations
 
 import ast
@@ -426,10 +427,10 @@ def main():
         # Generate markdown report
         report = f"""# AMOS Ecosystem Cleanup Report
 
-**Generated:** {__import__('datetime').datetime.now().isoformat()}
-**Files Analyzed:** {results['total_files']}
-**Total Lines:** {results['total_lines']}
-**Issues Found:** {results['total_issues']}
+**Generated:** {__import__("datetime").datetime.now().isoformat()}
+**Files Analyzed:** {results["total_files"]}
+**Total Lines:** {results["total_lines"]}
+**Issues Found:** {results["total_issues"]}
 
 ## Summary
 
@@ -437,9 +438,9 @@ This report identifies technical debt and cleanup opportunities in the AMOS ecos
 
 ## Statistics
 
-- High Priority Issues: {results['high_priority']}
-- Medium Priority Issues: {results['medium_priority']}
-- Duplicate Groups: {results['duplicates']}
+- High Priority Issues: {results["high_priority"]}
+- Medium Priority Issues: {results["medium_priority"]}
+- Duplicate Groups: {results["duplicates"]}
 
 ## Issues by Category
 

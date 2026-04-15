@@ -18,6 +18,7 @@ Tasks:
     refactor    Get refactoring recommendations
     full        Run complete workflow
 """
+
 from __future__ import annotations
 
 import argparse
@@ -87,10 +88,10 @@ class AMOSWorkflow:
         problem = f"""Review this code for quality, maintainability, and potential issues:
 
 File: {filepath} ({lines} lines)
-Language: {review_context['language']}
-Has tests: {review_context['has_tests']}
-Has documentation: {review_context['has_docs']}
-Has type hints: {review_context['has_types']}
+Language: {review_context["language"]}
+Has tests: {review_context["has_tests"]}
+Has documentation: {review_context["has_docs"]}
+Has type hints: {review_context["has_types"]}
 
 Provide:
 1. Optimistic view: What's good about this code?
@@ -151,7 +152,7 @@ Provide:
         amos = self._load_amos()
 
         # Build decision problem
-        options_str = "\n".join([f"{i+1}. {opt}" for i, opt in enumerate(options)])
+        options_str = "\n".join([f"{i + 1}. {opt}" for i, opt in enumerate(options)])
         problem = f"""Architecture Decision: {decision}
 
 Options:
@@ -183,9 +184,9 @@ Recommend the best option with justification.
             consistency = validation.get("consistency_score", 0)
             print(f"  Consistency: {consistency:.2f}")
 
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print(f"RECOMMENDATION: {recommendation}")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
 
             return {
                 "decision": decision,
@@ -211,7 +212,7 @@ Recommend the best option with justification.
         problem = f"""Refactoring Task: {target}
 
 Known Issues:
-{chr(10).join(f'- {issue}' for issue in issues)}
+{chr(10).join(f"- {issue}" for issue in issues)}
 
 Create a refactoring plan that:
 1. Addresses all issues systematically
@@ -240,9 +241,9 @@ Create a refactoring plan that:
 
             recommendation = analysis.get("recommendation", "No plan generated")
 
-            print(f"\n{'='*60}")
+            print(f"\n{'=' * 60}")
             print("REFACTORING PLAN")
-            print(f"{'='*60}")
+            print(f"{'=' * 60}")
             print(recommendation)
 
             return {

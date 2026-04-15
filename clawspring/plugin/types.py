@@ -1,4 +1,5 @@
 """Plugin system types: manifest, entry, scope."""
+
 from __future__ import annotations
 
 import re
@@ -9,26 +10,27 @@ from typing import Any
 
 
 class PluginScope(str, Enum):
-    USER    = "user"     # ~/.clawspring/plugins/
+    USER = "user"  # ~/.clawspring/plugins/
     PROJECT = "project"  # .clawspring/plugins/ (cwd)
 
 
 @dataclass
 class PluginManifest:
     """Parsed from PLUGIN.md YAML frontmatter or plugin.json."""
+
     name: str
     version: str = "0.1.0"
     description: str = ""
     author: str = ""
     tags: list[str] = field(default_factory=list)
-    tools: list[str] = field(default_factory=list)    # python modules exporting tools
-    skills: list[str] = field(default_factory=list)   # skill .md files
+    tools: list[str] = field(default_factory=list)  # python modules exporting tools
+    skills: list[str] = field(default_factory=list)  # skill .md files
     mcp_servers: dict[str, Any] = field(default_factory=dict)  # name → mcp server config
-    dependencies: list[str] = field(default_factory=list)      # pip packages
+    dependencies: list[str] = field(default_factory=list)  # pip packages
     homepage: str = ""
 
     @classmethod
-    def from_dict(cls, data: dict) -> "PluginManifest":
+    def from_dict(cls, data: dict) -> PluginManifest:
         return cls(
             name=data.get("name", "unknown"),
             version=str(data.get("version", "0.1.0")),
@@ -43,12 +45,13 @@ class PluginManifest:
         )
 
     @classmethod
-    def from_plugin_dir(cls, plugin_dir: Path) -> "PluginManifest | None":
+    def from_plugin_dir(cls, plugin_dir: Path) -> PluginManifest | None:
         """Load manifest from a plugin directory (plugin.json or PLUGIN.md frontmatter)."""
         # Try plugin.json first
         json_file = plugin_dir / "plugin.json"
         if json_file.exists():
             import json
+
             try:
                 return cls.from_dict(json.loads(json_file.read_text()))
             except Exception:
@@ -62,7 +65,7 @@ class PluginManifest:
         return None
 
     @classmethod
-    def _from_md(cls, md_file: Path) -> "PluginManifest | None":
+    def _from_md(cls, md_file: Path) -> PluginManifest | None:
         text = md_file.read_text()
         if not text.startswith("---"):
             return None
@@ -72,6 +75,7 @@ class PluginManifest:
         frontmatter = text[3:end].strip()
         try:
             import yaml  # type: ignore
+
             data = yaml.safe_load(frontmatter)
         except ImportError:
             # Minimal YAML parser for simple key: value pairs
@@ -88,9 +92,10 @@ class PluginManifest:
 @dataclass
 class PluginEntry:
     """A plugin registered in the config store."""
+
     name: str
     scope: PluginScope
-    source: str          # git URL, local path, or marketplace name@url
+    source: str  # git URL, local path, or marketplace name@url
     install_dir: Path
     enabled: bool = True
     manifest: PluginManifest | None = None
@@ -109,7 +114,7 @@ class PluginEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "PluginEntry":
+    def from_dict(cls, data: dict) -> PluginEntry:
         return cls(
             name=data["name"],
             scope=PluginScope(data.get("scope", "user")),

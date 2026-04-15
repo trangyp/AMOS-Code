@@ -3,6 +3,7 @@
 Parses AMOSL source code into AST.
 Grammar based on 9-tuple: (O, S, D, C, E, M, U, V, A, R)
 """
+
 from __future__ import annotations
 
 from .ast_nodes import (
@@ -175,9 +176,7 @@ class Lexer:
 
             # Single-character tokens
             self.advance()
-            if char in "{}[]()":
-                self.tokens.append(Token(char, char, line, col))
-            elif char in ":;,.":
+            if char in "{}[]()" or char in ":;,.":
                 self.tokens.append(Token(char, char, line, col))
             elif char in "=+-*/<>!":
                 # Check for two-character operators
@@ -219,7 +218,7 @@ class Parser:
     def expect(self, type_: str) -> Token:
         if self.current().type != type_:
             raise ParseError(
-                f"Expected {type_}, got {self.current().type} " f"at line {self.current().line}"
+                f"Expected {type_}, got {self.current().type} at line {self.current().line}"
             )
         return self.advance()
 

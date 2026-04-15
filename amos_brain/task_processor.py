@@ -1,4 +1,5 @@
 """AMOS Brain Task Processor - Standalone cognitive task processing."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

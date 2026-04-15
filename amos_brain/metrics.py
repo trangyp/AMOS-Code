@@ -3,6 +3,7 @@
 Tracks latency, errors, token usage, and backend health for
 operational visibility.
 """
+
 from __future__ import annotations
 
 import time
@@ -13,6 +14,7 @@ from typing import Any
 @dataclass
 class RequestMetrics:
     """Metrics for a single request."""
+
     backend: str
     model: str
     start_time: float
@@ -33,6 +35,7 @@ class RequestMetrics:
 @dataclass
 class BackendMetrics:
     """Aggregated metrics for a backend."""
+
     backend: str
     total_requests: int = 0
     successful_requests: int = 0
@@ -135,14 +138,10 @@ class MetricsCollector:
             return {"status": "no_data"}
 
         total_latency = sum(r.latency_ms for r in self._request_history)
-        successful = sum(
-            1 for r in self._request_history if r.success
-        )
+        successful = sum(1 for r in self._request_history if r.success)
 
         # Calculate percentiles
-        latencies = sorted(
-            r.latency_ms for r in self._request_history
-        )
+        latencies = sorted(r.latency_ms for r in self._request_history)
         p50 = latencies[len(latencies) // 2] if latencies else 0
         p95 = latencies[int(len(latencies) * 0.95)] if latencies else 0
 
@@ -151,9 +150,7 @@ class MetricsCollector:
             "successful": successful,
             "failed": total_requests - successful,
             "success_rate": successful / total_requests if total_requests else 0,
-            "avg_latency_ms": (
-                total_latency / total_requests if total_requests else 0
-            ),
+            "avg_latency_ms": (total_latency / total_requests if total_requests else 0),
             "p50_latency_ms": p50,
             "p95_latency_ms": p95,
             "backends": {

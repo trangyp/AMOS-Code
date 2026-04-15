@@ -8,17 +8,17 @@ from datetime import datetime
 
 def test_imports():
     """Test all cognitive modules can be imported."""
-    sys.path.insert(0, 'clawspring')
-    sys.path.insert(0, 'clawspring/amos_brain')
+    sys.path.insert(0, "clawspring")
+    sys.path.insert(0, "clawspring/amos_brain")
 
     modules = [
-        'amos_cognitive_router',
-        'engine_executor',
-        'multi_agent_orchestrator',
-        'organism_bridge',
-        'master_orchestrator',
-        'system_validator',
-        'deploy_amos',
+        "amos_cognitive_router",
+        "engine_executor",
+        "multi_agent_orchestrator",
+        "organism_bridge",
+        "master_orchestrator",
+        "system_validator",
+        "deploy_amos",
     ]
 
     passed = 0
@@ -40,8 +40,8 @@ def test_system_validator():
     validator = SystemValidator()
     results = validator.validate_all()
 
-    passed = sum(1 for r in results if r.status == 'PASS')
-    failed = sum(1 for r in results if r.status == 'FAIL')
+    passed = sum(1 for r in results if r.status == "PASS")
+    failed = sum(1 for r in results if r.status == "FAIL")
 
     print(f"  Results: {passed} passed, {failed} failed")
     print(f"  Health: {passed}/{len(results)}")
@@ -121,7 +121,7 @@ def main():
     print(f"Total: {total}")
     print(f"Passed: {passed} ✓")
     print(f"Failed: {failed} ✗")
-    print(f"Rate: {passed/total*100:.0f}%")
+    print(f"Rate: {passed / total * 100:.0f}%")
     print(f"Time: {elapsed:.1f}s")
     print("=" * 60)
 

@@ -1,4 +1,5 @@
 """BLOOD forecast_engine stub — Re-exports from 04_BLOOD"""
+
 import sys
 from pathlib import Path
 

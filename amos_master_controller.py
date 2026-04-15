@@ -221,9 +221,9 @@ class AMOSMasterController:
 
     def run_demo(self, version: str):
         """Run demonstration for version."""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"DEMO: AMOS {version.upper()}")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         try:
             if version == "v1":

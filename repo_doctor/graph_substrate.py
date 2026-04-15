@@ -23,7 +23,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class NodeType(Enum):
@@ -125,7 +125,7 @@ class TreeSitterBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Optional[Path] = None
+        self.repo_path: Path | None = None
         self.parsed_files: dict[str, Any] = {}
 
     def is_available(self) -> bool:
@@ -194,8 +194,8 @@ class CodeQLBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Optional[Path] = None
-        self.database_path: Optional[Path] = None
+        self.repo_path: Path | None = None
+        self.database_path: Path | None = None
 
     def is_available(self) -> bool:
         """Check if CodeQL CLI is available."""
@@ -275,8 +275,8 @@ class JoernBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Optional[Path] = None
-        self.cpg_path: Optional[Path] = None
+        self.repo_path: Path | None = None
+        self.cpg_path: Path | None = None
 
     def is_available(self) -> bool:
         """Check if joern CLI is available."""
@@ -418,13 +418,13 @@ class UnifiedGraph:
     nodes: dict[str, Node] = field(default_factory=dict)
     edges: list[Edge] = field(default_factory=list)
     attributes: dict[str, Any] = field(default_factory=dict)
-    timestamp: Optional[float] = None
+    timestamp: float | None = None
 
     # Backend instances
-    treesitter: Optional[TreeSitterBackend] = None
-    codeql: Optional[CodeQLBackend] = None
-    joern: Optional[JoernBackend] = None
-    contracts: Optional[ContractGraph] = None
+    treesitter: TreeSitterBackend | None = None
+    codeql: CodeQLBackend | None = None
+    joern: JoernBackend | None = None
+    contracts: ContractGraph | None = None
 
     def build(self) -> bool:
         """Build unified graph from all available backends."""

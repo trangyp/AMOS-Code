@@ -1,4 +1,5 @@
 """AMOS Active Cognitive Router - Implements the brain's orchestration pattern."""
+
 from __future__ import annotations
 
 import json
@@ -495,8 +496,8 @@ if __name__ == "__main__":
 
     router = get_router()
     for task in test_tasks:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Task: {task}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         print(router.build_cognitive_prompt(task))
         print(router.explain_routing(task))

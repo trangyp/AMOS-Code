@@ -127,7 +127,7 @@ def validate():
     print()
     print("=" * 70)
     passed = sum(1 for v in results.values() if v is True)
-    total = len([k for k in results.keys() if k != "subsystems"])
+    total = len([k for k in results if k != "subsystems"])
 
     if results.get("subsystems"):
         subsys_passed = sum(1 for v in results["subsystems"].values() if v)

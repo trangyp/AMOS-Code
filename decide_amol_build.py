@@ -4,6 +4,7 @@
 Given the comprehensive AMOSL mathematical specification,
 what is the next logical implementation step?
 """
+
 from __future__ import annotations
 
 import os

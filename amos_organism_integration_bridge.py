@@ -214,7 +214,7 @@ class OrganismIntegrationBridge:
                 "connected": connected,
                 "total": 15,
                 "total_engines_assigned": total_engines_assigned,
-                "coverage": f"{connected}/15 ({connected/15*100:.0f}%)",
+                "coverage": f"{connected}/15 ({connected / 15 * 100:.0f}%)",
             },
         }
 

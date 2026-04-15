@@ -1,4 +1,5 @@
 """AMOS Physics & Cosmos Engine - Physical system modeling and analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

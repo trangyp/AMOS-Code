@@ -1,4 +1,5 @@
 """Skill loading: parse markdown files with YAML frontmatter into SkillDef objects."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -10,30 +11,32 @@ from typing import Optional
 class SkillDef:
     name: str
     description: str
-    triggers: list[str]          # ["/commit", "commit changes"]
-    tools: list[str]             # ["Bash", "Read"]  (allowed-tools)
-    prompt: str                  # full prompt body after frontmatter
+    triggers: list[str]  # ["/commit", "commit changes"]
+    tools: list[str]  # ["Bash", "Read"]  (allowed-tools)
+    prompt: str  # full prompt body after frontmatter
     file_path: str
     # Enhanced fields
-    when_to_use: str = ""        # when Claude should auto-invoke this skill
-    argument_hint: str = ""      # e.g. "[branch] [description]"
+    when_to_use: str = ""  # when Claude should auto-invoke this skill
+    argument_hint: str = ""  # e.g. "[branch] [description]"
     arguments: list[str] = field(default_factory=list)  # named arg names
-    model: str = ""              # model override
+    model: str = ""  # model override
     user_invocable: bool = True  # appears in /skills list
-    context: str = "inline"      # "inline" or "fork" (fork = sub-agent)
-    source: str = "user"         # "user", "project", "builtin"
+    context: str = "inline"  # "inline" or "fork" (fork = sub-agent)
+    source: str = "user"  # "user", "project", "builtin"
 
 
 # ── Directory paths ────────────────────────────────────────────────────────
 
+
 def _get_skill_paths() -> list[Path]:
     return [
-        Path.cwd() / ".clawspring" / "skills",   # project-level (priority)
-        Path.home() / ".clawspring" / "skills",   # user-level
+        Path.cwd() / ".clawspring" / "skills",  # project-level (priority)
+        Path.home() / ".clawspring" / "skills",  # user-level
     ]
 
 
 # ── List field parser ──────────────────────────────────────────────────────
+
 
 def _parse_list_field(value: str) -> list[str]:
     """Parse YAML-like list: ``[a, b, c]`` or ``"a, b, c"``."""
@@ -44,6 +47,7 @@ def _parse_list_field(value: str) -> list[str]:
 
 
 # ── Single-file parser ─────────────────────────────────────────────────────
+
 
 def _parse_skill_file(path: Path, source: str = "user") -> Optional[SkillDef]:
     """Parse a markdown file with ``---`` frontmatter into a SkillDef.
@@ -125,6 +129,7 @@ def register_builtin_skill(skill: SkillDef) -> None:
 
 # ── Load all skills ────────────────────────────────────────────────────────
 
+
 def load_skills(include_builtins: bool = True) -> list[SkillDef]:
     """Return skills from disk + builtins, deduplicated (project > user > builtin)."""
     seen: dict[str, SkillDef] = {}
@@ -165,6 +170,7 @@ def find_skill(query: str) -> Optional[SkillDef]:
 
 
 # ── Argument substitution ─────────────────────────────────────────────────
+
 
 def substitute_arguments(prompt: str, args: str, arg_names: list[str]) -> str:
     """Replace $ARGUMENTS (whole args string) and $ARG_NAME placeholders.

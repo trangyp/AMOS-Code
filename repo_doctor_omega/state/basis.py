@@ -3,6 +3,7 @@
 Defines the 12-dimensional integrity space basis vectors
 and the repository wavefunction.
 """
+
 from __future__ import annotations
 
 import math

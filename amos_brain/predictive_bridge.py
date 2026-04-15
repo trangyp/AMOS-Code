@@ -17,20 +17,20 @@ from typing import Any
 # Import predictive engine
 try:
     from repo_doctor.predictive_engine import (
+        ChangeRiskAssessment,
+        EarlyWarning,
+        Prediction,
         PredictiveArchitectureEngine,
         get_predictive_engine,
-        Prediction,
-        EarlyWarning,
-        ChangeRiskAssessment,
     )
+
     PREDICTIVE_AVAILABLE = True
 except ImportError:
     PREDICTIVE_AVAILABLE = False
 
 
 class PredictiveIntelligenceBridge:
-    """
-    Bridge between predictive engine and AMOS Brain.
+    """Bridge between predictive engine and AMOS Brain.
 
     Enables the brain to:
     - Predict future architecture failures

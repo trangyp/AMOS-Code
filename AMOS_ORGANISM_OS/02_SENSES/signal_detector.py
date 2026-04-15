@@ -1,6 +1,4 @@
-"""
-Signal Detector — External signal detection for AMOS.
-"""
+"""Signal Detector — External signal detection for AMOS."""
 
 from dataclasses import dataclass
 from datetime import datetime
@@ -10,18 +8,17 @@ from typing import Any, Dict, List
 @dataclass
 class Signal:
     """An external signal."""
+
     id: str
     source: str  # filesystem, git, api, timer
-    type: str    # change, alert, notification, heartbeat
+    type: str  # change, alert, notification, heartbeat
     priority: str  # low, normal, high, critical
     data: Dict[str, Any]
     timestamp: str
 
 
 class SignalDetector:
-    """
-    Detects external signals and events.
-    """
+    """Detects external signals and events."""
 
     def __init__(self):
         self._signals: List[Signal] = []
@@ -55,14 +52,17 @@ class SignalDetector:
     def _check_timer(self) -> List[Signal]:
         """Check for timer-based signals."""
         import uuid
-        return [Signal(
-            id=str(uuid.uuid4())[:8],
-            source="timer",
-            type="heartbeat",
-            priority="low",
-            data={"interval": "scan"},
-            timestamp=datetime.utcnow().isoformat(),
-        )]
+
+        return [
+            Signal(
+                id=str(uuid.uuid4())[:8],
+                source="timer",
+                type="heartbeat",
+                priority="low",
+                data={"interval": "scan"},
+                timestamp=datetime.utcnow().isoformat(),
+            )
+        ]
 
     def get_signals(self, priority: str = None, limit: int = 50) -> List[Signal]:
         """Get detected signals."""

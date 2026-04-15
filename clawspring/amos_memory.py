@@ -1,4 +1,5 @@
 """AMOS Memory Layer - Persistence for brain state and cognitive artifacts."""
+
 from __future__ import annotations
 
 import json

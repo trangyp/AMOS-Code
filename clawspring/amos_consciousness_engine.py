@@ -1,4 +1,5 @@
 """AMOS Consciousness Engine - Self-modeling and meta-cognitive awareness."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -294,7 +295,7 @@ class AMOSConsciousnessEngine:
                 "=" * 50,
                 "",
                 f"Domains analyzed: {len(results)}",
-                f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+                f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
                 "",
                 "## Findings by Domain",
                 "",
@@ -411,8 +412,7 @@ if __name__ == "__main__":
     print(f"\nAnalyzed {len(results)} consciousness domains:")
     for domain, analysis in results.items():
         print(
-            f"  - {domain}: {len(analysis.findings)} findings, "
-            f"confidence={analysis.confidence:.2f}"
+            f"  - {domain}: {len(analysis.findings)} findings, confidence={analysis.confidence:.2f}"
         )
 
     # Full summary

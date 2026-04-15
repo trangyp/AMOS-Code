@@ -41,39 +41,23 @@ class AMOSBrainClient:
     def think(self, query: str, domain: str = "general") -> dict:
         """Send a thinking query."""
         payload = {"query": query, "domain": domain}
-        r = self.session.post(
-            f"{self.base_url}/think",
-            json=payload,
-            timeout=30
-        )
+        r = self.session.post(f"{self.base_url}/think", json=payload, timeout=30)
         r.raise_for_status()
         return r.json()
 
-    def decide(
-        self,
-        question: str,
-        options: Optional[list] = None
-    ) -> dict:
+    def decide(self, question: str, options: Optional[list] = None) -> dict:
         """Make a decision."""
         payload = {"question": question}
         if options:
             payload["options"] = options
-        r = self.session.post(
-            f"{self.base_url}/decide",
-            json=payload,
-            timeout=30
-        )
+        r = self.session.post(f"{self.base_url}/decide", json=payload, timeout=30)
         r.raise_for_status()
         return r.json()
 
     def validate(self, action: str) -> dict:
         """Validate an action."""
         payload = {"action": action}
-        r = self.session.post(
-            f"{self.base_url}/validate",
-            json=payload,
-            timeout=10
-        )
+        r = self.session.post(f"{self.base_url}/validate", json=payload, timeout=10)
         r.raise_for_status()
         return r.json()
 

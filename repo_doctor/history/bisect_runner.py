@@ -5,16 +5,20 @@ t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 
 Uses git bisect with automated run/skip/log/replay.
 """
+
 from __future__ import annotations
+
+import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-import subprocess
-from typing import Callable, Any
+from typing import Any
 
 
 class BisectStatus(Enum):
     """Status of bisect operation."""
+
     GOOD = "good"
     BAD = "bad"
     SKIP = "skip"
@@ -24,7 +28,7 @@ class BisectStatus(Enum):
 @dataclass
 class BisectResult:
     """Result of bisect operation."""
-    
+
     first_bad_commit: str | None
     iterations: int
     skipped_commits: list[str]
@@ -35,7 +39,7 @@ class BisectResult:
 class BisectRunner:
     """
     Run git bisect with invariant oracle.
-    
+
     t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
     """
 
@@ -52,15 +56,16 @@ class BisectRunner:
     ) -> BisectResult:
         """
         Find first bad commit for given invariant.
-        
+
         Args:
             invariant_name: Name of invariant to check
             oracle: Function that takes commit hash, returns GOOD/BAD/SKIP
             good_commit: Known good commit
             bad_commit: Known bad commit
+
         """
         iterations = 0
-        
+
         try:
             # Start bisect
             subprocess.run(
@@ -69,7 +74,7 @@ class BisectRunner:
                 capture_output=True,
                 check=True,
             )
-            
+
             # Mark known good
             subprocess.run(
                 ["git", "bisect", "good", good_commit],
@@ -77,7 +82,7 @@ class BisectRunner:
                 capture_output=True,
                 check=True,
             )
-            
+
             # Mark known bad
             subprocess.run(
                 ["git", "bisect", "bad", bad_commit],
@@ -85,7 +90,7 @@ class BisectRunner:
                 capture_output=True,
                 check=True,
             )
-            
+
             # Automated bisect with oracle
             while True:
                 result = subprocess.run(
@@ -94,7 +99,7 @@ class BisectRunner:
                     capture_output=True,
                     text=True,
                 )
-                
+
                 if "is the first bad commit" in result.stdout:
                     # Parse first bad commit
                     for line in result.stdout.split("\n"):
@@ -108,7 +113,7 @@ class BisectRunner:
                                 message=f"Found first bad commit for {invariant_name}",
                             )
                     break
-                
+
                 # Get current commit
                 commit_result = subprocess.run(
                     ["git", "rev-parse", "HEAD"],
@@ -118,11 +123,11 @@ class BisectRunner:
                     check=True,
                 )
                 current = commit_result.stdout.strip()
-                
+
                 # Run oracle
                 status = oracle(current)
                 iterations += 1
-                
+
                 if status == BisectStatus.GOOD:
                     subprocess.run(
                         ["git", "bisect", "good"],
@@ -145,7 +150,7 @@ class BisectRunner:
                         capture_output=True,
                         check=True,
                     )
-                    
+
         except subprocess.CalledProcessError as e:
             return BisectResult(
                 first_bad_commit=None,
@@ -161,7 +166,7 @@ class BisectRunner:
                 cwd=self.repo_path,
                 capture_output=True,
             )
-        
+
         return BisectResult(
             first_bad_commit=None,
             iterations=iterations,
@@ -188,10 +193,12 @@ class BisectRunner:
                 if line.strip():
                     parts = line.split()
                     if len(parts) >= 2:
-                        entries.append({
-                            "command": parts[0],
-                            "commit": parts[1] if len(parts) > 1 else None,
-                        })
+                        entries.append(
+                            {
+                                "command": parts[0],
+                                "commit": parts[1] if len(parts) > 1 else None,
+                            }
+                        )
             return entries
         except subprocess.CalledProcessError:
             return []

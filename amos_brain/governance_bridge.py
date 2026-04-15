@@ -20,18 +20,18 @@ from typing import Any
 try:
     from repo_doctor.autonomous_governance import (
         AutonomousGovernanceEngine,
-        get_governance_engine,
-        GovernancePolicy,
         AutonomyLevel,
+        GovernancePolicy,
+        get_governance_engine,
     )
+
     GOVERNANCE_AVAILABLE = True
 except ImportError:
     GOVERNANCE_AVAILABLE = False
 
 
 class AutonomousGovernanceBridge:
-    """
-    Bridge between governance engine and AMOS Brain.
+    """Bridge between governance engine and AMOS Brain.
 
     Enables the brain to:
     - Make autonomous decisions on repairs
@@ -58,6 +58,7 @@ class AutonomousGovernanceBridge:
 
         # Get current health for context
         from .monitoring_bridge import get_monitoring_bridge
+
         monitor = get_monitoring_bridge(self.repo_path)
         health = monitor.get_health_dashboard()
 

@@ -13,6 +13,7 @@ Showcases the full AMOS stack working together:
 Usage:
     python demo_amos_complete.py
 """
+
 from __future__ import annotations
 
 import sys

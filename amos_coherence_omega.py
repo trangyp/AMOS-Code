@@ -340,26 +340,26 @@ class CoherenceOmega:
         # Template-based responses that change conditions, not human
         templates = {
             InterventionMode.MIRROR: (
-                f"I hear that {analysis.signal}. " f"There's a lot happening beneath the surface."
+                f"I hear that {analysis.signal}. There's a lot happening beneath the surface."
             ),
             InterventionMode.GROUND: (
-                "Let's pause together. Take a breath. " "The ground is still here beneath us."
+                "Let's pause together. Take a breath. The ground is still here beneath us."
             ),
             InterventionMode.CLARIFY: (
                 f"I notice {analysis.signal}. "
                 f"Among all that's arising, what matters most right now?"
             ),
             InterventionMode.SEPARATE: (
-                "I see multiple threads tangled together. " "Can we look at one strand at a time?"
+                "I see multiple threads tangled together. Can we look at one strand at a time?"
             ),
             InterventionMode.SIMPLIFY: (
-                "This feels complex. " "What's one small step that would help right now?"
+                "This feels complex. What's one small step that would help right now?"
             ),
             InterventionMode.BOUNDARY: (
-                "I notice this touches on deep patterns. " "What would support you in this moment?"
+                "I notice this touches on deep patterns. What would support you in this moment?"
             ),
             InterventionMode.DECONSTRUCT: (
-                f"I hear {analysis.pattern}. " "Is that structure serving you, or ready to soften?"
+                f"I hear {analysis.pattern}. Is that structure serving you, or ready to soften?"
             ),
             InterventionMode.MICRO_STEP: (
                 "Given everything, what's the smallest useful next move?"

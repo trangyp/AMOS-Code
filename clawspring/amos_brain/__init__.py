@@ -1,4 +1,5 @@
 """AMOS Brain Integration Layer - Connecting ClawSpring to AMOS Cognitive Architecture."""
+
 from .audit_exporter import AuditExporter, export_audit
 from .cognitive_audit import AuditEntry, CognitiveAuditTrail, record_cognitive_decision
 from .engine_executor import EngineExecutor, ExecutionResult, execute_cognitive_task

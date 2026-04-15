@@ -1,5 +1,4 @@
-"""Environment Scanner — Filesystem and change detection for AMOS.
-"""
+"""Environment Scanner — Filesystem and change detection for AMOS."""
 
 from __future__ import annotations
 

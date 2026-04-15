@@ -348,9 +348,9 @@ def main():
     for i in range(5):
         try:
             result = risky_operation()
-            print(f"  Call {i+1}: {result}")
+            print(f"  Call {i + 1}: {result}")
         except Exception as e:
-            print(f"  Call {i+1}: Failed - {e}")
+            print(f"  Call {i + 1}: Failed - {e}")
 
     # Get report
     time.sleep(1)

@@ -12,6 +12,7 @@ Implements verification of all 10 axioms from the 21-tuple specification:
     9. Ledger completeness
     10. Explainability
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

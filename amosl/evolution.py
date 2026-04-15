@@ -11,6 +11,7 @@ Block matrix T:
     [0     0     0     0     T_ee  T_et]
     [0     0     0     0     0     T_tt]
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

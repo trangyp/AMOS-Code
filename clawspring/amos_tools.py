@@ -1,4 +1,5 @@
 """AMOS Brain tools for ClawSpring - integrates AMOS cognitive architecture."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -177,9 +178,9 @@ def _amos_enhance_prompt(params: dict[str, Any], config: dict[str, Any]) -> str:
     laws = runtime.get_law_summary()
 
     amos_section = f"""# AMOS Brain (vInfinity)
-System: {identity.get('system_name', 'AMOS')}
-Creator: {identity.get('creator', 'Trang Phan')}
-Laws: {', '.join(law['name'] for law in laws[:4])}
+System: {identity.get("system_name", "AMOS")}
+Creator: {identity.get("creator", "Trang Phan")}
+Laws: {", ".join(law["name"] for law in laws[:4])}
 Gap: No embodiment, consciousness, or autonomous action
 """
     enhanced = f"{base_prompt}\n\n{amos_section}"
@@ -358,11 +359,11 @@ def _amos_memory(params: dict[str, Any], config: dict[str, Any]) -> str:
     if action == "stats":
         stats = bridge.store.get_memory_stats()
         return f"""# AMOS Memory Stats
-Total memories: {stats['total_memories']}
-By type: {stats['by_type']}
-Storage: {stats['storage_path']}
-Creator: {stats['creator']}
-Version: {stats['amos_version']}
+Total memories: {stats["total_memories"]}
+By type: {stats["by_type"]}
+Storage: {stats["storage_path"]}
+Creator: {stats["creator"]}
+Version: {stats["amos_version"]}
 """
     elif action == "recall":
         mem_type = params.get("memory_type")
@@ -688,8 +689,7 @@ AMOS_TOOLS = [
         schema={
             "name": "AMOSLaws",
             "description": (
-                "Access AMOS Global Laws (L1-L6). "
-                "Can list laws, check compliance, validate text."
+                "Access AMOS Global Laws (L1-L6). Can list laws, check compliance, validate text."
             ),
             "input_schema": {
                 "type": "object",

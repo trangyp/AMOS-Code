@@ -8,6 +8,7 @@ Demonstrates the complete formal universe with:
 - State bundle theory
 - Ledger homology
 """
+
 import os
 import sys
 
@@ -280,7 +281,7 @@ def demo_ledger_homology():
 
     print("\nLedger entries:")
     for entry in ledger:
-        boundary = f"x_{entry['t']+1} - x_{entry['t']} = {entry['x_t1']} - {entry['x_t']}"
+        boundary = f"x_{entry['t'] + 1} - x_{entry['t']} = {entry['x_t1']} - {entry['x_t']}"
         print(f"  ℓ_{entry['t']}: {entry['action']:<10} ∂ℓ = {boundary}")
 
     x_0 = ledger[0]["x_t"]

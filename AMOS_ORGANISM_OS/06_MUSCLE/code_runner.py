@@ -1,5 +1,4 @@
-"""Code Runner — Execute code in various languages.
-"""
+"""Code Runner — Execute code in various languages."""
 
 from __future__ import annotations
 

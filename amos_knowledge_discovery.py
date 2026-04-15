@@ -22,6 +22,7 @@ Commands:
     pdf <name>           Find and list PDF manuals
     country <code>       Access country knowledge pack
 """
+
 from __future__ import annotations
 
 import argparse

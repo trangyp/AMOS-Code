@@ -6,6 +6,7 @@ Mirrors the key ideas from Claude Code's memoryScan.ts and memoryAge.ts:
   - Report memory age in human-readable form ("today", "3 days ago")
   - Emit a staleness caveat for memories older than 1 day
 """
+
 from __future__ import annotations
 
 import math

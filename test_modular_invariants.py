@@ -87,8 +87,7 @@ def test_engine() -> bool:
         print("  All 18 invariants registered")
         return True
     else:
-        print(f"  Warning: Only {len(engine.invariants)} invariants "
-              f"found (expected 18)")
+        print(f"  Warning: Only {len(engine.invariants)} invariants found (expected 18)")
         return False
 
 

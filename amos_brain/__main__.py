@@ -3,6 +3,7 @@
 Usage:
     python -m amos_brain
 """
+
 from __future__ import annotations
 
 import os

@@ -1,4 +1,5 @@
 """AMOS Strategy/Game Theory Engine - Strategic planning and game theory."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -247,7 +248,7 @@ class AMOSStrategyEngine:
             "# AMOS Strategy/Game Theory Analysis Summary",
             "",
             f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+            f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
             "",
             "⚠️ SAFETY NOTICE:",
             "⚠️ Do not design strategies for physical harm",

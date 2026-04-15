@@ -4,7 +4,9 @@ Batch Remediation Planning
 Fleet-wide repair planning with preview/apply tracking.
 Inspired by Sourcegraph Batch Changes.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -12,6 +14,7 @@ from typing import Any
 
 class BatchStatus(Enum):
     """Status of a remediation batch."""
+
     PREVIEW = "preview"
     APPLYING = "applying"
     COMPLETED = "completed"
@@ -22,7 +25,7 @@ class BatchStatus(Enum):
 @dataclass
 class RemediationBatch:
     """A batch of remediation changes."""
-    
+
     batch_id: str
     name: str
     description: str
@@ -31,7 +34,7 @@ class RemediationBatch:
     status: BatchStatus = BatchStatus.PREVIEW
     applied_count: int = 0
     failed_repos: list[str] = field(default_factory=list)
-    
+
     def progress_percentage(self) -> float:
         """Calculate progress percentage."""
         if not self.target_repos:
@@ -42,14 +45,14 @@ class RemediationBatch:
 class BatchRemediationPlanner:
     """
     Plan and track fleet-wide remediation.
-    
+
     Supports preview, apply, update, and track operations
     across many repositories.
     """
-    
+
     def __init__(self):
         self.batches: dict[str, RemediationBatch] = {}
-    
+
     def create_batch(
         self,
         batch_id: str,
@@ -60,7 +63,7 @@ class BatchRemediationPlanner:
     ) -> RemediationBatch:
         """
         Create a new remediation batch.
-        
+
         Initially in PREVIEW state for review.
         """
         batch = RemediationBatch(
@@ -73,17 +76,17 @@ class BatchRemediationPlanner:
         )
         self.batches[batch_id] = batch
         return batch
-    
+
     def preview_batch(self, batch_id: str) -> dict[str, Any]:
         """
         Preview what changes would be applied.
-        
+
         Returns preview without making changes.
         """
         batch = self.batches.get(batch_id)
         if not batch:
             return {"error": f"Batch {batch_id} not found"}
-        
+
         return {
             "batch_id": batch_id,
             "name": batch.name,
@@ -92,7 +95,7 @@ class BatchRemediationPlanner:
             "estimated_impact": self._estimate_impact(batch),
             "preview_only": True,
         }
-    
+
     def apply_batch(
         self,
         batch_id: str,
@@ -100,16 +103,16 @@ class BatchRemediationPlanner:
     ) -> dict[str, Any]:
         """
         Apply batch changes to target repos.
-        
+
         If dry_run=True, simulates without actual changes.
         """
         batch = self.batches.get(batch_id)
         if not batch:
             return {"error": f"Batch {batch_id} not found"}
-        
+
         if not dry_run:
             batch.status = BatchStatus.APPLYING
-        
+
         results = {
             "batch_id": batch_id,
             "dry_run": dry_run,
@@ -117,7 +120,7 @@ class BatchRemediationPlanner:
             "failed": [],
             "skipped": [],
         }
-        
+
         for repo in batch.target_repos:
             try:
                 if dry_run:
@@ -131,7 +134,7 @@ class BatchRemediationPlanner:
             except Exception as e:
                 batch.failed_repos.append(repo)
                 results["failed"].append({"repo": repo, "error": str(e)})
-        
+
         if not dry_run:
             if batch.applied_count == len(batch.target_repos):
                 batch.status = BatchStatus.COMPLETED
@@ -139,9 +142,9 @@ class BatchRemediationPlanner:
                 batch.status = BatchStatus.PARTIAL
             else:
                 batch.status = BatchStatus.FAILED
-        
+
         return results
-    
+
     def update_batch(
         self,
         batch_id: str,
@@ -149,26 +152,26 @@ class BatchRemediationPlanner:
     ) -> RemediationBatch | None:
         """
         Update an existing batch with new changes.
-        
+
         Converges actual changesets toward new desired state.
         """
         batch = self.batches.get(batch_id)
         if not batch:
             return None
-        
+
         batch.changes = new_changes
         batch.status = BatchStatus.PREVIEW
         batch.applied_count = 0
         batch.failed_repos = []
-        
+
         return batch
-    
+
     def get_batch_status(self, batch_id: str) -> dict[str, Any] | None:
         """Get current status of a batch."""
         batch = self.batches.get(batch_id)
         if not batch:
             return None
-        
+
         return {
             "batch_id": batch_id,
             "name": batch.name,
@@ -178,17 +181,15 @@ class BatchRemediationPlanner:
             "total": len(batch.target_repos),
             "failed": len(batch.failed_repos),
         }
-    
+
     def _estimate_impact(self, batch: RemediationBatch) -> dict[str, Any]:
         """Estimate impact of batch changes."""
         return {
             "repos_affected": len(batch.target_repos),
             "files_estimated": len(batch.changes) * len(batch.target_repos),
-            "invariants_addressed": list(set(
-                c.get("invariant") for c in batch.changes
-            )),
+            "invariants_addressed": list(set(c.get("invariant") for c in batch.changes)),
         }
-    
+
     def _apply_to_repo(self, repo: str, changes: list[dict[str, Any]]) -> None:
         """Apply changes to a specific repo."""
         # Placeholder for actual implementation

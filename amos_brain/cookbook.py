@@ -1,4 +1,5 @@
 """AMOS Brain Cookbook - Pre-built cognitive workflows (Layer 12)."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -135,7 +136,7 @@ class CodeReview:
 {code[:1000]}
 ```
 
-Focus areas: {', '.join(focus)}
+Focus areas: {", ".join(focus)}
 
 Apply Rule of 2:
 1. What are the strengths of this code?
@@ -278,7 +279,7 @@ class DesignPattern:
 
 Problem: {problem}
 
-Available patterns: {', '.join(patterns)}
+Available patterns: {", ".join(patterns)}
 
 Analyze using Rule of 2:
 1. When is each pattern the RIGHT choice?
@@ -330,7 +331,7 @@ class ProblemDiagnosis:
 Problem: {problem}
 
 Symptoms:
-{chr(10).join(f'- {s}' for s in symptoms)}
+{chr(10).join(f"- {s}" for s in symptoms)}
 
 Context: {context}
 
@@ -522,8 +523,8 @@ class TechnologySelection:
         prompt = f"""Technology Selection:
 
 Category: {category}
-Options: {', '.join(options)}
-Criteria: {', '.join(merged_criteria)}
+Options: {", ".join(options)}
+Criteria: {", ".join(merged_criteria)}
 
 Compare the options using Rule of 2 and Rule of 4.
 Return a recommendation, tradeoffs, and selection rationale.
@@ -567,7 +568,7 @@ class RiskAssessment:
         prompt = f"""Risk Assessment:
 
 Change: {change}
-Impacts: {', '.join(merged_impacts)}
+Impacts: {", ".join(merged_impacts)}
 
 Assess the main risks, mitigations, fallback paths, and monitoring signals.
 """

@@ -1,4 +1,5 @@
 """Probability Engine for AMOS"""
+
 from __future__ import annotations
 
 import json
@@ -83,7 +84,7 @@ class ProbabilityEngine:
 
         for d in self.distributions:
             if d.id == dist_id:
-                results = {k: 0 for k in d.outcomes.keys()}
+                results = dict.fromkeys(d.outcomes.keys(), 0)
                 outcomes, weights = zip(*d.outcomes.items())
                 for _ in range(n_samples):
                     results[random.choices(outcomes, weights=weights)[0]] += 1

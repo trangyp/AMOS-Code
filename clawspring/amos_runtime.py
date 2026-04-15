@@ -1,4 +1,5 @@
 """AMOS Runtime Bootstrap - Loads and executes the AMOS brain."""
+
 from __future__ import annotations
 
 import asyncio

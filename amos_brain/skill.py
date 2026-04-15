@@ -1,4 +1,5 @@
 """AMOS Brain Decision Analysis Skill - Built-in skill for structured reasoning."""
+
 from __future__ import annotations
 
 # NOTE: Imports are lazy to avoid circular dependency with clawspring
@@ -10,6 +11,7 @@ def _get_skill_classes():
     """Lazy import skill classes to avoid circular imports."""
     # Import from root skill package (same one clawspring uses)
     from skill.loader import SkillDef, register_builtin_skill
+
     return SkillDef, register_builtin_skill
 
 
@@ -215,43 +217,47 @@ def register_amos_skills() -> None:
     # Lazy import to avoid circular dependency
     SkillDef, register_builtin_skill = _get_skill_classes()
 
-    register_builtin_skill(SkillDef(
-        name="decide",
-        description="Structured decision analysis using AMOS Brain Rule of 2 and Rule of 4",
-        triggers=["/decide", "analyze decision"],
-        tools=["Read", "Grep", "search_web"],
-        prompt=_DECIDE_PROMPT,
-        file_path="<builtin:amos>",
-        when_to_use=(
-            "Use when the user needs to make a decision or wants structured analysis. "
-            "Applies Rule of 2 (dual perspectives) and Rule of 4 (four quadrants). "
-            "Triggers: '/decide', 'help me decide', 'should I', 'analyze this decision'."
-        ),
-        argument_hint="<decision or problem to analyze>",
-        arguments=["decision"],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="decide",
+            description="Structured decision analysis using AMOS Brain Rule of 2 and Rule of 4",
+            triggers=["/decide", "analyze decision"],
+            tools=["Read", "Grep", "search_web"],
+            prompt=_DECIDE_PROMPT,
+            file_path="<builtin:amos>",
+            when_to_use=(
+                "Use when the user needs to make a decision or wants structured analysis. "
+                "Applies Rule of 2 (dual perspectives) and Rule of 4 (four quadrants). "
+                "Triggers: '/decide', 'help me decide', 'should I', 'analyze this decision'."
+            ),
+            argument_hint="<decision or problem to analyze>",
+            arguments=["decision"],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
-    register_builtin_skill(SkillDef(
-        name="analyze",
-        description="Deep systems analysis using AMOS Brain cognitive stack",
-        triggers=["/analyze", "/systems"],
-        tools=["Read", "Grep", "search_web", "Browser"],
-        prompt=_ANALYZE_PROMPT,
-        file_path="<builtin:amos>",
-        when_to_use=(
-            "Use when the user wants deep systems understanding of a topic. "
-            "Applies multi-scale, multi-domain analysis across 12 intelligences. "
-            "Triggers: '/analyze', '/systems', 'deep dive', 'system analysis'."
-        ),
-        argument_hint="<topic or system to analyze>",
-        arguments=["topic"],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="analyze",
+            description="Deep systems analysis using AMOS Brain cognitive stack",
+            triggers=["/analyze", "/systems"],
+            tools=["Read", "Grep", "search_web", "Browser"],
+            prompt=_ANALYZE_PROMPT,
+            file_path="<builtin:amos>",
+            when_to_use=(
+                "Use when the user wants deep systems understanding of a topic. "
+                "Applies multi-scale, multi-domain analysis across 12 intelligences. "
+                "Triggers: '/analyze', '/systems', 'deep dive', 'system analysis'."
+            ),
+            argument_hint="<topic or system to analyze>",
+            arguments=["topic"],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
 
 # Auto-register on import (but only if clawspring is available)

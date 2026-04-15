@@ -7,6 +7,7 @@ Comprehensive validation of the complete AMOSL ecosystem:
 - Performance regression
 - Stress testing
 """
+
 import os
 import sys
 
@@ -91,9 +92,11 @@ class TestFiveLensRegime(unittest.TestCase):
         # Necessity
         domain = [{"valid": True}, {"valid": True}]
         result = modal.necessity(
-            lambda x: StratifiedTruth(TruthValue.TRUE)
-            if x["valid"]
-            else StratifiedTruth(TruthValue.FALSE),
+            lambda x: (
+                StratifiedTruth(TruthValue.TRUE)
+                if x["valid"]
+                else StratifiedTruth(TruthValue.FALSE)
+            ),
             domain,
         )
         self.assertTrue(result.is_definitely_true())
@@ -101,9 +104,11 @@ class TestFiveLensRegime(unittest.TestCase):
         # Possibility
         domain = [{"valid": False}, {"valid": True}]
         result = modal.possibility(
-            lambda x: StratifiedTruth(TruthValue.TRUE)
-            if x["valid"]
-            else StratifiedTruth(TruthValue.FALSE),
+            lambda x: (
+                StratifiedTruth(TruthValue.TRUE)
+                if x["valid"]
+                else StratifiedTruth(TruthValue.FALSE)
+            ),
             domain,
         )
         self.assertTrue(result.is_definitely_true())

@@ -15,28 +15,28 @@ The monitoring bridge closes the loop from detection → continuous validation.
 
 from __future__ import annotations
 
-import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
 
 # Optional watchdog for file system monitoring
 try:
+    from watchdog.events import FileModifiedEvent, FileSystemEventHandler
     from watchdog.observers import Observer
-    from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
 
 # Import bridges for incremental checking
 try:
-    from .meta_architecture_bridge import get_meta_architecture_bridge
-    from .repair_bridge import get_repair_bridge
     from .entanglement_bridge import get_entanglement_bridge
-    from .temporal_bridge import get_temporal_cognition_bridge
+    from .meta_architecture_bridge import get_meta_architecture_bridge
     from .pathology_bridge import get_pathology_aware_bridge
+    from .repair_bridge import get_repair_bridge
+    from .temporal_bridge import get_temporal_cognition_bridge
+
     BRIDGES_AVAILABLE = True
 except ImportError:
     BRIDGES_AVAILABLE = False
@@ -134,15 +134,13 @@ class ArchitectureHealthHistory:
 
         # Keep only recent history
         if len(self.snapshots) > self.max_snapshots:
-            self.snapshots = self.snapshots[-self.max_snapshots:]
+            self.snapshots = self.snapshots[-self.max_snapshots :]
 
         # Detect drift from previous snapshot
         if len(self.snapshots) >= 2:
             self._detect_drift(self.snapshots[-2], snapshot)
 
-    def _detect_drift(
-        self, old: ArchitectureHealthSnapshot, new: ArchitectureHealthSnapshot
-    ):
+    def _detect_drift(self, old: ArchitectureHealthSnapshot, new: ArchitectureHealthSnapshot):
         """Detect architecture drift between two snapshots."""
         metrics = [
             ("syntax", old.syntax_score, new.syntax_score),
@@ -223,7 +221,7 @@ class IncrementalArchitectureChecker:
         arch_files = [
             f
             for f in changed_files
-            if f.endswith(('.py', '.toml', '.yaml', '.yml', '.json', '.md'))
+            if f.endswith((".py", ".toml", ".yaml", ".yml", ".json", ".md"))
         ]
 
         if not arch_files:
@@ -327,9 +325,7 @@ class FileSystemWatcher(FileSystemEventHandler if WATCHDOG_AVAILABLE else object
             return
 
         # Only watch relevant files
-        if not str(event.src_path).endswith(
-            ('.py', '.toml', '.yaml', '.yml', '.json', '.md')
-        ):
+        if not str(event.src_path).endswith((".py", ".toml", ".yaml", ".yml", ".json", ".md")):
             return
 
         rel_path = str(Path(event.src_path).relative_to(self.repo_path))
@@ -352,8 +348,7 @@ class FileSystemWatcher(FileSystemEventHandler if WATCHDOG_AVAILABLE else object
 
 
 class ContinuousMonitoringBridge:
-    """
-    Master bridge for continuous architecture monitoring.
+    """Master bridge for continuous architecture monitoring.
 
     Integrates:
     - File system watching

@@ -1,4 +1,5 @@
 """FACTORY quality_checker stub — Re-exports from 13_FACTORY"""
+
 import sys
 from pathlib import Path
 

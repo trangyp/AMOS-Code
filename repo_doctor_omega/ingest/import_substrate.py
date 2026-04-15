@@ -8,6 +8,7 @@ Resolves Python imports to verify:
 
 Based on Python import resolution rules (PEP 302, PEP 451).
 """
+
 from __future__ import annotations
 
 import ast

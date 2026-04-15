@@ -69,6 +69,7 @@ MAX_KEYTERMS = 50
 
 # ── Helpers ───────────────────────────────────────────────────────────────
 
+
 def split_identifier(name: str) -> list[str]:
     """Split camelCase / PascalCase / kebab-case / snake_case into words.
 
@@ -88,7 +89,9 @@ def _git_branch() -> str | None:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            capture_output=True, text=True, timeout=3,
+            capture_output=True,
+            text=True,
+            timeout=3,
         )
         branch = result.stdout.strip()
         return branch if branch and branch != "HEAD" else None
@@ -101,7 +104,9 @@ def _project_root() -> Path | None:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True, text=True, timeout=3,
+            capture_output=True,
+            text=True,
+            timeout=3,
         )
         root = result.stdout.strip()
         if root:
@@ -116,10 +121,14 @@ def _recent_py_files(root: Path, limit: int = 20) -> list[Path]:
     try:
         result = subprocess.run(
             ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
-            capture_output=True, text=True, timeout=5, cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=5,
+            cwd=str(root),
         )
         files = [
-            root / f for f in result.stdout.splitlines()
+            root / f
+            for f in result.stdout.splitlines()
             if f.endswith((".py", ".ts", ".tsx", ".js", ".jsx", ".go", ".rs"))
         ]
         # Sort by mtime descending
@@ -130,6 +139,7 @@ def _recent_py_files(root: Path, limit: int = 20) -> list[Path]:
 
 
 # ── Public API ────────────────────────────────────────────────────────────
+
 
 def get_voice_keyterms(recent_files: list[str] | None = None) -> list[str]:
     """Build a list of keyterms for the STT engine.

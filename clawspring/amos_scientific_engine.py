@@ -1,4 +1,5 @@
 """AMOS Scientific/Research Engine - Domain-specific scientific analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -271,7 +272,7 @@ class AMOSScientificEngine:
             "# AMOS Scientific Analysis Summary",
             "",
             f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+            f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
             "",
             "## Findings by Domain",
             "",
@@ -374,8 +375,7 @@ if __name__ == "__main__":
     print(f"\nAnalyzed {len(results)} domains:")
     for domain, analysis in results.items():
         print(
-            f"  - {domain}: {len(analysis.findings)} findings, "
-            f"confidence={analysis.confidence:.2f}"
+            f"  - {domain}: {len(analysis.findings)} findings, confidence={analysis.confidence:.2f}"
         )
 
     # Full summary

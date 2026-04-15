@@ -8,6 +8,7 @@ Integrates the 3 engines you have open:
 
 Usage: python amos_integrated_workflow.py <task>
 """
+
 import sys
 from pathlib import Path
 
@@ -85,9 +86,9 @@ class IntegratedWorkflow:
 
     def run(self, task: str) -> dict:
         """Run complete 3-phase workflow."""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"🔄 INTEGRATED WORKFLOW: {task[:50]}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         # Phase 1: Coherence
         print("\n[Phase 1] Coherence Validation")
@@ -104,9 +105,9 @@ class IntegratedWorkflow:
         )
 
         # Summary
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("📊 WORKFLOW RESULTS")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
         print(f"  Coherence: {self.coherence_result['confidence']:.2f}")
         print(f"  Prediction: {self.prediction_result['success_probability']:.0%} success")
         print(f"  Execution: {self.execution_result['status']}")
@@ -116,7 +117,7 @@ class IntegratedWorkflow:
         else:
             print(f"\n  ⚠️  WORKFLOW BLOCKED: {self.execution_result.get('reason', 'unknown')}")
 
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         return {
             "coherence": self.coherence_result,

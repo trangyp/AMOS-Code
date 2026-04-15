@@ -1,4 +1,5 @@
 """AMOS Design Language Engine - UX, information architecture, and visual design."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

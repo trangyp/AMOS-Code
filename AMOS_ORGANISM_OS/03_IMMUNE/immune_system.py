@@ -366,7 +366,7 @@ class ImmuneSystem:
 
     def status(self) -> dict[str, Any]:
         """Get immune system status."""
-        risk_counts = {r: 0 for r in RiskLevel}
+        risk_counts = dict.fromkeys(RiskLevel, 0)
         for log in self._audit_logs:
             risk_counts[log.risk_level] += 1
 

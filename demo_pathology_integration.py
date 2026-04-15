@@ -52,7 +52,7 @@ def demo_brain_with_pathologies():
 
     client = BrainClient(".")
     print(f"   Repository path: {Path.cwd()}")
-    print(f"   Brain initialized: ✅")
+    print("   Brain initialized: ✅")
 
     # Get base architectural context
     print("\n" + "-" * 70)
@@ -128,7 +128,9 @@ def demo_brain_with_pathologies():
         if path_result is not None:
             print(f"     Pathology score: {path_result.pathology_score:.2f}")
             print(f"     Approved: {'✅' if path_result.approved else '❌'}")
-            print(f"     Requires review: {'⚠️ yes' if path_result.requires_human_review else '✓ no'}")
+            print(
+                f"     Requires review: {'⚠️ yes' if path_result.requires_human_review else '✓ no'}"
+            )
 
             if path_result.issues:
                 print(f"     Issues ({len(path_result.issues)}):")

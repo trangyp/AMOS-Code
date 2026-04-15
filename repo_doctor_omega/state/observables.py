@@ -2,6 +2,7 @@
 
 Typed facts extracted from repository analysis.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -24,6 +24,7 @@ from typing import Any
 # Import temporal analyzer
 try:
     from repo_doctor.temporal import TemporalAnalyzer, TemporalDrift
+
     TEMPORAL_AVAILABLE = True
 except ImportError:
     TEMPORAL_AVAILABLE = False
@@ -32,6 +33,7 @@ except ImportError:
 try:
     from repo_doctor.state.basis import StateDimension
     from repo_doctor.state_vector import RepoStateVector
+
     STATE_AVAILABLE = True
 except ImportError:
     STATE_AVAILABLE = False
@@ -93,8 +95,7 @@ class DriftAlert:
 
 
 class TemporalCognitionBridge:
-    """
-    Bridge between temporal analysis and AMOS Brain cognition.
+    """Bridge between temporal analysis and AMOS Brain cognition.
 
     Provides:
     - Real-time drift monitoring
@@ -191,8 +192,7 @@ class TemporalCognitionBridge:
         invariant_name: str,
         max_commits: int = 50,
     ) -> FirstBadCommitResult | None:
-        """
-        Find t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
+        """Find t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 
         Args:
             invariant_name: The invariant to check
@@ -411,12 +411,14 @@ class TemporalCognitionBridge:
                 # 3. Record the state
 
                 # For now, add placeholder
-                history.append({
-                    "hash": commit[:12],
-                    "timestamp": "",
-                    "invariants": {invariant_name: True},  # Placeholder
-                    "state": {},
-                })
+                history.append(
+                    {
+                        "hash": commit[:12],
+                        "timestamp": "",
+                        "invariants": {invariant_name: True},  # Placeholder
+                        "state": {},
+                    }
+                )
 
         except Exception:
             pass

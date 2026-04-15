@@ -1,5 +1,4 @@
-"""BRAIN module — Alias for 01_BRAIN
-"""
+"""BRAIN module — Alias for 01_BRAIN"""
 
 # Re-export from 01_BRAIN
 import sys

@@ -660,8 +660,7 @@ class LedgerChainComplex:
             return "No outcome"
         final = self.entries[-1]
         return (
-            f"Final state: {final.x_t1.identity.identity_marker}, "
-            f"ledger size: {len(self.entries)}"
+            f"Final state: {final.x_t1.identity.identity_marker}, ledger size: {len(self.entries)}"
         )
 
     def replay(self) -> HyperState:

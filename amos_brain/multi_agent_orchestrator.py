@@ -28,6 +28,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity - Layer 24
 """
+
 from __future__ import annotations
 
 import uuid

@@ -1,5 +1,4 @@
-"""Structural Integrity — System integrity checking for AMOS.
-"""
+"""Structural Integrity — System integrity checking for AMOS."""
 
 from dataclasses import dataclass, field
 from datetime import datetime

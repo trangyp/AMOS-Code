@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Hello Hybrid - AMOSL Multi-Substrate Demo."""
+
 import os
 import sys
 
@@ -45,7 +46,7 @@ def main():
         # Classical → Biological
         c_to_b = bridge.execute(BridgeType.C_TO_B, float(i) / 3, threshold=0.3)
         status = "ON" if c_to_b["output"]["activated"] else "OFF"
-        print(f"      C→B: {float(i)/3:.2f} → {status}")
+        print(f"      C→B: {float(i) / 3:.2f} → {status}")
 
         # Record to ledger
         ledger.record(
@@ -76,7 +77,7 @@ def main():
         kernel.state.time,
     ]
     trajectory = evo.run_steps(state_vector, steps=3)
-    print(f"   Evolved {len(trajectory)-1} steps")
+    print(f"   Evolved {len(trajectory) - 1} steps")
     print(f"   Couplings: T_cq={matrix.T_cq}, T_qc={matrix.T_qc}")
 
     print("\n" + "=" * 60)

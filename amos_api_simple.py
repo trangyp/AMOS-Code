@@ -19,6 +19,7 @@ Example:
     -H "Content-Type: application/json" \
     -d '{"problem": "Should we use microservices?"}'
 """
+
 from __future__ import annotations
 
 import argparse

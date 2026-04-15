@@ -107,6 +107,7 @@ class Z3Model:
         Returns:
         -------
             Verification result with contradictions
+
         """
         if not self.is_available():
             return {"available": False, "error": "z3-solver not installed", "violations": []}

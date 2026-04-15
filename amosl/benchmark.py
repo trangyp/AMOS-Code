@@ -6,6 +6,7 @@ Measures and validates field-theoretic performance:
     - Verification throughput
     - Scalability metrics
 """
+
 from __future__ import annotations
 
 import statistics

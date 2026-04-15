@@ -61,7 +61,7 @@ async def demo_runner():
         print("\n[5] Running 3 cycles...")
         for i in range(3):
             await runner._process_cycle()
-            print(f"   ✓ Cycle {i+1} complete")
+            print(f"   ✓ Cycle {i + 1} complete")
             await asyncio.sleep(0.5)
 
         print("\n[6] Status check:")

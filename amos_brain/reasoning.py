@@ -1,4 +1,5 @@
 """Reasoning engines implementing Rule of 2, Rule of 4, and structural analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -8,6 +9,7 @@ from typing import Any
 @dataclass
 class Perspective:
     """A single perspective in dual analysis."""
+
     name: str
     viewpoint: str
     supporting_evidence: list[str] = field(default_factory=list)
@@ -17,6 +19,7 @@ class Perspective:
 @dataclass
 class Quadrant:
     """One of the four analysis quadrants."""
+
     name: str
     description: str
     factors: list[str] = field(default_factory=list)
@@ -25,14 +28,12 @@ class Quadrant:
 
 
 class RuleOfTwo:
-    """
-    Rule of 2 implementation: All analysis must check at least two
+    """Rule of 2 implementation: All analysis must check at least two
     contrasting perspectives or hypotheses.
     """
 
     def analyze(self, problem: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        """
-        Perform dual-perspective analysis.
+        """Perform dual-perspective analysis.
 
         Returns analysis with primary and alternative perspectives.
         """
@@ -43,7 +44,7 @@ class RuleOfTwo:
             name="Primary (Internal/Micro Focus)",
             viewpoint=f"Direct analysis of: {problem}",
             supporting_evidence=["Immediate observable factors", "Direct causal relationships"],
-            limitations=["May miss systemic patterns", "Limited temporal scope"]
+            limitations=["May miss systemic patterns", "Limited temporal scope"],
         )
 
         # Generate alternative perspective (external/macro/long-term view)
@@ -51,7 +52,7 @@ class RuleOfTwo:
             name="Alternative (External/Macro Focus)",
             viewpoint=f"Contextual/systemic view of: {problem}",
             supporting_evidence=["Long-term trends", "Environmental/systemic factors"],
-            limitations=["May miss immediate specifics", "Higher uncertainty in predictions"]
+            limitations=["May miss immediate specifics", "Higher uncertainty in predictions"],
         )
 
         # Synthesis
@@ -62,7 +63,7 @@ class RuleOfTwo:
             "perspectives": [primary, alternative],
             "synthesis": synthesis,
             "confidence": self._calculate_confidence(primary, alternative),
-            "recommendation": synthesis.get("recommended_path", "Further analysis needed")
+            "recommendation": synthesis.get("recommended_path", "Further analysis needed"),
         }
 
     def _synthesize(self, p1: Perspective, p2: Perspective, problem: str) -> dict[str, Any]:
@@ -78,9 +79,9 @@ class RuleOfTwo:
             "gaps": all_limitations,
             "complementary_insights": [
                 f"Primary view: {p1.viewpoint}",
-                f"Alternative view: {p2.viewpoint}"
+                f"Alternative view: {p2.viewpoint}",
             ],
-            "recommended_path": self._recommend_path(p1, p2)
+            "recommended_path": self._recommend_path(p1, p2),
         }
 
     def _recommend_path(self, p1: Perspective, p2: Perspective) -> str:
@@ -101,8 +102,7 @@ class RuleOfTwo:
 
 
 class RuleOfFour:
-    """
-    Rule of 4 implementation: For important systems, consider four entangled quadrants:
+    """Rule of 4 implementation: For important systems, consider four entangled quadrants:
     1. Biological/Human
     2. Technical/Infrastructural
     3. Economic/Organizational
@@ -110,39 +110,38 @@ class RuleOfFour:
     """
 
     QUADRANTS = {
-        'biological': Quadrant(
+        "biological": Quadrant(
             name="Biological/Human",
             description="Human factors, biological constraints, health, cognition, behavior",
             factors=["Human capacity", "Biological limits", "Cognitive load", "Wellbeing"],
             risks=["Burnout", "Health degradation", "Skill gaps"],
-            opportunities=["Human creativity", "Adaptability", "Learning"]
+            opportunities=["Human creativity", "Adaptability", "Learning"],
         ),
-        'technical': Quadrant(
+        "technical": Quadrant(
             name="Technical/Infrastructural",
             description="Technical systems, infrastructure, code, architecture",
             factors=["System reliability", "Technical debt", "Scalability", "Security"],
             risks=["System failure", "Security breaches", "Technical obsolescence"],
-            opportunities=["Automation", "Efficiency gains", "Innovation"]
+            opportunities=["Automation", "Efficiency gains", "Innovation"],
         ),
-        'economic': Quadrant(
+        "economic": Quadrant(
             name="Economic/Organizational",
             description="Economic factors, organizational structure, incentives",
             factors=["Cost structure", "ROI", "Organizational capacity", "Stakeholder alignment"],
             risks=["Budget overrun", "Resource constraints", "Misalignment"],
-            opportunities=["Cost savings", "New revenue", "Efficiency"]
+            opportunities=["Cost savings", "New revenue", "Efficiency"],
         ),
-        'environmental': Quadrant(
+        "environmental": Quadrant(
             name="Environmental/Planetary",
             description="Environmental impact, sustainability, planetary boundaries",
             factors=["Resource consumption", "Emissions", "Ecosystem impact", "Sustainability"],
             risks=["Environmental harm", "Regulatory non-compliance", "Reputation damage"],
-            opportunities=["Sustainability leadership", "Efficiency", "Resilience"]
-        )
+            opportunities=["Sustainability leadership", "Efficiency", "Resilience"],
+        ),
     }
 
     def analyze(self, problem: str, required_quadrants: set[str] | None = None) -> dict[str, Any]:
-        """
-        Perform four-quadrant analysis.
+        """Perform four-quadrant analysis.
 
         Args:
             problem: The problem or system to analyze
@@ -151,7 +150,11 @@ class RuleOfFour:
         Returns:
             Analysis results with all quadrants, cross-impacts, and recommendations
         """
-        required = set(required_quadrants) if required_quadrants is not None else set(self.QUADRANTS.keys())
+        required = (
+            set(required_quadrants)
+            if required_quadrants is not None
+            else set(self.QUADRANTS.keys())
+        )
         ordered_required = [key for key in self.QUADRANTS.keys() if key in required]
 
         # Analyze each quadrant
@@ -173,7 +176,7 @@ class RuleOfFour:
             "cross_impacts": cross_impacts,
             "integration": integration,
             "completeness_score": len(quadrant_results) / len(required) if required else 1.0,
-            "missing_quadrants": [key for key in ordered_required if key not in quadrant_results]
+            "missing_quadrants": [key for key in ordered_required if key not in quadrant_results],
         }
 
     def _analyze_quadrant(self, quadrant: Quadrant, problem: str) -> dict[str, Any]:
@@ -182,8 +185,10 @@ class RuleOfFour:
             "name": quadrant.name,
             "relevant_factors": [f for f in quadrant.factors if self._is_relevant(f, problem)],
             "applicable_risks": [r for r in quadrant.risks if self._is_relevant(r, problem)],
-            "potential_opportunities": [o for o in quadrant.opportunities if self._is_relevant(o, problem)],
-            "priority": self._assess_priority(quadrant, problem)
+            "potential_opportunities": [
+                o for o in quadrant.opportunities if self._is_relevant(o, problem)
+            ],
+            "priority": self._assess_priority(quadrant, problem),
         }
 
     def _is_relevant(self, factor: str, problem: str) -> bool:
@@ -206,16 +211,20 @@ class RuleOfFour:
         impacts = []
         keys = list(quadrants.keys())
         for i, k1 in enumerate(keys):
-            for k2 in keys[i+1:]:
-                impacts.append({
-                    "from": quadrants[k1]["name"],
-                    "to": quadrants[k2]["name"],
-                    "type": "bidirectional_influence",
-                    "notes": f"Changes in {k1} affect {k2} and vice versa"
-                })
+            for k2 in keys[i + 1 :]:
+                impacts.append(
+                    {
+                        "from": quadrants[k1]["name"],
+                        "to": quadrants[k2]["name"],
+                        "type": "bidirectional_influence",
+                        "notes": f"Changes in {k1} affect {k2} and vice versa",
+                    }
+                )
         return impacts
 
-    def _integrate_quadrants(self, quadrants: dict[str, Any], impacts: list[dict[str, Any]]) -> dict[str, Any]:
+    def _integrate_quadrants(
+        self, quadrants: dict[str, Any], impacts: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Integrate all quadrants into unified recommendation."""
         high_priority = [k for k, v in quadrants.items() if v.get("priority") == "HIGH"]
 
@@ -223,7 +232,7 @@ class RuleOfFour:
             "key_quadrants": high_priority,
             "critical_factors": self._extract_critical_factors(quadrants),
             "risk_summary": self._summarize_risks(quadrants),
-            "integrated_recommendation": self._generate_recommendation(quadrants, high_priority)
+            "integrated_recommendation": self._generate_recommendation(quadrants, high_priority),
         }
 
     def _extract_critical_factors(self, quadrants: dict[str, Any]) -> list[str]:
@@ -237,8 +246,7 @@ class RuleOfFour:
     def _summarize_risks(self, quadrants: dict[str, Any]) -> dict[str, int]:
         """Summarize risk counts by category."""
         return {
-            q_name: len(q_data.get("applicable_risks", []))
-            for q_name, q_data in quadrants.items()
+            q_name: len(q_data.get("applicable_risks", [])) for q_name, q_data in quadrants.items()
         }
 
     def _generate_recommendation(self, quadrants: dict[str, Any], high_priority: list[str]) -> str:
@@ -246,24 +254,23 @@ class RuleOfFour:
         if len(high_priority) >= 3:
             return f"Multi-domain challenge requiring coordinated approach across: {', '.join(high_priority)}"
         elif len(high_priority) == 2:
-            return f"Focus on integration between {high_priority[0]} and {high_priority[1]} dimensions"
+            return (
+                f"Focus on integration between {high_priority[0]} and {high_priority[1]} dimensions"
+            )
         elif len(high_priority) == 1:
             return f"Primarily a {high_priority[0]} challenge; other domains provide supporting context"
         return "Insufficient quadrant coverage for specific recommendation"
 
 
 class ReasoningEngine:
-    """
-    Main reasoning engine combining Rule of 2 and Rule of 4.
-    """
+    """Main reasoning engine combining Rule of 2 and Rule of 4."""
 
     def __init__(self):
         self.rule_of_two = RuleOfTwo()
         self.rule_of_four = RuleOfFour()
 
     def full_analysis(self, problem: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        """
-        Perform complete AMOS-compliant analysis.
+        """Perform complete AMOS-compliant analysis.
 
         Combines Rule of 2 (dual perspectives) with Rule of 4 (four quadrants).
         """
@@ -284,7 +291,7 @@ class ReasoningEngine:
             "structural_integrity_score": validation.get("integrity_score", 0.0),
             "recommendations": self._synthesize_recommendations(dual_analysis, quadrant_analysis),
             "assumptions": self._extract_assumptions(dual_analysis, quadrant_analysis),
-            "uncertainty_flags": self._identify_uncertainties(dual_analysis, quadrant_analysis)
+            "uncertainty_flags": self._identify_uncertainties(dual_analysis, quadrant_analysis),
         }
 
     def _cross_validate(self, dual: dict[str, Any], quadrants: dict[str, Any]) -> dict[str, Any]:
@@ -296,16 +303,20 @@ class ReasoningEngine:
         quad_names = set(quadrants.get("quadrants_analyzed", []))
         # Perspectives should ideally cover multiple quadrants
 
-        integrity_score = quadrants.get("completeness_score", 0.0) * 0.5 + dual.get("confidence", 0.0) * 0.5
+        integrity_score = (
+            quadrants.get("completeness_score", 0.0) * 0.5 + dual.get("confidence", 0.0) * 0.5
+        )
 
         return {
             "consistent": len(issues) == 0,
             "issues": issues,
             "integrity_score": integrity_score,
-            "coverage": f"{len(quad_names)} quadrants, {len(dual.get('perspectives', []))} perspectives"
+            "coverage": f"{len(quad_names)} quadrants, {len(dual.get('perspectives', []))} perspectives",
         }
 
-    def _synthesize_recommendations(self, dual: dict[str, Any], quadrants: dict[str, Any]) -> list[str]:
+    def _synthesize_recommendations(
+        self, dual: dict[str, Any], quadrants: dict[str, Any]
+    ) -> list[str]:
         """Synthesize final recommendations from both rules."""
         recs = []
 

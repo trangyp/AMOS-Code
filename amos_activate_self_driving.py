@@ -10,6 +10,7 @@ Activates the self-driving loop for continuous autonomous operation:
 
 Usage: python amos_activate_self_driving.py [goal]
 """
+
 import sys
 from pathlib import Path
 

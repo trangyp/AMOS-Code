@@ -13,6 +13,7 @@ Usage:
     plugin = AMOSPlugin()
     plugin.enable()
 """
+
 from __future__ import annotations
 
 import os

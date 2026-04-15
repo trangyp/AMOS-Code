@@ -9,6 +9,7 @@ Activates the complete AMOS ecosystem:
 
 Usage: python amos_activate_full_system.py [--demo] [--operational]
 """
+
 import sys
 from pathlib import Path
 
@@ -48,7 +49,7 @@ class FullSystemActivator:
 
             print(f"    ✓ Main engines: {self.status['brain']['main_engines']}")
             print(f"    ✓ Legacy engines: {self.status['brain']['legacy_engines']}")
-            print(f"    ✓ Total knowledge: {self.status['brain']['total_kb']/1024:.1f} MB")
+            print(f"    ✓ Total knowledge: {self.status['brain']['total_kb'] / 1024:.1f} MB")
 
             self.activated_components.append("Brain + Extended Knowledge")
             return {"success": True}

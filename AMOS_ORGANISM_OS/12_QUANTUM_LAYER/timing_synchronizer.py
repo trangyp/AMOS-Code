@@ -1,4 +1,5 @@
 """Timing Synchronizer for AMOS"""
+
 from __future__ import annotations
 
 import json

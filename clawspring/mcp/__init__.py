@@ -31,6 +31,7 @@ MCP tools are automatically discovered on startup and registered into the
 tool_registry under the name  mcp__<server>__<tool>.
 Claude can invoke them just like built-in tools.
 """
+
 from .client import (  # noqa: F401
     MCPClient,
     MCPManager,

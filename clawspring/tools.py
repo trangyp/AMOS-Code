@@ -1,4 +1,5 @@
 """Tool definitions and implementations for ClawSpring."""
+
 import difflib
 import glob as _glob
 import json

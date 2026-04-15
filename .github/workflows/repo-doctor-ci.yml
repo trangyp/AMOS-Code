@@ -1,0 +1,214 @@
+name: Repo Doctor Ω∞∞∞∞ - Repository Health Check
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - quick
+          - full
+          - sensors
+
+jobs:
+  repo-doctor-scan:
+    name: Repository Health Scan
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+      checks: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for temporal analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache AMOS Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-amos-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-amos-
+
+      - name: Install AMOS + Repo Doctor
+        run: |
+          python -m pip install --upgrade pip
+          # Install repo_doctor from local source
+          pip install -e .
+          # Install external sensor dependencies
+          pip install bandit safety ruff pyright pip-audit deptry
+          # Optional: Z3 solver for repair optimization
+          pip install z3-solver || echo "Z3 installation optional"
+
+      - name: Run Repo Doctor - Quick Scan
+        if: github.event.inputs.scan_type == 'quick' || github.event_name == 'push'
+        id: quick_scan
+        run: |
+          python -m repo_doctor.cli scan . --json > repo_doctor_report.json || true
+          cat repo_doctor_report.json | python -m json.tool > repo_doctor_report_formatted.json || cat repo_doctor_report.json
+        continue-on-error: true
+
+      - name: Run Repo Doctor - Full Scan
+        if: github.event.inputs.scan_type == 'full' || github.event_name == 'pull_request' || github.event_name == 'schedule'
+        id: full_scan
+        run: |
+          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_full_report.json || true
+          cat repo_doctor_full_report.json | python -m json.tool > repo_doctor_full_report_formatted.json || cat repo_doctor_full_report.json
+        continue-on-error: true
+
+      - name: Run Repo Doctor - Sensor Scan
+        if: github.event.inputs.scan_type == 'sensors'
+        id: sensor_scan
+        run: |
+          python -m repo_doctor.cli scan . --sensors --json > repo_doctor_sensor_report.json || true
+        continue-on-error: true
+
+      - name: Analyze Repository Energy
+        id: energy_analysis
+        run: |
+          echo "## Repository Energy State" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f repo_doctor_full_report.json ]; then
+            python3 scripts/ci_report_parser.py summary repo_doctor_full_report.json \
+              bandit_report.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
+              python3 scripts/ci_report_parser.py summary repo_doctor_full_report.json \
+              >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not generate summary"
+          fi
+
+      - name: Check Hard Invariants
+        id: invariant_check
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Hard Invariant Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f repo_doctor_full_report.json ]; then
+            python3 scripts/ci_report_parser.py invariants repo_doctor_full_report.json \
+              >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not check invariants"
+          fi
+
+      - name: Security Sensor Results
+        id: security_check
+        run: |
+          # Run bandit for security scan
+          bandit -r . -f json -o bandit_report.json || true
+
+      - name: Upload Scan Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: repo-doctor-reports
+          path: |
+            repo_doctor_*.json
+            bandit_report.json
+          retention-days: 30
+
+      - name: Post PR Comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the report
+            let report = {};
+            try {
+              const reportData = fs.readFileSync('repo_doctor_full_report.json', 'utf8');
+              report = JSON.parse(reportData);
+            } catch (e) {
+              console.log('Could not read report:', e.message);
+            }
+            
+            const energy = report.energy || 'N/A';
+            const failures = report.hard_invariant_failures || [];
+            const status = failures.length === 0 ? '✅ PASS' : '❌ FAIL';
+            
+            const body = `## Repo Doctor Ω∞∞∞∞ - Repository Health Check
+            
+            **Status:** ${status}
+            **Energy:** ${energy}
+            **Failed Invariants:** ${failures.length}
+            
+            ${failures.length > 0 ? '### Failed Invariants:\n' + failures.map(f => `- ${f}`).join('\n') : 'All invariants passing!'}
+            
+            <details>
+            <summary>View Full Report</summary>
+            
+            \`\`\`json
+            ${JSON.stringify(report, null, 2)}
+            \`\`\`
+            
+            </details>
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Set Check Status
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let report = {};
+            try {
+              const reportData = fs.readFileSync('repo_doctor_full_report.json', 'utf8');
+              report = JSON.parse(reportData);
+            } catch (e) {
+              console.log('Could not read report');
+            }
+            
+            const failures = report.hard_invariant_failures || [];
+            const conclusion = failures.length === 0 ? 'success' : 'failure';
+            
+            // Create check run
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Repo Doctor Ω∞∞∞∞',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: `Repo Doctor - ${failures.length === 0 ? 'Healthy' : 'Issues Found'}`,
+                summary: `Energy: ${report.energy || 'N/A'} | Failed Invariants: ${failures.length}`,
+                text: `Repository health check completed. See job summary for details.`
+              }
+            });
+
+      - name: Fail on Critical Issues
+        if: always()
+        run: |
+          # Check if any critical invariants failed
+          if [ -f repo_doctor_full_report.json ]; then
+            python3 scripts/ci_report_parser.py critical repo_doctor_full_report.json || {
+              echo "::error::Critical invariants failed (Parse or Security). Blocking merge."
+              exit 1
+            }
+          fi

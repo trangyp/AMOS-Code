@@ -4,6 +4,7 @@
 Checks environment and fixes common setup issues.
 Run: python setup_amos.py
 """
+
 from __future__ import annotations
 
 import json

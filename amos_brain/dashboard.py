@@ -1,4 +1,5 @@
 """AMOS Brain Dashboard - Analytics and reporting for reasoning patterns."""
+
 from __future__ import annotations
 
 from collections import defaultdict

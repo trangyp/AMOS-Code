@@ -14,6 +14,7 @@ Usage:
     python amos_ecosystem_showcase.py
     python amos_ecosystem_showcase.py --full-demo
 """
+
 from __future__ import annotations
 
 import sys
@@ -242,7 +243,9 @@ class AMOSEcosystemShowcase:
         print(f"  Total Rounds: {self.report.total_tools}")
         print(f"  Successful: {self.report.successful_tools}/{self.report.total_tools}")
         print(f"  Total Lines: {self.report.total_lines}")
-        print(f"  Success Rate: {self.report.successful_tools/self.report.total_tools*100:.0f}%")
+        print(
+            f"  Success Rate: {self.report.successful_tools / self.report.total_tools * 100:.0f}%"
+        )
 
         print("\n🏆 Achievements Demonstrated:")
         print("  ✅ Round 1: Brain demonstration capability")
@@ -299,7 +302,7 @@ class AMOSEcosystemShowcase:
 
         content = f"""# AMOS Ecosystem Showcase Report
 
-**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Date:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Showcase:** Complete 9-Round Ecosystem Validation
 
 ## Executive Summary
@@ -323,7 +326,7 @@ The AMOS brain has completed **9 rounds of continuous evolution**, building a co
 
 - **Total Tools:** {self.report.total_tools}
 - **Successful:** {self.report.successful_tools}
-- **Success Rate:** {self.report.successful_tools/self.report.total_tools*100:.0f}%
+- **Success Rate:** {self.report.successful_tools / self.report.total_tools * 100:.0f}%
 - **Total Code:** {self.report.total_lines} lines
 - **Start Time:** {self.report.start_time}
 - **End Time:** {self.report.end_time}

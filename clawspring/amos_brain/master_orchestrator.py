@@ -242,4 +242,4 @@ if __name__ == "__main__":
     for tid, desc, priority in test_tasks:
         result = orchestrate_task(tid, desc, priority)
         status_icon = "✓" if result.overall_success else "✗"
-        print(f"  {status_icon} {tid}: {result.domain} " f"({result.total_duration_ms:.1f}ms)")
+        print(f"  {status_icon} {tid}: {result.domain} ({result.total_duration_ms:.1f}ms)")

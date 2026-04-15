@@ -10,6 +10,7 @@ Dynamically scans the codebase to catalog:
 
 Usage: python amos_deep_inventory.py [--scan] [--export]
 """
+
 import ast
 import json
 import subprocess

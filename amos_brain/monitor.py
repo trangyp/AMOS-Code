@@ -1,4 +1,5 @@
 """AMOS Brain Cognitive Monitor - Observability and monitoring system."""
+
 from __future__ import annotations
 
 import json
@@ -284,7 +285,7 @@ class CognitiveMonitor:
                     {
                         "type": "reasoning_time_spike",
                         "severity": "warning",
-                        "message": f"Reasoning time increased {recent_avg/avg:.1f}x",
+                        "message": f"Reasoning time increased {recent_avg / avg:.1f}x",
                         "avg_before": avg,
                         "avg_recent": recent_avg,
                     }
@@ -341,7 +342,7 @@ class CognitiveMonitor:
     ):
         """Create a monitoring alert."""
         alert = Alert(
-            alert_id=f"ALERT-{len(self._alerts)+1:04d}",
+            alert_id=f"ALERT-{len(self._alerts) + 1:04d}",
             timestamp=datetime.now().isoformat(),
             severity=severity,
             metric=metric,

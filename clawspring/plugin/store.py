@@ -1,4 +1,5 @@
 """Plugin store: install/uninstall/enable/disable/update + config persistence."""
+
 from __future__ import annotations
 
 import json

@@ -1,4 +1,5 @@
 """I_pack = 1 iff build metadata describes the same runtime surface."""
+
 from __future__ import annotations
 
 from typing import Any

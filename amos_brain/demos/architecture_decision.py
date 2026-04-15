@@ -7,6 +7,7 @@ Demonstrates the ArchitectureDecision cookbook recipe.
 Usage:
   python architecture_decision.py
 """
+
 from amos_brain import ArchitectureDecision
 
 

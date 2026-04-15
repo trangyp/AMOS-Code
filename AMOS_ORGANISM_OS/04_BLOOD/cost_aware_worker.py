@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Cost-Aware Worker (04_BLOOD Integration)
+"""AMOS Cost-Aware Worker (04_BLOOD Integration)
 ==============================================
 
 Worker engine enhanced with cost tracking via BLOOD subsystem.
@@ -17,9 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 # Add paths for imports
-sys.path.insert(
-    0, str(Path(__file__).parent.parent / "06_MUSCLE")
-)
+sys.path.insert(0, str(Path(__file__).parent.parent / "06_MUSCLE"))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from amos_worker_engine import AmosWorkerEngine, WorkerResult
@@ -27,8 +24,7 @@ from financial_engine import FinancialEngine
 
 
 class CostAwareWorker(AmosWorkerEngine):
-    """
-    Worker with cost awareness via BLOOD subsystem.
+    """Worker with cost awareness via BLOOD subsystem.
     Tracks resource costs for every task.
     """
 
@@ -37,14 +33,9 @@ class CostAwareWorker(AmosWorkerEngine):
         self.blood = FinancialEngine(organism_root)
 
     def execute_with_budget(
-        self,
-        plan: Dict[str, Any],
-        context: Optional[Dict] = None,
-        budget_category: str = "compute"
+        self, plan: Dict[str, Any], context: Optional[Dict] = None, budget_category: str = "compute"
     ) -> WorkerResult:
-        """
-        Execute plan with cost tracking.
-        """
+        """Execute plan with cost tracking."""
         # Check budget before execution
         budget_status = self.blood.get_budget_status(budget_category)
         if budget_status and budget_status["remaining"] <= 0:
@@ -52,10 +43,7 @@ class CostAwareWorker(AmosWorkerEngine):
                 success=False,
                 output=f"Budget exhausted for {budget_category}",
                 artifacts=[],
-                metadata={
-                    "budget_exhausted": True,
-                    "category": budget_category
-                }
+                metadata={"budget_exhausted": True, "category": budget_category},
             )
 
         # Estimate costs
@@ -63,10 +51,7 @@ class CostAwareWorker(AmosWorkerEngine):
         total_estimate = 0.0
         for step in steps:
             complexity = step.get("complexity", "medium")
-            estimate = self.blood.estimate_task_cost(
-                complexity=complexity,
-                duration_minutes=5.0
-            )
+            estimate = self.blood.estimate_task_cost(complexity=complexity, duration_minutes=5.0)
             total_estimate += estimate["estimated_cost"]
 
         # Check if estimate fits budget
@@ -79,8 +64,8 @@ class CostAwareWorker(AmosWorkerEngine):
                     metadata={
                         "over_budget": True,
                         "estimate": total_estimate,
-                        "remaining": budget_status["remaining"]
-                    }
+                        "remaining": budget_status["remaining"],
+                    },
                 )
 
         # Allocate resources
@@ -89,7 +74,7 @@ class CostAwareWorker(AmosWorkerEngine):
             task_id=task_id,
             cpu_units=len(steps) * 1.0,
             memory_mb=len(steps) * 512.0,
-            priority=plan.get("priority", 5)
+            priority=plan.get("priority", 5),
         )
 
         print(f"[BLOOD] Allocated: ${allocation.cost_estimate:.4f} est")
@@ -132,9 +117,9 @@ def main() -> int:
                 "action": "write_file",
                 "target_file": "test_output/cost_test.txt",
                 "content": "Cost-aware test output",
-                "complexity": "low"
+                "complexity": "low",
             }
-        ]
+        ],
     }
 
     print("\nExecuting cost-aware plan...")

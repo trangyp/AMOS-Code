@@ -1,4 +1,5 @@
 """Brain configuration loader - loads and validates AMOS brain JSON specs."""
+
 from __future__ import annotations
 
 import asyncio
@@ -11,6 +12,7 @@ from typing import Any
 @dataclass
 class BrainConfig:
     """Runtime brain configuration."""
+
     name: str = "AMOS_FULL_BRAIN_OS"
     version: str = "vInfinity_merged_2"
     domains: list[str] = field(default_factory=list)
@@ -75,7 +77,7 @@ class BrainLoader:
 
     def _load_master_brain(self, path: Path) -> None:
         """Load AMOS_Brain_Master_Os_v0.json."""
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
         if isinstance(data, list) and len(data) > 0:
@@ -83,24 +85,24 @@ class BrainLoader:
         else:
             spec = data
 
-        self._raw_specs['master'] = spec
+        self._raw_specs["master"] = spec
         self._config.loaded_specs.append("master")
-        meta = spec.get('meta', {})
+        meta = spec.get("meta", {})
 
-        self._config.name = spec.get('name', self._config.name)
-        self._config.version = spec.get('version', self._config.version)
-        self._config.domains = meta.get('coverage', {}).get('domains', [])
-        self._config.ubi_domains = meta.get('coverage', {}).get('ubi_domains', [])
-        self._config.gap_management = spec.get('gap_management', {})
+        self._config.name = spec.get("name", self._config.name)
+        self._config.version = spec.get("version", self._config.version)
+        self._config.domains = meta.get("coverage", {}).get("domains", [])
+        self._config.ubi_domains = meta.get("coverage", {}).get("ubi_domains", [])
+        self._config.gap_management = spec.get("gap_management", {})
 
         # Extract engines from components
-        components = spec.get('components', {})
-        brain_core = components.get('brain_core', {})
-        self._config.engines = brain_core.get('engines', {})
+        components = spec.get("components", {})
+        brain_core = components.get("brain_core", {})
+        self._config.engines = brain_core.get("engines", {})
 
     def _load_agent_os(self, path: Path) -> None:
         """Load AMOS_Os_Agent_v0.json for global laws and reasoning constraints."""
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
         if isinstance(data, list) and len(data) > 0:
@@ -108,19 +110,19 @@ class BrainLoader:
         else:
             spec = data
 
-        self._raw_specs['agent'] = spec
+        self._raw_specs["agent"] = spec
         self._config.loaded_specs.append("agent")
-        components = spec.get('components', {})
-        brain_root = components.get('AMOS_BRAIN_ROOT.json', {})
+        components = spec.get("components", {})
+        brain_root = components.get("AMOS_BRAIN_ROOT.json", {})
 
-        self._config.global_laws = brain_root.get('global_laws', {})
-        self._config.reasoning_constraints = brain_root.get('reasoning_constraints', {})
+        self._config.global_laws = brain_root.get("global_laws", {})
+        self._config.reasoning_constraints = brain_root.get("reasoning_constraints", {})
 
     def _load_intelligences(self, path: Path) -> None:
         """Load all 7 Intelligences engine specs."""
         for json_file in path.glob("*.json"):
             try:
-                with open(json_file, 'r', encoding='utf-8') as f:
+                with open(json_file, encoding="utf-8") as f:
                     data = json.load(f)
                 self._raw_specs[f"intel_{json_file.stem}"] = data
             except Exception:
@@ -139,8 +141,7 @@ class BrainLoader:
         loop = asyncio.get_event_loop()
         try:
             return await asyncio.wait_for(
-                loop.run_in_executor(None, self.load),
-                timeout=timeout_seconds
+                loop.run_in_executor(None, self.load), timeout=timeout_seconds
             )
         except asyncio.TimeoutError:
             # Return a minimal config on timeout to prevent hanging
@@ -156,11 +157,11 @@ class BrainLoader:
                 stack_data[category_name] = []
                 for json_file in category_dir.glob("*.json"):
                     try:
-                        with open(json_file, 'r', encoding='utf-8') as f:
+                        with open(json_file, encoding="utf-8") as f:
                             stack_data[category_name].append(json.load(f))
                     except Exception:
                         pass
-        self._raw_specs['cognitive_stack'] = stack_data
+        self._raw_specs["cognitive_stack"] = stack_data
         self._config.loaded_specs.append("cognitive_stack")
 
     def get_raw_spec(self, name: str) -> Any:
@@ -174,7 +175,7 @@ class BrainLoader:
     def get_gap_rules(self) -> list[str]:
         """Get irreducible limits from gap management."""
         if self._config:
-            return self._config.gap_management.get('irreducible_limits', [])
+            return self._config.gap_management.get("irreducible_limits", [])
         return []
 
 

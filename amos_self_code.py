@@ -313,8 +313,9 @@ class SelfImprovement:
             "action": "Generate docstring from name and parameters",
         },
         "improve_naming": {
-            "detect": lambda entity: len(entity.get("name", "")) < 3
-            or "_" not in entity.get("name", ""),
+            "detect": lambda entity: (
+                len(entity.get("name", "")) < 3 or "_" not in entity.get("name", "")
+            ),
             "action": "Suggest clearer name following conventions",
         },
         "add_type_hints": {

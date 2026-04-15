@@ -15,6 +15,7 @@ Tests:
     6. Context integration
     7. Cognitive router
 """
+
 from __future__ import annotations
 
 import argparse
@@ -220,9 +221,9 @@ class TestRunner:
             # Just verify the function works and returns a dict
             status = get_amos_status()
             assert isinstance(status, dict), "Status should be a dict"
-            assert (
-                "enabled" in status or "error" in status
-            ), "Status should have enabled or error key"
+            assert "enabled" in status or "error" in status, (
+                "Status should have enabled or error key"
+            )
 
         self._test("Status", test)
 

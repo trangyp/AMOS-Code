@@ -103,6 +103,7 @@ class AuthorityInversionDetector:
     - tests more authoritative than implementation
     - launcher menu more accurate than shell registry
     - docs maintained separately from actual interface
+
     """
 
     # Layer hierarchy: lower = more canonical
@@ -398,6 +399,7 @@ class LayerLeakageDetector:
     - packaging layout changing runtime semantics
     - codegen output changing test oracle assumptions
     - shell aliases substituting for API compatibility
+
     """
 
     LAYERS = ["source", "build", "package", "install", "runtime", "observability"]
@@ -584,6 +586,7 @@ class BootstrapPathValidator:
     - migrations must have run before CLI starts
     - one package must be installed editable for another to resolve
     - local executable on PATH required
+
     """
 
     def __init__(self, repo_path: str | Path):
@@ -778,6 +781,7 @@ class ShadowDependencyDetector:
     - external network endpoint
     - dynamic plugin discovered at runtime
     - filesystem layout assumption
+
     """
 
     def __init__(self, repo_path: str | Path):
@@ -978,6 +982,7 @@ class ArtifactChainValidator:
     - wheel omits top-level module
     - console script resolves locally but not from package
     - source and artifact expose different mode surfaces
+
     """
 
     def __init__(self, repo_path: str | Path):

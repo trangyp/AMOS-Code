@@ -15,6 +15,7 @@ Provides commands:
 Usage:
   python amos_brain_cli.py
 """
+
 from __future__ import annotations
 
 import os

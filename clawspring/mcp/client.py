@@ -1,4 +1,5 @@
 """MCP client: stdio and HTTP/SSE transports, JSON-RPC 2.0 protocol."""
+
 from __future__ import annotations
 
 import json

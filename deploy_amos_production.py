@@ -14,6 +14,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity - Layer 21
 """
+
 from __future__ import annotations
 
 import argparse
@@ -226,9 +227,9 @@ class ProductionDeployer:
         Returns:
             Deployment result with status and report
         """
-        print(f"\n{'='*66}")
+        print(f"\n{'=' * 66}")
         print(f"AMOS PRODUCTION DEPLOYMENT - {self.deployment_id}")
-        print(f"{'='*66}\n")
+        print(f"{'=' * 66}\n")
 
         # Step 1: Pre-flight
         print("Step 1: Running pre-flight checks...")
@@ -315,9 +316,9 @@ class ProductionDeployer:
         # Final status
         deployment["status"] = "success" if verify_result["status"] == "verified" else "partial"
 
-        print(f"\n{'='*66}")
+        print(f"\n{'=' * 66}")
         print(f"DEPLOYMENT {deployment['status'].upper()}: {self.deployment_id}")
-        print(f"{'='*66}\n")
+        print(f"{'=' * 66}\n")
 
         # Save deployment report
         self._save_report(deployment)

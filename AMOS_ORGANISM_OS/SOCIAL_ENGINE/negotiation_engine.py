@@ -1,4 +1,5 @@
 """SOCIAL_ENGINE negotiation_engine stub — Re-exports from 10_SOCIAL_ENGINE"""
+
 import sys
 from pathlib import Path
 

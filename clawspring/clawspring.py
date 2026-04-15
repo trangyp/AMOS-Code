@@ -58,6 +58,7 @@ Slash commands in REPL:
   /cloudsave load <gist_id>  Download and load a session from Gist
   /exit /quit Exit
 """
+
 from __future__ import annotations
 
 import os
@@ -315,26 +316,26 @@ def print_tool_end(name: str, result: str, verbose: bool):
         print(clr(f"  ✗ {result[:120]}", "dim", "red"), flush=True)
     if verbose and not result.startswith("Denied"):
         preview = result[:500] + ("…" if len(result) > 500 else "")
-        print(clr(f"     {preview.replace(chr(10), chr(10)+'     ')}", "dim"))
+        print(clr(f"     {preview.replace(chr(10), chr(10) + '     ')}", "dim"))
 
 
 def _tool_desc(name: str, inputs: dict) -> str:
     if name == "Read":
-        return f"Read({inputs.get('file_path','')})"
+        return f"Read({inputs.get('file_path', '')})"
     if name == "Write":
-        return f"Write({inputs.get('file_path','')})"
+        return f"Write({inputs.get('file_path', '')})"
     if name == "Edit":
-        return f"Edit({inputs.get('file_path','')})"
+        return f"Edit({inputs.get('file_path', '')})"
     if name == "Bash":
-        return f"Bash({inputs.get('command','')[:80]})"
+        return f"Bash({inputs.get('command', '')[:80]})"
     if name == "Glob":
-        return f"Glob({inputs.get('pattern','')})"
+        return f"Glob({inputs.get('pattern', '')})"
     if name == "Grep":
-        return f"Grep({inputs.get('pattern','')})"
+        return f"Grep({inputs.get('pattern', '')})"
     if name == "WebFetch":
-        return f"WebFetch({inputs.get('url','')[:60]})"
+        return f"WebFetch({inputs.get('url', '')[:60]})"
     if name == "WebSearch":
-        return f"WebSearch({inputs.get('query','')})"
+        return f"WebSearch({inputs.get('query', '')})"
     if name == "Agent":
         atype = inputs.get("subagent_type", "")
         aname = inputs.get("name", "")
@@ -353,9 +354,9 @@ def _tool_desc(name: str, inputs: dict) -> str:
         prompt_short = inputs.get("prompt", "")[:60]
         return f"Agent{suffix}: {prompt_short}"
     if name == "SendMessage":
-        return f"SendMessage(to={inputs.get('to','')}: {inputs.get('message','')[:50]})"
+        return f"SendMessage(to={inputs.get('to', '')}: {inputs.get('message', '')[:50]})"
     if name == "CheckAgentResult":
-        return f"CheckAgentResult({inputs.get('task_id','')})"
+        return f"CheckAgentResult({inputs.get('task_id', '')})"
     if name == "ListAgentTasks":
         return "ListAgentTasks()"
     if name == "ListAgentTypes":
@@ -457,7 +458,7 @@ def _generate_personas(topic: str, curr_model: str, config: dict, count: int = 5
     from providers import TextChunk, stream
 
     example_entries = "\n".join(
-        f'  "p{i+1}": {{"icon": "emoji", "role": "Expert Title", "desc": "One sentence describing their analytical angle."}}'
+        f'  "p{i + 1}": {{"icon": "emoji", "role": "Expert Title", "desc": "One sentence describing their analytical angle."}}'
         for i in range(count)
     )
     user_msg = f"""Generate {count} expert personas for a multi-perspective brainstorming debate on: "{topic}"
@@ -543,7 +544,7 @@ def _interactive_ollama_picker(config: dict) -> bool:
 
     print(clr("\n  ── Local Ollama Models ──", "dim"))
     for i, m in enumerate(models):
-        print(clr(f"  [{i+1:2d}] ", "yellow") + m)
+        print(clr(f"  [{i + 1:2d}] ", "yellow") + m)
     print()
 
     try:
@@ -691,8 +692,8 @@ USER FOCUS: {user_topic}
     def call_persona(persona_name, p_data, history):
         letter, name = get_identity(persona_name[0].upper())
         # We wrap the persona instructions into a 'system' role
-        system_prompt = f"""You are {name}, the {p_data['role']}. Identity: Agent {letter}.
-{p_data['desc']}
+        system_prompt = f"""You are {name}, the {p_data["role"]}. Identity: Agent {letter}.
+{p_data["desc"]}
 
 TOPIC UNDER DISCUSSION: {user_topic}
 
@@ -955,7 +956,7 @@ def cmd_load(args: str, state, _config) -> bool:
                 label = f"{saved_at}  id:{sid}  turns:{turns}  {s.name}"
             except Exception:
                 pass
-            print(clr(f"  [{i+1:2d}] ", "yellow") + label)
+            print(clr(f"  [{i + 1:2d}] ", "yellow") + label)
 
         # Show history.json option at the bottom if it exists
         from config import SESSION_HIST_FILE
@@ -1200,7 +1201,7 @@ def cmd_permissions(args: str, _state, config) -> bool:
         for i, m in enumerate(modes):
             marker = clr("●", "green") if m == current else clr("○", "dim")
             print(
-                f"  {marker} {clr(f'[{i+1}]', 'yellow')} {clr(m, 'cyan')}  {clr(mode_desc[m], 'dim')}"
+                f"  {marker} {clr(f'[{i + 1}]', 'yellow')} {clr(m, 'cyan')}  {clr(mode_desc[m], 'dim')}"
             )
         print()
         try:
@@ -3483,7 +3484,7 @@ def repl(config: dict, initial_prompt: str = None):
         elif result[0] == "__worker__":
             _, worker_tasks = result
             for i, (line_idx, task_text, prompt) in enumerate(worker_tasks):
-                print(clr(f"\n  ── Worker ({i+1}/{len(worker_tasks)}): {task_text} ──", "yellow"))
+                print(clr(f"\n  ── Worker ({i + 1}/{len(worker_tasks)}): {task_text} ──", "yellow"))
                 run_query(prompt)
         return "query"
 
@@ -3773,7 +3774,9 @@ def repl(config: dict, initial_prompt: str = None):
                 _, worker_tasks = result
                 for i, (line_idx, task_text, prompt) in enumerate(worker_tasks):
                     print(
-                        clr(f"\n  ── Worker ({i+1}/{len(worker_tasks)}): {task_text} ──", "yellow")
+                        clr(
+                            f"\n  ── Worker ({i + 1}/{len(worker_tasks)}): {task_text} ──", "yellow"
+                        )
                     )
                     try:
                         run_query(prompt)

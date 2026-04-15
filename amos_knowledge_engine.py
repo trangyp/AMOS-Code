@@ -24,6 +24,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity - Layer 23
 """
+
 from __future__ import annotations
 
 import json

@@ -34,7 +34,7 @@ import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class BasisState(Enum):
@@ -130,10 +130,10 @@ class StateVector:
     """
 
     amplitudes: dict[BasisState, float] = field(
-        default_factory=lambda: {state: 1.0 for state in BasisState}
+        default_factory=lambda: dict.fromkeys(BasisState, 1.0)
     )
-    timestamp: Optional[float] = None
-    commit: Optional[str] = None
+    timestamp: float | None = None
+    commit: str | None = None
 
     def __post_init__(self):
         for state in BasisState:
@@ -312,7 +312,7 @@ class TemporalState:
 
     def find_first_bad(
         self, invariant: BasisState, good_commit: str, bad_commit: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Find first commit where invariant fails.
 

@@ -1,4 +1,5 @@
 """Backward-compatibility shim — real implementation is in multi_agent/subagent.py."""
+
 from multi_agent.subagent import (  # noqa: F401
     _BUILTIN_AGENTS,
     AgentDefinition,

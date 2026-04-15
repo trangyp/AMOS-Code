@@ -1,4 +1,5 @@
 """I_status = 1 iff every reported status label is logically implied by actual state."""
+
 from __future__ import annotations
 
 from typing import Any

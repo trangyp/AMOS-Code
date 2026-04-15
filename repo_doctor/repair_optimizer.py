@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .state_vector_triple import BasisState, Hamiltonian, StateVector
 
@@ -129,7 +129,7 @@ class RepairOptimizer:
 
     def _create_action_for_invariant(
         self, invariant: BasisState, state: StateVector
-    ) -> Optional[RepairAction]:
+    ) -> RepairAction | None:
         """Create a repair action for a specific invariant failure."""
         # Map invariants to repair commands
         action_map = {

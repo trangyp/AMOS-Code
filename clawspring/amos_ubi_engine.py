@@ -1,4 +1,5 @@
 """AMOS UBI Engine - Unified Biological Intelligence domains."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -219,31 +220,35 @@ class AMOSUBIEngine:
         ]
 
         for domain, result in results.items():
-            lines.extend([
-                f"### {domain}",
-                f"Key findings: {list(result.analysis.keys())[:3]}",
-                f"Design levers: {', '.join(result.design_levers[:2])}",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"### {domain}",
+                    f"Key findings: {list(result.analysis.keys())[:3]}",
+                    f"Design levers: {', '.join(result.design_levers[:2])}",
+                    "",
+                ]
+            )
 
-        lines.extend([
-            "## Unified Recommendations",
-            "1. Respect human cognitive limits (Miller's Law: 7±2 items)",
-            "2. Minimize physical and mental strain",
-            "3. Provide clear progress and control",
-            "4. Avoid manipulative patterns",
-            "",
-            "## Safety Constraints",
-            "- No medical diagnosis",
-            "- No therapy or treatment protocols",
-            "- No personal predictions",
-            "- Respect human autonomy",
-            "",
-            "## Gap Acknowledgment",
-            "This analysis models biological factors structurally.",
-            "Human biology is complex and variable.",
-            "Human testing and judgment required.",
-        ])
+        lines.extend(
+            [
+                "## Unified Recommendations",
+                "1. Respect human cognitive limits (Miller's Law: 7±2 items)",
+                "2. Minimize physical and mental strain",
+                "3. Provide clear progress and control",
+                "4. Avoid manipulative patterns",
+                "",
+                "## Safety Constraints",
+                "- No medical diagnosis",
+                "- No therapy or treatment protocols",
+                "- No personal predictions",
+                "- Respect human autonomy",
+                "",
+                "## Gap Acknowledgment",
+                "This analysis models biological factors structurally.",
+                "Human biology is complex and variable.",
+                "Human testing and judgment required.",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -270,7 +275,9 @@ def get_ubi_engine() -> AMOSUBIEngine:
     return _ubi_engine
 
 
-def analyze_human_factors(description: str, domains: list[str] | None = None) -> dict[str, UBIResult]:
+def analyze_human_factors(
+    description: str, domains: list[str] | None = None
+) -> dict[str, UBIResult]:
     """Quick human factors analysis with UBI alignment."""
     return get_ubi_engine().analyze(description, domains)
 
@@ -290,7 +297,7 @@ if __name__ == "__main__":
     ]
 
     for test in test_cases:
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"Scenario: {test[:50]}...")
         print("=" * 50)
 

@@ -12,6 +12,7 @@ Current State (42+ components):
 
 What is the next logical step after formal specification?
 """
+
 import os
 import sys
 

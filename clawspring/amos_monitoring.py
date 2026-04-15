@@ -1,4 +1,5 @@
 """AMOS Performance Monitoring & Telemetry - System observability layer."""
+
 from __future__ import annotations
 
 import time

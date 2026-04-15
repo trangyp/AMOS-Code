@@ -1,4 +1,5 @@
 """Built-in skills that ship with clawspring."""
+
 from __future__ import annotations
 
 from .loader import SkillDef, register_builtin_skill
@@ -66,35 +67,39 @@ User context: $ARGUMENTS
 
 
 def _register_builtins() -> None:
-    register_builtin_skill(SkillDef(
-        name="commit",
-        description="Review staged changes and create a well-structured git commit",
-        triggers=["/commit"],
-        tools=["Bash", "Read"],
-        prompt=_COMMIT_PROMPT,
-        file_path="<builtin>",
-        when_to_use="Use when the user wants to commit changes. Triggers: '/commit', 'commit changes', 'make a commit'.",
-        argument_hint="[optional context]",
-        arguments=[],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="commit",
+            description="Review staged changes and create a well-structured git commit",
+            triggers=["/commit"],
+            tools=["Bash", "Read"],
+            prompt=_COMMIT_PROMPT,
+            file_path="<builtin>",
+            when_to_use="Use when the user wants to commit changes. Triggers: '/commit', 'commit changes', 'make a commit'.",
+            argument_hint="[optional context]",
+            arguments=[],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
-    register_builtin_skill(SkillDef(
-        name="review",
-        description="Review code changes or a pull request and provide structured feedback",
-        triggers=["/review", "/review-pr"],
-        tools=["Bash", "Read", "Grep"],
-        prompt=_REVIEW_PROMPT,
-        file_path="<builtin>",
-        when_to_use="Use when the user wants a code review. Triggers: '/review', '/review-pr', 'review this PR'.",
-        argument_hint="[PR number or URL]",
-        arguments=["pr"],
-        user_invocable=True,
-        context="inline",
-        source="builtin",
-    ))
+    register_builtin_skill(
+        SkillDef(
+            name="review",
+            description="Review code changes or a pull request and provide structured feedback",
+            triggers=["/review", "/review-pr"],
+            tools=["Bash", "Read", "Grep"],
+            prompt=_REVIEW_PROMPT,
+            file_path="<builtin>",
+            when_to_use="Use when the user wants a code review. Triggers: '/review', '/review-pr', 'review this PR'.",
+            argument_hint="[PR number or URL]",
+            arguments=["pr"],
+            user_invocable=True,
+            context="inline",
+            source="builtin",
+        )
+    )
 
 
 _register_builtins()

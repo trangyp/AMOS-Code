@@ -4,6 +4,7 @@ Provides clean adapter interfaces for Ollama, LM Studio, vLLM, and other
 OpenAI-compatible local endpoints. This is the primary execution boundary
 for the AMOS local runtime.
 """
+
 from __future__ import annotations
 
 import json
@@ -174,7 +175,7 @@ class OllamaBackend:
             if self.model not in model_names:
                 return {
                     "status": "error",
-                    "error": (f"Model '{self.model}' not found. " f"Available: {model_names}"),
+                    "error": (f"Model '{self.model}' not found. Available: {model_names}"),
                     "help": (f"Run: ollama pull {self.model}"),
                     "available_models": model_names,
                 }
@@ -300,7 +301,7 @@ class OpenAICompatibleLocalBackend:
                 if model_ids and self.model not in model_ids:
                     return {
                         "status": "warning",
-                        "error": (f"Model '{self.model}' not in " f"available models: {model_ids}"),
+                        "error": (f"Model '{self.model}' not in available models: {model_ids}"),
                         "help": ("Load the model in your server UI or API"),
                         "available_models": model_ids,
                     }
@@ -364,7 +365,7 @@ class OpenAICompatibleLocalBackend:
                 return {
                     "status": "error",
                     "error": (f"Test completion failed: {resp.status_code}"),
-                    "help": (f"Server returned {resp.status_code}. " "Check server logs."),
+                    "help": (f"Server returned {resp.status_code}. Check server logs."),
                 }
 
         except Exception as e:

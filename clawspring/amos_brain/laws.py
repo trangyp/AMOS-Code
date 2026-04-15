@@ -1,4 +1,5 @@
 """AMOS Global Laws - In-memory representation of AMOS legal framework."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,6 +8,7 @@ from dataclasses import dataclass
 @dataclass
 class LawViolation:
     """Represents a detected law violation."""
+
     law_id: str
     law_name: str
     severity: str
@@ -36,13 +38,15 @@ class GlobalLaws:
         for law_id, patterns in self.PROHIBITED_PATTERNS.items():
             for pattern, suggestion in patterns:
                 if pattern.lower() in text_lower:
-                    violations.append(LawViolation(
-                        law_id=law_id,
-                        law_name=self._get_law_name(law_id),
-                        severity="warning",
-                        message=f"Detected: '{pattern}'",
-                        suggestion=suggestion,
-                    ))
+                    violations.append(
+                        LawViolation(
+                            law_id=law_id,
+                            law_name=self._get_law_name(law_id),
+                            severity="warning",
+                            message=f"Detected: '{pattern}'",
+                            suggestion=suggestion,
+                        )
+                    )
 
         return violations
 
@@ -70,12 +74,14 @@ class GlobalLaws:
         missing = [q for q in expected if q not in checked]
 
         if missing:
-            violations.append(LawViolation(
-                law_id="L3",
-                law_name="Rule of 4",
-                severity="warning",
-                message=f"Missing quadrants: {', '.join(missing)}",
-                suggestion="Consider all four quadrants or justify omissions",
-            ))
+            violations.append(
+                LawViolation(
+                    law_id="L3",
+                    law_name="Rule of 4",
+                    severity="warning",
+                    message=f"Missing quadrants: {', '.join(missing)}",
+                    suggestion="Consider all four quadrants or justify omissions",
+                )
+            )
 
         return violations

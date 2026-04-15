@@ -1,4 +1,5 @@
-"""I_observability = 1 iff every critical failure class emits sufficient telemetry.
+"""
+I_observability = 1 iff every critical failure class emits sufficient telemetry.
 
 Observability surface decomposition:
     αObs = f(
@@ -18,10 +19,10 @@ Invariant checks:
 
 Based on 2024 observability engineering best practices.
 """
+
 from __future__ import annotations
 
 import ast
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -107,14 +108,14 @@ class ObservabilityInvariant(Invariant):
                 "critical_gaps": len(critical),
                 "error_gaps": len(errors),
                 "warning_gaps": len(warnings),
-                "gaps": [{"type": g.type, "location": g.location, "message": g.message}
-                        for g in gaps[:20]],
+                "gaps": [
+                    {"type": g.type, "location": g.location, "message": g.message}
+                    for g in gaps[:20]
+                ],
             },
         )
 
-    def _analyze_file(
-        self, file_path: Path, tree: ast.AST, content: str
-    ) -> list[ObservabilityGap]:
+    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> list[ObservabilityGap]:
         """Analyze a single file for observability gaps."""
         gaps: list[ObservabilityGap] = []
         relative_path = str(file_path.relative_to(file_path.parent.parent))
@@ -163,8 +164,8 @@ class ObservabilityInvariant(Invariant):
 
                 # Check for except without logging
                 has_log = any(
-                    isinstance(child, ast.Call) and
-                    (self._is_logging_call(child) or self._is_print_call(child))
+                    isinstance(child, ast.Call)
+                    and (self._is_logging_call(child) or self._is_print_call(child))
                     for child in ast.walk(node)
                 )
 

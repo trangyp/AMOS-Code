@@ -1,4 +1,5 @@
 """AMOS Brain Memory Integration - Persists reasoning to clawspring memory."""
+
 from __future__ import annotations
 
 import hashlib

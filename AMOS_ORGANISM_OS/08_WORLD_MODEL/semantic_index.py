@@ -1,5 +1,4 @@
-"""Semantic Index — Document indexing and search for AMOS.
-"""
+"""Semantic Index — Document indexing and search for AMOS."""
 
 import re
 from dataclasses import dataclass, field
@@ -119,7 +118,6 @@ class SemanticIndex:
             "did",
             "she",
             "use",
-            "her",
             "man",
         }
         return [t for t in tokens if t not in stop_words][:1000]  # Limit tokens

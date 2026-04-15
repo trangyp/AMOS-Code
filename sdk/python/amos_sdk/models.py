@@ -2,6 +2,7 @@
 
 Type definitions for API responses.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

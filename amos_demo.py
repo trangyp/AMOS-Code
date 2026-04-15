@@ -2,6 +2,7 @@
 """AMOS Capstone Demo - Three Layers, One Unified System.
 Demonstrates: Brain (12 engines, 6 laws) → Organism OS (14 subsystems) → ClawSpring (real-time plugin)
 """
+
 import sys
 from pathlib import Path
 

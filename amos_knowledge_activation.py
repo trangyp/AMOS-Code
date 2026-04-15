@@ -21,6 +21,7 @@ Commands:
     inject          Inject knowledge into AMOS Brain
     server          Start knowledge API server
 """
+
 from __future__ import annotations
 
 import argparse

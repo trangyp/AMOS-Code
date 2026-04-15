@@ -3,6 +3,7 @@
 Simulates the full brainstorm session: agent count prompt → persona generation
 → multi-agent debate → synthesis.
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont

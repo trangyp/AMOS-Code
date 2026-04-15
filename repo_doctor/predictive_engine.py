@@ -1,4 +1,5 @@
-"""Predictive Architecture Intelligence Engine.
+"""
+Predictive Architecture Intelligence Engine.
 
 Learns from historical architecture data to predict future failures.
 
@@ -15,12 +16,10 @@ The predictive engine enables proactive architecture management.
 
 from __future__ import annotations
 
-import json
 import math
 import time
 from collections import deque
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -183,9 +182,7 @@ class PatternRecognizer:
     ]
 
     def __init__(self):
-        self.patterns: dict[str, FailurePattern] = {
-            p.pattern_id: p for p in self.KNOWN_PATTERNS
-        }
+        self.patterns: dict[str, FailurePattern] = {p.pattern_id: p for p in self.KNOWN_PATTERNS}
         self.observed_transitions: list[dict[str, Any]] = []
 
     def analyze_snapshot(self, snapshot: dict[str, float]) -> list[Prediction]:
@@ -311,9 +308,7 @@ class CorrelationAnalyzer:
 
         for i, m1 in enumerate(metrics):
             for m2 in metrics[i + 1 :]:
-                corr = self._calculate_correlation(
-                    self.metric_history[m1], self.metric_history[m2]
-                )
+                corr = self._calculate_correlation(self.metric_history[m1], self.metric_history[m2])
                 if abs(corr) > 0.5:  # Significant correlation threshold
                     correlations.append(
                         {
@@ -412,7 +407,7 @@ class PredictiveArchitectureEngine:
     Master engine for predictive architecture intelligence.
 
     Combines pattern recognition, correlation analysis, and trend extrapolation
-to predict future architecture failures before they occur.
+    to predict future architecture failures before they occur.
     """
 
     def __init__(self, repo_path: str | Path | None = None):
@@ -500,9 +495,9 @@ to predict future architecture failures before they occur.
         recommended_tests = []
 
         # Check file types
-        arch_files = [f for f in changed_files if f.endswith(('.py', '.toml', '.yaml'))]
-        test_files = [f for f in changed_files if 'test' in f.lower()]
-        doc_files = [f for f in changed_files if f.endswith('.md')]
+        arch_files = [f for f in changed_files if f.endswith((".py", ".toml", ".yaml"))]
+        test_files = [f for f in changed_files if "test" in f.lower()]
+        doc_files = [f for f in changed_files if f.endswith(".md")]
 
         if len(arch_files) > 10:
             risk_factors.append("Large change blast radius")
@@ -513,12 +508,12 @@ to predict future architecture failures before they occur.
             predicted_issues.append("Test coverage gaps")
             recommended_tests.append("Add unit tests for changed code")
 
-        if any('api' in f.lower() for f in changed_files):
+        if any("api" in f.lower() for f in changed_files):
             risk_factors.append("API surface changes")
             predicted_issues.append("Contract compatibility risk")
             recommended_tests.append("Run API contract tests")
 
-        if any('migration' in f.lower() for f in changed_files):
+        if any("migration" in f.lower() for f in changed_files):
             risk_factors.append("Database migration changes")
             predicted_issues.append("Migration ordering issues")
             recommended_tests.append("Test migration rollback")
@@ -538,8 +533,8 @@ to predict future architecture failures before they occur.
             overall_risk=min(1.0, base_risk),
             risk_factors=risk_factors,
             protected_invariants_at_risk=[
-                "I_api_contract" if any('api' in f for f in changed_files) else None,
-                "I_migration" if any('migration' in f for f in changed_files) else None,
+                "I_api_contract" if any("api" in f for f in changed_files) else None,
+                "I_migration" if any("migration" in f for f in changed_files) else None,
             ],
             predicted_issues=predicted_issues,
             recommended_tests=recommended_tests,
@@ -571,7 +566,11 @@ to predict future architecture failures before they occur.
             )
 
         # Trend-based warnings
-        degrading = [e for e in extrapolations if e["trend_direction"] == "degrading" and e["confidence"] > 0.6]
+        degrading = [
+            e
+            for e in extrapolations
+            if e["trend_direction"] == "degrading" and e["confidence"] > 0.6
+        ]
         if len(degrading) >= 3:
             warnings.append(
                 EarlyWarning(

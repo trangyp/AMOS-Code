@@ -23,6 +23,7 @@ Modes:
     interactive         Interactive brain mode
     demo                Demonstrate all capabilities
 """
+
 from __future__ import annotations
 
 import argparse

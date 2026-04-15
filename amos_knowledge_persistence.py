@@ -21,6 +21,7 @@ Commands:
     compress          Compress knowledge cache
     clean             Clean old cache files
 """
+
 from __future__ import annotations
 
 import argparse

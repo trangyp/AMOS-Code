@@ -5,6 +5,7 @@ Provides:
   find_relevant_memories()  — keyword (+ optional AI) relevance filtering
   truncate_index_content()  — line + byte truncation with warning
 """
+
 from __future__ import annotations
 
 from .scan import memory_freshness_text

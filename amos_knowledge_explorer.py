@@ -10,6 +10,7 @@ Usage:
     python amos_knowledge_explorer.py map
     python amos_knowledge_explorer.py stats
 """
+
 from __future__ import annotations
 
 import sys
@@ -327,9 +328,9 @@ class KnowledgeExplorer:
 
 def print_search_results(results: list[KnowledgeFile], query: str):
     """Pretty print search results."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f'  SEARCH RESULTS: "{query}"')
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     if not results:
         print("\n  No matching knowledge files found.")
@@ -350,9 +351,9 @@ def print_stats(explorer: KnowledgeExplorer):
     """Print knowledge base statistics."""
     stats = explorer.get_stats()
 
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("  AMOS KNOWLEDGE BASE STATISTICS")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     print("\n  📊 OVERVIEW:")
     print(f"     Total Files: {stats['total_files']:,}")
@@ -373,10 +374,10 @@ def print_stats(explorer: KnowledgeExplorer):
 
 def print_recommendations(explorer: KnowledgeExplorer, problem: str):
     """Print engine recommendations for a problem."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("  ENGINE RECOMMENDATIONS FOR:")
     print(f'  "{problem}"')
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     recommendations = explorer.recommend_engines(problem)
 
@@ -401,14 +402,14 @@ def export_knowledge_map(explorer: KnowledgeExplorer, output_file: str = "knowle
 
     content = f"""# AMOS Knowledge Base Map
 
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Overview
 
-- **Total Files:** {stats['total_files']:,}
-- **Total Size:** {stats['total_size_human']}
-- **Categories:** {len(stats['categories'])}
-- **Domains:** {len(stats['domains'])}
+- **Total Files:** {stats["total_files"]:,}
+- **Total Size:** {stats["total_size_human"]}
+- **Categories:** {len(stats["categories"])}
+- **Domains:** {len(stats["domains"])}
 
 ## Categories
 

@@ -6,6 +6,7 @@ Tests cover:
 - Retry logic behavior
 - Error handling and message quality
 """
+
 from __future__ import annotations
 
 import os

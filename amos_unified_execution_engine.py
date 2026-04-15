@@ -58,7 +58,7 @@ class UnifiedExecutionEngine:
         """Initialize the unified execution engine."""
         self.initialized = False
         self.execution_count = 0
-        self.subsystem_status = {k: "idle" for k in self.SUBSYSTEMS}
+        self.subsystem_status = dict.fromkeys(self.SUBSYSTEMS, "idle")
 
     def initialize(self) -> dict[str, Any]:
         """Initialize all 15 subsystems."""

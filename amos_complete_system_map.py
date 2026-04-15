@@ -12,6 +12,7 @@ This script catalogs:
 
 Run: python amos_complete_system_map.py
 """
+
 import sys
 from pathlib import Path
 from typing import Any

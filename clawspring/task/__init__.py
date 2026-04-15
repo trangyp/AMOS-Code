@@ -1,4 +1,5 @@
 """Task system for clawspring."""
+
 from .store import (
     clear_all_tasks,
     create_task,

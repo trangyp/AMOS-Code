@@ -1,5 +1,4 @@
-"""Compliance Engine — Regulatory and policy compliance.
-"""
+"""Compliance Engine — Regulatory and policy compliance."""
 
 from __future__ import annotations
 

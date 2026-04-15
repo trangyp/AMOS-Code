@@ -1,4 +1,5 @@
 """AMOS System Prompt Builder - Constructs system prompts with brain integration."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

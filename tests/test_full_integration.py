@@ -18,6 +18,7 @@ This test validates:
 - State persistence functions
 - Complete system sanity
 """
+
 import os
 import sys
 import unittest

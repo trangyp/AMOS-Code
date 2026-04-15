@@ -9,6 +9,7 @@ Query across all 20 legacy engines:
 
 Usage: python amos_knowledge_query.py <query> [--domain <domain>]
 """
+
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -119,9 +120,9 @@ class AMOSKnowledgeQuery:
 
     def query(self, query: str, domain: Optional[str] = None) -> dict[str, Any]:
         """Query the knowledge base."""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"🔍 KNOWLEDGE QUERY: {query[:60]}")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         # Route to appropriate engines
         engine_ids = self.route_query(query)
@@ -163,9 +164,9 @@ class AMOSKnowledgeQuery:
 
     def list_domains(self):
         """List all available knowledge domains."""
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print("📚 AVAILABLE KNOWLEDGE DOMAINS")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         domains = {}
         for eid, info in self.engines.items():
@@ -182,9 +183,9 @@ class AMOSKnowledgeQuery:
             print(f"   Total: {total_kb} KB")
 
         total_all = sum(info["size_kb"] for info in self.engines.values())
-        print(f"\n{'='*70}")
-        print(f"💾 TOTAL KNOWLEDGE: {total_all:,} KB ({total_all/1024:.1f} MB)")
-        print(f"{'='*70}\n")
+        print(f"\n{'=' * 70}")
+        print(f"💾 TOTAL KNOWLEDGE: {total_all:,} KB ({total_all / 1024:.1f} MB)")
+        print(f"{'=' * 70}\n")
 
 
 def main():

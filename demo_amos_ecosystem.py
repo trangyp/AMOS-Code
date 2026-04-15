@@ -47,7 +47,7 @@ class AMOSEcosystemDemo:
         ]
 
         for name, demo_func in demos:
-            print(f"\n{'='*70}")
+            print(f"\n{'=' * 70}")
             print(f"DEMO: {name}")
             print("=" * 70)
             try:

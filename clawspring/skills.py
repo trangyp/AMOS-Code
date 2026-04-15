@@ -1,4 +1,5 @@
 """Backward-compatibility shim — real implementation is in skill/ package."""
+
 from skill.executor import execute_skill  # noqa: F401
 from skill.loader import (  # noqa: F401
     SkillDef,

@@ -10,6 +10,7 @@ Implements the 16-tuple formal system:
 
 Based on: docs/AMOSL_FORMAL_SPECIFICATION.md
 """
+
 from __future__ import annotations
 
 __version__ = "1.0.0"

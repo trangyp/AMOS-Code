@@ -4,6 +4,7 @@ All tests run without a microphone or STT library installed.
 They cover the pure-Python helpers: WAV wrapping, keyterm extraction,
 availability checks, and the REPL integration sentinel.
 """
+
 from __future__ import annotations
 
 import struct

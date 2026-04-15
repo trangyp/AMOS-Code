@@ -41,6 +41,7 @@ from .cli import main
 from .contracts import ContractAnalyzer
 from .entrypoints import EntrypointAnalyzer
 from .history import DriftAnalyzer
+
 # Modular invariants (18 total)
 from .invariants import (
     APIInvariant,

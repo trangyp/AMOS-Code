@@ -8,6 +8,7 @@ Runs all AMOS demos in sequence:
 
 Usage: python amos_demo_all.py
 """
+
 import sys
 from pathlib import Path
 

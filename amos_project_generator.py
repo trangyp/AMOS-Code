@@ -8,6 +8,7 @@ Usage:
     python amos_project_generator.py create "A decision support tool for doctors"
     python amos_project_generator.py create "An API for brain analytics"
 """
+
 from __future__ import annotations
 
 import sys

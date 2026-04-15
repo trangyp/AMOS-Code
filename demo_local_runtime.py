@@ -7,6 +7,7 @@ Shows how to use the new local-model-first architecture with:
 - Streaming responses
 - Metrics tracking
 """
+
 from __future__ import annotations
 
 import os
@@ -83,7 +84,7 @@ def demo_metrics():
         if response.get("ok"):
             print("  ✓ Success")
         else:
-            err = response.get('error')
+            err = response.get("error")
             print(f"  ✗ Failed: {err}")
         print()
 
@@ -110,15 +111,15 @@ def demo_health_check():
     print(f"Runtime ready: {status.get('ready')}")
     print()
 
-    if status.get('backend'):
-        backend = status['backend']
+    if status.get("backend"):
+        backend = status["backend"]
         print(f"Backend status: {backend.get('status')}")
         print(f"Backend type: {backend.get('backend')}")
         print(f"Model: {backend.get('model')}")
 
-        if backend.get('error'):
+        if backend.get("error"):
             print(f"Error: {backend['error']}")
-        if backend.get('help'):
+        if backend.get("help"):
             print(f"Help: {backend['help']}")
 
 

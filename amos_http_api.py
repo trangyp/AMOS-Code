@@ -152,9 +152,9 @@ class AMOSRequestHandler(BaseHTTPRequestHandler):
 def run_server(port=8000):
     """Run the HTTP API server."""
     server = HTTPServer(("", port), AMOSRequestHandler)
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("AMOS HTTP API Server")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     print(f"\nServer running on http://localhost:{port}")
     print("\nEndpoints:")
     print("  GET  /           - API info")
@@ -163,9 +163,9 @@ def run_server(port=8000):
     print("  POST /process    - Process task")
     print("  POST /query      - Query knowledge")
     print("  POST /batch      - Batch processing")
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("Press Ctrl+C to stop")
-    print(f"{'='*70}\n")
+    print(f"{'=' * 70}\n")
 
     try:
         server.serve_forever()

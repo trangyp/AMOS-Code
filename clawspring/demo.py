@@ -5,6 +5,7 @@ Requires ANTHROPIC_API_KEY environment variable.
 Run:
   ANTHROPIC_API_KEY=sk-... python demo.py
 """
+
 import os
 import sys
 

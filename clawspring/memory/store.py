@@ -8,6 +8,7 @@ MEMORY.md in each directory is the index file — rebuilt automatically after
 every save/delete. It is loaded into the system prompt to give Claude an
 overview of available memories.
 """
+
 from __future__ import annotations
 
 import re

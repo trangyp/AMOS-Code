@@ -1,4 +1,5 @@
 """Bridge connecting AMOS Brain to ClawSpring agent runtime."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -7,8 +8,7 @@ from .integration import get_amos_integration
 
 
 class AMOSAgentBridge:
-    """
-    Bridge that wraps clawspring agent with AMOS brain capabilities.
+    """Bridge that wraps clawspring agent with AMOS brain capabilities.
 
     Provides:
     - Brain-enhanced system prompts
@@ -32,6 +32,7 @@ class AMOSAgentBridge:
         """Ensure clawspring package is in sys.path for imports."""
         import sys
         from pathlib import Path
+
         clawspring_path = str(Path(__file__).resolve().parent.parent / "clawspring")
         if clawspring_path not in sys.path:
             sys.path.insert(0, clawspring_path)
@@ -41,6 +42,7 @@ class AMOSAgentBridge:
         if self._state is None:
             self._ensure_clawspring_path()
             from agent import AgentState
+
             self._state = AgentState()
         return self._state
 
@@ -52,8 +54,7 @@ class AMOSAgentBridge:
         return self._system_prompt
 
     def run_with_brain(self, user_message: str, config: dict[str, Any]) -> Any:
-        """
-        Run agent with AMOS brain pre/post processing.
+        """Run agent with AMOS brain pre/post processing.
 
         Args:
             user_message: User's input message
@@ -69,18 +70,19 @@ class AMOSAgentBridge:
             yield {
                 "type": "brain_block",
                 "reason": pre_result.get("reason"),
-                "law": pre_result.get("law")
+                "law": pre_result.get("law"),
             }
             return
 
         # Run through clawspring agent (lazy import)
         self._ensure_clawspring_path()
         from agent import run as agent_run
+
         for event in agent_run(
             user_message=user_message,
             state=self._get_state(),
             config=config,
-            system_prompt=self._get_system_prompt()
+            system_prompt=self._get_system_prompt(),
         ):
             yield event
 

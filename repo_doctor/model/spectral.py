@@ -83,7 +83,7 @@ class GraphLaplacian:
 
     def _approximate_betweenness(self) -> dict[str, float]:
         """Approximate betweenness centrality."""
-        betweenness = {node: 0.0 for node in self.adjacency}
+        betweenness = dict.fromkeys(self.adjacency, 0.0)
 
         for source in self.adjacency:
             # BFS to find shortest paths

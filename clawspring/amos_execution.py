@@ -1,4 +1,5 @@
 """AMOS Execution Kernel - Layer 6 Integration and Output Production."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -10,8 +11,7 @@ from amos_runtime import AMOSRuntime, get_runtime
 class OutputFormatter(Protocol):
     """Protocol for output formatters."""
 
-    def format(self, data: dict) -> str:
-        ...
+    def format(self, data: dict) -> str: ...
 
 
 @dataclass
@@ -128,10 +128,10 @@ class DiagnosticEngine:
 - Language Precision: VERIFIED
 
 ## Gap Map
-{plan.reasoning_result.get('gap_statement', 'No gap statement available')}
+{plan.reasoning_result.get("gap_statement", "No gap statement available")}
 
 ## Constraints Applied
-{chr(10).join(f'- {c}' for c in plan.constraints) if plan.constraints else 'None specified'}
+{chr(10).join(f"- {c}" for c in plan.constraints) if plan.constraints else "None specified"}
 """
 
 
@@ -292,7 +292,7 @@ if __name__ == "__main__":
     ]
 
     for task, out_type in test_tasks:
-        print(f"\n{'='*40}")
+        print(f"\n{'=' * 40}")
         print(f"Task: {task[:40]}...")
         print(f"Output Type: {out_type}")
         print("=" * 40)

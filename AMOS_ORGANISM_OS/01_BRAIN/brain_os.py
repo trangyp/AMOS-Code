@@ -1,5 +1,4 @@
-"""AMOS Brain OS — Core reasoning and orchestration engine.
-"""
+"""AMOS Brain OS — Core reasoning and orchestration engine."""
 
 from __future__ import annotations
 
@@ -185,9 +184,7 @@ class BrainOS:
         """Multi-system, multi-actor, multi-decade reasoning."""
         thought = Thought(
             type=ThoughtType.SYSTEMIC,
-            content=(
-                f"Systemic analysis across {', '.join(systems)} " f"over {time_horizon} horizon"
-            ),
+            content=(f"Systemic analysis across {', '.join(systems)} over {time_horizon} horizon"),
             source="01_BRAIN",
             references=[c.id for c in causal_thoughts],
             tags=["systemic", "multi-actor"] + systems,

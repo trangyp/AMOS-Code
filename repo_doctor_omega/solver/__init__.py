@@ -5,10 +5,11 @@ Provides SMT-based constraint solving for:
 - Minimum-cost repair computation
 - Unsat core extraction (minimum contradictory facts)
 """
+
 from __future__ import annotations
 
 from .repair_optimizer import RepairOptimizer, RepairPlan
-from .z3_model import Z3Model, InvariantConstraint
+from .z3_model import InvariantConstraint, Z3Model
 
 __all__ = [
     "RepairOptimizer",

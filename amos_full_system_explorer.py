@@ -10,6 +10,7 @@ Deep catalog of all AMOS capabilities:
 
 Usage: python amos_full_system_explorer.py [--detailed]
 """
+
 import json
 import sys
 from dataclasses import dataclass

@@ -540,7 +540,7 @@ class AMOSMetaCognition:
 
         # Create reflection result
         result = ReflectionResult(
-            reflection_id=f"refl_{len(self.reflection_history)+1:04d}",
+            reflection_id=f"refl_{len(self.reflection_history) + 1:04d}",
             insights=insights,
             parameter_updates=param_updates,
             confidence_calibration=confidence_updates,

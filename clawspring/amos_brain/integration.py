@@ -1,4 +1,5 @@
 """AMOS Brain Integration - Connects new runtime to ClawSpring agent."""
+
 from __future__ import annotations
 
 
@@ -40,8 +41,8 @@ class AMOSBrainIntegration:
 
         amos_section = f"""# AMOS Brain Integration (vInfinity)
 
-System: {identity.get('system_name', 'AMOS')}
-Creator: {identity.get('creator', 'Trang Phan')}
+System: {identity.get("system_name", "AMOS")}
+Creator: {identity.get("creator", "Trang Phan")}
 
 ## Global Laws (Mandatory)
 """
@@ -69,7 +70,7 @@ Creator: {identity.get('creator', 'Trang Phan')}
         reason = ""
 
         # High-risk domain check
-        high_risk_terms = ['medical diagnosis', 'legal advice', 'financial investment']
+        high_risk_terms = ["medical diagnosis", "legal advice", "financial investment"]
         msg_lower = user_message.lower()
         for term in high_risk_terms:
             if term in msg_lower:
@@ -80,8 +81,8 @@ Creator: {identity.get('creator', 'Trang Phan')}
             "blocked": blocked,
             "reason": reason,
             "analysis": result,
-            "perspectives": len(result.get('perspectives', [])),
-            "quadrants": len(result.get('quadrant_analysis', {})),
+            "perspectives": len(result.get("perspectives", [])),
+            "quadrants": len(result.get("quadrant_analysis", {})),
         }
 
     def get_runtime_status(self) -> dict:
@@ -110,8 +111,14 @@ Creator: {identity.get('creator', 'Trang Phan')}
             "engines_count": 12 if runtime_loaded else 0,
             "laws_active": ["L1", "L2", "L3", "L4", "L5", "L6"],
             "domains_covered": [
-                "biology", "engineering", "economics", "physics",
-                "strategy", "logic", "design", "society"
+                "biology",
+                "engineering",
+                "economics",
+                "physics",
+                "strategy",
+                "logic",
+                "design",
+                "society",
             ],
         }
 

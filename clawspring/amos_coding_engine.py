@@ -1,4 +1,5 @@
 """AMOS Coding Engine - Domain-specific code production with law compliance."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -414,7 +415,7 @@ if __name__ == "__main__":
     ]
 
     for layer, func, desc in test_cases:
-        print(f"\n{'='*40}")
+        print(f"\n{'=' * 40}")
         print(f"Layer: {layer}")
         print(f"Function: {func}")
         print("=" * 40)

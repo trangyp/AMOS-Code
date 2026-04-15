@@ -1,4 +1,5 @@
 """AMOS Emotion Engine - Affective, somatic, and motivational analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -326,7 +327,7 @@ class AMOSEmotionEngine:
                 "=" * 50,
                 "",
                 f"Domains analyzed: {len(results)}",
-                f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+                f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
                 "",
                 "## Findings by Domain",
                 "",

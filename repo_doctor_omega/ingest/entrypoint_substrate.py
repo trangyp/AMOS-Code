@@ -5,6 +5,7 @@ importable, runnable targets.
 
 I_entry = 1 iff launcher target exists and behaves as documented.
 """
+
 from __future__ import annotations
 
 import ast

@@ -572,7 +572,7 @@ class UnifiedIntegrationTestSuite:
         print(f"\nTotal Tests: {total}")
         print(f"Passed: {passed} ✅")
         print(f"Failed: {failed} ❌")
-        print(f"Success Rate: {passed/total*100:.1f}%" if total > 0 else "N/A")
+        print(f"Success Rate: {passed / total * 100:.1f}%" if total > 0 else "N/A")
 
         print("\n" + "-" * 70)
         print("FAILED TESTS:")

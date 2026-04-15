@@ -1,4 +1,5 @@
 """Quantum Decision Engine for AMOS"""
+
 from __future__ import annotations
 
 import json

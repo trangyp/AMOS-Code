@@ -305,7 +305,7 @@ class SkeletonKernel:
 
         if constraint_type == ConstraintType.SHOULD:
             # Check recommended condition
-            return context.get(rule.value, None) is not None
+            return context.get(rule.value) is not None
 
         if constraint_type == ConstraintType.PATTERN:
             value = str(context.get(rule.target, ""))

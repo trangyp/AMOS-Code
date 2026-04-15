@@ -1,4 +1,5 @@
-"""I_migration = 1 iff every migration path preserves schema safety and rollback validity.
+"""
+I_migration = 1 iff every migration path preserves schema safety and rollback validity.
 
 Migration chain model:
     μ0 -> μ1 -> μ2 -> ... -> μn
@@ -16,13 +17,13 @@ Invariant checks:
 
 Based on Alembic/SQLAlchemy best practices 2024.
 """
+
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
 
@@ -32,7 +33,7 @@ class MigrationStep:
     """A single migration step in the chain."""
 
     revision: str
-    down_revision: Optional[str]
+    down_revision: str | None
     file_path: Path
     has_upgrade: bool = False
     has_downgrade: bool = False
@@ -44,8 +45,8 @@ class MigrationStep:
 class MigrationChain:
     """Complete migration chain analysis."""
 
-    head: Optional[str] = None
-    base: Optional[str] = None
+    head: str | None = None
+    base: str | None = None
     steps: dict[str, MigrationStep] = field(default_factory=dict)
     branches: list[list[str]] = field(default_factory=list)
     merge_points: list[str] = field(default_factory=list)
@@ -134,7 +135,7 @@ class MigrationInvariant(Invariant):
             },
         )
 
-    def _find_migration_dir(self, repo: Path) -> Optional[Path]:
+    def _find_migration_dir(self, repo: Path) -> Path | None:
         """Find the migrations directory."""
         for subdir in self.migration_dirs:
             path = repo / subdir
@@ -185,7 +186,7 @@ class MigrationInvariant(Invariant):
 
         return chain
 
-    def _parse_migration_file(self, file_path: Path) -> Optional[MigrationStep]:
+    def _parse_migration_file(self, file_path: Path) -> MigrationStep | None:
         """Parse a single migration file."""
         content = file_path.read_text()
 
@@ -238,12 +239,14 @@ class MigrationInvariant(Invariant):
                 heads.append(rev)
 
         if len(heads) > 1:
-            issues.append({
-                "type": "multiple_heads",
-                "severity": "warning",
-                "message": f"Multiple migration heads detected: {heads[:3]}",
-                "hint": "Run 'alembic merge' to consolidate branches",
-            })
+            issues.append(
+                {
+                    "type": "multiple_heads",
+                    "severity": "warning",
+                    "message": f"Multiple migration heads detected: {heads[:3]}",
+                    "hint": "Run 'alembic merge' to consolidate branches",
+                }
+            )
 
         return issues
 
@@ -253,27 +256,33 @@ class MigrationInvariant(Invariant):
 
         for rev, step in chain.steps.items():
             if not step.has_upgrade:
-                issues.append({
-                    "type": "missing_upgrade",
-                    "severity": "error",
-                    "revision": rev,
-                    "message": f"Migration {rev[:8]} missing upgrade() function",
-                })
+                issues.append(
+                    {
+                        "type": "missing_upgrade",
+                        "severity": "error",
+                        "revision": rev,
+                        "message": f"Migration {rev[:8]} missing upgrade() function",
+                    }
+                )
 
             if not step.has_downgrade:
                 # Downgrade is optional but recommended
                 if "drop_table" in step.schema_changes or "drop_column" in step.schema_changes:
-                    issues.append({
-                        "type": "destructive_no_rollback",
-                        "severity": "warning",
-                        "revision": rev,
-                        "message": f"Destructive migration {rev[:8]} has no rollback",
-                        "hint": "Add downgrade() to enable rollback",
-                    })
+                    issues.append(
+                        {
+                            "type": "destructive_no_rollback",
+                            "severity": "warning",
+                            "revision": rev,
+                            "message": f"Destructive migration {rev[:8]} has no rollback",
+                            "hint": "Add downgrade() to enable rollback",
+                        }
+                    )
 
         return issues
 
-    def _check_schema_compatibility(self, repo: Path, chain: MigrationChain, context: dict) -> list[dict]:
+    def _check_schema_compatibility(
+        self, repo: Path, chain: MigrationChain, context: dict
+    ) -> list[dict]:
         """Check that code matches migrated schema."""
         issues = []
 
@@ -286,11 +295,13 @@ class MigrationInvariant(Invariant):
                 content = schema_file.read_text()
                 # Look for TODO or FIXME markers
                 if "TODO" in content or "FIXME" in content:
-                    issues.append({
-                        "type": "schema_todos",
-                        "severity": "info",
-                        "message": "Schema file contains TODO/FIXME markers",
-                    })
+                    issues.append(
+                        {
+                            "type": "schema_todos",
+                            "severity": "info",
+                            "message": "Schema file contains TODO/FIXME markers",
+                        }
+                    )
 
         return issues
 
@@ -320,11 +331,13 @@ class MigrationInvariant(Invariant):
         for rev in chain.steps:
             if rev not in visited:
                 if has_cycle(rev):
-                    issues.append({
-                        "type": "circular_dependency",
-                        "severity": "critical",
-                        "message": f"Circular dependency detected in migration chain",
-                    })
+                    issues.append(
+                        {
+                            "type": "circular_dependency",
+                            "severity": "critical",
+                            "message": "Circular dependency detected in migration chain",
+                        }
+                    )
                     break
 
         return issues

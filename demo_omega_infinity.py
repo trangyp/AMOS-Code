@@ -95,7 +95,7 @@ def demo_entanglement(doctor) -> None:
         if entangled:
             print(f"\n📦 {module}")
             print(f"  {'Connected Module':<30} {'Coupling':<10}")
-            print(f"  {'-'*40}")
+            print(f"  {'-' * 40}")
             for mod, coupling in entangled[:5]:  # Top 5
                 bar = "█" * int(coupling * 10) + "░" * (10 - int(coupling * 10))
                 print(f"  {mod:<30} {bar} {coupling:.2f}")
@@ -199,7 +199,7 @@ def demo_fleet_analysis() -> None:
         sv = StateVector()
         sv.amplitudes[StateDimension.API] = 0.8 - i * 0.2
         sv.amplitudes[StateDimension.SYNTAX] = 0.95
-        fleet.add_repository(f"service-{i+1}", sv, weight=1.0 - i * 0.1)
+        fleet.add_repository(f"service-{i + 1}", sv, weight=1.0 - i * 0.1)
 
     energy = fleet.compute_fleet_energy()
 

@@ -1,4 +1,5 @@
 """AMOS Kernel Router - Routes tasks to appropriate cognitive kernels."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

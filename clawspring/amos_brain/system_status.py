@@ -35,12 +35,14 @@ def check_imports_work() -> Tuple[bool, List[str]]:
         sys.path.insert(0, str(Path(__file__).parent.parent))
         try:
             from amos_cognitive_router import get_router
+
             router = get_router()
         except Exception as e:
             errors.append(f"Router: {e}")
 
         try:
             from amos_brain.cognitive_audit import get_audit_trail
+
             audit = get_audit_trail()
         except Exception as e:
             errors.append(f"Audit: {e}")
@@ -55,10 +57,7 @@ def get_system_status() -> Dict:
     module_dir = Path(__file__).parent
 
     # Check modules
-    modules_status = {
-        name: check_module_exists(module_dir, name)
-        for name in MODULES
-    }
+    modules_status = {name: check_module_exists(module_dir, name) for name in MODULES}
 
     # Check imports
     imports_ok, import_errors = check_imports_work()
@@ -68,6 +67,7 @@ def get_system_status() -> Dict:
     try:
         sys.path.insert(0, str(module_dir.parent))
         from amos_brain.cognitive_audit import get_audit_trail
+
         audit = get_audit_trail()
         audit_stats = audit.get_statistics()
     except Exception:
@@ -118,7 +118,7 @@ def print_status_report():
         print(f"  • Total decisions: {stats.get('total_entries', 0)}")
         print(f"  • Violation rate: {stats.get('violation_rate', 0):.1%}")
         print(f"  • Avg execution: {stats.get('avg_execution_time_ms', 0):.1f}ms")
-        domains = stats.get('domains', {})
+        domains = stats.get("domains", {})
         if domains:
             print(f"  • Active domains: {', '.join(domains.keys())}")
 

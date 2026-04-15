@@ -15,6 +15,7 @@ Usage:
     python amos_integration_tests.py --coherence
     python amos_integration_tests.py --all
 """
+
 from __future__ import annotations
 
 import sys
@@ -311,7 +312,7 @@ class AMOSIntegrationTests:
         print(f"  Total Tests: {len(self.results)}")
         print(f"  Passed: {len(passed)} ✅")
         print(f"  Failed: {len(failed)} ❌")
-        print(f"  Success Rate: {len(passed)/len(self.results)*100:.1f}%")
+        print(f"  Success Rate: {len(passed) / len(self.results) * 100:.1f}%")
         print(f"  Total Time: {total_time:.2f}s")
 
         # Results by category

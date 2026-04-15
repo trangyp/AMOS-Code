@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """AMOS Brain CLI - Command line interface to the AMOS cognitive architecture."""
+
 from __future__ import annotations
 
 import argparse

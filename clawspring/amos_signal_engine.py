@@ -1,4 +1,5 @@
 """AMOS Signal Processing Engine - Multi-domain signal analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -297,7 +298,7 @@ class AMOSSignalEngine:
             "# AMOS Signal Processing Analysis Summary",
             "",
             f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+            f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
             "",
             "⚠️ SAFETY NOTICE:",
             "⚠️ No actual signal processing - conceptual analysis only",

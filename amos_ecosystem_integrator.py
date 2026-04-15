@@ -25,6 +25,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity - Layer 20
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

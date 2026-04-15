@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Task Queue System
+"""AMOS Task Queue System
 =======================
 
 Central task queue for cross-subsystem coordination.
@@ -23,6 +22,7 @@ from typing import Any, Dict, List, Optional
 
 class TaskStatus(Enum):
     """Task execution status."""
+
     PENDING = "pending"
     ASSIGNED = "assigned"
     RUNNING = "running"
@@ -33,6 +33,7 @@ class TaskStatus(Enum):
 
 class TaskPriority(Enum):
     """Task priority levels."""
+
     LOW = 1
     MEDIUM = 2
     HIGH = 3
@@ -42,6 +43,7 @@ class TaskPriority(Enum):
 @dataclass
 class Task:
     """A task in the queue."""
+
     id: str
     title: str
     description: str
@@ -63,6 +65,7 @@ class Task:
 @dataclass
 class TaskAssignment:
     """Task assigned to an agent."""
+
     task_id: str
     agent_id: str
     assigned_at: str
@@ -70,8 +73,7 @@ class TaskAssignment:
 
 
 class TaskQueue:
-    """
-    Central task queue for AMOS organism.
+    """Central task queue for AMOS organism.
     Manages task lifecycle from creation to completion.
     """
 
@@ -91,7 +93,7 @@ class TaskQueue:
         state_file = self.queue_dir / "queue_state.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r', encoding='utf-8') as f:
+                with open(state_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for task_data in data.get("tasks", []):
@@ -111,7 +113,7 @@ class TaskQueue:
                         result=task_data.get("result"),
                         error_message=task_data.get("error_message"),
                         retry_count=task_data.get("retry_count", 0),
-                        max_retries=task_data.get("max_retries", 3)
+                        max_retries=task_data.get("max_retries", 3),
                     )
                     self.tasks[task.id] = task
 
@@ -146,14 +148,14 @@ class TaskQueue:
                     "result": t.result,
                     "error_message": t.error_message,
                     "retry_count": t.retry_count,
-                    "max_retries": t.max_retries
+                    "max_retries": t.max_retries,
                 }
                 for t in self.tasks.values()
             ],
-            "task_history": self.task_history[-100:]  # Keep last 100
+            "task_history": self.task_history[-100:],  # Keep last 100
         }
 
-        with open(state_file, 'w', encoding='utf-8') as f:
+        with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def submit_task(
@@ -164,7 +166,7 @@ class TaskQueue:
         source_subsystem: str,
         priority: TaskPriority = TaskPriority.MEDIUM,
         target_agent: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None
+        params: Optional[Dict[str, Any]] = None,
     ) -> Task:
         """Submit a new task to the queue."""
         task = Task(
@@ -175,7 +177,7 @@ class TaskQueue:
             source_subsystem=source_subsystem,
             target_agent=target_agent,
             priority=priority,
-            params=params or {}
+            params=params or {},
         )
 
         self.tasks[task.id] = task
@@ -198,7 +200,7 @@ class TaskQueue:
             task_id=task_id,
             agent_id=agent_id,
             assigned_at=datetime.utcnow().isoformat(),
-            expected_duration=300  # 5 minutes default
+            expected_duration=300,  # 5 minutes default
         )
         self.assignments[task_id] = assignment
 
@@ -270,7 +272,8 @@ class TaskQueue:
     def get_tasks_for_agent(self, agent_id: str) -> List[Task]:
         """Get tasks assigned to a specific agent."""
         return [
-            t for t in self.tasks.values()
+            t
+            for t in self.tasks.values()
             if t.target_agent == agent_id and t.status in [TaskStatus.ASSIGNED, TaskStatus.RUNNING]
         ]
 
@@ -289,7 +292,7 @@ class TaskQueue:
 
     def get_status(self) -> Dict[str, Any]:
         """Get queue status."""
-        status_counts = {s: 0 for s in TaskStatus}
+        status_counts = dict.fromkeys(TaskStatus, 0)
         for task in self.tasks.values():
             status_counts[task.status] += 1
 
@@ -301,7 +304,7 @@ class TaskQueue:
             "running": status_counts[TaskStatus.RUNNING],
             "completed": status_counts[TaskStatus.COMPLETED],
             "failed": status_counts[TaskStatus.FAILED],
-            "active_assignments": len(self.assignments)
+            "active_assignments": len(self.assignments),
         }
 
     def cleanup_old_tasks(self, max_age_hours: int = 24) -> int:
@@ -312,7 +315,7 @@ class TaskQueue:
         for task_id, task in self.tasks.items():
             if task.status in [TaskStatus.COMPLETED, TaskStatus.FAILED]:
                 created_ts = datetime.fromisoformat(
-                    task.created_at.replace('Z', '+00:00')
+                    task.created_at.replace("Z", "+00:00")
                 ).timestamp()
                 if created_ts < cutoff:
                     to_remove.append(task_id)
@@ -345,7 +348,7 @@ def main() -> int:
         task_type="analysis",
         source_subsystem="01_BRAIN",
         priority=TaskPriority.HIGH,
-        target_agent="analyst_agent"
+        target_agent="analyst_agent",
     )
 
     queue.submit_task(
@@ -353,7 +356,7 @@ def main() -> int:
         description="Create documentation for new subsystem",
         task_type="documentation",
         source_subsystem="06_MUSCLE",
-        priority=TaskPriority.MEDIUM
+        priority=TaskPriority.MEDIUM,
     )
 
     queue.submit_task(
@@ -361,7 +364,7 @@ def main() -> int:
         description="Run security checks on all subsystems",
         task_type="security",
         source_subsystem="03_IMMUNE",
-        priority=TaskPriority.CRITICAL
+        priority=TaskPriority.CRITICAL,
     )
 
     # Show status
@@ -382,4 +385,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

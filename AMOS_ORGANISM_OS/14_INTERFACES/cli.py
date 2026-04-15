@@ -1,5 +1,4 @@
-"""AMOS CLI — Command-line interface for the organism.
-"""
+"""AMOS CLI — Command-line interface for the organism."""
 
 from __future__ import annotations
 

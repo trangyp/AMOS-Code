@@ -19,6 +19,7 @@ Interactive docs:
   http://localhost:8000/docs (Swagger UI)
   http://localhost:8000/redoc (ReDoc)
 """
+
 from __future__ import annotations
 
 import os

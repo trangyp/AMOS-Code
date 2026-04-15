@@ -1,4 +1,5 @@
 """AMOS Society/Culture Engine - Social and cultural analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -318,7 +319,7 @@ class AMOSSocietyEngine:
             "# AMOS Society/Culture Analysis Summary",
             "",
             f"Domains analyzed: {len(results)}",
-            f"Overall confidence: {sum(r.confidence for r in results.values())/len(results):.2f}",
+            f"Overall confidence: {sum(r.confidence for r in results.values()) / len(results):.2f}",
             "",
             "⚠️ SAFETY NOTICE:",
             "⚠️ Avoid prescriptive cultural judgments",

@@ -21,6 +21,7 @@ Usage:
     python amos_unified.py --mode core        # Core cognitive mode
     python amos_unified.py --mode full        # Full integration (default)
 """
+
 from __future__ import annotations
 
 import argparse

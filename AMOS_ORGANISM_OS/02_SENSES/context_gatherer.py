@@ -1,5 +1,4 @@
-"""Context Gatherer — Environment context for AMOS.
-"""
+"""Context Gatherer — Environment context for AMOS."""
 
 from __future__ import annotations
 

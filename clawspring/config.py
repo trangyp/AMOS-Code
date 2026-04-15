@@ -1,4 +1,5 @@
 """Configuration management for ClawSpring (multi-provider)."""
+
 import json
 import os
 from pathlib import Path

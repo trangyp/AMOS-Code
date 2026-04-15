@@ -32,7 +32,8 @@ from .basis import StateDimension
 
 @dataclass
 class Observable:
-    """A single structured observable measurement.
+    """
+    A single structured observable measurement.
 
     Per Ω∞∞∞∞∞: Observables have weights for amplitude calculation:
     α_k = exp(- Σ_j w_{k,j} · o_j)
@@ -754,6 +755,518 @@ class ObservableSet:
         weight=0.6,
     )
 
+    # ============================================
+    # Phase 4: State Machine and Coexistence Observables
+    # ============================================
+
+    # 6.1 State Machine Integrity
+    O_UNDECLARED_REACHABLE_STATE = Observable(
+        name="o_undeclared_reachable_state",
+        severity=1.0,
+        dimension=StateDimension.STATE_MACHINE_INTEGRITY,
+        weight=1.0,
+    )
+    O_PARTIAL_INITIALIZATION_HEALTHY = Observable(
+        name="o_partial_initialization_healthy",
+        severity=0.95,
+        dimension=StateDimension.STATE_MACHINE_INTEGRITY,
+        weight=0.95,
+    )
+    O_HALF_MIGRATED_ROUTABLE = Observable(
+        name="o_half_migrated_routable",
+        severity=1.0,
+        dimension=StateDimension.STATE_MACHINE_INTEGRITY,
+        weight=1.0,
+    )
+    O_ROLLBACK_INVARIANT_VIOLATION = Observable(
+        name="o_rollback_invariant_violation",
+        severity=1.0,
+        dimension=StateDimension.STATE_MACHINE_INTEGRITY,
+        weight=1.0,
+    )
+
+    # 6.2 Forbidden State Reachability
+    O_FORBIDDEN_STATE_REACHABLE = Observable(
+        name="o_forbidden_state_reachable",
+        severity=1.0,
+        dimension=StateDimension.FORBIDDEN_STATE_REACHABILITY,
+        weight=1.0,
+    )
+
+    # 6.3 Transition Legality
+    O_UNDECLARED_TRANSITION_PATH = Observable(
+        name="o_undeclared_transition_path",
+        severity=0.9,
+        dimension=StateDimension.TRANSITION_LEGALITY,
+        weight=0.9,
+    )
+    O_TRANSITION_WITHOUT_PRECONDITION = Observable(
+        name="o_transition_without_precondition",
+        severity=0.85,
+        dimension=StateDimension.TRANSITION_LEGALITY,
+        weight=0.85,
+    )
+
+    # 6.4 Multi-Version Coexistence
+    O_VERSION_WINDOW_UNDEFINED = Observable(
+        name="o_version_window_undefined",
+        severity=0.9,
+        dimension=StateDimension.MULTIVERSION_COEXISTENCE,
+        weight=0.9,
+    )
+    O_SHELL_LAUNCHER_MISMATCH = Observable(
+        name="o_shell_launcher_mismatch",
+        severity=0.9,
+        dimension=StateDimension.MULTIVERSION_COEXISTENCE,
+        weight=0.9,
+    )
+    O_GENERATED_CLIENT_LAG = Observable(
+        name="o_generated_client_lag",
+        severity=0.85,
+        dimension=StateDimension.MULTIVERSION_COEXISTENCE,
+        weight=0.85,
+    )
+    O_MIXED_ARTIFACT_INCOMPATIBLE = Observable(
+        name="o_mixed_artifact_incompatible",
+        severity=1.0,
+        dimension=StateDimension.MULTIVERSION_COEXISTENCE,
+        weight=1.0,
+    )
+
+    # 6.5 Compatibility Window
+    O_COMPATIBILITY_WINDOW_VIOLATED = Observable(
+        name="o_compatibility_window_violated",
+        severity=1.0,
+        dimension=StateDimension.COMPATIBILITY_WINDOW,
+        weight=1.0,
+    )
+
+    # 6.6 Split-Brain Resistance
+    O_SPLIT_BRAIN_POSSIBLE = Observable(
+        name="o_split_brain_possible",
+        severity=1.0,
+        dimension=StateDimension.SPLIT_BRAIN_RESISTANCE,
+        weight=1.0,
+    )
+    O_DIVERGENT_AUTHORITY_NO_RECONCILIATION = Observable(
+        name="o_divergent_authority_no_reconciliation",
+        severity=1.0,
+        dimension=StateDimension.SPLIT_BRAIN_RESISTANCE,
+        weight=1.0,
+    )
+
+    # 6.7 Cutover Integrity
+    O_DUAL_WRITE_NO_IDEMPOTENCY = Observable(
+        name="o_dual_write_no_idempotency",
+        severity=1.0,
+        dimension=StateDimension.CUTOVER_INTEGRITY,
+        weight=1.0,
+    )
+    O_DUAL_READ_INCONSISTENT_PRECEDENCE = Observable(
+        name="o_dual_read_inconsistent_precedence",
+        severity=0.95,
+        dimension=StateDimension.CUTOVER_INTEGRITY,
+        weight=0.95,
+    )
+    O_WRITE_OLD_READ_NEW_ASYMMETRY = Observable(
+        name="o_write_old_read_new_asymmetry",
+        severity=0.9,
+        dimension=StateDimension.CUTOVER_INTEGRITY,
+        weight=0.9,
+    )
+    O_ONE_WAY_CUTOVER_HIDDEN = Observable(
+        name="o_one_way_cutover_hidden",
+        severity=0.85,
+        dimension=StateDimension.CUTOVER_INTEGRITY,
+        weight=0.85,
+    )
+
+    # 6.8 Canary Safety
+    O_CANARY_CORRUPTS_STATE = Observable(
+        name="o_canary_corrupts_state",
+        severity=1.0,
+        dimension=StateDimension.CANARY_SAFETY,
+        weight=1.0,
+    )
+    O_CANARY_FALSE_CONFIDENCE = Observable(
+        name="o_canary_false_confidence",
+        severity=0.9,
+        dimension=StateDimension.CANARY_SAFETY,
+        weight=0.9,
+    )
+
+    # 6.9 Change Coordination
+    O_UNCOORDINATED_MULTI_SURFACE = Observable(
+        name="o_uncoordinated_multi_surface",
+        severity=0.9,
+        dimension=StateDimension.CHANGE_COORDINATION,
+        weight=0.9,
+    )
+
+    # 6.10 Data Quality
+    O_CONFIG_PARSEABLE_BUT_INVALID = Observable(
+        name="o_config_parseable_but_invalid",
+        severity=0.85,
+        dimension=StateDimension.DATA_QUALITY,
+        weight=0.85,
+    )
+    O_CACHE_OLDER_THAN_POLICY = Observable(
+        name="o_cache_older_than_policy",
+        severity=0.9,
+        dimension=StateDimension.DATA_QUALITY,
+        weight=0.9,
+    )
+    O_MIGRATION_COMPLETE_BUT_INVALID = Observable(
+        name="o_migration_complete_but_invalid",
+        severity=1.0,
+        dimension=StateDimension.DATA_QUALITY,
+        weight=1.0,
+    )
+    O_GENERATED_ARTIFACT_SEMANTICALLY_STALE = Observable(
+        name="o_generated_artifact_semantically_stale",
+        severity=0.85,
+        dimension=StateDimension.DATA_QUALITY,
+        weight=0.85,
+    )
+
+    # 6.11 Backfill Integrity
+    O_BACKFILL_NON_MONOTONIC = Observable(
+        name="o_backfill_non_monotonic",
+        severity=0.9,
+        dimension=StateDimension.BACKFILL_INTEGRITY,
+        weight=0.9,
+    )
+    O_BACKFILL_NON_IDEMPOTENT = Observable(
+        name="o_backfill_non_idempotent",
+        severity=0.9,
+        dimension=StateDimension.BACKFILL_INTEGRITY,
+        weight=0.9,
+    )
+    O_BACKFILL_LINEAGE_VIOLATION = Observable(
+        name="o_backfill_lineage_violation",
+        severity=0.85,
+        dimension=StateDimension.BACKFILL_INTEGRITY,
+        weight=0.85,
+    )
+
+    # 6.12 Garbage Collection
+    O_DELETED_SOURCE_LIVE_DERIVED = Observable(
+        name="o_deleted_source_live_derived",
+        severity=0.8,
+        dimension=StateDimension.GARBAGE_COLLECTION,
+        weight=0.8,
+    )
+    O_PURGED_DATA_CACHED_REFERENCES = Observable(
+        name="o_purged_data_cached_references",
+        severity=1.0,
+        dimension=StateDimension.GARBAGE_COLLECTION,
+        weight=1.0,
+    )
+    O_RETENTION_POLICY_AUDIT_CONFLICT = Observable(
+        name="o_retention_policy_audit_conflict",
+        severity=0.9,
+        dimension=StateDimension.GARBAGE_COLLECTION,
+        weight=0.9,
+    )
+
+    # 6.13 External Contract
+    O_EXTERNAL_CONTRACT_UNVERSIONED = Observable(
+        name="o_external_contract_unversioned",
+        severity=0.9,
+        dimension=StateDimension.EXTERNAL_CONTRACT,
+        weight=0.9,
+    )
+    O_EXTERNAL_FAILURE_SEMANTICS_UNDECLARED = Observable(
+        name="o_external_failure_semantics_undeclared",
+        severity=0.9,
+        dimension=StateDimension.EXTERNAL_CONTRACT,
+        weight=0.9,
+    )
+
+    # 6.14 Quota Architecture
+    O_QUOTA_UNMODELED = Observable(
+        name="o_quota_unmodeled",
+        severity=0.85,
+        dimension=StateDimension.QUOTA_ARCHITECTURE,
+        weight=0.85,
+    )
+    O_RATE_LIMIT_RETRY_INCOMPATIBLE = Observable(
+        name="o_rate_limit_retry_incompatible",
+        severity=0.9,
+        dimension=StateDimension.QUOTA_ARCHITECTURE,
+        weight=0.9,
+    )
+
+    # 6.15 Vendor Substitutability
+    O_CRITICAL_VENDOR_NO_EXIT_PATH = Observable(
+        name="o_critical_vendor_no_exit_path",
+        severity=0.7,
+        dimension=StateDimension.VENDOR_SUBSTITUTABILITY,
+        weight=0.7,
+    )
+
+    # 6.16 Experiment Safety
+    O_EXPERIMENT_AUTHORITY_VIOLATION = Observable(
+        name="o_experiment_authority_violation",
+        severity=1.0,
+        dimension=StateDimension.EXPERIMENT_SAFETY,
+        weight=1.0,
+    )
+    O_EXPERIMENT_OBSERVABILITY_GAP = Observable(
+        name="o_experiment_observability_gap",
+        severity=0.85,
+        dimension=StateDimension.EXPERIMENT_SAFETY,
+        weight=0.85,
+    )
+    O_EXPERIMENT_ROLLBACK_IMPOSSIBLE = Observable(
+        name="o_experiment_rollback_impossible",
+        severity=0.9,
+        dimension=StateDimension.EXPERIMENT_SAFETY,
+        weight=0.9,
+    )
+
+    # 6.17 Flag Lattice
+    O_FLAG_COMBINATIONS_UNBOUNDED = Observable(
+        name="o_flag_combinations_unbounded",
+        severity=0.8,
+        dimension=StateDimension.FLAG_LATTICE,
+        weight=0.8,
+    )
+    O_FLAG_INTERACTION_UNDECLARED = Observable(
+        name="o_flag_interaction_undeclared",
+        severity=0.85,
+        dimension=StateDimension.FLAG_LATTICE,
+        weight=0.85,
+    )
+
+    # 6.18 Mode Activation
+    O_HIDDEN_MODE_ACTIVATION = Observable(
+        name="o_hidden_mode_activation",
+        severity=0.9,
+        dimension=StateDimension.MODE_ACTIVATION,
+        weight=0.9,
+    )
+    O_UNDOCUMENTED_MODE_SIDE_EFFECT = Observable(
+        name="o_undocumented_mode_side_effect",
+        severity=0.85,
+        dimension=StateDimension.MODE_ACTIVATION,
+        weight=0.85,
+    )
+
+    # 6.19 Economic Envelope
+    O_OBSERVABILITY_TOO_EXPENSIVE = Observable(
+        name="o_observability_too_expensive",
+        severity=0.6,
+        dimension=StateDimension.ECONOMIC_ENVELOPE,
+        weight=0.6,
+    )
+    O_RETRY_EXPLODES_COST = Observable(
+        name="o_retry_explodes_cost",
+        severity=0.9,
+        dimension=StateDimension.ECONOMIC_ENVELOPE,
+        weight=0.9,
+    )
+    O_SAFE_PATH_TOO_EXPENSIVE = Observable(
+        name="o_safe_path_too_expensive",
+        severity=0.85,
+        dimension=StateDimension.ECONOMIC_ENVELOPE,
+        weight=0.85,
+    )
+
+    # 6.20 Resource Coupling
+    O_UNDECLARED_BOTTLENECK_SHARING = Observable(
+        name="o_undeclared_bottleneck_sharing",
+        severity=0.9,
+        dimension=StateDimension.RESOURCE_COUPLING,
+        weight=0.9,
+    )
+
+    # 6.21 Team Topology
+    O_CONWAY_MISFIT = Observable(
+        name="o_conway_misfit",
+        severity=0.75,
+        dimension=StateDimension.TEAM_TOPOLOGY_FIT,
+        weight=0.75,
+    )
+    O_TEAM_BOUNDARY_ARCHITECTURE_MISMATCH = Observable(
+        name="o_team_boundary_architecture_mismatch",
+        severity=0.8,
+        dimension=StateDimension.TEAM_TOPOLOGY_FIT,
+        weight=0.8,
+    )
+
+    # 6.22 Knowledge Distribution
+    O_SINGLE_PERSON_CRITICAL_PATH = Observable(
+        name="o_single_person_critical_path",
+        severity=0.8,
+        dimension=StateDimension.KNOWLEDGE_DISTRIBUTION,
+        weight=0.8,
+    )
+    O_OPAQUE_RECOVERY_KNOWLEDGE = Observable(
+        name="o_opaque_recovery_knowledge",
+        severity=0.85,
+        dimension=StateDimension.KNOWLEDGE_DISTRIBUTION,
+        weight=0.85,
+    )
+
+    # 6.23 Incentive Alignment
+    O_LOCAL_WIN_GLOBAL_DAMAGE = Observable(
+        name="o_local_win_global_damage",
+        severity=0.7,
+        dimension=StateDimension.INCENTIVE_ALIGNMENT,
+        weight=0.7,
+    )
+    O_SPEED_VS_Safety_INCENTIVE_CONFLICT = Observable(
+        name="o_speed_vs_safety_incentive_conflict",
+        severity=0.75,
+        dimension=StateDimension.INCENTIVE_ALIGNMENT,
+        weight=0.75,
+    )
+
+    # 6.24 Exception Governance
+    O_EMERGENCY_BYPASS_UNBOUNDED = Observable(
+        name="o_emergency_bypass_unbounded",
+        severity=1.0,
+        dimension=StateDimension.EXCEPTION_GOVERNANCE,
+        weight=1.0,
+    )
+    O_EXCEPTION_UNREVIEWED = Observable(
+        name="o_exception_unreviewed",
+        severity=0.9,
+        dimension=StateDimension.EXCEPTION_GOVERNANCE,
+        weight=0.9,
+    )
+    O_EXCEPTION_UNLOGGED = Observable(
+        name="o_exception_unlogged",
+        severity=0.9,
+        dimension=StateDimension.EXCEPTION_GOVERNANCE,
+        weight=0.9,
+    )
+
+    # 6.25 Override Decay
+    O_OVERRIDE_WITHOUT_EXPIRY = Observable(
+        name="o_override_without_expiry",
+        severity=0.85,
+        dimension=StateDimension.OVERRIDE_DECAY,
+        weight=0.85,
+    )
+    O_TEMPORARY_BECOMES_PERMANENT = Observable(
+        name="o_temporary_becomes_permanent",
+        severity=0.8,
+        dimension=StateDimension.OVERRIDE_DECAY,
+        weight=0.8,
+    )
+
+    # 6.26 Hotfix Topology
+    O_HOTFIX_VIOLATES_ARCHITECTURE = Observable(
+        name="o_hotfix_violates_architecture",
+        severity=0.95,
+        dimension=StateDimension.HOTFIX_TOPOLOGY,
+        weight=0.95,
+    )
+    O_HOTFIX_ROLLBACK_UNSAFE = Observable(
+        name="o_hotfix_rollback_unsafe",
+        severity=1.0,
+        dimension=StateDimension.HOTFIX_TOPOLOGY,
+        weight=1.0,
+    )
+
+    # 6.27 Compliance Lifecycle
+    O_ROLLBACK_REQUIRES_DELETED_DATA = Observable(
+        name="o_rollback_requires_deleted_data",
+        severity=0.9,
+        dimension=StateDimension.COMPLIANCE_LIFECYCLE,
+        weight=0.9,
+    )
+    O_CACHE_DELETION_LAG_VIOLATION = Observable(
+        name="o_cache_deletion_lag_violation",
+        severity=0.9,
+        dimension=StateDimension.COMPLIANCE_LIFECYCLE,
+        weight=0.9,
+    )
+    O_GENERATED_ARTIFACT_RETENTION_VIOLATION = Observable(
+        name="o_generated_artifact_retention_violation",
+        severity=0.85,
+        dimension=StateDimension.COMPLIANCE_LIFECYCLE,
+        weight=0.85,
+    )
+
+    # 6.28 Epistemic Integrity
+    O_EVIDENCE_STALE_FOR_DECISION = Observable(
+        name="o_evidence_stale_for_decision",
+        severity=0.85,
+        dimension=StateDimension.EPISTEMIC_INTEGRITY,
+        weight=0.85,
+    )
+    O_EVIDENCE_GENERALIZED_INCORRECTLY = Observable(
+        name="o_evidence_generalized_incorrectly",
+        severity=0.9,
+        dimension=StateDimension.EPISTEMIC_INTEGRITY,
+        weight=0.9,
+    )
+    O_DECISION_WITHOUT_EVIDENCE_ACCESS = Observable(
+        name="o_decision_without_evidence_access",
+        severity=0.9,
+        dimension=StateDimension.EPISTEMIC_INTEGRITY,
+        weight=0.9,
+    )
+
+    # 6.29 Constitutional and Ownership
+    O_CONSTITUTION_VIOLATION = Observable(
+        name="o_constitution_violation",
+        severity=1.0,
+        dimension=StateDimension.CONSTITUTIONAL_INTEGRITY,
+        weight=1.0,
+    )
+    O_STATE_AUTHORITY_AMBIGUOUS = Observable(
+        name="o_state_authority_ambiguous",
+        severity=0.9,
+        dimension=StateDimension.STATE_OWNERSHIP,
+        weight=0.9,
+    )
+    O_ABSENCE_SEMANTICS_UNDECLARED = Observable(
+        name="o_absence_semantics_undeclared",
+        severity=0.85,
+        dimension=StateDimension.ABSENCE_SEMANTICS,
+        weight=0.85,
+    )
+
+    # 6.30 Disaster Recovery
+    O_DR_UNTESTED_PATH = Observable(
+        name="o_dr_untested_path",
+        severity=0.9,
+        dimension=StateDimension.DISASTER_RECOVERY,
+        weight=0.9,
+    )
+    O_DR_INCOMPLETE_COVERAGE = Observable(
+        name="o_dr_incomplete_coverage",
+        severity=0.85,
+        dimension=StateDimension.DISASTER_RECOVERY,
+        weight=0.85,
+    )
+
+    # 6.31 Graceful Degradation
+    O_DEGRADATION_PATH_UNDEFINED = Observable(
+        name="o_degradation_path_undefined",
+        severity=0.9,
+        dimension=StateDimension.GRACEFUL_DEGRADATION,
+        weight=0.9,
+    )
+    O_DEGRADATION_CASCADES_UNCONTROLLABLY = Observable(
+        name="o_degradation_cascades_uncontrollably",
+        severity=1.0,
+        dimension=StateDimension.GRACEFUL_DEGRADATION,
+        weight=1.0,
+    )
+
+    # 6.32 Interoperability
+    O_CROSS_SYSTEM_CONTRACT_VIOLATION = Observable(
+        name="o_cross_system_contract_violation",
+        severity=0.85,
+        dimension=StateDimension.INTEROPERABILITY,
+        weight=0.85,
+    )
+
     # Dimension weights for amplitude calculation
     DIMENSION_WEIGHTS: dict[StateDimension, dict[str, float]] = {
         StateDimension.SYNTAX: {
@@ -795,6 +1308,210 @@ class ObservableSet:
         StateDimension.SECURITY: {
             "security_flow_violation": 10.0,
             "disallowed_dependency": 8.0,
+        },
+        # Phase 3: Control system dimensions
+        StateDimension.CLOCK_SEMANTICS: {
+            "clock_skew": 9.0,
+            "timestamp_ambiguity": 8.0,
+            "expiry_inconsistent": 9.0,
+        },
+        StateDimension.TEMPORAL_ORDER: {
+            "order_violation": 9.0,
+        },
+        StateDimension.CACHE_COHERENCE: {
+            "invalidation_missing": 9.0,
+            "stale_override": 10.0,
+            "key_semantics_drift": 8.0,
+        },
+        StateDimension.CONSISTENCY_MODEL: {
+            "model_undeclared": 9.0,
+            "strong_assumption_invalid": 10.0,
+            "read_after_write_failure": 9.0,
+        },
+        StateDimension.IDENTITY_LIFECYCLE: {
+            "rotation_failure": 10.0,
+        },
+        StateDimension.CAPABILITY_DISCIPLINE: {
+            "ambient_authority": 9.0,
+            "capability_leak": 10.0,
+        },
+        StateDimension.QUEUE_BACKPRESSURE: {
+            "retry_amplification": 10.0,
+            "unbounded_growth": 9.0,
+            "backpressure_missing": 9.0,
+        },
+        StateDimension.FALLBACK_TOPOLOGY: {
+            "fallback_bypasses_auth": 10.0,
+        },
+        StateDimension.IDEMPOTENCY_BOUNDARY: {
+            "boundary_violation": 10.0,
+        },
+        StateDimension.DATA_LINEAGE: {
+            "artifact_outlives_source": 8.0,
+        },
+        StateDimension.DEPRECATION_LIFECYCLE: {
+            "deprecation_without_sunset": 7.0,
+        },
+        StateDimension.FORENSIC_AUDITABILITY: {
+            "forensic_gap": 8.0,
+        },
+        StateDimension.ESCALATION_GRAPH: {
+            "escalation_undefined": 9.0,
+        },
+        StateDimension.CONTROL_LOOP_STABILITY: {
+            "control_oscillation": 10.0,
+        },
+        StateDimension.FAILURE_DOMAINS: {
+            "domain_overlap": 9.0,
+        },
+        StateDimension.NEGATIVE_CAPABILITY: {
+            "forbidden_state_unblocked": 10.0,
+        },
+        StateDimension.ARCHITECTURAL_DEBT: {
+            "debt_unbounded": 6.0,
+        },
+        # Phase 4: State machine and coexistence dimensions
+        StateDimension.STATE_MACHINE_INTEGRITY: {
+            "undeclared_state": 10.0,
+            "partial_init_healthy": 9.5,
+            "half_migrated": 10.0,
+            "rollback_violation": 10.0,
+        },
+        StateDimension.FORBIDDEN_STATE_REACHABILITY: {
+            "forbidden_reachable": 10.0,
+        },
+        StateDimension.TRANSITION_LEGALITY: {
+            "undeclared_path": 9.0,
+            "no_precondition": 8.5,
+        },
+        StateDimension.MULTIVERSION_COEXISTENCE: {
+            "window_undefined": 9.0,
+            "shell_mismatch": 9.0,
+            "client_lag": 8.5,
+            "mixed_incompatible": 10.0,
+        },
+        StateDimension.COMPATIBILITY_WINDOW: {
+            "window_violated": 10.0,
+        },
+        StateDimension.SPLIT_BRAIN_RESISTANCE: {
+            "split_brain_possible": 10.0,
+            "no_reconciliation": 10.0,
+        },
+        StateDimension.CUTOVER_INTEGRITY: {
+            "dual_write_no_idempotency": 10.0,
+            "dual_read_inconsistent": 9.5,
+            "write_read_asymmetry": 9.0,
+            "hidden_cutover": 8.5,
+        },
+        StateDimension.CANARY_SAFETY: {
+            "canary_corrupts": 10.0,
+            "false_confidence": 9.0,
+        },
+        StateDimension.CHANGE_COORDINATION: {
+            "uncoordinated_multi": 9.0,
+        },
+        StateDimension.DATA_QUALITY: {
+            "parseable_invalid": 8.5,
+            "cache_older_policy": 9.0,
+            "migration_invalid": 10.0,
+            "artifact_stale": 8.5,
+        },
+        StateDimension.BACKFILL_INTEGRITY: {
+            "non_monotonic": 9.0,
+            "non_idempotent": 9.0,
+            "lineage_violation": 8.5,
+        },
+        StateDimension.GARBAGE_COLLECTION: {
+            "deleted_source_live": 8.0,
+            "purged_cached": 10.0,
+            "retention_audit_conflict": 9.0,
+        },
+        StateDimension.EXTERNAL_CONTRACT: {
+            "unversioned": 9.0,
+            "failure_undeclared": 9.0,
+        },
+        StateDimension.QUOTA_ARCHITECTURE: {
+            "quota_unmodeled": 8.5,
+            "rate_retry_incompatible": 9.0,
+        },
+        StateDimension.VENDOR_SUBSTITUTABILITY: {
+            "no_exit_path": 7.0,
+        },
+        StateDimension.EXPERIMENT_SAFETY: {
+            "authority_violation": 10.0,
+            "observability_gap": 8.5,
+            "rollback_impossible": 9.0,
+        },
+        StateDimension.FLAG_LATTICE: {
+            "combinations_unbounded": 8.0,
+            "interaction_undeclared": 8.5,
+        },
+        StateDimension.MODE_ACTIVATION: {
+            "hidden_activation": 9.0,
+            "undocumented_side_effect": 8.5,
+        },
+        StateDimension.ECONOMIC_ENVELOPE: {
+            "observability_expensive": 6.0,
+            "retry_explodes": 9.0,
+            "safe_path_expensive": 8.5,
+        },
+        StateDimension.RESOURCE_COUPLING: {
+            "bottleneck_sharing": 9.0,
+        },
+        StateDimension.TEAM_TOPOLOGY_FIT: {
+            "conway_misfit": 7.5,
+            "boundary_mismatch": 8.0,
+        },
+        StateDimension.KNOWLEDGE_DISTRIBUTION: {
+            "single_person": 8.0,
+            "opaque_recovery": 8.5,
+        },
+        StateDimension.INCENTIVE_ALIGNMENT: {
+            "local_global_damage": 7.0,
+            "speed_safety_conflict": 7.5,
+        },
+        StateDimension.EXCEPTION_GOVERNANCE: {
+            "bypass_unbounded": 10.0,
+            "unreviewed": 9.0,
+            "unlogged": 9.0,
+        },
+        StateDimension.OVERRIDE_DECAY: {
+            "no_expiry": 8.5,
+            "temporary_permanent": 8.0,
+        },
+        StateDimension.HOTFIX_TOPOLOGY: {
+            "violates_architecture": 9.5,
+            "rollback_unsafe": 10.0,
+        },
+        StateDimension.COMPLIANCE_LIFECYCLE: {
+            "rollback_requires_deleted": 9.0,
+            "cache_deletion_lag": 9.0,
+            "artifact_retention": 8.5,
+        },
+        StateDimension.EPISTEMIC_INTEGRITY: {
+            "evidence_stale": 8.5,
+            "generalized_incorrectly": 9.0,
+            "no_evidence_access": 9.0,
+        },
+        StateDimension.CONSTITUTIONAL_INTEGRITY: {
+            "constitution_violation": 10.0,
+        },
+        StateDimension.STATE_OWNERSHIP: {
+            "authority_ambiguous": 9.0,
+        },
+        StateDimension.ABSENCE_SEMANTICS: {
+            "undeclared": 8.5,
+        },
+        StateDimension.DISASTER_RECOVERY: {
+            "untested_path": 9.0,
+            "incomplete_coverage": 8.5,
+        },
+        StateDimension.GRACEFUL_DEGRADATION: {
+            "path_undefined": 9.0,
+            "cascades_uncontrollably": 10.0,
+        },
+        StateDimension.INTEROPERABILITY: {
+            "cross_system_violation": 8.5,
         },
     }
 

@@ -2,6 +2,7 @@
 """Generate animated GIF demo of clawspring Telegram Bridge.
 Shows: setup → auto-start → incoming messages → tool calls → response → stop
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont

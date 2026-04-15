@@ -1,4 +1,5 @@
 """AMOS Brain Tools - Register brain capabilities as clawspring tools."""
+
 from __future__ import annotations
 
 import json

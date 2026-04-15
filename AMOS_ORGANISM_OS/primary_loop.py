@@ -14,6 +14,7 @@ Usage:
     loop = PrimaryLoop()
     result = loop.execute_cycle(task="Design a system")
 """
+
 from __future__ import annotations
 
 import sys

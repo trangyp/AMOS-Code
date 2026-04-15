@@ -15,6 +15,7 @@ Invariant checks:
 
 Based on 2024 Python packaging best practices (PEP 517/518/660).
 """
+
 from __future__ import annotations
 
 import zipfile

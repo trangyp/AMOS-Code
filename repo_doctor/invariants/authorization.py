@@ -18,6 +18,7 @@ Invariant checks:
 
 Based on 2024 RBAC/ABAC authorization best practices.
 """
+
 from __future__ import annotations
 
 import ast

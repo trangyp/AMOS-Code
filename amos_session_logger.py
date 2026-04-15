@@ -13,6 +13,7 @@ Commands:
     report      Generate usage report
     export      Export session data to JSON
 """
+
 from __future__ import annotations
 
 import argparse
@@ -191,10 +192,10 @@ class AMOSSessionLogger:
         stats = session.get_stats()
         report = f"""
 AMOS SESSION REPORT
-{'=' * 50}
-Session ID: {stats['session_id']}
-Duration: {stats['duration_minutes']:.1f} minutes
-Total Interactions: {stats['total_interactions']}
+{"=" * 50}
+Session ID: {stats["session_id"]}
+Duration: {stats["duration_minutes"]:.1f} minutes
+Total Interactions: {stats["total_interactions"]}
 
 Breakdown by Type:
 """
@@ -203,12 +204,12 @@ Breakdown by Type:
 
         report += f"""
 Cognitive Coverage:
-  - Engines Used: {stats['unique_engines_used']}
-  - Laws Applied: {stats['unique_laws_applied']}
+  - Engines Used: {stats["unique_engines_used"]}
+  - Laws Applied: {stats["unique_laws_applied"]}
 
 Performance:
-  - Avg Response Time: {stats['avg_response_time_ms']:.0f}ms
-  - Success Rate: {stats['success_rate']*100:.1f}%
+  - Avg Response Time: {stats["avg_response_time_ms"]:.0f}ms
+  - Success Rate: {stats["success_rate"] * 100:.1f}%
 """
         return report
 

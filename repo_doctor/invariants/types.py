@@ -1,4 +1,5 @@
 """I_type = 1 iff every public callsite satisfies the actual callable signature."""
+
 from __future__ import annotations
 
 from typing import Any

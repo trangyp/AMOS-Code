@@ -1,5 +1,4 @@
-"""Muscle Executor — The execution engine for AMOS.
-"""
+"""Muscle Executor — The execution engine for AMOS."""
 
 from __future__ import annotations
 
@@ -162,7 +161,7 @@ class MuscleExecutor:
 
     def status(self) -> dict[str, Any]:
         """Get executor status."""
-        counts = {s: 0 for s in ExecutionStatus}
+        counts = dict.fromkeys(ExecutionStatus, 0)
         for r in self._history:
             counts[r.status] += 1
         return {

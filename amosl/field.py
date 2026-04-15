@@ -6,6 +6,7 @@ Implements the field-theoretic regime:
     - Constraint multipliers
     - Cross-domain interaction terms
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

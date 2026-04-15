@@ -11,6 +11,7 @@ MCP tool qualified names follow the pattern:
 
 This matches the Claude Code convention (mcp__serverName__toolName).
 """
+
 from __future__ import annotations
 
 import threading

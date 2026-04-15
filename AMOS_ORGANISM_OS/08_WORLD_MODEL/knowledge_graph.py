@@ -1,5 +1,4 @@
-"""Knowledge Graph — Semantic knowledge representation for AMOS.
-"""
+"""Knowledge Graph — Semantic knowledge representation for AMOS."""
 
 import json
 from dataclasses import dataclass, field

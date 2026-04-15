@@ -1,4 +1,5 @@
 """AMOS Design Engine - UI/UX production with biological constraints."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -301,7 +302,7 @@ if __name__ == "__main__":
     ]
 
     for comp_type, purpose, segments in test_cases:
-        print(f"\n{'='*40}")
+        print(f"\n{'=' * 40}")
         print(f"Component: {comp_type}")
         print(f"Purpose: {purpose}")
         print("=" * 40)

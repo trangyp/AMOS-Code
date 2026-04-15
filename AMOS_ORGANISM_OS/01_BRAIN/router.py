@@ -1,5 +1,4 @@
-"""System Router — Routes decisions to appropriate subsystems.
-"""
+"""System Router — Routes decisions to appropriate subsystems."""
 
 from __future__ import annotations
 

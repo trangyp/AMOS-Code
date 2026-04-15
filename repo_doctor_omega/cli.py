@@ -16,6 +16,7 @@ Examples:
     repo-doctor drift --since v14.0.0
     repo-doctor repair-plan --output markdown
 """
+
 from __future__ import annotations
 
 import argparse

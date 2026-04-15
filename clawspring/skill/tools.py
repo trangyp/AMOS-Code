@@ -1,4 +1,5 @@
 """Skill tool: lets the model invoke skills by name via tool call."""
+
 from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool

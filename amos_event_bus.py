@@ -16,7 +16,7 @@ class Event:
     payload: Any
     source: str
     timestamp: float = field(default_factory=time.time)
-    event_id: str = field(default_factory=lambda: f"evt_{int(time.time()*1000)}")
+    event_id: str = field(default_factory=lambda: f"evt_{int(time.time() * 1000)}")
     priority: int = 5  # 1-10, lower is higher priority
 
 

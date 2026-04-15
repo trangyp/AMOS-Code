@@ -1,4 +1,5 @@
 """AMOS Brain Meta-Cognitive Controller - Self-directed orchestration."""
+
 from __future__ import annotations
 
 import uuid
@@ -116,7 +117,7 @@ class MetaCognitiveController:
             # Determine dependencies
             dependencies = []
             if i > 1:
-                dependencies = [f"T{i-1:03d}"]
+                dependencies = [f"T{i - 1:03d}"]
 
             subtask = SubTask(
                 task_id=task_id,
@@ -130,7 +131,7 @@ class MetaCognitiveController:
         # Add final synthesis task
         subtasks.append(
             SubTask(
-                task_id=f"T{len(subtasks)+1:03d}",
+                task_id=f"T{len(subtasks) + 1:03d}",
                 description=f"Synthesize results to achieve: {goal[:50]}...",
                 dependencies=[t.task_id for t in subtasks],
                 status=TaskStatus.PENDING,

@@ -1,4 +1,5 @@
 """AMOS Brain Cognitive State Manager - Persistent reasoning memory."""
+
 from __future__ import annotations
 
 import json
@@ -141,7 +142,7 @@ class CognitiveStateManager:
             )
             session = self._active_sessions[session_id]
 
-        step_id = f"{session.session_id}-S{len(session.reasoning_chain)+1:03d}"
+        step_id = f"{session.session_id}-S{len(session.reasoning_chain) + 1:03d}"
 
         step = ReasoningStep(
             step_id=step_id,

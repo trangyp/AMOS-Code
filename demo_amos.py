@@ -12,6 +12,7 @@ Examples:
     python demo_amos.py laws
     python demo_amos.py full
 """
+
 from __future__ import annotations
 
 import argparse

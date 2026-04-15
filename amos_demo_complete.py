@@ -597,7 +597,7 @@ class AMOSGrandDemonstration:
         self._print("\nOverall Statistics:")
         self._print(f"  Total stages: {total_stages}")
         self._print(f"  Successful: {successful_stages}")
-        self._print(f"  Success rate: {successful_stages/total_stages:.0%}")
+        self._print(f"  Success rate: {successful_stages / total_stages:.0%}")
         self._print(f"  Total duration: {total_duration:.1f}ms")
 
         # Architecture summary

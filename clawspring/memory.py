@@ -1,4 +1,5 @@
 """Backward-compatibility shim — real implementation is in memory/ package."""
+
 from memory.context import get_memory_context  # noqa: F401
 from memory.store import (  # noqa: F401
     MemoryEntry,

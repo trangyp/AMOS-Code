@@ -20,6 +20,7 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 22
 Version: 20.0.0
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,10 +57,10 @@ class FinalValidator:
         Returns:
             Complete validation report
         """
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"AMOS BRAIN v{self.VERSION} - FINAL VALIDATION")
         print(f"Validation ID: {self.validation_id}")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         report = {
             "validation_id": self.validation_id,
@@ -194,11 +195,11 @@ class FinalValidator:
         # Save report
         self._save_report(report)
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"VALIDATION COMPLETE: {report['status']}")
         print(f"Passed: {passed}/{7}")
         print(f"Failed: {failed}/{7}")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         return report
 
@@ -248,16 +249,16 @@ class FinalValidator:
         with open(manifest_file, "w") as f:
             json.dump(declaration, f, indent=2)
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"🎉 AMOS BRAIN v{self.VERSION} OFFICIALLY SHIP-READY 🎉")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
         print(f"\nDeclaration saved: {manifest_file}")
         print("\nSystem ready for:")
         print("  • Production deployment")
         print("  • Real-world adoption")
         print("  • Commercial use")
         print("  • Academic research")
-        print(f"{'='*70}\n")
+        print(f"{'=' * 70}\n")
 
         return declaration
 

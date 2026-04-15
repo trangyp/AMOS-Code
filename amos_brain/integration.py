@@ -1,4 +1,5 @@
 """Integration layer connecting AMOS Brain to ClawSpring agent."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -96,8 +97,8 @@ AMOS BRAIN CONTEXT:
 You are operating within the AMOS (Artificial Mind Operating System) cognitive architecture.
 
 BRAIN IDENTITY:
-- System: {self.brain._config.name if self.brain._config else 'AMOS_FULL_BRAIN_OS'}
-- Version: {self.brain._config.version if self.brain._config else 'vInfinity'}
+- System: {self.brain._config.name if self.brain._config else "AMOS_FULL_BRAIN_OS"}
+- Version: {self.brain._config.version if self.brain._config else "vInfinity"}
 - Role: Deterministic Cognitive Operating Core
 
 GLOBAL LAWS (MUST FOLLOW):
@@ -116,10 +117,10 @@ REASONING CONSTRAINTS:
 - Safety over optimization
 
 DOMAIN COVERAGE:
-{', '.join(self.brain._config.domains if self.brain._config else [])}
+{", ".join(self.brain._config.domains if self.brain._config else [])}
 
 UBI DOMAINS:
-{', '.join(self.brain._config.ubi_domains if self.brain._config else [])}
+{", ".join(self.brain._config.ubi_domains if self.brain._config else [])}
 
 IRREDUCIBLE LIMITS (ACKNOWLEDGE):
 - No embodiment: no physical body or direct sensory input

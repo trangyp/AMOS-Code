@@ -702,7 +702,7 @@ def cmd_predict(args) -> int:
             pred = engine.predict_queue_clearance(status.get("pending", 0))
             print(f"Pending tasks: {status.get('pending', 0)}")
             print(f"Estimated clearance: {pred.horizon}")
-            print(f"Confidence: {pred.confidence*100:.0f}%")
+            print(f"Confidence: {pred.confidence * 100:.0f}%")
         except Exception as e:
             print(f"Error: {e}")
     elif args.target == "resources":

@@ -7,6 +7,7 @@ Shows proof generation for:
 3. Γ ⊢ e:τ - Type derivations
 4. Explain(L) = Outcome - Audit verification
 """
+
 import os
 import sys
 

@@ -1,4 +1,5 @@
 """AMOS Integration Test Suite - Validates all 11 layers."""
+
 from __future__ import annotations
 
 import time
@@ -370,7 +371,7 @@ class AMOSIntegrationTests:
             f"Total Tests: {result.total_tests}",
             f"Passed: {result.passed_tests} ✓",
             f"Failed: {result.failed_tests} ✗",
-            f"Success Rate: {result.passed_tests/result.total_tests*100:.1f}%",
+            f"Success Rate: {result.passed_tests / result.total_tests * 100:.1f}%",
             f"Total Time: {result.total_time:.2f}s",
             "",
             "Results by Layer:",
@@ -380,7 +381,9 @@ class AMOSIntegrationTests:
         for layer, tests in result.layer_results.items():
             passed = sum(1 for t in tests if t.passed)
             lines.append(f"{layer}")
-            lines.append(f"  Tests: {len(tests)} | Passed: {passed} | Failed: {len(tests)-passed}")
+            lines.append(
+                f"  Tests: {len(tests)} | Passed: {passed} | Failed: {len(tests) - passed}"
+            )
             for test in tests:
                 icon = "✓" if test.passed else "✗"
                 lines.append(f"    {icon} {test.test_name} ({test.execution_time:.3f}s)")

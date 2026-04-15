@@ -10,6 +10,7 @@ Design principles:
 - Won't overwrite a higher-confidence existing memory
 - Skips short sessions (< MIN_MESSAGES_TO_CONSOLIDATE turns)
 """
+
 from __future__ import annotations
 
 from datetime import datetime

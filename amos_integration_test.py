@@ -423,9 +423,9 @@ class AMOSIntegrationTestSuite:
         print(f"  Tests Run: {self.tests_run}")
         print(f"  Passed: {self.tests_passed} ✓")
         print(f"  Failed: {self.tests_failed} ✗")
-        print(f"  Success Rate: {self.tests_passed/self.tests_run*100:.1f}%")
+        print(f"  Success Rate: {self.tests_passed / self.tests_run * 100:.1f}%")
         print(f"  Total Duration: {total_duration}ms")
-        print(f"  Avg Duration: {total_duration/self.tests_run:.0f}ms")
+        print(f"  Avg Duration: {total_duration / self.tests_run:.0f}ms")
 
         if self.tests_failed > 0:
             print("\n  Failed Tests:")

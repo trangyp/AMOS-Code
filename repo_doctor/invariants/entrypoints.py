@@ -1,4 +1,5 @@
 """I_entry = 1 iff every launcher points to a real runnable target."""
+
 from __future__ import annotations
 
 from typing import Any

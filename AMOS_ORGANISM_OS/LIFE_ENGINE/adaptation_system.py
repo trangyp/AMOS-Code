@@ -1,4 +1,5 @@
 """LIFE_ENGINE adaptation_system stub — Re-exports from 11_LIFE_ENGINE"""
+
 import sys
 from pathlib import Path
 

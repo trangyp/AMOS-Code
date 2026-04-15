@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Hello Classical - AMOSL Classical Substrate Demo."""
+
 import os
 import sys
 

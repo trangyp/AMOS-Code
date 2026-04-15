@@ -1,4 +1,5 @@
 """System context: CLAUDE.md, git info, cwd injection."""
+
 import subprocess
 from datetime import datetime
 from pathlib import Path

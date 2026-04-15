@@ -8,6 +8,7 @@ Provides concrete syntax tree ingestion with:
 
 Based on Tree-sitter Python bindings best practices 2024.
 """
+
 from __future__ import annotations
 
 import subprocess

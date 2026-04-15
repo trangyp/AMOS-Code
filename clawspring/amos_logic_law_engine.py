@@ -1,4 +1,5 @@
 """AMOS Deterministic Logic & Law Engine - Formal reasoning and legal analysis."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

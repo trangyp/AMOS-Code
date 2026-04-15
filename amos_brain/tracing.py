@@ -6,6 +6,7 @@ Provides distributed tracing support for:
 - Error context propagation
 - Integration with modern observability backends (Jaeger, Zipkin, OTLP)
 """
+
 from __future__ import annotations
 
 import os
@@ -33,7 +34,11 @@ class TracingConfig:
         endpoint: str | None = None,
         sample_rate: float = 1.0,
     ):
-        self.enabled = enabled if enabled is not None else os.getenv("AMOS_TRACING_ENABLED", "false").lower() == "true"
+        self.enabled = (
+            enabled
+            if enabled is not None
+            else os.getenv("AMOS_TRACING_ENABLED", "false").lower() == "true"
+        )
         self.service_name = service_name
         self.endpoint = endpoint or os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
         self.sample_rate = max(0.0, min(1.0, sample_rate))
@@ -62,21 +67,26 @@ class TracingSpan:
         """Add an event to the span."""
         import time
 
-        self.events.append({
-            "name": name,
-            "timestamp": time.time(),
-            "attributes": attributes or {},
-        })
+        self.events.append(
+            {
+                "name": name,
+                "timestamp": time.time(),
+                "attributes": attributes or {},
+            }
+        )
 
     def record_exception(self, exception: BaseException) -> None:
         """Record an exception in the span."""
         self.set_attribute("error", True)
         self.set_attribute("error.type", type(exception).__name__)
         self.set_attribute("error.message", str(exception))
-        self.add_event("exception", {
-            "exception.type": type(exception).__name__,
-            "exception.message": str(exception),
-        })
+        self.add_event(
+            "exception",
+            {
+                "exception.type": type(exception).__name__,
+                "exception.message": str(exception),
+            },
+        )
 
     def __enter__(self) -> TracingSpan:
         """Context manager entry."""
@@ -128,7 +138,9 @@ class Tracer:
         return span
 
     @contextmanager
-    def span(self, name: str, attributes: dict[str, Any] | None = None) -> Generator[TracingSpan, None, None]:
+    def span(
+        self, name: str, attributes: dict[str, Any] | None = None
+    ) -> Generator[TracingSpan, None, None]:
         """Context manager for span creation.
 
         Args:
@@ -198,7 +210,9 @@ def configure_tracing(
     Returns:
         Configured Tracer instance
     """
-    config = TracingConfig(enabled=enabled, service_name=service_name, endpoint=endpoint, sample_rate=sample_rate)
+    config = TracingConfig(
+        enabled=enabled, service_name=service_name, endpoint=endpoint, sample_rate=sample_rate
+    )
     return get_tracer(config)
 
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Predictive Analytics Engine
+"""AMOS Predictive Analytics Engine
 =================================
 
 Forecasts task completion times, subsystem load, and resource usage.
@@ -23,6 +22,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class Prediction:
     """A single prediction result."""
+
     metric: str
     predicted_value: float
     confidence: float
@@ -35,6 +35,7 @@ class Prediction:
 @dataclass
 class TaskPrediction:
     """Prediction for a specific task."""
+
     task_id: str
     task_type: str
     priority: str
@@ -47,8 +48,7 @@ class TaskPrediction:
 
 
 class PredictiveEngine:
-    """
-    Predictive analytics engine for AMOS organism.
+    """Predictive analytics engine for AMOS organism.
     Forecasts performance, load, and resource usage.
     """
 
@@ -86,7 +86,7 @@ class PredictiveEngine:
         history_file = self.analytics_dir / "execution_history.json"
         if history_file.exists():
             try:
-                with open(history_file, 'r', encoding='utf-8') as f:
+                with open(history_file, encoding="utf-8") as f:
                     data = json.load(f)
                     self.execution_history = data.get("executions", [])
                     self.subsystem_metrics = data.get("subsystem_metrics", {})
@@ -100,35 +100,29 @@ class PredictiveEngine:
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "total_executions": len(self.execution_history),
             "executions": self.execution_history[-1000:],  # Keep last 1000
-            "subsystem_metrics": self.subsystem_metrics
+            "subsystem_metrics": self.subsystem_metrics,
         }
-        with open(history_file, 'w', encoding='utf-8') as f:
+        with open(history_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def record_execution(
-        self,
-        task_type: str,
-        priority: str,
-        duration_ms: float,
-        agent_id: str,
-        success: bool
+        self, task_type: str, priority: str, duration_ms: float, agent_id: str, success: bool
     ) -> None:
         """Record execution for future predictions."""
-        self.execution_history.append({
-            "timestamp": datetime.utcnow().isoformat(),
-            "task_type": task_type,
-            "priority": priority,
-            "duration_ms": duration_ms,
-            "agent_id": agent_id,
-            "success": success
-        })
+        self.execution_history.append(
+            {
+                "timestamp": datetime.utcnow().isoformat(),
+                "task_type": task_type,
+                "priority": priority,
+                "duration_ms": duration_ms,
+                "agent_id": agent_id,
+                "success": success,
+            }
+        )
         self._save_history()
 
     def predict_task_duration(
-        self,
-        task_type: str,
-        priority: str,
-        agent_id: Optional[str] = None
+        self, task_type: str, priority: str, agent_id: Optional[str] = None
     ) -> TaskPrediction:
         """Predict duration for a task."""
         # Get baseline for task type
@@ -141,20 +135,20 @@ class PredictiveEngine:
         predicted_duration = baseline["mean"] * multiplier
 
         # Adjust confidence based on data availability
-        historical_count = sum(
-            1 for e in self.execution_history
-            if e["task_type"] == task_type
-        )
+        historical_count = sum(1 for e in self.execution_history if e["task_type"] == task_type)
 
         if historical_count >= 10:
             # Use historical data for better prediction
             type_history = [
-                e["duration_ms"] for e in self.execution_history
+                e["duration_ms"]
+                for e in self.execution_history
                 if e["task_type"] == task_type and e["success"]
             ]
             if type_history:
                 predicted_duration = statistics.mean(type_history) * multiplier
-                std_dev = statistics.stdev(type_history) if len(type_history) > 1 else baseline["std"]
+                std_dev = (
+                    statistics.stdev(type_history) if len(type_history) > 1 else baseline["std"]
+                )
                 confidence = min(0.95, 0.7 + (historical_count / 100))
             else:
                 std_dev = baseline["std"]
@@ -177,7 +171,7 @@ class PredictiveEngine:
             std_dev=std_dev,
             assigned_agent=agent_id,
             recommended_start=recommended_start,
-            estimated_completion=estimated_completion
+            estimated_completion=estimated_completion,
         )
 
     def predict_queue_clearance(self, pending_count: int) -> Prediction:
@@ -190,7 +184,7 @@ class PredictiveEngine:
                 lower_bound=0,
                 upper_bound=0,
                 timestamp=datetime.utcnow().isoformat(),
-                horizon="immediate"
+                horizon="immediate",
             )
 
         # Average processing rate (tasks per second)
@@ -210,7 +204,7 @@ class PredictiveEngine:
             lower_bound=max(0, clearance_seconds - variance),
             upper_bound=clearance_seconds + variance,
             timestamp=datetime.utcnow().isoformat(),
-            horizon=f"{int(clearance_seconds)}s"
+            horizon=f"{int(clearance_seconds)}s",
         )
 
     def predict_subsystem_load(self, subsystem: str, horizon_minutes: int = 5) -> Prediction:
@@ -242,14 +236,10 @@ class PredictiveEngine:
             lower_bound=max(0, predicted_load - std_dev),
             upper_bound=min(100, predicted_load + std_dev),
             timestamp=datetime.utcnow().isoformat(),
-            horizon=f"{horizon_minutes}m"
+            horizon=f"{horizon_minutes}m",
         )
 
-    def predict_resource_usage(
-        self,
-        resource_type: str,
-        horizon_hours: int = 24
-    ) -> Prediction:
+    def predict_resource_usage(self, resource_type: str, horizon_hours: int = 24) -> Prediction:
         """Predict resource usage (compute, storage, budget)."""
         if resource_type == "compute":
             base = 45  # % CPU
@@ -274,7 +264,7 @@ class PredictiveEngine:
             lower_bound=max(0, predicted - variance),
             upper_bound=min(100, predicted + variance),
             timestamp=datetime.utcnow().isoformat(),
-            horizon=f"{horizon_hours}h"
+            horizon=f"{horizon_hours}h",
         )
 
     def get_all_predictions(self) -> Dict[str, Any]:
@@ -282,8 +272,10 @@ class PredictiveEngine:
         # Load current queue status
         try:
             import sys
+
             sys.path.insert(0, str(self.root / "07_METABOLISM"))
             from task_queue import TaskQueue
+
             queue = TaskQueue(self.root)
             queue_status = queue.get_status()
             pending_count = queue_status.get("pending", 0)
@@ -294,17 +286,22 @@ class PredictiveEngine:
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "queue": {
                 "pending_tasks": pending_count,
-                "clearance_prediction": self.predict_queue_clearance(pending_count).__dict__
+                "clearance_prediction": self.predict_queue_clearance(pending_count).__dict__,
             },
             "subsystems": {},
             "resources": {},
-            "task_types": {}
+            "task_types": {},
         }
 
         # Predict for all subsystems
         for subsystem in [
-            "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD",
-            "05_SKELETON", "06_MUSCLE", "07_METABOLISM"
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "04_BLOOD",
+            "05_SKELETON",
+            "06_MUSCLE",
+            "07_METABOLISM",
         ]:
             pred = self.predict_subsystem_load(subsystem, horizon_minutes=5)
             predictions["subsystems"][subsystem] = pred.__dict__
@@ -320,7 +317,7 @@ class PredictiveEngine:
             predictions["task_types"][task_type] = {
                 "predicted_duration_ms": pred.predicted_duration_ms,
                 "confidence": pred.confidence,
-                "estimated_seconds": pred.predicted_duration_ms / 1000
+                "estimated_seconds": pred.predicted_duration_ms / 1000,
             }
 
         return predictions
@@ -338,37 +335,43 @@ class PredictiveEngine:
             f"  Pending tasks: {predictions['queue']['pending_tasks']}",
         ]
 
-        if predictions['queue']['pending_tasks'] > 0:
-            clearance = predictions['queue']['clearance_prediction']
+        if predictions["queue"]["pending_tasks"] > 0:
+            clearance = predictions["queue"]["clearance_prediction"]
             lines.append(f"  Estimated clearance: {clearance['horizon']}")
 
-        lines.extend([
-            "",
-            "Subsystem Load (5min forecast):",
-        ])
+        lines.extend(
+            [
+                "",
+                "Subsystem Load (5min forecast):",
+            ]
+        )
 
-        for subsys, pred in predictions['subsystems'].items():
-            load = pred['predicted_value']
+        for subsys, pred in predictions["subsystems"].items():
+            load = pred["predicted_value"]
             status = "HIGH" if load > 80 else "MEDIUM" if load > 50 else "LOW"
             lines.append(f"  {subsys}: {load:.1f}% ({status})")
 
-        lines.extend([
-            "",
-            "Resource Usage (24h forecast):",
-        ])
+        lines.extend(
+            [
+                "",
+                "Resource Usage (24h forecast):",
+            ]
+        )
 
-        for resource, pred in predictions['resources'].items():
-            usage = pred['predicted_value']
+        for resource, pred in predictions["resources"].items():
+            usage = pred["predicted_value"]
             lines.append(f"  {resource}: {usage:.1f}%")
 
-        lines.extend([
-            "",
-            "Task Duration Estimates:",
-        ])
+        lines.extend(
+            [
+                "",
+                "Task Duration Estimates:",
+            ]
+        )
 
-        for task_type, pred in predictions['task_types'].items():
-            seconds = pred['estimated_seconds']
-            conf = pred['confidence'] * 100
+        for task_type, pred in predictions["task_types"].items():
+            seconds = pred["estimated_seconds"]
+            conf = pred["confidence"] * 100
             lines.append(f"  {task_type}: ~{seconds:.1f}s (conf: {conf:.0f}%)")
 
         return "\n".join(lines)
@@ -396,11 +399,12 @@ def main() -> int:
             pred = engine.predict_task_duration(task_type, priority)
             print(f"\n{priority} {task_type}:")
             print(f"  Duration: {pred.predicted_duration_ms:.0f}ms")
-            print(f"  Confidence: {pred.confidence*100:.0f}%")
+            print(f"  Confidence: {pred.confidence * 100:.0f}%")
 
     return 0
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

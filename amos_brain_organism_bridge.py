@@ -18,6 +18,7 @@ Usage:
     bridge = BrainOrganismBridge()
     result = bridge.execute_decision("Refactor the auth module")
 """
+
 from __future__ import annotations
 
 import sys

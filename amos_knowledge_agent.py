@@ -20,6 +20,7 @@ Examples:
     python amos_knowledge_agent.py "Create an ethical AI governance framework"
     python amos_knowledge_agent.py "Analyze Vietnam EV market strategy"
 """
+
 from __future__ import annotations
 
 import argparse
@@ -235,13 +236,13 @@ class KnowledgeAgent:
             # Generate output based on knowledge
             if relevant:
                 top_match = relevant[0]
-                result[
-                    "output"
-                ] = f"Executed with knowledge from {top_match.engine_key}: {top_match.excerpt[:100]}..."
+                result["output"] = (
+                    f"Executed with knowledge from {top_match.engine_key}: {top_match.excerpt[:100]}..."
+                )
             else:
-                result[
-                    "output"
-                ] = f"Executed step using general {context.get('domain', 'domain')} principles"
+                result["output"] = (
+                    f"Executed step using general {context.get('domain', 'domain')} principles"
+                )
         else:
             result["output"] = f"Completed: {step['action']}"
 

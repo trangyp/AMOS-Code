@@ -3,6 +3,7 @@ I_api = 1 iff [A_public, A_runtime] = 0
 
 Public contract commutator - detects drift between claimed and actual API.
 """
+
 from __future__ import annotations
 
 from typing import Any

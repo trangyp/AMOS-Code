@@ -15,6 +15,7 @@ Usage:
     python amos_meta_cognitive_reflector.py
     python amos_meta_cognitive_reflector.py --deep-analysis
 """
+
 from __future__ import annotations
 
 import re
@@ -223,7 +224,7 @@ class AMOSMetaCognitiveReflector:
         lines_counts = [r.lines_of_code for r in self.rounds]
         patterns["complexity"] = [
             f"Range: {min(lines_counts)}-{max(lines_counts)} lines",
-            f"Average: {sum(lines_counts)/len(lines_counts):.0f} lines",
+            f"Average: {sum(lines_counts) / len(lines_counts):.0f} lines",
             "Pattern: Consistent 300-600 line tools",
         ]
 
@@ -257,7 +258,9 @@ class AMOSMetaCognitiveReflector:
 
         print(f"  Total Rounds: {metrics['total_rounds']}")
         print(f"  Successful Builds: {metrics['successful_builds']}")
-        print(f"  Success Rate: {metrics['successful_builds']/metrics['total_rounds']*100:.0f}%")
+        print(
+            f"  Success Rate: {metrics['successful_builds'] / metrics['total_rounds'] * 100:.0f}%"
+        )
         print(f"  Avg Confidence: {metrics['avg_confidence']:.0%}")
         print(f"  Total Lines: {metrics['total_lines']}")
         print(f"  Avg Lines/Round: {metrics['avg_lines_per_round']:.0f}")
@@ -375,7 +378,7 @@ class AMOSMetaCognitiveReflector:
 
         playbook_content = f"""# AMOS Meta-Cognitive Decision Playbook
 
-**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Generated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Based on:** {result.total_rounds} rounds of evolution
 **Total Lines:** {result.total_lines}
 
@@ -446,7 +449,7 @@ After analyzing {result.total_rounds} rounds of decision-making, the AMOS brain 
 | Successful Builds | {result.total_rounds} |
 | Success Rate | 100% |
 | Avg Confidence | {result.avg_confidence:.0%} |
-| Avg Lines/Tool | {result.total_lines/result.total_rounds:.0f} |
+| Avg Lines/Tool | {result.total_lines / result.total_rounds:.0f} |
 
 ## Insights (Meta-Cognitive Analysis)
 

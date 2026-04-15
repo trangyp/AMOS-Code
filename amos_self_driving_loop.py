@@ -15,6 +15,7 @@ Usage:
     python amos_self_driving_loop.py "Build a complete cognitive decision system"
     python amos_self_driving_loop.py --interactive
 """
+
 from __future__ import annotations
 
 import sys

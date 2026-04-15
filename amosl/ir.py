@@ -2,6 +2,7 @@
 
 IR_AMOS = CIR ⊕ QIR ⊕ BIR ⊕ HIR
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

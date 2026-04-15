@@ -9,6 +9,7 @@ This module enables:
 - Real-time law enforcement during agent operations
 - State synchronization between brain and agent
 """
+
 from __future__ import annotations
 
 import functools

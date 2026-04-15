@@ -9,6 +9,7 @@ Validates packaging configuration consistency:
 
 I_pack = 1 iff declared package surface == shipped package surface.
 """
+
 from __future__ import annotations
 
 import sys

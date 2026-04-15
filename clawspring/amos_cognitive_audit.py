@@ -1,4 +1,5 @@
 """AMOS Cognitive Audit - Validates outputs against 6 Global Laws."""
+
 from __future__ import annotations
 
 import re
@@ -357,7 +358,7 @@ Risks: System may fail under high load.
     ]
 
     for i, content in enumerate(test_contents, 1):
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"Test {i}: {content[:50]}...")
         print("=" * 50)
 

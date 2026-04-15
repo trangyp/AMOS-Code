@@ -4,6 +4,7 @@ Tests the integration between:
 - AMOS coherence engine (signal detection, state assessment)
 - Local LLM runtime (Ollama, LM Studio backends)
 """
+
 from __future__ import annotations
 
 import os
@@ -13,7 +14,7 @@ from unittest.mock import Mock, patch
 
 # Add project to path  # noqa: E402
 _here = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
-sys.path.insert(0, os.path.join(_here, '..'))  # noqa: E402
+sys.path.insert(0, os.path.join(_here, ".."))  # noqa: E402
 
 from amos_coherence_bridge import (  # noqa: E402
     CoherenceLocalBridge,
@@ -27,7 +28,7 @@ from amos_coherence_engine import (  # noqa: E402
 class TestCoherenceLocalBridge(unittest.TestCase):
     """Test coherence + local runtime integration."""
 
-    @patch('amos_coherence_bridge.create_local_runtime')
+    @patch("amos_coherence_bridge.create_local_runtime")
     def test_initialization(self, mock_create_runtime):
         """Test bridge initializes both systems."""
         # Mock runtime
@@ -46,7 +47,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
         self.assertTrue(status["coherence_ready"])
         mock_runtime.initialize.assert_called_once()
 
-    @patch('amos_coherence_bridge.create_local_runtime')
+    @patch("amos_coherence_bridge.create_local_runtime")
     def test_signal_detection(self, mock_create_runtime):
         """Test signal detection works with local analysis."""
         mock_runtime = Mock()
@@ -55,9 +56,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
         bridge = CoherenceLocalBridge(runtime=mock_runtime)
 
         # Analyze a message
-        analysis = bridge.signal_detector.analyze(
-            "I'm feeling overwhelmed with everything"
-        )
+        analysis = bridge.signal_detector.analyze("I'm feeling overwhelmed with everything")
 
         # Should detect noise components
         self.assertIn("noise_components", dir(analysis))
@@ -95,7 +94,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
         # Low noise should result in STABLE
         self.assertEqual(state, HumanState.STABLE)
 
-    @patch('amos_coherence_bridge.create_local_runtime')
+    @patch("amos_coherence_bridge.create_local_runtime")
     def test_process_with_coherence_fallback(self, mock_create_runtime):
         """Test fallback when LLM fails."""
         # Mock runtime that fails
@@ -126,9 +125,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
         self.assertEqual(state, HumanState.OVERLOADED)
 
         # Select intervention
-        intervention = bridge.intervention_selector.select(
-            mock_analysis, state, 0.3
-        )
+        intervention = bridge.intervention_selector.select(mock_analysis, state, 0.3)
 
         # Should select grounding or boundary for overloaded
         valid = [InterventionMode.GROUND, InterventionMode.BOUNDARY]
@@ -143,7 +140,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
         original.noise_components = {"anxiety": 0.8, "confusion": 0.6}
 
         # Mock that new analysis has lower noise
-        with patch.object(bridge.signal_detector, 'analyze') as mock_analyze:
+        with patch.object(bridge.signal_detector, "analyze") as mock_analyze:
             new_analysis = Mock()
             new_analysis.noise_components = {"anxiety": 0.2}  # Reduced
             mock_analyze.return_value = new_analysis
@@ -180,10 +177,7 @@ class TestCoherenceLocalBridge(unittest.TestCase):
 class TestCoherenceBridgeIntegration(unittest.TestCase):
     """Integration tests requiring actual backends (optional)."""
 
-    @unittest.skipUnless(
-        os.getenv("RUN_INTEGRATION_TESTS"),
-        "Set RUN_INTEGRATION_TESTS=1 to run"
-    )
+    @unittest.skipUnless(os.getenv("RUN_INTEGRATION_TESTS"), "Set RUN_INTEGRATION_TESTS=1 to run")
     def test_full_pipeline_with_mock(self):
         """Full pipeline test - skipped unless explicitly enabled."""
         # This test would run the full pipeline

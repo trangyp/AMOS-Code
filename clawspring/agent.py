@@ -1,4 +1,5 @@
 """Core agent loop: neutral message format, multi-provider streaming."""
+
 from __future__ import annotations
 
 import os
@@ -82,9 +83,9 @@ def _get_enhanced_system_prompt(base_prompt: str, use_amos: bool = True) -> str:
         identity = runtime.get_identity()
         laws = runtime.get_law_summary()
         amos_section = f"""# AMOS Brain (vInfinity)
-System: {identity.get('system_name', 'AMOS')}
-Creator: {identity.get('creator', 'Trang Phan')}
-Laws: {', '.join(l['name'] for l in laws[:4])}
+System: {identity.get("system_name", "AMOS")}
+Creator: {identity.get("creator", "Trang Phan")}
+Laws: {", ".join(l["name"] for l in laws[:4])}
 Gap: No embodiment/consciousness/autonomous action
 """
         return f"{base_prompt}\n\n{amos_section}"

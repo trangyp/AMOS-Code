@@ -9,6 +9,7 @@ Integrates the Coherence Engine with Organism OS health monitoring:
 
 Usage: python amos_coherent_organism.py [--cycle] [--health]
 """
+
 import sys
 from pathlib import Path
 
@@ -108,8 +109,7 @@ class CoherentOrganismMonitor:
                 status_icon = "✗"
 
             print(
-                f"  {status_icon} {code}: {info['name']:<25} "
-                f"(coherence: {result.confidence:.2f})"
+                f"  {status_icon} {code}: {info['name']:<25} (coherence: {result.confidence:.2f})"
             )
 
             if result.violations:

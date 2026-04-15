@@ -1,4 +1,5 @@
 """Ingest modules for external substrate integration."""
+
 from __future__ import annotations
 
 from .api_substrate import APIDiscrepancy, APISubstrate, APISymbol

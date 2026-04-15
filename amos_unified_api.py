@@ -23,6 +23,7 @@ Usage:
 Creator: Trang Phan
 System: AMOS vInfinity
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -3,6 +3,7 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 print("=" * 60)
@@ -12,10 +13,12 @@ print("=" * 60)
 # Test 1: Imports
 print("\n[1] Testing imports...")
 try:
-    from repo_doctor import InvariantEngine, InvariantResult
-    from repo_doctor import RepoStateVector, StateDimension
-    from repo_doctor import SensorSuite, SensorResult
-    from repo_doctor import RepairPlanner, RepairPlan
+    from repo_doctor import (
+        InvariantEngine,
+        RepoStateVector,
+        SensorSuite,
+    )
+
     print("✓ All core imports successful")
 except Exception as e:
     print(f"✗ Import error: {e}")
@@ -35,24 +38,27 @@ try:
 except Exception as e:
     print(f"✗ State vector error: {e}")
     import traceback
+
     traceback.print_exc()
 
 # Test 3: Invariant Engine
 print("\n[3] Testing invariant engine...")
 try:
     from pathlib import Path
-    engine = InvariantEngine(Path('.'))
+
+    engine = InvariantEngine(Path("."))
     print(f"  Invariants registered: {len(engine.invariants)}")
     print("✓ Invariant engine created")
 except Exception as e:
     print(f"✗ Invariant engine error: {e}")
     import traceback
+
     traceback.print_exc()
 
 # Test 4: Sensors
 print("\n[4] Testing sensors...")
 try:
-    suite = SensorSuite(Path('.'))
+    suite = SensorSuite(Path("."))
     available = suite.available_sensors()
     print(f"  Available sensors: {available}")
     print("✓ Sensor suite created")

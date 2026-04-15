@@ -1,4 +1,5 @@
 """BLOOD budget_manager stub — Re-exports from 04_BLOOD"""
+
 import sys
 from pathlib import Path
 

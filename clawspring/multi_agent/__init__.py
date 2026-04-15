@@ -6,6 +6,7 @@ Provides:
   - SubAgentManager  — thread-pool manager for spawning agents
   - load_agent_definitions / get_agent_definition — agent registry
 """
+
 from .subagent import (
     AgentDefinition,
     SubAgentManager,

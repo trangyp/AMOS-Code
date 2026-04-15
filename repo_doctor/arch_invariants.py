@@ -530,6 +530,7 @@ class ArchitectureInvariantEngine:
         Returns
         -------
             (architecture_score, hidden_state_score, all_results)
+
         """
         results = self.run_all()
 

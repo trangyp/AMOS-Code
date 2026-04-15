@@ -1,4 +1,5 @@
 """I_history = 1 iff structural transitions over commits remain localizable."""
+
 from __future__ import annotations
 
 from typing import Any

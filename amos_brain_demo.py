@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """AMOS Brain Demonstration CLI - Showcase cognitive capabilities."""
+
 from __future__ import annotations
 
 import argparse

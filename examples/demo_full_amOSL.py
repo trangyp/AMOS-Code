@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """AMOSL End-to-End Demonstration."""
+
 import os
 import sys
 
@@ -63,7 +64,7 @@ def demo_full_execution():
         state.time,
     ]
     trajectory = evo.run_steps(state_vector, steps=5)
-    print(f"  Evolved {len(trajectory)-1} steps")
+    print(f"  Evolved {len(trajectory) - 1} steps")
 
     # Summary
     print("\n" + "=" * 70)

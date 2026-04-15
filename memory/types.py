@@ -52,7 +52,7 @@ type: {{user | feedback | project | reference}}
 ```"""
 
 # Full guidance injected into the system prompt
-MEMORY_SYSTEM_PROMPT = """\
+MEMORY_SYSTEM_PROMPT = f"""\
 ## Memory system
 
 You have a persistent, file-based memory system. Memories are stored as markdown files with
@@ -72,7 +72,7 @@ persist beyond this conversation. For feedback: save corrections AND quiet confi
   **Why:** (reason given) | **How to apply:** (when this guidance kicks in)
 
 **Format**:
-{format_example}
+{MEMORY_FORMAT_EXAMPLE}
 
 **Saving is two steps**:
 1. Write the memory to its own file (e.g. `feedback_testing.md`) using MemorySave.
@@ -83,4 +83,4 @@ anything already in CLAUDE.md, or ephemeral task state.
 
 **Before recommending from memory**: A memory naming a file, function, or flag may be stale.
 Verify it still exists before acting on it. For current state, prefer `git log` or reading code.
-""".format(format_example=MEMORY_FORMAT_EXAMPLE)
+"""

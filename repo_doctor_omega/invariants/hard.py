@@ -6,6 +6,7 @@ RepoValid = I_parse ∧ I_import ∧ I_type ∧ I_api ∧ I_entry ∧
             I_pack ∧ I_runtime ∧ I_persist ∧ I_status ∧
             I_tests ∧ I_security ∧ I_history
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -237,14 +238,11 @@ class ImportInvariant(HardInvariant):
             violations.append(
                 InvariantViolation(
                     invariant=self.name,
-                    message=(
-                        f"Unresolved import '{imp.module}' " f"in {imp.source_file}:{imp.line}"
-                    ),
+                    message=(f"Unresolved import '{imp.module}' in {imp.source_file}:{imp.line}"),
                     location=f"{imp.source_file}:{imp.line}",
                     severity=0.85,
                     remediation=(
-                        "Check import path, ensure target module exists, "
-                        "or add missing __init__.py"
+                        "Check import path, ensure target module exists, or add missing __init__.py"
                     ),
                 )
             )
@@ -403,12 +401,13 @@ class TestInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.TEST, BasisVector.TEST)
         self._substrate: Any | None = None
-    
+
     def _get_substrate(self, repo_path: str) -> Any:
         """Lazy-load Test substrate."""
         if self._substrate is None:
             try:
                 from ..ingest.test_substrate import TestSubstrate
+
                 self._substrate = TestSubstrate(repo_path)
             except ImportError:
                 self._substrate = None
@@ -417,9 +416,9 @@ class TestInvariant(HardInvariant):
     def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
         """Check test integrity."""
         violations = []
-        
+
         substrate = self._get_substrate(repo_path)
-        
+
         if substrate is None:
             return InvariantResult(
                 invariant=self.name,
@@ -428,30 +427,27 @@ class TestInvariant(HardInvariant):
                 violations=[],
                 metadata={"substrate": "test", "status": "unavailable"},
             )
-        
+
         # Run hard contract tests
         results = substrate.run_hard_contract_tests()
         failed = [r for r in results if not r.passed]
-        
+
         # Create violations for failed hard contract tests
         for result in failed:
             test = result.test
             violations.append(
                 InvariantViolation(
                     invariant=self.name,
-                    message=(
-                        f"Hard contract test failed: {test.name} "
-                        f"({test.file}:{test.line})"
-                    ),
+                    message=(f"Hard contract test failed: {test.name} ({test.file}:{test.line})"),
                     location=f"{test.file}:{test.line}",
                     severity=1.0,  # Maximum severity - blocks release
                     remediation=result.error_message or "Fix test failure",
                 )
             )
-        
+
         # Also collect overall test suite statistics
         analysis = substrate.analyze_repository()
-        
+
         return InvariantResult(
             invariant=self.name,
             passed=len(violations) == 0,
@@ -496,6 +492,7 @@ class SecurityInvariant(HardInvariant):
         if self._substrate is None:
             try:
                 from ..ingest.security_substrate import SecuritySubstrate
+
                 self._substrate = SecuritySubstrate(repo_path)
             except ImportError:
                 self._substrate = None

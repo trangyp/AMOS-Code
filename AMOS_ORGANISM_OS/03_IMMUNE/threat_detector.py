@@ -1,5 +1,4 @@
-"""Threat Detector — Anomaly detection for AMOS.
-"""
+"""Threat Detector — Anomaly detection for AMOS."""
 
 from __future__ import annotations
 

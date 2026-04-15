@@ -18,6 +18,7 @@ Model string formats:
   "ollama/qwen2.5-coder"     explicit provider prefix
   "custom/my-model"          uses CUSTOM_BASE_URL from config
 """
+
 from __future__ import annotations
 
 import json

@@ -1,5 +1,4 @@
-"""API Server — REST API for AMOS Organism.
-"""
+"""API Server — REST API for AMOS Organism."""
 
 from __future__ import annotations
 

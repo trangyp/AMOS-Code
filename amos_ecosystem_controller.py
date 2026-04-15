@@ -15,6 +15,7 @@ Usage:
     python amos_ecosystem_controller.py --interactive
     python amos_ecosystem_controller.py --run-all
 """
+
 from __future__ import annotations
 
 import subprocess

@@ -2,6 +2,7 @@
 
 τ ::= τ_c | τ_q | τ_b | τ_h
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

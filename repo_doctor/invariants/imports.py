@@ -3,10 +3,12 @@ I_import = 1 iff every claimed symbol import resolves
 
 Covers: internal imports, package exports, entrypoint imports, docs/demo/test imports
 """
+
 from __future__ import annotations
 
 from typing import Any
 
+from ..constants import MSG_IMPORTS_RESOLVED
 from .base import Invariant, InvariantResult, InvariantSeverity
 
 
@@ -33,7 +35,7 @@ class ImportInvariant(Invariant):
                 name=self.name,
                 passed=True,
                 severity=self.severity,
-                message="All imports resolve",
+                message=MSG_IMPORTS_RESOLVED,
             )
 
         return InvariantResult(

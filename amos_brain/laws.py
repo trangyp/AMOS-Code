@@ -1,4 +1,5 @@
 """Global Laws and UBI alignment enforcement."""
+
 from __future__ import annotations
 
 import re

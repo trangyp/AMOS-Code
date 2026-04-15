@@ -7,6 +7,7 @@ Usage:
     amos stats
     amos history
 """
+
 import argparse
 import os
 import sys

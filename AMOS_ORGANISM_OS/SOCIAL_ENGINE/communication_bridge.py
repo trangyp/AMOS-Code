@@ -1,4 +1,5 @@
 """SOCIAL_ENGINE communication_bridge stub — Re-exports from 10_SOCIAL_ENGINE"""
+
 import sys
 from pathlib import Path
 

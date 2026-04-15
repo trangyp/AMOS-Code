@@ -9,6 +9,7 @@ Demonstrates all 5 mathematical regimes:
 5. Information-geometric (Fisher metric, belief manifold)
 6. Field-theoretic (Lagrangian, Euler-Lagrange, action)
 """
+
 import os
 import sys
 
@@ -68,9 +69,9 @@ def demo_logical_regime():
     # Necessity: holds in all futures
     domain = [{"valid": True}, {"valid": True}, {"valid": True}]
     result = modal.necessity(
-        lambda x: StratifiedTruth(TruthValue.TRUE)
-        if x["valid"]
-        else StratifiedTruth(TruthValue.FALSE),
+        lambda x: (
+            StratifiedTruth(TruthValue.TRUE) if x["valid"] else StratifiedTruth(TruthValue.FALSE)
+        ),
         domain,
     )
     print(f"  □P (necessity): {result.value_type.name}, confidence={result.confidence():.2f}")
@@ -78,9 +79,9 @@ def demo_logical_regime():
     # Possibility: holds in some future
     domain = [{"valid": False}, {"valid": True}, {"valid": False}]
     result = modal.possibility(
-        lambda x: StratifiedTruth(TruthValue.TRUE)
-        if x["valid"]
-        else StratifiedTruth(TruthValue.FALSE),
+        lambda x: (
+            StratifiedTruth(TruthValue.TRUE) if x["valid"] else StratifiedTruth(TruthValue.FALSE)
+        ),
         domain,
     )
     print(f"  ◇P (possibility): {result.value_type.name}, confidence={result.confidence():.2f}")

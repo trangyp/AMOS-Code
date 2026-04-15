@@ -3,6 +3,7 @@
 Integrates the signal detection/coherence induction system with
 the local LLM runtime for privacy-preserving cognitive support.
 """
+
 from __future__ import annotations
 
 from typing import Any

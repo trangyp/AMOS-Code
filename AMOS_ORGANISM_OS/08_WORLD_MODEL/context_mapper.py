@@ -1,6 +1,4 @@
-"""
-Context Mapper — Maps environment context to semantic meaning for AMOS.
-"""
+"""Context Mapper — Maps environment context to semantic meaning for AMOS."""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -10,6 +8,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class ContextMap:
     """A mapping of context to meaning."""
+
     id: str
     source: str  # e.g., file path, directory
     context_type: str  # e.g., "project", "module", "task"
@@ -19,8 +18,7 @@ class ContextMap:
 
 
 class ContextMapper:
-    """
-    Maps environment context to semantic understanding.
+    """Maps environment context to semantic understanding.
 
     Responsibilities:
     - Map file structures to project concepts
@@ -33,8 +31,9 @@ class ContextMapper:
         self._maps: Dict[str, ContextMap] = {}
         self._tag_index: Dict[str, List[str]] = {}
 
-    def map_context(self, source: str, context_type: str = None,
-                    properties: Dict[str, Any] = None) -> ContextMap:
+    def map_context(
+        self, source: str, context_type: str = None, properties: Dict[str, Any] = None
+    ) -> ContextMap:
         """Create a context map for a source."""
         import uuid
 
@@ -77,8 +76,9 @@ class ContextMapper:
         else:
             return "general"
 
-    def _generate_tags(self, source: str, context_type: str,
-                       properties: Dict[str, Any]) -> List[str]:
+    def _generate_tags(
+        self, source: str, context_type: str, properties: Dict[str, Any]
+    ) -> List[str]:
         """Generate semantic tags for context."""
         tags = [context_type]
 

@@ -1,5 +1,4 @@
-"""Rule Validator — Business rule validation for AMOS.
-"""
+"""Rule Validator — Business rule validation for AMOS."""
 
 from dataclasses import dataclass, field
 from datetime import datetime

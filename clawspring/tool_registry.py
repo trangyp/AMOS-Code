@@ -3,6 +3,7 @@
 Provides a central registry for tool definitions, lookup, schema export,
 and dispatch with output truncation.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -20,6 +21,7 @@ class ToolDef:
         read_only: True if the tool never mutates state
         concurrent_safe: True if safe to run in parallel with other tools
     """
+
     name: str
     schema: Dict[str, Any]
     func: Callable[[Dict[str, Any], Dict[str, Any]], str]
@@ -33,6 +35,7 @@ _registry: Dict[str, ToolDef] = {}
 
 
 # --------------- public API ---------------
+
 
 def register_tool(tool_def: ToolDef) -> None:
     """Register a tool, overwriting any existing tool with the same name."""

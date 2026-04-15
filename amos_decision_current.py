@@ -40,7 +40,7 @@ for cat, files in components.items():
     built += count
     print(f"  {cat}: {count}/{len(files)}")
 
-print(f"\n📦 Total: {built}/{total} components built ({built/total*100:.0f}%)")
+print(f"\n📦 Total: {built}/{total} components built ({built / total * 100:.0f}%)")
 
 # Brain analysis
 print("\n" + "=" * 70)

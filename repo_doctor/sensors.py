@@ -390,7 +390,8 @@ class BanditSensor(ExternalSensor):
                     "bandit",
                     "-r",
                     str(self.repo_path),
-                    "-f", "json",
+                    "-f",
+                    "json",
                     "-ll",  # Low severity and above
                 ],
                 capture_output=True,
@@ -405,14 +406,16 @@ class BanditSensor(ExternalSensor):
             try:
                 output = json.loads(result.stdout) if result.stdout else {}
                 for issue in output.get("results", []):
-                    findings.append({
-                        "file": issue.get("filename"),
-                        "line": issue.get("line_number"),
-                        "code": issue.get("test_id"),
-                        "severity": issue.get("issue_severity"),
-                        "message": issue.get("issue_text"),
-                        "confidence": issue.get("issue_confidence"),
-                    })
+                    findings.append(
+                        {
+                            "file": issue.get("filename"),
+                            "line": issue.get("line_number"),
+                            "code": issue.get("test_id"),
+                            "severity": issue.get("issue_severity"),
+                            "message": issue.get("issue_text"),
+                            "confidence": issue.get("issue_confidence"),
+                        }
+                    )
             except json.JSONDecodeError:
                 pass
 
@@ -507,13 +510,15 @@ class SafetySensor(ExternalSensor):
             try:
                 output = json.loads(result.stdout) if result.stdout else {}
                 for vuln in output.get("vulnerabilities", []):
-                    findings.append({
-                        "package": vuln.get("package_name"),
-                        "affected": vuln.get("affected_specifications"),
-                        "vulnerability": vuln.get("vulnerability_id"),
-                        "severity": vuln.get("severity"),
-                        "message": vuln.get("advisory"),
-                    })
+                    findings.append(
+                        {
+                            "package": vuln.get("package_name"),
+                            "affected": vuln.get("affected_specifications"),
+                            "vulnerability": vuln.get("vulnerability_id"),
+                            "severity": vuln.get("severity"),
+                            "message": vuln.get("advisory"),
+                        }
+                    )
             except json.JSONDecodeError:
                 pass
 

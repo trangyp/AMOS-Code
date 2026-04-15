@@ -1,4 +1,5 @@
 """AMOS Multi-Agent Coordinator - Parallel cognition across 9 layers."""
+
 from __future__ import annotations
 
 import time
@@ -213,7 +214,7 @@ class AMOSMultiAgentCoordinator:
             f"# AMOS Multi-Agent Synthesis ({synthesis_type})",
             f"Agents executed: {len(results)}",
             f"Successful: {sum(1 for r in results if r.success)}",
-            f"Average quality: {sum(r.quality_score for r in results)/len(results):.2f}",
+            f"Average quality: {sum(r.quality_score for r in results) / len(results):.2f}",
             "",
             "## Individual Agent Outputs",
             "",

@@ -272,7 +272,7 @@ class LayerOperationalInterface:
 
     def get_status(self) -> dict:
         """Get status of all operational components."""
-        return {name: "available" for name in self.components.keys()}
+        return dict.fromkeys(self.components.keys(), "available")
 
 
 # ============================================================================
@@ -482,9 +482,9 @@ class AMOSUnifiedInfinite:
 
         # Demonstrate each zoom level
         for zoom in ZoomLevel:
-            print(f"\n{'='*50}")
+            print(f"\n{'=' * 50}")
             print(f"  ZOOM LEVEL: {zoom.value}")
-            print(f"{'='*50}")
+            print(f"{'=' * 50}")
 
             result = self.process(
                 intent="maximize_survival_with_identity_preservation",
@@ -495,9 +495,9 @@ class AMOSUnifiedInfinite:
             time.sleep(0.5)  # Pause for readability
 
         # Demonstrate human cognition path
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print("  HUMAN COGNITION PATH")
-        print(f"{'='*50}")
+        print(f"{'=' * 50}")
 
         self.process_human_message("I'm overwhelmed with complex decisions")
 

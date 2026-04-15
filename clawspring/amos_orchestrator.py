@@ -1,4 +1,5 @@
 """AMOS Workflow Orchestrator - Chains cognition, execution, and output."""
+
 from __future__ import annotations
 
 import uuid
@@ -118,7 +119,7 @@ class AMOSWorkflowOrchestrator:
         for i, config in enumerate(steps_config):
             step = WorkflowStep(
                 id=f"{workflow_id}_{i}",
-                name=config.get("name", f"Step {i+1}"),
+                name=config.get("name", f"Step {i + 1}"),
                 step_type=config.get("type", "cognitive"),
                 input_data=config.get("input", {}),
             )

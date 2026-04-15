@@ -1,4 +1,5 @@
 """AMOS Biology & Cognition Engine - Biological and neurological systems."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

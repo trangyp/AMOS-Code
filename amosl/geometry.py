@@ -7,6 +7,7 @@ Implements the information-geometric regime:
     - Bayesian belief updates
     - Uncertainty bundles u(x) = (p, γ, δ, κ, ν)
 """
+
 from __future__ import annotations
 
 import math
@@ -205,7 +206,7 @@ class BeliefManifold:
         """Initialize uniform belief over given states."""
         n = len(states)
         belief = BeliefState(
-            distribution={s: 1.0 / n for s in states}, timestamp=0.0, metadata={"type": "uniform"}
+            distribution=dict.fromkeys(states, 1.0 / n), timestamp=0.0, metadata={"type": "uniform"}
         )
         self.current_belief = belief
         self.trajectory.append(belief)

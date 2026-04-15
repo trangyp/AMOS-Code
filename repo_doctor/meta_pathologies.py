@@ -1,4 +1,5 @@
-"""Meta-Architecture Pathologies - The Missing Layer.
+"""
+Meta-Architecture Pathologies - The Missing Layer.
 
 Detects failures that live above ordinary architecture:
 - Failures of meaning (semantic integrity)
@@ -128,6 +129,7 @@ class SemanticIntegrityDetector:
         Examples:
         - "status" means runtime liveness in one place and structural validity elsewhere
         - "healthy" means "service up" in ops, but "all hard invariants pass" in code
+
         """
         pathologies = []
 
@@ -143,8 +145,8 @@ class SemanticIntegrityDetector:
                     patterns = [
                         rf'"""[^"]*\b{term}\b[^"]*"""',  # Docstring
                         rf"'''[^']*\b{term}\b[^']*'''",  # Docstring
-                        rf'#.*\b{term}\b',  # Comment
-                        rf'{term}_\w+',  # Variable name
+                        rf"#.*\b{term}\b",  # Comment
+                        rf"{term}_\w+",  # Variable name
                     ]
                     for pattern in patterns:
                         matches = re.findall(pattern, content, re.IGNORECASE)
@@ -158,8 +160,10 @@ class SemanticIntegrityDetector:
             try:
                 content = md_file.read_text()
                 for term in self.CRITICAL_TERMS:
-                    if re.search(rf'\b{term}\b', content, re.IGNORECASE):
-                        context = re.search(rf'.{{0,30}}\b{term}\b.{{0,30}}', content, re.IGNORECASE)
+                    if re.search(rf"\b{term}\b", content, re.IGNORECASE):
+                        context = re.search(
+                            rf".{{0,30}}\b{term}\b.{{0,30}}", content, re.IGNORECASE
+                        )
                         if context:
                             term_usages[term].append((str(md_file), context.group()))
             except Exception:
@@ -171,8 +175,16 @@ class SemanticIntegrityDetector:
                 # Check if contexts suggest different meanings
                 contexts = [usage[1].lower() for usage in usages]
                 # Check for divergent contexts
-                has_runtime_context = any(kw in ctx for ctx in contexts for kw in ["runtime", "server", "service", "up", "down"])
-                has_structural_context = any(kw in ctx for ctx in contexts for kw in ["structural", "validity", "invariant", "check"])
+                has_runtime_context = any(
+                    kw in ctx
+                    for ctx in contexts
+                    for kw in ["runtime", "server", "service", "up", "down"]
+                )
+                has_structural_context = any(
+                    kw in ctx
+                    for ctx in contexts
+                    for kw in ["structural", "validity", "invariant", "check"]
+                )
 
                 if has_runtime_context and has_structural_context:
                     pathologies.append(
@@ -180,10 +192,13 @@ class SemanticIntegrityDetector:
                             pathology_type=MetaPathologyType.ONTOLOGY_DRIFT,
                             location=term,
                             message=f"Term '{term}' appears to have divergent meanings: "
-                                    f"runtime context ({has_runtime_context}) vs "
-                                    f"structural context ({has_structural_context})",
+                            f"runtime context ({has_runtime_context}) vs "
+                            f"structural context ({has_structural_context})",
                             severity="high",
-                            details={"usages": usages[:5], "possible_meanings": self.CRITICAL_TERMS.get(term, [])},
+                            details={
+                                "usages": usages[:5],
+                                "possible_meanings": self.CRITICAL_TERMS.get(term, []),
+                            },
                             remediation=f"Define '{term}' explicitly in architecture glossary or split into disambiguated terms",
                             invariant_violated="I_ontology",
                         )
@@ -198,6 +213,7 @@ class SemanticIntegrityDetector:
         Examples:
         - workflow / recipe / flow / job / task / session (uncontrolled)
         - package / module / distribution / artifact (unmapped)
+
         """
         pathologies = []
 
@@ -210,7 +226,7 @@ class SemanticIntegrityDetector:
                 try:
                     content = py_file.read_text()
                     for alias in aliases:
-                        count = len(re.findall(rf'\b{alias}\b', content, re.IGNORECASE))
+                        count = len(re.findall(rf"\b{alias}\b", content, re.IGNORECASE))
                         if count > 0:
                             alias_counts[alias] = alias_counts.get(alias, 0) + count
                 except Exception:
@@ -227,7 +243,7 @@ class SemanticIntegrityDetector:
                             pathology_type=MetaPathologyType.SEMANTIC_ALIAS_EXPLOSION,
                             location=f"concept:{concept}",
                             message=f"Concept '{concept}' has {len(alias_counts)} uncontrolled aliases: "
-                                    f"{list(alias_counts.keys())[:5]}",
+                            f"{list(alias_counts.keys())[:5]}",
                             severity="medium",
                             details={"alias_counts": alias_counts, "concept": concept},
                             remediation=f"Create semantic registry mapping all '{concept}' aliases to canonical terms",
@@ -245,6 +261,7 @@ class SemanticIntegrityDetector:
         - "initialized" treated as equivalent to "loaded"
         - "build succeeds" treated as equivalent to "artifact valid"
         - "documented" treated as equivalent to "enforced"
+
         """
         pathologies = []
 
@@ -264,10 +281,10 @@ class SemanticIntegrityDetector:
                     content = py_file.read_text()
                     # Check for compound conditions or assignments suggesting equivalence
                     patterns = [
-                        rf'{term_a}.*{term_b}',  # Sequential usage
-                        rf'{term_b}.*{term_a}',  # Reverse order
-                        rf'{term_a}\s*=\s*{term_b}',  # Assignment
-                        rf'{term_b}\s*=\s*{term_a}',  # Reverse assignment
+                        rf"{term_a}.*{term_b}",  # Sequential usage
+                        rf"{term_b}.*{term_a}",  # Reverse order
+                        rf"{term_a}\s*=\s*{term_b}",  # Assignment
+                        rf"{term_b}\s*=\s*{term_a}",  # Reverse assignment
                     ]
 
                     for pattern in patterns:
@@ -277,9 +294,13 @@ class SemanticIntegrityDetector:
                                     pathology_type=MetaPathologyType.FALSE_SEMANTIC_EQUIVALENCE,
                                     location=str(py_file),
                                     message=f"Potential false equivalence: '{term_a}' and '{term_b}' "
-                                            f"used in ways suggesting equivalence. {explanation}",
+                                    f"used in ways suggesting equivalence. {explanation}",
                                     severity="high",
-                                    details={"term_a": term_a, "term_b": term_b, "pattern": pattern},
+                                    details={
+                                        "term_a": term_a,
+                                        "term_b": term_b,
+                                        "pattern": pattern,
+                                    },
                                     remediation="Explicitly distinguish states or add intermediate validation",
                                     invariant_violated="I_false_equivalence",
                                 )
@@ -324,7 +345,11 @@ class TemporalOrderDetector:
         ("build", "codegen_publish", "Build must precede codegen publish"),
         ("schema_sync", "server_start", "Schema sync must precede server start"),
         ("policy_load", "mode_enable", "Policy load must precede mode enable"),
-        ("protocol_support", "client_rollout", "Server protocol support must precede client rollout"),
+        (
+            "protocol_support",
+            "client_rollout",
+            "Server protocol support must precede client rollout",
+        ),
     ]
 
     def __init__(self, repo_path: str | Path):
@@ -346,6 +371,7 @@ class TemporalOrderDetector:
         - migrate before deploy (not enforced)
         - build before codegen publish (not represented)
         - start server after schema sync (not checked)
+
         """
         pathologies = []
 
@@ -373,7 +399,7 @@ class TemporalOrderDetector:
                                     pathology_type=MetaPathologyType.PARTIAL_ORDER_FAILURE,
                                     location=str(ci_file),
                                     message=f"Operations '{op_a}' and '{op_b}' present but "
-                                            f"no explicit ordering enforced. {explanation}",
+                                    f"no explicit ordering enforced. {explanation}",
                                     severity="high",
                                     details={"operation_a": op_a, "operation_b": op_b},
                                     remediation=f"Add explicit dependency: {op_a} must precede {op_b}",
@@ -393,6 +419,7 @@ class TemporalOrderDetector:
         - deployment updated, docs not updated
         - runtime updated, observability not updated
         - migration completed, status plane reports old state
+
         """
         pathologies = []
 
@@ -415,7 +442,7 @@ class TemporalOrderDetector:
                         pathology_type=MetaPathologyType.TEMPORAL_PLANE_SKEW,
                         location=f"plane:{plane_name}",
                         message=f"{plane_name.capitalize()} plane lacks explicit update/sync mechanism. "
-                                f"May lag other planes causing skew.",
+                        f"May lag other planes causing skew.",
                         severity="medium",
                         details={"plane": plane_name, "keywords": plane_keywords},
                         remediation=f"Add bounded skew constraints and sync mechanisms for {plane_name} plane",
@@ -433,6 +460,7 @@ class TemporalOrderDetector:
         - "rollout eventually converges" (no bound)
         - "caches eventually refresh" (no timeout)
         - "metrics eventually appear" (no SLA)
+
         """
         pathologies = []
 
@@ -443,11 +471,11 @@ class TemporalOrderDetector:
 
                 # Find eventually patterns without bounds
                 eventually_patterns = [
-                    r'eventually.*?converge',
-                    r'eventually.*?refresh',
-                    r'eventually.*?appear',
-                    r'eventually.*?catch',
-                    r'eventually.*?align',
+                    r"eventually.*?converge",
+                    r"eventually.*?refresh",
+                    r"eventually.*?appear",
+                    r"eventually.*?catch",
+                    r"eventually.*?align",
                 ]
 
                 for pattern in eventually_patterns:
@@ -469,7 +497,7 @@ class TemporalOrderDetector:
                                     pathology_type=MetaPathologyType.EVENTUAL_VALIDITY_TRAP,
                                     location=str(py_file),
                                     message=f"Unbounded 'eventually' pattern found: '{match.group()}'. "
-                                            f"No convergence bound specified.",
+                                    f"No convergence bound specified.",
                                     severity="high",
                                     details={"pattern": match.group(), "context": context[:100]},
                                     remediation="Add explicit bounded convergence: timeout or max attempts",
@@ -485,11 +513,11 @@ class TemporalOrderDetector:
         """Check if explicit ordering exists between two operations."""
         # Look for dependency keywords
         dep_patterns = [
-            rf'needs.*{op_a}',
-            rf'depends.*{op_a}',
-            rf'requires.*{op_a}',
-            rf'after.*{op_a}',
-            rf'{op_a}.*before',
+            rf"needs.*{op_a}",
+            rf"depends.*{op_a}",
+            rf"requires.*{op_a}",
+            rf"after.*{op_a}",
+            rf"{op_a}.*before",
         ]
         return any(re.search(pattern, content, re.IGNORECASE) for pattern in dep_patterns)
 
@@ -497,8 +525,13 @@ class TemporalOrderDetector:
         """Check if a plane has update/sync mechanisms."""
         # Look for sync/update mechanisms in common files
         mechanism_files = [
-            "sync.py", "update.py", "refresh.py", "watch.py",
-            "reconcile.py", "poll.py", "subscribe.py",
+            "sync.py",
+            "update.py",
+            "refresh.py",
+            "watch.py",
+            "reconcile.py",
+            "poll.py",
+            "subscribe.py",
         ]
 
         for filename in mechanism_files:
@@ -540,6 +573,7 @@ class ProvenanceTrustDetector:
         - Generated file with unknown generator version
         - Build artifact without reproducible source mapping
         - Copied config templates with no authority
+
         """
         pathologies = []
 
@@ -559,8 +593,13 @@ class ProvenanceTrustDetector:
                     has_provenance = any(
                         marker in content[:1000]
                         for marker in [
-                            "generator:", "tool:", "version:", "source:",
-                            "provenance", "derived from", "created by",
+                            "generator:",
+                            "tool:",
+                            "version:",
+                            "source:",
+                            "provenance",
+                            "derived from",
+                            "created by",
                         ]
                     )
 
@@ -569,8 +608,8 @@ class ProvenanceTrustDetector:
                             MetaPathology(
                                 pathology_type=MetaPathologyType.PROVENANCE_GAP,
                                 location=str(gen_file),
-                                message=f"Generated file lacks provenance information. "
-                                        f"Cannot trace origin or verify authority.",
+                                message="Generated file lacks provenance information. "
+                                "Cannot trace origin or verify authority.",
                                 severity="medium",
                                 details={"file": str(gen_file)},
                                 remediation="Add provenance header: generator, version, source mapping",
@@ -590,6 +629,7 @@ class ProvenanceTrustDetector:
         - Hidden plugin source
         - Transitive dependency introduces runtime path
         - Build tool version changes emitted artifacts
+
         """
         pathologies = []
 
@@ -602,7 +642,7 @@ class ProvenanceTrustDetector:
                 content = req_file.read_text()
 
                 # Check for unpinned dependencies (trust issue)
-                unpinned = re.findall(r'^[a-zA-Z][a-zA-Z0-9_-]+$', content, re.MULTILINE)
+                unpinned = re.findall(r"^[a-zA-Z][a-zA-Z0-9_-]+$", content, re.MULTILINE)
 
                 if len(unpinned) > 5:
                     pathologies.append(
@@ -610,7 +650,7 @@ class ProvenanceTrustDetector:
                             pathology_type=MetaPathologyType.SUPPLY_CHAIN_SEMANTIC_TRUST_FAILURE,
                             location=str(req_file),
                             message=f"{len(unpinned)} unpinned dependencies found. "
-                                    f"Semantic behavior may change with version updates.",
+                            f"Semantic behavior may change with version updates.",
                             severity="medium",
                             details={"unpinned_count": len(unpinned), "examples": unpinned[:5]},
                             remediation="Pin dependency versions and add hash verification",
@@ -630,6 +670,7 @@ class ProvenanceTrustDetector:
         - Timestamps in generated artifacts
         - Random seeds not fixed
         - Environment-dependent outputs
+
         """
         pathologies = []
 
@@ -659,7 +700,7 @@ class ProvenanceTrustDetector:
                                     pathology_type=MetaPathologyType.REPRODUCIBILITY_FAILURE,
                                     location=str(py_file),
                                     message=f"Potential reproducibility issue: {explanation}. "
-                                            f"Found '{pattern}' in build context.",
+                                    f"Found '{pattern}' in build context.",
                                     severity="medium",
                                     details={"pattern": pattern, "explanation": explanation},
                                     remediation=f"Make {pattern} deterministic or add to reproducibility exceptions",
@@ -699,6 +740,7 @@ class RecoveryContainmentDetector:
         - Rollback restores code but not schema
         - Disable flag restores mode but not cache state
         - Revert commit restores source but not artifact pipeline
+
         """
         pathologies = []
 
@@ -716,7 +758,7 @@ class RecoveryContainmentDetector:
                         pathology_type=MetaPathologyType.RECOVERY_PATH_INCOMPLETENESS,
                         location=str(self.repo_path),
                         message="No recovery documentation found, but failure-prone components detected. "
-                                "No declared path back to safety.",
+                        "No declared path back to safety.",
                         severity="high",
                         details={"failure_prone": failure_prone},
                         remediation="Create RECOVERY.md with rollback procedures for each failure class",
@@ -734,6 +776,7 @@ class RecoveryContainmentDetector:
         - Rerunning migration mutates state incorrectly
         - Rerunning bootstrap duplicates artifacts
         - Rerunning rollback leaves partial state
+
         """
         pathologies = []
 
@@ -759,7 +802,7 @@ class RecoveryContainmentDetector:
                                 pathology_type=MetaPathologyType.NON_IDEMPOTENT_RECOVERY,
                                 location=str(mig_file),
                                 message="Migration lacks idempotency markers but has destructive operations. "
-                                        "Rerunning may corrupt state.",
+                                "Rerunning may corrupt state.",
                                 severity="high",
                                 details={"file": str(mig_file)},
                                 remediation="Add idempotency checks: skip if already applied",
@@ -779,13 +822,18 @@ class RecoveryContainmentDetector:
         - One status bug affects rollout gating across repos
         - One shared schema drift breaks multiple services
         - One package version bump invalidates whole fleet
+
         """
         pathologies = []
 
         # Check for shared state without containment
         shared_files = [
-            "config.py", "settings.py", "constants.py",
-            "shared.py", "common.py", "utils.py",
+            "config.py",
+            "settings.py",
+            "constants.py",
+            "shared.py",
+            "common.py",
+            "utils.py",
         ]
 
         for shared_file in shared_files:
@@ -798,8 +846,15 @@ class RecoveryContainmentDetector:
                     for py_file in self.repo_path.rglob("*.py"):
                         try:
                             py_content = py_file.read_text()
-                            module_name = str(file.relative_to(self.repo_path)).replace("/", ".").replace(".py", "")
-                            if f"from {module_name}" in py_content or f"import {module_name.split('.')[-1]}" in py_content:
+                            module_name = (
+                                str(file.relative_to(self.repo_path))
+                                .replace("/", ".")
+                                .replace(".py", "")
+                            )
+                            if (
+                                f"from {module_name}" in py_content
+                                or f"import {module_name.split('.')[-1]}" in py_content
+                            ):
                                 import_count += 1
                                 if import_count > 20:
                                     break
@@ -819,7 +874,7 @@ class RecoveryContainmentDetector:
                                     pathology_type=MetaPathologyType.BLAST_CONTAINMENT_FAILURE,
                                     location=str(file),
                                     message=f"Shared file has {import_count} dependents but no blast containment. "
-                                            f"Changes may propagate too widely.",
+                                    f"Changes may propagate too widely.",
                                     severity="medium",
                                     details={"dependents": import_count, "file": str(file)},
                                     remediation="Add versioning, scoping, or circuit breakers for blast containment",
@@ -835,8 +890,15 @@ class RecoveryContainmentDetector:
     def _has_failure_prone_components(self) -> bool:
         """Check if repo has components prone to failure."""
         indicators = [
-            "server", "api", "worker", "daemon", "service",
-            "database", "migration", "deployment", "rollout",
+            "server",
+            "api",
+            "worker",
+            "daemon",
+            "service",
+            "database",
+            "migration",
+            "deployment",
+            "rollout",
         ]
 
         for indicator in indicators:
@@ -896,7 +958,7 @@ class DiagnosticSelfIntegrityDetector:
                         pathology_type=MetaPathologyType.MEASUREMENT_BLIND_SPOT,
                         location=f"invariant:{invariant}",
                         message=f"Critical invariant {invariant} may lack sufficient detector. "
-                                f"Expected {expected_detector} not found.",
+                        f"Expected {expected_detector} not found.",
                         severity="critical",
                         details={"invariant": invariant, "expected_detector": expected_detector},
                         remediation=f"Add or verify detector for {invariant}",
@@ -914,6 +976,7 @@ class DiagnosticSelfIntegrityDetector:
         - build passes ⇒ artifact valid (weak proof)
         - initialized ⇒ ready (false implication)
         - docs compile ⇒ docs accurate (unrelated)
+
         """
         pathologies = []
 
@@ -940,7 +1003,7 @@ class DiagnosticSelfIntegrityDetector:
                                     pathology_type=MetaPathologyType.FALSE_PROOF_SURFACE,
                                     location=str(ci_file),
                                     message=f"Potential false proof: '{weak}' used to prove '{claimed_strong}'. "
-                                            f"{explanation}.",
+                                    f"{explanation}.",
                                     severity="high",
                                     details={"weak": weak, "claimed_strong": claimed_strong},
                                     remediation=f"Strengthen proof or weaken claim. Add explicit verification for {claimed_strong}",
@@ -967,7 +1030,7 @@ class DiagnosticSelfIntegrityDetector:
         if test_files:
             # Check for mode coverage
             modes = ["dev", "prod", "test", "staging", "ci"]
-            mode_coverage = {mode: False for mode in modes}
+            mode_coverage = dict.fromkeys(modes, False)
 
             for test_file in test_files:
                 try:
@@ -986,9 +1049,12 @@ class DiagnosticSelfIntegrityDetector:
                         pathology_type=MetaPathologyType.ORACLE_UNSOUNDNESS,
                         location="test_suite",
                         message=f"Test oracle may be mode-blind. Uncovered modes: {uncovered_modes}. "
-                                f"Behavior in these modes may differ.",
+                        f"Behavior in these modes may differ.",
                         severity="medium",
-                        details={"uncovered_modes": uncovered_modes, "mode_coverage": mode_coverage},
+                        details={
+                            "uncovered_modes": uncovered_modes,
+                            "mode_coverage": mode_coverage,
+                        },
                         remediation="Add tests covering all critical modes: dev, prod, ci, etc.",
                         invariant_violated="I_oracle_sound",
                     )
@@ -1022,7 +1088,7 @@ class DiagnosticSelfIntegrityDetector:
                             pathology_type=MetaPathologyType.REPAIR_RECOMMENDATION_UNSOUNDNESS,
                             location=str(repair_bridge_path),
                             message="Repair synthesis may not verify invariant preservation. "
-                                    "Repairs could increase architecture debt.",
+                            "Repairs could increase architecture debt.",
                             severity="high",
                             details={"checks_invariants": checks_invariants, "monotone": monotone},
                             remediation="Add explicit invariant checks before and after repair suggestions",

@@ -3,10 +3,12 @@ I_parse = 1 iff every required source file yields acceptable parse tree
 
 Tree-sitter provides incremental, error-tolerant parsing.
 """
+
 from __future__ import annotations
 
 from typing import Any
 
+from ..constants import MSG_PARSING_SUCCESS
 from .base import Invariant, InvariantResult, InvariantSeverity
 
 
@@ -32,7 +34,7 @@ class ParseInvariant(Invariant):
                 name=self.name,
                 passed=True,
                 severity=self.severity,
-                message="All files parse successfully",
+                message=MSG_PARSING_SUCCESS,
             )
 
         return InvariantResult(

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-AMOS Social Engine (09_SOCIAL_ENGINE)
+"""AMOS Social Engine (09_SOCIAL_ENGINE)
 ======================================
 
 Agent communication, coordination, and collective intelligence.
@@ -23,6 +22,7 @@ from typing import Any, Dict, List, Optional, Set
 @dataclass
 class Message:
     """Message between agents."""
+
     id: str
     sender: str
     recipient: str
@@ -36,6 +36,7 @@ class Message:
 @dataclass
 class SocialConnection:
     """Connection between two agents."""
+
     agent_a: str
     agent_b: str
     connection_type: str  # collaborates, reports_to, mentors, etc.
@@ -47,6 +48,7 @@ class SocialConnection:
 @dataclass
 class KnowledgeShare:
     """Shared knowledge from one agent to others."""
+
     id: str
     source_agent: str
     knowledge_type: str
@@ -57,8 +59,7 @@ class KnowledgeShare:
 
 
 class SocialEngine:
-    """
-    Social subsystem - agent communication and coordination.
+    """Social subsystem - agent communication and coordination.
     Manages messaging, social graphs, and collective intelligence.
     """
 
@@ -80,7 +81,7 @@ class SocialEngine:
         state_file = self.data_dir / "social_state.json"
         if state_file.exists():
             try:
-                with open(state_file, 'r', encoding='utf-8') as f:
+                with open(state_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 # Load messages
@@ -116,7 +117,7 @@ class SocialEngine:
                     "content": m.content,
                     "timestamp": m.timestamp,
                     "priority": m.priority,
-                    "read": m.read
+                    "read": m.read,
                 }
                 for m in self.messages[-100:]  # Keep last 100
             ],
@@ -127,7 +128,7 @@ class SocialEngine:
                     "connection_type": c.connection_type,
                     "strength": c.strength,
                     "established": c.established,
-                    "last_interaction": c.last_interaction
+                    "last_interaction": c.last_interaction,
                 }
                 for c in self.connections
             ],
@@ -139,22 +140,17 @@ class SocialEngine:
                     "content": k.content,
                     "share_scope": k.share_scope,
                     "timestamp": k.timestamp,
-                    "recipients": k.recipients
+                    "recipients": k.recipients,
                 }
                 for k in self.knowledge_shares[-50:]
-            ]
+            ],
         }
 
-        with open(state_file, 'w', encoding='utf-8') as f:
+        with open(state_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def send_message(
-        self,
-        sender: str,
-        recipient: str,
-        message_type: str,
-        content: Any,
-        priority: int = 5
+        self, sender: str, recipient: str, message_type: str, content: Any, priority: int = 5
     ) -> Message:
         """Send a message from one agent to another."""
         msg = Message(
@@ -165,7 +161,7 @@ class SocialEngine:
             content=content,
             timestamp=datetime.utcnow().isoformat() + "Z",
             priority=priority,
-            read=False
+            read=False,
         )
 
         self.messages.append(msg)
@@ -179,11 +175,7 @@ class SocialEngine:
         return msg
 
     def broadcast(
-        self,
-        sender: str,
-        message_type: str,
-        content: Any,
-        exclude: Optional[Set[str]] = None
+        self, sender: str, message_type: str, content: Any, exclude: Optional[Set[str]] = None
     ) -> List[Message]:
         """Broadcast message to all agents."""
         exclude = exclude or set()
@@ -203,10 +195,7 @@ class SocialEngine:
         return messages
 
     def get_messages(
-        self,
-        recipient: str,
-        unread_only: bool = False,
-        message_type: Optional[str] = None
+        self, recipient: str, unread_only: bool = False, message_type: Optional[str] = None
     ) -> List[Message]:
         """Get messages for an agent."""
         msgs = [m for m in self.messages if m.recipient == recipient]
@@ -225,17 +214,14 @@ class SocialEngine:
         return msgs
 
     def create_connection(
-        self,
-        agent_a: str,
-        agent_b: str,
-        connection_type: str,
-        strength: float = 0.5
+        self, agent_a: str, agent_b: str, connection_type: str, strength: float = 0.5
     ) -> SocialConnection:
         """Create a social connection between agents."""
         # Check if exists
         for conn in self.connections:
-            if ((conn.agent_a == agent_a and conn.agent_b == agent_b) or
-                (conn.agent_a == agent_b and conn.agent_b == agent_a)):
+            if (conn.agent_a == agent_a and conn.agent_b == agent_b) or (
+                conn.agent_a == agent_b and conn.agent_b == agent_a
+            ):
                 # Update existing
                 conn.connection_type = connection_type
                 conn.strength = strength
@@ -250,7 +236,7 @@ class SocialEngine:
             connection_type=connection_type,
             strength=strength,
             established=datetime.utcnow().isoformat() + "Z",
-            last_interaction=datetime.utcnow().isoformat() + "Z"
+            last_interaction=datetime.utcnow().isoformat() + "Z",
         )
 
         self.connections.append(conn)
@@ -263,8 +249,8 @@ class SocialEngine:
     def _update_connection(self, agent_a: str, agent_b: str) -> None:
         """Update connection with new interaction."""
         for conn in self.connections:
-            agent_match = (conn.agent_a == agent_a and conn.agent_b == agent_b)
-            reverse_match = (conn.agent_a == agent_b and conn.agent_b == agent_a)
+            agent_match = conn.agent_a == agent_a and conn.agent_b == agent_b
+            reverse_match = conn.agent_a == agent_b and conn.agent_b == agent_a
             if agent_match or reverse_match:
                 conn.last_interaction = datetime.utcnow().isoformat() + "Z"
                 # Strengthen connection slightly
@@ -277,7 +263,7 @@ class SocialEngine:
         knowledge_type: str,
         content: Any,
         share_scope: str = "team",
-        specific_recipients: Optional[List[str]] = None
+        specific_recipients: Optional[List[str]] = None,
     ) -> KnowledgeShare:
         """Share knowledge from one agent to others."""
         ks = KnowledgeShare(
@@ -287,7 +273,7 @@ class SocialEngine:
             content=content,
             share_scope=share_scope,
             timestamp=datetime.utcnow().isoformat() + "Z",
-            recipients=specific_recipients or []
+            recipients=specific_recipients or [],
         )
 
         self.knowledge_shares.append(ks)
@@ -298,7 +284,7 @@ class SocialEngine:
                 source_agent,
                 "knowledge_share",
                 {"knowledge_id": ks.id, "type": knowledge_type},
-                exclude={source_agent}
+                exclude={source_agent},
             )
         elif share_scope == "team" and specific_recipients:
             for recipient in specific_recipients:
@@ -306,7 +292,7 @@ class SocialEngine:
                     source_agent,
                     recipient,
                     "knowledge_share",
-                    {"knowledge_id": ks.id, "type": knowledge_type}
+                    {"knowledge_id": ks.id, "type": knowledge_type},
                 )
 
         self._save_state()
@@ -320,7 +306,7 @@ class SocialEngine:
             {
                 "agent": c.agent_b if c.agent_a == agent_id else c.agent_a,
                 "type": c.connection_type,
-                "strength": c.strength
+                "strength": c.strength,
             }
             for c in self.connections
             if c.agent_a == agent_id or c.agent_b == agent_id
@@ -340,15 +326,11 @@ class SocialEngine:
             "knowledge_shared": len(shared),
             "messages_received": len(inbox),
             "messages_sent": len(outbox),
-            "unread_messages": len([m for m in inbox if not m.read])
+            "unread_messages": len([m for m in inbox if not m.read]),
         }
 
     def coordinate_task(
-        self,
-        task_id: str,
-        coordinator: str,
-        participants: List[str],
-        task_description: str
+        self, task_id: str, coordinator: str, participants: List[str], task_description: str
     ) -> Dict[str, Any]:
         """Coordinate a multi-agent task."""
         # Send coordination messages
@@ -358,29 +340,20 @@ class SocialEngine:
                     coordinator,
                     participant,
                     "task_assignment",
-                    {
-                        "task_id": task_id,
-                        "description": task_description,
-                        "role": "participant"
-                    },
-                    priority=7
+                    {"task_id": task_id, "description": task_description, "role": "participant"},
+                    priority=7,
                 )
 
         # Create connections if don't exist
         for participant in participants:
             if participant != coordinator:
-                self.create_connection(
-                    coordinator,
-                    participant,
-                    "collaborates",
-                    0.6
-                )
+                self.create_connection(coordinator, participant, "collaborates", 0.6)
 
         return {
             "task_id": task_id,
             "coordinator": coordinator,
             "participants": participants,
-            "coordination_messages_sent": len(participants) - 1
+            "coordination_messages_sent": len(participants) - 1,
         }
 
     def get_status(self) -> Dict[str, Any]:
@@ -397,7 +370,7 @@ class SocialEngine:
             "total_messages": len(self.messages),
             "total_connections": len(self.connections),
             "knowledge_shares": len(self.knowledge_shares),
-            "unread_messages": len([m for m in self.messages if not m.read])
+            "unread_messages": len([m for m in self.messages if not m.read]),
         }
 
 
@@ -412,15 +385,9 @@ def main() -> int:
 
     # Test agent registration
     print("\nCreating test connections...")
-    engine.create_connection(
-        "planner_agent", "analyst_agent", "collaborates", 0.8
-    )
-    engine.create_connection(
-        "planner_agent", "code_worker", "delegates_to", 0.7
-    )
-    engine.create_connection(
-        "analyst_agent", "auditor_agent", "reports_to", 0.9
-    )
+    engine.create_connection("planner_agent", "analyst_agent", "collaborates", 0.8)
+    engine.create_connection("planner_agent", "code_worker", "delegates_to", 0.7)
+    engine.create_connection("analyst_agent", "auditor_agent", "reports_to", 0.9)
 
     # Test messaging
     print("\nSending test messages...")
@@ -428,14 +395,14 @@ def main() -> int:
         "planner_agent",
         "code_worker",
         "task_request",
-        {"task": "Generate Python module", "priority": "high"}
+        {"task": "Generate Python module", "priority": "high"},
     )
 
     engine.send_message(
         "analyst_agent",
         "planner_agent",
         "analysis_result",
-        {"finding": "Architecture looks good", "confidence": 0.95}
+        {"finding": "Architecture looks good", "confidence": 0.95},
     )
 
     # Test knowledge sharing
@@ -443,19 +410,16 @@ def main() -> int:
     engine.share_knowledge(
         "analyst_agent",
         "pattern_recognition",
-        {
-            "pattern": "modular_architecture",
-            "benefits": ["scalability", "maintainability"]
-        },
-        share_scope="all"
+        {"pattern": "modular_architecture", "benefits": ["scalability", "maintainability"]},
+        share_scope="all",
     )
 
     # Get social graphs
     print("\nSocial Graphs:")
     for agent in ["planner_agent", "analyst_agent", "code_worker"]:
         graph = engine.get_social_graph(agent)
-        conn_count = graph['connection_count']
-        unread = graph['unread_messages']
+        conn_count = graph["connection_count"]
+        unread = graph["unread_messages"]
         print(f"  {agent}: {conn_count} connections, {unread} unread")
 
     # Show status
@@ -470,4 +434,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

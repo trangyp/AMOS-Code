@@ -2,6 +2,7 @@
 """Generate animated GIF demo of clawspring using PIL.
 Simulates a realistic terminal session with tool calls.
 """
+
 import os
 
 from PIL import Image, ImageDraw, ImageFont

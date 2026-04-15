@@ -11,14 +11,14 @@ H_repo = H_S ⊗ H_I ⊗ H_Ty ⊗ H_A ⊗ H_E ⊗ H_Pk ⊗ H_Rt ⊗ H_Ps ⊗ H_S
 |H⟩   history            |Gc⟩  generated code |Env⟩ environment
 """
 
-
 from __future__ import annotations
 
 from enum import Enum
 
 
 class StateDimension(Enum):
-    """18 dimensions of repository state space (Ω∞∞∞∞∞).
+    """
+    18 dimensions of repository state space (Ω∞∞∞∞∞).
 
     Original 12 + 6 Phase 1-2 additions.
     """
@@ -93,6 +93,148 @@ class StateDimension(Enum):
     SEMANTIC_INTEGRITY = "semantic_integrity"  # |Sem⟩ semantic integrity
     RECOVERY = "recovery"  # |Rec⟩ recovery integrity
 
+    # Phase 4: State Machine and Coexistence Dimensions (25+ new dimensions)
+    # State machine architecture
+    STATE_MACHINE_INTEGRITY = "state_machine_integrity"  # |SM⟩ state machine correctness
+    FORBIDDEN_STATE_REACHABILITY = "forbidden_state_reachability"  # |Fbd⟩ forbidden states
+    TRANSITION_LEGALITY = "transition_legality"  # |Trans⟩ transition validity
+
+    # Multi-version coexistence
+    MULTIVERSION_COEXISTENCE = "multiversion_coexistence"  # |MV⟩ multi-version safety
+    COMPATIBILITY_WINDOW = "compatibility_window"  # |Compat⟩ version window truth
+    SPLIT_BRAIN_RESISTANCE = "split_brain_resistance"  # |SB⟩ authority divergence
+
+    # Cutover and coordination
+    CUTOVER_INTEGRITY = "cutover_integrity"  # |Cut⟩ dual-read/write safety
+    CANARY_SAFETY = "canary_safety"  # |Canary⟩ canary/shadow integrity
+    CHANGE_COORDINATION = "change_coordination"  # |Coord⟩ multi-surface coordination
+
+    # Data lifecycle and quality
+    DATA_QUALITY = "data_quality"  # |DQ⟩ data quality architecture
+    BACKFILL_INTEGRITY = "backfill_integrity"  # |BF⟩ backfill/replay safety
+    GARBAGE_COLLECTION = "garbage_collection"  # |GC⟩ GC and tombstone integrity
+
+    # External contracts
+    EXTERNAL_CONTRACT = "external_contract"  # |Ext⟩ external dependency contracts
+    QUOTA_ARCHITECTURE = "quota_architecture"  # |Quota⟩ rate limit/quota modeling
+    VENDOR_SUBSTITUTABILITY = "vendor_substitutability"  # |Vend⟩ vendor exit paths
+
+    # Experimentation and flags
+    EXPERIMENT_SAFETY = "experiment_safety"  # |Exp⟩ A/B test safety
+    FLAG_LATTICE = "flag_lattice"  # |Flag⟩ feature flag bounds
+    MODE_ACTIVATION = "mode_activation"  # |Mode⟩ runtime mode semantics
+
+    # Economic and resources
+    ECONOMIC_ENVELOPE = "economic_envelope"  # |Cost⟩ cost/resource budgets
+    RESOURCE_COUPLING = "resource_coupling"  # |ResCoup⟩ bottleneck sharing
+
+    # Team and knowledge
+    TEAM_TOPOLOGY_FIT = "team_topology_fit"  # |Team⟩ Conway alignment
+    KNOWLEDGE_DISTRIBUTION = "knowledge_distribution"  # |KnowDist⟩ knowledge spread
+    INCENTIVE_ALIGNMENT = "incentive_alignment"  # |Incent⟩ incentive geometry
+
+    # Exception and override governance
+    EXCEPTION_GOVERNANCE = "exception_governance"  # |Exc⟩ emergency bypasses
+    OVERRIDE_DECAY = "override_decay"  # |Over⟩ temporary override limits
+    HOTFIX_TOPOLOGY = "hotfix_topology"  # |Hot⟩ hotfix safety
+
+    # Compliance and legal
+    COMPLIANCE_LIFECYCLE = "compliance_lifecycle"  # |Comp⟩ retention/deletion compliance
+
+    # Epistemic integrity
+    EPISTEMIC_INTEGRITY = "epistemic_integrity"  # |Know⟩ evidence/decision quality
+    EVIDENCE_FRESHNESS = "evidence_freshness"  # |Fresh⟩ evidence staleness
+    EVIDENCE_SCOPE = "evidence_scope"  # |Scope⟩ evidence generalization
+    DECISION_RIGHTS = "decision_rights"  # |Rights⟩ decision authority alignment
+
+    # Constitutional and ownership
+    CONSTITUTIONAL_INTEGRITY = "constitutional_integrity"  # |Const⟩ constitution adherence
+    STATE_OWNERSHIP = "state_ownership"  # |Own⟩ state authority clarity
+    ABSENCE_SEMANTICS = "absence_semantics"  # |Abs⟩ "not present" meaning
+
+    # Disaster and resilience
+    DISASTER_RECOVERY = "disaster_recovery"  # |DR⟩ DR architecture
+    GRACEFUL_DEGRADATION = "graceful_degradation"  # |Grace⟩ degradation paths
+    BLAST_CONTAINMENT = "blast_containment"  # |Blast⟩ blast radius limits
+    ISOLATION = "isolation"  # |Iso⟩ isolation boundaries
+
+    # Interoperability
+    INTEROPERABILITY = "interoperability"  # |Port⟩ cross-system compatibility
+
+    # Phase 5: Lease, Transaction, and Meta-Stability Dimensions (30+ new)
+    # Lease and revocation
+    LEASE_INTEGRITY = "lease_integrity"  # |Lease⟩ lease semantics
+    ZOMBIE_LEASE = "zombie_lease"  # |Zombie⟩ expired lease action
+    LEASE_CLOCK_COUPLING = "lease_clock_coupling"  # |LeaseClk⟩ lease/clock skew
+
+    # Transaction boundaries
+    TRANSACTION_SCOPE = "transaction_scope"  # |Txn⟩ transaction boundary
+    CROSS_PLANE_COMMIT = "cross_plane_commit"  # |XPlane⟩ multi-plane atomicity
+    COMPENSATION_CLOSURE = "compensation_closure"  # |Compensate⟩ compensation completeness
+
+    # Saturation and overload
+    SATURATION_SAFETY = "saturation_safety"  # |Sat⟩ saturation correctness
+    OVERLOAD_POLICY = "overload_policy"  # |Overload⟩ shedding order
+    SATURATION_AUTHORITY_DRIFT = "saturation_authority_drift"  # |SatAuth⟩ overload authority shift
+
+    # Hysteresis and state memory
+    HYSTERESIS_SAFETY = "hysteresis_safety"  # |Hyst⟩ threshold oscillation
+    STATE_MEMORY = "state_memory"  # |StateMem⟩ prior state dependence
+
+    # Symmetry and symmetry breaking
+    FALSE_SYMMETRY = "false_symmetry"  # |FalseSym⟩ incorrect interchangeability
+    SYMMETRY_BREAKING = "symmetry_breaking"  # |SymBreak⟩ hidden asymmetry
+
+    # Trust domains
+    TRUST_DOMAIN_INTEGRITY = "trust_domain_integrity"  # |Trust⟩ trust boundary
+    TRUST_TRANSITIVITY = "trust_transitivity"  # |TrustTrans⟩ trust chain validity
+    TRUST_CACHE_BLEED = "trust_cache_bleed"  # |TrustCache⟩ cross-domain cache
+
+    # Hermeticity
+    BUILD_HERMETICITY = "build_hermeticity"  # |HermBuild⟩ build reproducibility
+    TEST_HERMETICITY = "test_hermeticity"  # |HermTest⟩ test isolation
+    DOCTOR_HERMETICITY = "doctor_hermeticity"  # |HermDoc⟩ diagnostic purity
+
+    # Impossibility boundaries
+    IMPOSSIBILITY_AWARENESS = "impossibility_awareness"  # |Imposs⟩ guarantee feasibility
+    IMPOSSIBILITY_HONESTY = "impossibility_honesty"  # |ImpossHonest⟩ tradeoff explicitness
+
+    # Dark-state and nullspace
+    DARK_STATE_DETECTABILITY = "dark_state_detectability"  # |Dark⟩ unobserved states
+    NULLSPACE_BEHAVIOR = "nullspace_behavior"  # |Null⟩ observational collapse
+
+    # Non-local and global invariants
+    NONLOCAL_INVARIANT = "nonlocal_invariant"  # |NonLocal⟩ global safety
+    GLOBAL_CONSERVATION = "global_conservation"  # |Conserv⟩ quantity preservation
+
+    # Truth and distributed systems
+    TRUTH_ARBITRATION = "truth_arbitration"  # |Truth⟩ authority resolution
+    IRREVERSIBILITY_MANAGEMENT = "irreversibility_management"  # |Irrev⟩ irreversible action
+    QUIESCENCE_INTEGRITY = "quiescence_integrity"  # |Quiesce⟩ safe stopping
+
+    # Liveness and fairness
+    LIVENESS = "liveness"  # |Live⟩ progress guarantee
+    FAIRNESS = "fairness"  # |Fair⟩ equitable scheduling
+    SCHEDULER_ROBUSTNESS = "scheduler_robustness"  # |Sched⟩ scheduler safety
+
+    # Partition and convergence
+    PARTITION_BEHAVIOR = "partition_behavior"  # |Part⟩ partition handling
+    CONVERGENCE = "convergence"  # |Conv⟩ eventual consistency
+    CAUSAL_ATTRIBUTION = "causal_attribution"  # |Cause⟩ causality tracking
+
+    # Compositional and observer effects
+    COMPOSITIONAL_VALIDITY = "compositional_validity"  # |Compose⟩ component composition
+    OBSERVER_EFFECT_BOUND = "observer_effect_bound"  # |ObsFx⟩ measurement impact
+    ARCHITECTURAL_ENTROPY = "architectural_entropy"  # |Entropy⟩ disorder growth
+
+    # Loss and boundedness
+    LOSS_BOUNDEDNESS = "loss_boundedness"  # |Loss⟩ acceptable loss
+    SEMANTIC_LOSS = "semantic_loss"  # |SemLoss⟩ meaning preservation
+
+    # Policy and adaptation
+    POLICY_PRECEDENCE = "policy_precedence"  # |Policy⟩ rule ordering
+    ADAPTIVE_STABILITY = "adaptive_stability"  # |Adapt"> self-regulation
+
 
 class StateBasis:
     """Basis state management for repository Hilbert space."""
@@ -143,6 +285,46 @@ class StateBasis:
         StateDimension.OBSERVABILITY: 65.0,
         StateDimension.SEMANTIC_INTEGRITY: 90.0,
         StateDimension.RECOVERY: 85.0,
+        # Phase 4: State machine and coexistence dimensions
+        StateDimension.STATE_MACHINE_INTEGRITY: 95.0,
+        StateDimension.FORBIDDEN_STATE_REACHABILITY: 100.0,
+        StateDimension.TRANSITION_LEGALITY: 90.0,
+        StateDimension.MULTIVERSION_COEXISTENCE: 90.0,
+        StateDimension.COMPATIBILITY_WINDOW: 95.0,
+        StateDimension.SPLIT_BRAIN_RESISTANCE: 95.0,
+        StateDimension.CUTOVER_INTEGRITY: 95.0,
+        StateDimension.CANARY_SAFETY: 85.0,
+        StateDimension.CHANGE_COORDINATION: 90.0,
+        StateDimension.DATA_QUALITY: 85.0,
+        StateDimension.BACKFILL_INTEGRITY: 80.0,
+        StateDimension.GARBAGE_COLLECTION: 75.0,
+        StateDimension.EXTERNAL_CONTRACT: 90.0,
+        StateDimension.QUOTA_ARCHITECTURE: 85.0,
+        StateDimension.VENDOR_SUBSTITUTABILITY: 70.0,
+        StateDimension.EXPERIMENT_SAFETY: 85.0,
+        StateDimension.FLAG_LATTICE: 80.0,
+        StateDimension.MODE_ACTIVATION: 90.0,
+        StateDimension.ECONOMIC_ENVELOPE: 60.0,
+        StateDimension.RESOURCE_COUPLING: 85.0,
+        StateDimension.TEAM_TOPOLOGY_FIT: 75.0,
+        StateDimension.KNOWLEDGE_DISTRIBUTION: 80.0,
+        StateDimension.INCENTIVE_ALIGNMENT: 70.0,
+        StateDimension.EXCEPTION_GOVERNANCE: 90.0,
+        StateDimension.OVERRIDE_DECAY: 85.0,
+        StateDimension.HOTFIX_TOPOLOGY: 95.0,
+        StateDimension.COMPLIANCE_LIFECYCLE: 80.0,
+        StateDimension.EPISTEMIC_INTEGRITY: 85.0,
+        StateDimension.EVIDENCE_FRESHNESS: 80.0,
+        StateDimension.EVIDENCE_SCOPE: 85.0,
+        StateDimension.DECISION_RIGHTS: 90.0,
+        StateDimension.CONSTITUTIONAL_INTEGRITY: 95.0,
+        StateDimension.STATE_OWNERSHIP: 90.0,
+        StateDimension.ABSENCE_SEMANTICS: 85.0,
+        StateDimension.DISASTER_RECOVERY: 90.0,
+        StateDimension.GRACEFUL_DEGRADATION: 85.0,
+        StateDimension.BLAST_CONTAINMENT: 90.0,
+        StateDimension.ISOLATION: 90.0,
+        StateDimension.INTEROPERABILITY: 80.0,
     }
 
     # Collapse thresholds (θk) per Ω∞∞∞∞∞
@@ -191,6 +373,46 @@ class StateBasis:
         StateDimension.OBSERVABILITY: 0.70,
         StateDimension.SEMANTIC_INTEGRITY: 0.90,
         StateDimension.RECOVERY: 0.85,
+        # Phase 4: State machine and coexistence thresholds
+        StateDimension.STATE_MACHINE_INTEGRITY: 0.95,
+        StateDimension.FORBIDDEN_STATE_REACHABILITY: 0.99,
+        StateDimension.TRANSITION_LEGALITY: 0.90,
+        StateDimension.MULTIVERSION_COEXISTENCE: 0.90,
+        StateDimension.COMPATIBILITY_WINDOW: 0.95,
+        StateDimension.SPLIT_BRAIN_RESISTANCE: 0.95,
+        StateDimension.CUTOVER_INTEGRITY: 0.95,
+        StateDimension.CANARY_SAFETY: 0.85,
+        StateDimension.CHANGE_COORDINATION: 0.90,
+        StateDimension.DATA_QUALITY: 0.85,
+        StateDimension.BACKFILL_INTEGRITY: 0.80,
+        StateDimension.GARBAGE_COLLECTION: 0.75,
+        StateDimension.EXTERNAL_CONTRACT: 0.90,
+        StateDimension.QUOTA_ARCHITECTURE: 0.85,
+        StateDimension.VENDOR_SUBSTITUTABILITY: 0.70,
+        StateDimension.EXPERIMENT_SAFETY: 0.85,
+        StateDimension.FLAG_LATTICE: 0.80,
+        StateDimension.MODE_ACTIVATION: 0.90,
+        StateDimension.ECONOMIC_ENVELOPE: 0.60,
+        StateDimension.RESOURCE_COUPLING: 0.85,
+        StateDimension.TEAM_TOPOLOGY_FIT: 0.75,
+        StateDimension.KNOWLEDGE_DISTRIBUTION: 0.80,
+        StateDimension.INCENTIVE_ALIGNMENT: 0.70,
+        StateDimension.EXCEPTION_GOVERNANCE: 0.90,
+        StateDimension.OVERRIDE_DECAY: 0.85,
+        StateDimension.HOTFIX_TOPOLOGY: 0.95,
+        StateDimension.COMPLIANCE_LIFECYCLE: 0.80,
+        StateDimension.EPISTEMIC_INTEGRITY: 0.85,
+        StateDimension.EVIDENCE_FRESHNESS: 0.80,
+        StateDimension.EVIDENCE_SCOPE: 0.85,
+        StateDimension.DECISION_RIGHTS: 0.90,
+        StateDimension.CONSTITUTIONAL_INTEGRITY: 0.95,
+        StateDimension.STATE_OWNERSHIP: 0.90,
+        StateDimension.ABSENCE_SEMANTICS: 0.85,
+        StateDimension.DISASTER_RECOVERY: 0.90,
+        StateDimension.GRACEFUL_DEGRADATION: 0.85,
+        StateDimension.BLAST_CONTAINMENT: 0.90,
+        StateDimension.ISOLATION: 0.90,
+        StateDimension.INTEROPERABILITY: 0.80,
     }
 
     @classmethod
@@ -212,6 +434,7 @@ class StateBasis:
     def hard_fail_dimensions(cls) -> list[StateDimension]:
         """Dimensions that cause hard failure when collapsed."""
         return [
+            # Core dimensions (Phase 1-2)
             StateDimension.SYNTAX,
             StateDimension.IMPORT,
             StateDimension.TYPE,
@@ -221,4 +444,15 @@ class StateBasis:
             StateDimension.PERSISTENCE,
             StateDimension.STATUS,
             StateDimension.SECURITY,
+            # Control system dimensions (Phase 3)
+            StateDimension.IDENTITY_LIFECYCLE,
+            StateDimension.CAPABILITY_DISCIPLINE,
+            StateDimension.CONTROL_LOOP_STABILITY,
+            StateDimension.NEGATIVE_CAPABILITY,
+            # State machine & coexistence dimensions (Phase 4)
+            StateDimension.FORBIDDEN_STATE_REACHABILITY,
+            StateDimension.SPLIT_BRAIN_RESISTANCE,
+            StateDimension.CUTOVER_INTEGRITY,
+            StateDimension.CONSTITUTIONAL_INTEGRITY,
+            StateDimension.HOTFIX_TOPOLOGY,
         ]

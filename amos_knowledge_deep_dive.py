@@ -9,6 +9,7 @@ Reads and catalogs all knowledge from:
 
 Usage: python amos_knowledge_deep_dive.py [--engine <name>] [--list-all]
 """
+
 import json
 import sys
 from dataclasses import dataclass

@@ -1,4 +1,5 @@
 """LEGAL_BRAIN compliance_auditor stub — Re-exports from 12_LEGAL_BRAIN"""
+
 import sys
 from pathlib import Path
 

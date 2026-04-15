@@ -1,4 +1,5 @@
 """I_security = 1 iff no forbidden source-to-sink flow exists."""
+
 from __future__ import annotations
 
 from typing import Any

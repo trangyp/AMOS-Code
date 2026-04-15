@@ -36,6 +36,7 @@ from typing import Any
 try:
     from repo_doctor_omega.solver import RepairOptimizer, RepairPlan
     from repo_doctor_omega.state.basis import BasisVector, RepositoryState
+
     REPAIR_AVAILABLE = True
 except ImportError:
     REPAIR_AVAILABLE = False
@@ -47,6 +48,7 @@ try:
         PathologyType,
         get_pathology_engine,
     )
+
     PATHOLOGY_AVAILABLE = True
 except ImportError:
     PATHOLOGY_AVAILABLE = False
@@ -114,8 +116,7 @@ class RepairSynthesisResult:
 
 
 class RepairSynthesisBridge:
-    """
-    Bridge between repair planning and AMOS Brain cognition.
+    """Bridge between repair planning and AMOS Brain cognition.
 
     Synthesizes concrete repair actions from abstract detections:
     - Pathology → Concrete fix suggestions
@@ -143,8 +144,7 @@ class RepairSynthesisBridge:
         self,
         pathologies: list[Any],
     ) -> list[SynthesizedRepair]:
-        """
-        Synthesize repairs from detected pathologies.
+        """Synthesize repairs from detected pathologies.
 
         Args:
             pathologies: List of ArchitecturalPathology objects
@@ -168,8 +168,7 @@ class RepairSynthesisBridge:
         self,
         invariant_results: list[Any],
     ) -> list[SynthesizedRepair]:
-        """
-        Synthesize repairs from invariant violations.
+        """Synthesize repairs from invariant violations.
 
         Args:
             invariant_results: List of invariant check results
@@ -192,8 +191,7 @@ class RepairSynthesisBridge:
         include_pathologies: bool = True,
         include_invariants: bool = True,
     ) -> RepairSynthesisResult | None:
-        """
-        Generate complete repair synthesis from all detections.
+        """Generate complete repair synthesis from all detections.
 
         Args:
             include_pathologies: Whether to include pathology-based repairs
@@ -227,10 +225,12 @@ class RepairSynthesisBridge:
         human_required = [r for r in all_repairs if r.requires_human_review]
 
         # Create safe and risky batches
-        safe_batch = [r for r in all_repairs
-                       if r.auto_fixable and r.risk_level in ["low", "medium"]]
-        risky_batch = [r for r in all_repairs
-                        if not r.auto_fixable or r.risk_level in ["high", "critical"]]
+        safe_batch = [
+            r for r in all_repairs if r.auto_fixable and r.risk_level in ["low", "medium"]
+        ]
+        risky_batch = [
+            r for r in all_repairs if not r.auto_fixable or r.risk_level in ["high", "critical"]
+        ]
 
         # Calculate total energy gain
         total_energy = sum(r.estimated_energy_change for r in all_repairs)
@@ -256,8 +256,7 @@ class RepairSynthesisBridge:
         self,
         max_fixes: int = 10,
     ) -> list[SynthesizedRepair]:
-        """
-        Get repairs that can be safely applied automatically.
+        """Get repairs that can be safely applied automatically.
 
         Args:
             max_fixes: Maximum number of fixes to return
@@ -314,7 +313,7 @@ class RepairSynthesisBridge:
                 target_file=location,
                 target_module=self._file_to_module(location),
                 repair_type="refactor",
-                description=f"Extract cross-layer logic to declared interface",
+                description="Extract cross-layer logic to declared interface",
                 original_code=None,
                 suggested_code="# TODO: Extract to interface layer",
                 auto_fixable=False,
@@ -336,7 +335,7 @@ class RepairSynthesisBridge:
                 target_file=location,
                 target_module=self._file_to_module(location),
                 repair_type="add",
-                description=f"Add explicit bootstrap dependency declaration",
+                description="Add explicit bootstrap dependency declaration",
                 original_code=None,
                 suggested_code="# TODO: Add to bootstrap manifest",
                 auto_fixable=True,
@@ -358,7 +357,7 @@ class RepairSynthesisBridge:
                 target_file=location,
                 target_module=self._file_to_module(location),
                 repair_type="add",
-                description=f"Declare hidden dependency explicitly",
+                description="Declare hidden dependency explicitly",
                 original_code=None,
                 suggested_code="# TODO: Add explicit dependency declaration",
                 auto_fixable=True,

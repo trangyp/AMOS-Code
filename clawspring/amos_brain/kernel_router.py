@@ -1,4 +1,5 @@
 """AMOS Kernel Router - Routes tasks to appropriate cognitive kernels."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 @dataclass
 class TaskIntent:
     """Parsed task intent for routing decisions."""
+
     primary_domain: str
     secondary_domains: list[str]
     risk_level: str

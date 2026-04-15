@@ -4,6 +4,7 @@
 This applies Rule of 2 (dual perspective) and Rule of 4 (four quadrants)
 to determine what should be built next for the AMOS project.
 """
+
 from __future__ import annotations
 
 import os

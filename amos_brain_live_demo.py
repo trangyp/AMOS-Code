@@ -12,6 +12,7 @@ This demo uses the AMOS brain to:
 
 Usage: python amos_brain_live_demo.py
 """
+
 from __future__ import annotations
 
 import sys
@@ -179,14 +180,14 @@ def demonstrate_brain_thinking(problem: str):
 
     export_content = f"""# Brain Decision Analysis
 
-**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Date:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Problem:** {problem}
 
 ## Summary
 
-- **Confidence:** {analysis.get('structural_integrity_score', 0.0):.0%}
-- **Rule of 2:** {'✅ Applied' if 'rule_of_two' in analysis else '❌ Missing'}
-- **Rule of 4:** {'✅ Applied' if 'rule_of_four' in analysis else '❌ Missing'}
+- **Confidence:** {analysis.get("structural_integrity_score", 0.0):.0%}
+- **Rule of 2:** {"✅ Applied" if "rule_of_two" in analysis else "❌ Missing"}
+- **Rule of 4:** {"✅ Applied" if "rule_of_four" in analysis else "❌ Missing"}
 
 ## Recommendations
 
@@ -224,7 +225,7 @@ def demonstrate_brain_thinking(problem: str):
 
 📁 Output: {export_path}
 💾 Memory: {entry_id[:16]}...
-📊 Confidence: {analysis.get('structural_integrity_score', 0.0):.0%}
+📊 Confidence: {analysis.get("structural_integrity_score", 0.0):.0%}
 
 The brain is thinking, deciding, and remembering.
 """

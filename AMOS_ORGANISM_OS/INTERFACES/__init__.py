@@ -1,5 +1,4 @@
-"""INTERFACES module — Alias for 14_INTERFACES
-"""
+"""INTERFACES module — Alias for 14_INTERFACES"""
 
 import sys
 from pathlib import Path

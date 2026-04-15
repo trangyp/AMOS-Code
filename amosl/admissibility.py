@@ -8,6 +8,7 @@ Verifies the 17-component admissibility model 𝔐_P:
     - ∏_k V_k(P) = 1
     - ∃𝔏 : Explain(𝔏) = Outcome
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -98,7 +99,7 @@ class GrandAdmissibilityVerifier:
         present = "T" in model or "types" in model or "typing_context" in model
 
         # Check Γ ⊢ P : T
-        has_judgment = "type_judgments" in model or any(":" in str(k) for k in model.keys())
+        has_judgment = "type_judgments" in model or any(":" in str(k) for k in model)
 
         return AdmissibilityResult(
             component=AdmissibilityComponent.TYPE,

@@ -11,6 +11,7 @@ Verification operations:
     V_biology: Viability checks
     V_hybrid: Bridge legality
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
