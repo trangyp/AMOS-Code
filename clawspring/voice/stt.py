@@ -16,11 +16,14 @@ coding-domain vocabulary (grep, MCP, TypeScript, …) is recognised correctly.
 from __future__ import annotations
 
 import io
+import logging
 import os
 import struct
 from typing import Optional
 
 from .recorder import BYTES_PER_SAMPLE, CHANNELS, SAMPLE_RATE
+
+logger = logging.getLogger(__name__)
 
 # ── Cached model handles ──────────────────────────────────────────────────
 
@@ -71,13 +74,13 @@ def check_stt_availability() -> tuple[bool, str | None]:
 
         return True, None
     except ImportError:
-        pass
+        logger.debug("faster_whisper not available")
     try:
         import whisper  # noqa: F401
 
         return True, None
     except ImportError:
-        pass
+        logger.debug("openai-whisper not available")
     if os.environ.get("OPENAI_API_KEY"):
         return True, None
 
@@ -97,13 +100,13 @@ def get_stt_backend_name() -> str:
 
         return f"faster-whisper ({DEFAULT_MODEL_SIZE})"
     except ImportError:
-        pass
+        logger.debug("faster_whisper not available for model_name")
     try:
         import whisper  # noqa: F401
 
         return f"openai-whisper ({DEFAULT_MODEL_SIZE})"
     except ImportError:
-        pass
+        logger.debug("openai-whisper not available for get_stt_backend_name")
     if os.environ.get("OPENAI_API_KEY"):
         return "OpenAI Whisper API"
     return "(none)"
@@ -134,7 +137,7 @@ def _has_cuda() -> bool:
 
         return torch.cuda.is_available()
     except ImportError:
-        pass
+        logger.debug("torch not available for CUDA check")
     try:
         import ctranslate2
 
@@ -266,7 +269,7 @@ def transcribe(
 
         return _transcribe_faster_whisper(pcm_bytes, terms, lang)
     except ImportError:
-        pass
+        logger.debug("faster_whisper not available for transcription")
 
     # openai-whisper (local, fallback)
     try:
@@ -274,7 +277,7 @@ def transcribe(
 
         return _transcribe_openai_whisper(pcm_bytes, terms, lang)
     except ImportError:
-        pass
+        logger.debug("openai-whisper not available for transcription")
 
     # OpenAI Whisper API (cloud, last resort)
     if os.environ.get("OPENAI_API_KEY"):
