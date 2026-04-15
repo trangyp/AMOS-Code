@@ -355,6 +355,36 @@ window.AMOSDashboard = {
     fetchStatus: fetchBrainStatus
 };
 
+// Connection status check
+async function checkServerConnection() {
+    const statusText = document.querySelector('.status-text');
+    const statusIndicator = document.querySelector('.status-indicator');
+
+    try {
+        const response = await fetch(`${API_BASE}/health`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status === 'healthy' || data.status === 'initializing') {
+                statusText.textContent = 'System Online';
+                statusIndicator.classList.add('online');
+            } else {
+                statusText.textContent = 'System Degraded';
+                statusIndicator.classList.remove('online');
+            }
+        } else {
+            statusText.textContent = 'Server Error';
+            statusIndicator.classList.remove('online');
+        }
+    } catch (error) {
+        statusText.textContent = 'Not Connected';
+        statusIndicator.classList.remove('online');
+        console.error('Server connection failed:', error);
+    }
+}
+
+// Check connection on load
+checkServerConnection();
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
     if (metricsInterval) clearInterval(metricsInterval);

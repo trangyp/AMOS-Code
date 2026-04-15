@@ -1795,6 +1795,130 @@ class ObservableSet:
         StateDimension.INTEROPERABILITY: {
             "cross_system_violation": 8.5,
         },
+        # Phase 5: Lease, Transaction, and Meta-Stability weights
+        StateDimension.LEASE_INTEGRITY: {
+            "semantics_undefined": 9.0,
+        },
+        StateDimension.ZOMBIE_LEASE: {
+            "zombie_active": 10.0,
+        },
+        StateDimension.LEASE_CLOCK_COUPLING: {
+            "clock_skew_unbounded": 8.5,
+        },
+        StateDimension.TRANSACTION_SCOPE: {
+            "scope_ambiguous": 8.5,
+        },
+        StateDimension.CROSS_PLANE_COMMIT: {
+            "cross_plane_failure": 9.0,
+        },
+        StateDimension.COMPENSATION_CLOSURE: {
+            "compensation_incomplete": 8.5,
+        },
+        StateDimension.SATURATION_SAFETY: {
+            "correctness_violated": 8.0,
+        },
+        StateDimension.OVERLOAD_POLICY: {
+            "shedding_implicit": 7.5,
+        },
+        StateDimension.SATURATION_AUTHORITY_DRIFT: {
+            "authority_drift": 9.0,
+        },
+        StateDimension.HYSTERESIS_SAFETY: {
+            "absent_oscillation": 7.0,
+        },
+        StateDimension.STATE_MEMORY: {
+            "dependence_hidden": 7.5,
+        },
+        StateDimension.FALSE_SYMMETRY: {
+            "symmetry_assumed": 8.0,
+        },
+        StateDimension.SYMMETRY_BREAKING: {
+            "breaking_hidden": 7.5,
+        },
+        StateDimension.TRUST_DOMAIN_INTEGRITY: {
+            "domain_collapse": 9.5,
+        },
+        StateDimension.TRUST_TRANSITIVITY: {
+            "transitivity_illusion": 8.5,
+        },
+        StateDimension.TRUST_CACHE_BLEED: {
+            "cache_bleed": 9.0,
+        },
+        StateDimension.BUILD_HERMETICITY: {
+            "build_nonhermetic": 8.0,
+        },
+        StateDimension.TEST_HERMETICITY: {
+            "test_nonhermetic": 7.5,
+        },
+        StateDimension.DOCTOR_HERMETICITY: {
+            "doctor_nonhermetic": 8.5,
+        },
+        StateDimension.IMPOSSIBILITY_AWARENESS: {
+            "impossible_bundle": 9.0,
+        },
+        StateDimension.IMPOSSIBILITY_HONESTY: {
+            "silent_compensation": 8.5,
+        },
+        StateDimension.DARK_STATE_DETECTABILITY: {
+            "dark_state_unobserved": 8.0,
+        },
+        StateDimension.NULLSPACE_BEHAVIOR: {
+            "nullspace_collapse": 7.5,
+        },
+        StateDimension.NONLOCAL_INVARIANT: {
+            "nonlocal_violated": 9.0,
+        },
+        StateDimension.GLOBAL_CONSERVATION: {
+            "conservation_failure": 8.5,
+        },
+        StateDimension.TRUTH_ARBITRATION: {
+            "arbitration_unresolved": 9.5,
+        },
+        StateDimension.IRREVERSIBILITY_MANAGEMENT: {
+            "action_unbounded": 9.0,
+        },
+        StateDimension.QUIESCENCE_INTEGRITY: {
+            "quiescence_unsafe": 8.5,
+        },
+        StateDimension.LIVENESS: {
+            "guarantee_absent": 8.0,
+        },
+        StateDimension.FAIRNESS: {
+            "fairness_violation": 7.5,
+        },
+        StateDimension.SCHEDULER_ROBUSTNESS: {
+            "scheduler_unsafe": 8.0,
+        },
+        StateDimension.PARTITION_BEHAVIOR: {
+            "handling_incorrect": 8.5,
+        },
+        StateDimension.CONVERGENCE: {
+            "convergence_failure": 8.0,
+        },
+        StateDimension.CAUSAL_ATTRIBUTION: {
+            "attribution_lost": 8.5,
+        },
+        StateDimension.COMPOSITIONAL_VALIDITY: {
+            "compositional_invalidity": 9.0,
+        },
+        StateDimension.OBSERVER_EFFECT_BOUND: {
+            "observer_effect_unbounded": 7.5,
+        },
+        StateDimension.ARCHITECTURAL_ENTROPY: {
+            "entropy_unchecked": 7.0,
+        },
+        StateDimension.LOSS_BOUNDEDNESS: {
+            "loss_unbounded": 8.5,
+        },
+        StateDimension.SEMANTIC_LOSS: {
+            "semantic_loss_undetected": 8.0,
+        },
+        StateDimension.POLICY_PRECEDENCE: {
+            "precedence_ambiguous": 8.5,
+        },
+        StateDimension.ADAPTIVE_STABILITY: {
+            "adaptive_instability": 8.0,
+        },
     }
 
     def __init__(self):
