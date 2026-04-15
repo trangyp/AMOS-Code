@@ -93,6 +93,22 @@ class VertexType(Enum):
     FRESHNESS_BOUND_NODE = auto()  # Evidence freshness bound
     DECISION_RIGHT_NODE = auto()  # Decision authority
 
+    # Phase 5: Lease, Transaction, and Meta-Stability nodes (14 new)
+    LEASE_NODE = auto()  # Lease definition
+    LEASE_HOLDER_NODE = auto()  # Lease holder/authority
+    TRANSACTION_BOUNDARY_NODE = auto()  # Transaction scope
+    SATURATION_POLICY_NODE = auto()  # Saturation handling policy
+    HYSTERESIS_RULE_NODE = auto()  # Hysteresis configuration
+    SYMMETRY_CLASS_NODE = auto()  # Symmetry equivalence class
+    TRUST_DOMAIN_NODE = auto()  # Trust boundary
+    HERMETIC_BOUNDARY_NODE = auto()  # Hermeticity enclosure
+    IMPOSSIBILITY_CONSTRAINT_NODE = auto()  # Impossibility boundary
+    TRADEOFF_DECLARATION_NODE = auto()  # Explicit tradeoff
+    DARK_STATE_NODE = auto()  # Unobserved but real state
+    NULLSPACE_CLASS_NODE = auto()  # Observational equivalence class
+    NONLOCAL_INVARIANT_NODE = auto()  # Global safety property
+    CONSERVATION_LAW_NODE = auto()  # Global quantity constraint
+
 
 class EdgeType(Enum):
     """E - Types of edges in G_repo per Ω∞∞∞∞∞."""
@@ -153,6 +169,23 @@ class EdgeType(Enum):
     REQUIRES_EVIDENCE_FROM = auto()  # Evidence dependency
     DECISION_AUTHORITY = auto()  # Decision authority
     SUPPORTS_SCOPE_OF = auto()  # Evidence scope
+
+    # Phase 5: Lease, Transaction, and Meta-Stability edges (18 new)
+    LEASED_BY = auto()  # Lease acquisition
+    EXPIRES_UNDER = auto()  # Lease expiry condition
+    COMMITS_WITH = auto()  # Transaction atomicity
+    SATURATES_UNDER = auto()  # Saturation trigger
+    APPLIES_HYSTERESIS_TO = auto()  # Hysteresis application
+    SYMMETRIC_WITH = auto()  # Symmetrical equivalence
+    BREAKS_SYMMETRY_OF = auto()  # Symmetry breaking
+    TRUSTS = auto()  # Trust relationship
+    CROSSES_TRUST_DOMAIN = auto()  # Trust boundary crossing
+    HERMETIC_UNDER = auto()  # Hermeticity condition
+    VIOLATES_IMPOSSIBILITY_BUNDLE_WITH = auto()  # Impossibility violation
+    DECLARES_TRADEOFF_AGAINST = auto()  # Explicit tradeoff
+    OBSERVATIONALLY_COLLAPSES_INTO = auto()  # Nullspace collapse
+    PARTICIPATES_IN_NONLOCAL_INVARIANT = auto()  # Non-local participation
+    BOUNDED_BY_CONSERVATION_LAW = auto()  # Conservation constraint
 
 
 @dataclass

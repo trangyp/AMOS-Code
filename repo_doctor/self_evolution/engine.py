@@ -3,11 +3,11 @@ Self-Evolution Engine - Main Orchestrator for AMOS Self-Improvement.
 
 Executes the complete self-evolution loop:
 1. Detect recurring weaknesses
-2. Create evolution contracts
-3. Plan minimal patches
+2. Create evolution contracts (with learning predictions)
+3. Plan minimal patches (with learned recommendations)
 4. Verify no regression
 5. Apply or rollback
-6. Register outcomes
+6. Register outcomes (learn from results)
 
 This is the canonical entry point for AMOS self-evolution.
 """
@@ -22,6 +22,7 @@ from .contract import EvolutionContract, EvolutionRegistry, EvolutionStatus
 from .detector import EvolutionOpportunityDetector, StructuralHotspot
 from .guard import RegressionGuard, RollbackGuard
 from .planner import SelfPatchPlanner
+from .memory import EvolutionMemoryStore, LearningEngine
 
 
 @dataclass
@@ -35,25 +36,31 @@ class EvolutionReport:
     patches_rolled_back: int
     success_rate: float
     details: list[dict[str, Any]]
+    learned_patterns: int
+    memory_stats: dict[str, Any]
 
 
 class SelfEvolutionEngine:
     """
     Main engine for safe, bounded, reversible self-improvement.
 
+    Now with integrated memory and learning from evolution history.
+
     Usage:
         engine = SelfEvolutionEngine("/path/to/amos")
         report = engine.evolve()
     """
 
-    def __init__(self, amos_root: str) -> None:
-        """Initialize self-evolution engine."""
+    def __init__(self, amos_root: str, memory_path: str | None = None) -> None:
+        """Initialize self-evolution engine with memory and learning."""
         self.amos_root = Path(amos_root)
         self.detector = EvolutionOpportunityDetector(amos_root)
         self.planner = SelfPatchPlanner(amos_root)
         self.regression_guard = RegressionGuard(amos_root)
         self.rollback_guard = RollbackGuard(amos_root)
         self.registry = EvolutionRegistry()
+        self.memory = EvolutionMemoryStore(memory_path)
+        self.learning = LearningEngine(self.memory)
 
     def evolve(self, max_evolutions: int = 1) -> EvolutionReport:
         """

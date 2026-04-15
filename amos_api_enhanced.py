@@ -398,22 +398,30 @@ def run_demo():
     return jsonify({"demo_type": demo_type, "demos": demos, "status": "success"})
 
 
+def _init_amos_background():
+    """Initialize AMOS in background thread."""
+    global amos_system
+    try:
+        from amos_unified_enhanced import AMOSUnifiedEnhanced
+        amos_system = AMOSUnifiedEnhanced()
+        amos_system.initialize(auto_load_knowledge=True)
+        print("\n✅ AMOS background initialization complete!")
+    except Exception as e:
+        print(f"\n⚠️  AMOS background initialization failed: {e}")
+
+
 def main():
     """Start the API server."""
     print("=" * 70)
     print("🚀 AMOS API Server Enhanced")
     print("=" * 70)
-    print("\nInitializing AMOS ecosystem...")
 
-    # Initialize on startup
-    amos = get_amos()
-    if amos:
-        print("✅ AMOS system ready!")
-        print(f"   🧬 Organism: {amos.status.subsystems_active} subsystems")
-        print("   🧠 Brain: 6 laws")
-        print(f"   📚 Knowledge: {amos.status.knowledge_entries:,} entries")
-    else:
-        print("⚠️  AMOS initialization failed - starting in limited mode")
+    # Start AMOS initialization in background so server starts immediately
+    import threading
+    init_thread = threading.Thread(target=_init_amos_background, daemon=True)
+    init_thread.start()
+    print("\n⏳ AMOS initializing in background...")
+    print("   Server will start immediately.")
 
     print("\n📡 API Endpoints:")
     print("   GET  /                    - API info")

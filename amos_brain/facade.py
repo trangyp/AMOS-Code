@@ -756,6 +756,97 @@ class BrainClient:
         except ImportError:
             return {"error": "temporal_bridge not available"}
 
+    def assess_operational_integrity(self) -> dict[str, Any]:
+        """Assess operational architecture integrity."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.assess_operational_integrity()
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
+    def validate_cache_config(
+        self,
+        cache_id: str,
+        strategy: str,
+        invalidation: str,
+        source_of_truth: str | None = None,
+        ttl_seconds: int | None = None,
+        staleness_bound_ms: int | None = None,
+    ) -> dict[str, Any]:
+        """Validate cache configuration (I_cache)."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.validate_cache_config(
+                cache_id, strategy, invalidation, source_of_truth,
+                ttl_seconds, staleness_bound_ms
+            )
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
+    def validate_fallback_topology(
+        self, service_id: str, levels: dict[str, list[str]],
+        triggers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
+        """Validate fallback topology (I_fallback)."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.validate_fallback_topology(service_id, levels, triggers)
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
+    def validate_queue_config(
+        self,
+        queue_id: str,
+        order: str,
+        delivery_guarantee: str,
+        max_retry: int = 3,
+        dlq_enabled: bool = False,
+        deduplication: bool = False,
+        dedup_window_ms: int | None = None,
+    ) -> dict[str, Any]:
+        """Validate queue configuration (I_queue)."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.validate_queue_config(
+                queue_id, order, delivery_guarantee, max_retry,
+                dlq_enabled, deduplication, dedup_window_ms
+            )
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
+    def validate_idempotency(
+        self, operation_id: str, idempotent: bool,
+        key_extractor: str | None = None, storage_backend: str | None = None
+    ) -> dict[str, Any]:
+        """Validate idempotency configuration (I_idempotency)."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.validate_idempotency(
+                operation_id, idempotent, key_extractor, storage_backend
+            )
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
+    def get_operational_insights(self) -> dict[str, Any]:
+        """Get operational architecture insights."""
+        try:
+            from .operational_architecture_bridge import get_operational_architecture_bridge
+
+            bridge = get_operational_architecture_bridge(self._repo_path)
+            return bridge.get_operational_insights()
+        except ImportError:
+            return {"error": "operational_bridge not available"}
+
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()

@@ -10,13 +10,15 @@ Core Principles:
 - Bounded scope (minimal effective change)
 - Verified improvement (measure before/after)
 - Reversible (rollback on regression)
+- Learning (remember and improve from history)
 """
 
-from .contract import EvolutionContract, EvolutionRegistry
 from .detector import EvolutionOpportunityDetector
-from .engine import SelfEvolutionEngine
-from .guard import RegressionGuard, RollbackGuard
+from .contract import EvolutionContract, EvolutionRegistry
 from .planner import SelfPatchPlanner
+from .guard import RegressionGuard, RollbackGuard
+from .engine import SelfEvolutionEngine
+from .memory import EvolutionMemoryStore, LearningEngine, EvolutionMemory
 
 __all__ = [
     "EvolutionOpportunityDetector",
@@ -26,4 +28,7 @@ __all__ = [
     "RegressionGuard",
     "RollbackGuard",
     "SelfEvolutionEngine",
+    "EvolutionMemoryStore",
+    "LearningEngine",
+    "EvolutionMemory",
 ]
