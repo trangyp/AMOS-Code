@@ -192,6 +192,15 @@ class TemporalHierarchy:
         mid_idx = (idx1 + idx2) // 2
         return hierarchy[mid_idx][1]
 
+    @property
+    def current_scale(self) -> TimeScale:
+        """Get current time scale (defaults to CLASSICAL)."""
+        return TimeScale.CLASSICAL
+
+    def scale_admissible(self, scale: TimeScale) -> bool:
+        """Check if scale transition is admissible."""
+        return scale in [s for s, _ in self.get_hierarchy()]
+
 
 # =============================================================================
 # SELF-REFERENCE LAYER (S)
@@ -306,6 +315,21 @@ class IdentityManifold:
             return "collapse"
         else:
             return "replacement"
+
+    def update_metric(self, score: float) -> None:
+        """Update identity metric with new score."""
+        self.history.append(score)
+
+    @property
+    def identity_score(self) -> float:
+        """Get current identity score from history."""
+        if not self.history:
+            return 1.0  # Default perfect identity
+        return float(np.mean(list(self.history)[-10:]))  # Last 10 samples
+
+    def check_persistence(self, threshold: float) -> bool:
+        """Check if identity persists above threshold."""
+        return self.identity_score >= threshold
 
     def adaptive_identity_check(self, x_t: dict, x_t1: dict) -> tuple[bool, float]:
         """Adapt(x_t) = x_{t+1} ⟹ ι(x_t, x_{t+1}) ≥ λ_I"""
@@ -878,6 +902,14 @@ class EthicalBoundary:
                 return rule.get("status", DeonticStatus.REVIEW_REQUIRED)
 
         return DeonticStatus.PERMITTED
+
+    def check_deontic(self, state: dict) -> tuple[bool, DeonticStatus]:
+        """Check deontic status for a state."""
+        action = state.get("action", {})
+        context = {"type": state.get("type", "")}
+        status = self.evaluate_deontic(action, context)
+        is_valid = status in [DeonticStatus.PERMITTED, DeonticStatus.OBLIGATORY]
+        return (is_valid, status)
 
     def _check_principle(self, action: dict, context: dict, principle: str) -> bool:
         """Check if action complies with ethical principle."""

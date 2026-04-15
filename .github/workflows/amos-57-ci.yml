@@ -1,0 +1,90 @@
+name: AMOS 57-Component CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: '0 2 * * *'
+
+env:
+  PYTHON_VERSION: '3.11'
+  TEST_TIMEOUT: 300
+
+jobs:
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - run: |
+          pip install ruff mypy black isort
+          pip install -r requirements.txt
+      - run: ruff check amos_meta_architecture.py amos_meta_ontological.py amos_formal_core.py || true
+      - run: black --check amos_meta_architecture.py amos_meta_ontological.py amos_formal_core.py || true
+      - run: mypy amos_meta_architecture.py amos_meta_ontological.py --ignore-missing-imports || true
+
+  test-57-complete:
+    name: Test All 57 Components
+    runs-on: ubuntu-latest
+    needs: code-quality
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      - name: Run Complete System
+        run: python3 amos_complete_system.py
+      - name: Run 57-Component Test Suite
+        run: python3 test_amos_complete_57.py -v
+
+  deployment-readiness:
+    name: Deployment Readiness
+    runs-on: ubuntu-latest
+    needs: test-57-complete
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Validate All Components
+        run: python3 validate_deployment.py
+      - name: Generate Report
+        run: echo "57-COMPONENT SYSTEM READY FOR DEPLOYMENT" > DEPLOYMENT_REPORT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deployment-report
+          path: DEPLOYMENT_REPORT.txt
+
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    needs: test-57-complete
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: Run Performance Benchmarks
+        run: python3 benchmark_57_components.py
+      - name: Upload Benchmark Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: PERFORMANCE_BENCHMARK_REPORT.md

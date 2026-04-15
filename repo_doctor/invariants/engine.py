@@ -13,6 +13,15 @@ from .api import APIInvariant
 from .artifact import ArtifactInvariant
 from .authorization import AuthorizationInvariant
 from .base import InvariantResult
+from .distributed_physics import (
+    AdaptiveStabilityInvariant,
+    CompensationInvariant,
+    EntropyInvariant,
+    IrreversibilityInvariant,
+    PolicyPrecedenceInvariant,
+    QuiescenceInvariant,
+    TruthArbitrationInvariant,
+)
 from .entrypoints import EntrypointInvariant
 from .environment import EnvironmentInvariant
 from .history import HistoryInvariant
@@ -58,6 +67,14 @@ class InvariantEngine:
         AuthorizationInvariant,
         EnvironmentInvariant,
         ArtifactInvariant,
+        # Phase 5 - Layer 18 Distributed Systems Physics (7)
+        TruthArbitrationInvariant,
+        IrreversibilityInvariant,
+        CompensationInvariant,
+        QuiescenceInvariant,
+        PolicyPrecedenceInvariant,
+        AdaptiveStabilityInvariant,
+        EntropyInvariant,
     ]
 
     def __init__(self, repo_path: str | Path):

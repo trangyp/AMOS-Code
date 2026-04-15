@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initialize AMOS Brain Registries for Orchestrator
+"""Initialize AMOS Brain Registries for Orchestrator.
 
 This script creates the initial registry files required by the
 AMOS_MASTER_ORCHESTRATOR to function properly.
@@ -14,7 +14,7 @@ Registries initialized:
 
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Registry paths
@@ -22,7 +22,7 @@ REGISTRY_DIR = Path("_AMOS_BRAIN")
 REGISTRIES = {
     "system_registry.json": {
         "version": "14.0.0",
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "subsystems": {
             "01_BRAIN": {
                 "name": "Cognitive Brain",
@@ -68,18 +68,13 @@ REGISTRIES = {
             },
         },
         "primary_loop": [
-            "01_BRAIN",
-            "02_SENSES",
-            "03_IMMUNE",
-            "04_BLOOD",
-            "05_NERVES",
-            "06_MUSCLE",
-            "07_METABOLISM",
+            "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD",
+            "05_NERVES", "06_MUSCLE", "07_METABOLISM"
         ],
     },
     "agent_registry.json": {
         "version": "14.0.0",
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "agents": {
             "cognitive_agent": {
                 "type": "cognitive",
@@ -100,36 +95,47 @@ REGISTRIES = {
     },
     "engine_registry.json": {
         "version": "14.0.0",
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "engines": {
-            "coherence": {"enabled": True, "config": {"validation_level": "strict"}},
+            "coherence": {
+                "enabled": True,
+                "config": {"validation_level": "strict"}
+            },
             "axiom": {"enabled": True, "config": {"check_all": True}},
             "knowledge": {"enabled": True, "config": {"auto_load": True}},
         },
     },
     "world_state.json": {
         "version": "14.0.0",
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "global_state": {
             "status": "initialized",
             "cycle_count": 0,
-            "last_update": datetime.utcnow().isoformat(),
+            "last_update": datetime.now(timezone.utc).isoformat(),
         },
-        "context": {"environment": "production", "domain": "neurosyncai.tech", "version": "14.0.0"},
+        "context": {
+            "environment": "production",
+            "domain": "neurosyncai.tech",
+            "version": "14.0.0"
+        },
     },
     "operator_profile.json": {
         "version": "14.0.0",
-        "created": datetime.utcnow().isoformat(),
+        "created": datetime.now(timezone.utc).isoformat(),
         "operator": {
             "name": "System Operator",
             "role": "administrator",
-            "preferences": {"auto_start": True, "notification_level": "all", "default_cycles": 1},
+            "preferences": {
+                "auto_start": True,
+                "notification_level": "all",
+                "default_cycles": 1
+            },
         },
     },
 }
 
 
-def init_registries():
+def init_registries() -> bool:
     """Initialize all registry files."""
     print("Initializing AMOS Brain Registries...")
     print("=" * 60)

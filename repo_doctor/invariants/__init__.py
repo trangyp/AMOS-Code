@@ -109,6 +109,17 @@ from .status import StatusInvariant
 from .tests import TestsInvariant
 from .types import TypeInvariant
 
+# Import Phase 5 Distributed Systems Physics invariants (7)
+from .distributed_physics import (
+    AdaptiveStabilityInvariant,
+    CompensationInvariant,
+    EntropyInvariant,
+    IrreversibilityInvariant,
+    PolicyPrecedenceInvariant,
+    QuiescenceInvariant,
+    TruthArbitrationInvariant,
+)
+
 __all__ = [
     # Base
     "Invariant",
@@ -185,4 +196,12 @@ __all__ = [
     "DisasterRecoveryInvariant",
     "GracefulDegradationInvariant",
     "InteroperabilityInvariant",
+    # Phase 5 Distributed Systems Physics invariants (7)
+    "TruthArbitrationInvariant",
+    "IrreversibilityInvariant",
+    "CompensationInvariant",
+    "QuiescenceInvariant",
+    "PolicyPrecedenceInvariant",
+    "AdaptiveStabilityInvariant",
+    "EntropyInvariant",
 ]

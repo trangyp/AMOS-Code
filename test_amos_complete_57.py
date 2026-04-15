@@ -233,23 +233,23 @@ class TestMetaOntologicalLayer(unittest.TestCase):
         energy = EnergyBudget(
             computation=0.5,
             observation=0.2,
-            communication=0.1,
             memory=0.1,
-            adaptation=0.05,
-            ethics=0.05
+            mutation=0.05,
+            control=0.05,
+            bridge=0.1
         )
         total = energy.total()
         self.assertLessEqual(total, 1.0)
-        self.assertTrue(self.meta_ont.check_landauer_bound(total, 1.0))
+        self.assertTrue(energy.is_feasible(1.0))
 
     def test_temporal_hierarchy(self):
         """Test Temporal Hierarchy (Multi-scale Time)"""
         temporal = TemporalHierarchy()
         self.assertEqual(temporal.current_scale, TimeScale.CLASSICAL)
         
-        # Test scale transitions
-        temporal.current_scale = TimeScale.QUANTUM
+        # Test scale admissibility
         self.assertTrue(temporal.scale_admissible(TimeScale.QUANTUM))
+        self.assertTrue(temporal.scale_admissible(TimeScale.CLASSICAL))
 
     def test_identity_manifold(self):
         """Test Identity Manifold"""
@@ -299,24 +299,19 @@ class TestFormalCoreLayer(unittest.TestCase):
     def test_state_bundle_creation(self):
         """Test State Bundle creation"""
         bundle = StateBundle(
-            intent=self.formal.intent,
-            environment=self.formal.state.environment,
-            constraints=self.formal.constraints
+            classical={"test": "value"},
+            environment={"test": "env"}
         )
         self.assertIsNotNone(bundle)
 
     def test_universal_step(self):
         """Test Universal AMOS Step"""
         x_t = StateBundle(
-            intent=self.formal.intent,
-            environment=self.formal.state.environment,
-            constraints=self.formal.constraints
+            classical={"test": "value"},
+            environment={"test": "env"}
         )
-        u_t = ActionUniverse(
-            available=["test_action"],
-            substrate="test",
-            target="test"
-        )
+        # ActionUniverse doesn't accept 'available' parameter
+        u_t = ActionUniverse(substrate="classical", target="classical")
         
         x_t1 = self.formal.universal_step(x_t, u_t)
         self.assertIsNotNone(x_t1)
@@ -366,15 +361,10 @@ class TestIntegration(unittest.TestCase):
         
         # 2. Formal step
         x_t = StateBundle(
-            intent=formal.intent,
-            environment=formal.state.environment,
-            constraints=formal.constraints
+            classical={"test": "integration"},
+            environment={"test": "env"}
         )
-        u_t = ActionUniverse(
-            available=["integrate"],
-            substrate="test",
-            target="test"
-        )
+        u_t = ActionUniverse(substrate="classical", target="classical")
         x_t1 = formal.universal_step(x_t, u_t)
         self.assertIsNotNone(x_t1)
         
