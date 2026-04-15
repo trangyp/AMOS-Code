@@ -2,7 +2,7 @@
 // Usage: Include in HTML and connect to ws://neurosyncai.tech/ws
 
 class AMOSWebSocketClient {
-    constructor(url = 'ws://neurosyncai.tech:8765') {
+    constructor(url = 'ws://neurosyncai.tech:8766') {
         this.url = url;
         this.ws = null;
         this.onStep = null;

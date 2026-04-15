@@ -16,7 +16,7 @@ import websockets
 class AMOSWebSocketClient:
     """Python WebSocket client for AMOS Brain."""
 
-    def __init__(self, url="ws://neurosyncai.tech:8765"):
+    def __init__(self, url="ws://neurosyncai.tech:8766"):
         self.url = url
 
     async def think(self, query, domain="general"):
@@ -77,7 +77,7 @@ def main():
     parser.add_argument("input", help="Query or question")
     parser.add_argument("--domain", default="general", help="Domain for think")
     parser.add_argument("--options", nargs="+", help="Options for decide")
-    parser.add_argument("--url", default="ws://neurosyncai.tech:8765", help="WebSocket URL")
+    parser.add_argument("--url", default="ws://neurosyncai.tech:8766", help="WebSocket URL")
 
     args = parser.parse_args()
 

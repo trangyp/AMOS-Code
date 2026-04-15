@@ -254,7 +254,7 @@ function animateLevels() {
 function initWebSocket() {
     const wsUrl = window.location.protocol === 'https:'
         ? `wss://${window.location.host}/ws`
-        : `ws://${window.location.host}:8765`;
+        : `ws://${window.location.host}:8766`;
 
     const ws = new WebSocket(wsUrl);
 

@@ -130,8 +130,8 @@ async def stream_decide(websocket, data):
 
 async def main():
     """Start WebSocket server."""
-    async with websockets.serve(handler, "0.0.0.0", 8765):
-        logger.info("WebSocket server started on ws://0.0.0.0:8765")
+    async with websockets.serve(handler, "0.0.0.0", 8766):
+        logger.info("WebSocket server started on ws://0.0.0.0:8766")
         await asyncio.Future()  # Run forever
 
 
