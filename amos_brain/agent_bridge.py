@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from functools import lru_cache
 from typing import Any, Callable
 
 from .laws import GlobalLaws, UBILaws
@@ -284,13 +285,19 @@ Execute with AMOS cognitive discipline.
                 logging.getLogger(__name__).warning(f"Hook failed for event '{event}': {e}")
 
 
-# Global bridge instance
+# Global bridge instance with caching
 _bridge_instance: AMOSAgentBridge | None = None
 
 
+@lru_cache(maxsize=1)
+def _get_agent_bridge_cached() -> AMOSAgentBridge:
+    """Cached agent bridge instance."""
+    return AMOSAgentBridge()
+
+
 def get_agent_bridge() -> AMOSAgentBridge:
-    """Get or create global agent bridge instance."""
+    """Get or create global agent bridge instance (singleton)."""
     global _bridge_instance
     if _bridge_instance is None:
-        _bridge_instance = AMOSAgentBridge()
+        _bridge_instance = _get_agent_bridge_cached()
     return _bridge_instance

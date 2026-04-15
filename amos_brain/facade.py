@@ -686,6 +686,76 @@ class BrainClient:
         except ImportError:
             return {"error": "constitutional_bridge not available"}
 
+    def assess_temporal_integrity(self) -> dict[str, Any]:
+        """Assess temporal architecture integrity."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.assess_temporal_integrity()
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
+    def validate_partial_order(
+        self, order_id: str, operations: list[dict[str, Any]],
+        execution_sequence: list[str]
+    ) -> dict[str, Any]:
+        """Validate execution respects partial order (I_partial_order)."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.validate_partial_order(order_id, operations, execution_sequence)
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
+    def validate_migration_order(
+        self, migrations: list[str], execution_order: list[str]
+    ) -> dict[str, Any]:
+        """Validate migration executes before deploy (I_partial_order)."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.validate_migration_order(migrations, execution_order)
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
+    def check_clock_consistency(self, components: list[dict[str, Any]]) -> dict[str, Any]:
+        """Check clock semantics consistency across components (I_clock)."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.check_clock_consistency(components)
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
+    def validate_consistency_model(
+        self, domain: str, declared_model: str,
+        actual_model: str | None = None, convergence_bound_ms: float | None = None
+    ) -> dict[str, Any]:
+        """Validate consistency model declaration (I_consistency, I_eventuality)."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.validate_consistency_model(
+                domain, declared_model, actual_model, convergence_bound_ms
+            )
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
+    def get_temporal_insights(self) -> dict[str, Any]:
+        """Get temporal architecture insights."""
+        try:
+            from .temporal_architecture_bridge import get_temporal_architecture_bridge
+
+            bridge = get_temporal_architecture_bridge(self._repo_path)
+            return bridge.get_temporal_insights()
+        except ImportError:
+            return {"error": "temporal_bridge not available"}
+
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()
