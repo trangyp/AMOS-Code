@@ -1,6 +1,7 @@
 """Threaded sub-agent system for spawning nested agent loops."""
 from __future__ import annotations
 
+import logging
 import os
 import queue
 import subprocess
@@ -10,6 +11,8 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 # ── Agent definition ───────────────────────────────────────────────────────
 
@@ -167,7 +170,7 @@ def load_agent_definitions() -> dict[str, AgentDefinition]:
                 d = _parse_agent_md(p, source="user")
                 defs[d.name] = d
             except Exception:
-                pass
+                logger.debug(f"Failed to parse user agent: {p}")
 
     # Project-level (overrides user)
     proj_dir = Path.cwd() / ".clawspring" / "agents"
@@ -177,7 +180,7 @@ def load_agent_definitions() -> dict[str, AgentDefinition]:
                 d = _parse_agent_md(p, source="project")
                 defs[d.name] = d
             except Exception:
-                pass
+                logger.debug(f"Failed to parse project agent: {p}")
 
     return defs
 
@@ -257,7 +260,7 @@ def _remove_worktree(wt_path: str, branch: str, base_dir: str) -> None:
             capture_output=True,
         )
     except Exception:
-        pass
+        logger.debug(f"Failed to prune worktree: {wt_path}")
     try:
         subprocess.run(
             ["git", "branch", "-D", branch],
@@ -265,7 +268,7 @@ def _remove_worktree(wt_path: str, branch: str, base_dir: str) -> None:
             capture_output=True,
         )
     except Exception:
-        pass
+        logger.debug(f"Failed to delete branch: {branch}")
 
 
 # ── Internal helpers ───────────────────────────────────────────────────────
@@ -451,7 +454,7 @@ class SubAgentManager:
             try:
                 task._future.result(timeout=timeout)
             except Exception:
-                pass
+                logger.debug("Task future result had exception (expected)")
         return task
 
     def get_result(self, task_id: str) -> Optional[str]:
