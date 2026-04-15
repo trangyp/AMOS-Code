@@ -52,17 +52,23 @@ class StateDimension(Enum):
     PACKAGING = "pk"       # H_Pk - packaging / build / distribution integrity
     RUNTIME = "rt"         # H_Rt - runtime behavior integrity
     PERSISTENCE = "ps"     # H_Ps - persistence / schema / state integrity
+    BUILD = "b"            # H_B - build integrity
     
     # Operational surfaces (4)
     STATUS = "st"          # H_St - status-truth integrity
     TEST = "t"             # H_T - test / oracle integrity
     DOCS = "d"             # H_D - docs / demos / tutorials integrity
     SECURITY = "sec"       # H_Sec - security integrity
+    CONFIG = "cfg"         # H_Cfg - configuration integrity
     
     # Temporal and environment surfaces (3)
     HISTORY = "h"          # H_H - history / temporal / drift integrity
     GENERATED_CODE = "gc"  # H_Gc - generated code / codegen integrity
     ENVIRONMENT = "env"    # H_Env - environment compatibility integrity
+    
+    # Architectural integrity
+    ARCHITECTURE = "arch"  # αArch(t) - architectural integrity
+    HIDDEN_STATE = "hidden"  # αHidden(t) - hidden state integrity
 
 
 STATE_DIMENSIONS = list(StateDimension)

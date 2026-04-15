@@ -26,7 +26,7 @@ class StateDimension(Enum):
     # Original 12 dimensions
     SYNTAX = "syntax"  # |S⟩ parse integrity
     IMPORT = "import"  # |I⟩ import resolution (singular form for observables)
-    IMPORTS = "imports"  # |I⟩ import resolution (plural form for compatibility)
+    IMPORTS = "imports"  # |I⟩ import resolution (plural compat)
     TYPE = "type"  # |T⟩ type/signature integrity (singular)
     TYPES = "types"  # |T⟩ type/signature integrity (plural)
     API = "api"  # |A⟩ public API contract integrity
@@ -41,8 +41,16 @@ class StateDimension(Enum):
 
     # Temporal and environment surfaces (3)
     HISTORY = "history"  # |H⟩ history / temporal / drift integrity
-    GENERATED_CODE = "generated_code"  # |Gc⟩ generated code / codegen integrity
+    GENERATED_CODE = "generated_code"  # |Gc⟩ codegen integrity
     ENVIRONMENT = "environment"  # |Env⟩ environment compatibility integrity
+
+    # Legacy compatibility dimensions
+    BUILD = "build"  # |B⟩ build integrity (legacy compat)
+    CONFIG = "config"  # |Cfg⟩ config integrity (legacy compat)
+
+    # Architectural invariants dimensions
+    ARCHITECTURE = "architecture"  # |Arch⟩ architectural integrity
+    HIDDEN_STATE = "hidden_state"  # |Hs⟩ hidden state integrity
 
     # Additional dimensions for future expansion
     CODE_QUALITY = "code_quality"  # |C⟩ code quality
@@ -51,9 +59,7 @@ class StateDimension(Enum):
 
 
 class StateBasis:
-    """
-    Basis state management for repository Hilbert space.
-    """
+    """Basis state management for repository Hilbert space."""
 
     # Severity weights for Hamiltonian (λk) per Ω∞∞∞∞∞
     WEIGHTS: dict[StateDimension, float] = {
@@ -72,6 +78,10 @@ class StateBasis:
         StateDimension.HISTORY: 55.0,
         StateDimension.GENERATED_CODE: 60.0,
         StateDimension.ENVIRONMENT: 45.0,
+        StateDimension.BUILD: 85.0,
+        StateDimension.CONFIG: 70.0,
+        StateDimension.ARCHITECTURE: 85.0,
+        StateDimension.HIDDEN_STATE: 75.0,
     }
 
     # Collapse thresholds (θk) per Ω∞∞∞∞∞
@@ -91,6 +101,9 @@ class StateBasis:
         StateDimension.HISTORY: 0.60,
         StateDimension.GENERATED_CODE: 0.70,
         StateDimension.ENVIRONMENT: 0.65,
+        StateDimension.BUILD: 0.85,
+        StateDimension.ARCHITECTURE: 0.85,
+        StateDimension.HIDDEN_STATE: 0.80,
     }
 
     @classmethod
