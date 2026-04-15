@@ -933,6 +933,207 @@ class BrainClient:
         except ImportError:
             return {"error": "resilience_bridge not available"}
 
+    def assess_unified_architecture(self) -> dict[str, Any]:
+        """Assess unified architecture across all 19 invariants."""
+        try:
+            from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
+
+            bridge = get_unified_orchestrator_bridge(self._repo_path)
+            return bridge.assess_unified_architecture()
+        except ImportError:
+            return {"error": "unified_orchestrator not available"}
+
+    def get_unified_architectural_decision(self) -> dict[str, Any]:
+        """Get synthesized decision from all invariant domains."""
+        try:
+            from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
+
+            bridge = get_unified_orchestrator_bridge(self._repo_path)
+            return bridge.get_unified_decision()
+        except ImportError:
+            return {"error": "unified_orchestrator not available"}
+
+    def get_architectural_health_dashboard(self) -> dict[str, Any]:
+        """Get comprehensive architectural health across all domains."""
+        try:
+            from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
+
+            bridge = get_unified_orchestrator_bridge(self._repo_path)
+            return bridge.get_architectural_health_dashboard()
+        except ImportError:
+            return {"error": "unified_orchestrator not available"}
+
+    def get_cross_domain_correlations(self) -> dict[str, Any]:
+        """Get cross-domain invariant correlations."""
+        try:
+            from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
+
+            bridge = get_unified_orchestrator_bridge(self._repo_path)
+            return bridge.get_cross_domain_correlations()
+        except ImportError:
+            return {"error": "unified_orchestrator not available"}
+
+    def get_unified_architecture_insights(self) -> dict[str, Any]:
+        """Get unified insights across all architectural domains."""
+        try:
+            from .unified_orchestrator_bridge import get_unified_orchestrator_bridge
+
+            bridge = get_unified_orchestrator_bridge(self._repo_path)
+            return bridge.get_unified_insights()
+        except ImportError:
+            return {"error": "unified_orchestrator not available"}
+
+    def capture_architecture_state(self, components: list[dict[str, Any]],
+                                    dependencies: list[dict[str, Any]],
+                                    interfaces: list[dict[str, Any]],
+                                    invariant_status: dict[str, bool]) -> dict[str, Any]:
+        """Capture architecture state into digital twin."""
+        try:
+            from .digital_twin_bridge import get_digital_twin_bridge
+
+            bridge = get_digital_twin_bridge(self._repo_path)
+            return bridge.capture_architecture_state(components, dependencies,
+                                                     interfaces, invariant_status)
+        except ImportError:
+            return {"error": "digital_twin not available"}
+
+    def simulate_architectural_change(self, change_type: str, target: str,
+                                      description: str, details: dict[str, Any]) -> dict[str, Any]:
+        """Simulate impact of architectural change."""
+        try:
+            from .digital_twin_bridge import get_digital_twin_bridge
+
+            bridge = get_digital_twin_bridge(self._repo_path)
+            return bridge.simulate_architectural_change(change_type, target, description, details)
+        except ImportError:
+            return {"error": "digital_twin not available"}
+
+    def forecast_invariant_violations(self, steps: int = 5) -> dict[str, Any]:
+        """Forecast future invariant violations."""
+        try:
+            from .digital_twin_bridge import get_digital_twin_bridge
+
+            bridge = get_digital_twin_bridge(self._repo_path)
+            return bridge.forecast_invariant_violations(steps)
+        except ImportError:
+            return {"error": "digital_twin not available"}
+
+    def evaluate_what_if_scenario(self, changes: list[dict[str, Any]]) -> dict[str, Any]:
+        """Evaluate what-if scenario with multiple changes."""
+        try:
+            from .digital_twin_bridge import get_digital_twin_bridge
+
+            bridge = get_digital_twin_bridge(self._repo_path)
+            return bridge.evaluate_what_if_scenario(changes)
+        except ImportError:
+            return {"error": "digital_twin not available"}
+
+    def get_digital_twin_status(self) -> dict[str, Any]:
+        """Get digital twin status."""
+        try:
+            from .digital_twin_bridge import get_digital_twin_bridge
+
+            bridge = get_digital_twin_bridge(self._repo_path)
+            return bridge.get_twin_status()
+        except ImportError:
+            return {"error": "digital_twin not available"}
+
+    # ===================================================================
+    # Layer 18: Distributed Systems Physics Engine
+    # ===================================================================
+
+    def assess_truth_arbitration(self, domains: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess truth arbitration integrity across domains."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_truth_arbitration(domains)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def assess_irreversibility(self, transitions: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess irreversibility classification and compensation."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_irreversibility(transitions)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def assess_quiescence(self, subsystems: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess quiescence integrity for safe stopping."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_quiescence(subsystems)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def assess_policy_precedence(self, policy_layers: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess policy precedence hierarchy."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_policy_precedence(policy_layers)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def assess_adaptive_bounds(self, loops: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess adaptive behavior boundedness."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_adaptive_bounds(loops)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def assess_architectural_entropy(self, measurements: list[dict[str, Any]]) -> dict[str, Any]:
+        """Assess architectural entropy boundedness."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.assess_entropy(measurements)
+        except ImportError:
+            return {"error": "distributed_physics not available", "satisfied": False}
+
+    def comprehensive_distributed_physics_assessment(self, context: dict[str, Any]) -> dict[str, Any]:
+        """Run comprehensive distributed systems physics assessment."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            result = bridge.comprehensive_assessment(context)
+
+            return {
+                "layer": 18,
+                "assessment_type": "distributed_physics",
+                "engine_id": bridge.bridge_id,
+                "result": result,
+            }
+        except ImportError:
+            return {
+                "error": "distributed_physics not available",
+                "layer": 18,
+                "assessment_type": "distributed_physics",
+                "health": 0.0,
+            }
+
+    def get_distributed_physics_status(self) -> dict[str, Any]:
+        """Get Layer 18 distributed physics engine status."""
+        try:
+            from .distributed_physics_bridge import get_distributed_physics_bridge
+
+            bridge = get_distributed_physics_bridge()
+            return bridge.get_status()
+        except ImportError:
+            return {"error": "distributed_physics not available", "layer": 18}
+
     def get_status(self) -> dict[str, Any]:
         """Get complete brain status."""
         engines = self.brain.list_engines()

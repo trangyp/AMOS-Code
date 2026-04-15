@@ -84,7 +84,7 @@ def demo_learning_engine():
         if procedure:
             print(f"    ✓ Extracted: {procedure.name}")
             print(f"    ✓ Confidence: {procedure.confidence:.2f}")
-            print(f"    ✓ Steps: {len(procedure.steps)}")
+            print(f"    ✓ Steps: {len(procedure.execution_steps)}")
 
     # Show what was learned
     print("\n[3] LEARNING STATE AFTER ACQUISITION")

@@ -1,122 +1,63 @@
-# AMOS Brain + ClawSpring Docker Compose
-# Full stack with optional services
+# AMOS v3.0.0 - Full Stack Docker Compose
+# React Dashboard + FastAPI Backend
+# 
+# Creator: Trang Phan
+# Quick Start: docker-compose up -d
 
 version: '3.8'
 
 services:
-  # AMOS Brain API Server (for neurosyncai.tech)
-  amos-api:
+  # AMOS Dashboard - React Frontend
+  amos-dashboard:
     build:
-      context: .
+      context: ./dashboard
       dockerfile: Dockerfile
-    image: amos-brain:latest
-    container_name: amos-api
+    image: amos-dashboard:latest
+    container_name: amos-dashboard
     ports:
-      - "5000:5000"
+      - "3000:80"
     environment:
-      - PYTHONUNBUFFERED=1
-      - AMOS_BRAIN_PATH=/app/_AMOS_BRAIN
-      - PORT=5000
-    env_file:
-      - .env
-    volumes:
-      - amos-memory:/app/memory
-      - amos-logs:/app/logs
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8000
     networks:
       - amos-network
     restart: unless-stopped
+    depends_on:
+      amos-backend:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
 
-  # MCP Server (optional - for external IDE integration)
-  amos-mcp:
+  # AMOS Backend - FastAPI API
+  amos-backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
-    image: amos-brain:latest
-    container_name: amos-mcp-server
-    command: ["python3", "amos_mcp_server.py", "--transport", "sse", "--port", "8080"]
+    image: amos-backend:latest
+    container_name: amos-backend
     ports:
-      - "8081:8080"
+      - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
-    volumes:
-      - amos-memory:/app/memory
-    networks:
-      - amos-network
-    depends_on:
-      amos-api:
-        condition: service_healthy
-
-  # CLI Interface (interactive mode)
-  amos-cli:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: amos-brain:latest
-    container_name: amos-cli
-    stdin_open: true
-    tty: true
-    command: ["bash"]
-    volumes:
-      - amos-memory:/app/memory
-      - amos-logs:/app/logs
-      - ./:/app/workspace
-    networks:
-      - amos-network
-    depends_on:
-      amos-api:
-        condition: service_healthy
-
-  # WebSocket Server for real-time streaming
-  amos-websocket:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: amos-brain:latest
-    container_name: amos-websocket
-    command: ["python3", "websocket_server.py"]
-    ports:
-      - "8765:8765"
-    environment:
-      - PYTHONUNBUFFERED=1
-    volumes:
-      - amos-memory:/app/memory
+      - PYTHONDONTWRITEBYTECODE=1
     networks:
       - amos-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
-  # Admin Dashboard
-  admin-dashboard:
-    build:
-      context: ./admin-dashboard
-      dockerfile: Dockerfile
-    container_name: admin-dashboard
-    ports:
-      - "8080:80"
-    networks:
-      - amos-network
-    restart: unless-stopped
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - amos-api
-      - amos-websocket
-      - admin-dashboard
-    networks:
-      - amos-network
-    restart: unless-stopped
+  # Optional: Add more services as needed
+  # - Database (PostgreSQL)
+  # - Cache (Redis)
+  # - Queue (RabbitMQ)
 
 volumes:
   amos-memory:

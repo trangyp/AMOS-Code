@@ -23,6 +23,7 @@ from .detector import EvolutionOpportunityDetector, StructuralHotspot
 from .guard import RegressionGuard, RollbackGuard
 from .planner import SelfPatchPlanner
 from .memory import EvolutionMemoryStore, LearningEngine
+from .audit import EvolutionAuditor, GovernanceController, AuditAction
 
 
 @dataclass
@@ -51,8 +52,9 @@ class SelfEvolutionEngine:
         report = engine.evolve()
     """
 
-    def __init__(self, amos_root: str, memory_path: str | None = None) -> None:
-        """Initialize self-evolution engine with memory and learning."""
+    def __init__(self, amos_root: str, memory_path: str | None = None,
+                 audit_path: str | None = None) -> None:
+        """Initialize self-evolution engine with memory, learning and audit."""
         self.amos_root = Path(amos_root)
         self.detector = EvolutionOpportunityDetector(amos_root)
         self.planner = SelfPatchPlanner(amos_root)
@@ -61,6 +63,8 @@ class SelfEvolutionEngine:
         self.registry = EvolutionRegistry()
         self.memory = EvolutionMemoryStore(memory_path)
         self.learning = LearningEngine(self.memory)
+        self.auditor = EvolutionAuditor(audit_path)
+        self.governance = GovernanceController(self.auditor)
 
     def evolve(self, max_evolutions: int = 1) -> EvolutionReport:
         """
@@ -82,13 +86,20 @@ class SelfEvolutionEngine:
 
         # Phase 2: Create contracts with learning predictions
         contracts = self._create_contracts(hotspots[:max_evolutions])
-        
-        # Add learning predictions to each contract
+
+        # Add learning predictions and audit to each contract
         for contract in contracts:
             prediction = self.learning.predict_success(contract)
             contract.predicted_success = prediction
             recommendations = self.learning.suggest_optimization(contract)
             contract.learning_recommendations = recommendations
+            # Record contract creation
+            self.auditor.record(
+                AuditAction.CONTRACTED,
+                contract.evolution_id,
+                {"pattern": contract.owner, "files": len(contract.target_files)},
+                f"Evolution contract created for {contract.problem_pattern[:50]}...",
+            )
 
         # Phase 3-6: Plan, verify, apply/rollback for each contract
         for contract in contracts:
@@ -154,6 +165,12 @@ class SelfEvolutionEngine:
             detail["status"] = "rejected"
             detail["reason"] = "Pre-verification failed"
             contract.status = EvolutionStatus.REJECTED
+            self.auditor.record(
+                AuditAction.REJECTED,
+                contract.evolution_id,
+                {"reason": "pre_verification_failed"},
+                "System health check failed before patching",
+            )
             return detail
 
         # Step 2: Plan patches
@@ -190,20 +207,36 @@ class SelfEvolutionEngine:
             self.registry.rollback(contract.evolution_id, "Verification failed")
             detail["status"] = "rolled_back"
             detail["reason"] = verification.message
-            # Record failure to memory
-            self.memory.record(contract, patches_applied=0, lessons="Verification failed - rollback executed")
+            # Record to memory and audit
+            self.memory.record(contract, patches_applied=0,
+                               lessons="Verification failed - rollback executed")
+            self.auditor.record(
+                AuditAction.ROLLED_BACK,
+                contract.evolution_id,
+                {"reason": verification.message},
+                "Evolution rolled back due to verification failure",
+            )
         else:
-            self.registry.complete(contract.evolution_id, f"Applied {len(patches)} patches")
+            self.registry.complete(contract.evolution_id,
+                                   f"Applied {len(patches)} patches")
             detail["status"] = "completed"
             detail["actual_improvement"] = f"Planned {len(patches)} improvements"
-            # Record success to memory
-            self.memory.record(contract, patches_applied=len(patches), lessons="Successfully applied patches")
+            # Record to memory and audit
+            self.memory.record(contract, patches_applied=len(patches),
+                               lessons="Successfully applied patches")
+            self.auditor.record(
+                AuditAction.COMPLETED,
+                contract.evolution_id,
+                {"patches_applied": len(patches)},
+                "Evolution completed successfully",
+            )
 
         return detail
 
     def get_status(self) -> dict[str, Any]:
-        """Get current evolution status including memory."""
+        """Get current evolution status including memory and audit."""
         memory_stats = self.memory.get_statistics()
+        audit_stats = self.auditor.get_statistics()
         return {
             "active_contracts": len(self.registry.get_active()),
             "completed_evolutions": len(self.registry.completed),
@@ -213,4 +246,6 @@ class SelfEvolutionEngine:
             "learned_patterns": len(self.memory.patterns),
             "total_memories": memory_stats.get("total_evolutions", 0),
             "memory_success_rate": memory_stats.get("success_rate", 0.0),
+            "audit_entries": audit_stats.get("total_entries", 0),
+            "audit_integrity": audit_stats.get("chain_integrity", "unknown"),
         }

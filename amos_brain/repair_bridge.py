@@ -69,8 +69,8 @@ class SynthesizedRepair:
     line_number: int | None = None
 
     # Repair details
-    repair_type: str  # "add", "remove", "modify", "move", "create"
-    description: str
+    repair_type: str = "modify"  # "add", "remove", "modify", "move", "create"
+    description: str = ""
     original_code: str | None = None
     suggested_code: str | None = None
     diff_preview: str | None = None

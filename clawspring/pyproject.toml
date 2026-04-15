@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "clawspring"
-version = "3.06.0-amos-v2.8"
-description = "ClawSpring + AMOS Ecosystem v2.8: AI Coding Assistant with Cognitive Architecture, Deep Integration, and Ethics"
+name = "amos"
+version = "3.0.0"
+description = "AMOS - Absolute Meta Operating System by Trang Phan: The Deterministic Cognitive OS with 14 Layers, 6 Global Laws, and Full Transparency"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -24,7 +24,8 @@ vision = ["Pillow"]
 api = ["fastapi>=0.100.0", "uvicorn>=0.23.0", "pydantic>=2.0.0"]
 
 [project.scripts]
-clawspring = "clawspring:main"
+amos = "amos:main"
+clawspring = "amos:main"
 amos = "amos_brain.__main__:main"
 amos-validate = "amos_brain.system_validator:validate_system"
 amos-unified = "amos_brain.unified_cli:main"
@@ -33,7 +34,7 @@ amos-test = "amos_brain.test_integration_suite:main"
 
 [tool.setuptools]
 py-modules = [
-    "clawspring",
+    "amos",
     "agent",
     "cloudsave",
     "compaction",

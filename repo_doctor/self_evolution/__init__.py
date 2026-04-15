@@ -19,6 +19,7 @@ from .planner import SelfPatchPlanner
 from .guard import RegressionGuard, RollbackGuard
 from .engine import SelfEvolutionEngine
 from .memory import EvolutionMemoryStore, LearningEngine, EvolutionMemory
+from .audit import EvolutionAuditor, GovernanceController, AuditEntry, AuditAction
 
 __all__ = [
     "EvolutionOpportunityDetector",
@@ -31,4 +32,8 @@ __all__ = [
     "EvolutionMemoryStore",
     "LearningEngine",
     "EvolutionMemory",
+    "EvolutionAuditor",
+    "GovernanceController",
+    "AuditEntry",
+    "AuditAction",
 ]

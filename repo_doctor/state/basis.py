@@ -539,4 +539,10 @@ class StateBasis:
             StateDimension.CUTOVER_INTEGRITY,
             StateDimension.CONSTITUTIONAL_INTEGRITY,
             StateDimension.HOTFIX_TOPOLOGY,
+            # Distributed systems physics dimensions (Phase 5 - Layer 18)
+            StateDimension.TRUTH_ARBITRATION,
+            StateDimension.IRREVERSIBILITY_MANAGEMENT,
+            StateDimension.QUIESCENCE_INTEGRITY,
+            StateDimension.POLICY_PRECEDENCE,
+            StateDimension.COMPOSITIONAL_VALIDITY,
         ]

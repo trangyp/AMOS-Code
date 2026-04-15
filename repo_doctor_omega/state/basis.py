@@ -12,21 +12,84 @@ from enum import Enum, auto
 
 
 class BasisVector(Enum):
-    """12 basis vectors for repository integrity space."""
+    """27 basis vectors for repository integrity space.
 
+    Expanded to cover:
+    - Implementation layers (syntax, import, type, API)
+    - Operational layers (runtime, persistence, status, test)
+    - Documentation layers (docs, packaging, entrypoint)
+    - Security and temporal layers (security, history)
+    - Meta-architecture layers (law, ecology, path, observer, evidence, topology, anti-objective)
+    - Semantic layers (silence, invariant-order, emergency, constraint-provenance)
+    - Institutional layers (model-transport, world-drift, legibility, commons)
+    """
+
+    # Implementation integrity
     SYNTAX = auto()  # |S⟩ - parse integrity
     IMPORT = auto()  # |I⟩ - import/resolution integrity
     TYPE = auto()  # |Ty⟩ - type and signature integrity
     API = auto()  # |A⟩ - public API integrity
     ENTRYPOINT = auto()  # |E⟩ - entrypoint/launcher integrity
+
+    # Operational integrity
     PACKAGING = auto()  # |Pk⟩ - packaging/build integrity
     RUNTIME = auto()  # |Rt⟩ - runtime integrity
     PERSISTENCE = auto()  # |Ps⟩ - persistence/schema integrity
     STATUS = auto()  # |St⟩ - status-truth integrity
     TEST = auto()  # |T⟩ - test integrity
+
+    # Documentation and security
     DOCS = auto()  # |D⟩ - docs/demos/tutorial integrity
     SECURITY = auto()  # |Sec⟩ - security integrity
     HISTORY = auto()  # |H⟩ - temporal/history integrity
+
+    # Meta-architecture: Law hierarchy
+    LAW_HIERARCHY = auto()  # |Law⟩ - invariant precedence and conflict resolution
+    LAW_SCOPE = auto()  # |Scope⟩ - law applicability boundaries
+    EMERGENCY_CONSTITUTION = auto()  # |Emerg⟩ - emergency mode integrity
+
+    # Meta-architecture: Silence and semantics
+    SILENCE = auto()  # |Sil⟩ - silence/absence semantics
+    ABSTENTION = auto()  # |Abst⟩ - abstention vs denial distinction
+    NEGATIVE_EVIDENCE = auto()  # |NegEvid⟩ - missing evidence as signal
+
+    # Meta-architecture: Constraint provenance
+    CONSTRAINT_PROVENANCE = auto()  # |Prov⟩ - constraint origin and rationale
+    CONSTRAINT_TAINT = auto()  # |Taint⟩ - workaround-to-policy drift
+
+    # Meta-architecture: Observer plurality
+    OBSERVER_PLURALITY = auto()  # |ObsPl⟩ - multi-observer coherence
+    OBSERVER_PRECEDENCE = auto()  # |ObsPr⟩ - observer conflict resolution
+
+    # Meta-architecture: Evidence and survival
+    EVIDENCE_SURVIVAL = auto()  # |EvidSur⟩ - evidence horizon preservation
+    RECOVERY_EVIDENCE = auto()  # |RecEvid⟩ - recovery action traceability
+
+    # Meta-architecture: Path and history
+    PATH_DEPENDENCE = auto()  # |Path⟩ - history-shaped state equivalence
+    NON_ERGODIC = auto()  # |NonErg⟩ - rare-event sensitivity
+
+    # Meta-architecture: Topology
+    TOPOLOGY_REWRITE = auto()  # |Topo⟩ - split/merge/extraction integrity
+    TOPOLOGY_NEUTRALIZE = auto()  # |Neut⟩ - old topology retirement
+
+    # Meta-architecture: Anti-objectives
+    ANTI_OBJECTIVE = auto()  # |Anti⟩ - forbidden optimization directions
+    PROXY_CAPTURE = auto()  # |Proxy⟩ - Goodhart's law protection
+
+    # Meta-architecture: Model and world
+    MODEL_TRANSPORT = auto()  # |ModTr⟩ - proof/model scope preservation
+    WORLD_DRIFT = auto()  # |World⟩ - world-model alignment
+    MODEL_FEDERATION = auto()  # |Fed⟩ - cross-model consistency
+
+    # Meta-architecture: Institutional
+    LEGIBILITY = auto()  # |Legib⟩ - reconstructability without tribal knowledge
+    COMMONS = auto()  # |Comm⟩ - shared surface protection
+    SHADOW_CONSTITUTION = auto()  # |Shadow⟩ - declared vs actual governance
+
+    # Meta-architecture: Proof and assumption
+    PROOF_TRANSPORT = auto()  # |ProofTr⟩ - assumption preservation across contexts
+    ASSUMPTION_VISIBILITY = auto()  # |Assump⟩ - assumption metadata preservation
 
 
 @dataclass
@@ -111,21 +174,92 @@ class RepositoryState:
 
     @staticmethod
     def _default_weights() -> dict[BasisVector, float]:
-        """Default Hamiltonian weights λk."""
+        """Default Hamiltonian weights λk.
+
+        Weights reflect criticality to release and operational integrity:
+        - 100: Security, Syntax (blocking)
+        - 95: API, Import, Law Hierarchy (core contracts)
+        - 90: Entrypoint, Packaging, Emergency Constitution
+        - 85: Runtime, Observer Plurality
+        - 80: Test, Evidence Survival
+        - 75: Type, Constraint Provenance
+        - 70: Persistence, Status, Topology Rewrite
+        - 65: History, Path Dependence, Model Transport
+        - 60: Silence, Legibility, World Drift
+        - 55: Docs, Commons, Shadow Constitution
+        - 50: Law Scope, Anti-Objective, Proof Transport
+        - 45: Abstention, Recovery Evidence, Model Federation
+        - 40: Negative Evidence, Constraint Taint, Non-Ergodic
+        - 35: Observer Precedence, Topology Neutralize
+        - 30: Proxy Capture, Assumption Visibility
+        """
         return {
+            # Core implementation (highest weight)
             BasisVector.SYNTAX: 100.0,
             BasisVector.IMPORT: 95.0,
             BasisVector.TYPE: 75.0,
             BasisVector.API: 95.0,
             BasisVector.ENTRYPOINT: 90.0,
+
+            # Operational layers
             BasisVector.PACKAGING: 90.0,
             BasisVector.RUNTIME: 85.0,
             BasisVector.PERSISTENCE: 70.0,
             BasisVector.STATUS: 70.0,
             BasisVector.TEST: 80.0,
+
+            # Documentation and security
             BasisVector.DOCS: 45.0,
             BasisVector.SECURITY: 100.0,
-            BasisVector.HISTORY: 60.0,
+            BasisVector.HISTORY: 65.0,
+
+            # Meta-architecture: Law hierarchy (critical for governance)
+            BasisVector.LAW_HIERARCHY: 95.0,
+            BasisVector.LAW_SCOPE: 50.0,
+            BasisVector.EMERGENCY_CONSTITUTION: 90.0,
+
+            # Meta-architecture: Silence and semantics
+            BasisVector.SILENCE: 60.0,
+            BasisVector.ABSTENTION: 45.0,
+            BasisVector.NEGATIVE_EVIDENCE: 40.0,
+
+            # Meta-architecture: Constraint provenance
+            BasisVector.CONSTRAINT_PROVENANCE: 75.0,
+            BasisVector.CONSTRAINT_TAINT: 40.0,
+
+            # Meta-architecture: Observer plurality
+            BasisVector.OBSERVER_PLURALITY: 85.0,
+            BasisVector.OBSERVER_PRECEDENCE: 35.0,
+
+            # Meta-architecture: Evidence and survival
+            BasisVector.EVIDENCE_SURVIVAL: 80.0,
+            BasisVector.RECOVERY_EVIDENCE: 45.0,
+
+            # Meta-architecture: Path and history
+            BasisVector.PATH_DEPENDENCE: 65.0,
+            BasisVector.NON_ERGODIC: 40.0,
+
+            # Meta-architecture: Topology
+            BasisVector.TOPOLOGY_REWRITE: 70.0,
+            BasisVector.TOPOLOGY_NEUTRALIZE: 35.0,
+
+            # Meta-architecture: Anti-objectives
+            BasisVector.ANTI_OBJECTIVE: 50.0,
+            BasisVector.PROXY_CAPTURE: 30.0,
+
+            # Meta-architecture: Model and world
+            BasisVector.MODEL_TRANSPORT: 65.0,
+            BasisVector.WORLD_DRIFT: 60.0,
+            BasisVector.MODEL_FEDERATION: 45.0,
+
+            # Meta-architecture: Institutional
+            BasisVector.LEGIBILITY: 60.0,
+            BasisVector.COMMONS: 55.0,
+            BasisVector.SHADOW_CONSTITUTION: 55.0,
+
+            # Meta-architecture: Proof and assumption
+            BasisVector.PROOF_TRANSPORT: 50.0,
+            BasisVector.ASSUMPTION_VISIBILITY: 30.0,
         }
 
     def to_dict(self) -> dict:

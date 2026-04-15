@@ -32,6 +32,7 @@ class InvariantKind(Enum):
     TEST = auto()
     SECURITY = auto()
     HISTORY = auto()
+    META = auto()  # Meta-architecture invariants
 
 
 @dataclass

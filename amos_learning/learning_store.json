@@ -19,7 +19,7 @@
       "failure_count": 0,
       "avg_execution_time_ms": 1000,
       "created_at": "2026-04-15T07:32:38.245763",
-      "last_used": "2026-04-15T07:32:38.245763",
+      "last_used": "2026-04-15T08:18:59.052482",
       "evolution_history": []
     },
     "proc_fix_import_error_b5db0dcd": {
@@ -51,19 +51,18 @@
         "module_name"
       ],
       "execution_steps": [
-        "Check if module exists in project structure",
-        "Add missing __init__.py if needed",
-        "Verify import path is correct",
-        "Test import to confirm fix"
+        "Check module exists",
+        "Add __init__.py",
+        "Verify import"
       ],
-      "expected_outcome": "Task completed successfully",
+      "expected_outcome": "Import fixed",
       "verification_method": "Verify no errors",
       "pattern_signature": "000310ca6848560b",
       "success_count": 1,
       "failure_count": 0,
       "avg_execution_time_ms": 500,
-      "created_at": "2026-04-15T07:55:40.459688",
-      "last_used": "2026-04-15T07:55:40.459688",
+      "created_at": "2026-04-15T08:18:59.052655",
+      "last_used": "2026-04-15T08:18:59.052655",
       "evolution_history": []
     }
   },
@@ -87,21 +86,21 @@
         "proc_fix_import_error_b5db0dcd",
         "proc_fix_import_error_000310ca"
       ],
-      "frequency": 3,
+      "frequency": 6,
       "first_seen": "2026-04-15T07:32:38.245774",
-      "last_seen": "2026-04-15T07:55:40.459697"
+      "last_seen": "2026-04-15T08:18:59.052659"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 3,
+    "procedures_learned": 5,
     "patterns_detected": 1,
     "decisions_recorded": 0,
     "failures_avoided": 0,
-    "procedures_reused": 0,
+    "procedures_reused": 1,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-15T07:55:40.459797"
+  "saved_at": "2026-04-15T08:18:59.052745"
 }
