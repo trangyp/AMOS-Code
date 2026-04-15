@@ -1,6 +1,6 @@
 """AMOS Tools stub for compatibility."""
 
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 
 class ToolRegistry:
@@ -13,7 +13,7 @@ class ToolRegistry:
         """Register a tool."""
         self._tools[name] = func
 
-    def get(self, name: str) -> Callable | None:
+    def get(self, name: str) -> Optional[Callable]:
         """Get tool by name."""
         return self._tools.get(name)
 
@@ -25,7 +25,7 @@ class ToolRegistry:
 class ToolExecutor:
     """Executor for AMOS tools."""
 
-    def __init__(self, registry: ToolRegistry | None = None):
+    def __init__(self, registry: Optional[ToolRegistry] = None):
         self.registry = registry or ToolRegistry()
 
     def execute(self, tool_name: str, **kwargs: Any) -> Any:
