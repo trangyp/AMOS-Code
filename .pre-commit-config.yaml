@@ -33,12 +33,14 @@ repos:
 
   # Python linting and formatting (Ruff - replaces black, flake8, isort)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.3.0
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        name: ruff-lint
+        args: [--fix, --exit-non-zero-on-fix, --select, "E9,F63,F7,F82,F841,F401,E741,S110"]
         types_or: [python, pyi]
       - id: ruff-format
+        name: ruff-format
         types_or: [python, pyi]
 
   # Python type checking (MyPy)
