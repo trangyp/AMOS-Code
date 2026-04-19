@@ -1,6 +1,6 @@
 """Layer 18 Bridge - Distributed Systems Physics Engine Bridge."""
 
-
+from __future__ import annotations
 
 try:
     from repo_doctor.layer18_physics_engine import DistributedPhysicsEngine
@@ -11,7 +11,6 @@ except ImportError:
 
 class DistributedPhysicsBridge:
     """Bridge between Layer 18 Physics Engine and AMOS Brain."""
-from __future__ import annotations
 
 
     def __init__(self) -> None:

@@ -1,4 +1,6 @@
-from typing import Optional, Any
+from __future__ import annotations
+
+from typing import Any, Dict, List, Tuple
 
 """
 AMOS Thinking Kernel - Core State Transformation Engine
@@ -27,8 +29,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from functools import lru_cache
-from typing import Optional, Final, Any, Any, Final
-from typing import Final
 
 # ============================================================================
 # Section 1: Enums and Type Definitions
@@ -620,7 +620,7 @@ class ThinkingOperators:
             + 0.25 * constraint_satisfaction
             + 0.15 * predictive_power
         )
-metrics = QualityMetrics(
+        metrics = QualityMetrics(
             coherence=coherence,
             goal_alignment=goal_alignment,
             constraint_satisfaction=constraint_satisfaction,
@@ -851,6 +851,7 @@ class MetaThinkingOperators:
                         severity="medium",
                         description="Quality not improving over last 5 iterations",
                     )
+                )
 
         # Check for oscillation
         if len(thinking_history) >= 4:
@@ -862,6 +863,7 @@ class MetaThinkingOperators:
                         severity="high",
                         description=f"Oscillation between {ops[0]} and {ops[1]}",
                     )
+                )
 
         # Check for error accumulation
         recent_errors = [s.error_state.total_error() for s in thinking_history[-3:]]
@@ -872,6 +874,7 @@ class MetaThinkingOperators:
                     severity="high",
                     description="Errors accumulating over last 3 iterations",
                 )
+            )
 
         # Keep only recent signals
         new_meta.failure_signals = new_meta.failure_signals[-10:]

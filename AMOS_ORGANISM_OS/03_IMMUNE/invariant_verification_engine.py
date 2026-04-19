@@ -20,7 +20,7 @@ import sys
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 # Add brain module to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))

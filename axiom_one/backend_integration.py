@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AXIOM One Backend Integration - Real AMOS Backend Connection
 
 Integrates AXIOM One ExecutionSlots with the real AMOS backend:
@@ -16,7 +18,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Add paths for AMOS imports
 REPO_ROOT = Path(__file__).parent.parent

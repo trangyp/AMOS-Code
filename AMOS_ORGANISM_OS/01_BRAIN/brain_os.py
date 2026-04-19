@@ -3,10 +3,10 @@
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 
 class ThoughtType(Enum):
@@ -26,7 +26,7 @@ class Thought:
     type: ThoughtType = ThoughtType.CONCEPTUAL
     content: str = ""
     source: str = "internal"  # Which subsystem originated this
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     confidence: float = 0.8  # 0.0 to 1.0
     tags: List[str] = field(default_factory=list)
     references: List[str] = field(default_factory=list)  # IDs of related thoughts
@@ -52,7 +52,7 @@ class Plan:
     goal: str = ""
     horizon: str = "short-term"  # short-term, medium-term, long-term
     steps: list[dict[str, Any]] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: str = "draft"  # draft, active, completed, abandoned
     audit_trail: list[dict[str, Any]] = field(default_factory=list)
 
@@ -73,7 +73,7 @@ class Plan:
         """Add an audit entry."""
         self.audit_trail.append(
             {
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "subsystem": subsystem,
                 "finding": finding,
             }
@@ -89,13 +89,13 @@ class BrainState:
     active_plans: List[Plan] = field(default_factory=list)
     completed_plans: List[Plan] = field(default_factory=list)
     current_focus: str = ""  # What the brain is currently focused on
-    last_update: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    last_update: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     cycle_count: int = 0  # How many primary loops completed
 
     def add_thought(self, thought: Thought) -> Thought:
         """Add a thought and update timestamp."""
         self.thoughts.append(thought)
-        self.last_update = datetime.now(UTC).isoformat()
+        self.last_update = datetime.now(timezone.utc).isoformat()
         return thought
 
     def get_thoughts_by_type(self, ttype: ThoughtType) -> List[Thought]:
@@ -220,7 +220,7 @@ class BrainOS:
     def complete_cycle(self):
         """Mark completion of one primary loop cycle."""
         self.state.cycle_count += 1
-        self.state.last_update = datetime.now(UTC).isoformat()
+        self.state.last_update = datetime.now(timezone.utc).isoformat()
 
     def save_state(self):
         """Persist brain state to disk."""

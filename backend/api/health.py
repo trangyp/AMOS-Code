@@ -5,9 +5,11 @@ Exposes health checks for CloudWatch and external monitoring systems
 Version: 3.1.0
 """
 
+from __future__ import annotations
+
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
-from typing import Any, Dict
+from typing import Any
 
 from backend.health_checks import (
     init_default_checks,
@@ -26,7 +28,7 @@ async def startup_event():
 
 
 @router.get("/live")
-async def liveness_probe() -> Dict[str, Any]:
+async def liveness_probe() -> dict[str, Any]:
     """
     Kubernetes liveness probe endpoint.
     Returns 200 if the application is running.

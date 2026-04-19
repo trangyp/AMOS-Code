@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cashflow Tracker — Income and expense monitoring
 
 Tracks cash movements, balances, and flow analysis over time.

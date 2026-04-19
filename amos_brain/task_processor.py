@@ -1,5 +1,6 @@
 """AMOS Brain Task Processor - Standalone cognitive task processing with Real Learning."""
 
+from __future__ import annotations
 
 import logging
 import time
@@ -60,8 +61,6 @@ class BrainTaskProcessor:
     - Validates output against Global Laws
     - Tracks reasoning chain
     """
-from __future__ import annotations
-
 
     def __init__(self):
         self._brain = None

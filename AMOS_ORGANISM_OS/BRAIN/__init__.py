@@ -1,15 +1,17 @@
-"""BRAIN module — Alias for 01_BRAIN"""
+"""BRAIN module — Alias for 01_BRAIN
 
-# Re-export from 01_BRAIN
+NOTE: This uses sys.path to access 01_BRAIN modules.
+This is a transitional pattern until package structure is fully refactored.
+"""
+
 import sys
 from pathlib import Path
 
-# Add 01_BRAIN to path
-brain_path = Path(__file__).parent.parent / "01_BRAIN"
-if str(brain_path) not in sys.path:
-    sys.path.insert(0, str(brain_path))
+# Add 01_BRAIN to path for module access (transitional pattern)
+_01_BRAIN_PATH = Path(__file__).parent.parent / "01_BRAIN"
+if str(_01_BRAIN_PATH) not in sys.path:
+    sys.path.insert(0, str(_01_BRAIN_PATH))
 
-# Import and re-export
 from brain_os import BrainOS, BrainState, Plan, Thought, ThoughtType
 from memory_layer import Memory, MemoryLayer
 from router import RoutingDecision, SystemRouter

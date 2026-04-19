@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """
 AMOS SuperBrain Equation Tool Integration
 Connects the 41-domain equation system to AMOS tool ecosystem.
@@ -22,7 +24,7 @@ Author: AMOS SuperBrain
 import json
 from dataclasses import dataclass, asdict
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 # SuperBrain integration
 try:
@@ -66,7 +68,6 @@ except ImportError:
 
 try:
     from clawspring.amos_brain.math_audit_logger import get_math_audit_logger
-from typing import List, Optional
     AUDIT_LOGGER_AVAILABLE = True
 except ImportError:
     AUDIT_LOGGER_AVAILABLE = False

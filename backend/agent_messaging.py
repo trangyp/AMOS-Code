@@ -26,6 +26,8 @@ Creator: Trang Phan
 Version: 3.1.0
 """
 
+from __future__ import annotations
+
 import json
 import asyncio
 import uuid
@@ -76,13 +78,13 @@ class AgentMessage:
     recipient_id: str = ""  # Empty for broadcast
     message_type: str = "direct"
     priority: int = 2  # NORMAL
-    content: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    content: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     reply_to: str  = None
     retry_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert message to dictionary."""
         return asdict(self)
 
@@ -91,7 +93,7 @@ class AgentMessage:
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AgentMessage":
+    def from_dict(cls, data: dict[str, Any]) -> "AgentMessage":
         """Create message from dictionary."""
         return cls(**data)
 
@@ -106,7 +108,7 @@ class AgentMessageBus:
 
     def __init__(self):
         self.subscribers: dict[str, list[Callable[[AgentMessage], Coroutine]]] = {}
-        self.message_history: List[AgentMessage] = []
+        self.message_history: list[AgentMessage] = []
         self.max_history = 1000
         self._lock = asyncio.Lock()
         self._redis = None
@@ -117,8 +119,6 @@ class AgentMessageBus:
         if self._redis is None:
             try:
                 import redis.asyncio as redis
-from typing import Callable, Generic
-from typing import Dict, List, Optional
                 self._redis = redis.from_url(REDIS_URL, decode_responses=True)
             except ImportError:
                 # Fallback to in-memory
@@ -300,7 +300,7 @@ from typing import Dict, List, Optional
         self,
         sender_id: str,
         recipient_id: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         conversation_id: str = "",
         metadata: dict[str, Any ] = None
     ) -> str:
@@ -320,7 +320,7 @@ from typing import Dict, List, Optional
     async def broadcast(
         self,
         sender_id: str,
-        content: Dict[str, Any],
+        content: dict[str, Any],
         conversation_id: str = "",
         metadata: dict[str, Any ] = None
     ) -> str:
@@ -341,7 +341,7 @@ from typing import Dict, List, Optional
         self,
         sender_id: str,
         recipient_id: str,
-        task: Dict[str, Any],
+        task: dict[str, Any],
         context: dict[str, Any ] = None
     ) -> str:
         """Hand off a task to another agent."""
@@ -361,7 +361,7 @@ from typing import Dict, List, Optional
         self,
         delegator_id: str,
         delegate_id: str,
-        task: Dict[str, Any],
+        task: dict[str, Any],
         deadline: str  = None
     ) -> str:
         """Delegate a task to another agent with deadline."""
@@ -385,7 +385,7 @@ from typing import Dict, List, Optional
         self,
         conversation_id: str,
         limit: int = 50
-    ) -> List[AgentMessage]:
+    ) -> list[AgentMessage]:
         """Get message history for a conversation."""
         # Check Redis first
         redis = await self._get_redis()
@@ -407,7 +407,7 @@ from typing import Dict, List, Optional
             if m.conversation_id == conversation_id
         ][-limit:]
 
-    async def get_message(self, message_id: str) -> Optional[AgentMessage]:
+    async def get_message(self, message_id: str) -> AgentMessage | None:
         """Get a specific message by ID."""
         # Check Redis
         redis = await self._get_redis()
@@ -447,7 +447,7 @@ from typing import Dict, List, Optional
             except Exception as e:
                 print(f"Cleanup error: {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get message bus statistics."""
         return {
             "total_messages": len(self.message_history),
@@ -466,7 +466,7 @@ message_bus = AgentMessageBus()
 async def send_message(
     sender: str,
     recipient: str,
-    content: Dict[str, Any],
+    content: dict[str, Any],
     conversation_id: str = ""
 ) -> str:
     """Send a direct message."""
@@ -475,7 +475,7 @@ async def send_message(
 
 async def broadcast_message(
     sender: str,
-    content: Dict[str, Any],
+    content: dict[str, Any],
     conversation_id: str = ""
 ) -> str:
     """Broadcast a message."""
@@ -485,7 +485,7 @@ async def broadcast_message(
 async def handoff_task(
     from_agent: str,
     to_agent: str,
-    task: Dict[str, Any],
+    task: dict[str, Any],
     context: dict[str, Any ] = None
 ) -> str:
     """Hand off a task between agents."""

@@ -18,7 +18,7 @@ Architecture: Closed-Loop Self-Healing System
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Add subsystem paths
 sys.path.insert(0, str(Path(__file__).parent / "01_BRAIN"))

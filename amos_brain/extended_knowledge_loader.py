@@ -18,7 +18,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -296,9 +296,6 @@ class ComprehensiveKnowledgeSystem:
         # Query core knowledge
         if self.core_loader:
             from amos_brain.knowledge_loader import query_knowledge
-from typing import List, Optional, Set
-from typing import Dict
-
             results["core"] = query_knowledge(query, limit=limit // 2)
 
         # Query extended knowledge

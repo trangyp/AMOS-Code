@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """Axiom One - Code Completion Engine."""
 
 import ast
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass

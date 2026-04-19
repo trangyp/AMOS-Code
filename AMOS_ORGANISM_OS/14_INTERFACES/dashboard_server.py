@@ -16,7 +16,7 @@ from datetime import datetime
 # Simple HTTP server for dashboard
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 
 class DashboardHandler(BaseHTTPRequestHandler):

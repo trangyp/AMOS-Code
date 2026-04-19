@@ -1,5 +1,6 @@
 """AMOS Brain Cognitive Monitor - Observability and monitoring system."""
 
+from __future__ import annotations
 
 import json
 import logging
@@ -51,8 +52,6 @@ class CognitiveMonitor:
     5. Alerting system
     6. Decision audit logging
     """
-from __future__ import annotations
-
 
     def __init__(self, storage_path: Path | None = None):
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "monitor"

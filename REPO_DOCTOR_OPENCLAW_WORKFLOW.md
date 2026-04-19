@@ -1,0 +1,426 @@
+# Repo Doctor + OpenClaw Integration Workflow
+
+## The Concrete Implementation
+
+This document describes the exact deterministic verification pipeline that all AI patches must pass through before being trusted.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         AI PATCH VERIFICATION PIPELINE                    │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────────────┐   │
+│  │ OpenClaw     │─────▶│ SecurityGate │─────▶│ Repo Doctor          │   │
+│  │ Agent        │      │              │      │ Security Scanners    │   │
+│  └──────────────┘      └──────────────┘      └──────────────────────┘   │
+│         │                      │                      │                  │
+│         │                      │                      ▼                  │
+│         │                      │              ┌──────────────┐          │
+│         │                      │              │ Semgrep CE   │          │
+│         │                      │              │ Trivy        │          │
+│         │                      │              │ Gitleaks     │          │
+│         │                      │              │ OSV-Scanner  │          │
+│         │                      │              │ Ruff         │          │
+│         │                      │              │ Pyright      │          │
+│         │                      │              └──────────────┘          │
+│         │                      │                      │                  │
+│         │                      ▼                      ▼                  │
+│         │              ┌──────────────┐      ┌──────────────┐          │
+│         │              │ Patch Status │      │ Verification │          │
+│         │              │ - pending    │      │ Receipt      │          │
+│         │              │ - verifying  │      │ (signed)     │          │
+│         │              │ - blocked    │      │              │          │
+│         │              │ - approved   │      │ - critical   │          │
+│         │              │ - applied    │      │ - high       │          │
+│         └─────────────▶│              │      │ - medium     │          │
+│                        └──────────────┘      │ - low        │          │
+│                                                 └──────────────┘          │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Core Principle
+
+**AI patches should sit INSIDE a deterministic verification envelope, not replace it.**
+
+## Module Breakdown
+
+### 1. `repo_doctor/security_scanner.py`
+
+The deterministic security verification engine.
+
+**Key Classes:**
+- `SecurityVerificationEngine` - Orchestrates all scanners
+- `SecurityGate` - The gate that patches must pass through
+- `VerificationReceipt` - Signed receipt of verification results
+- `PatchProposal` - A proposed patch with verification status
+
+**Scanners Integrated:**
+| Scanner | Purpose | Blocking Threshold |
+|---------|---------|-------------------|
+| Semgrep CE | Static code analysis | CRITICAL severity |
+| Trivy | Vuln/misconfig/secrets | CRITICAL severity |
+| Gitleaks | Secret detection in history | Any finding |
+| OSV-Scanner | Dependency vulnerabilities | HIGH+ severity |
+| Ruff | Python linting | Any error |
+| Pyright | Type checking | Any error |
+
+### 2. `clawspring/openclaw_bridge.py`
+
+First-class OpenClaw integration with native Ollama API support.
+
+**Key Classes:**
+- `OpenClawBridge` - Main integration orchestrator
+- `OllamaNativeProvider` - Uses native API (not /v1 compatible mode)
+- `SecurityGate` - Bridges to Repo Doctor
+- `OpenClawSession` - Session configuration
+- `PatchProposal` - Patch with verification metadata
+
+**Agent Modes:**
+- `PERSISTENT` - Always-on assistant
+- `TASK` - One-shot execution
+- `VERIFIER` - Security-focused verification agent
+- `REPAIR` - Code repair with security gates
+
+## Exact Workflow
+
+### Step 1: Initialize Bridge
+
+```python
+from clawspring.openclaw_bridge import get_openclaw_bridge
+
+bridge = get_openclaw_bridge(
+    ollama_url="http://localhost:11434",
+    workspace_dir=Path("/path/to/repo")
+)
+await bridge.initialize()
+```
+
+### Step 2: Create Security-Gated Session
+
+```python
+from clawspring.openclaw_bridge import AgentMode
+
+session = bridge.create_session(
+    workspace_id="my-workspace",
+    mode=AgentMode.REPAIR,  # Enables security gates
+    model="qwen2.5-coder:14b",
+)
+```
+
+### Step 3: Propose Patch Through Security Gate
+
+```python
+patch = await bridge.propose_patch(
+    session=session,
+    file_path="src/vulnerable.py",
+    original=original_content,
+    proposed=ai_generated_content,
+    description="Fix SQL injection vulnerability",
+    reasoning="Generated by repair agent",
+)
+```
+
+### Step 4: Automatic Verification Pipeline
+
+When `propose_patch()` is called with `enable_security_gates=True`:
+
+1. **Temp Copy Created** - Proposed changes written to temp location
+2. **Semgrep Scan** - Static analysis for security patterns
+3. **Trivy Scan** - Vulnerability and misconfiguration detection
+4. **Gitleaks Scan** - Secret detection
+5. **OSV Scan** - Dependency vulnerability check
+6. **Ruff Check** - Python linting
+7. **Status Determined**:
+   - `blocked` - Critical findings found
+   - `approved` - No critical/high findings
+   - `needs_review` - Medium/low findings only
+
+### Step 5: Apply or Retry
+
+```python
+if patch.status == "approved":
+    await bridge.apply_approved_patch(patch.patch_id)
+elif patch.status == "blocked":
+    # Get blocking findings for context
+    findings = bridge.security_gate.get_blocking_findings(patch)
+    # Retry with findings as context
+```
+
+## Iterative Repair Loop
+
+For complex repairs, use the built-in retry mechanism:
+
+```python
+patch = await bridge.repair_with_verification(
+    session=session,
+    issue_description="Fix command injection in run_command()",
+    file_path="src/utils.py",
+    max_attempts=3,  # Auto-retry up to 3 times
+)
+```
+
+**Retry Logic:**
+1. Generate repair using Ollama
+2. Run full security verification
+3. If blocked, add blocking findings to context
+4. Retry with updated context
+5. Stop when approved or max attempts reached
+
+## Verification Receipt Format
+
+```python
+@dataclass
+class VerificationReceipt:
+    receipt_id: str           # Unique ID (e.g., "sec-abc123")
+    timestamp: str            # ISO8601 timestamp
+    repository_path: str      # Absolute path to repo
+    commit_hash: str | None   # Git commit if available
+    scan_results: list[ScanResult]  # Results from each scanner
+    overall_passed: bool      # True if no critical findings
+    critical_count: int       # Number of CRITICAL findings
+    high_count: int           # Number of HIGH findings
+    medium_count: int         # Number of MEDIUM findings
+    low_count: int            # Number of LOW findings
+    blocking_findings: list[SecurityFinding]  # What blocked the patch
+```
+
+## Sample Output
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║           SECURITY VERIFICATION RECEIPT                      ║
+╠══════════════════════════════════════════════════════════════╣
+║ Receipt ID: sec-a1b2c3d4e5f6                                 ║
+║ Timestamp:  2026-04-19T14:30:45                               ║
+║ Repository: /home/user/projects/my-app                        ║
+╠══════════════════════════════════════════════════════════════╣
+║ STATUS: PASS ✅                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║ Findings Summary:                                            ║
+║   Critical: 0   │ High: 0   │ Medium: 2   │ Low: 5            ║
+╠══════════════════════════════════════════════════════════════╣
+║ ✅ semgrep     (  0 findings,   125ms)                      ║
+║ ✅ trivy       (  0 findings,   340ms)                      ║
+║ ✅ gitleaks    (  0 findings,    85ms)                      ║
+║ ✅ osv-scanner (  2 findings,   210ms)                      ║
+║ ⚠️  ruff       (  5 findings,    45ms)                      ║
+╠══════════════════════════════════════════════════════════════╣
+║ Blocking Findings: 0                                         ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+## Integration with AMOS Kernel Runtime
+
+The bridge integrates with AMOS Kernel Runtime for lawful agent execution:
+
+```python
+from clawspring.amos_kernel_runtime import AMOSKernelRuntime
+
+# Kernel runtime provides the lawful execution framework
+kernel = AMOSKernelRuntime()
+
+# OpenClaw bridge uses kernel for patch execution
+bridge = get_openclaw_bridge()
+bridge.kernel_runtime = kernel
+```
+
+## Why Native Ollama API (Not /v1 Compatible)
+
+Per OpenClaw documentation, the `/v1` OpenAI-compatible mode can break tool calling.
+
+**Native Ollama API:**
+```python
+# Uses /api/chat endpoint
+payload = {
+    "model": "qwen2.5-coder:14b",
+    "messages": messages,
+    "tools": tool_schemas,  # Reliable tool support
+    "options": {"num_ctx": 128000}
+}
+```
+
+**OpenAI-Compatible Mode (Problematic):**
+```python
+# Uses /v1/chat/completions
+# Tool calling may fail or behave inconsistently
+```
+
+## Installation Requirements
+
+```bash
+# Security scanners
+pip install semgrep
+pip install ruff pyright
+
+# External tools (install via package manager)
+# Trivy: https://aquasecurity.github.io/trivy/
+# Gitleaks: https://github.com/gitleaks/gitleaks
+# OSV-Scanner: https://google.github.io/osv-scanner/
+
+# Example (macOS)
+brew install trivy gitleaks osv-scanner
+
+# Example (Ubuntu)
+apt install trivy
+wget -O - https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 > /usr/local/bin/gitleaks
+```
+
+## Configuration
+
+```python
+# Environment variables
+export OLLAMA_URL=http://localhost:11434
+export SECURITY_MODE=strict  # strict | relaxed | off
+
+# Python configuration
+from repo_doctor.security_scanner import SecurityVerificationEngine
+
+engine = SecurityVerificationEngine(
+    enable_semgrep=True,
+    enable_trivy=True,
+    enable_gitleaks=True,
+    enable_osv=True,
+    enable_ruff=True,
+    enable_pyright=False,  # Optional, slower
+)
+```
+
+## Usage Examples
+
+### Example 1: Basic Patch Verification
+
+```python
+import asyncio
+from pathlib import Path
+from clawspring.openclaw_bridge import get_openclaw_bridge, AgentMode
+
+async def main():
+    bridge = get_openclaw_bridge(workspace_dir=Path("."))
+    await bridge.initialize()
+
+    session = bridge.create_session(
+        workspace_id="test",
+        mode=AgentMode.REPAIR,
+    )
+
+    # Read file
+    code = Path("my_script.py").read_text()
+
+    # AI proposes a change (simulated)
+    proposed = code.replace("os.system(cmd)", "subprocess.run(cmd, shell=True)")
+
+    # Verify through security gate
+    patch = await bridge.propose_patch(
+        session=session,
+        file_path="my_script.py",
+        original=code,
+        proposed=proposed,
+        description="Replace os.system with subprocess",
+        reasoning="Security improvement",
+    )
+
+    print(f"Status: {patch.status}")
+    if patch.verification_receipt:
+        print(f"Findings: {patch.verification_receipt.critical_count} critical")
+
+asyncio.run(main())
+```
+
+### Example 2: CI/CD Integration
+
+```python
+# In your CI pipeline
+async def ci_security_check():
+    bridge = get_openclaw_bridge()
+    await bridge.initialize()
+
+    session = bridge.create_session(
+        workspace_id="ci",
+        mode=AgentMode.VERIFIER,
+    )
+
+    # Verify all staged changes
+    receipt = await bridge.security_gate.engine.verify(
+        repo_path=Path("."),
+        commit_hash=os.environ.get("GITHUB_SHA"),
+    )
+
+    if not receipt.overall_passed:
+        print("❌ Security check failed")
+        for finding in receipt.blocking_findings:
+            print(f"  - {finding}")
+        exit(1)
+
+    print("✅ Security check passed")
+```
+
+### Example 3: Auto-Repair with Verification
+
+```python
+async def auto_repair_issue(issue: str, file_path: str):
+    bridge = get_openclaw_bridge()
+    await bridge.initialize()
+
+    session = bridge.create_session(
+        workspace_id="repair",
+        mode=AgentMode.REPAIR,
+        max_repair_attempts=3,
+    )
+
+    # Attempt repair with automatic verification
+    patch = await bridge.repair_with_verification(
+        session=session,
+        issue_description=issue,
+        file_path=file_path,
+    )
+
+    if patch and patch.status == "approved":
+        await bridge.apply_approved_patch(patch.patch_id)
+        return True
+
+    return False
+```
+
+## Success Metrics
+
+The integration tracks:
+- **Patch Acceptance Rate** - % of patches passing security gate
+- **Security Finding Reduction** - Before/after vulnerability counts
+- **Repair Success Rate** - % of issues resolved within max attempts
+- **Verification Time** - Average time to complete full scan
+- **False Positive Rate** - % of patches blocked incorrectly
+
+## Governance Layer Integration
+
+The verification receipts feed into the governance layer:
+
+```python
+from amos_security_compliance import AuditLogger
+
+audit = AuditLogger()
+await audit.log_event(
+    event_type="patch.verification",
+    user_id=session.workspace_id,
+    details={
+        "receipt_id": patch.verification_receipt.receipt_id,
+        "status": patch.status,
+        "findings": patch.verification_receipt.critical_count,
+    }
+)
+```
+
+## Summary
+
+This integration provides:
+
+1. **Deterministic Verification** - All patches scanned before approval
+2. **Multi-Scanner Coverage** - Semgrep, Trivy, Gitleaks, OSV, Ruff, Pyright
+3. **Native Ollama API** - Reliable tool calling via native API
+4. **Iterative Repair** - Auto-retry with security feedback
+5. **Audit Trail** - Signed verification receipts
+6. **CI/CD Ready** - Can block builds on security findings
+
+**Status:** Production-ready integration between Repo Doctor and OpenClaw.

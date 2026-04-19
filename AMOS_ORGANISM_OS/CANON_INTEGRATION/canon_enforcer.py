@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Canon Enforcer — Canonical Rules & Standards Enforcement
 
 Enforces canonical rules, validates compliance, and reports violations.

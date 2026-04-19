@@ -453,8 +453,8 @@ async def complete_with_brain(request: BrainRoutingRequest) -> BrainLLMResponse:
     return await brain_llm_router.complete(request)
 
 
-@router.post("/complete/stream")
-async def complete_stream(request: BrainRoutingRequest) -> AsyncGenerator[str, None]:
+@router.post("/complete/stream", response_model=None)
+async def complete_stream(request: BrainRoutingRequest):
     """Stream LLM completion with brain routing."""
     return brain_llm_router.complete_stream(request)
 

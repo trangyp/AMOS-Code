@@ -1,11 +1,12 @@
-"""AMOS Brain Cognitive State Manager - Persistent reasoning memory."""
+from __future__ import annotations
 
+"""AMOS Brain Cognitive State Manager - Persistent reasoning memory."""
 
 import json
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -72,8 +73,6 @@ class CognitiveStateManager:
     - Enables reasoning replay and audit trails
     - Supports recursive self-analysis
     """
-from __future__ import annotations
-
 
     def __init__(self, storage_path: Path | None = None):
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "sessions"

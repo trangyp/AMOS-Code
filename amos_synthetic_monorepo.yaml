@@ -1,0 +1,147 @@
+# AMOS Synthetic Monorepo Configuration
+# This file defines how 6 separate repos behave as one coordinated system
+
+name: amos-platform
+version: 1.0.0
+description: Synthetic monorepo bridging 6 AMOS repositories
+
+# Repository Definitions
+repositories:
+  amos-code:
+    name: AMOS-Code
+    url: https://github.com/trangyp/AMOS-Code.git
+    path: repos/amos-code
+    role: shared-core
+    type: library
+    primary_language: python
+    exposed_packages:
+      - amos_core
+      - amos_brain
+      - amos_equations
+    version_strategy: independent
+    
+  amos-universe:
+    name: AMOS-UNIVERSE
+    url: https://github.com/trangyp/AMOS-UNIVERSE.git
+    path: repos/amos-universe
+    role: shared-contracts
+    type: library
+    primary_language: python
+    exposed_packages:
+      - amos_schemas
+      - amos_ontology
+      - amos_contracts
+    version_strategy: independent
+    
+  amos-consulting:
+    name: AMOS-Consulting
+    url: https://github.com/trangyp/AMOS-Consulting.git
+    path: repos/amos-consulting
+    role: backend-hub
+    type: application
+    primary_language: python
+    dependencies:
+      - amos-code
+      - amos-universe
+    deploy_target: kubernetes
+    
+  amos-claws:
+    name: AMOS-Claws
+    url: https://github.com/trangyp/AMOS-Claws.git
+    path: repos/amos-claws
+    role: operator-interface
+    type: application
+    primary_language: typescript
+    dependencies:
+      - amos-code
+      - amos-universe
+      - amos-consulting
+    deploy_target: kubernetes
+    
+  mailinhconect:
+    name: Mailinhconect
+    url: https://github.com/trangyp/Mailinhconect.git
+    path: repos/mailinhconect
+    role: product-frontend
+    type: application
+    primary_language: typescript
+    dependencies:
+      - amos-consulting
+    deploy_target: kubernetes
+    
+  amos-invest:
+    name: AMOS-Invest
+    url: https://github.com/trangyp/AMOS-Invest.git
+    path: repos/amos-invest
+    role: investor-frontend
+    type: application
+    primary_language: typescript
+    dependencies:
+      - amos-consulting
+    deploy_target: kubernetes
+
+# Cross-Repo Build Pipeline
+pipeline:
+  trigger_events:
+    - push
+    - pull_request
+    - workflow_dispatch
+    
+  build_order:
+    - stage: libraries
+      repos:
+        - amos-code
+        - amos-universe
+      parallel: true
+      
+    - stage: backend
+      repos:
+        - amos-consulting
+      depends_on: [libraries]
+      
+    - stage: frontends
+      repos:
+        - amos-claws
+        - mailinhconect
+        - amos-invest
+      depends_on: [backend]
+      parallel: true
+
+# Change Detection
+change_detection:
+  enabled: true
+  affected_strategy: affected
+  base_branch: main
+  
+# Version Coordination
+versioning:
+  strategy: independent
+  lockstep_groups:
+    - name: shared-libraries
+      repos:
+        - amos-code
+        - amos-universe
+      bump_together: patch
+
+# NATS Integration
+nats:
+  enabled: true
+  server_url: nats://nats.amos-platform.svc:4222
+  
+# Temporal Integration
+temporal:
+  enabled: true
+  server_url: temporal.amos-platform.svc:7233
+  namespace: amos-platform
+  
+# GitOps Configuration
+gitops:
+  enabled: true
+  tool: argocd
+  server_url: https://argocd.amos-platform.io
+  
+# Renovate Integration
+renovate:
+  enabled: true
+  config_file: renovate.json
+  schedule: "before 5am on monday"

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """Axiom One - Real Multi-Agent Fleet Orchestration System.
 
 Unified agent orchestration that integrates:
@@ -21,7 +23,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Setup logging
 logging.basicConfig(

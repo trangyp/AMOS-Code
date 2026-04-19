@@ -1,8 +1,10 @@
 """Signal Detector — External signal detection for AMOS."""
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+UTC = timezone.utc
 
 
 @dataclass

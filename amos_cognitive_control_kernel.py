@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict
 
 """
 AMOS Cognitive Control Kernel

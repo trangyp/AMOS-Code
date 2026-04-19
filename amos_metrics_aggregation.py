@@ -276,10 +276,6 @@ class AlertMetricsCollector:
     def __call__(self) -> List[MetricFamily]:
         try:
             from amos_alert_manager import get_alert_manager
-    from datetime import timedelta
-from typing import Callable, Optional, Set, Optional, Set
-from typing import Set
-
             mgr = get_alert_manager()
 
             critical = len(mgr.get_alerts(severity=mgr.AlertSeverity.CRITICAL))

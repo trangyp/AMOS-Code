@@ -9,6 +9,8 @@ Features:
 - Query analytics aggregation
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
@@ -17,8 +19,9 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
-UTC = timezone.utc
 from pathlib import Path
+
+UTC = timezone.utc
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -205,14 +208,14 @@ class AMOSDatabase:
             conn.commit()
             return cursor.lastrowid
 
-    async def store_health(self, overall_status: str, checks: List[dict], uptime_seconds: float):
+    async def store_health(self, overall_status: str, checks: list[dict], uptime_seconds: float):
         """Store health check result."""
         async with self._lock:
             return await asyncio.get_running_loop().run_in_executor(
                 None, self._store_health_sync, overall_status, checks, uptime_seconds
             )
 
-    def _store_health_sync(self, overall_status: str, checks: List[dict], uptime_seconds: float):
+    def _store_health_sync(self, overall_status: str, checks: list[dict], uptime_seconds: float):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 """
@@ -277,14 +280,14 @@ class AMOSDatabase:
             )
             conn.commit()
 
-    async def get_query_history(self, limit: int = 100, hours: int = None) -> List[dict]:
+    async def get_query_history(self, limit: int = 100, hours: int | None = None) -> list[dict]:
         """Get query history."""
         async with self._lock:
             return await asyncio.get_running_loop().run_in_executor(
                 None, self._get_query_history_sync, limit, hours
             )
 
-    def _get_query_history_sync(self, limit: int, hours: int) -> List[dict]:
+    def _get_query_history_sync(self, limit: int, hours: int | None) -> list[dict]:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
 
@@ -454,7 +457,7 @@ class AMOSDatabase:
 
 
 # Global database instance
-_db: Optional[AMOSDatabase] = None
+_db: AMOSDatabase | None = None
 
 
 def get_database() -> AMOSDatabase:

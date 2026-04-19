@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict, List
 
 """AMOS Formal Semantics Kernel (FSK).
 
@@ -13,7 +15,7 @@ This is the missing understanding layer between Reading/Thinking and Execution.
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum, auto
 
 # =============================================================================
@@ -132,7 +134,7 @@ class FormalExpression:
             "requires_proof": False,
         }
     )
-    compiled_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    compiled_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 @dataclass

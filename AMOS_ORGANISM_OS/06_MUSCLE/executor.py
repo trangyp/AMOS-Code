@@ -4,10 +4,12 @@ import json
 import subprocess
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
+
+UTC = timezone.utc
 
 
 class ExecutionStatus(Enum):

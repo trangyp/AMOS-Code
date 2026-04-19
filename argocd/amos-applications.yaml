@@ -1,0 +1,175 @@
+# Argo CD Applications for AMOS 6-Repo Platform
+# GitOps continuous deployment configuration
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amos-consulting
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: amos-platform
+  source:
+    repoURL: https://github.com/trangyp/AMOS-Consulting.git
+    targetRevision: main
+    path: k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amos-consulting
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amos-claws
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: amos-platform
+  source:
+    repoURL: https://github.com/trangyp/AMOS-Claws.git
+    targetRevision: main
+    path: k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amos-claws
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mailinhconect
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: amos-platform
+  source:
+    repoURL: https://github.com/trangyp/Mailinhconect.git
+    targetRevision: main
+    path: k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mailinhconect
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amos-invest
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: amos-platform
+  source:
+    repoURL: https://github.com/trangyp/AMOS-Invest.git
+    targetRevision: main
+    path: k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amos-invest
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+# App of Apps pattern for managing all AMOS applications
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amos-platform-root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/trangyp/AMOS-Code.git
+    targetRevision: main
+    path: argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+# AMOS Platform Project
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: amos-platform
+  namespace: argocd
+spec:
+  description: AMOS Platform - 6 Repository System
+  sourceRepos:
+    - https://github.com/trangyp/AMOS-Code.git
+    - https://github.com/trangyp/AMOS-Consulting.git
+    - https://github.com/trangyp/AMOS-Claws.git
+    - https://github.com/trangyp/Mailinhconect.git
+    - https://github.com/trangyp/AMOS-Invest.git
+    - https://github.com/trangyp/AMOS-UNIVERSE.git
+  destinations:
+    - namespace: amos-consulting
+      server: https://kubernetes.default.svc
+    - namespace: amos-claws
+      server: https://kubernetes.default.svc
+    - namespace: mailinhconect
+      server: https://kubernetes.default.svc
+    - namespace: amos-invest
+      server: https://kubernetes.default.svc
+    - namespace: amos-shared
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Secret
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler

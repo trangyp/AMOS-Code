@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Brain Cognitive Facade - Simple SDK for external use."""
 
 
@@ -67,10 +69,8 @@ class BrainClient:
         # Validate action
         valid, issues = client.validate_action("delete production database")
     """
-from __future__ import annotations
 
-
-    def __init__(self, repo_path: str  = None):
+    def __init__(self, repo_path: str | None = None):
         self.brain = get_brain()
         self.laws = GlobalLaws()
         self.processor = BrainTaskProcessor()

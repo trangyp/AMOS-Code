@@ -7,7 +7,7 @@ to provide unified world context for AMOS decisions.
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from geopolitical_monitor import get_geopolitical_monitor
 from macroeconomic_scanner import get_macro_scanner

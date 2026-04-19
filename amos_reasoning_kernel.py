@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List
 
 """
@@ -41,7 +43,7 @@ import uuid
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from functools import lru_cache
 
@@ -145,7 +147,7 @@ class Premise:
     source: str = field(default="")
     active: bool = field(default=True)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert premise to dictionary representation."""
@@ -182,7 +184,7 @@ class Hypothesis:
     cost: float = field(default=0.0)
     score: float = field(default=0.0)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def calculate_score(self) -> float:
         """Calculate abductive hypothesis score."""
@@ -286,7 +288,7 @@ class Conclusion:
     uncertainty_propagated: bool = field(default=False)
     contradiction_checked: bool = field(default=False)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert conclusion to dictionary representation."""
@@ -324,7 +326,7 @@ class Justification:
     reasoning_mode: ReasoningMode = field(default=ReasoningMode.DEDUCTIVE)
     chain: list[dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert justification to dictionary representation."""
@@ -355,7 +357,7 @@ class Conflict:
     description: str = field(default="")
     resolution_strategy: str | None = field(default=None)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert conflict to dictionary representation."""
@@ -585,7 +587,7 @@ class Retraction:
 
     conclusion_id: str = field(default="")
     reason: RetractionReason = field(default=RetractionReason.PREMISE_CHANGED)
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert retraction to dictionary representation."""
@@ -643,13 +645,13 @@ class ReasoningState:
 
     # State metadata
     state_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    updated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     reasoning_quality: float = field(default=0.0)
 
     def update_timestamp(self) -> None:
         """Update the state's timestamp."""
-        self.updated_at = datetime.now(UTC).isoformat()
+        self.updated_at = datetime.now(timezone.utc).isoformat()
 
     def calculate_quality(self) -> float:
         """
@@ -1717,7 +1719,7 @@ class ReasoningKernel:
             "reasoning_state": self.state.to_dict(),
             "justification_graph": self.justification_graph.to_dict(),
             "truth_maintenance": self.tms.to_dict(),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 

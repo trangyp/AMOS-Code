@@ -1,4 +1,6 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any, Dict, List
 
 """AMOS Brain-Semantics Bridge - Real integration of Formal Semantics Kernel with Brain.
 

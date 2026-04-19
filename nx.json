@@ -1,0 +1,93 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default"],
+    "sharedGlobals": []
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "test": {
+      "inputs": ["default", "^production"]
+    },
+    "lint": {
+      "inputs": ["default"]
+    }
+  },
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "generators": {
+    "@nx/python:app": {
+      "projectNameAndRootFormat": "as-provided"
+    },
+    "@nx/python:lib": {
+      "projectNameAndRootFormat": "as-provided"
+    }
+  },
+  "workspaceLayout": {
+    "projectNameAndRootFormat": "as-provided"
+  },
+  "release": {
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      },
+      "projectChangelogs": true
+    }
+  },
+  "plugins": ["@nxlv/python"],
+  "repoArchitect": {
+    "enabled": true,
+    "repositories": [
+      {
+        "name": "AMOS-Code",
+        "url": "https://github.com/trangyp/AMOS-Code.git",
+        "type": "library",
+        "role": "shared-core"
+      },
+      {
+        "name": "AMOS-UNIVERSE",
+        "url": "https://github.com/trangyp/AMOS-UNIVERSE.git",
+        "type": "library",
+        "role": "shared-contracts"
+      },
+      {
+        "name": "AMOS-Consulting",
+        "url": "https://github.com/trangyp/AMOS-Consulting.git",
+        "type": "application",
+        "role": "backend-hub"
+      },
+      {
+        "name": "AMOS-Claws",
+        "url": "https://github.com/trangyp/AMOS-Claws.git",
+        "type": "application",
+        "role": "operator-interface"
+      },
+      {
+        "name": "Mailinhconect",
+        "url": "https://github.com/trangyp/Mailinhconect.git",
+        "type": "application",
+        "role": "product-frontend"
+      },
+      {
+        "name": "AMOS-Invest",
+        "url": "https://github.com/trangyp/AMOS-Invest.git",
+        "type": "application",
+        "role": "investor-frontend"
+      }
+    ]
+  }
+}

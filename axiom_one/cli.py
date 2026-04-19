@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AXIOM One CLI - Command Line Interface
 
 Unified entry point for AXIOM One Technical Operating System.
@@ -12,6 +14,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import List
 
 from .brain_integration import BrainExecutionConfig, BrainPoweredOrchestrator
 from .execution_slot import SlotMode

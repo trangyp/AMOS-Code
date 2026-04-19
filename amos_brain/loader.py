@@ -1,5 +1,6 @@
 """Brain configuration loader - loads and validates AMOS brain JSON specs."""
 
+from __future__ import annotations
 
 import asyncio
 import json
@@ -141,8 +142,6 @@ class BrainLoader:
             BrainConfig instance. On timeout, returns a minimal default config
             instead of raising, to avoid blocking the UI.
         """
-from __future__ import annotations
-
         try:
             loop = asyncio.get_running_loop()
             return await asyncio.wait_for(

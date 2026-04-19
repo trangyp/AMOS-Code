@@ -1,11 +1,16 @@
-"""BLOOD module — Alias for 04_BLOOD"""
+"""BLOOD module — Alias for 04_BLOOD
+
+NOTE: This uses sys.path to access 04_BLOOD modules.
+This is a transitional pattern until package structure is fully refactored.
+"""
 
 import sys
 from pathlib import Path
 
-blood_path = Path(__file__).parent.parent / "04_BLOOD"
-if str(blood_path) not in sys.path:
-    sys.path.insert(0, str(blood_path))
+# Add 04_BLOOD to path for module access (transitional pattern)
+_04_BLOOD_PATH = Path(__file__).parent.parent / "04_BLOOD"
+if str(_04_BLOOD_PATH) not in sys.path:
+    sys.path.insert(0, str(_04_BLOOD_PATH))
 
 from budget_manager import Budget, BudgetCategory, BudgetManager
 from cashflow_tracker import CashflowRecord, CashflowTracker, CashflowType

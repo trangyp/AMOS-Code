@@ -463,6 +463,16 @@ def canon_search(*args, **kwargs):
     return _lazy_import("canon_search")(*args, **kwargs)
 
 
+def get_canon_orchestrator():
+    """Get Canon orchestrator (lazy import)."""
+    return _lazy_import("get_canon_orchestrator")()
+
+
+def canon_orchestrate(*args, **kwargs):
+    """Orchestrate task with Canon integration (lazy import)."""
+    return _lazy_import("canon_orchestrate")(*args, **kwargs)
+
+
 # Optional features - deferred to avoid import-time failures
 # These are loaded lazily via __getattr__ below
 # DO NOT assign None here - it prevents __getattr__ from triggering

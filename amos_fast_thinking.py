@@ -195,9 +195,7 @@ class FastThinkingEngine:
         # Import here to avoid circular dependency
         try:
             from amos_vector_search import ContentType, get_vector_service
-from typing import Dict, List, Optional, List, Optional
-from typing import Optional
-    except ImportError:
+        except ImportError:
             return None
 
         vector_service = get_vector_service()

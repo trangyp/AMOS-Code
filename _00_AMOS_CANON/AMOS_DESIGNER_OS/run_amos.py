@@ -1,6 +1,6 @@
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -112,7 +112,7 @@ def main() -> None:
     print("Loaded brain sections:", ", ".join(sorted(brain.keys())))
     print("Loaded worker roles:", ", ".join(sorted(WORKER_REGISTRY.keys())))
     event = AmosEvent(
-        timestamp=datetime.utcnow().isoformat() + "Z",
+        timestamp=datetime.now(timezone.utc).isoformat(),
         event_type="startup",
         payload={
             "identity": brain.get("IDENTITY", {}),
@@ -138,14 +138,14 @@ def main() -> None:
     growth_path = MEMORY_DIR / "growth.log"
     with growth_path.open("a", encoding="utf-8") as f:
         f.write(
-            f"[{datetime.utcnow().isoformat()}Z] "
+            f"[{datetime.now(timezone.utc).isoformat()}] "
             f"NEXT_ACTION={_pick_next_action(brain)} | "
             f"plan_steps={len(plan_resp.details.get('plan', [])) if isinstance(plan_resp.details, dict) else 0}\n"
         )
 
     _log_event(
         AmosEvent(
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(timezone.utc).isoformat(),
             event_type="run_summary",
             payload={
                 "planner": asdict(plan_resp),

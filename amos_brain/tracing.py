@@ -10,7 +10,7 @@ Provides distributed tracing support for:
 
 import os
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -226,9 +226,6 @@ def get_otel_tracer() -> Any:
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-from typing import Any, Optional, Set
-from typing import Dict, Generator, List
-
         provider = TracerProvider()
         processor = BatchSpanProcessor(ConsoleSpanExporter())
         provider.add_span_processor(processor)

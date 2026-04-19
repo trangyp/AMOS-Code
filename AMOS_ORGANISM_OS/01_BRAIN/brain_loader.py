@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """AMOS Brain JSON Loader (01_BRAIN)
 =================================
 

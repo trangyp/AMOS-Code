@@ -1,9 +1,10 @@
 """Backend configuration module."""
 
+from __future__ import annotations
+
 import json
 import os
 from functools import lru_cache
-from typing import List, Optional
 
 
 class Settings:
@@ -23,7 +24,7 @@ class Settings:
 
     # CORS Configuration
     @property
-    def CORS_ORIGINS(self) -> List[str]:
+    def CORS_ORIGINS(self) -> list[str]:
         """Parse CORS origins from environment variable."""
         origins_str = os.getenv("CORS_ORIGINS", '["http://localhost:3000"]')
         try:
@@ -34,19 +35,19 @@ class Settings:
 
     # API Documentation Security
     DOCS_ENABLED: bool = os.getenv("DOCS_ENABLED", "true").lower() == "true"
-    DOCS_USERNAME: Optional[str] = os.getenv("DOCS_USERNAME")
-    DOCS_PASSWORD: Optional[str] = os.getenv("DOCS_PASSWORD")
+    DOCS_USERNAME: str | None = os.getenv("DOCS_USERNAME")
+    DOCS_PASSWORD: str | None = os.getenv("DOCS_PASSWORD")
 
     # Database
-    DATABASE_URL: Optional[str] = os.getenv("DATABASE_URL")
-    SQLITE_URL: Optional[str] = os.getenv("SQLITE_URL", "sqlite:///./amos.db")
+    DATABASE_URL: str | None = os.getenv("DATABASE_URL")
+    SQLITE_URL: str | None = os.getenv("SQLITE_URL", "sqlite:///./amos.db")
 
     # Redis
-    REDIS_URL: Optional[str] = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_URL: str | None = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
     # External Services
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
-    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY")
+    OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
+    ANTHROPIC_API_KEY: str | None = os.getenv("ANTHROPIC_API_KEY")
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
     # Logging

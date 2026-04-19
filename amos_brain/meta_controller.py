@@ -1,5 +1,6 @@
 """AMOS Brain Meta-Cognitive Controller - Self-directed orchestration."""
 
+from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
@@ -62,8 +63,6 @@ class MetaCognitiveController:
     4. Strategy adaptation based on results
     5. Self-correction when laws violated
     """
-from __future__ import annotations
-
 
     def __init__(self):
         self.brain = get_brain()

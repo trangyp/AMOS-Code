@@ -1,5 +1,6 @@
 """AMOS Brain Agent Execution Bridge - Bidirectional brain-agent integration."""
 
+from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -47,8 +48,6 @@ class AMOSAgentBridge:
     - Decision logging with reasoning chain
     - Law violation alerts with alternatives
     """
-from __future__ import annotations
-
 
     # Risk categories for tools
     RISK_CATEGORIES = {

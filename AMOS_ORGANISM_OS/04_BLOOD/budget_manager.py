@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Budget Manager — Financial planning and category tracking
 
 Handles budgeting across categories, expense tracking, and
@@ -10,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class BudgetCategory(Enum):

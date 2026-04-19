@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 AMOS Unified Equation API & Dashboard Backend
 ===============================================

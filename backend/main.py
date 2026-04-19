@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Backend API - FastAPI Application
 
 The cognitive engine powering the AMOS Dashboard.
@@ -22,7 +24,7 @@ from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import structlog
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
@@ -387,7 +389,7 @@ class MemoryEntry(BaseModel):
     type: str  # episodic, semantic, procedural, working, long_term
     content: str
     importance: int
-    tags: List[str]
+    tags: list[str]
     timestamp: str
     access_count: int
 
@@ -420,14 +422,14 @@ class SystemStatus(BaseModel):
     confidence: float
     active_layers: int
     total_layers: int
-    components: Dict[str, str]
+    components: dict[str, str]
 
 
 class AGENTSFile(BaseModel):
     id: str
     path: str
     scope: str
-    sections: Dict[str, str]
+    sections: dict[str, str]
     last_modified: str
 
 
@@ -655,7 +657,7 @@ agents_files = [
 # WebSocket Connection Manager
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -848,7 +850,7 @@ async def get_agent_tasks():
 
 
 @app.post("/api/agents/tasks")
-async def create_agent_task(task: Dict[str, Any]):
+async def create_agent_task(task: dict[str, Any]):
     """Create a new agent task"""
     new_task = {
         "id": f"agent-{len(agents) + 1}",
@@ -895,7 +897,7 @@ async def get_memory_entries(type: str = None):
 
 
 @app.post("/api/memory/entries")
-async def create_memory_entry(entry: Dict[str, Any]):
+async def create_memory_entry(entry: dict[str, Any]):
     """Create a new memory entry"""
     new_entry = {
         "id": f"mem-{len(memories) + 1}",
@@ -932,7 +934,7 @@ async def get_checkpoints():
 
 
 @app.post("/api/checkpoints")
-async def create_checkpoint(checkpoint: Dict[str, Any]):
+async def create_checkpoint(checkpoint: dict[str, Any]):
     """Create a new checkpoint"""
     new_checkpoint = {
         "id": f"cp-{len(checkpoints) + 1}",
@@ -1012,7 +1014,7 @@ async def get_agents_md_file(file_id: str):
 
 
 @app.put("/api/agents-md/files/{file_id}")
-async def update_agents_md_file(file_id: str, sections: Dict[str, str]):
+async def update_agents_md_file(file_id: str, sections: dict[str, str]):
     """Update AGENTS.md file sections"""
     file = next((f for f in agents_files if f["id"] == file_id), None)
     if not file:

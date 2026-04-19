@@ -79,10 +79,21 @@ py-modules = [
     "amos_brain_launcher",
     "amos_brain_tutorial",
     "amos_brain_cli",
+    "amos_canon_integration",
+    "amos_cognitive_bridge",
+    "amos_core",
+    "amos_model_router",
+    "amos_cognitive_architecture",
+    "amos_action_gate",
+    "amos_kernel_router",
+    "amos_tool_registry",
+    "amos_fast_thinking",
+    "amos_super_brain",
+    "amos_brain_coding_tools",
 ]
 
 [tool.setuptools.packages.find]
-include = ["amos_brain", "amos_brain.*", "amosl", "amosl.*"]
+include = ["amos_brain", "amos_brain.*", "amosl", "amosl.*", "amos_model_fabric", "amos_model_fabric.*"]
 exclude = ["tests", "tests.*"]
 
 [tool.setuptools.package-data]

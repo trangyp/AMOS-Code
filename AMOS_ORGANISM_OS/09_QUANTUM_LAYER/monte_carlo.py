@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Monte Carlo Simulator — Probabilistic Decision Analysis
 
 Runs Monte Carlo simulations to evaluate decision outcomes
@@ -10,7 +11,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 
 @dataclass

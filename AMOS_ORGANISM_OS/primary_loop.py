@@ -17,8 +17,11 @@ Usage:
 
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+UTC = timezone.utc
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent))

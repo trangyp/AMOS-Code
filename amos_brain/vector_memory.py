@@ -46,7 +46,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -161,8 +161,6 @@ class VectorMemoryService:
 
             # Initialize embedding model
             from sentence_transformers import SentenceTransformer
-from typing import List, Optional, Set
-from typing import Dict
             self._embedding_model = SentenceTransformer(self.embedding_model_name)
 
             self._initialized = True

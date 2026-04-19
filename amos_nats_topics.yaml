@@ -1,0 +1,322 @@
+# AMOS NATS Topic Schema
+# Defines all pub/sub and request/reply topics for inter-repo communication
+
+# Topic Naming Convention: amos.{domain}.{action}.{target}
+# Wildcards: * matches one token, > matches zero or more tokens
+
+# ============================================================
+# SYNC LANE - Direct Request/Reply
+# ============================================================
+
+sync:
+  description: Synchronous request/reply patterns
+  
+  # Brain operations
+  brain:
+    think:
+      subject: amos.brain.think
+      pattern: request_reply
+      timeout: 30s
+      payload_schema: BrainThinkRequest
+      response_schema: BrainThinkResponse
+      
+    reason:
+      subject: amos.brain.reason
+      pattern: request_reply
+      timeout: 60s
+      payload_schema: BrainReasonRequest
+      response_schema: BrainReasonResponse
+      
+    collapse:
+      subject: amos.brain.collapse
+      pattern: request_reply
+      timeout: 10s
+      payload_schema: CollapseRequest
+      response_schema: CollapseResponse
+      
+  # Equation operations
+  equations:
+    execute:
+      subject: amos.equations.execute
+      pattern: request_reply
+      timeout: 120s
+      payload_schema: EquationExecuteRequest
+      response_schema: EquationExecuteResponse
+      
+    validate:
+      subject: amos.equations.validate
+      pattern: request_reply
+      timeout: 5s
+      payload_schema: EquationValidateRequest
+      response_schema: EquationValidateResponse
+      
+  # Knowledge operations
+  knowledge:
+    query:
+      subject: amos.knowledge.query
+      pattern: request_reply
+      timeout: 10s
+      payload_schema: KnowledgeQueryRequest
+      response_schema: KnowledgeQueryResponse
+      
+    update:
+      subject: amos.knowledge.update
+      pattern: request_reply
+      timeout: 10s
+      payload_schema: KnowledgeUpdateRequest
+      response_schema: KnowledgeUpdateResponse
+      
+  # Health checks
+  health:
+    check:
+      subject: amos.health.check
+      pattern: request_reply
+      timeout: 5s
+      payload_schema: HealthCheckRequest
+      response_schema: HealthCheckResponse
+      
+    status:
+      subject: amos.health.status
+      pattern: request_reply
+      timeout: 5s
+      payload_schema: StatusRequest
+      response_schema: StatusResponse
+
+# ============================================================
+# ASYNC LANE - Pub/Sub Events
+# ============================================================
+
+async:
+  description: Asynchronous event broadcasting
+  
+  # System lifecycle events
+  system:
+    startup:
+      subject: amos.system.startup
+      pattern: pub_sub
+      payload_schema: SystemStartupEvent
+      
+    shutdown:
+      subject: amos.system.shutdown
+      pattern: pub_sub
+      payload_schema: SystemShutdownEvent
+      
+    heartbeat:
+      subject: amos.system.heartbeat
+      pattern: pub_sub
+      payload_schema: HeartbeatEvent
+      retention: 1m  # Short retention for heartbeats
+      
+  # Brain cognitive events
+  brain:
+    thought_started:
+      subject: amos.brain.thought.started
+      pattern: pub_sub
+      payload_schema: ThoughtStartedEvent
+      
+    thought_completed:
+      subject: amos.brain.thought.completed
+      pattern: pub_sub
+      payload_schema: ThoughtCompletedEvent
+      
+    insight_generated:
+      subject: amos.brain.insight.generated
+      pattern: pub_sub
+      payload_schema: InsightGeneratedEvent
+      
+    anomaly_detected:
+      subject: amos.brain.anomaly.detected
+      pattern: pub_sub
+      payload_schema: AnomalyDetectedEvent
+      priority: high
+      
+  # Equation execution events
+  equations:
+    execution_started:
+      subject: amos.equations.execution.started
+      pattern: pub_sub
+      payload_schema: ExecutionStartedEvent
+      
+    execution_completed:
+      subject: amos.equations.execution.completed
+      pattern: pub_sub
+      payload_schema: ExecutionCompletedEvent
+      
+    execution_failed:
+      subject: amos.equations.execution.failed
+      pattern: pub_sub
+      payload_schema: ExecutionFailedEvent
+      priority: high
+      
+  # Knowledge events
+  knowledge:
+    learned:
+      subject: amos.knowledge.learned
+      pattern: pub_sub
+      payload_schema: KnowledgeLearnedEvent
+      
+    synced:
+      subject: amos.knowledge.synced
+      pattern: pub_sub
+      payload_schema: KnowledgeSyncedEvent
+      
+  # Repository events
+  repo:
+    changed:
+      subject: amos.repo.changed
+      pattern: pub_sub
+      payload_schema: RepoChangedEvent
+      
+    scanned:
+      subject: amos.repo.scanned
+      pattern: pub_sub
+      payload_schema: RepoScannedEvent
+      
+    fixed:
+      subject: amos.repo.fixed
+      pattern: pub_sub
+      payload_schema: RepoFixedEvent
+      
+  # Workflow events
+  workflow:
+    started:
+      subject: amos.workflow.started
+      pattern: pub_sub
+      payload_schema: WorkflowStartedEvent
+      
+    completed:
+      subject: amos.workflow.completed
+      pattern: pub_sub
+      payload_schema: WorkflowCompletedEvent
+      
+    failed:
+      subject: amos.workflow.failed
+      pattern: pub_sub
+      payload_schema: WorkflowFailedEvent
+      priority: high
+
+# ============================================================
+# SCATTER-GATHER - Fan Out/Fan In
+# ============================================================
+
+scatter_gather:
+  description: Scatter requests to multiple services, gather responses
+  
+  brain_consensus:
+    subject: amos.brain.consensus.>
+    pattern: scatter_gather
+    timeout: 45s
+    expected_responses: 3
+    payload_schema: ConsensusRequest
+    
+  multi_repo_scan:
+    subject: amos.repo.scan.>
+    pattern: scatter_gather
+    timeout: 300s
+    expected_responses: 6
+    payload_schema: MultiRepoScanRequest
+
+# ============================================================
+# QUEUE GROUPS - Load Balancing
+# ============================================================
+
+queue_groups:
+  description: Queue groups for load balanced processing
+  
+  brain_workers:
+    subject: amos.brain.work.*
+    queue: brain_workers
+    
+  equation_workers:
+    subject: amos.equations.work.*
+    queue: equation_workers
+    
+  repo_doctors:
+    subject: amos.repo.doctor.*
+    queue: repo_doctors
+
+# ============================================================
+# WILDCARD SUBSCRIPTIONS
+# ============================================================
+
+wildcard_patterns:
+  all_brain_events:
+    subject: amos.brain.>
+    description: Subscribe to all brain events
+    
+  all_system_events:
+    subject: amos.system.>
+    description: Subscribe to all system events
+    
+  all_repo_events:
+    subject: amos.repo.>
+    description: Subscribe to all repository events
+
+# ============================================================
+# JETSTREAM PERSISTENCE
+# ============================================================
+
+jetstream:
+  description: Persistent streams for reliable delivery
+  
+  streams:
+    brain_events:
+      name: BRAIN_EVENTS
+      subjects: [amos.brain.>]
+      retention: limits
+      max_msgs: 100000
+      max_age: 7d
+      
+    equation_events:
+      name: EQUATION_EVENTS
+      subjects: [amos.equations.>]
+      retention: limits
+      max_msgs: 50000
+      max_age: 3d
+      
+    repo_events:
+      name: REPO_EVENTS
+      subjects: [amos.repo.>]
+      retention: limits
+      max_msgs: 100000
+      max_age: 30d
+      
+    workflow_events:
+      name: WORKFLOW_EVENTS
+      subjects: [amos.workflow.>]
+      retention: workqueue
+      max_msgs: 10000
+      max_age: 1d
+      
+    system_events:
+      name: SYSTEM_EVENTS
+      subjects: [amos.system.>]
+      retention: limits
+      max_msgs: 10000
+      max_age: 1d
+
+# ============================================================
+# CONSUMER CONFIGURATIONS
+# ============================================================
+
+consumers:
+  brain_processor:
+    stream: BRAIN_EVENTS
+    durable_name: brain_processor
+    deliver_policy: all
+    ack_policy: explicit
+    max_deliver: 3
+    
+  equation_processor:
+    stream: EQUATION_EVENTS
+    durable_name: equation_processor
+    deliver_policy: all
+    ack_policy: explicit
+    max_deliver: 3
+    
+  repo_sync:
+    stream: REPO_EVENTS
+    durable_name: repo_sync
+    deliver_policy: all
+    ack_policy: explicit
+    max_deliver: 5

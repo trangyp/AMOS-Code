@@ -5,9 +5,12 @@ import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from datetime import timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
+
+UTC = timezone.utc
 
 
 class StepStatus(Enum):

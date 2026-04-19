@@ -33,8 +33,8 @@ System: AMOS vInfinity - Layer 24
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 from datetime import datetime, timezone
-from typing import Any
 
 
 @dataclass
@@ -269,9 +269,6 @@ class MultiAgentOrchestrator:
     ) -> str:
         """Make final decision based on agent results."""
         from amos_brain import decide
-from typing import Final, List
-from typing import Dict, Optional
-
         # Build decision context
         perspectives = []
         for r in results:

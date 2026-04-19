@@ -10,7 +10,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_worker_engine import (
     CodeWorker,

@@ -13,7 +13,7 @@ import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Add repo root to path to import amos_alerting
 REPO_ROOT = Path(__file__).parent.parent.parent

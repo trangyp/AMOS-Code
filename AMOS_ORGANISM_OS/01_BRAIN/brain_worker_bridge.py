@@ -11,7 +11,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from brain_loader import BrainResult, get_brain_loader
 

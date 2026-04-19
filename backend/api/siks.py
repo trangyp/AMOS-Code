@@ -277,6 +277,8 @@ async def get_siks_status() -> dict[str, Any]:
 @router.get("/kernels")
 async def list_kernels() -> dict[str, Any]:
     """List all available SIKS kernels."""
+from __future__ import annotations
+
     stack = await get_siks_stack()
 
     if stack is None:

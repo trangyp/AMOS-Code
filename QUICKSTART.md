@@ -1,4 +1,45 @@
-# AMOS Brain API - Quick Start
+# AMOS Local-First AI Platform - Quick Start
+
+## New: Local Platform (Offline LLMs)
+
+The AMOS Local Platform provides a complete offline AI development environment:
+
+### Quick Setup (5 minutes)
+
+```bash
+# 1. Test platform components
+python3 test_platform.py
+
+# 2. Setup all tools
+python3 amos_local_platform.py setup
+
+# 3. Start LiteLLM proxy
+python3 amos_local_platform.py start
+
+# 4. Check status
+python3 amos_local_platform.py status
+```
+
+### Components
+
+| Component | Purpose | Command |
+|-----------|---------|---------|
+| **LiteLLM** | Model routing proxy | `python3 -m amos_model_fabric.litellm_setup start` |
+| **Continue** | VS Code AI assistant | Config at `~/.continue/config.yaml` |
+| **Aider** | Terminal AI coding | `aider --openai-api-base http://localhost:4000` |
+| **OpenHands** | Autonomous AI engineer | `python3 -m amos_model_fabric.openhands_integration interactive` |
+| **Repo Doctor** | Security verification | `python3 -m repo_doctor.security_scanner` |
+
+### Requirements
+
+- Python 3.10+
+- Ollama (for local LLMs)
+- Docker (for OpenHands)
+- VS Code (for Continue)
+
+---
+
+# AMOS Brain API - Quick Start (Cloud)
 
 **Domain:** `neurosyncai.tech`
 

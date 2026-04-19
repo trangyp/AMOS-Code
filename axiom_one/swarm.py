@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AXIOM One Swarm - Multi-Agent Scheduler
 
 Beats Devin on parallel execution with Planner/Worker/Critic/Verifier/Integrator.
@@ -11,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from .execution_slot import ExecutionSlot, SlotMode
 

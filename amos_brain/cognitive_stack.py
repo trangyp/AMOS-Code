@@ -2,7 +2,7 @@
 
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -61,8 +61,6 @@ class CognitiveStack:
     - 7_Intelligents (domain engines)
     - Cognitive_Stack (cognitive capabilities)
     """
-from __future__ import annotations
-
 
     INTELLIGENCES = [
         "AMOS_Biology_And_Cognition_Engine",

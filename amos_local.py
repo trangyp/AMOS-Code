@@ -22,19 +22,8 @@ import argparse
 import os
 import sys
 
-# Ensure amos_brain is in path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # noqa: E402
-
-
-from amos_brain.config_validator import (  # noqa: E402
-    validate_config,
-)
-from amos_brain.local_runtime import (  # noqa: E402
-    create_local_runtime,
-)
-from amos_brain.local_runtime import (
-    main as runtime_main,
-)
+from amos_brain.config_validator import validate_config
+from amos_brain.local_runtime import create_local_runtime, main as runtime_main
 
 
 def print_local_banner():

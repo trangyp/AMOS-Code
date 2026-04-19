@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Integration Manager — External System Integration
 
 Manages connections and integrations with external systems,

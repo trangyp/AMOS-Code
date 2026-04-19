@@ -1,5 +1,3 @@
-from typing import Optional, Any
-
 """AMOS MCP Server Registry - Model Context Protocol server management.
 
 Manages MCP server connections with:
@@ -9,13 +7,12 @@ Manages MCP server connections with:
 - Capability advertisement
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-
 from enum import Enum
-from typing import Optional, List, Protocol, Any, Any, List, Protocol
-from typing import Protocol, List
-from typing import Dict
+from typing import Any, Protocol
 
 class MCPProtocol(Enum):
     """MCP protocol versions."""
@@ -37,7 +34,7 @@ class MCPTool:
 
     name: str
     description: str
-    input_schema: Dict[str, Any]
+    input_schema: dict[str, Any]
 
 @dataclass
 class MCPResource:
@@ -46,7 +43,7 @@ class MCPResource:
     uri: str
     name: str
     description: str
-    mime_type: Optional[str] = None
+    mime_type: str | None = None
 
 @dataclass
 class MCPServer:
@@ -57,15 +54,15 @@ class MCPServer:
     url: str
     protocol: MCPProtocol
     status: ServerStatus
-    capabilities: List[str]
-    tools: List[MCPTool] = field(default_factory=list)
-    resources: List[MCPResource] = field(default_factory=list)
+    capabilities: list[str]
+    tools: list[MCPTool] = field(default_factory=list)
+    resources: list[MCPResource] = field(default_factory=list)
     registered_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    last_ping: Optional[str] = None
+    last_ping: str | None = None
     error_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -101,7 +98,7 @@ class MCPRegistry:
     """Registry for MCP server management."""
 
     def __init__(self):
-        self._servers: Dict[str, MCPServer] = {}
+        self._servers: dict[str, MCPServer] = {}
         self._initialized = False
 
     def initialize(self) -> None:
@@ -133,6 +130,7 @@ class MCPRegistry:
                                 "path": {"type": "string"},
                                 "content": {"type": "string"},
                             },
+                        },
                     ),
                 ],
                 resources=[
@@ -144,6 +142,7 @@ class MCPRegistry:
                     )
                 ],
             )
+        )
 
         # Register GitHub MCP server
         self.register_server(
@@ -165,6 +164,7 @@ class MCPRegistry:
                     ),
                 ],
             )
+        )
 
         self._initialized = True
 
@@ -180,15 +180,15 @@ class MCPRegistry:
             return True
         return False
 
-    def get_server(self, server_id: str) -> Optional[MCPServer]:
+    def get_server(self, server_id: str) -> MCPServer | None:
         """Get a specific MCP server."""
         return self._servers.get(server_id)
 
     def list_servers(
         self,
-        status: Optional[ServerStatus] = None,
-        capability: Optional[str] = None,
-    ) -> List[MCPServer]:
+        status: ServerStatus | None = None,
+        capability: str | None = None,
+    ) -> list[MCPServer]:
         """List MCP servers with optional filtering."""
         servers = list(self._servers.values())
 
@@ -200,7 +200,7 @@ class MCPRegistry:
 
         return servers
 
-    def update_status(self, server_id: str, status: ServerStatus) -> Optional[MCPServer]:
+    def update_status(self, server_id: str, status: ServerStatus) -> MCPServer | None:
         """Update server connection status."""
         server = self._servers.get(server_id)
         if server:
@@ -261,7 +261,7 @@ class MCPRegistry:
         return resources
 
 # Global MCP registry instance
-_mcp_registry: Optional[MCPRegistry] = None
+_mcp_registry: MCPRegistry | None = None
 
 def get_mcp_registry() -> MCPRegistry:
     """Get global MCP registry."""

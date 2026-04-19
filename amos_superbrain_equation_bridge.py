@@ -15,13 +15,15 @@ Version: 7.0.0
 Date: April 2026
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional, Any
 
 """AMOS Thinking Engine - State Transformation Subsystem
@@ -7,13 +9,9 @@ Based on neuro-symbolic AI research: state-based cognition with meta-cognitive m
 
 Key equation: Thinking = S_t → S_{t+1} under goals, constraints, uncertainty
 """
-from __future__ import annotations
-
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
-from typing import Dict, List
 
 class ThinkingMode(Enum):
     """Modes of thinking operation."""
@@ -126,6 +124,7 @@ class ThinkingEngine:
                 Goal(
                     id="solve", description="Analyze and solve the presented problem", priority=1.0
                 )
+            )
 
         return state
 

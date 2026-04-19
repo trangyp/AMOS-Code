@@ -227,8 +227,6 @@ class DualProcessBrain:
         try:
             # Add to vector search index if available
             from amos_vector_search import ContentType, get_vector_service
-from typing import Dict, Optional, Optional
-
             vector_service = get_vector_service()
             if vector_service:
                 # Store query pattern for similar future queries

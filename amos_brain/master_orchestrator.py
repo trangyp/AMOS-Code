@@ -37,8 +37,6 @@ class MasterOrchestrator:
         Returns:
             Dict with output, confidence, and metadata
         """
-from __future__ import annotations
-
         # Use cognitive engine for direct processing
         result = self._cognitive_engine.process(task, domain=domain, context=context)
 

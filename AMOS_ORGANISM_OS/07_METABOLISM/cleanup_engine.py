@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Cleanup Engine — Resource cleanup and maintenance
 
 Manages cleanup tasks, temporary file removal, and

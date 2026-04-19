@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Expression Translation - Decodes human expression into structured logic."""
 
 import re

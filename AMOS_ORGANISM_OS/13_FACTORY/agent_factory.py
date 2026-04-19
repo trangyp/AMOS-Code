@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """AMOS Agent Factory (13_FACTORY)
 ===============================
 

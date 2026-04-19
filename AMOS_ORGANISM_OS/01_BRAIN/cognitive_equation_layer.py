@@ -8,7 +8,7 @@ Enables formal reasoning about code using mathematical invariants.
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Import equation bridge
 sys.path.insert(0, str(Path(__file__).parent))

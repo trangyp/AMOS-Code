@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Standards Registry — Standards & Compliance Tracking
 
 Maintains registry of industry standards, compliance requirements,

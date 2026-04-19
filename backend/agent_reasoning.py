@@ -20,6 +20,8 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
+from __future__ import annotations
+
 import json
 import asyncio
 from typing import Any, Callable
@@ -54,7 +56,7 @@ class Thought:
     content: str
     step_number: int
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -64,20 +66,20 @@ class ReasoningChain:
     agent_id: str
     task: str
     strategy: str
-    thoughts: List[Thought] = field(default_factory=list)
+    thoughts: list[Thought] = field(default_factory=list)
     final_answer: str  = None
     completed: bool = False
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ToolCall:
     """Represents a tool call in agent workflow."""
     tool_name: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     call_id: str
-    result: Optional[Any] = None
+    result: Any | None = None
     executed: bool = False
     error: str  = None
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -87,8 +89,8 @@ class AgentReasoningEngine:
     """Core reasoning engine for AMOS agents."""
 
     def __init__(self):
-        self.reasoning_chains: Dict[str, ReasoningChain] = {}
-        self.tool_registry: Dict[str, Callable] = {}
+        self.reasoning_chains: dict[str, ReasoningChain] = {}
+        self.tool_registry: dict[str, Callable] = {}
         self.max_iterations = 10
 
     def register_tool(self, name: str, tool_func: Callable) -> bool:
@@ -104,8 +106,6 @@ class AgentReasoningEngine:
     ) -> ReasoningChain:
         """Create a new reasoning chain."""
         import uuid
-from typing import Callable, Final
-from typing import Dict, List, Optional
         chain = ReasoningChain(
             chain_id=str(uuid.uuid4())[:8],
             agent_id=agent_id,
@@ -306,11 +306,11 @@ Execute each step and provide the final result."""
         )
         chain.thoughts.append(thought)
 
-    def get_chain(self, chain_id: str) -> Optional[ReasoningChain]:
+    def get_chain(self, chain_id: str) -> ReasoningChain | None:
         """Get reasoning chain by ID."""
         return self.reasoning_chains.get(chain_id)
 
-    def get_chain_summary(self, chain_id: str) -> Dict[str, Any]:
+    def get_chain_summary(self, chain_id: str) -> dict[str, Any]:
         """Get summary of reasoning chain."""
         chain = self.reasoning_chains.get(chain_id)
         if not chain:

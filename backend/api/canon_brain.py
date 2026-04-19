@@ -153,6 +153,73 @@ async def multi_domain_query(
         )
 
 
+class CanonOrchestrateRequest(BaseModel):
+    """Request for Canon-orchestrated task execution."""
+
+    task: str
+    domain: str = "general"
+    context: dict[str, Any] | None = None
+
+
+class CanonOrchestrateResponse(BaseModel):
+    """Response from Canon orchestration."""
+
+    task_id: str
+    success: bool
+    result: str
+    canon_context: dict[str, Any]
+    reasoning_path: list[str]
+    memories_accessed: list[str]
+    patterns_applied: list[str]
+    processing_time_ms: float
+
+
+@router.post("/orchestrate", response_model=CanonOrchestrateResponse)
+async def canon_orchestrate_endpoint(
+    request: CanonOrchestrateRequest,
+) -> CanonOrchestrateResponse:
+    """Execute task with full Canon orchestration.
+
+    This endpoint coordinates all Canon-integrated components:
+    - Canon Knowledge Engine for context
+    - Canon Cognitive Processor for enrichment
+    - Canon Reasoning Engine for decisions
+    - Canon Learning Engine for pattern recognition
+    - Canon Memory System for knowledge retention
+
+    Example:
+        POST /canon-brain/orchestrate
+        {
+            "task": "How should we design brain architecture?",
+            "domain": "cognitive",
+            "context": {"user_id": "123"}
+        }
+    """
+    from amos_brain.canon_orchestrator import canon_orchestrate
+
+    try:
+        result = canon_orchestrate(
+            task=request.task,
+            domain=request.domain,
+            context=request.context or {},
+        )
+        return CanonOrchestrateResponse(
+            task_id=result.task_id,
+            success=result.success,
+            result=result.result,
+            canon_context=result.canon_context,
+            reasoning_path=result.reasoning_path,
+            memories_accessed=result.memories_accessed,
+            patterns_applied=result.patterns_applied,
+            processing_time_ms=result.processing_time_ms,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Canon orchestration failed: {str(e)}",
+        )
+
+
 @router.get("/canon/status")
 async def canon_status() -> dict[str, Any]:
     """Get Canon integration status.

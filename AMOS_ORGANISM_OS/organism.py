@@ -12,61 +12,53 @@ import json
 import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
-# Add parent to path for imports
-_PARENT = Path(__file__).parent
-if str(_PARENT) not in sys.path:
-    sys.path.insert(0, str(_PARENT))
-if str(_PARENT.parent) not in sys.path:
-    sys.path.insert(0, str(_PARENT.parent))
+# Add subsystem paths for imports (transitional pattern)
+_ORGANISM_ROOT = Path(__file__).parent
+for _subsystem in [
+    "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON",
+    "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL",
+    "09_SOCIAL_ENGINE", "09_QUANTUM_LAYER", "10_LIFE_ENGINE", 
+    "11_LEGAL_BRAIN", "11_LIFE_ENGINE",
+    "12_QUANTUM_LAYER", "12_LEGAL_BRAIN", "13_FACTORY", "13_MEMORY_ARCHIVAL",
+    "14_INTERFACES", "15_KNOWLEDGE_CORE",
+]:
+    _path = _ORGANISM_ROOT / _subsystem
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 
-# Import subsystems
-from BLOOD.budget_manager import BudgetManager
-from BLOOD.cashflow_tracker import CashflowTracker
-from BLOOD.resource_engine import ResourceEngine
-from BRAIN.brain_os import BrainOS
-from BRAIN.memory_layer import MemoryLayer
-from BRAIN.router import RoutingDecision, SystemRouter
-from FACTORY.agent_factory import AgentFactory
-from FACTORY.builder_engine import BuilderEngine
-from FACTORY.code_generator import CodeGenerator
-from FACTORY.quality_checker import QualityChecker
-from IMMUNE.compliance_engine import ComplianceEngine
-from IMMUNE.immune_system import ActionType, ImmuneSystem
-from IMMUNE.threat_detector import ThreatDetector
-from LEGAL_BRAIN.compliance_auditor import ComplianceAuditor
-from LEGAL_BRAIN.contract_manager import ContractManager
-from LEGAL_BRAIN.policy_engine import PolicyEngine
-from LEGAL_BRAIN.risk_governor import RiskGovernor
-from LIFE_ENGINE.adaptation_system import AdaptationSystem
-from LIFE_ENGINE.growth_engine import GrowthEngine
-from LIFE_ENGINE.health_monitor import HealthMonitor
-from LIFE_ENGINE.lifecycle_manager import LifecycleManager
-from METABOLISM.io_router import IORouter
-from METABOLISM.pipeline_engine import PipelineEngine
-from METABOLISM.transform_engine import TransformEngine
-from MUSCLE.code_runner import CodeRunner
-from MUSCLE.executor import MuscleExecutor
-from MUSCLE.workflow_engine import WorkflowEngine
-from QUANTUM_LAYER.decision_optimizer import DecisionOptimizer
-from QUANTUM_LAYER.monte_carlo import MonteCarloSimulator
-from QUANTUM_LAYER.scenario_engine import ScenarioEngine
-from SENSES.context_gatherer import ContextGatherer
-from SENSES.environment_scanner import EnvironmentScanner
-from SENSES.signal_detector import SignalDetector
-from SKELETON.constraint_engine import ConstraintEngine
-from SKELETON.rule_validator import RuleValidator
-from SKELETON.structural_integrity import StructuralIntegrity
-from SOCIAL_ENGINE.agent_coordinator import AgentCoordinator
-from SOCIAL_ENGINE.communication_bridge import CommunicationBridge
-from SOCIAL_ENGINE.human_interface import HumanInterface
-from SOCIAL_ENGINE.negotiation_engine import NegotiationEngine
-from WORLD_MODEL.context_mapper import ContextMapper
-from WORLD_MODEL.knowledge_graph import KnowledgeGraph
-from WORLD_MODEL.semantic_index import SemanticIndex
+# Import subsystems (through alias modules)
+from BLOOD import BudgetManager, CashflowTracker, ResourceEngine
+from BRAIN import BrainOS, MemoryLayer, RoutingDecision, SystemRouter
+from FACTORY import AgentFactory, BuilderEngine, CodeGenerator, QualityChecker
+from IMMUNE import ActionType, ComplianceEngine, ImmuneSystem, ThreatDetector
+from LEGAL_BRAIN import (
+    ComplianceAuditor,
+    ContractManager,
+    PolicyEngine,
+    RiskGovernor,
+)
+from LIFE_ENGINE import (
+    AdaptationSystem,
+    GrowthEngine,
+    HealthMonitor,
+    LifecycleManager,
+)
+from METABOLISM import IORouter, PipelineEngine, TransformEngine
+from MUSCLE import CodeRunner, MuscleExecutor, WorkflowEngine
+from QUANTUM_LAYER import DecisionOptimizer, MonteCarloSimulator, ScenarioEngine
+from SENSES import ContextGatherer, EnvironmentScanner, SignalDetector
+from SKELETON import ConstraintEngine, RuleValidator, StructuralIntegrity
+from SOCIAL_ENGINE import (
+    AgentCoordinator,
+    CommunicationBridge,
+    HumanInterface,
+    NegotiationEngine,
+)
+from WORLD_MODEL import ContextMapper, KnowledgeGraph, SemanticIndex
 
 
 @dataclass
@@ -74,7 +66,7 @@ class OrganismState:
     """Global state of the AMOS organism."""
 
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
-    started_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     cycle_count: int = 0
     current_subsystem: str = "00_ROOT"
     global_context: Dict[str, Any] = field(default_factory=dict)

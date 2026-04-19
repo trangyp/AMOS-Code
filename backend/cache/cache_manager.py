@@ -14,6 +14,7 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
 
 import hashlib
 import json
@@ -40,8 +41,6 @@ except ImportError:
 # Import existing modules
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Callable, Set
-from typing import Dict, List, Optional
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -68,7 +67,7 @@ class CacheEntry:
     value: Any
     created_at: float = field(default_factory=time.time)
     expires_at: float  = None
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     hit_count: int = 0
     size_bytes: int = 0
 
@@ -109,7 +108,7 @@ class CacheManager:
 
     def __init__(self, redis_url: str  = None):
         self.redis_url = redis_url or "redis://localhost:6379/5"
-        self._l1_cache: Dict[str, CacheEntry] = {}
+        self._l1_cache: dict[str, CacheEntry] = {}
         self._l1_lock = threading.RLock()
         self._redis: redis.Redis  = None
         self._brain = None
@@ -177,7 +176,7 @@ class CacheManager:
         key: str,
         data_type: str = "general",
         fetch_func: Callable[..., Any ] = None
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Get value from cache with multi-level lookup."""
         # CANONICAL: Check governance for cache access
         if SUPERBRAIN_AVAILABLE and self._brain:
@@ -420,7 +419,7 @@ class CacheManager:
         namespace: str,
         identifier: str,
         data_type: str = "general"
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Get tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
         return self.get(key, data_type)
@@ -432,7 +431,7 @@ class CacheManager:
         identifier: str,
         value: Any,
         data_type: str = "general",
-        ttl: int  = None
+        ttl: int | None = None
     ) -> bool:
         """Set tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
@@ -512,7 +511,7 @@ def cache_get(
     key: str,
     data_type: str = "general",
     fetch_func: Callable[..., Any]  = None
-) -> Optional[Any]:
+) -> Any | None:
     """Get from cache with optional fetch."""
     return cache_manager.get(key, data_type, fetch_func)
 
@@ -541,7 +540,7 @@ def get_tenant_cache(
     namespace: str,
     identifier: str,
     data_type: str = "general"
-) -> Optional[Any]:
+) -> Any | None:
     """Get tenant-scoped cache."""
     return cache_manager.get_tenant_cached(tenant_id, namespace, identifier, data_type)
 

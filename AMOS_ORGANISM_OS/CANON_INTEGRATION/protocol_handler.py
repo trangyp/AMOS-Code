@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Protocol Handler — Protocol Compliance & Message Handling
 
 Handles protocol definitions, message formats, and conversions

@@ -45,6 +45,8 @@ async def web_query_endpoint(request: WebQueryRequest) -> WebQueryResponse:
 
     Equation: WebQuery → RankFast → ReadLittle → AnswerEarly → DeepenOnlyIfNeeded
     """
+from __future__ import annotations
+
     budgets = WebBudgets(
         max_search_queries=request.max_search_queries,
         max_page_opens=request.max_page_opens,

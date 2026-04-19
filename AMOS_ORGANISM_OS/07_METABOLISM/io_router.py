@@ -1,3 +1,4 @@
+from __future__ import annotations
 """IO Router — Input/Output routing and dispatch
 
 Routes data between subsystems, external interfaces, and
@@ -11,7 +12,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 
 class RouteType(Enum):

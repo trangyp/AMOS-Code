@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Moral Framework — Moral Principles & Value Systems
 
 Defines moral principles, value hierarchies, and ethical frameworks

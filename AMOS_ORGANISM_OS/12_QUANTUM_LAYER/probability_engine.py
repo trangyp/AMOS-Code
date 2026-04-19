@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Probability Engine for AMOS"""
 
 import json

@@ -516,7 +516,6 @@ if __name__ == "__main__":
 
     # Create test secret with secure random value
     import secrets
-from typing import Optional, Any, List, List
 
     mgr.create_secret(
         name="test_api_key",

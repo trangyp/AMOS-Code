@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """Axiom One - Real System Graph Analysis.
 
 Builds actual code dependency graph:
@@ -15,7 +17,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 AMOS_ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(AMOS_ROOT))
@@ -436,6 +438,30 @@ def demo():
     print("\n" + "=" * 70)
     print("GRAPH ANALYSIS COMPLETE")
     print("=" * 70)
+
+
+class SystemGraphAnalyzer:
+    """Analyzes system graph for architecture insights."""
+
+    def __init__(self, root_path: str = "."):
+        self.root_path = Path(root_path)
+        self.graph = SystemGraph()
+
+    def analyze(self) -> dict:
+        """Analyze the system graph."""
+        return {
+            "nodes": len(self.graph.nodes),
+            "edges": len(self.graph.edges),
+            "components": len(self.graph.get_connected_components()),
+        }
+
+    def export_json(self, filepath: str) -> None:
+        """Export graph to JSON."""
+        self.graph.export_json(filepath)
+
+    def export_dot(self, filepath: str) -> None:
+        """Export graph to DOT format."""
+        self.graph.export_dot(filepath)
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, Set
+from typing import Any, Dict, List, Set
 
 
 class TokenAlgorithm(Enum):

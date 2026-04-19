@@ -3,8 +3,10 @@
 import os
 import platform
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+
+UTC = timezone.utc
 
 
 @dataclass

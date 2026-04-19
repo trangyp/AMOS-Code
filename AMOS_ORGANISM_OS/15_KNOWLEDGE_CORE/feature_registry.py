@@ -1,3 +1,4 @@
+from __future__ import annotations
 """AMOS Feature Registry & Knowledge Integration
 ===============================================
 
@@ -10,7 +11,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 
 @dataclass

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":semanticCommitScope(deps)",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "description": "Renovate configuration for AMOS 6-repo platform",
+  "platform": "github",
+  "repositories": [
+    "trangyp/AMOS-Code",
+    "trangyp/AMOS-UNIVERSE",
+    "trangyp/AMOS-Consulting",
+    "trangyp/AMOS-Claws",
+    "trangyp/Mailinhconect",
+    "trangyp/AMOS-Invest"
+  ],
+  "gitAuthor": "Renovate Bot <renovate@amos-platform.io>",
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 5,
+  "branchConcurrentLimit": 20,
+  "labels": ["dependencies", "renovate"],
+  "schedule": [
+    "before 5am on monday"
+  ],
+  "timezone": "Asia/Ho_Chi_Minh",
+  "packageRules": [
+    {
+      "description": "Auto-merge patch updates for dev dependencies",
+      "matchUpdateTypes": ["patch"],
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Group FastAPI ecosystem updates",
+      "groupName": "FastAPI ecosystem",
+      "matchPackagePrefixes": ["fastapi", "uvicorn", "starlette"]
+    },
+    {
+      "description": "Group SQLAlchemy updates",
+      "groupName": "SQLAlchemy",
+      "matchPackagePrefixes": ["sqlalchemy", "alembic", "asyncpg"]
+    },
+    {
+      "description": "Group React updates",
+      "groupName": "React ecosystem",
+      "matchPackagePrefixes": ["react", "react-dom", "@types/react"]
+    },
+    {
+      "description": "Group Temporal SDK updates",
+      "groupName": "Temporal SDK",
+      "matchPackagePrefixes": ["temporalio", "@temporalio"]
+    },
+    {
+      "description": "Group NATS client updates",
+      "groupName": "NATS clients",
+      "matchPackageNames": ["nats-py", "nats.ws"]
+    },
+    {
+      "description": "Group Kubernetes client updates",
+      "groupName": "Kubernetes clients",
+      "matchPackagePrefixes": ["kubernetes"]
+    },
+    {
+      "description": "Require approval for major updates",
+      "matchUpdateTypes": ["major"],
+      "reviewers": ["trangyp"],
+      "labels": ["dependencies", "renovate", "major-update"],
+      "additionalBranchPrefix": "major-"
+    },
+    {
+      "description": "Python specific rules",
+      "matchManagers": ["pip_requirements", "pipenv", "poetry"],
+      "addLabels": ["python"]
+    },
+    {
+      "description": "Node.js specific rules",
+      "matchManagers": ["npm", "yarn"],
+      "addLabels": ["nodejs"]
+    },
+    {
+      "description": "Docker image updates",
+      "matchManagers": ["dockerfile"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "vulnerability"],
+    "assignees": ["trangyp"]
+  },
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard - AMOS Platform",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"]
+  },
+  "baseBranches": ["main"],
+  "prBodyNotes": [
+    "### AMOS Platform Cross-Repo Impact Assessment",
+    "- [ ] Check impact on AMOS-Code shared libraries",
+    "- [ ] Check impact on AMOS-UNIVERSE schemas",
+    "- [ ] Verify compatibility with AMOS-Consulting backend",
+    "- [ ] Test with AMOS-Claws interface",
+    "- [ ] Verify Mailinhconect frontend compatibility",
+    "- [ ] Verify AMOS-Invest frontend compatibility"
+  ]
+}

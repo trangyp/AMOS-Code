@@ -13,9 +13,11 @@ Based on AMOS cognitive architecture:
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
+
+UTC = timezone.utc
 
 
 @dataclass
@@ -29,16 +31,16 @@ class Memory:
     content: str = ""
     source: str = "internal"  # Origin subsystem
     importance: float = 0.5  # 0.0 to 1.0
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     access_count: int = 0  # For LRU eviction
-    last_accessed: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    last_accessed: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     tags: List[str] = field(default_factory=list)
     related: List[str] = field(default_factory=list)  # Related memory IDs
 
     def touch(self):
         """Mark as accessed."""
         self.access_count += 1
-        self.last_accessed = datetime.now(UTC).isoformat()
+        self.last_accessed = datetime.now(timezone.utc).isoformat()
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

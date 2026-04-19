@@ -41,10 +41,6 @@ except ImportError:
 
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Callable, List, Optional, List, Optional
-from typing import Optional
-from typing import Dict
-
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False

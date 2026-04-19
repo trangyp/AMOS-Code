@@ -41,8 +41,7 @@ from clawspring.amos_brain.kernel_router import KernelRouter, TaskIntent
 
 # AMOS Brain components
 from clawspring.amos_brain.loader import get_brain
-from typing import Optional, List, Any, Any, List
-from typing import List
+from typing import Any, Dict, List, Optional
 
 @dataclass
 class BrainBridgeResult:

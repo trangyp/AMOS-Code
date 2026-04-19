@@ -14,9 +14,11 @@ Date: 2026-04-16
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import ast
 import builtins
-from typing import Any
+from typing import Any, Dict, Optional, Tuple
 
 
 class EquationExecutionError(Exception):

@@ -1,0 +1,1014 @@
+openapi: 3.1.0
+info:
+  title: AMOS Platform API
+  description: |
+    Unified API Gateway for the AMOS 5-Repository Integration Architecture.
+    
+    This API serves as the central communication hub for:
+    - AMOS-Code (core brain package)
+    - AMOS-Consulting (this service - platform hub)
+    - AMOS-Claws (operator frontend)
+    - Mailinhconect (product frontend)
+    - AMOS-Invest (investor dashboard)
+    
+    Communication lanes:
+    - Sync: REST API + WebSocket
+    - Async: Redis Streams / NATS (event bus)
+  version: 1.0.0
+  contact:
+    name: AMOS Platform Team
+    email: platform@amos.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: https://api.amos.io/v1
+    description: Production
+  - url: https://api-staging.amos.io/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Local Development
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Health & Status
+  /health:
+    get:
+      summary: Health Check
+      description: Check system health status
+      security: []
+      tags:
+        - System
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /status:
+    get:
+      summary: System Status
+      description: Get detailed system status
+      tags:
+        - System
+      responses:
+        '200':
+          description: System status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStatus'
+
+  # Chat Operations
+  /chat:
+    post:
+      summary: Send Chat Message
+      description: Send a message and get AI response
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  # Agent Operations
+  /agent/run:
+    post:
+      summary: Run Agent
+      description: Execute an agent task asynchronously
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentRunRequest'
+      responses:
+        '202':
+          description: Agent task accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRunAccepted'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /agent/status/{taskId}:
+    get:
+      summary: Get Agent Status
+      description: Check the status of a running agent task
+      tags:
+        - Agents
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Agent status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRunResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /agent/cancel/{taskId}:
+    post:
+      summary: Cancel Agent
+      description: Cancel a running agent task
+      tags:
+        - Agents
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cancellation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  # Repository Operations
+  /repo/scan:
+    post:
+      summary: Scan Repository
+      description: Initiate a repository scan for issues
+      tags:
+        - Repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepoScanRequest'
+      responses:
+        '202':
+          description: Scan initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanAccepted'
+
+  /repo/fix:
+    post:
+      summary: Fix Repository
+      description: Apply automated fixes to a repository
+      tags:
+        - Repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepoFixRequest'
+      responses:
+        '202':
+          description: Fix job initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FixAccepted'
+
+  /repo/status/{scanId}:
+    get:
+      summary: Get Scan Status
+      description: Check the status of a repository scan
+      tags:
+        - Repository
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scan status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepoScanResult'
+
+  /repo/reports/{scanId}:
+    get:
+      summary: Download Report
+      description: Download the scan report
+      tags:
+        - Repository
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Report data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanReport'
+            text/markdown:
+              schema:
+                type: string
+
+  # Workflow Operations
+  /workflow/run:
+    post:
+      summary: Run Workflow
+      description: Execute a workflow
+      tags:
+        - Workflows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowRunRequest'
+      responses:
+        '202':
+          description: Workflow started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAccepted'
+
+  /workflow/status/{workflowId}:
+    get:
+      summary: Get Workflow Status
+      description: Check workflow execution status
+      tags:
+        - Workflows
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Workflow status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowStatus'
+
+  /workflow/cancel/{workflowId}:
+    post:
+      summary: Cancel Workflow
+      description: Cancel a running workflow
+      tags:
+        - Workflows
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cancellation result
+
+  # Model/LLM Operations
+  /models:
+    get:
+      summary: List Models
+      description: Get list of available AI models
+      tags:
+        - Models
+      responses:
+        '200':
+          description: List of models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ModelInfo'
+
+  /models/{modelId}/status:
+    get:
+      summary: Get Model Status
+      description: Check if a model is loaded and available
+      tags:
+        - Models
+      parameters:
+        - name: modelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelStatus'
+
+  /models/{modelId}/load:
+    post:
+      summary: Load Model
+      description: Load a model into memory (admin only)
+      tags:
+        - Models
+      parameters:
+        - name: modelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model loading initiated
+
+  /models/{modelId}/unload:
+    post:
+      summary: Unload Model
+      description: Unload a model from memory (admin only)
+      tags:
+        - Models
+      parameters:
+        - name: modelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model unloaded
+
+  # Task Management
+  /tasks:
+    get:
+      summary: List Tasks
+      description: Get list of user tasks
+      tags:
+        - Tasks
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, completed, failed, cancelled]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskStatus'
+                  total:
+                    type: integer
+
+  /tasks/{taskId}:
+    get:
+      summary: Get Task
+      description: Get detailed information about a task
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetails'
+
+    delete:
+      summary: Delete Task
+      description: Delete a task and its results
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Task deleted
+
+  # Metrics
+  /metrics:
+    get:
+      summary: Prometheus Metrics
+      description: Get Prometheus-formatted metrics
+      security: []
+      tags:
+        - System
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # WebSocket
+  /ws/stream:
+    get:
+      summary: WebSocket Stream
+      description: |
+        WebSocket endpoint for real-time updates.
+        
+        Connect and authenticate:
+        ```javascript
+        const ws = new WebSocket('wss://api.amos.io/v1/ws/stream');
+        ws.onopen = () => {
+          ws.send(JSON.stringify({
+            type: 'auth',
+            token: '<jwt_token>'
+          }));
+        };
+        ```
+        
+        Subscribe to channels:
+        ```javascript
+        ws.send(JSON.stringify({
+          type: 'subscribe',
+          channels: ['tasks', 'notifications']
+        }));
+        ```
+      tags:
+        - WebSocket
+      responses:
+        '101':
+          description: WebSocket connection established
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+    
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+
+  schemas:
+    # Request/Response Models
+    ChatRequest:
+      type: object
+      required:
+        - message
+        - workspace_id
+      properties:
+        message:
+          type: string
+          description: User message
+        context:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: Previous messages for context
+        model:
+          type: string
+          description: Model to use (default from config)
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+          default: 0.7
+        max_tokens:
+          type: integer
+          minimum: 1
+          maximum: 8192
+        workspace_id:
+          type: string
+          description: Workspace/tenant ID
+
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ChatResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        message:
+          type: string
+        model:
+          type: string
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    AgentRunRequest:
+      type: object
+      required:
+        - agent_type
+        - parameters
+      properties:
+        agent_type:
+          type: string
+          enum: [code_review, repo_scan, fix_generator, security_audit, performance_check, custom]
+        target_repo:
+          type: string
+          description: Repository URL or local path
+        parameters:
+          type: object
+          additionalProperties: true
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+          default: normal
+        callback_url:
+          type: string
+          format: uri
+          description: URL to call when agent completes
+
+    AgentRunAccepted:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, running]
+        estimated_duration_seconds:
+          type: integer
+        queue_position:
+          type: integer
+
+    AgentRunResult:
+      type: object
+      properties:
+        task_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cancelled]
+        agent_type:
+          type: string
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          type: string
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        duration_ms:
+          type: integer
+
+    RepoScanRequest:
+      type: object
+      required:
+        - repo_url
+      properties:
+        repo_url:
+          type: string
+          format: uri
+        branch:
+          type: string
+          default: main
+        scan_types:
+          type: array
+          items:
+            type: string
+            enum: [security, performance, style, architecture, dependencies, tests]
+        depth:
+          type: string
+          enum: [quick, standard, deep]
+          default: standard
+
+    RepoScanResult:
+      type: object
+      properties:
+        scan_id:
+          type: string
+        repo_url:
+          type: string
+        status:
+          type: string
+        findings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+        summary:
+          type: object
+          properties:
+            total_files:
+              type: integer
+            issues_found:
+              type: integer
+            critical:
+              type: integer
+            warning:
+              type: integer
+            info:
+              type: integer
+        report_url:
+          type: string
+          format: uri
+
+    Finding:
+      type: object
+      properties:
+        id:
+          type: string
+        file_path:
+          type: string
+        line_number:
+          type: integer
+        severity:
+          type: string
+          enum: [critical, warning, info]
+        category:
+          type: string
+        message:
+          type: string
+        suggestion:
+          type: string
+
+    RepoFixRequest:
+      type: object
+      required:
+        - repo_url
+        - scan_id
+      properties:
+        repo_url:
+          type: string
+        scan_id:
+          type: string
+        fix_types:
+          type: array
+          items:
+            type: string
+        create_pr:
+          type: boolean
+          default: true
+
+    ScanAccepted:
+      type: object
+      properties:
+        scan_id:
+          type: string
+        status:
+          type: string
+          enum: [queued, running]
+
+    FixAccepted:
+      type: object
+      properties:
+        fix_id:
+          type: string
+        status:
+          type: string
+
+    WorkflowRunRequest:
+      type: object
+      required:
+        - workflow_id
+      properties:
+        workflow_id:
+          type: string
+        parameters:
+          type: object
+          additionalProperties: true
+        trigger:
+          type: string
+          enum: [manual, scheduled, webhook, event]
+
+    WorkflowAccepted:
+      type: object
+      properties:
+        workflow_id:
+          type: string
+        execution_id:
+          type: string
+        status:
+          type: string
+
+    WorkflowStatus:
+      type: object
+      properties:
+        execution_id:
+          type: string
+        workflow_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, paused, completed, failed, cancelled]
+        current_step:
+          type: string
+        progress_percent:
+          type: number
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+              duration_ms:
+                type: integer
+
+    ModelInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        provider:
+          type: string
+          enum: [ollama, lmstudio, openai, anthropic, vllm, sglang, local]
+        status:
+          type: string
+          enum: [available, loading, loaded, unavailable, error]
+        capabilities:
+          type: array
+          items:
+            type: string
+        context_window:
+          type: integer
+        loaded_at:
+          type: string
+          format: date-time
+
+    ModelStatus:
+      type: object
+      properties:
+        model_id:
+          type: string
+        status:
+          type: string
+        loaded_at:
+          type: string
+          format: date-time
+        last_used:
+          type: string
+          format: date-time
+        memory_usage_mb:
+          type: integer
+
+    TaskStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cancelled]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error:
+          type: string
+
+    TaskDetails:
+      allOf:
+        - $ref: '#/components/schemas/TaskStatus'
+        - type: object
+          properties:
+            input:
+              type: object
+            output:
+              type: object
+            logs:
+              type: array
+              items:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  level:
+                    type: string
+                  message:
+                    type: string
+
+    ScanReport:
+      type: object
+      properties:
+        scan_id:
+          type: string
+        format:
+          type: string
+          enum: [json, markdown, html, sarif]
+        content:
+          type: string
+        download_url:
+          type: string
+          format: uri
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        version:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              response_time_ms:
+                type: number
+
+    SystemStatus:
+      type: object
+      properties:
+        version:
+          type: string
+        uptime_seconds:
+          type: integer
+        components:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              latency_ms:
+                type: number
+              last_check:
+                type: string
+                format: date-time
+        queue_depth:
+          type: integer
+        active_tasks:
+          type: integer
+
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+            request_id:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'

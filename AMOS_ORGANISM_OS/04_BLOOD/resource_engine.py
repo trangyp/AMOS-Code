@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Resource Engine — Core resource tracking and allocation
 
 Manages the "blood" of the organism - computational resources, tokens,
@@ -10,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 
 class ResourceType(Enum):

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Quantum Router — Intelligent Decision Routing
 
 Routes decisions through appropriate optimization pipelines,
