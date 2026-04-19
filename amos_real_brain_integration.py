@@ -28,9 +28,6 @@ _AMOS_ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(_AMOS_ROOT))
 
 # Import real brain components
-from datetime import timezone
-from typing import Optional, Any
-
 from minimal_real_brain import (
     MinimalBrain,
     Plan,
