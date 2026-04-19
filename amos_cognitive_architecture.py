@@ -1,4 +1,6 @@
-from typing import Optional, Any
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
 
 """AMOS Cognitive Architecture - State-of-Art Implementation.
 
