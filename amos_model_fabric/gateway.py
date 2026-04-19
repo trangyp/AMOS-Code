@@ -10,7 +10,7 @@ import logging
 import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # LiteLLM for unified API
@@ -24,7 +24,7 @@ from .providers import (
     VLLMProvider,
     create_provider,
 )
-from typing import Dict, List, Optional
+from typing import Any
 
 from amos_model_fabric.models import (
     FabricRequest,
@@ -59,7 +59,7 @@ class GatewayMetrics:
     failed_requests: int = 0
     avg_latency_ms: float = 0.0
     cache_hits: int = 0
-    provider_health: Dict[ProviderType, ProviderHealth] = field(default_factory=dict)
+    provider_health: dict[ProviderType, ProviderHealth] = field(default_factory=dict)
 
     def record_request(self, success: bool, latency_ms: float):
         """Record a request metric."""
@@ -78,11 +78,11 @@ class LiteLLMRouter:
     """LiteLLM-based router for unified API access."""
 
     def __init__(self):
-        self._model_list: List[dict] = []
-        self._litellm_proxy_process: subprocess.Popen = None
+        self._model_list: list[dict] = []
+        self._litellm_proxy_process: subprocess.Popen | None = None
         self._proxy_url: str = "http://localhost:4000"
 
-    def build_model_list(self, registry: CapabilityRegistry) -> List[dict]:
+    def build_model_list(self, registry: CapabilityRegistry) -> list[dict]:
         """Build LiteLLM model list from capability registry."""
         models = []
 
@@ -131,7 +131,7 @@ class LiteLLMRouter:
             },
         }
 
-    def start_proxy(self, config_path: Optional[Path] = None) -> bool:
+    def start_proxy(self, config_path: Path | None = None) -> bool:
         """Start LiteLLM proxy server if available."""
         try:
             # Check if litellm proxy is already running
@@ -189,8 +189,8 @@ class RoutingStrategy:
 
     def select_provider(
         self,
-        required_capabilities: List[ModelCapability],
-        preferred_provider: Optional[ProviderType] = None,
+        required_capabilities: list[ModelCapability],
+        preferred_provider: ProviderType | None = None,
         task_type: str = "general",
     ) -> RoutingDecision:
         """Select the best provider for a task."""
@@ -265,9 +265,9 @@ class ModelFabricGateway:
         self.router = LiteLLMRouter()
         self.routing_strategy = RoutingStrategy(self.registry)
         self.metrics = GatewayMetrics()
-        self._providers: Dict[ProviderType, BaseProvider] = {}
+        self._providers: dict[ProviderType, BaseProvider] = {}
         self._initialized = False
-        self._last_health_check: datetime = None
+        self._last_health_check: datetime | None = None
 
     async def initialize(self) -> bool:
         """Initialize the gateway and discover available providers."""
@@ -325,7 +325,7 @@ class ModelFabricGateway:
 
     async def complete(self, request: FabricRequest) -> FabricResponse:
         """Execute a completion request."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         # Determine required capabilities
         required_caps = self._infer_required_capabilities(request)
@@ -347,7 +347,7 @@ class ModelFabricGateway:
 
         try:
             response = await provider.complete(request)
-            latency_ms = (datetime.now(UTC) - start).total_seconds() * 1000
+            latency_ms = (datetime.now(timezone.utc) - start).total_seconds() * 1000
 
             self.metrics.record_request(success=True, latency_ms=latency_ms)
             self.registry.update_model_health(
@@ -357,7 +357,7 @@ class ModelFabricGateway:
             return response
 
         except Exception as e:
-            latency_ms = (datetime.now(UTC) - start).total_seconds() * 1000
+            latency_ms = (datetime.now(timezone.utc) - start).total_seconds() * 1000
             self.metrics.record_request(success=False, latency_ms=latency_ms)
             self.registry.update_model_health(
                 f"{decision.provider_type.value}:{decision.model}", False, str(e)
@@ -406,7 +406,7 @@ class ModelFabricGateway:
 
         return caps
 
-    async def health_check(self) -> Dict[ProviderType, bool]:
+    async def health_check(self) -> dict[ProviderType, bool]:
         """Check health of all providers."""
         results = {}
 
@@ -417,14 +417,14 @@ class ModelFabricGateway:
             except:
                 results[provider_type] = False
 
-        self._last_health_check = datetime.now(UTC)
+        self._last_health_check = datetime.now(timezone.utc)
         return results
 
     def get_metrics(self) -> GatewayMetrics:
         """Get current gateway metrics."""
         return self.metrics
 
-    def list_available_models(self) -> List[ModelInfo]:
+    def list_available_models(self) -> list[ModelInfo]:
         """List all available models."""
         return self.registry.list_models()
 
@@ -436,7 +436,7 @@ class ModelFabricGateway:
 
 
 # Singleton instance
-_gateway: Optional[ModelFabricGateway] = None
+_gateway: ModelFabricGateway | None = None
 
 
 def get_gateway() -> ModelFabricGateway:

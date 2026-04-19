@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 AMOS Brain-Reading Kernel
 
@@ -14,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Dict, Final, List, Optional, Tuple
+from typing import Any, Final
 
 # ============================================================================
 # 1. ENUMS AND TYPE DEFINITIONS

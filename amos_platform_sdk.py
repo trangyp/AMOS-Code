@@ -21,15 +21,18 @@ Usage:
             print(event)
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from typing import Any, Dict, List, Optional, Protocol
 from urllib.parse import urljoin
+
+UTC = timezone.utc
 
 # Real HTTP client
 try:

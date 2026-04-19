@@ -1,7 +1,13 @@
-"""AMOS API Hub - Backend API implementation for hub-and-spoke architecture.
+"""AMOS API Hub - Production Backend API for hub-and-spoke architecture.
 
 This is the AMOS-Consulting backend that serves as the single API hub
 for all client repositories (AMOS-Claws, Mailinhconect, AMOS-Invest).
+
+Integrates:
+- Real LLM providers (Ollama, OpenAI, Anthropic)
+- AMOS Brain cognitive runtime
+- Repo Doctor analysis engine
+- Workflow orchestration
 
 Usage:
     uvicorn amos_api_hub:app --host 0.0.0.0 --port 8000
@@ -9,16 +15,22 @@ Usage:
 
 import os
 import sys
+import asyncio
+import time
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, List
+from datetime import datetime, timezone
+from typing import AsyncGenerator, List, Optional
+from pathlib import Path
 
 # Ensure amos_brain is importable
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(Path(__file__).parent / "backend"))
+sys.path.insert(0, str(Path(__file__).parent / "repo_doctor"))
 
 try:
-    from fastapi import FastAPI, HTTPException, Request
+    from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import JSONResponse
+    from fastapi.responses import JSONResponse, StreamingResponse
 except ImportError:
     raise ImportError(
         "FastAPI not installed. Run: pip install fastapi uvicorn"
@@ -28,10 +40,12 @@ from amos_brain.api_contracts import (
     ChatRequest,
     ChatResponse,
     ChatContext,
+    ChatMessage,
     BrainRunRequest,
     BrainRunResponse,
     RepoScanRequest,
     RepoScanResult,
+    RepoScanIssue,
     RepoFixRequest,
     RepoFixResult,
     ModelInfo,
@@ -42,6 +56,31 @@ from amos_brain.api_contracts import (
     ApiError,
     ErrorCode,
 )
+
+# Import real providers
+try:
+    from llm_providers import llm_router, LLMRequest, Message, OllamaProvider
+    LLM_PROVIDERS_AVAILABLE = True
+except ImportError as e:
+    print(f"[WARNING] LLM providers not available: {e}")
+    LLM_PROVIDERS_AVAILABLE = False
+
+# Import brain
+try:
+    from amos_brain import get_amos_integration, think, decide
+    BRAIN_AVAILABLE = True
+except ImportError as e:
+    print(f"[WARNING] AMOS Brain not available: {e}")
+    BRAIN_AVAILABLE = False
+
+# Import repo doctor
+try:
+    from repo_doctor.ingest.treesitter_ingest import TreeSitterIngest
+    from repo_doctor.architecture import ArchitectureAnalyzer
+    REPO_DOCTOR_AVAILABLE = True
+except ImportError as e:
+    print(f"[WARNING] Repo Doctor not available: {e}")
+    REPO_DOCTOR_AVAILABLE = False
 
 
 # ============================================================================
@@ -123,26 +162,47 @@ async def health_check() -> dict:
 
 @app.post("/v1/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
-    """Process chat message through AMOS brain.
-    
+    """Process chat message through AMOS brain with real LLM integration.
+
     This endpoint:
     1. Receives chat request from client repos
-    2. Routes to appropriate LLM (local/offline)
-    3. Returns structured response
+    2. Routes to appropriate LLM (Ollama local -> OpenAI -> Anthropic)
+    3. Returns structured response with token usage
     """
     try:
-        # TODO: Integrate with actual brain + LLM backend
-        # For now, return a mock response
+        if not LLM_PROVIDERS_AVAILABLE:
+            raise RuntimeError("LLM providers not available")
+
+        # Build message history
+        messages = []
+        if request.history:
+            for msg in request.history:
+                messages.append(Message(role=msg.get("role", "user"), content=msg.get("content", "")))
+        messages.append(Message(role="user", content=request.message))
+
+        # Create LLM request
+        llm_request = LLMRequest(
+            messages=messages,
+            model=request.model,
+            temperature=0.7,
+        )
+
+        # Route to best available provider (Ollama preferred for local)
+        start_time = time.time()
+        response = await llm_router.route_request(llm_request)
+        latency_ms = (time.time() - start_time) * 1000
+
         return ChatResponse(
-            message=f"Received: {request.message}",
-            conversation_id=request.context.conversation_id or "new-conv",
+            message=response.content,
+            conversation_id=request.context.conversation_id or f"conv-{int(start_time)}",
             session_id=request.context.session_id,
-            model="amos-brain-v14",
-            usage={
-                "prompt_tokens": len(request.message.split()),
-                "completion_tokens": 10,
-                "total_tokens": len(request.message.split()) + 10,
+            model=response.model,
+            usage=response.usage or {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
             },
+            latency_ms=latency_ms,
         )
     except Exception as e:
         raise HTTPException(
@@ -160,44 +220,33 @@ async def chat(request: ChatRequest) -> ChatResponse:
 
 @app.post("/v1/brain/run", response_model=BrainRunResponse)
 async def brain_run(request: BrainRunRequest) -> BrainRunResponse:
-    """Execute AMOS brain cycle.
-    
+    """Execute AMOS brain cycle with real cognitive runtime.
+
     Provides direct access to AMOS cognitive architecture for:
     - State graph execution
     - Branch generation
     - Morph execution
     """
-    import sys
-    sys.path.insert(0, 'clawspring/amos_brain')
-    from amos_kernel_runtime import AMOSKernelRuntime
-    
     try:
-        kernel = AMOSKernelRuntime()
-        
-        # Convert request to kernel observation
-        observation = {
-            "entities": ["brain_request"],
-            "relations": [],
-            "input_data": request.input,
-            "context": {
-                "max_branches": request.max_branches,
-                "collapse_strategy": request.collapse_strategy,
-            },
-        }
-        
-        goal = {
-            "type": "brain_execute",
-            "target": request.collapse_strategy,
-        }
-        
-        result = kernel.execute_cycle(observation, goal)
-        
+        if not BRAIN_AVAILABLE:
+            raise RuntimeError("AMOS Brain not available")
+
+        start_time = time.time()
+
+        # Use the think function from amos_brain for cognitive analysis
+        analysis = think(
+            query=request.input.get("query", "Process input"),
+            context=request.input.get("context", {}),
+        )
+
+        execution_time_ms = (time.time() - start_time) * 1000
+
         return BrainRunResponse(
-            run_id="run-" + str(hash(str(request.input)))[:8],
-            status="completed" if result.get("status") == "SUCCESS" else "failed",
+            run_id=f"run-{int(start_time * 1000)}",
+            status="completed",
             branches=[],
-            final_state=result,
-            execution_time_ms=0,
+            final_state=analysis,
+            execution_time_ms=execution_time_ms,
         )
     except Exception as e:
         raise HTTPException(

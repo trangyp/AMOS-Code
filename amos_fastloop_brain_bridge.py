@@ -341,7 +341,7 @@ class FastLoopBrainBridge:
             "state_id": state_id,
             "branch_count": len(branches),
             "laws_checked": ["L1", "L2", "L3", "L4", "L5", "L6"],
-        }
+        }}
 
     def _select_engines_for_fast_path(
         self, classification: ClassificationResult, intent: TaskIntent

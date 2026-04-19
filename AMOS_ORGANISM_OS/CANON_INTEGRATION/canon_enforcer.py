@@ -8,9 +8,11 @@ Version: 1.0.0
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class RulePriority(Enum):
