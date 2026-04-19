@@ -6,10 +6,10 @@ Tracks cash movements, balances, and flow analysis over time.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class CashflowType(Enum):
@@ -40,14 +40,14 @@ class CashflowRecord:
     currency: str = "USD"
     description: str = ""
     category: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: CashflowStatus = CashflowStatus.COMPLETED
     source: str = ""  # Where it came from
     destination: str = ""  # Where it went
     tags: List[str] = field(default_factory=list)
     recurring: bool = False
-    recurrence_period: str | None = None  # daily, weekly, monthly
-    related_record_id: str | None = None  # For transfers
+    recurrence_period: Optional[str] = None  # daily, weekly, monthly
+    related_record_id: Optional[str] = None  # For transfers
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,7 +76,7 @@ class CashflowTracker:
     trend analysis and forecasting input.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir

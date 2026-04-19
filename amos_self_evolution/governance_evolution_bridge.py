@@ -268,8 +268,8 @@ class GovernanceEvolutionBridge:
             )
 
     def _create_contract_from_opportunity(
-        self, opportunity: DetectedOpportunity
-    ) -> EvolutionContract:
+        self, opportunity: "DetectedOpportunity"
+    ) -> "EvolutionContract":
         """Create an evolution contract from a detected opportunity."""
         evolution_id = f"GOV_{opportunity.opportunity_id}_{int(time.time())}"
 
@@ -291,7 +291,7 @@ class GovernanceEvolutionBridge:
         self._contract_registry.register(contract)
         return contract
 
-    def _generate_patches(self, opportunity: DetectedOpportunity) -> List[PatchOperation]:
+    def _generate_patches(self, opportunity: "DetectedOpportunity") -> List["PatchOperation"]:
         """Generate patch operations for an opportunity.
 
         In production, this would analyze the opportunity and generate

@@ -198,6 +198,64 @@ class QuantumState:
 
         return np.concatenate([real_parts, imag_parts, probs])[:6]
 
+    @staticmethod
+    def zero(num_qubits: int = 1) -> "QuantumState":
+        """Create |0⟩^⊗n state (all qubits in ground state)."""
+        dim = 2 ** num_qubits
+        amplitudes = np.zeros(dim)
+        amplitudes[0] = 1.0
+        basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
+        return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
+
+    @staticmethod
+    def one(num_qubits: int = 1) -> "QuantumState":
+        """Create |1⟩^⊗n state (all qubits in excited state)."""
+        dim = 2 ** num_qubits
+        amplitudes = np.zeros(dim)
+        amplitudes[-1] = 1.0
+        basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
+        return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
+
+    @staticmethod
+    def superposition(num_qubits: int = 1) -> "QuantumState":
+        """Create |+⟩^⊗n state (equal superposition of all basis states)."""
+        dim = 2 ** num_qubits
+        amplitudes = np.ones(dim) / np.sqrt(dim)
+        basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
+        return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
+
+    @staticmethod
+    def bell() -> "QuantumState":
+        """Create Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2."""
+        amplitudes = np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)])
+        return QuantumState(
+            amplitudes=amplitudes,
+            num_qubits=2,
+            basis_states=["|00⟩", "|01⟩", "|10⟩", "|11⟩"]
+        )
+
+    @staticmethod
+    def ghz(num_qubits: int = 3) -> "QuantumState":
+        """Create GHZ state (|0...0⟩ + |1...1⟩)/√2."""
+        dim = 2 ** num_qubits
+        amplitudes = np.zeros(dim)
+        amplitudes[0] = 1 / np.sqrt(2)
+        amplitudes[-1] = 1 / np.sqrt(2)
+        basis = [f"|{i:0{num_qubits}b}⟩" for i in range(dim)]
+        return QuantumState(amplitudes=amplitudes, num_qubits=num_qubits, basis_states=basis)
+
+    def tensor_product(self, other: "QuantumState") -> "QuantumState":
+        """Compute tensor product of two quantum states: |ψ⟩ ⊗ |φ⟩."""
+        if self.amplitudes is None or other.amplitudes is None:
+            raise ValueError("Cannot tensor product with None amplitudes")
+        new_amplitudes = np.kron(self.amplitudes, other.amplitudes)
+        new_basis = [s + o for s in self.basis_states for o in other.basis_states]
+        return QuantumState(
+            amplitudes=new_amplitudes,
+            num_qubits=self.num_qubits + other.num_qubits,
+            basis_states=new_basis
+        )
+
 
 class StateBundle:
     """𝒳 - Total state universe as fiber bundle π: 𝕏 → 𝔹."""

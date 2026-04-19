@@ -430,6 +430,31 @@ def canon_query(*args, **kwargs):
     return _lazy_import("canon_query")(*args, **kwargs)
 
 
+def get_canon_learning_engine():
+    """Get Canon learning engine (lazy import)."""
+    return _lazy_import("get_canon_learning_engine")()
+
+
+def canon_learn(*args, **kwargs):
+    """Learn with Canon guidance (lazy import)."""
+    return _lazy_import("canon_learn")(*args, **kwargs)
+
+
+def get_canon_memory_system():
+    """Get Canon memory system (lazy import)."""
+    return _lazy_import("get_canon_memory_system")()
+
+
+def canon_store(*args, **kwargs):
+    """Store memory with Canon context (lazy import)."""
+    return _lazy_import("canon_store")(*args, **kwargs)
+
+
+def canon_search(*args, **kwargs):
+    """Search memories with Canon enhancement (lazy import)."""
+    return _lazy_import("canon_search")(*args, **kwargs)
+
+
 # Optional features - deferred to avoid import-time failures
 # These are loaded lazily via __getattr__ below
 # DO NOT assign None here - it prevents __getattr__ from triggering
