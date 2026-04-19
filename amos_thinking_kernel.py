@@ -1,7 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
-
-"""
-AMOS Thinking Kernel - Core State Transformation Engine
+"""AMOS Thinking Kernel - Core State Transformation Engine
 
 This module implements the formal thinking model defined in AMOS_THINKING_KERNEL_SPEC.md.
 

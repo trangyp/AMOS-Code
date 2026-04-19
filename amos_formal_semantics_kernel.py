@@ -8,12 +8,14 @@ Formalism → Semantics → RuntimeObjects → Checks → ExecutionMeaning
 This is the missing understanding layer between Reading/Thinking and Execution.
 """
 
+from __future__ import annotations
+
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum, auto
-from typing import List
+from typing import Any, Dict, List
 
 # =============================================================================
 # 1. Formula Classification System

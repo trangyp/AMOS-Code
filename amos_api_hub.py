@@ -298,43 +298,105 @@ async def repo_fix(request: RepoFixRequest) -> RepoFixResult:
 # ============================================================================
 
 @app.get("/v1/models", response_model=list[ModelInfo])
-async def list_models() -> List[ModelInfo]:
-    """List available LLM models.
-    
+async def list_models() -> list[ModelInfo]:
+    """List available LLM models from Ollama and other providers.
+
     Returns models from:
     - Ollama (local)
     - vLLM (local)
     - LM Studio (local)
     """
-    # TODO: Query actual model backends
-    return [
-        ModelInfo(
-            model_id="llama3.1:8b",
-            name="Llama 3.1 8B",
-            provider="ollama",
-            capabilities={
-                "context_window": 128000,
-                "max_output_tokens": 8192,
-                "supports_tools": True,
-                "supports_vision": False,
-                "supports_streaming": True,
-                "supports_json_mode": True,
-            },
-            is_local=True,
-            is_loaded=True,
-        ),
-    ]
+    models = []
+
+    # Query Ollama for available models
+    if LLM_PROVIDERS_AVAILABLE:
+        try:
+            ollama = OllamaProvider()
+            if ollama.is_enabled():
+                ollama_models = ollama.get_available_models()
+                for model_name in ollama_models:
+                    models.append(ModelInfo(
+                        model_id=model_name,
+                        name=model_name,
+                        provider="ollama",
+                        capabilities={
+                            "context_window": 128000,
+                            "max_output_tokens": 8192,
+                            "supports_tools": True,
+                            "supports_vision": False,
+                            "supports_streaming": True,
+                            "supports_json_mode": True,
+                        },
+                        is_local=True,
+                        is_loaded=True,
+                    ))
+        except Exception as e:
+            print(f"[WARNING] Failed to query Ollama models: {e}")
+
+    # Fallback to default if no models found
+    if not models:
+        models = [
+            ModelInfo(
+                model_id="llama3.2",
+                name="Llama 3.2",
+                provider="ollama",
+                capabilities={
+                    "context_window": 128000,
+                    "max_output_tokens": 8192,
+                    "supports_tools": True,
+                    "supports_vision": False,
+                    "supports_streaming": True,
+                    "supports_json_mode": True,
+                },
+                is_local=True,
+                is_loaded=False,
+            ),
+        ]
+
+    return models
 
 
 @app.post("/v1/models/run", response_model=ModelResponse)
 async def run_model(request: ModelRequest) -> ModelResponse:
-    """Run inference on specific model."""
-    # TODO: Integrate with actual model backend
-    return ModelResponse(
-        content=f"Model {request.model_id} response to: {request.prompt[:50]}...",
-        model_id=request.model_id,
-        usage={"prompt_tokens": 10, "completion_tokens": 10, "total_tokens": 20},
-    )
+    """Run inference on specific model using LLM router."""
+    try:
+        if not LLM_PROVIDERS_AVAILABLE:
+            raise RuntimeError("LLM providers not available")
+
+        # Build messages from prompt
+        messages = [Message(role="user", content=request.prompt)]
+
+        # Create LLM request
+        llm_request = LLMRequest(
+            messages=messages,
+            model=request.model_id,
+            temperature=request.temperature or 0.7,
+            max_tokens=request.max_tokens,
+        )
+
+        # Route to provider
+        start_time = time.time()
+        response = await llm_router.route_request(llm_request)
+        latency_ms = (time.time() - start_time) * 1000
+
+        return ModelResponse(
+            content=response.content,
+            model_id=request.model_id,
+            usage=response.usage or {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+            },
+            latency_ms=latency_ms,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=ApiError(
+                code=ErrorCode.INTERNAL_ERROR,
+                message=f"Model inference failed: {e}",
+            ).model_dump(),
+        )
 
 
 # ============================================================================

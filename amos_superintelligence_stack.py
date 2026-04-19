@@ -1832,6 +1832,7 @@ class ProblemFindingKernel(CognitiveKernel):
                     potential_impact=0.7,
                     suggested_action="Map out prerequisites before proceeding",
                 )
+            )
 
         # Pattern: Unaddressed constraints
         if "constraints" not in context:
@@ -1845,6 +1846,7 @@ class ProblemFindingKernel(CognitiveKernel):
                     potential_impact=0.5,
                     suggested_action="Explicitly list constraints",
                 )
+            )
 
         return problems
 
@@ -1867,6 +1869,7 @@ class ProblemFindingKernel(CognitiveKernel):
                         potential_impact=0.8,
                         suggested_action="Define specific, measurable success criteria",
                     )
+                )
 
         return problems
 

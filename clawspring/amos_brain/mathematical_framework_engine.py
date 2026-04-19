@@ -17,7 +17,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from functools import lru_cache
-from typing import Any, Dict, List, TypeVar
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 

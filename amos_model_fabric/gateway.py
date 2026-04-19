@@ -24,7 +24,6 @@ from .providers import (
     VLLMProvider,
     create_provider,
 )
-from typing import Any
 
 from amos_model_fabric.models import (
     FabricRequest,
@@ -390,7 +389,7 @@ class ModelFabricGateway:
         async for chunk in provider.complete_stream(request):
             yield chunk
 
-    def _infer_required_capabilities(self, request: FabricRequest) -> List[ModelCapability]:
+    def _infer_required_capabilities(self, request: FabricRequest) -> list[ModelCapability]:
         """Infer required capabilities from request."""
         caps = [ModelCapability.CHAT]
 

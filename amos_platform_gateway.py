@@ -74,10 +74,16 @@ from pydantic import BaseModel, Field, field_validator
 
 # Try to import AMOS-Code (core brain package)
 try:
-    from amos_brain import get_cognitive_runtime
+    from amos_brain import get_cognitive_runtime, BrainClient
+    from amos_brain.canon_cognitive_processor import CanonCognitiveProcessor
     AMOS_BRAIN_AVAILABLE = True
+    brain_client = BrainClient()
+    canon_processor = CanonCognitiveProcessor()
+    canon_processor.initialize()
 except ImportError:
     AMOS_BRAIN_AVAILABLE = False
+    brain_client = None
+    canon_processor = None
     logging.warning("amos-brain not available. Running in mock mode.")
 
 # Import auth manager
@@ -492,13 +498,38 @@ async def chat(
     """Send chat message and get AI response."""
     request_id = str(uuid.uuid4())
     
-    # Real LLM integration via LLMRouter
+    # Brain-powered cognitive processing with Canon enrichment
     response_text = ""
-    model_used = request.model or "ollama/llama3.2"
-    
-    if LLM_ROUTER_AVAILABLE and llm_router:
+    model_used = request.model or "canon-cognitive"
+    canon_enriched = False
+
+    if AMOS_BRAIN_AVAILABLE and canon_processor:
         try:
-            # Use LLM router for real inference
+            # Use Canon Cognitive Processor for brain-powered response
+            cognitive_result = canon_processor.process(
+                query=request.message,
+                domain=request.workspace_id or "general",
+                context={"user_id": user["id"], "model": model_used}
+            )
+            response_text = cognitive_result.content
+            canon_enriched = True
+            logger.info(f"Canon cognitive processing: confidence={cognitive_result.confidence:.2f}")
+        except Exception as e:
+            logger.error(f"Canon cognitive processing failed: {e}")
+            # Fallback to LLM
+            if LLM_ROUTER_AVAILABLE and llm_router:
+                try:
+                    messages = [{"role": "user", "content": request.message}]
+                    llm_response = await llm_router.chat(model_used, messages)
+                    response_text = llm_response.get("content", "")
+                    model_used = llm_response.get("model", model_used)
+                except Exception as e2:
+                    logger.error(f"LLM fallback failed: {e2}")
+                    response_text = f"Error: Processing failed - {str(e)}"
+            else:
+                response_text = f"Echo: {request.message}"
+    elif LLM_ROUTER_AVAILABLE and llm_router:
+        try:
             messages = [{"role": "user", "content": request.message}]
             llm_response = await llm_router.chat(model_used, messages)
             response_text = llm_response.get("content", "")
@@ -507,7 +538,6 @@ async def chat(
             logger.error(f"LLM inference failed: {e}")
             response_text = f"Error: LLM inference failed - {str(e)}"
     else:
-        # Fallback: mock response when LLM not available
         response_text = f"Echo: {request.message}"
     
     response = ChatResponse(

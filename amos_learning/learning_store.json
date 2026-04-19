@@ -1153,6 +1153,102 @@
       "created_at": "2026-04-19T17:49:05.091219+00:00",
       "last_used": "2026-04-19T17:49:05.091219+00:00",
       "evolution_history": []
+    },
+    "proc_generic_8b70f1_8b70f157": {
+      "procedure_id": "proc_generic_8b70f1_8b70f157",
+      "name": "generic_8b70f1",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Break down this task into executable steps:\n\nTask: Explain Python type hints\nContext: {}\n\nProvide steps as JSON array with format:\n[{\"step\": 1, \"description\": \"...\", \"action_type\": \"analyze|transform|verify|execute\"}]\n\nSteps should be concrete and actionable.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Contrarian View - Critical examination",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Break down this task into executable steps:\n\nTask:...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Break down this task into executable steps:\n\nTask: Explain Python type hints\nCon"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "8b70f1579a27e183",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-19T17:56:47.565107+00:00",
+      "last_used": "2026-04-19T17:56:47.565107+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_4db9ee_4db9ee67": {
+      "procedure_id": "proc_generic_4db9ee_4db9ee67",
+      "name": "generic_4db9ee",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Execute this step:\n\nStep: Explain Python type hints\nAction Type: execute\nInput: {\"original_request\": \"Explain Python type hints\"}\n\nProvide specific actions and expected output.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Execute this step:\n\nStep: Explain Python type hint...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Execute this step:\n\nStep: Explain Python type hints\nAction Type: execute\nInput: "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "4db9ee67c8cbac50",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-19T17:56:47.569339+00:00",
+      "last_used": "2026-04-19T17:56:47.569339+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_f9da2d_f9da2dfb": {
+      "procedure_id": "proc_generic_f9da2d_f9da2dfb",
+      "name": "generic_f9da2d",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Synthesize final output from these completed steps:\n\nStep 1: Explain Python type hints\nOutput: {\"action_complete\": true, \"result\": \"## AMOS Brain Analysis: Execute this step:\\n\\nStep: Explain Python type hint...\\n\\n### Reasoning Chain\\n- 1. Task Analysis: 'Execute this step:\\n\\nStep: Explain Py\n\nOriginal request: Explain Python type hints\n\nProvide concise final output.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Synthesize final output from these completed steps...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Synthesize final output from these completed steps:\n\nStep 1: Explain Python type"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "f9da2dfb1225d33a",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-19T17:56:47.572195+00:00",
+      "last_used": "2026-04-19T17:56:47.572195+00:00",
+      "evolution_history": []
     }
   },
   "patterns": {
@@ -1759,18 +1855,69 @@
       "frequency": 1,
       "first_seen": "2026-04-19T17:49:05.091254+00:00",
       "last_seen": "2026-04-19T17:49:05.091254+00:00"
+    },
+    "pat_general_9354ad14": {
+      "pattern_id": "pat_general_9354ad14",
+      "pattern_type": "general",
+      "signature": "9354ad14f483fbd1",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_8b70f1_8b70f157"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T17:56:47.565155+00:00",
+      "last_seen": "2026-04-19T17:56:47.565155+00:00"
+    },
+    "pat_general_cfe5f128": {
+      "pattern_id": "pat_general_cfe5f128",
+      "pattern_type": "general",
+      "signature": "cfe5f12897cf8d5d",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_4db9ee_4db9ee67"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T17:56:47.569389+00:00",
+      "last_seen": "2026-04-19T17:56:47.569389+00:00"
+    },
+    "pat_general_ba3ab4b0": {
+      "pattern_id": "pat_general_ba3ab4b0",
+      "pattern_type": "general",
+      "signature": "ba3ab4b04cc26844",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_f9da2d_f9da2dfb"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T17:56:47.572246+00:00",
+      "last_seen": "2026-04-19T17:56:47.572246+00:00"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 58,
-    "patterns_detected": 35,
+    "procedures_learned": 61,
+    "patterns_detected": 38,
     "decisions_recorded": 0,
     "failures_avoided": 0,
     "procedures_reused": 33,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-19T17:49:05.092653+00:00"
+  "saved_at": "2026-04-19T17:56:47.573561+00:00"
 }
