@@ -3,7 +3,7 @@
 import random
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class AgentRole(Enum):
@@ -53,7 +53,7 @@ class AgentRegistry:
 
     def __init__(self):
         self.agents: Dict[str, Agent] = {}
-        self.capability_index: dict[str, set[str]] = {}
+        self.capability_index: Dict[str, set[str]] = {}
 
     def register_agent(self, agent: Agent) -> None:
         """Register a new agent."""
@@ -68,7 +68,7 @@ class AgentRegistry:
         agent_ids = self.capability_index.get(capability, set())
         return [self.agents[aid] for aid in agent_ids if aid in self.agents]
 
-    def get_system_load(self) -> dict[str, float]:
+    def get_system_load(self) -> Dict[str, float]:
         """Get current load distribution."""
         return {aid: agent.load for aid, agent in self.agents.items()}
 
@@ -139,7 +139,7 @@ class ConsensusEngine:
         """Weighted voting consensus mechanism."""
         if not proposals:
             return None
-        vote_counts: dict[Any, float] = {}
+        vote_counts: Dict[Any, float] = {}
         for agent_id, proposal in proposals.items():
             weight = weights.get(agent_id, 1.0)
             vote_counts[proposal] = vote_counts.get(proposal, 0) + weight
@@ -151,7 +151,7 @@ class ConsensusEngine:
         if n <= 3 * f:
             return None  # Cannot guarantee consensus
         # Count occurrences
-        counts: dict[Any, int] = {}
+        counts: Dict[Any, int] = {}
         for proposal in proposals.values():
             counts[proposal] = counts.get(proposal, 0) + 1
         # Need n-f agreements
@@ -192,10 +192,10 @@ class SwarmIntelligenceEngine:
             "convergence": global_best,
         }
 
-    def ant_colony_optimization(self, tasks: List[Task], agents: List[Agent]) -> list[tuple[str, str]]:
+    def ant_colony_optimization(self, tasks: List[Task], agents: List[Agent]) -> List[tuple[str, str]]:
         """ACO-inspired task allocation."""
         allocations = []
-        pheromones: dict[tuple[str, str], float] = {}
+        pheromones: Dict[tuple[str, str], float] = {}
         for task in tasks:
             for agent in agents:
                 key = (task.id, agent.id)
@@ -412,8 +412,6 @@ _multi_agent_engine: Optional[MultiAgentCoordinationEngine] = None
 
 def get_multi_agent_engine() -> MultiAgentCoordinationEngine:
     """Get or create the Multi-Agent Coordination Engine singleton."""
-from __future__ import annotations
-
     global _multi_agent_engine
     if _multi_agent_engine is None:
         _multi_agent_engine = MultiAgentCoordinationEngine()

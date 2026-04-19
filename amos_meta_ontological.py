@@ -32,7 +32,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -169,7 +169,7 @@ class TemporalHierarchy:
         default_factory=lambda: TimeSignature(2.592e6, 86400, 3.858e-7, TimeScale.META)
     )
 
-    def get_hierarchy(self) -> list[tuple[TimeScale, TimeSignature]]:
+    def get_hierarchy(self) -> List[tuple[TimeScale, TimeSignature]]:
         """Return ordered hierarchy."""
         return [
             (TimeScale.QUANTUM, self.quantum),
@@ -463,7 +463,7 @@ class SheafOfTruths:
         """Add local truth to sheaf."""
         self.local_sections[truth.context_id] = truth
 
-    def check_compatibility(self) -> tuple[bool, list[tuple[str, str, float]]]:
+    def check_compatibility(self) -> Tuple[bool, list[tuple[str, str, float]]]:
         """Check all pairs for consistency."""
         issues = []
         contexts = list(self.local_sections.keys())
@@ -792,7 +792,7 @@ class MetaSemanticEvaluator:
     """
 
     current_semantics: dict = field(default_factory=dict)
-    fitness_history: list[tuple[float, str]] = field(default_factory=list)
+    fitness_history: List[tuple[float, str]] = field(default_factory=list)
     adaptation_log: List[dict] = field(default_factory=list)
 
     def evaluate_fitness(self, semantics: dict, performance_metrics: dict) -> float:
@@ -932,7 +932,7 @@ class EthicalBoundary:
             "applies_to_contexts", []
         )
 
-    def check_multi_regime_admissibility(self, x_prime: dict) -> tuple[bool, list[str]]:
+    def check_multi_regime_admissibility(self, x_prime: dict) -> Tuple[bool, list[str]]:
         """X' ∈ Z* - check all regime constraints."""
         regimes = [
             ("type", x_prime.get("type_valid", True)),

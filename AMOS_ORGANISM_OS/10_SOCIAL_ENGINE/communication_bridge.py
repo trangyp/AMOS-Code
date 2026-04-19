@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class MessageType(Enum):
@@ -68,11 +68,11 @@ class CommunicationBridge:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.connections: dict[str, dict[str, Any]] = {}
-        self.message_queue: list[Message] = []
-        self.sent_messages: list[Message] = []
-        self.received_messages: list[Message] = []
-        self.protocols: dict[str, dict[str, Any]] = {}
+        self.connections: Dict[str, dict[str, Any]] = {}
+        self.message_queue: List[Message] = []
+        self.sent_messages: List[Message] = []
+        self.received_messages: List[Message] = []
+        self.protocols: Dict[str, dict[str, Any]] = {}
 
         self._init_default_protocols()
 
@@ -106,7 +106,7 @@ class CommunicationBridge:
         connection_id: str,
         protocol: str,
         endpoint: str,
-        credentials: dict[str, Any] = None,
+        credentials: Dict[str, Any] = None,
     ) -> bool:
         """Register a new external connection."""
         if protocol not in self.protocols:
@@ -171,7 +171,7 @@ class CommunicationBridge:
         self,
         content: Dict[str, Any],
         msg_type: MessageType = MessageType.EVENT,
-    ) -> list[Message]:
+    ) -> List[Message]:
         """Broadcast a message to all connected recipients."""
         messages = []
         for connection_id in self.connections.keys():
@@ -179,7 +179,7 @@ class CommunicationBridge:
             messages.append(msg)
         return messages
 
-    def get_pending_messages(self) -> list[dict[str, Any]]:
+    def get_pending_messages(self) -> List[dict[str, Any]]:
         """Get messages awaiting processing."""
         # In a real implementation, this would filter unprocessed messages
         return [m.to_dict() for m in self.received_messages[-10:]]
@@ -188,7 +188,7 @@ class CommunicationBridge:
         self,
         recipient: str = None,
         limit: int = 50,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get message history."""
         messages = self.sent_messages + self.received_messages
         if recipient:
@@ -208,11 +208,11 @@ class CommunicationBridge:
         }
         messages_file.write_text(json.dumps(data, indent=2))
 
-    def get_connection_status(self, connection_id: str) -> dict[str, Any]:
+    def get_connection_status(self, connection_id: str) -> Dict[str, Any]:
         """Get status of a connection."""
         return self.connections.get(connection_id)
 
-    def list_connections(self) -> list[dict[str, Any]]:
+    def list_connections(self) -> List[dict[str, Any]]:
         """List all registered connections."""
         return [{"id": cid, **info} for cid, info in self.connections.items()]
 

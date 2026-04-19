@@ -14,7 +14,8 @@ import re
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List
 
 # SuperBrain integration
 try:
@@ -60,7 +61,7 @@ class CognitiveRouter:
         self._brain_lock = threading.Lock()
         self._init_superbrain()
 
-    def _build_keyword_mappings(self) -> dict[str, list[str]]:
+    def _build_keyword_mappings(self) -> Dict[str, list[str]]:
         """Build keyword-to-category mappings for routing."""
         return {
             "consulting": [
@@ -227,7 +228,7 @@ class CognitiveRouter:
             except Exception:
                 pass  # Fail open
 
-    def route_task(self, task: str, context: dict[str, Any] = None) -> RouteDecision:
+    def route_task(self, task: str, context: Dict[str, Any] = None) -> RouteDecision:
         """Route a task to the optimal engine."""
         context = context or {}
         task_lower = task.lower()
@@ -282,7 +283,7 @@ class CognitiveRouter:
 
         return decision
 
-    def _score_categories(self, task_lower: str) -> dict[str, float]:
+    def _score_categories(self, task_lower: str) -> Dict[str, float]:
         """Score each category based on keyword matches."""
         scores = {}
 

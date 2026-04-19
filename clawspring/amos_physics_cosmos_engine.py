@@ -364,8 +364,6 @@ _physics_cosmos_engine: Optional[PhysicsCosmosEngine] = None
 
 def get_physics_cosmos_engine() -> PhysicsCosmosEngine:
     """Get or create the Physics Cosmos Engine singleton."""
-from __future__ import annotations
-
     global _physics_cosmos_engine
     if _physics_cosmos_engine is None:
         _physics_cosmos_engine = PhysicsCosmosEngine()

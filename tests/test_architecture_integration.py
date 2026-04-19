@@ -413,7 +413,6 @@ class TestEndToEndAutonomousFlow(unittest.TestCase):
         # Step 5: Rollback Capability (E004)
         try:
             from amos_self_evolution.rollback_guard import RollbackGuard
-from typing import Set
             guard = RollbackGuard(".")
             steps.append(("Rollback", "✓ Rollback guard ready", 1))
         except Exception as e:

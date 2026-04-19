@@ -10,7 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class StorageType(Enum):
@@ -88,7 +88,7 @@ class StorageManager:
         storage_type: StorageType,
         path: str,
         capacity_bytes: int,
-        config: dict[str, Any] = None,
+        config: Dict[str, Any] = None,
     ) -> StorageBackend:
         """Create and register a new storage backend."""
         backend_id = f"storage_{len(self.backends) + 1}"
@@ -156,14 +156,14 @@ class StorageManager:
 
         return True
 
-    def list_backends(self, status_filter: Optional[StorageStatus] = None) -> list[StorageBackend]:
+    def list_backends(self, status_filter: Optional[StorageStatus] = None) -> List[StorageBackend]:
         """List all storage backends, optionally filtered by status."""
         backends = list(self.backends.values())
         if status_filter:
             backends = [b for b in backends if b.status == status_filter]
         return backends
 
-    def get_available_backends(self) -> list[StorageBackend]:
+    def get_available_backends(self) -> List[StorageBackend]:
         """Get all online backends with available space."""
         return [
             b
@@ -184,7 +184,7 @@ class StorageManager:
         # Select by lowest latency
         return min(suitable, key=lambda b: b.metrics.latency_ms)
 
-    def get_total_capacity(self) -> dict[str, int]:
+    def get_total_capacity(self) -> Dict[str, int]:
         """Get total capacity across all backends."""
         total = sum(b.metrics.total_capacity_bytes for b in self.backends.values())
         used = sum(b.metrics.used_bytes for b in self.backends.values())

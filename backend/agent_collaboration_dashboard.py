@@ -34,7 +34,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Set
 
 from agent_messaging import message_bus
 from ai_cost_manager import cost_manager
@@ -67,7 +67,7 @@ class DashboardEvent:
 
     event_type: str
     timestamp: str
-    data: dict[str, Any]
+    data: Dict[str, Any]
     event_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
 
 
@@ -79,8 +79,8 @@ class AgentNode:
     label: str
     type: str
     status: str
-    capabilities: list[str]
-    metrics: dict[str, Any]
+    capabilities: List[str]
+    metrics: Dict[str, Any]
     x: float = 0.0
     y: float = 0.0
 
@@ -100,11 +100,11 @@ class WebSocketManager:
     """Manage WebSocket connections for real-time dashboard."""
 
     def __init__(self):
-        self.connections: set[Any] = set()
-        self.connection_info: dict[Any, dict[str, Any]] = {}
+        self.connections: Set[Any] = set()
+        self.connection_info: Dict[Any, dict[str, Any]] = {}
         self._lock = asyncio.Lock()
 
-    async def connect(self, websocket: Any, client_info: dict[str, Any] = None):
+    async def connect(self, websocket: Any, client_info: Dict[str, Any] = None):
         """Register new WebSocket connection."""
         async with self._lock:
             self.connections.add(websocket)
@@ -170,7 +170,7 @@ class WebSocketManager:
             )
         )
 
-    def _get_agent_summary(self) -> list[dict[str, Any]]:
+    def _get_agent_summary(self) -> List[dict[str, Any]]:
         """Get summary of all agents."""
         return [
             {
@@ -186,7 +186,7 @@ class WebSocketManager:
             for agent in amos_brain.agents.values()
         ]
 
-    def _get_network_topology(self) -> dict[str, Any]:
+    def _get_network_topology(self) -> Dict[str, Any]:
         """Get current network topology."""
         nodes = []
         edges = []
@@ -430,7 +430,7 @@ class CollaborationDashboard:
         finally:
             await self.ws_manager.disconnect(websocket)
 
-    def _get_agent_details(self, agent_id: str) -> dict[str, Any]:
+    def _get_agent_details(self, agent_id: str) -> Dict[str, Any]:
         """Get detailed information about an agent."""
         agent = amos_brain.agents.get(agent_id)
         if not agent:
@@ -466,7 +466,7 @@ class CollaborationDashboard:
             "config": agent.config,
         }
 
-    def _get_evolution_history(self, agent_id: str) -> list[dict[str, Any]]:
+    def _get_evolution_history(self, agent_id: str) -> List[dict[str, Any]]:
         """Get evolution history for an agent."""
         improvements = self_evolving_engine.get_agent_improvements(agent_id)
 

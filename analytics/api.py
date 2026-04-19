@@ -7,6 +7,7 @@ Version: 2.0.0
 """
 
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query

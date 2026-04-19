@@ -18,6 +18,7 @@ import functools
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict, Set
 
 # OPA integration
 try:
@@ -107,16 +108,16 @@ class RBACPolicy:
     """RBAC policy definition."""
 
     role: Role
-    permissions: set[Permission]
-    allowed_systems: set[str]
-    denied_systems: set[str]
+    permissions: Set[Permission]
+    allowed_systems: Set[str]
+    denied_systems: Set[str]
 
 
 class RBACManager:
     """Central RBAC manager for 12-system governance."""
 
     # Role-to-Permissions mapping
-    ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
+    ROLE_PERMISSIONS: Dict[Role, set[Permission]] = {
         Role.ADMIN: set(Permission),  # All permissions
         Role.OPERATOR: {
             Permission.COGNITIVE_ROUTER_ROUTE,
@@ -162,7 +163,7 @@ class RBACManager:
     }
 
     # System access rules
-    SYSTEM_ACCESS: dict[Role, dict[str, str]] = {
+    SYSTEM_ACCESS: Dict[Role, dict[str, str]] = {
         Role.ADMIN: {
             "cognitive_router": "full",
             "resilience_engine": "full",

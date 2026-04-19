@@ -42,26 +42,26 @@ class FleetIntelligenceBridge:
 
     def __init__(self, root_path: str | Path = None):
         self.root_path = Path(root_path) if root_path else Path(".")
-        self._fleet_manager: FleetManager | None = None
-        self._shared_contract_analyzer: SharedContractAnalyzer | None = None
-        self._batch_planner: BatchRemediationPlanner | None = None
+        self._fleet_manager: Optional[FleetManager] = None
+        self._shared_contract_analyzer: Optional[SharedContractAnalyzer] = None
+        self._batch_planner: Optional[BatchRemediationPlanner] = None
 
     @property
-    def fleet_manager(self) -> FleetManager | None:
+    def fleet_manager(self) -> Optional[FleetManager]:
         """Lazy initialization of fleet manager."""
         if self._fleet_manager is None and FLEET_AVAILABLE:
             self._fleet_manager = FleetManager()
         return self._fleet_manager
 
     @property
-    def contract_analyzer(self) -> SharedContractAnalyzer | None:
+    def contract_analyzer(self) -> Optional[SharedContractAnalyzer]:
         """Lazy initialization of contract analyzer."""
         if self._shared_contract_analyzer is None and FLEET_AVAILABLE:
             self._shared_contract_analyzer = SharedContractAnalyzer()
         return self._shared_contract_analyzer
 
     @property
-    def batch_planner(self) -> BatchRemediationPlanner | None:
+    def batch_planner(self) -> Optional[BatchRemediationPlanner]:
         """Lazy initialization of batch planner."""
         if self._batch_planner is None and FLEET_AVAILABLE:
             self._batch_planner = BatchRemediationPlanner()

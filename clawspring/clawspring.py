@@ -59,8 +59,6 @@ Slash commands in REPL:
   /exit /quit Exit
 """
 
-from __future__ import annotations
-
 
 import os
 import re
@@ -150,8 +148,8 @@ def _has_diff(text: str) -> bool:
 
 # ── Conversation rendering ─────────────────────────────────────────────────
 
-_accumulated_text: list[str] = []  # buffer text during streaming
-_current_live: Live | None = None  # active Rich Live instance (one at a time)
+_accumulated_text: List[str] = []  # buffer text during streaming
+_current_live: Optional[Live] = None  # active Rich Live instance (one at a time)
 _RICH_LIVE = True  # set to False (via config rich_live=false) to disable in-place Live streaming
 
 
@@ -385,6 +383,7 @@ def ask_permission_interactive(desc: str, config: dict) -> bool:
 
 import time
 import traceback
+from typing import Dict, List, Optional
 
 
 def _proactive_watcher_loop(config):
@@ -919,7 +918,7 @@ def cmd_load(args: str, state, _config) -> bool:
     path = None
     if not args.strip():
         # Collect sessions from daily/ folders, newest first
-        sessions: list[Path] = []
+        sessions: List[Path] = []
         if DAILY_DIR.exists():
             for day_dir in sorted(DAILY_DIR.iterdir(), reverse=True):
                 if day_dir.is_dir():
@@ -2717,7 +2716,7 @@ def cmd_voice(args: str, state, config) -> bool:
 
     # Live energy bar (blocks are ▁▂▃▄▅▆▇█)
     _BARS = " ▁▂▃▄▅▆▇█"
-    _last_bar: list[str] = [""]
+    _last_bar: List[str] = [""]
 
     def on_energy(rms: float) -> None:
         level = min(int(rms * 8 / 0.08), 8)  # normalise ~0–0.08 to 0–8
@@ -3115,7 +3114,7 @@ def handle_slash(line: str, state, config) -> bool | tuple:
 # ── Input history setup ────────────────────────────────────────────────────
 
 # Descriptions and subcommands for each slash command (used by Tab completion)
-_CMD_META: dict[str, tuple[str, list[str]]] = {
+_CMD_META: Dict[str, tuple[str, list[str]]] = {
     "help": ("Show help", []),
     "clear": ("Clear conversation history", []),
     "model": ("Show / set model", []),

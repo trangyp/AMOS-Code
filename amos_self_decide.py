@@ -20,7 +20,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths
 REPO_ROOT = Path(__file__).parent
@@ -195,7 +195,7 @@ class AMOSSelfDecider:
             "satisfaction_metric": "system_self_operates",
         }
 
-    def _analyze_quadrants(self, p1: dict, p2: dict) -> dict[str, str]:
+    def _analyze_quadrants(self, p1: dict, p2: dict) -> Dict[str, str]:
         """Apply Rule of 4 - Quadrant analysis."""
         return {
             "BIOLOGICAL": "Human tests AI by observing autonomous decisions",
@@ -219,7 +219,7 @@ class AMOSSelfDecider:
 
         return axioms
 
-    def _apply_laws(self, quadrants: dict) -> dict[str, str]:
+    def _apply_laws(self, quadrants: dict) -> Dict[str, str]:
         """Apply 6 Global Laws."""
         return {
             "L1 (Structural)": "✓",

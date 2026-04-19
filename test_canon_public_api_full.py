@@ -6,8 +6,6 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 
 def test_public_api_imports():
     """Test all Canon functions are importable from amos_brain."""

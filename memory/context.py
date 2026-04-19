@@ -16,6 +16,7 @@ from .store import (
     search_memory,
 )
 from .types import MEMORY_SYSTEM_PROMPT
+from typing import List
 
 # ── Index truncation ───────────────────────────────────────────────────────
 
@@ -198,7 +199,6 @@ def _ai_select_memories(
                 break
 
         import json as _json
-from typing import List
 
         parsed = _json.loads(result_text)
         selected_indices = [int(i) for i in parsed.get("indices", []) if isinstance(i, int)]

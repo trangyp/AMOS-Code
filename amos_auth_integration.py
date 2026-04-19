@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Authentication Integration v1.0.0
 =========================================
 
@@ -84,7 +86,7 @@ class AMOSAuthIntegration:
         self._initialized = False
         self._sessions: Dict[str, AuthSession] = {}
         self._api_keys: Dict[str, str] = {}  # key -> user_id
-        self._rate_limits: dict[str, list[float]] = {}  # ip -> timestamps
+        self._rate_limits: Dict[str, list[float]] = {}  # ip -> timestamps
 
     def initialize(self) -> bool:
         """Initialize authentication integration."""

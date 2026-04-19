@@ -7,8 +7,6 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import time
@@ -16,7 +14,7 @@ from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
@@ -42,7 +40,7 @@ class StreamChunk(BaseModel):
 
     content: str
     timestamp: str
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class StreamAnalysisRequest(BaseModel):
@@ -53,7 +51,7 @@ class StreamAnalysisRequest(BaseModel):
     analyze_sentiment: bool = True
     extract_entities: bool = True
     generate_summary: bool = False
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class StreamAnalysisResult(BaseModel):
@@ -62,10 +60,10 @@ class StreamAnalysisResult(BaseModel):
     stream_id: str
     chunk_count: int
     total_chars: int
-    sentiment_score: float | None
-    entities: list[dict[str, Any]]
-    summary: str | None
-    insights: list[str]
+    sentiment_score: Optional[float]
+    entities: List[dict[str, Any]]
+    summary: Optional[str]
+    insights: List[str]
     cognitive_load: float
     processing_time_ms: float
     timestamp: str
@@ -75,8 +73,8 @@ class BrainStreamProcessor:
     """Brain-powered stream processor for real-time analysis with Canon context."""
 
     def __init__(self):
-        self._streams: dict[str, list[StreamChunk]] = {}
-        self._analysis_results: dict[str, StreamAnalysisResult] = {}
+        self._streams: Dict[str, list[StreamChunk]] = {}
+        self._analysis_results: Dict[str, StreamAnalysisResult] = {}
         self._lock = asyncio.Lock()
         self._canon_bridge = None
 
@@ -90,7 +88,7 @@ class BrainStreamProcessor:
         self,
         stream_id: str,
         content: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: Optional[Dict[str, Any] ] = None,
     ) -> StreamChunk:
         """Process a single stream chunk."""
         chunk = StreamChunk(
@@ -126,9 +124,9 @@ class BrainStreamProcessor:
         combined_text = " ".join(c.content for c in chunks)
 
         sentiment_score = None
-        entities: list[dict[str, Any]] = []
+        entities: List[dict[str, Any]] = []
         summary = None
-        insights: list[str] = []
+        insights: List[str] = []
         cognitive_load = 0.5
         canon_context = {}
 
@@ -306,11 +304,11 @@ class BrainStreamProcessor:
 
         yield "data: [DONE]\n\n"
 
-    def get_stream(self, stream_id: str) -> list[StreamChunk] | None:
+    def get_stream(self, stream_id: str) -> Optional[List[StreamChunk] ]:
         """Get stream chunks by ID."""
         return self._streams.get(stream_id)
 
-    def get_analysis(self, stream_id: str) -> StreamAnalysisResult | None:
+    def get_analysis(self, stream_id: str) -> Optional[StreamAnalysisResult]:
         """Get analysis result by stream ID."""
         return self._analysis_results.get(stream_id)
 
@@ -332,7 +330,7 @@ stream_processor = BrainStreamProcessor()
 async def add_stream_chunk(
     stream_id: str,
     content: str,
-    metadata: dict[str, Any] | None = None,
+    metadata: Optional[Dict[str, Any] ] = None,
 ) -> StreamChunk:
     """Add a chunk to a stream."""
     return await stream_processor.process_chunk(stream_id, content, metadata)
@@ -347,7 +345,7 @@ async def analyze_stream_endpoint(
 
 
 @router.get("/streams/{stream_id}")
-async def get_stream_chunks(stream_id: str) -> list[StreamChunk]:
+async def get_stream_chunks(stream_id: str) -> List[StreamChunk]:
     """Get all chunks for a stream."""
     chunks = stream_processor.get_stream(stream_id)
     if chunks is None:
@@ -365,7 +363,7 @@ async def get_stream_analysis(stream_id: str) -> StreamAnalysisResult:
 
 
 @router.delete("/streams/{stream_id}")
-async def clear_stream_endpoint(stream_id: str) -> dict[str, str]:
+async def clear_stream_endpoint(stream_id: str) -> Dict[str, str]:
     """Clear a stream and its analysis."""
     await stream_processor.clear_stream(stream_id)
     return {"status": "cleared", "stream_id": stream_id}

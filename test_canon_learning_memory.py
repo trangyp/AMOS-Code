@@ -6,8 +6,6 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 from amos_brain.canon_learning_engine import canon_learn
 from amos_brain.canon_memory_system import canon_store, canon_search
 

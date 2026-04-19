@@ -32,6 +32,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
@@ -155,9 +156,9 @@ class MetaCognitiveReflectionEngine:
         self.storage_path.mkdir(exist_ok=True)
 
         # Subsystem integration
-        self._governance: Any | None = None
-        self._gov_bridge: GovernanceEvolutionBridge | None = None
-        self._omega_bridge: OmegaEvolutionBridge | None = None
+        self._governance: Optional[Any] = None
+        self._gov_bridge: Optional[GovernanceEvolutionBridge] = None
+        self._omega_bridge: Optional[OmegaEvolutionBridge] = None
 
         # Reflection state
         self._decision_history: list[DecisionEffectiveness] = []

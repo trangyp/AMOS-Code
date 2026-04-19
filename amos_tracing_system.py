@@ -18,7 +18,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
 class SpanStatus(Enum):
@@ -62,10 +62,10 @@ class Span:
 
     # Context
     attributes: Dict[str, Any] = field(default_factory=dict)
-    events: list[dict[str, Any]] = field(default_factory=list)
+    events: List[dict[str, Any]] = field(default_factory=list)
 
     # Links to other spans
-    links: list[dict[str, Any]] = field(default_factory=list)
+    links: List[dict[str, Any]] = field(default_factory=list)
 
     def duration_ms(self) -> float:
         """Calculate span duration in milliseconds."""
@@ -78,7 +78,7 @@ class Span:
         self.status = status
         self.status_message = message
 
-    def add_event(self, name: str, attributes: dict[str, Any] = None) -> None:
+    def add_event(self, name: str, attributes: Dict[str, Any] = None) -> None:
         """Add an event to the span."""
         self.events.append({"name": name, "timestamp": time.time(), "attributes": attributes or {}})
 
@@ -147,7 +147,7 @@ class TraceSummary:
 
     # Service breakdown
     service_counts: Dict[str, int] = field(default_factory=dict)
-    service_durations: dict[str, list[float]] = field(default_factory=dict)
+    service_durations: Dict[str, list[float]] = field(default_factory=dict)
 
 
 class TraceExporter(Protocol):
@@ -220,10 +220,10 @@ class AMOSTracingSystem:
 
         # Sampling
         self.sampling_rate = 1.0  # 100% sampling
-        self.force_sample_spans: set[str] = set()
+        self.force_sample_spans: Set[str] = set()
 
         # Service tracking
-        self.service_spans: dict[str, list[Span]] = defaultdict(list)
+        self.service_spans: Dict[str, list[Span]] = defaultdict(list)
 
         # Performance thresholds
         self.slow_span_threshold_ms = 1000.0
@@ -235,7 +235,7 @@ class AMOSTracingSystem:
         print(f"  - Sampling rate: {self.sampling_rate:.0%}")
         print(f"  - Slow span threshold: {self.slow_span_threshold_ms}ms")
 
-    def start_trace(self, name: str, service: str, tags: dict[str, str] = None) -> Tuple[str, Span]:
+    def start_trace(self, name: str, service: str, tags: Dict[str, str] = None) -> Tuple[str, Span]:
         """Start a new distributed trace."""
         trace_id = f"trace_{uuid.uuid4().hex[:16]}"
         span_id = f"span_{uuid.uuid4().hex[:16]}"
@@ -258,7 +258,7 @@ class AMOSTracingSystem:
         service: str,
         parent_span_id: str,
         kind: SpanKind = SpanKind.INTERNAL,
-        attributes: dict[str, Any] = None,
+        attributes: Dict[str, Any] = None,
     ) -> Optional[Span]:
         """Start a child span."""
         # Find parent span
@@ -338,9 +338,9 @@ class AMOSTracingSystem:
 
         return None
 
-    def get_service_dependencies(self) -> dict[str, set[str]]:
+    def get_service_dependencies(self) -> Dict[str, set[str]]:
         """Map service dependencies from traces."""
-        dependencies: dict[str, set[str]] = defaultdict(set)
+        dependencies: Dict[str, set[str]] = defaultdict(set)
 
         for trace in self.completed_traces:
             for span in trace.spans.values():
@@ -368,7 +368,7 @@ class AMOSTracingSystem:
 
         # Service breakdown
         service_counts: Dict[str, int] = defaultdict(int)
-        service_durations: dict[str, list[float]] = defaultdict(list)
+        service_durations: Dict[str, list[float]] = defaultdict(list)
 
         for trace in recent_traces:
             for span in trace.spans.values():
@@ -386,7 +386,7 @@ class AMOSTracingSystem:
             service_durations=dict(service_durations),
         )
 
-    def find_bottlenecks(self, trace_id: str) -> list[dict[str, Any]]:
+    def find_bottlenecks(self, trace_id: str) -> List[dict[str, Any]]:
         """Find performance bottlenecks in a trace."""
         trace = self.get_trace(trace_id)
         if not trace:

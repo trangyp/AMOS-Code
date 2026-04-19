@@ -60,7 +60,7 @@ import time
 from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, TypeVar, cast
+from typing import Any, List, Optional, Tuple, TypeVar, cast
 
 # Try to import Redis
 try:

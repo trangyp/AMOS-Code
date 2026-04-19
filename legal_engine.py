@@ -1,6 +1,6 @@
 """Legal Engine stub for compatibility."""
 
-from typing import Any
+from typing import Any, Dict, List
 
 
 class LegalRule:

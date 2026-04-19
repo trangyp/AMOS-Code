@@ -130,14 +130,14 @@ class RepairSynthesisBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._optimizer: Any | None = None
+        self._optimizer: Optional[Any] = None
 
         # Risk thresholds
         self.auto_fix_threshold = 0.8  # Confidence needed for auto-fix
         self.human_review_threshold = 0.5  # Below this requires human review
 
     @property
-    def optimizer(self) -> Any | None:
+    def optimizer(self) -> Optional[Any]:
         """Lazy initialization of repair optimizer."""
         if self._optimizer is None and REPAIR_AVAILABLE:
             self._optimizer = RepairOptimizer()
@@ -193,7 +193,7 @@ class RepairSynthesisBridge:
         self,
         include_pathologies: bool = True,
         include_invariants: bool = True,
-    ) -> RepairSynthesisResult | None:
+    ) -> Optional[RepairSynthesisResult]:
         """Generate complete repair synthesis from all detections.
 
         Args:
@@ -276,7 +276,7 @@ class RepairSynthesisBridge:
     def _synthesize_pathology_repair(
         self,
         pathology: Any,
-    ) -> SynthesizedRepair | None:
+    ) -> Optional[SynthesizedRepair]:
         """Synthesize a repair from a single pathology."""
         if not PATHOLOGY_AVAILABLE:
             return None
@@ -398,7 +398,7 @@ class RepairSynthesisBridge:
     def _synthesize_invariant_repair(
         self,
         invariant_result: Any,
-    ) -> SynthesizedRepair | None:
+    ) -> Optional[SynthesizedRepair]:
         """Synthesize a repair from an invariant violation."""
         inv_name = getattr(invariant_result, "invariant_name", "unknown")
         details = getattr(invariant_result, "details", {})

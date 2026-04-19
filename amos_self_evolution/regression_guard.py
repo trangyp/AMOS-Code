@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Import invariant checking
 from amos_invariants import (
@@ -46,9 +46,9 @@ class RegressionCheck:
     status: CheckStatus
     details: str = ""
     duration_ms: int = 0
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "check_name": self.check_name,
             "status": self.status.name,
@@ -64,8 +64,8 @@ class RegressionReport:
 
     evolution_id: str
     overall_status: CheckStatus = CheckStatus.PENDING
-    checks: list[RegressionCheck] = field(default_factory=list)
-    started_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    checks: List[RegressionCheck] = field(default_factory=list)
+    started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     completed_at: str = ""
     mutation_permitted: bool = False
 
@@ -85,10 +85,10 @@ class RegressionReport:
             self.mutation_permitted = True
 
     def complete(self) -> None:
-        self.completed_at = datetime.now(UTC).isoformat()
+        self.completed_at = datetime.now(timezone.utc).isoformat()
         self._update_overall_status()
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "evolution_id": self.evolution_id,
             "overall_status": self.overall_status.name,
@@ -113,7 +113,7 @@ class RegressionGuard:
 
     def __init__(self, repo_root: str = "."):
         self.repo_root = Path(repo_root)
-        self._check_registry: dict[str, callable] = {
+        self._check_registry: Dict[str, callable] = {
             "syntax_check": self._check_syntax,
             "import_check": self._check_imports,
             "test_check": self._check_tests,
@@ -152,7 +152,7 @@ class RegressionGuard:
 
     def _check_syntax(self, contract: EvolutionContract) -> RegressionCheck:
         """Verify Python syntax of target files."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         errors = []
         for target_file in contract.target_files[:10]:  # Limit checks
@@ -174,7 +174,7 @@ class RegressionGuard:
             except Exception as e:
                 errors.append(f"{target_file}: check error - {e}")
 
-        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+        duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
         if errors:
             return RegressionCheck(
@@ -193,7 +193,7 @@ class RegressionGuard:
 
     def _check_imports(self, contract: EvolutionContract) -> RegressionCheck:
         """Verify imports resolve correctly."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         import_errors = []
 
@@ -215,7 +215,7 @@ class RegressionGuard:
             except Exception as e:
                 import_errors.append(f"{target_module}: {e}")
 
-        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+        duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
         if import_errors:
             return RegressionCheck(
@@ -234,7 +234,7 @@ class RegressionGuard:
 
     def _check_tests(self, contract: EvolutionContract) -> RegressionCheck:
         """Run relevant tests to verify no regression."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         # Look for tests related to target modules
         test_files = list(self.repo_root.rglob("test_*.py"))
@@ -258,7 +258,7 @@ class RegressionGuard:
                 cwd=self.repo_root,
             )
 
-            duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+            duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
             if result.returncode == 0:
                 return RegressionCheck(
@@ -294,7 +294,7 @@ class RegressionGuard:
 
     def _check_types(self, contract: EvolutionContract) -> RegressionCheck:
         """Check type consistency with mypy if available."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         try:
             result = subprocess.run(
@@ -306,7 +306,7 @@ class RegressionGuard:
                 cwd=self.repo_root,
             )
 
-            duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+            duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
             if result.returncode == 0:
                 return RegressionCheck(
@@ -333,7 +333,7 @@ class RegressionGuard:
 
     def _check_lint(self, contract: EvolutionContract) -> RegressionCheck:
         """Check code quality with ruff if available."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
 
         try:
             result = subprocess.run(
@@ -344,7 +344,7 @@ class RegressionGuard:
                 cwd=self.repo_root,
             )
 
-            duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+            duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
             if result.returncode == 0:
                 return RegressionCheck(
@@ -385,7 +385,7 @@ class RegressionGuard:
 
         Uses: Cyclomatic complexity, Maintainability Index, Halstead metrics.
         """
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
         arch = ArchitectureInvariants()
 
         violations = []
@@ -419,7 +419,7 @@ class RegressionGuard:
             except Exception:
                 continue
 
-        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+        duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
         if violations:
             return RegressionCheck(
@@ -441,7 +441,7 @@ class RegressionGuard:
 
         Verifies: Dependency resolution correctness, build determinism.
         """
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
         build = BuildSystemInvariants()
 
         # Check for pyproject.toml or requirements.txt
@@ -453,14 +453,14 @@ class RegressionGuard:
                 check_name="build_invariants",
                 status=CheckStatus.WARNING,
                 details="No dependency manifest found (pyproject.toml or requirements.txt)",
-                duration_ms=int((datetime.now(UTC) - start).total_seconds() * 1000),
+                duration_ms=int((datetime.now(timezone.utc) - start).total_seconds() * 1000),
             )
 
         # Check for lock file (deterministic builds)
         has_poetry_lock = (self.repo_root / "poetry.lock").exists()
         has_pipfile_lock = (self.repo_root / "Pipfile.lock").exists()
 
-        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+        duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
         if has_pyproject and not has_poetry_lock and not has_pipfile_lock:
             return RegressionCheck(
@@ -482,7 +482,7 @@ class RegressionGuard:
 
         Uses: Mutation testing score, coverage thresholds.
         """
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
         testing = TestingInvariants()
 
         # Check for test files
@@ -492,7 +492,7 @@ class RegressionGuard:
                 check_name="testing_invariants",
                 status=CheckStatus.WARNING,
                 details="No test files found - cannot verify testing adequacy",
-                duration_ms=int((datetime.now(UTC) - start).total_seconds() * 1000),
+                duration_ms=int((datetime.now(timezone.utc) - start).total_seconds() * 1000),
             )
 
         # Check test coverage if available
@@ -505,7 +505,7 @@ class RegressionGuard:
                 cov.load()
                 pct = cov.report()
 
-                duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+                duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
 
                 _, meets = testing.coverage_adequacy(int(pct), 100, threshold=80.0)
                 if not meets:
@@ -525,7 +525,7 @@ class RegressionGuard:
             except Exception:
                 pass
 
-        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
+        duration = int((datetime.now(timezone.utc) - start).total_seconds() * 1000)
         return RegressionCheck(
             check_name="testing_invariants",
             status=CheckStatus.PASS,
@@ -537,7 +537,7 @@ class RegressionGuard:
         """Determine if mutation should be permitted based on report."""
         return report.mutation_permitted and report.overall_status == CheckStatus.PASS
 
-    def get_mandatory_checks(self) -> list[str]:
+    def get_mandatory_checks(self) -> List[str]:
         """Get list of mandatory checks that cannot be skipped."""
         return ["syntax_check", "import_check"]
 

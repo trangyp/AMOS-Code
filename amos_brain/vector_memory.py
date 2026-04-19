@@ -45,6 +45,7 @@ import hashlib
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -69,7 +70,7 @@ class VectorMemoryEntry:
     """
     id: str
     content: str
-    embedding: list[float ] = None
+    embedding: List[float ] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     score: float = 0.0
@@ -194,8 +195,8 @@ class VectorMemoryService:
         self,
         entry_id: str,
         content: str,
-        metadata: dict[str, Any ] = None,
-        embedding: list[float ] = None
+        metadata: Dict[str, Any ] = None,
+        embedding: List[float ] = None
     ) -> bool:
         """Store content in vector memory.
 
@@ -240,7 +241,7 @@ class VectorMemoryService:
         self,
         query: str,
         k: int = 5,
-        filter: dict[str, Any ] = None,
+        filter: Dict[str, Any ] = None,
         min_score: float  = None
     ) -> List[SearchResult]:
         """Semantic search over vector memory.

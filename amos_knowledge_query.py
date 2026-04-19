@@ -12,7 +12,7 @@ Usage: python amos_knowledge_query.py <query> [--domain <domain>]
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent))
 

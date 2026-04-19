@@ -1,6 +1,6 @@
-from typing import Any, Dict, Optional
-
 """Fast Web Runtime API - High-precision web retrieval endpoints."""
+
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -35,7 +35,7 @@ class WebQueryResponse(BaseModel):
     time_ms: float
     pages_fetched: int
     confidence: Optional[float] = None
-    sources: list[dict[str, Any]]
+    sources: List[dict[str, Any]]
 
 
 @router.post("/query", response_model=WebQueryResponse)
@@ -45,8 +45,6 @@ async def web_query_endpoint(request: WebQueryRequest) -> WebQueryResponse:
 
     Equation: WebQuery → RankFast → ReadLittle → AnswerEarly → DeepenOnlyIfNeeded
     """
-from __future__ import annotations
-
     budgets = WebBudgets(
         max_search_queries=request.max_search_queries,
         max_page_opens=request.max_page_opens,

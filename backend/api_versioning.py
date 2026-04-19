@@ -14,13 +14,11 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any
+from typing import Any, Dict, Optional
 
 from fastapi import Header, HTTPException, Request
 from pydantic import BaseModel
@@ -28,7 +26,7 @@ from pydantic import BaseModel
 # API Version Configuration
 CURRENT_VERSION = "v1"
 SUPPORTED_VERSIONS = ["v1"]
-DEPRECATED_VERSIONS: dict[str, dict[str, Any]] = {}
+DEPRECATED_VERSIONS: Dict[str, dict[str, Any]] = {}
 SUNSET_NOTICE_DAYS = 90  # Days before deprecated version is removed
 
 
@@ -64,7 +62,7 @@ class DeprecationInfo:
 
 
 # Version registry
-VERSION_REGISTRY: dict[str, VersionInfo] = {
+VERSION_REGISTRY: Dict[str, VersionInfo] = {
     "v1": VersionInfo(
         version="v1",
         status="current",
@@ -79,7 +77,7 @@ VERSION_REGISTRY: dict[str, VersionInfo] = {
 }
 
 
-def get_version_info(version: str) -> VersionInfo | None:
+def get_version_info(version: str) -> Optional[VersionInfo]:
     """Get version information."""
     return VERSION_REGISTRY.get(version)
 
@@ -140,7 +138,7 @@ def deprecated_endpoint(
 def versioned_api(
     version: str = CURRENT_VERSION,
     deprecated: bool = False,
-    deprecation_info: DeprecationInfo | None = None,
+    deprecation_info: Optional[DeprecationInfo] = None,
 ):
     """Decorator to mark API endpoint with version info."""
 
@@ -181,7 +179,7 @@ class APIVersionManager:
 
     def __init__(self):
         self.versions = VERSION_REGISTRY.copy()
-        self.deprecated_endpoints: dict[str, DeprecationInfo] = {}
+        self.deprecated_endpoints: Dict[str, DeprecationInfo] = {}
 
     def register_version(self, version_info: VersionInfo) -> None:
         """Register a new API version."""
@@ -206,7 +204,7 @@ class APIVersionManager:
         if version in SUPPORTED_VERSIONS:
             SUPPORTED_VERSIONS.remove(version)
 
-    def get_versions(self) -> dict[str, VersionInfo]:
+    def get_versions(self) -> Dict[str, VersionInfo]:
         """Get all registered versions."""
         return self.versions
 
@@ -214,7 +212,7 @@ class APIVersionManager:
         """Get current API version."""
         return CURRENT_VERSION
 
-    def check_endpoint_deprecated(self, endpoint: str) -> DeprecationInfo | None:
+    def check_endpoint_deprecated(self, endpoint: str) -> Optional[DeprecationInfo]:
         """Check if endpoint is deprecated."""
         return self.deprecated_endpoints.get(endpoint)
 
@@ -250,7 +248,7 @@ class VersionListResponse(BaseModel):
 
     current_version: str
     supported_versions: list
-    versions: dict[str, VersionInfo]
+    versions: Dict[str, VersionInfo]
 
 
 class DeprecationNoticeResponse(BaseModel):

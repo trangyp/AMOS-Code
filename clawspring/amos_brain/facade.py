@@ -7,11 +7,10 @@ Provides a simplified interface to the AMOS Brain for:
 - Cross-domain reasoning
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional
 
 # Try to import brain components
 try:
@@ -36,7 +35,7 @@ class CognitiveTask:
     id: str
     task_type: str
     description: str
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
     priority: int = 5
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -49,7 +48,7 @@ class CognitiveResult:
     status: str
     response: str
     confidence: float
-    recommendations: list[dict[str, Any]]
+    recommendations: List[dict[str, Any]]
     processing_time_ms: float
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -61,9 +60,9 @@ class BrainThinkResponse:
     content: str
     confidence: float
     law_compliant: bool
-    violations: list[str]
+    violations: List[str]
     reasoning: str
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
     success: bool = True  # For compatibility with BrainResponse interface
 
 
@@ -78,7 +77,7 @@ class BrainClient:
     """
 
     def __init__(self):
-        self._brain: IntegratedBrainAPI | None = None
+        self._brain: Optional[IntegratedBrainAPI] = None
         self._initialized = False
         self._task_count = 0
 
@@ -102,7 +101,7 @@ class BrainClient:
         return _BRAIN_AVAILABLE and self._initialized
 
     def think(
-        self, query: str, domain: str = "software", context: dict[str, Any] = None
+        self, query: str, domain: str = "software", context: Dict[str, Any] = None
     ) -> BrainThinkResponse:
         """
         Process a thought through the brain - synchronous interface for axiom_one_brain_bridge.
@@ -149,7 +148,7 @@ class BrainClient:
             )
 
     async def think_async(
-        self, query: str, domain: str = "software", context: dict[str, Any] = None
+        self, query: str, domain: str = "software", context: Dict[str, Any] = None
     ) -> BrainThinkResponse:
         """Async version of think() method."""
         await self.initialize()
@@ -192,7 +191,7 @@ class BrainClient:
     async def analyze_repo_issue(
         self,
         issue_description: str,
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> CognitiveResult:
         """
         Analyze a repository issue using brain cognitive capabilities.
@@ -245,8 +244,8 @@ Provide:
     async def suggest_fix_strategy(
         self,
         issue_type: str,
-        affected_files: list[str],
-        repo_context: dict[str, Any] = None,
+        affected_files: List[str],
+        repo_context: Dict[str, Any] = None,
     ) -> CognitiveResult:
         """
         Suggest a fix strategy for an issue type.
@@ -297,7 +296,7 @@ Provide:
     async def evaluate_impact(
         self,
         change_description: str,
-        affected_domains: list[str],
+        affected_domains: List[str],
     ) -> CognitiveResult:
         """
         Evaluate cross-domain impact of a change.
@@ -346,8 +345,8 @@ Provide:
     async def plan_agent_execution(
         self,
         goal: str,
-        available_tools: list[str],
-        constraints: dict[str, Any] = None,
+        available_tools: List[str],
+        constraints: Dict[str, Any] = None,
     ) -> CognitiveResult:
         """
         Plan an agent execution strategy.
@@ -395,7 +394,7 @@ Provide:
         except Exception as e:
             return self._fallback_result(str(e))
 
-    def _format_context(self, context: dict[str, Any]) -> str:
+    def _format_context(self, context: Dict[str, Any]) -> str:
         """Format context for brain query."""
         if not context:
             return "No additional context"
@@ -408,7 +407,7 @@ Provide:
                 lines.append(f"- {key}: {value}")
         return "\n".join(lines)
 
-    def _extract_recommendations(self, brain_response: Any) -> list[dict[str, Any]]:
+    def _extract_recommendations(self, brain_response: Any) -> List[dict[str, Any]]:
         """Extract recommendations from brain response."""
         recommendations = []
 
@@ -443,7 +442,7 @@ Provide:
 
 
 # Singleton instance
-_brain_client_instance: BrainClient | None = None
+_brain_client_instance: Optional[BrainClient] = None
 
 
 def get_brain_client() -> BrainClient:

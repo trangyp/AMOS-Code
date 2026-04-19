@@ -22,7 +22,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 
 class AuthMethod(Enum):
@@ -85,7 +85,7 @@ class Role(Enum):
 
 
 # Role to permissions mapping
-ROLE_PERMISSIONS: dict[Role, set[Permission]] = {
+ROLE_PERMISSIONS: Dict[Role, set[Permission]] = {
     Role.ADMIN: {
         Permission.SYSTEM_ADMIN,
         Permission.MODEL_WRITE,
@@ -165,7 +165,7 @@ class Principal:
 
     # Authorization
     roles: List[Role] = field(default_factory=list)
-    custom_permissions: set[Permission] = field(default_factory=set)
+    custom_permissions: Set[Permission] = field(default_factory=set)
 
     # Metadata
     created_at: float = field(default_factory=time.time)
@@ -211,7 +211,7 @@ class AccessToken:
 
     # Scope and restrictions
     scopes: List[str] = field(default_factory=list)
-    allowed_ips: list[str] = None
+    allowed_ips: List[str] = None
 
     is_revoked: bool = False
 
@@ -250,7 +250,7 @@ class AccessDecision:
 
     # Permissions checked
     required_permission: Optional[Permission] = None
-    principal_permissions: set[Permission] = field(default_factory=set)
+    principal_permissions: Set[Permission] = field(default_factory=set)
 
     # Rate limiting
     rate_limit_exceeded: bool = False
@@ -388,10 +388,10 @@ class AMOSSecuritySystem:
         self.policies: Dict[str, SecurityPolicy] = {}
 
         # Session management
-        self.active_sessions: dict[str, dict[str, Any]] = {}
+        self.active_sessions: Dict[str, dict[str, Any]] = {}
 
         # Rate limiting
-        self.request_counts: dict[str, list[float]] = {}  # principal_id -> timestamps
+        self.request_counts: Dict[str, list[float]] = {}  # principal_id -> timestamps
 
         # Configuration
         self.default_token_ttl = 3600  # 1 hour
@@ -410,7 +410,7 @@ class AMOSSecuritySystem:
         name: str,
         principal_type: str = "user",
         email: str = None,
-        roles: list[Role] = None,
+        roles: List[Role] = None,
         auth_method: AuthMethod = AuthMethod.API_KEY,
         rate_limit: int = 1000,
         quota_daily: int = 10000,
@@ -640,7 +640,7 @@ class AMOSSecuritySystem:
         resource: str,
         action: str,
         success: bool,
-        details: dict[str, Any] = None,
+        details: Dict[str, Any] = None,
         severity: str = "info",
         source_ip: str = None,
         user_agent: str = None,
@@ -673,7 +673,7 @@ class AMOSSecuritySystem:
         resource_pattern: str,
         action_pattern: str,
         allowed_roles: List[Role],
-        required_permissions: list[Permission] = None,
+        required_permissions: List[Permission] = None,
         effect: str = "allow",
         priority: int = 100,
     ) -> SecurityPolicy:

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class InteractionGoal(Enum):
@@ -60,7 +60,7 @@ class HumanInteractionEngine:
     ]
 
     def __init__(self):
-        self.state_layers: dict[int, StateLayer] = {
+        self.state_layers: Dict[int, StateLayer] = {
             1: StateLayer(1, "surface_text", {}),
             2: StateLayer(2, "emotional_state", {}),
             3: StateLayer(3, "nervous_system_state", {}),
@@ -243,7 +243,7 @@ class UniverseInteractionEngine:
             "system": {"style": "formal", "safety_priority": "low"},
         }
 
-    def map_intent(self, goal: str, context: dict) -> dict[str, float]:
+    def map_intent(self, goal: str, context: dict) -> Dict[str, float]:
         """Map goal and context to intent vector."""
         return {
             "helpfulness": 0.9,
@@ -493,8 +493,6 @@ _species_core: Optional[SpeciesInteractionCoreEngine] = None
 
 def get_species_interaction_core_engine() -> SpeciesInteractionCoreEngine:
     """Get or create the Species Interaction Core Engine singleton."""
-from __future__ import annotations
-
     global _species_core
     if _species_core is None:
         _species_core = SpeciesInteractionCoreEngine()

@@ -14,6 +14,7 @@ import statistics
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -55,8 +56,8 @@ class PredictiveEngine:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Historical data storage
-        self.execution_history: list[dict[str, Any]] = []
-        self.subsystem_metrics: dict[str, list[Dict]] = {}
+        self.execution_history: List[dict[str, Any]] = []
+        self.subsystem_metrics: Dict[str, list[Dict]] = {}
 
         # Load historical data
         self._load_history()

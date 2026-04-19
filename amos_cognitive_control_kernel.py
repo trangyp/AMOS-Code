@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS Cognitive Control Kernel
@@ -189,7 +189,7 @@ class ErrorMonitor:
 
     # Failure detection flags
     has_failures: bool = False
-    dominant_failure: FailureType | None = None
+    dominant_failure: Optional[FailureType] = None
 
     # Weights for global error computation
     _weights: Dict[str, float] = field(
@@ -689,7 +689,7 @@ class DeepPathProcessor:
         control_state: CognitiveControlState,
         context: Dict[str, Any] = None,
         memory: Dict[str, Any] = None,
-        goals: list[str] | None = None,
+        goals: Optional[List[str] ] = None,
     ) -> Dict[str, Any]:
         """
         Execute deep path processing with full analysis.
@@ -782,7 +782,7 @@ class DeepPathProcessor:
 
     async def _extract_constraints(
         self, input_object: Dict[str, Any], analysis: Dict[str, Any]
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Extract constraints from input and analysis."""
         return []
 
@@ -790,8 +790,8 @@ class DeepPathProcessor:
         self,
         analysis: Dict[str, Any],
         bindings: Dict[str, Any],
-        constraints: list[dict[str, Any]],
-        goals: list[str] | None,
+        constraints: List[dict[str, Any]],
+        goals: Optional[List[str] ],
     ) -> bool:
         """Perform global verification against goals and constraints."""
         return analysis.get("confidence", 0) > 0.8
@@ -914,7 +914,7 @@ class RepairEngine:
     """
 
     def __init__(self):
-        self.repair_strategies: dict[FailureType, RepairStrategy] = {
+        self.repair_strategies: Dict[FailureType, RepairStrategy] = {
             FailureType.BINDING_FAILURE: RepairStrategy.RERUN_REFERENCE_BINDING,
             FailureType.CONSTRAINT_DROP: RepairStrategy.RERUN_CONSTRAINT_EXTRACTION,
             FailureType.SCOPE_MISMATCH: RepairStrategy.RERUN_SCOPE_RESOLUTION,
@@ -930,7 +930,7 @@ class RepairEngine:
         read_result: Dict[str, Any],
         control_state: CognitiveControlState,
         context: Dict[str, Any],
-    ) -> tuple[dict[str, Any], bool]:
+    ) -> Tuple[dict[str, Any], bool]:
         """
         Execute repair loop on failed components.
 
@@ -1159,7 +1159,7 @@ class PatternCache:
         self._cache: Dict[str, PatternCacheEntry] = {}
         self._access_order: List[str] = []
 
-    async def lookup(self, input_signature: str) -> PatternCacheEntry | None:
+    async def lookup(self, input_signature: str) -> Optional[PatternCacheEntry]:
         """Look up pattern by input signature."""
         if input_signature in self._cache:
             entry = self._cache[input_signature]
@@ -1259,7 +1259,7 @@ class AMOSCognitiveControlKernel:
         input_object: Dict[str, Any],
         context: Dict[str, Any] = None,
         memory: Dict[str, Any] = None,
-        goals: list[str] | None = None,
+        goals: Optional[List[str] ] = None,
         governance_state: Dict[str, Any] = None,
     ) -> Dict[str, Any]:
         """
@@ -1426,7 +1426,7 @@ class AMOSCognitiveControlKernel:
 # GLOBAL SINGLETON ACCESSOR
 # =============================================================================
 
-_kernel_instance: AMOSCognitiveControlKernel | None = None
+_kernel_instance: Optional[AMOSCognitiveControlKernel] = None
 
 
 def get_cognitive_control_kernel(

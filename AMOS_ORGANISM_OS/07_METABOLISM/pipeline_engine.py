@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class StageStatus(Enum):
@@ -38,8 +38,8 @@ class PipelineStage:
     error: str = ""
     start_time: str = None
     end_time: str = None
-    depends_on: list[str] = field(default_factory=list)
-    next_stages: list[str] = field(default_factory=list)
+    depends_on: List[str] = field(default_factory=list)
+    next_stages: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -55,7 +55,7 @@ class Pipeline:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    stages: list[PipelineStage] = field(default_factory=list)
+    stages: List[PipelineStage] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "draft"  # draft, running, completed, failed
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -288,7 +288,7 @@ class PipelineEngine:
             ],
         }
 
-    def list_pipelines(self) -> list[dict]:
+    def list_pipelines(self) -> List[dict]:
         """List all pipelines."""
         return [
             {

@@ -13,7 +13,8 @@ Implements the Field lens of the 5-lens mathematical regime:
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Protocol
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 import numpy as np
 
@@ -131,10 +132,10 @@ class FieldDynamics:
         self.config = config or FieldConfig()
         self.history: List[FieldState] = []
         self._action_history: List[float] = []
-        self._conserved_quantities: dict[str, list[float]] = defaultdict(list)
+        self._conserved_quantities: Dict[str, list[float]] = defaultdict(list)
         self._initialized_at = datetime.now(timezone.utc).isoformat()
 
-    def initialize_field(self, shape: tuple[int, ...], initializer: str = "vacuum") -> FieldState:
+    def initialize_field(self, shape: Tuple[int, ...], initializer: str = "vacuum") -> FieldState:
         """Initialize field configuration."""
         if initializer == "vacuum":
             values = np.zeros(shape)

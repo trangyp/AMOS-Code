@@ -15,6 +15,7 @@ Run: python test_amos_complete_system.py
 import asyncio
 import sys
 from datetime import datetime
+from typing import List
 
 # Test configuration
 VERBOSE = True

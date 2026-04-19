@@ -19,12 +19,13 @@ from tool_registry import ToolDef, register_tool
 from .client import get_mcp_manager
 from .config import load_mcp_configs
 from .types import MCPTool
+from typing import Dict
 
 # ── Global state ──────────────────────────────────────────────────────────────
 
 _initialized = False
 _init_lock = threading.Lock()
-_connect_errors: dict[str, str] = {}  # server → error or None
+_connect_errors: Dict[str, str] = {}  # server → error or None
 
 
 # ── Tool wrapper ──────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ def _register_tool(tool: MCPTool) -> None:
 # ── Initialization ────────────────────────────────────────────────────────────
 
 
-def initialize_mcp(verbose: bool = False) -> dict[str, str]:
+def initialize_mcp(verbose: bool = False) -> Dict[str, str]:
     """Load configs, connect servers, register tools. Idempotent.
 
     Returns a dict of {server_name: error_message_or_None}.
@@ -92,7 +93,7 @@ def initialize_mcp(verbose: bool = False) -> dict[str, str]:
         return errors
 
 
-def reload_mcp() -> dict[str, str]:
+def reload_mcp() -> Dict[str, str]:
     """Force a full reload: re-read configs, reconnect, re-register all tools."""
     global _initialized
     with _init_lock:
@@ -115,7 +116,7 @@ def refresh_server(server_name: str) -> str:
         return str(e)
 
 
-def get_connect_errors() -> dict[str, str]:
+def get_connect_errors() -> Dict[str, str]:
     return dict(_connect_errors)
 
 

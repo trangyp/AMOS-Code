@@ -4,12 +4,10 @@ Generates Continue.dev config for local LLM backends via LiteLLM proxy.
 https://docs.continue.dev/guides/ollama-guide
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +20,7 @@ class ContinueConfigGenerator:
         self.config_dir = Path.home() / ".continue"
         self.config_file = self.config_dir / "config.yaml"
 
-    def generate_config(self, models: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    def generate_config(self, models: Optional[List[dict[str, Any]] ] = None) -> Dict[str, Any]:
         """Generate Continue.dev configuration."""
         if not models:
             models = self._get_default_models()
@@ -80,7 +78,7 @@ class ContinueConfigGenerator:
 
         return config
 
-    def _get_default_models(self) -> list[dict[str, Any]]:
+    def _get_default_models(self) -> List[dict[str, Any]]:
         """Get default model list for Continue."""
         return [
             {
@@ -100,7 +98,7 @@ class ContinueConfigGenerator:
             },
         ]
 
-    def write_config(self, config: dict[str, Any] | None = None) -> Path:
+    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
         """Write Continue configuration to ~/.continue/config.yaml."""
         import yaml
 
@@ -150,7 +148,7 @@ class ContinueConfigGenerator:
             logger.error(f"Failed to open VS Code: {e}")
             return False
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get Continue configuration status."""
         status = {
             "config_exists": self.config_file.exists(),

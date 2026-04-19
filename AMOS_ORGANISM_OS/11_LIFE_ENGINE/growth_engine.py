@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class GrowthStage(Enum):
@@ -41,7 +41,7 @@ class GrowthPlan:
     description: str = ""
     growth_type: GrowthType = GrowthType.CAPABILITY
     target_subsystem: str = ""
-    requirements: list[str] = field(default_factory=list)
+    requirements: List[str] = field(default_factory=list)
     expected_outcome: Dict[str, Any] = field(default_factory=dict)
     stage: GrowthStage = GrowthStage.PLANNED
     progress: float = 0.0
@@ -71,8 +71,8 @@ class GrowthEngine:
         self.data_dir.mkdir(exist_ok=True)
 
         self.plans: Dict[str, GrowthPlan] = {}
-        self.growth_history: list[dict[str, Any]] = []
-        self.capabilities: dict[str, dict[str, Any]] = {}
+        self.growth_history: List[dict[str, Any]] = []
+        self.capabilities: Dict[str, dict[str, Any]] = {}
 
         self._init_default_capabilities()
 
@@ -107,7 +107,7 @@ class GrowthEngine:
         description: str,
         growth_type: GrowthType,
         target_subsystem: str,
-        requirements: list[str],
+        requirements: List[str],
         expected_outcome: Dict[str, Any],
     ) -> GrowthPlan:
         """Create a new growth plan."""
@@ -232,7 +232,7 @@ class GrowthEngine:
         }
         plans_file.write_text(json.dumps(data, indent=2))
 
-    def list_plans(self, stage: Optional[GrowthStage] = None) -> list[dict[str, Any]]:
+    def list_plans(self, stage: Optional[GrowthStage] = None) -> List[dict[str, Any]]:
         """List growth plans."""
         plans = self.plans.values()
         if stage:

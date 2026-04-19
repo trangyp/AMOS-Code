@@ -8,8 +8,6 @@ Uses AMOS brain for:
 - Performance prediction
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -18,7 +16,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -47,7 +45,7 @@ class ForecastRequest(BaseModel):
     """Request for time series forecasting."""
 
     metric_name: str = Field(..., min_length=1)
-    historical_data: list[dict[str, Any]] = Field(..., min_length=3)
+    historical_data: List[dict[str, Any]] = Field(..., min_length=3)
     forecast_horizon: str = Field(default="24h")
     granularity: str = Field(default="1h")
 
@@ -66,7 +64,7 @@ class ForecastResult(BaseModel):
     """Forecast result with predictions."""
 
     metric_name: str
-    forecast_points: list[ForecastPoint]
+    forecast_points: List[ForecastPoint]
     trend_direction: str
     seasonality_detected: bool
     accuracy_estimate: float = Field(ge=0.0, le=1.0)
@@ -76,18 +74,18 @@ class ForecastResult(BaseModel):
 class TrendPredictionRequest(BaseModel):
     """Request for trend prediction."""
 
-    data_series: list[float] = Field(..., min_length=5)
-    context: dict[str, Any] = Field(default_factory=dict)
+    data_series: List[float] = Field(..., min_length=5)
+    context: Dict[str, Any] = Field(default_factory=dict)
     prediction_window: int = Field(default=10, ge=1, le=100)
 
 
 class TrendPredictionResult(BaseModel):
     """Trend prediction result."""
 
-    predicted_values: list[float]
+    predicted_values: List[float]
     trend_direction: str
     trend_strength: float = Field(ge=0.0, le=1.0)
-    confidence_interval: tuple[float, float]
+    confidence_interval: Tuple[float, float]
     prediction_confidence: float = Field(ge=0.0, le=1.0)
     timestamp: datetime
 
@@ -96,7 +94,7 @@ class AnomalyPredictionRequest(BaseModel):
     """Request for anomaly prediction."""
 
     metric_name: str = Field(..., min_length=1)
-    baseline_data: list[float] = Field(..., min_length=10)
+    baseline_data: List[float] = Field(..., min_length=10)
     threshold_sensitivity: str = Field(default="medium")
 
 
@@ -114,9 +112,9 @@ class AnomalyPredictionResult(BaseModel):
     """Anomaly prediction result."""
 
     metric_name: str
-    predicted_anomalies: list[PredictedAnomaly]
+    predicted_anomalies: List[PredictedAnomaly]
     risk_score: float = Field(ge=0.0, le=1.0)
-    monitoring_recommendations: list[str]
+    monitoring_recommendations: List[str]
     timestamp: datetime
 
 
@@ -124,7 +122,7 @@ class ResourceForecastRequest(BaseModel):
     """Request for resource demand forecasting."""
 
     resource_type: str = Field(..., min_length=1)
-    usage_history: list[dict[str, Any]] = Field(..., min_length=5)
+    usage_history: List[dict[str, Any]] = Field(..., min_length=5)
     forecast_days: int = Field(default=7, ge=1, le=90)
 
 
@@ -132,7 +130,7 @@ class ResourceForecastResult(BaseModel):
     """Resource demand forecast."""
 
     resource_type: str
-    predicted_demand: list[dict[str, Any]]
+    predicted_demand: List[dict[str, Any]]
     peak_demand_estimate: float
     average_demand_estimate: float
     scaling_recommendation: str
@@ -167,7 +165,7 @@ class BrainPredictionEngine:
     async def forecast(
         self,
         metric_name: str,
-        historical_data: list[dict[str, Any]],
+        historical_data: List[dict[str, Any]],
         forecast_horizon: str,
         granularity: str,
     ) -> ForecastResult:
@@ -211,7 +209,7 @@ Analyze trend, seasonality, and generate predictions."""
         )
 
     async def predict_trend(
-        self, data_series: list[float], context: dict[str, Any], prediction_window: int
+        self, data_series: List[float], context: Dict[str, Any], prediction_window: int
     ) -> TrendPredictionResult:
         """Predict trend from data series."""
         brain = await self._get_brain()
@@ -253,7 +251,7 @@ Identify trend direction and strength."""
         )
 
     async def predict_anomalies(
-        self, metric_name: str, baseline_data: list[float], threshold_sensitivity: str
+        self, metric_name: str, baseline_data: List[float], threshold_sensitivity: str
     ) -> AnomalyPredictionResult:
         """Predict potential anomalies."""
         brain = await self._get_brain()
@@ -300,7 +298,7 @@ Identify potential anomaly patterns and risks."""
         )
 
     async def forecast_resources(
-        self, resource_type: str, usage_history: list[dict[str, Any]], forecast_days: int
+        self, resource_type: str, usage_history: List[dict[str, Any]], forecast_days: int
     ) -> ResourceForecastResult:
         """Forecast resource demand."""
         brain = await self._get_brain()
@@ -378,7 +376,7 @@ Predict demand patterns and scaling needs."""
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get engine statistics."""
         return {
             "brain_available": _BRAIN_AVAILABLE,
@@ -390,7 +388,7 @@ Predict demand patterns and scaling needs."""
 
 
 # Global engine
-_prediction_engine: BrainPredictionEngine | None = None
+_prediction_engine: Optional[BrainPredictionEngine] = None
 
 
 def get_prediction_engine() -> BrainPredictionEngine:
@@ -473,14 +471,14 @@ async def stream_predictions(
 
 
 @router.get("/stats")
-async def get_engine_stats() -> dict[str, Any]:
+async def get_engine_stats() -> Dict[str, Any]:
     """Get prediction engine statistics."""
     engine = get_prediction_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Check prediction engine health."""
     return {
         "status": "healthy" if _BRAIN_AVAILABLE else "degraded",

@@ -129,7 +129,7 @@ import secrets
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class VectorMetric(Enum):
@@ -231,19 +231,19 @@ class AMOSDataInfrastructure:
 
         # Vector database
         self.vectors: Dict[str, VectorEntry] = {}
-        self.vector_indices: dict[Modality, list[str]] = {
+        self.vector_indices: Dict[Modality, list[str]] = {
             mod: [] for mod in Modality
         }
 
         # Graph database
         self.graph_nodes: Dict[str, GraphNode] = {}
-        self.graph_edges: dict[str, list[GraphEdge]] = {}  # source_id -> edges
-        self.node_labels_index: dict[str, set[str]] = {}  # label -> node_ids
+        self.graph_edges: Dict[str, list[GraphEdge]] = {}  # source_id -> edges
+        self.node_labels_index: Dict[str, set[str]] = {}  # label -> node_ids
 
         # Feature store
-        self.online_features: dict[str, dict[str, FeatureValue]] = {}  # entity -> features
+        self.online_features: Dict[str, dict[str, FeatureValue]] = {}  # entity -> features
         self.offline_features: List[FeatureValue] = []
-        self.feature_registry: dict[str, dict[str, Any]] = {}
+        self.feature_registry: Dict[str, dict[str, Any]] = {}
 
         # Cache
         self.cache: Dict[str, CacheEntry] = {}
@@ -291,7 +291,7 @@ class AMOSDataInfrastructure:
         metric: VectorMetric = VectorMetric.COSINE,
         filters: Dict[str, Any]  = None,
         modality: Optional[Modality] = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """
         Find most similar vectors using specified metric.
 
@@ -479,7 +479,7 @@ class AMOSDataInfrastructure:
         source_id: str,
         target_id: str,
         max_depth: int = 10
-    ) -> list[dict[str, Any]] :
+    ) -> List[dict[str, Any]] :
         """Find shortest path between two nodes using BFS."""
         if source_id not in self.graph_nodes or target_id not in self.graph_nodes:
             return None
@@ -590,7 +590,7 @@ class AMOSDataInfrastructure:
         self,
         entity_ids: List[str],
         feature_names: List[str]
-    ) -> dict[str, dict[str, Any]]:
+    ) -> Dict[str, dict[str, Any]]:
         """Get online features for entities (low-latency serving)."""
         results = {}
 
@@ -619,7 +619,7 @@ class AMOSDataInfrastructure:
         feature_names: List[str]  = None,
         start_time: float  = None,
         end_time: float  = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get offline features for training (batch retrieval)."""
         results = []
 
@@ -772,7 +772,6 @@ class AMOSDataInfrastructure:
 def main():
     """CLI demo for data infrastructure."""
     import argparse
-from typing import Protocol, Set
 
     parser = argparse.ArgumentParser(
         description="AMOS Data Infrastructure (Phase 27)"

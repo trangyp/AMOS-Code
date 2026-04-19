@@ -22,9 +22,10 @@ Version: 1.0.0
 import asyncio
 import os
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -41,10 +42,10 @@ class GitHubRepository:
     forks: int = 0
     open_issues: int = 0
     default_branch: str = "main"
-    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     local_path: Optional[Path] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "full_name": self.full_name,
@@ -68,10 +69,10 @@ class RepositoryIssue:
     state: str
     created_at: datetime
     updated_at: datetime
-    labels: List[str] = field(default_factory=list)
+    labels: list[str] = field(default_factory=list)
     body: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "number": self.number,
             "title": self.title,
@@ -111,7 +112,7 @@ class AMOSGitHubConnector:
             return
 
         self.token = token or os.environ.get("GITHUB_TOKEN")
-        self._repos: Dict[str, GitHubRepository] = {}
+        self._repos: dict[str, GitHubRepository] = {}
         self._session: aiohttp.ClientSession = None
         self._initialized = False
         self._owner = "trangyp"
@@ -135,7 +136,7 @@ class AMOSGitHubConnector:
             self._session = aiohttp.ClientSession(headers=headers)
         return self._session
 
-    async def discover_repos(self) -> List[GitHubRepository]:
+    async def discover_repos(self) -> list[GitHubRepository]:
         """
         Discover all repositories under trangyp.
 
@@ -145,7 +146,7 @@ class AMOSGitHubConnector:
         session = await self._get_session()
         url = f"{self.GITHUB_API_BASE}/users/{self._owner}/repos"
 
-        discovered: List[GitHubRepository] = []
+        discovered: list[GitHubRepository] = []
 
         try:
             async with session.get(url, params={"per_page": 100}) as resp:
@@ -179,8 +180,8 @@ class AMOSGitHubConnector:
         self,
         repo_name: str,
         state: str = "open",
-        labels: List[str] = None,
-    ) -> List[RepositoryIssue]:
+        labels: Optional[list[str] ] = None,
+    ) -> list[RepositoryIssue]:
         """
         Get issues from a specific repository.
 
@@ -195,14 +196,14 @@ class AMOSGitHubConnector:
         session = await self._get_session()
         url = f"{self.GITHUB_API_BASE}/repos/{self._owner}/{repo_name}/issues"
 
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             "state": state,
             "per_page": 100,
         }
         if labels:
             params["labels"] = ",".join(labels)
 
-        issues: List[RepositoryIssue] = []
+        issues: list[RepositoryIssue] = []
 
         try:
             async with session.get(url, params=params) as resp:
@@ -223,7 +224,7 @@ class AMOSGitHubConnector:
                             updated_at=datetime.fromisoformat(
                                 issue_data["updated_at"].replace("Z", "+00:00")
                             ),
-                            labels=[l["name"] for l in issue_data.get("labels", [])],
+                            labels=[lbl["name"] for lbl in issue_data.get("labels", [])],
                             body=issue_data.get("body", ""),
                         )
                         issues.append(issue)
@@ -239,7 +240,7 @@ class AMOSGitHubConnector:
         repo_name: str,
         path: str = "",
         ref: str = "main",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Fetch content from a repository path.
 
@@ -294,11 +295,11 @@ class AMOSGitHubConnector:
             print(f"❌ Failed to fetch file: {e}")
             return None
 
-    def get_all_repos(self) -> List[GitHubRepository]:
+    def get_all_repos(self) -> list[GitHubRepository]:
         """Get all discovered repositories."""
         return list(self._repos.values())
 
-    def get_core_repos(self) -> List[GitHubRepository]:
+    def get_core_repos(self) -> list[GitHubRepository]:
         """Get core AMOS ecosystem repositories."""
         return [self._repos[name] for name in self._core_repos if name in self._repos]
 
@@ -314,7 +315,7 @@ class AMOSGitHubConnector:
         """
         import subprocess
 
-        synced: Dict[str, Path] = {}
+        synced: dict[str, Path] = {}
 
         for repo_name in self._core_repos:
             repo_path = base_path / repo_name

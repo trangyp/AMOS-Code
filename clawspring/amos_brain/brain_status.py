@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Brain Status - Unified status reporting for all brain components.
 
@@ -19,6 +19,7 @@ import asyncio
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 # Add paths for both direct run and module import contexts

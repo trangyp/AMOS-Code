@@ -1,11 +1,9 @@
 """AMOS Task Execution Integration - Bridge cognitive tasks to organism execution."""
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 # Add organism OS to path - use relative path from this file
 ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
@@ -22,7 +20,7 @@ class ExecutionOutcome:
     error: str
     duration_ms: float
     execution_type: str
-    artifacts: dict[str, Any]
+    artifacts: Dict[str, Any]
 
 
 class TaskExecutionIntegration:
@@ -114,7 +112,7 @@ class TaskExecutionIntegration:
         return mapping.get(domain, "analysis")
 
     def _fallback_execution(
-        self, task_id: str, exec_type: str, params: dict[str, Any]
+        self, task_id: str, exec_type: str, params: Dict[str, Any]
     ) -> ExecutionOutcome:
         """Fallback execution when organism executor unavailable."""
         import time
@@ -144,7 +142,7 @@ class TaskExecutionIntegration:
                 pass
         return []
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get task execution integration status."""
         return {
             "initialized": self._initialized,

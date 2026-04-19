@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """AMOS Alert Manager - Production Implementation
 
+import urllib.request
+import urllib.error
 Real-time alerting system with multi-channel notifications.
 Integrates with Service Discovery, Cache, and LLM providers.
 
@@ -20,7 +22,7 @@ import time
 import json
 import threading
 import hashlib
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -120,9 +122,6 @@ class WebhookHandler(ChannelHandler):
             return False
 
         try:
-            import urllib.request
-            import urllib.error
-from typing import Callable, Optional
 
             payload = json.dumps(alert.to_dict()).encode()
             req = urllib.request.Request(
@@ -166,9 +165,9 @@ class AlertManager:
     def __init__(self):
         self._alerts: Dict[str, Alert] = {}
         self._alert_queue: queue.Queue[Alert] = queue.Queue()
-        self._handlers: dict[AlertChannel, ChannelHandler] = {}
+        self._handlers: Dict[AlertChannel, ChannelHandler] = {}
         self._rules: List[AlertRule] = []
-        self._correlation_window: dict[str, list[Alert]] = defaultdict(list)
+        self._correlation_window: Dict[str, list[Alert]] = defaultdict(list)
         self._lock = threading.RLock()
         self._running = False
         self._worker_thread: Optional[threading.Thread] = None

@@ -11,6 +11,7 @@ Version: 3.0.0
 import asyncio
 import time
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 import psutil
 from fastapi import APIRouter, HTTPException

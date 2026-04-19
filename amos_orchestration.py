@@ -71,7 +71,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 
 # Try to import Prefect
 try:
@@ -106,7 +106,6 @@ except ImportError:
 
 try:
     from collections.abc import Callable
-    from typing import List, TypeVar
 
     from amos_events import AMOSEvent, EventProducer, EventType
 
@@ -142,7 +141,7 @@ class WorkflowResult:
     tasks_completed: int = 0
     tasks_failed: int = 0
     output: Dict[str, Any] = field(default_factory=dict)
-    artifacts: list[str] = field(default_factory=list)
+    artifacts: List[str] = field(default_factory=list)
     error_message: str = None
 
     def to_dict(self) -> Dict[str, Any]:
@@ -229,7 +228,7 @@ class AMOSWorkflowBase(ABC):
             name: Workflow name
         """
         self.name = name
-        self.results: list[WorkflowResult] = []
+        self.results: List[WorkflowResult] = []
 
     @abstractmethod
     async def run(self, **kwargs: Any) -> WorkflowResult:
@@ -329,7 +328,7 @@ async def agent_execute_task(
 
 
 @task(name="validate_output", retries=1)
-async def validate_output_task(output: str, criteria: list[str]) -> Dict[str, Any]:
+async def validate_output_task(output: str, criteria: List[str]) -> Dict[str, Any]:
     """Task to validate agent output.
 
     Args:
@@ -355,7 +354,7 @@ async def validate_output_task(output: str, criteria: list[str]) -> Dict[str, An
 
 
 @task(name="consolidate_results")
-async def consolidate_results_task(results: list[dict[str, Any]]) -> Dict[str, Any]:
+async def consolidate_results_task(results: List[dict[str, Any]]) -> Dict[str, Any]:
     """Task to consolidate multiple results.
 
     Args:
@@ -469,7 +468,7 @@ async def text_chunk_task(document_id: str, text: str, chunk_size: int = 1000) -
 
 @task(name="vectorize_chunks")
 async def vectorize_chunks_task(
-    chunks: list[dict[str, Any]], collection: str = "default"
+    chunks: List[dict[str, Any]], collection: str = "default"
 ) -> Dict[str, Any]:
     """Task to vectorize text chunks.
 
@@ -555,7 +554,7 @@ if PREFECT_AVAILABLE:
 
     @flow(name="multi_agent_workflow", description="Multi-agent collaboration workflow")
     async def multi_agent_workflow(
-        task: str, agents: list[str] = None, require_consensus: bool = True
+        task: str, agents: List[str] = None, require_consensus: bool = True
     ) -> Dict[str, Any]:
         """Multi-agent workflow with orchestration.
 
@@ -650,7 +649,7 @@ if PREFECT_AVAILABLE:
 
     @flow(name="document_processing_workflow", description="Document ingestion and vectorization")
     async def document_processing_workflow(
-        document_paths: list[str], collection: str = "amos_documents"
+        document_paths: List[str], collection: str = "amos_documents"
     ) -> Dict[str, Any]:
         """Document processing workflow.
 
@@ -775,7 +774,7 @@ class MultiAgentWorkflow(AMOSWorkflowBase):
         super().__init__("multi_agent")
 
     async def run(
-        self, task: str, agents: list[str] = None, require_consensus: bool = True
+        self, task: str, agents: List[str] = None, require_consensus: bool = True
     ) -> WorkflowResult:
         """Run multi-agent workflow."""
         start_time = datetime.now()
@@ -816,7 +815,7 @@ class DocumentProcessingWorkflow(AMOSWorkflowBase):
         super().__init__("document_processing")
 
     async def run(
-        self, document_paths: list[str], collection: str = "amos_documents"
+        self, document_paths: List[str], collection: str = "amos_documents"
     ) -> WorkflowResult:
         """Run document processing workflow."""
         start_time = datetime.now()

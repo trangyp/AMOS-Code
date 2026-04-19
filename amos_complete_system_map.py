@@ -15,7 +15,7 @@ Run: python amos_complete_system_map.py
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -257,7 +257,7 @@ class AMOSCompleteSystemMap:
             "Case_Memory": {"layer": "L3", "type": "analogical", "purpose": "Patterns"},
         }
 
-    def get_global_laws(self) -> dict[str, str]:
+    def get_global_laws(self) -> Dict[str, str]:
         """6 Global Laws (L1-L6)"""
         return {
             "L1": "Logic-Structure Preservation",

@@ -1,7 +1,7 @@
 """Pipeline Engine stub for compatibility."""
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class PipelineStage:

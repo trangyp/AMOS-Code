@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Brain - Unified Coding Tools Interface
 
@@ -11,6 +11,7 @@ import json
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 
@@ -20,7 +21,7 @@ class ToolResult:
 
     tool: str
     status: str
-    issues: list[dict[str, Any]]
+    issues: List[dict[str, Any]]
     summary: str
     timestamp: str
 
@@ -170,7 +171,7 @@ class AMOSBrainCodingTools:
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
-    def run_all(self) -> dict[str, ToolResult]:
+    def run_all(self) -> Dict[str, ToolResult]:
         """Run all strongest coding tools."""
         print("=" * 60)
         print("AMOS BRAIN: Running Strongest Coding Tools")

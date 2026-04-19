@@ -23,7 +23,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -65,7 +65,7 @@ class CodeParser:
         self.entities: Dict[str, CodeEntity] = {}
         self.dependencies: List[DependencyEdge] = []
 
-    def parse_repository(self) -> dict[str, CodeEntity]:
+    def parse_repository(self) -> Dict[str, CodeEntity]:
         """Parse entire repository."""
         for py_file in self.root_path.rglob("*.py"):
             if "__pycache__" in str(py_file):
@@ -295,7 +295,7 @@ class ZoneClassifier:
 
         return "unknown"
 
-    def classify_all(self, entities: Dict[str, CodeEntity]) -> dict[str, CodeEntity]:
+    def classify_all(self, entities: Dict[str, CodeEntity]) -> Dict[str, CodeEntity]:
         """Classify all entities."""
         for entity in entities.values():
             entity.zone = self.classify(entity)
@@ -341,7 +341,7 @@ class RepoAnalyzer:
 
         return dict(metrics)
 
-    def find_cycles(self) -> list[list[str]]:
+    def find_cycles(self) -> List[list[str]]:
         """Find circular dependencies."""
         # Build adjacency list
         graph = defaultdict(set)

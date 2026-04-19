@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 # Configuration
 VECTOR_STORE_TYPE = os.getenv("VECTOR_STORE_TYPE", "chroma")  # chroma, pinecone, weaviate
@@ -62,8 +62,8 @@ class KnowledgeChunk:
 
     chunk_id: str
     content: str
-    embedding: list[float] = None
-    metadata: dict[str, Any] = field(default_factory=dict)
+    embedding: List[float] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
     source: str = ""
     source_type: str = ""
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -76,7 +76,7 @@ class RAGQueryResult:
     """Result of a RAG query."""
 
     query: str
-    chunks: list[KnowledgeChunk]
+    chunks: List[KnowledgeChunk]
     context: str = ""  # Combined context for LLM
     total_found: int = 0
     latency_ms: float = 0.0
@@ -148,7 +148,7 @@ class VectorStore:
             self._client = InMemoryVectorStore()
 
     async def add_chunks(
-        self, chunks: list[KnowledgeChunk], memory_type: MemoryType = MemoryType.SEMANTIC
+        self, chunks: List[KnowledgeChunk], memory_type: MemoryType = MemoryType.SEMANTIC
     ) -> bool:
         """Add knowledge chunks to vector store."""
         if not self._client:
@@ -180,8 +180,8 @@ class VectorStore:
         query: str,
         memory_type: MemoryType = MemoryType.SEMANTIC,
         top_k: int = TOP_K_RETRIEVAL,
-        filter_dict: dict[str, Any] = None,
-    ) -> list[KnowledgeChunk]:
+        filter_dict: Dict[str, Any] = None,
+    ) -> List[KnowledgeChunk]:
         """Search for relevant knowledge chunks."""
         if not self._client:
             return []
@@ -231,7 +231,7 @@ class VectorStore:
 
         return False
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get vector store statistics."""
         stats = {"store_type": self.store_type, "url": self.url, "collections": []}
 
@@ -251,15 +251,15 @@ class InMemoryVectorStore:
     """In-memory fallback vector store for development."""
 
     def __init__(self):
-        self.collections: dict[str, list[KnowledgeChunk]] = {mt.value: [] for mt in MemoryType}
+        self.collections: Dict[str, list[KnowledgeChunk]] = {mt.value: [] for mt in MemoryType}
 
-    async def add_chunks(self, chunks: list[KnowledgeChunk], memory_type: MemoryType) -> bool:
+    async def add_chunks(self, chunks: List[KnowledgeChunk], memory_type: MemoryType) -> bool:
         self.collections[memory_type.value].extend(chunks)
         return True
 
     async def search(
         self, query: str, memory_type: MemoryType, top_k: int = 5
-    ) -> list[KnowledgeChunk]:
+    ) -> List[KnowledgeChunk]:
         # Simple keyword matching for in-memory fallback
         query_words = set(query.lower().split())
         scored = []
@@ -299,7 +299,7 @@ class AgentKnowledgeManager:
         source: str,
         source_type: str,
         memory_type: MemoryType = MemoryType.SEMANTIC,
-    ) -> list[KnowledgeChunk]:
+    ) -> List[KnowledgeChunk]:
         """Chunk document into knowledge pieces."""
         chunks = []
         words = content.split()
@@ -330,7 +330,7 @@ class AgentKnowledgeManager:
         source: str,
         source_type: str = "document",
         memory_type: MemoryType = MemoryType.SEMANTIC,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> int:
         """Ingest a document into knowledge base."""
         chunks = self._chunk_document(content, source, source_type, memory_type)
@@ -353,7 +353,7 @@ class AgentKnowledgeManager:
         event: str,
         agent_id: str,
         conversation_id: str = None,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> bool:
         """Add an episodic memory (event/experience)."""
         chunk = KnowledgeChunk(
@@ -390,7 +390,7 @@ class AgentKnowledgeManager:
         return await self.vector_store.add_chunks([chunk], MemoryType.SEMANTIC)
 
     async def add_procedural_memory(
-        self, procedure: str, skill_name: str, steps: list[str] = None
+        self, procedure: str, skill_name: str, steps: List[str] = None
     ) -> bool:
         """Add a procedural memory (skill/how-to)."""
         content = procedure
@@ -415,9 +415,9 @@ class AgentKnowledgeManager:
     async def query(
         self,
         query: str,
-        memory_types: list[MemoryType] = None,
+        memory_types: List[MemoryType] = None,
         top_k: int = TOP_K_RETRIEVAL,
-        filter_dict: dict[str, Any] = None,
+        filter_dict: Dict[str, Any] = None,
     ) -> RAGQueryResult:
         """Query knowledge base."""
         import time
@@ -496,7 +496,7 @@ Based on the context above, please respond to the user's query."""
 
         return augmented
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get knowledge manager statistics."""
         stats = self.vector_store.get_stats()
         stats["chunk_size"] = CHUNK_SIZE

@@ -13,8 +13,9 @@ Version: 2.0.0
 import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
@@ -176,7 +177,7 @@ class StreamProcessor:
 
     def __init__(self, kafka_bus: KafkaEventBus):
         self.kafka_bus = kafka_bus
-        self._handlers: dict[EventType, list[Callable]] = {}
+        self._handlers: Dict[EventType, list[Callable]] = {}
 
     def on(self, event_type: EventType) -> Callable:
         """Decorator to register event handler."""
@@ -208,7 +209,7 @@ class EventSourcingRepository:
     ):
         self.kafka_bus = kafka_bus
         self.aggregate_type = aggregate_type
-        self._event_store: dict[str, list[DomainEvent]] = {}  # In-memory for demo
+        self._event_store: Dict[str, list[DomainEvent]] = {}  # In-memory for demo
 
     async def save(self, aggregate_id: str, events: List[DomainEvent]) -> None:
         """Save events to event store and publish to Kafka."""
@@ -345,7 +346,6 @@ if __name__ == "__main__":
     import argparse
     import asyncio
     import uuid
-from typing import Callable
 
     parser = argparse.ArgumentParser(description="AMOS Kafka Event Streaming")
     parser.add_argument("--produce", action="store_true", help="Produce sample events")

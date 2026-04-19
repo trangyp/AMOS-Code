@@ -14,7 +14,7 @@ Owner: Trang
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths
 REPO_ROOT = Path(__file__).parent

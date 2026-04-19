@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """Axiom One - Real Multi-Agent Fleet Orchestration System.
 
 Unified agent orchestration that integrates:
@@ -21,6 +19,7 @@ from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -373,7 +372,7 @@ ToolRegistry.register("list_directory", tool_list_directory)
 # Agent Fleet Definitions
 # ─────────────────────────────────────────────────────────────────────────────
 
-AGENT_FLEET: dict[AgentType, Agent] = {
+AGENT_FLEET: Dict[AgentType, Agent] = {
     AgentType.ARCHITECT: Agent(
         agent_id="architect-001",
         name="Architect Agent",
@@ -928,7 +927,7 @@ class AxiomOneAgentFleet:
         """Get an agent from the fleet."""
         return AGENT_FLEET.get(agent_type)
 
-    def list_agents(self) -> list[dict[str, Any]]:
+    def list_agents(self) -> List[dict[str, Any]]:
         """List all available agents."""
         return [
             {
@@ -981,7 +980,7 @@ class AxiomOneAgentFleet:
         """Execute a workflow."""
         return self.workflow_engine.execute_workflow(workflow)
 
-    def get_audit_log(self) -> list[dict[str, Any]]:
+    def get_audit_log(self) -> List[dict[str, Any]]:
         """Get the audit log of all agent actions."""
         return [asdict(action) for action in self.agent_executor.audit_log]
 

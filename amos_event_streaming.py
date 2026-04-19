@@ -116,7 +116,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class Priority(Enum):
@@ -195,7 +195,7 @@ class AsyncTask:
     task_id: str
     priority: Priority
     function: Callable[..., Any]
-    args: tuple[Any, ...]
+    args: Tuple[Any, ...]
     kwargs: Dict[str, Any]
     created_at: float
     scheduled_at: float = None
@@ -218,19 +218,19 @@ class AMOSEventStreaming:
         self.retry_delay_seconds = retry_delay_seconds
 
         # Event bus
-        self.subscribers: dict[str, list[Callable[[Event], Any]]] = defaultdict(list)
+        self.subscribers: Dict[str, list[Callable[[Event], Any]]] = defaultdict(list)
         self.event_history: deque[Event] = deque(maxlen=max_history)
-        self.pending_events: list[tuple[int, float, Event]] = []  # (priority, timestamp, event)
+        self.pending_events: List[tuple[int, float, Event]] = []  # (priority, timestamp, event)
 
         # Event sourcing
-        self.event_store: dict[str, list[SourcedEvent]] = defaultdict(list)
+        self.event_store: Dict[str, list[SourcedEvent]] = defaultdict(list)
 
         # Stream processing
         self.windows: Dict[str, StreamWindow] = {}
         self.window_results: Dict[str, Any] = {}
 
         # Async processing
-        self.task_queue: list[tuple[int, float, AsyncTask]] = []  # (priority, timestamp, task)
+        self.task_queue: List[tuple[int, float, AsyncTask]] = []  # (priority, timestamp, task)
         self.dead_letter_queue: List[Event] = []
         self.completed_tasks: Dict[str, AsyncTask] = {}
 
@@ -501,7 +501,7 @@ class AMOSEventStreaming:
     def submit_task(
         self,
         function: Callable[..., Any],
-        args: tuple[Any, ...] = (),
+        args: Tuple[Any, ...] = (),
         kwargs: Dict[str, Any] = None,
         priority: Priority = Priority.NORMAL,
         delay_seconds: float = 0.0,

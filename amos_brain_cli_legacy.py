@@ -16,14 +16,15 @@ Usage:
   python amos_brain_cli.py
 """
 
-
 import os
 import sys
+from typing import List
 
 # Setup paths
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from amos_brain import GlobalLaws, get_amos_integration
+from amos_brain.cognitive_stack import CognitiveStack
 from amos_brain.dashboard import print_dashboard
 from amos_brain.memory import get_brain_memory
 
@@ -146,9 +147,6 @@ def cmd_analyze(amos, topic: str):
     print()
 
     # Route query
-    from amos_brain.cognitive_stack import CognitiveStack
-from typing import Final
-
     stack = CognitiveStack()
     engines = stack.route_query(topic)
 

@@ -20,7 +20,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 import numpy as np
 
@@ -59,7 +59,7 @@ class CacheEntry:
     expires_at: float = None
 
     # For semantic cache
-    embedding: list[float] = None  # Vector embedding for similarity
+    embedding: List[float] = None  # Vector embedding for similarity
     original_query: str = None
 
     # Size tracking
@@ -345,7 +345,7 @@ class AMOSCachingLayer:
 
         return None
 
-    async def set(self, key: str, value: Any, ttl: int = None, tags: list[str] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int = None, tags: List[str] = None) -> bool:
         """Store in exact-match cache."""
         entry = CacheEntry(
             key=key,

@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS Thinking Kernel - Core State Transformation Engine
@@ -27,6 +25,7 @@ Architecture:
 import math
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from functools import lru_cache
 
@@ -169,7 +168,7 @@ class ErrorState:
     coherence_error: float = 0.0
     constraint_error: float = 0.0
     reasoning_error: float = 0.0
-    detected_anomalies: list[dict[str, Any]] = field(default_factory=list)
+    detected_anomalies: List[dict[str, Any]] = field(default_factory=list)
 
     def total_error(self) -> float:
         """Aggregate error score."""
@@ -1259,7 +1258,7 @@ class ThinkingInvariants:
     @staticmethod
     def validate_all(
         state: ThinkingState, history: Optional[list[ThinkingState]] = None
-    ) -> dict[str, tuple[bool, str]]:
+    ) -> Dict[str, tuple[bool, str]]:
         """Run all invariant checks."""
         results = {
             "THI01": ThinkingInvariants.validate_thi01(state),

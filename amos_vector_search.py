@@ -25,7 +25,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Protocol, TypeVar
+from typing import Any, Dict, List, Optional, Protocol, TypeVar
 
 # SQLAlchemy imports
 from sqlalchemy import Index, String, Text, select
@@ -200,7 +200,7 @@ if DB_AVAILABLE:
 class EmbeddingProvider(Protocol):
     """Protocol for embedding providers."""
 
-    async def embed(self, texts: List[str]) -> list[list[float]]:
+    async def embed(self, texts: List[str]) -> List[list[float]]:
         """Generate embeddings for texts."""
         ...
 
@@ -215,7 +215,7 @@ class LocalEmbeddingProvider:
         self.model_name = model_name
         self._model = None
 
-    async def embed(self, texts: List[str]) -> list[list[float]]:
+    async def embed(self, texts: List[str]) -> List[list[float]]:
         """Generate embeddings using local model."""
         if self._model is None:
             try:
@@ -241,7 +241,7 @@ class OpenAIEmbeddingProvider:
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.model = model
 
-    async def embed(self, texts: List[str]) -> list[list[float]]:
+    async def embed(self, texts: List[str]) -> List[list[float]]:
         """Generate embeddings using OpenAI API."""
         try:
             import openai
@@ -665,7 +665,7 @@ if FASTAPI_AVAILABLE and DB_AVAILABLE:
         hybrid: bool = False
 
     class SearchResponse(BaseModel):
-        results: list[dict[str, Any]]
+        results: List[dict[str, Any]]
         total: int
         query: str
 

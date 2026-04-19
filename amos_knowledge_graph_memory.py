@@ -18,7 +18,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class MemoryTier(Enum):
@@ -111,8 +111,8 @@ class MemoryQuery:
     """Query for memory retrieval."""
 
     query_text: str
-    entity_types: list[str] = None
-    relation_types: list[RelationType] = None
+    entity_types: List[str] = None
+    relation_types: List[RelationType] = None
     time_range: Tuple[float, float] = None  # start, end
     memory_tiers: List[MemoryTier] = field(
         default_factory=lambda: [MemoryTier.EPISODIC, MemoryTier.SEMANTIC]
@@ -144,16 +144,16 @@ class AMOSKnowledgeGraphMemory:
         self.episodes: Dict[str, Episode] = {}
 
         # Indices for fast lookup
-        self.entity_name_index: dict[str, set[str]] = {}  # name -> entity_ids
-        self.entity_type_index: dict[str, set[str]] = {}  # type -> entity_ids
-        self.episode_time_index: list[tuple[float, str]] = []  # (timestamp, episode_id)
+        self.entity_name_index: Dict[str, set[str]] = {}  # name -> entity_ids
+        self.entity_type_index: Dict[str, set[str]] = {}  # type -> entity_ids
+        self.episode_time_index: List[tuple[float, str]] = []  # (timestamp, episode_id)
 
         # Working memory (short term)
-        self.working_memory: list[dict[str, Any]] = []
+        self.working_memory: List[dict[str, Any]] = []
         self.working_memory_limit = 10
 
         # Procedural memory
-        self.procedures: dict[str, dict[str, Any]] = {}
+        self.procedures: Dict[str, dict[str, Any]] = {}
 
         # Configuration
         self.decay_factor = 0.95  # Importance decay per day
@@ -167,7 +167,7 @@ class AMOSKnowledgeGraphMemory:
         print(f"  - Episodes: {len(self.episodes)}")
 
     def create_entity(
-        self, name: str, entity_type: str, properties: dict[str, Any] = None
+        self, name: str, entity_type: str, properties: Dict[str, Any] = None
     ) -> Entity:
         """Create a new entity in semantic memory."""
         entity_id = f"ent_{uuid.uuid4().hex[:12]}"
@@ -194,7 +194,7 @@ class AMOSKnowledgeGraphMemory:
         source_id: str,
         target_id: str,
         relation_type: RelationType,
-        properties: dict[str, Any] = None,
+        properties: Dict[str, Any] = None,
         confidence: float = 1.0,
     ) -> Optional[Relation]:
         """Create relationship between entities."""
@@ -218,8 +218,8 @@ class AMOSKnowledgeGraphMemory:
     def record_episode(
         self,
         content: str,
-        entity_names: list[str] = None,
-        context: dict[str, Any] = None,
+        entity_names: List[str] = None,
+        context: Dict[str, Any] = None,
         importance: float = 1.0,
         emotion_tag: str = None,
     ) -> Episode:
@@ -337,7 +337,7 @@ class AMOSKnowledgeGraphMemory:
     def query_episodic_memory(
         self,
         time_range: Tuple[float, float] = None,
-        entity_ids: list[str] = None,
+        entity_ids: List[str] = None,
         min_importance: float = 0.0,
         limit: int = 10,
     ) -> List[Episode]:
@@ -374,7 +374,7 @@ class AMOSKnowledgeGraphMemory:
         if len(self.working_memory) > self.working_memory_limit:
             self.working_memory.pop(0)
 
-    def get_working_memory(self) -> list[dict[str, Any]]:
+    def get_working_memory(self) -> List[dict[str, Any]]:
         """Get current working memory contents."""
         return self.working_memory
 

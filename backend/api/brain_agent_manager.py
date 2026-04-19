@@ -7,14 +7,12 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import time
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
@@ -37,7 +35,7 @@ class AgentSpawnRequest(BaseModel):
 
     agent_type: str = Field(..., description="Type of agent to spawn")
     task: str = Field(..., min_length=1, description="Task for the agent")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     priority: int = Field(default=5, ge=1, le=10)
     timeout_seconds: int = Field(default=300, ge=10)
 
@@ -50,8 +48,8 @@ class AgentSpawnResponse(BaseModel):
     task: str
     status: str
     spawn_timestamp: str
-    estimated_completion: str | None
-    orchestrator_task_id: str | None
+    estimated_completion: Optional[str]
+    orchestrator_task_id: Optional[str]
 
 
 class AgentStatus(BaseModel):
@@ -60,8 +58,8 @@ class AgentStatus(BaseModel):
     agent_id: str
     status: str  # pending, running, completed, failed
     progress_percent: float
-    current_step: str | None
-    thoughts: list[str]
+    current_step: Optional[str]
+    thoughts: List[str]
     legality_score: float
     confidence: float
     last_update: str
@@ -72,7 +70,7 @@ class AgentResult(BaseModel):
 
     agent_id: str
     status: str
-    result: dict[str, Any]
+    result: Dict[str, Any]
     reasoning: str
     execution_time_ms: float
     memory_entries_saved: int
@@ -83,9 +81,9 @@ class BrainAgentManager:
     """Manager for brain-powered agent spawning and control."""
 
     def __init__(self):
-        self._agents: dict[str, AgentStatus] = {}
-        self._results: dict[str, AgentResult] = {}
-        self._active_tasks: dict[str, asyncio.Task] = {}
+        self._agents: Dict[str, AgentStatus] = {}
+        self._results: Dict[str, AgentResult] = {}
+        self._active_tasks: Dict[str, asyncio.Task] = {}
         self._lock = asyncio.Lock()
 
     async def spawn_agent(
@@ -225,18 +223,18 @@ class BrainAgentManager:
                     self._agents[agent_id].current_step = f"error: {e!s}"
                     self._agents[agent_id].last_update = datetime.now(UTC).isoformat()
 
-    def get_agent_status(self, agent_id: str) -> AgentStatus | None:
+    def get_agent_status(self, agent_id: str) -> Optional[AgentStatus]:
         """Get current status of an agent."""
         return self._agents.get(agent_id)
 
-    def get_agent_result(self, agent_id: str) -> AgentResult | None:
+    def get_agent_result(self, agent_id: str) -> Optional[AgentResult]:
         """Get result of a completed agent."""
         return self._results.get(agent_id)
 
     def list_agents(
         self,
-        status_filter: str | None = None,
-    ) -> list[AgentStatus]:
+        status_filter: Optional[str] = None,
+    ) -> List[AgentStatus]:
         """List all agents, optionally filtered by status."""
         agents = list(self._agents.values())
         if status_filter:
@@ -283,7 +281,7 @@ class BrainAgentManager:
 
         return cleaned
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get manager statistics."""
         statuses = {"pending": 0, "running": 0, "completed": 0, "failed": 0, "cancelled": 0}
         for agent in self._agents.values():
@@ -328,27 +326,27 @@ async def get_agent_result(agent_id: str) -> AgentResult:
 
 
 @router.get("/list")
-async def list_agents(status: str | None = None) -> list[AgentStatus]:
+async def list_agents(status: Optional[str] = None) -> List[AgentStatus]:
     """List all agents with optional status filter."""
     return agent_manager.list_agents(status)
 
 
 @router.post("/cancel/{agent_id}")
-async def cancel_agent(agent_id: str) -> dict[str, str]:
+async def cancel_agent(agent_id: str) -> Dict[str, str]:
     """Cancel a running agent."""
     success = await agent_manager.cancel_agent(agent_id)
     return {"agent_id": agent_id, "cancelled": str(success)}
 
 
 @router.post("/cleanup")
-async def cleanup_agents(max_age_seconds: int = 3600) -> dict[str, int]:
+async def cleanup_agents(max_age_seconds: int = 3600) -> Dict[str, int]:
     """Clean up old completed agents."""
     cleaned = await agent_manager.cleanup_completed(max_age_seconds)
     return {"cleaned": cleaned}
 
 
 @router.get("/stats")
-async def get_manager_stats() -> dict[str, Any]:
+async def get_manager_stats() -> Dict[str, Any]:
     """Get agent manager statistics."""
     return agent_manager.get_stats()
 

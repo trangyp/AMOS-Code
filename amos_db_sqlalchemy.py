@@ -32,7 +32,7 @@ import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, Optional
 
 # SQLAlchemy imports
 try:
@@ -427,7 +427,7 @@ class AMOSDatabase:
         resource: str = None,
         action: str = None,
         success: bool = True,
-        details: dict[str, Any] = None,
+        details: Dict[str, Any] = None,
     ) -> AuditLog:
         """Log an audit event."""
         async with self.session() as session:
@@ -453,8 +453,8 @@ class AMOSDatabase:
         duration_ms: float,
         user_id: int = None,
         api_key_id: int = None,
-        parameters: dict[str, Any] = None,
-        result: dict[str, Any] = None,
+        parameters: Dict[str, Any] = None,
+        result: Dict[str, Any] = None,
         success: bool = True,
         error_message: str = None,
         ip_address: str = None,
@@ -478,7 +478,7 @@ class AMOSDatabase:
             return execution
 
     async def record_health_metric(
-        self, metric_name: str, value: float, labels: dict[str, str] = None
+        self, metric_name: str, value: float, labels: Dict[str, str] = None
     ) -> HealthMetric:
         """Record health metric."""
         async with self.session() as session:

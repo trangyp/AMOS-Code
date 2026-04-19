@@ -6,7 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from .types import (
+from typing import List, Optional, Tuple
+
+from clawspring.plugin.models import (
     PluginEntry,
     PluginManifest,
     PluginScope,

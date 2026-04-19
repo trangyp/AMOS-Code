@@ -18,7 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class TemporalStatus(Enum):
@@ -116,7 +116,7 @@ class TemporalEngine:
     async def schedule_workflow(
         self,
         name: str,
-        events: list[tuple[str, Callable[..., Any], float]],
+        events: List[tuple[str, Callable[..., Any], float]],
         metadata: Dict[str, Any] = None,
     ) -> str:
         """Schedule a field-theoretic workflow."""

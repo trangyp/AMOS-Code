@@ -20,7 +20,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -74,7 +74,7 @@ class AMOSGitHubConnector:
             repo.local_path = self.base_path / repo.name
             self.repos[repo.name] = repo
 
-    def clone_all(self) -> dict[str, bool]:
+    def clone_all(self) -> Dict[str, bool]:
         """Clone all repositories."""
         results = {}
         for name, repo in self.repos.items():
@@ -147,7 +147,7 @@ class AMOSGitHubConnector:
                 files.extend(repo.local_path.rglob(f"*{extension}"))
         return files
 
-    def sync_all(self) -> dict[str, bool]:
+    def sync_all(self) -> Dict[str, bool]:
         """Sync all repositories."""
         return self.clone_all()
 
@@ -173,7 +173,7 @@ def get_github_connector(base_path: str = "./github_repos") -> AMOSGitHubConnect
 
 
 # Convenience functions
-def connect_all_repos() -> dict[str, bool]:
+def connect_all_repos() -> Dict[str, bool]:
     """Connect and clone all trangyp repos."""
     connector = get_github_connector()
     return connector.clone_all()

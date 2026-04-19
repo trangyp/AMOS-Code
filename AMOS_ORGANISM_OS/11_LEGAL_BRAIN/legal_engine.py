@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -260,7 +260,7 @@ class LegalEngine:
         return True
 
     def assess_risk(
-        self, target: str, action_type: str, parameters: dict[str, Any]
+        self, target: str, action_type: str, parameters: Dict[str, Any]
     ) -> RiskAssessment:
         """Assess risk of an action."""
         risk_factors: List[str] = []
@@ -310,7 +310,7 @@ class LegalEngine:
 
         return assessment
 
-    def validate_governance(self, action: str, params: dict) -> dict[str, Any]:
+    def validate_governance(self, action: str, params: dict) -> Dict[str, Any]:
         """Validate action against operator governance rules."""
         profile = self.operator_profile
         is_dict = isinstance(profile, dict)
@@ -340,7 +340,7 @@ class LegalEngine:
             "reasoning_preference": reasoning_style,
         }
 
-    def generate_compliance_report(self) -> dict[str, Any]:
+    def generate_compliance_report(self) -> Dict[str, Any]:
         """Generate compliance status report."""
         # Get recent checks
         recent_checks = self.checks[-50:]
@@ -349,7 +349,7 @@ class LegalEngine:
         failed = len(recent_checks) - passed
 
         # Group by severity
-        by_severity: dict[str, int] = {}
+        by_severity: Dict[str, int] = {}
         for check in recent_checks:
             if not check.passed:
                 sev = check.severity
@@ -366,7 +366,7 @@ class LegalEngine:
             "total_risk_assessments": len(self.risk_assessments),
         }
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get legal engine status."""
         return {
             "status": "operational",

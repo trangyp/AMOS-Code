@@ -32,7 +32,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -42,9 +42,9 @@ class GovernanceCycle:
     cycle_id: str
     timestamp: float
     repo_doctor_results: Dict[str, Any] = field(default_factory=dict)
-    brain_decisions: list[dict[str, Any]] = field(default_factory=list)
-    evolution_contracts: list[dict[str, Any]] = field(default_factory=list)
-    learning_patterns: list[dict[str, Any]] = field(default_factory=list)
+    brain_decisions: List[dict[str, Any]] = field(default_factory=list)
+    evolution_contracts: List[dict[str, Any]] = field(default_factory=list)
+    learning_patterns: List[dict[str, Any]] = field(default_factory=list)
     success: bool = False
     energy_before: float = 0.0
     energy_after: float = 0.0
@@ -167,7 +167,7 @@ class AutonomousGovernanceOrchestrator:
 
         return results
 
-    def synthesize_repairs(self, diagnosis: Dict[str, Any]) -> list[dict[str, Any]]:
+    def synthesize_repairs(self, diagnosis: Dict[str, Any]) -> List[dict[str, Any]]:
         """
         Phase 2: Synthesize repairs using AMOS Brain.
 
@@ -207,7 +207,7 @@ class AutonomousGovernanceOrchestrator:
         print(f"  ✓ Total repairs synthesized: {len(repairs)}")
         return repairs
 
-    def evolve(self, repairs: list[dict[str, Any]]) -> Dict[str, Any]:
+    def evolve(self, repairs: List[dict[str, Any]]) -> Dict[str, Any]:
         """
         Phase 3: Implement repairs using Self-Evolution Engine.
 

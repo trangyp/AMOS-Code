@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, Optional
 
 
 class PlanetaryBoundary(Enum):
@@ -121,7 +121,7 @@ class EcologyBiodiversityKernel:
             "habitat_loss_percent": self.habitat_loss_percent,
         }
 
-    def calculate_ecosystem_services(self) -> dict[str, float]:
+    def calculate_ecosystem_services(self) -> Dict[str, float]:
         """Calculate ecosystem services value (simplified)."""
         services = {
             "carbon_sequestration": 50.0,  # Gt CO2/year
@@ -192,7 +192,6 @@ class SustainabilityMetricsKernel:
         if self.footprint_per_capita > self.biocapacity_per_capita:
             overshoot_ratio = self.biocapacity_per_capita / self.footprint_per_capita
             day_of_year = int(365 * overshoot_ratio)
-            from datetime import datetime, timedelta
             date = datetime(2024, 1, 1) + timedelta(days=day_of_year - 1)
             return {
                 "overshoot_day": day_of_year,
@@ -514,8 +513,6 @@ _planetary_engine: Optional[PlanetaryStackEngine] = None
 
 def get_planetary_stack_engine() -> PlanetaryStackEngine:
     """Get or create the Planetary Stack Engine singleton."""
-from __future__ import annotations
-
     global _planetary_engine
     if _planetary_engine is None:
         _planetary_engine = PlanetaryStackEngine()

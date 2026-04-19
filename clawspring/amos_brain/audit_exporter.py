@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Optional
+UTC = timezone.utc
+from typing import Any, Dict, Optional
 
 
 @dataclass
@@ -11,7 +12,7 @@ class AuditExporter:
 
     name: str = "default"
 
-    def export(self, audit_data: dict[str, Any]) -> dict[str, Any]:
+    def export(self, audit_data: Dict[str, Any]) -> Dict[str, Any]:
         """Export audit data."""
         return {
             "exported": True,
@@ -21,8 +22,8 @@ class AuditExporter:
 
 
 def export_audit(
-    audit_data: dict[str, Any], exporter: Optional[AuditExporter] = None
-) -> dict[str, Any]:
+    audit_data: Dict[str, Any], exporter: Optional[AuditExporter] = None
+) -> Dict[str, Any]:
     """Export audit using default or provided exporter."""
     if exporter is None:
         exporter = AuditExporter()

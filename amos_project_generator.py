@@ -320,7 +320,7 @@ python main.py
 
 # Or import and use programmatically
 from main import {name.replace("-", "_").title().replace(" ", "")}
-from typing import Final, Optional
+from typing import Dict, Final, List, Optional
 
 app = {name.replace("-", "_").title().replace(" ", "")}()
 result = app.analyze("Your problem here")

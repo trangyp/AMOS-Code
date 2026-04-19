@@ -38,9 +38,9 @@ class BrainLoader:
         Path(__file__).resolve().parent.parent / "_AMOS_BRAIN",
     ]
 
-    def __init__(self, core_path: Path | None = None):
+    def __init__(self, core_path: Optional[Path] = None):
         self.core_path = core_path or self._resolve_core_path()
-        self._config: BrainConfig | None = None
+        self._config: Optional[BrainConfig] = None
         self._raw_specs: dict[str, Any] = {}
 
     def _resolve_core_path(self) -> Path:
@@ -184,7 +184,7 @@ class BrainLoader:
 
 
 # Global singleton with proper caching
-_brain_loader: BrainLoader | None = None
+_brain_loader: Optional[BrainLoader] = None
 
 
 @lru_cache(maxsize=1)

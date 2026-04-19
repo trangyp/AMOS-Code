@@ -20,7 +20,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # ============================================================================
 # 1. DATA INGESTION - Market Signals & Opportunity Detection

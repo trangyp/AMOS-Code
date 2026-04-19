@@ -8,12 +8,10 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 import logging
 import sys
 import structlog
-from typing import Any
+from typing import Any, Dict, List
 import os
 
 # Environment-based configuration
@@ -33,7 +31,7 @@ def configure_logging() -> None:
     )
 
     # Configure structlog
-    shared_processors: list[Any] = [
+    shared_processors: List[Any] = [
         # Add timestamp
         structlog.processors.TimeStamper(fmt="iso"),
         # Add log level
@@ -157,8 +155,8 @@ class MetricsCollector:
 
     def __init__(self):
         self.logger = get_logger("amos.metrics")
-        self._counters: dict[str, int] = {}
-        self._gauges: dict[str, float] = {}
+        self._counters: Dict[str, int] = {}
+        self._gauges: Dict[str, float] = {}
 
     def increment(self, metric_name: str, value: int = 1, tags: dict = None):
         """Increment a counter metric."""

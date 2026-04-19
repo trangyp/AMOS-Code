@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Cognitive File Processor API
 
@@ -7,8 +7,6 @@ Real-time file analysis with brain-powered cognition.
 
 Owner: Trang Phan
 """
-from __future__ import annotations
-
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -32,8 +30,8 @@ class CognitiveProcessRequest(BaseModel):
     """Request for cognitive file processing."""
 
     content: str
-    source: str | None = None
-    context: dict[str, Any] = {}
+    source: Optional[str] = None
+    context: Dict[str, Any] = {}
     max_concurrent: int = 5
     enable_brain: bool = True
 
@@ -42,16 +40,16 @@ class CognitiveProcessResponse(BaseModel):
     """Response with cognitively processed document."""
 
     doc_id: str
-    source_path: str | None
+    source_path: Optional[str]
     state: str
     total_segments: int
     processed_chunks: int
     failed_chunks: int
     brain_enhanced: bool
     total_processing_time_ms: float
-    cognitive_summary: dict[str, Any]
-    errors: list[str]
-    chunks: list[dict[str, Any]]
+    cognitive_summary: Dict[str, Any]
+    errors: List[str]
+    chunks: List[dict[str, Any]]
 
 
 class CognitiveStatusResponse(BaseModel):
@@ -67,7 +65,7 @@ class CognitiveStatusResponse(BaseModel):
 async def process_cognitive_endpoint(
     background_tasks: BackgroundTasks,
     content: str = Form(...),
-    source: str | None = Form(None),
+    source: Optional[str] = Form(None),
     context: str = Form("{}"),
     max_concurrent: int = Form(5),
     enable_brain: bool = Form(True),
@@ -203,7 +201,7 @@ async def get_cognitive_status() -> CognitiveStatusResponse:
 
 
 @router.post("/analyze-text")
-async def analyze_text_endpoint(text: str = Form(...)) -> dict[str, Any]:
+async def analyze_text_endpoint(text: str = Form(...)) -> Dict[str, Any]:
     """Quick cognitive analysis of text without full file processing."""
     if not COGNITIVE_AVAILABLE:
         raise HTTPException(status_code=503, detail="Cognitive processor not available")

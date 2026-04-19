@@ -4,6 +4,7 @@ import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List
@@ -51,10 +52,10 @@ class Plan:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     goal: str = ""
     horizon: str = "short-term"  # short-term, medium-term, long-term
-    steps: list[dict[str, Any]] = field(default_factory=list)
+    steps: List[dict[str, Any]] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: str = "draft"  # draft, active, completed, abandoned
-    audit_trail: list[dict[str, Any]] = field(default_factory=list)
+    audit_trail: List[dict[str, Any]] = field(default_factory=list)
 
     def add_step(self, action: str, subsystem: str, params: Dict[str, Any] = None):
         """Add a step to the plan."""

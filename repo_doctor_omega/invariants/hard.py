@@ -492,7 +492,6 @@ class SecurityInvariant(HardInvariant):
         if self._substrate is None:
             try:
                 from ..ingest.security_substrate import SecuritySubstrate
-from typing import Callable, Optional
 
                 self._substrate = SecuritySubstrate(repo_path)
             except ImportError:

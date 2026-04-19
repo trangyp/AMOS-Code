@@ -17,7 +17,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, TypeVar
+from typing import Any, Dict, Optional, Tuple, TypeVar
 
 T = TypeVar("T")
 
@@ -47,7 +47,7 @@ class CircuitBreaker:
     Prevents cascading failures by stopping calls to failing services.
     """
 
-    def __init__(self, name: str, config: CircuitBreakerConfig | None = None):
+    def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
         self.name = name
         self.config = config or CircuitBreakerConfig()
         self.state = CircuitState.CLOSED
@@ -132,18 +132,18 @@ class RetryConfig:
     max_delay: float = 60.0
     exponential_base: float = 2.0
     jitter: bool = True
-    retryable_exceptions: tuple[type[Exception], ...] = field(default_factory=lambda: (Exception,))
+    retryable_exceptions: Tuple[type[Exception], ...] = field(default_factory=lambda: (Exception,))
 
 
 class AsyncRetry:
     """Retry mechanism with exponential backoff."""
 
-    def __init__(self, config: RetryConfig | None = None):
+    def __init__(self, config: Optional[RetryConfig] = None):
         self.config = config or RetryConfig()
 
     async def execute(self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
         """Execute with retry logic."""
-        last_exception: Exception | None = None
+        last_exception: Optional[Exception] = None
 
         for attempt in range(1, self.config.max_attempts + 1):
             try:
@@ -228,7 +228,7 @@ class TimeoutConfig:
 class AsyncTimeout:
     """Timeout enforcement with optional graceful shutdown."""
 
-    def __init__(self, config: TimeoutConfig | None = None):
+    def __init__(self, config: Optional[TimeoutConfig] = None):
         self.config = config or TimeoutConfig()
 
     async def execute(self, func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
@@ -258,7 +258,7 @@ class AsyncSafetyManager:
         self.retry_policies: Dict[str, AsyncRetry] = {}
 
     def get_circuit_breaker(
-        self, name: str, config: CircuitBreakerConfig | None = None
+        self, name: str, config: Optional[CircuitBreakerConfig] = None
     ) -> CircuitBreaker:
         """Get or create circuit breaker."""
         if name not in self.circuit_breakers:
@@ -276,7 +276,7 @@ class AsyncSafetyManager:
         func: Callable[..., T],
         circuit_name: str = None,
         bulkhead_name: str = None,
-        retry_config: RetryConfig | None = None,
+        retry_config: Optional[RetryConfig] = None,
         timeout: float = None,
         *args: Any,
         **kwargs: Any,
@@ -312,7 +312,7 @@ class AsyncSafetyManager:
 
 
 # Global safety manager
-_safety_manager: AsyncSafetyManager | None = None
+_safety_manager: Optional[AsyncSafetyManager] = None
 
 
 def get_safety_manager() -> AsyncSafetyManager:

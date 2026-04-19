@@ -2,20 +2,21 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass
 class SkillDef:
     name: str
     description: str
-    triggers: list[str]  # ["/commit", "commit changes"]
-    tools: list[str]  # ["Bash", "Read"]  (allowed-tools)
+    triggers: List[str]  # ["/commit", "commit changes"]
+    tools: List[str]  # ["Bash", "Read"]  (allowed-tools)
     prompt: str  # full prompt body after frontmatter
     file_path: str
     # Enhanced fields
     when_to_use: str = ""  # when Claude should auto-invoke this skill
     argument_hint: str = ""  # e.g. "[branch] [description]"
-    arguments: list[str] = field(default_factory=list)  # named arg names
+    arguments: List[str] = field(default_factory=list)  # named arg names
     model: str = ""  # model override
     user_invocable: bool = True  # appears in /skills list
     context: str = "inline"  # "inline" or "fork" (fork = sub-agent)
@@ -25,7 +26,7 @@ class SkillDef:
 # ── Directory paths ────────────────────────────────────────────────────────
 
 
-def _get_skill_paths() -> list[Path]:
+def _get_skill_paths() -> List[Path]:
     return [
         Path.cwd() / ".clawspring" / "skills",  # project-level (priority)
         Path.home() / ".clawspring" / "skills",  # user-level
@@ -35,7 +36,7 @@ def _get_skill_paths() -> list[Path]:
 # ── List field parser ──────────────────────────────────────────────────────
 
 
-def _parse_list_field(value: str) -> list[str]:
+def _parse_list_field(value: str) -> List[str]:
     """Parse YAML-like list: ``[a, b, c]`` or ``"a, b, c"``."""
     value = value.strip()
     if value.startswith("[") and value.endswith("]"):
@@ -117,7 +118,7 @@ def _parse_skill_file(path: Path, source: str = "user") -> Optional[SkillDef]:
 
 # ── Registry of built-in skills (registered by builtin.py) ────────────────
 
-_BUILTIN_SKILLS: list[SkillDef] = []
+_BUILTIN_SKILLS: List[SkillDef] = []
 
 
 def register_builtin_skill(skill: SkillDef) -> None:
@@ -127,7 +128,7 @@ def register_builtin_skill(skill: SkillDef) -> None:
 # ── Load all skills ────────────────────────────────────────────────────────
 
 
-def load_skills(include_builtins: bool = True) -> list[SkillDef]:
+def load_skills(include_builtins: bool = True) -> List[SkillDef]:
     """Return skills from disk + builtins, deduplicated (project > user > builtin)."""
     seen: Dict[str, SkillDef] = {}
 
@@ -169,7 +170,7 @@ def find_skill(query: str) -> Optional[SkillDef]:
 # ── Argument substitution ─────────────────────────────────────────────────
 
 
-def substitute_arguments(prompt: str, args: str, arg_names: list[str]) -> str:
+def substitute_arguments(prompt: str, args: str, arg_names: List[str]) -> str:
     """Replace $ARGUMENTS (whole args string) and $ARG_NAME placeholders.
 
     Named args are positional: first word → first name, etc.

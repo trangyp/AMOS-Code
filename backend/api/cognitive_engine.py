@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Cognitive Engine API - Real-time brain-powered cognition.
 
@@ -8,8 +8,6 @@ Production-grade cognitive processing with AMOS brain integration:
 - Autonomous reasoning chains
 - Cognitive state management
 """
-from __future__ import annotations
-
 
 import hashlib
 import sys
@@ -42,11 +40,11 @@ router = APIRouter(prefix="/cognitive", tags=["Cognitive Engine"])
 class CognitiveRequest(BaseModel):
     """Request for cognitive processing."""
 
-    observation: dict[str, Any] = Field(
+    observation: Dict[str, Any] = Field(
         description="Current state/observation for brain processing"
     )
-    goal: dict[str, Any] = Field(description="Target goal state")
-    context: dict[str, Any] = Field(default_factory=dict, description="Additional context")
+    goal: Dict[str, Any] = Field(description="Target goal state")
+    context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
     require_legality: bool = Field(default=True, description="Require brain legality validation")
     max_depth: int = Field(default=3, ge=1, le=10, description="Maximum reasoning depth")
 
@@ -54,11 +52,11 @@ class CognitiveRequest(BaseModel):
 class CognitiveResponse(BaseModel):
     """Response from cognitive processing."""
 
-    decision: dict[str, Any]
+    decision: Dict[str, Any]
     legality: float
     confidence: float
-    reasoning_chain: list[dict[str, Any]]
-    execution_plan: list[str]
+    reasoning_chain: List[dict[str, Any]]
+    execution_plan: List[str]
     cognitive_state: str
     processing_time_ms: float
     brain_validated: bool
@@ -68,7 +66,7 @@ class CognitiveResponse(BaseModel):
 class PatternRecognitionRequest(BaseModel):
     """Request for pattern recognition."""
 
-    data: list[dict[str, Any]]
+    data: List[dict[str, Any]]
     pattern_type: str = Field(
         default="anomaly", description="Type: anomaly, trend, cycle, correlation"
     )
@@ -78,17 +76,17 @@ class PatternRecognitionRequest(BaseModel):
 class PatternRecognitionResponse(BaseModel):
     """Response with recognized patterns."""
 
-    patterns: list[dict[str, Any]]
+    patterns: List[dict[str, Any]]
     confidence: float
-    brain_assessment: dict[str, Any]
-    recommendations: list[str]
+    brain_assessment: Dict[str, Any]
+    recommendations: List[str]
 
 
 class ReasoningChainRequest(BaseModel):
     """Request for multi-step reasoning."""
 
     premise: str
-    steps: list[str]
+    steps: List[str]
     validate_each: bool = True
 
 
@@ -96,7 +94,7 @@ class ReasoningChainResponse(BaseModel):
     """Response with reasoning results."""
 
     chain_id: str
-    results: list[dict[str, Any]]
+    results: List[dict[str, Any]]
     overall_valid: bool
     brain_coherence: float
 
@@ -107,16 +105,16 @@ class CognitiveSession:
 
     session_id: str
     created_at: datetime
-    kernel: AMOSKernelRuntime | None = None
-    history: list[dict[str, Any]] = field(default_factory=list)
-    state: dict[str, Any] = field(default_factory=dict)
+    kernel: Optional[AMOSKernelRuntime] = None
+    history: List[dict[str, Any]] = field(default_factory=list)
+    state: Dict[str, Any] = field(default_factory=dict)
 
 
 class CognitiveEngine:
     """Production cognitive engine with brain integration."""
 
     def __init__(self):
-        self._sessions: dict[str, CognitiveSession] = {}
+        self._sessions: Dict[str, CognitiveSession] = {}
         self._kernel = AMOSKernelRuntime() if BRAIN_AVAILABLE else None
 
     def _generate_session_id(self) -> str:
@@ -317,7 +315,7 @@ class CognitiveEngine:
 
 
 # Global engine instance
-_engine: CognitiveEngine | None = None
+_engine: Optional[CognitiveEngine] = None
 
 
 def get_cognitive_engine() -> CognitiveEngine:
@@ -350,7 +348,7 @@ async def reasoning_chain(request: ReasoningChainRequest) -> ReasoningChainRespo
 
 
 @router.post("/process-fast")
-async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
+async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
     """Fast cognitive processing using dual-process brain (<100ms)."""
 
     start = time.perf_counter()
@@ -393,7 +391,7 @@ async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
 
 
 @router.get("/status")
-async def cognitive_status() -> dict[str, Any]:
+async def cognitive_status() -> Dict[str, Any]:
     """Get cognitive engine status."""
     # Check fast thinking availability
     fast_thinking = False

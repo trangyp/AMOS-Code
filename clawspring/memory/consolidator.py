@@ -12,6 +12,7 @@ Design principles:
 """
 
 from datetime import datetime
+from typing import Any, List
 
 MIN_MESSAGES_TO_CONSOLIDATE = 8  # don't consolidate trivial sessions
 

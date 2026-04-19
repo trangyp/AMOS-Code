@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """AMOS Muscle Kernel - 06_MUSCLE Subsystem
 
+import urllib.error
+import urllib.request
+import uuid
 Responsible for:
 - Action execution and task completion
 - Tool invocation and management
@@ -17,6 +20,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Callable
@@ -385,8 +389,6 @@ class MuscleKernel:
 
     def _exec_api_call(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute API call."""
-        import urllib.error
-        import urllib.request
 
         url = payload["url"]
         method = payload.get("method", "GET")
@@ -484,8 +486,6 @@ class MuscleKernel:
 
     def _generate_id(self) -> str:
         """Generate unique ID."""
-        import uuid
-from typing import Callable, List, Set
 
         return str(uuid.uuid4())[:8]
 

@@ -13,6 +13,7 @@ Version: 2.0.0
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
 from typing import Any
 

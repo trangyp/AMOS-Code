@@ -1,5 +1,7 @@
 """AMOS Continuous Learning - AutoML & Self-Improving Intelligence (Phase 25).
 
+import itertools
+import argparse
 Continuous learning system enabling automatic model improvement, hyperparameter
 optimization, neural architecture search, and online adaptation from execution feedback.
 
@@ -98,7 +100,7 @@ import random
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 
 class OptimizationStrategy(Enum):
@@ -202,15 +204,15 @@ class AMOSContinuousLearning:
         # Online learning state
         self.learning_episodes: List[LearningEpisode] = []
         self.experience_buffer: List[LearningEpisode] = []
-        self.drift_history: list[dict[str, Any]] = []
+        self.drift_history: List[dict[str, Any]] = []
 
         # A/B testing state
-        self.active_tests: dict[str, list[ABTestVariant]] = {}
-        self.test_results: dict[str, dict[str, Any]] = {}
+        self.active_tests: Dict[str, list[ABTestVariant]] = {}
+        self.test_results: Dict[str, dict[str, Any]] = {}
 
         # Meta-learning state
         self.meta_model: Dict[str, Any] = {}
-        self.adaptation_history: list[dict[str, Any]] = []
+        self.adaptation_history: List[dict[str, Any]] = []
 
         # Statistics
         self.total_optimizations: int = 0
@@ -220,7 +222,7 @@ class AMOSContinuousLearning:
     def optimize_hyperparameters(
         self,
         model: str,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         strategy: OptimizationStrategy = OptimizationStrategy.BAYESIAN,
         max_iterations: int = 50,
         objectives: List[str] = ["accuracy"]
@@ -267,7 +269,7 @@ class AMOSContinuousLearning:
 
     def _random_search(
         self,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         n_iter: int
     ) -> List[HyperparameterConfig]:
         """Random search for hyperparameters."""
@@ -285,11 +287,10 @@ class AMOSContinuousLearning:
 
     def _grid_search(
         self,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         max_iter: int
     ) -> List[HyperparameterConfig]:
         """Grid search (sampled if space is too large)."""
-        import itertools
 
         keys = list(search_space.keys())
         values = [search_space[k] for k in keys]
@@ -311,7 +312,7 @@ class AMOSContinuousLearning:
 
     def _bayesian_optimization(
         self,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         n_iter: int
     ) -> List[HyperparameterConfig]:
         """
@@ -362,7 +363,7 @@ class AMOSContinuousLearning:
 
     def _evolutionary_search(
         self,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         n_iter: int
     ) -> List[HyperparameterConfig]:
         """Evolutionary algorithm for HPO."""
@@ -418,7 +419,7 @@ class AMOSContinuousLearning:
 
     def _hyperband_search(
         self,
-        search_space: dict[str, list[Any]],
+        search_space: Dict[str, list[Any]],
         max_iter: int
     ) -> List[HyperparameterConfig]:
         """
@@ -482,7 +483,7 @@ class AMOSContinuousLearning:
     def _perturb_config(
         self,
         config: Dict[str, Any],
-        search_space: dict[str, list[Any]]
+        search_space: Dict[str, list[Any]]
     ) -> Dict[str, Any]:
         """Perturb configuration for local search."""
         perturbed = config.copy()
@@ -504,7 +505,7 @@ class AMOSContinuousLearning:
     def _mutate(
         self,
         config: Dict[str, Any],
-        search_space: dict[str, list[Any]]
+        search_space: Dict[str, list[Any]]
     ) -> Dict[str, Any]:
         """Mutate configuration."""
         mutated = config.copy()
@@ -857,7 +858,7 @@ class AMOSContinuousLearning:
 
     def adapt_to_new_task(
         self,
-        task_data: list[dict[str, Any]],
+        task_data: List[dict[str, Any]],
         steps: int = 5
     ) -> Dict[str, Any]:
         """
@@ -907,8 +908,6 @@ class AMOSContinuousLearning:
 
 def main():
     """CLI demo for continuous learning."""
-    import argparse
-from typing import Callable, Final
 
     parser = argparse.ArgumentParser(
         description="AMOS Continuous Learning & AutoML (Phase 25)"

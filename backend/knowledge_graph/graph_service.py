@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS Knowledge Graph & GraphRAG Service v2.0.0
@@ -15,8 +15,6 @@ Architecture based on Microsoft GraphRAG and Neo4j best practices.
 Owner: Trang Phan
 Version: 2.0.0
 """
-from __future__ import annotations
-
 
 import json
 import re
@@ -113,7 +111,7 @@ class EntityExtractor:
 
     def extract(
         self, text: str, doc_id: Optional[str] = None
-    ) -> tuple[list[GraphNode], list[GraphRelationship]]:
+    ) -> Tuple[list[GraphNode], list[GraphRelationship]]:
         """Extract entities and relationships from text."""
         import hashlib
 
@@ -198,7 +196,7 @@ class GraphRAGEngine:
 
     def retrieve(
         self, query: str, query_vector: Optional[list[float]] = None, depth: int = 2, top_k: int = 10
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Retrieve context using graph traversal + vector similarity.
 
         Args:
@@ -456,8 +454,6 @@ class KnowledgeGraphService:
     def vector_search(self, query_vector: List[float], top_k: int = 10) -> List[GraphNode]:
         """Search nodes by vector similarity."""
         import math
-from typing import Optional, Any, Dict, List, Dict, List
-from typing import List
 
         def cosine_similarity(v1: List[float], v2: List[float]) -> float:
             dot = sum(a * b for a, b in zip(v1, v2))
@@ -515,7 +511,7 @@ from typing import List
 
         return subgraph
 
-    def query(self, query: GraphQuery) -> list[dict[str, Any]]:
+    def query(self, query: GraphQuery) -> List[dict[str, Any]]:
         """Query the graph."""
         results = []
 
@@ -581,14 +577,14 @@ knowledge_graph = KnowledgeGraphService()
 
 def extract_entities(
     text: str, doc_id: Optional[str] = None
-) -> tuple[list[GraphNode], list[GraphRelationship]]:
+) -> Tuple[list[GraphNode], list[GraphRelationship]]:
     """Extract entities from text (convenience function)."""
     extractor = EntityExtractor()
     return extractor.extract(text, doc_id)
 
 def graph_retrieval(
     query: str, query_vector: Optional[list[float]] = None, depth: int = 2, top_k: int = 10
-) -> list[dict[str, Any]]:
+) -> List[dict[str, Any]]:
     """GraphRAG retrieval (convenience function)."""
     engine = GraphRAGEngine(knowledge_graph)
     return engine.retrieve(query, query_vector, depth, top_k)

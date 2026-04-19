@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+from typing import Tuple
 
 # Module paths
 MODULES = [
@@ -27,7 +28,7 @@ def check_module_exists(module_dir: Path, name: str) -> bool:
     return (module_dir / name).exists()
 
 
-def check_imports_work() -> tuple[bool, list[str]]:
+def check_imports_work() -> Tuple[bool, list[str]]:
     """Test if core imports work."""
     errors = []
     try:

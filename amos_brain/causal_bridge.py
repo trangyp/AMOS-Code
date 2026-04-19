@@ -10,11 +10,9 @@ Provides API for:
 - Intervention analysis
 """
 
-from __future__ import annotations
-
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Import causal engine
 try:
@@ -34,23 +32,23 @@ class CausalBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: CausalArchitectureEngine | None = None
+        self._engine: Optional[CausalArchitectureEngine] = None
 
     @property
-    def engine(self) -> CausalArchitectureEngine | None:
+    def engine(self) -> Optional[CausalArchitectureEngine]:
         """Lazy initialization of causal engine."""
         if self._engine is None and CAUSAL_AVAILABLE:
             self._engine = CausalArchitectureEngine()
         return self._engine
 
-    def build_causal_graph(self, metric_data: dict[str, Any], target: str) -> dict[str, Any]:
+    def build_causal_graph(self, metric_data: Dict[str, Any], target: str) -> Dict[str, Any]:
         """Build causal graph for target metric."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
 
         return self.engine.build_causal_graph([metric_data], target)
 
-    def find_root_causes(self, symptom: str, data: dict[str, Any]) -> dict[str, Any]:
+    def find_root_causes(self, symptom: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Find true root causes (not just correlations)."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
@@ -62,7 +60,7 @@ class CausalBridge:
             "count": len(causes),
         }
 
-    def check_spurious_correlation(self, var1: str, var2: str) -> dict[str, Any]:
+    def check_spurious_correlation(self, var1: str, var2: str) -> Dict[str, Any]:
         """Check if correlation is causal or spurious."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
@@ -70,8 +68,8 @@ class CausalBridge:
         return self.engine.identify_spurious_correlations(var1, var2)
 
     def analyze_intervention(
-        self, target: str, new_value: Any, context: dict[str, Any]
-    ) -> dict[str, Any]:
+        self, target: str, new_value: Any, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Analyze effects of an intervention."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
@@ -85,10 +83,10 @@ class CausalBridge:
 
     def counterfactual(
         self,
-        observation: dict[str, Any],
+        observation: Dict[str, Any],
         target: str,
         new_value: Any,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Perform counterfactual reasoning."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
@@ -108,7 +106,7 @@ class CausalBridge:
             "assumptions": result.assumptions,
         }
 
-    def analyze_architecture(self, metrics: dict[str, Any], target: str) -> dict[str, Any]:
+    def analyze_architecture(self, metrics: Dict[str, Any], target: str) -> Dict[str, Any]:
         """Comprehensive causal analysis."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}
@@ -125,7 +123,7 @@ class CausalBridge:
             "counterfactuals": analysis.counterfactuals,
         }
 
-    def get_insights(self) -> dict[str, Any]:
+    def get_insights(self) -> Dict[str, Any]:
         """Get general causal insights."""
         if not CAUSAL_AVAILABLE or self.engine is None:
             return {"error": "causal_engine not available"}

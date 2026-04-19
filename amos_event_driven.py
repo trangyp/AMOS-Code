@@ -47,7 +47,7 @@ import time
 import uuid
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator, Callable
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 
 try:
     import pydantic
@@ -223,7 +223,7 @@ class EventPublisher:
     def __init__(self, broker_url: str) -> None:
         self.broker_url = broker_url
         self.broker: Optional[MessageBroker] = None
-        self._outbox: list[tuple[str, str]] = []
+        self._outbox: List[tuple[str, str]] = []
 
     async def connect(self) -> None:
         """Initialize broker connection."""
@@ -263,7 +263,7 @@ class EventPublisher:
             return 0
 
         sent = 0
-        remaining: list[tuple[str, str]] = []
+        remaining: List[tuple[str, str]] = []
 
         for channel, message in self._outbox:
             if await self.broker.publish(channel, message):
@@ -281,7 +281,7 @@ class EventSubscriber:
     def __init__(self, broker_url: str) -> None:
         self.broker_url = broker_url
         self.broker: Optional[MessageBroker] = None
-        self.handlers: dict[str, list[Callable]] = {}
+        self.handlers: Dict[str, list[Callable]] = {}
 
     async def connect(self) -> None:
         """Initialize broker connection."""

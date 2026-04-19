@@ -36,6 +36,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Optional, Any
 
 

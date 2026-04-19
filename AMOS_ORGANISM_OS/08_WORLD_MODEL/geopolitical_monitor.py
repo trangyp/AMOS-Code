@@ -188,7 +188,7 @@ class GeopoliticalMonitor:
         self,
         region: str = None,
         risk_threshold: RiskLevel = RiskLevel.LOW,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get active events matching criteria."""
         events = [
             e for e in self.events if not e.resolved and e.risk_level.value >= risk_threshold.value
@@ -275,7 +275,7 @@ class GeopoliticalMonitor:
             "updated_at": datetime.now(UTC).isoformat(),
         }
 
-    def _get_highest_risk(self, n: int = 3) -> list[dict[str, Any]]:
+    def _get_highest_risk(self, n: int = 3) -> List[dict[str, Any]]:
         """Get regions with highest risk."""
         regions = sorted(
             self.regional_stability.values(),

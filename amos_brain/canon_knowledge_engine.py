@@ -112,7 +112,7 @@ class CanonKnowledgeEngine:
     components during cognitive processing.
     """
 
-    def __init__(self, canon_dir: str | None = None) -> None:
+    def __init__(self, canon_dir: Optional[str] = None) -> None:
         self.canon_dir = canon_dir or os.environ.get(
             "AMOS_CANON_DIR",
             "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/_00_AMOS_CANON",
@@ -236,7 +236,7 @@ class CanonKnowledgeEngine:
         # Fallback to source filename
         return Path(source_file).stem
 
-    def get_domain_knowledge(self, domain: str) -> CanonKnowledgeIndex | None:
+    def get_domain_knowledge(self, domain: str) -> Optional[CanonKnowledgeIndex]:
         """Get knowledge index for a domain."""
         if not self._loaded:
             self.load_canon()
@@ -296,7 +296,7 @@ class CanonKnowledgeEngine:
 
 
 # Global instance
-_canon_knowledge_engine: CanonKnowledgeEngine | None = None
+_canon_knowledge_engine: Optional[CanonKnowledgeEngine] = None
 
 
 def get_canon_knowledge_engine() -> CanonKnowledgeEngine:

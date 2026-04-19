@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 import numpy as np
+from typing import Dict, List, Optional
 
 
 class Domain(Enum):
@@ -83,7 +84,7 @@ class EquationMetadata:
     pattern: MathematicalPattern
     formula: str
     description: str
-    invariants: list[str]
+    invariants: List[str]
     phase: int
 
 
@@ -92,7 +93,7 @@ class MultiAgentOrchestrationEquations:
     """Multi-agent orchestration mathematical models."""
 
     @staticmethod
-    def multi_agent_consensus(confidences: list[float]) -> float:
+    def multi_agent_consensus(confidences: List[float]) -> float:
         """Calculate weighted voting consensus across agent fleet."""
         if not confidences:
             return 0.0
@@ -114,8 +115,8 @@ class MultiAgentOrchestrationEquations:
 
     @staticmethod
     def agent_cost_optimization(
-        models: list[dict[str, float]], target_quality: float
-    ) -> dict[str, int]:
+        models: List[dict[str, float]], target_quality: float
+    ) -> Dict[str, int]:
         """Optimize model mix for cost vs quality."""
         # Greedy selection: highest quality per cost ratio until target met
         sorted_models = sorted(
@@ -169,7 +170,7 @@ class MetaLearningEquations:
     """Meta-learning (learning to learn) equations."""
 
     @staticmethod
-    def maml_outer_loop(task_losses: list[float], meta_lr: float = 0.001) -> float:
+    def maml_outer_loop(task_losses: List[float], meta_lr: float = 0.001) -> float:
         """MAML outer loop meta-gradient."""
         return meta_lr * sum(task_losses) / len(task_losses)
 
@@ -228,7 +229,7 @@ class ConstitutionalGovernanceEquations:
     """Constitutional AI governance equations."""
 
     @staticmethod
-    def constitutional_compliance_score(outputs: list[dict], principles: list[str]) -> float:
+    def constitutional_compliance_score(outputs: List[dict], principles: List[str]) -> float:
         """Score constitutional principle adherence."""
         if not outputs or not principles:
             return 1.0
@@ -279,7 +280,7 @@ class ProductionAGIEquations:
     """Production AGI system equations."""
 
     @staticmethod
-    def system_reliability(component_reliabilities: list[float], redundancy: int = 1) -> float:
+    def system_reliability(component_reliabilities: List[float], redundancy: int = 1) -> float:
         """Calculate overall system reliability with redundancy."""
         single_path = np.prod(component_reliabilities)
         if redundancy > 1:
@@ -307,8 +308,8 @@ class EquationBridgeCompletion:
     """Complete equation bridge for Phases 15-20."""
 
     def __init__(self):
-        self.equations: dict[str, Callable] = {}
-        self.metadata: dict[str, EquationMetadata] = {}
+        self.equations: Dict[str, Callable] = {}
+        self.metadata: Dict[str, EquationMetadata] = {}
         self._register_all_phases()
 
     def _register_all_phases(self):
@@ -586,11 +587,11 @@ class EquationBridgeCompletion:
         """Get equation metadata."""
         return self.metadata.get(name)
 
-    def list_by_phase(self, phase: int) -> list[str]:
+    def list_by_phase(self, phase: int) -> List[str]:
         """List all equations in a phase."""
         return [name for name, meta in self.metadata.items() if meta.phase == phase]
 
-    def list_by_domain(self, domain: Domain) -> list[str]:
+    def list_by_domain(self, domain: Domain) -> List[str]:
         """List all equations in a domain."""
         return [name for name, meta in self.metadata.items() if meta.domain == domain]
 

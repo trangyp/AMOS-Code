@@ -23,7 +23,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -62,7 +62,7 @@ class AnalysisResult:
     total_rounds: int
     total_lines: int
     avg_confidence: float
-    patterns: dict[str, list[str]]
+    patterns: Dict[str, list[str]]
     insights: List[MetaInsight]
     recommendations: List[str]
 
@@ -190,7 +190,7 @@ class AMOSMetaCognitiveReflector:
         for r in self.rounds:
             print(f"    Round {r.round_number}: {r.tool_built} ({r.lines_of_code} lines)")
 
-    def _identify_patterns(self) -> dict[str, list[str]]:
+    def _identify_patterns(self) -> Dict[str, list[str]]:
         """Identify patterns across decision rounds."""
         print("\n🧩 Pattern Identification")
         print("─" * 70)
@@ -577,7 +577,6 @@ The AMOS brain has demonstrated that consistent methodology + documentation enab
 def main():
     """CLI entry point."""
     import argparse
-from typing import Final
 
     parser = argparse.ArgumentParser(
         description="AMOS Meta-Cognitive Reflector - Self-Improving Thinking"

@@ -14,7 +14,7 @@ import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -131,7 +131,7 @@ class AMOSKnowledgeDeepDive:
 
         return specs
 
-    def scan_clawspring_engines(self) -> list[dict[str, Any]]:
+    def scan_clawspring_engines(self) -> List[dict[str, Any]]:
         """Scan ClawSpring engine implementations."""
         clawspring_dir = self.root / "clawspring"
         engines = []

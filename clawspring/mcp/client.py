@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 import threading
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class StdioTransport:
         self._process: subprocess.Popen = None
         self._lock = threading.Lock()
         self._next_id = 1
-        self._pending: dict[int, dict] = {}  # id → {"event": Event, "result": ...}
+        self._pending: Dict[int, dict] = {}  # id → {"event": Event, "result": ...}
         self._reader: threading.Thread = None
         self._stderr_reader: threading.Thread = None
         self._running = False
@@ -152,7 +152,7 @@ class HttpTransport:
         self._next_id = 1
         self._client = None  # httpx.Client, loaded lazily
         self._sse_thread: threading.Thread = None
-        self._sse_pending: dict[int, dict] = {}
+        self._sse_pending: Dict[int, dict] = {}
         self._running = False
 
     def _get_client(self):
@@ -468,9 +468,9 @@ class MCPManager:
         self._clients[config.name] = client
         return client
 
-    def connect_all(self) -> dict[str, str]:
+    def connect_all(self) -> Dict[str, str]:
         """Connect to all registered servers. Returns {name: error_or_None}."""
-        errors: dict[str, str] = {}
+        errors: Dict[str, str] = {}
         for name, client in self._clients.items():
             if client.config.disabled:
                 errors[name] = "disabled"

@@ -14,7 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from statistics import mean, stdev
-from typing import Any
+from typing import Any, List
 
 import psutil
 

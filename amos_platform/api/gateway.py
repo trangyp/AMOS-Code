@@ -8,13 +8,11 @@ It provides:
 - Integration with amos-universe for contracts
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import os
 from contextlib import asynccontextmanager
-from typing import Any, AsyncIterator
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,9 +45,9 @@ class GatewayState:
     """Shared state for the API gateway."""
     
     def __init__(self):
-        self.llm_router: LLMRouter | None = None
-        self.event_bus: EventBus | None = None
-        self.active_connections: list[WebSocket] = []
+        self.llm_router: Optional[LLMRouter] = None
+        self.event_bus: Optional[EventBus] = None
+        self.active_connections: List[WebSocket] = []
         self.startup_time: float = 0.0
 
 
@@ -146,7 +144,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # =============================================================================
 
 @app.get("/", tags=["root"])
-async def root() -> dict[str, Any]:
+async def root() -> Dict[str, Any]:
     """API information."""
     return {
         "name": "AMOS Platform API",
@@ -157,7 +155,7 @@ async def root() -> dict[str, Any]:
 
 
 @app.get("/v1/health", tags=["health"])
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check endpoint."""
     import time
     
@@ -181,7 +179,7 @@ async def health_check() -> dict[str, Any]:
 
 
 @app.get("/v1/status", tags=["status"])
-async def system_status() -> dict[str, Any]:
+async def system_status() -> Dict[str, Any]:
     """Detailed system status."""
     return {
         "gateway": {
@@ -260,7 +258,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 # =============================================================================
 
 @app.get("/v1/models", response_model=list[ModelInfo], tags=["models"])
-async def list_models() -> list[ModelInfo]:
+async def list_models() -> List[ModelInfo]:
     """List available LLM models."""
     if not state.llm_router:
         return []
@@ -314,7 +312,6 @@ async def scan_repository(request: RepoScanRequest) -> RepoScanResult:
     - Publish events as scan progresses
     """
     import uuid
-    from datetime import datetime, timezone
     
     scan_id = f"scan_{uuid.uuid4().hex[:8]}"
     
@@ -409,7 +406,7 @@ async def run_brain(request: BrainRunRequest) -> BrainRunResponse:
 # =============================================================================
 
 @app.get("/v1/universe/event-types", tags=["universe"])
-async def list_event_types() -> dict[str, Any]:
+async def list_event_types() -> Dict[str, Any]:
     """List all canonical event types."""
     return {
         "event_types": [
@@ -491,6 +488,7 @@ async def general_exception_handler(request, exc: Exception):
 
 # Import routes
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 if __name__ == "__main__":
     import uvicorn

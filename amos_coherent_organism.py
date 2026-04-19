@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass

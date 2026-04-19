@@ -57,7 +57,7 @@ class CanonCognitiveProcessor:
         self,
         query: str,
         domain: str = "general",
-        context: dict[str, Any] | None = None,
+        context: Optional[dict[str, Any] ] = None,
     ) -> CanonCognitiveResult:
         """Process query with Canon enrichment.
 
@@ -210,7 +210,7 @@ class CanonCognitiveProcessor:
 
 
 # Global processor instance
-_canon_processor: CanonCognitiveProcessor | None = None
+_canon_processor: Optional[CanonCognitiveProcessor] = None
 
 
 def get_canon_cognitive_processor() -> CanonCognitiveProcessor:

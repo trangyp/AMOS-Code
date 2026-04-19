@@ -17,6 +17,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import List, Optional
 
 
 def print_banner():

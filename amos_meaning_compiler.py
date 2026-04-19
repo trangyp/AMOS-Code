@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Deterministic Meaning Compiler v1.0
 =============================================
 Anti-rubbish architecture ensuring structured compilation before rendering.
@@ -12,8 +14,9 @@ import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # ============================================================================
 # SECTION 1: TYPE SYSTEM
@@ -549,6 +552,7 @@ class MeaningCompiler:
                         target=goal.id,
                         confidence=0.7,
                     )
+                )
 
         # Link instructions to entities they target
         instructions = [n for n in nodes if n.type == SemanticType.INSTRUCTION]
@@ -569,6 +573,7 @@ class MeaningCompiler:
                             target=entity.id,
                             confidence=0.8,
                         )
+                    )
 
         return edges
 
@@ -606,6 +611,7 @@ class MeaningCompiler:
                             target=instruction.id,
                             confidence=0.7,
                         )
+                    )
 
     def _detect_conflicts(self, graph: TypedMeaningGraph) -> None:
         """Detect contradictions and add conflict edges."""
@@ -626,6 +632,7 @@ class MeaningCompiler:
                             target=c2.id,
                             confidence=0.75,
                         )
+                    )
 
     def _are_conflicting(self, text1: str, text2: str) -> bool:
         """Simple conflict detection between two constraint texts."""
@@ -720,7 +727,7 @@ class TypeChecker:
 
     def _check_instruction_targets(
         self, graph: TypedMeaningGraph
-    ) -> tuple[list[str], list[tuple[TypedNode, str]]]:
+    ) -> Tuple[list[str], list[tuple[TypedNode, str]]]:
         """Rule: Instruction must target an Entity or Process."""
         errors = []
         violations = []
@@ -739,7 +746,7 @@ class TypeChecker:
 
     def _check_constraint_attachments(
         self, graph: TypedMeaningGraph
-    ) -> tuple[list[str], list[tuple[TypedNode, str]]]:
+    ) -> Tuple[list[str], list[tuple[TypedNode, str]]]:
         """Rule: Constraint must attach to valid target types."""
         errors = []
         violations = []
@@ -770,7 +777,7 @@ class TypeChecker:
 
     def _check_question_executable(
         self, graph: TypedMeaningGraph
-    ) -> tuple[list[str], list[tuple[TypedNode, str]]]:
+    ) -> Tuple[list[str], list[tuple[TypedNode, str]]]:
         """Rule: Question cannot be executed (marked as instruction)."""
         errors = []
         violations = []
@@ -790,7 +797,7 @@ class TypeChecker:
 
     def _check_ambiguity_blocks(
         self, graph: TypedMeaningGraph
-    ) -> tuple[list[str], list[tuple[TypedNode, str]]]:
+    ) -> Tuple[list[str], list[tuple[TypedNode, str]]]:
         """Rule: Ambiguity blocks executable instruction compilation."""
         errors = []
         violations = []
@@ -816,7 +823,7 @@ class TypeChecker:
 
     def _check_output_format_constraints(
         self, graph: TypedMeaningGraph
-    ) -> tuple[list[str], list[tuple[TypedNode, str]]]:
+    ) -> Tuple[list[str], list[tuple[TypedNode, str]]]:
         """Rule: OutputFormat cannot override hard constraints."""
         # This would require tracking constraint priority - simplified version
         return [], []
@@ -1589,7 +1596,7 @@ class AntiRubbishStateMachine:
 
     def __init__(self):
         self.state = self.State.RAW_INPUT
-        self.history: list[tuple[str, str]] = []  # (state, reason)
+        self.history: List[tuple[str, str]] = []  # (state, reason)
 
     def transition(self, to_state: State, reason: str = "") -> bool:
         """Attempt state transition."""

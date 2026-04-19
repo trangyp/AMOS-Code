@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -203,7 +203,7 @@ class WorkingMemory:
         removed = self.buffer.pop(least_accessed_idx)
         logger.debug(f"Evicted from working memory: {removed.domain}")
 
-    def query(self, domain: str = None, tags: list[str] = None) -> List[MemoryEntry]:
+    def query(self, domain: str = None, tags: List[str] = None) -> List[MemoryEntry]:
         """Query working memory by domain or tags."""
         results = self.buffer
         if domain:
@@ -311,7 +311,7 @@ class CaseMemory:
     """
 
     def __init__(self):
-        self.cases: list[dict[str, Any]] = []
+        self.cases: List[dict[str, Any]] = []
 
     def add_case(
         self, domain: str, scale: str, trajectory: str, resolution: str, outcome: Dict[str, Any]
@@ -911,7 +911,7 @@ class AMOSCognitiveRuntime:
         """List all loaded cognitive engines."""
         return list(self.canonical_mem.engines.keys())
 
-    def query_memory(self, domain: str = None, tags: list[str] = None) -> List[MemoryEntry]:
+    def query_memory(self, domain: str = None, tags: List[str] = None) -> List[MemoryEntry]:
         """Query the working memory."""
         return self.working_mem.query(domain, tags)
 

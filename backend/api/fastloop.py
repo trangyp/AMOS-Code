@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """FastLoop Brain API - High-performance cognitive endpoints."""
 
@@ -20,17 +20,17 @@ router = APIRouter(prefix="/fastloop", tags=["fastloop"])
 
 class FastLoopRequest(BaseModel):
     request: str
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class FastLoopResponse(BaseModel):
     success: bool
-    output: dict[str, Any]
+    output: Dict[str, Any]
     latency_ms: float
     path_taken: str
-    engines_used: list[str]
+    engines_used: List[str]
     branch_count: int
-    laws_checked: list[str]
+    laws_checked: List[str]
 
 
 @router.post("/execute", response_model=FastLoopResponse)
@@ -52,7 +52,7 @@ async def fastloop_execute(request: FastLoopRequest) -> FastLoopResponse:
 
 
 @router.get("/stats")
-async def fastloop_stats() -> dict[str, Any]:
+async def fastloop_stats() -> Dict[str, Any]:
     """Get FastLoop bridge statistics."""
     bridge = get_brain_bridge()
     return bridge.get_stats()

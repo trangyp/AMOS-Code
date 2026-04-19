@@ -14,7 +14,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Tuple
 
 # Add project paths
 PROJECT_ROOT = Path(__file__).parent

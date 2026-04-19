@@ -18,6 +18,7 @@ import json
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 
@@ -150,7 +151,7 @@ class ProcedureExtractor:
         solution_steps: list[str],
         outcome: dict[str, Any],
         execution_time_ms: float,
-    ) -> Procedure | None:
+    ) -> Optional[Procedure]:
         """Extract a reusable procedure from a successful task.
 
         Called automatically after EVERY successful task.
@@ -255,7 +256,7 @@ class PatternDetector:
     def __init__(self, learning_engine: RealLearningEngine):
         self.engine = learning_engine
 
-    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Pattern | None:
+    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Optional[Pattern]:
         """Detect what pattern a task matches."""
         desc_lower = task_description.lower()
 
@@ -403,7 +404,7 @@ class AutoReuseEngine:
             "bypass_analysis": True,  # Skip re-analysis
         }
 
-    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Procedure | None:
+    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Optional[Procedure]:
         """Find best matching procedure for a pattern."""
         candidates = []
 
@@ -559,7 +560,7 @@ class ProcedureEvolutionEngine:
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Procedure | None:
+    ) -> Optional[Procedure]:
         """Evolve an existing procedure with improved steps."""
         if procedure_id not in self.engine.procedures:
             return None
@@ -599,7 +600,7 @@ class ProcedureEvolutionEngine:
 
         return new_proc
 
-    def merge_procedures(self, procedure_ids: list[str]) -> Procedure | None:
+    def merge_procedures(self, procedure_ids: list[str]) -> Optional[Procedure]:
         """Merge multiple similar procedures into one optimized version."""
         if len(procedure_ids) < 2:
             return None
@@ -825,7 +826,7 @@ class RealLearningEngine:
         outcome: dict[str, Any],
         execution_time_ms: float = 0,
         context: dict[str, Any] = None,
-    ) -> Procedure | None:
+    ) -> Optional[Procedure]:
         """Learn from a successful task execution.
 
         Called automatically after EVERY successful task.
@@ -936,7 +937,7 @@ class RealLearningEngine:
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Procedure | None:
+    ) -> Optional[Procedure]:
         """Evolve a procedure with a better solution."""
         evolved = self.procedure_evolution.evolve_procedure(
             procedure_id, improved_steps, improvement_rationale
@@ -1021,7 +1022,7 @@ class RealLearningEngine:
 
 
 # Global learning engine instance
-_learning_engine: RealLearningEngine | None = None
+_learning_engine: Optional[RealLearningEngine] = None
 
 
 def get_learning_engine(storage_path: str = "./amos_learning") -> RealLearningEngine:
@@ -1038,7 +1039,7 @@ def learn_from_task(
     outcome: dict[str, Any],
     execution_time_ms: float = 0,
     context: dict[str, Any] = None,
-) -> Procedure | None:
+) -> Optional[Procedure]:
     """Convenience function: learn from a successful task."""
     engine = get_learning_engine()
     return engine.learn_from_success(

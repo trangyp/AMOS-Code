@@ -18,6 +18,7 @@ Version: 3.0.0
 import asyncio
 import sys
 import json
+from typing import Dict
 
 # Test Configuration
 API_BASE = "http://localhost:8000"
@@ -188,7 +189,6 @@ class IntegrationTester:
         """Test WebSocket connection."""
         try:
             import websockets
-from typing import List
             async with websockets.connect(WS_URL) as ws:
                 # Wait for connection confirmation
                 response = await asyncio.wait_for(ws.recv(), timeout=5.0)

@@ -378,7 +378,6 @@ class SecuritySubstrate:
 
             if result.returncode in (0, 1):  # 0 = no issues, 1 = issues found
                 import json
-from typing import Optional
 
                 try:
                     data = json.loads(result.stdout)

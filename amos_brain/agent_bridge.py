@@ -1,12 +1,10 @@
 """AMOS Brain Agent Execution Bridge - Bidirectional brain-agent integration."""
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import lru_cache
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from .canon_bridge import get_canon_bridge
 from .laws import GlobalLaws, UBILaws
@@ -22,10 +20,10 @@ class ToolDecision:
     timestamp: str
     tool_name: str
     arguments: dict
-    reasoning_chain: list[str]
-    law_violations: list[dict]
+    reasoning_chain: List[str]
+    law_violations: List[dict]
     approved: bool
-    alternatives: list[str] = field(default_factory=list)
+    alternatives: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -33,8 +31,8 @@ class ExecutionContext:
     """Context for agent execution with brain oversight."""
 
     task_id: str
-    active_kernels: list[str]
-    reasoning_steps: list[str]
+    active_kernels: List[str]
+    reasoning_steps: List[str]
     quadrant_analysis: dict
     law_compliance: dict
 
@@ -74,8 +72,8 @@ class AMOSAgentBridge:
         self.ubi_laws = UBILaws()
         self.rule_of_two = RuleOfTwo()
         self.rule_of_four = RuleOfFour()
-        self._decision_log: list[ToolDecision] = []
-        self._hooks: dict[str, list[Callable]] = {
+        self._decision_log: List[ToolDecision] = []
+        self._hooks: Dict[str, list[Callable]] = {
             "pre_tool": [],
             "post_tool": [],
             "law_violation": [],
@@ -92,14 +90,14 @@ class AMOSAgentBridge:
         self,
         tool_name: str,
         arguments: dict,
-        context: ExecutionContext | None = None,
+        context: Optional[ExecutionContext] = None,
     ) -> dict:
         """Validate a tool call against AMOS global laws.
 
         Returns:
             dict with keys: approved, reason, violations, alternatives, risk_level
         """
-        result: dict[str, Any] = {
+        result: Dict[str, Any] = {
             "approved": True,
             "reason": "No violations detected",
             "violations": [],
@@ -174,14 +172,14 @@ class AMOSAgentBridge:
         tool_name: str,
         arguments: dict,
         result: Any,
-        context: ExecutionContext | None = None,
+        context: Optional[ExecutionContext] = None,
     ) -> dict:
         """Post-execution audit of tool result.
 
         Returns:
             dict with keys: valid, issues, recommendations
         """
-        audit: dict[str, Any] = {
+        audit: Dict[str, Any] = {
             "valid": True,
             "issues": [],
             "recommendations": [],
@@ -280,7 +278,7 @@ Execute with AMOS cognitive discipline.
         approved = sum(1 for d in self._decision_log if d.approved)
         blocked = total - approved
 
-        violations_by_law: dict[str, int] = {}
+        violations_by_law: Dict[str, int] = {}
         for decision in self._decision_log:
             for v in decision.law_violations:
                 law = v["law"]

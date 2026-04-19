@@ -51,7 +51,7 @@ import time
 from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 
 # FastAPI imports
 try:
@@ -76,7 +76,6 @@ except ImportError:
 # Metrics integration
 try:
     from collections.abc import Callable
-    from typing import TypeVar
 
     from amos_metrics_exporter import get_metrics_exporter
 
@@ -232,7 +231,7 @@ class CircuitBreakerRegistry:
         """Get circuit breaker by name."""
         return self._breakers.get(name)
 
-    def get_all_status(self) -> list[dict[str, Any]]:
+    def get_all_status(self) -> List[dict[str, Any]]:
         """Get status of all circuit breakers."""
         return [breaker.get_status() for breaker in self._breakers.values()]
 

@@ -3,7 +3,7 @@
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class SignalDomain(Enum):
@@ -363,8 +363,6 @@ _signal_processing_engine: Optional[SignalProcessingEngine] = None
 
 def get_signal_processing_engine() -> SignalProcessingEngine:
     """Get or create the Signal Processing Engine singleton."""
-from __future__ import annotations
-
     global _signal_processing_engine
     if _signal_processing_engine is None:
         _signal_processing_engine = SignalProcessingEngine()

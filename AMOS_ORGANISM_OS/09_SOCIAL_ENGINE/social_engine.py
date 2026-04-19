@@ -14,7 +14,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 
 @dataclass
@@ -173,7 +173,7 @@ class SocialEngine:
         return msg
 
     def broadcast(
-        self, sender: str, message_type: str, content: Any, exclude: set[str] = None
+        self, sender: str, message_type: str, content: Any, exclude: Set[str] = None
     ) -> List[Message]:
         """Broadcast message to all agents."""
         exclude = exclude or set()
@@ -261,7 +261,7 @@ class SocialEngine:
         knowledge_type: str,
         content: Any,
         share_scope: str = "team",
-        specific_recipients: list[str] = None,
+        specific_recipients: List[str] = None,
     ) -> KnowledgeShare:
         """Share knowledge from one agent to others."""
         ks = KnowledgeShare(

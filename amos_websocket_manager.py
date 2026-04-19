@@ -12,8 +12,9 @@ import asyncio
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timezone
+UTC = timezone.utc
+from typing import Any, Dict, Optional, Set
 
 from fastapi import WebSocket
 from starlette.websockets import WebSocketState
@@ -34,8 +35,8 @@ class WSConnection:
     user_id: str = None
     rooms: Set[str] = field(default_factory=set)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    connected_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    last_activity: datetime = field(default_factory=lambda: datetime.now(UTC))
+    connected_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     async def send(self, message: Dict[str, Any]) -> None:
         """Send message to this connection."""
@@ -44,7 +45,7 @@ class WSConnection:
 
     def touch(self) -> None:
         """Update last activity timestamp."""
-        self.last_activity = datetime.now(UTC)
+        self.last_activity = datetime.now(timezone.utc)
 
     @property
     def is_active(self) -> bool:
@@ -84,8 +85,8 @@ class WebSocketManager:
 
     def __init__(self):
         self._connections: Dict[str, WSConnection] = {}
-        self._rooms: dict[str, set[str]] = defaultdict(set)
-        self._user_connections: dict[str, set[str]] = defaultdict(set)
+        self._rooms: Dict[str, set[str]] = defaultdict(set)
+        self._user_connections: Dict[str, set[str]] = defaultdict(set)
         self._event_bus = get_event_bus()
         self._lock = asyncio.Lock()
         self._running = False
@@ -100,7 +101,7 @@ class WebSocketManager:
         websocket: WebSocket,
         room: str = None,
         user_id: str = None,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> str:
         """
         Accept and register a new WebSocket connection.
@@ -171,7 +172,7 @@ class WebSocketManager:
             {
                 "connection_id": conn_id,
                 "user_id": connection.user_id,
-                "duration_seconds": (datetime.now(UTC) - connection.connected_at).total_seconds(),
+                "duration_seconds": (datetime.now(timezone.utc) - connection.connected_at).total_seconds(),
             },
         )
 
@@ -372,7 +373,7 @@ class WebSocketManager:
         while self._running:
             await asyncio.sleep(60)  # Run every minute
 
-            stale_threshold = datetime.now(UTC).timestamp() - 300  # 5 minutes
+            stale_threshold = datetime.now(timezone.utc).timestamp() - 300  # 5 minutes
             dead_connections = []
 
             for conn_id, connection in self._connections.items():
@@ -400,7 +401,7 @@ class WebSocketManager:
 # Global Manager Instance
 # ============================================================================
 
-_manager: WebSocketManager | None = None
+_manager: Optional[WebSocketManager] = None
 
 
 def get_websocket_manager() -> WebSocketManager:

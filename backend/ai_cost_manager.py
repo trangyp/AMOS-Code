@@ -24,9 +24,10 @@ Version: 3.0.0
 
 import os
 import time
-from typing import Any
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
 from collections import defaultdict
 import asyncio
@@ -143,8 +144,8 @@ class AICostManager:
         self.token_usage: List[TokenUsage] = []
         self.budgets: Dict[str, Budget] = {}
         self.alerts: List[CostAlert] = []
-        self.usage_by_agent: dict[str, list[TokenUsage]] = defaultdict(list)
-        self.usage_by_model: dict[str, list[TokenUsage]] = defaultdict(list)
+        self.usage_by_agent: Dict[str, list[TokenUsage]] = defaultdict(list)
+        self.usage_by_model: Dict[str, list[TokenUsage]] = defaultdict(list)
         self.daily_usage: Dict[str, float] = defaultdict(float)
         self.max_history = 10000
         self._lock = asyncio.Lock()
@@ -258,12 +259,10 @@ class AICostManager:
         allocated_usd: float,
         period: str = "monthly",
         alert_threshold: float = 0.8,
-        metadata: dict[str, Any ] = None
+        metadata: Dict[str, Any ] = None
     ) -> Budget:
         """Create a new budget."""
         import uuid
-from typing import List
-from typing import Dict, Optional
 
         # Calculate period dates
         now = datetime.now(timezone.utc)
@@ -387,7 +386,7 @@ from typing import Dict, Optional
             }
         }
 
-    def get_optimization_recommendations(self) -> list[dict[str, Any]]:
+    def get_optimization_recommendations(self) -> List[dict[str, Any]]:
         """Get cost optimization recommendations."""
         recommendations = []
 
@@ -443,7 +442,7 @@ from typing import Dict, Optional
         level: str  = None,
         acknowledged: bool  = None,
         limit: int = 50
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get cost alerts with filtering."""
         alerts = self.alerts
 
@@ -514,6 +513,6 @@ def get_cost_report(days: int = 30) -> Dict[str, Any]:
     return cost_manager.get_cost_summary(days)
 
 
-def get_optimization_tips() -> list[dict[str, Any]]:
+def get_optimization_tips() -> List[dict[str, Any]]:
     """Get optimization recommendations."""
     return cost_manager.get_optimization_recommendations()

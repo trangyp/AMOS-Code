@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from amos_runtime import get_runtime
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -39,8 +40,8 @@ class TelemetryCollector:
     MAX_EVENTS = 1000
 
     def __init__(self):
-        self.events: list[TelemetryEvent] = []
-        self.metrics: dict[str, PerformanceMetrics] = {}
+        self.events: List[TelemetryEvent] = []
+        self.metrics: Dict[str, PerformanceMetrics] = {}
 
     def record_event(
         self,
@@ -115,7 +116,7 @@ class TelemetryCollector:
             for name, m in self.metrics.items()
         }
 
-    def get_recent_events(self, count: int = 10) -> list[dict]:
+    def get_recent_events(self, count: int = 10) -> List[dict]:
         """Get recent telemetry events."""
         recent = self.events[-count:]
         return [
@@ -135,7 +136,7 @@ class SystemHealthMonitor:
 
     def __init__(self):
         self.start_time = time.time()
-        self.health_checks: dict[str, bool] = {}
+        self.health_checks: Dict[str, bool] = {}
 
     def check_health(self) -> dict:
         """Run system health checks."""
@@ -321,7 +322,7 @@ class AMOSMonitoring:
 
 
 # Singleton
-_monitoring: AMOSMonitoring | None = None
+_monitoring: Optional[AMOSMonitoring] = None
 
 
 def get_monitoring() -> AMOSMonitoring:
@@ -339,8 +340,6 @@ def record_execution(tool_name: str, duration_ms: float, success: bool = True) -
 
 def get_system_status() -> dict:
     """Quick helper to get system status."""
-from __future__ import annotations
-
     return get_monitoring().get_system_status()
 
 

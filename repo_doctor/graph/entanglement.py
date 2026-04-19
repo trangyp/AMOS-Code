@@ -112,7 +112,6 @@ def compute_entanglement_from_graph(
 
     # Count edges between dimensions
     from collections import defaultdict
-from typing import Set
 
     cross_edges = defaultdict(lambda: defaultdict(int))
 

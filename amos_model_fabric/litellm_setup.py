@@ -3,8 +3,6 @@
 Real implementation for managing LiteLLM proxy with all local LLM backends.
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import os
@@ -12,7 +10,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import yaml
 
@@ -22,14 +20,14 @@ logger = logging.getLogger(__name__)
 class LiteLLMSetup:
     """Setup and manage LiteLLM proxy server for AMOS."""
 
-    def __init__(self, config_dir: Path | None = None):
+    def __init__(self, config_dir: Optional[Path] = None):
         self.config_dir = config_dir or Path.home() / ".amos" / "litellm"
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.config_file = self.config_dir / "config.yaml"
         self.env_file = self.config_dir / ".env"
         self.proxy_process: subprocess.Popen | None = None
 
-    def detect_ollama_models(self) -> list[dict[str, Any]]:
+    def detect_ollama_models(self) -> List[dict[str, Any]]:
         """Detect available Ollama models."""
         models = []
         try:
@@ -60,7 +58,7 @@ class LiteLLMSetup:
             logger.warning(f"Could not detect Ollama models: {e}")
         return models
 
-    def detect_lmstudio(self) -> dict[str, Any] | None:
+    def detect_lmstudio(self) -> Optional[Dict[str, Any] ]:
         """Detect if LM Studio is running."""
         import urllib.request
         try:
@@ -87,7 +85,7 @@ class LiteLLMSetup:
             pass
         return None
 
-    def detect_vllm(self) -> dict[str, Any] | None:
+    def detect_vllm(self) -> Optional[Dict[str, Any] ]:
         """Detect if vLLM is running."""
         import urllib.request
         try:
@@ -112,7 +110,7 @@ class LiteLLMSetup:
             pass
         return None
 
-    def generate_config(self) -> dict[str, Any]:
+    def generate_config(self) -> Dict[str, Any]:
         """Generate LiteLLM configuration with detected models."""
         model_list = []
 
@@ -152,7 +150,7 @@ class LiteLLMSetup:
 
         return config
 
-    def write_config(self, config: dict[str, Any] | None = None) -> Path:
+    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
         """Write LiteLLM configuration to file."""
         config = config or self.generate_config()
         self.config_file.write_text(yaml.dump(config, default_flow_style=False))
@@ -260,7 +258,7 @@ class LiteLLMSetup:
             self.proxy_process = None
             logger.info("LiteLLM proxy stopped")
 
-    def get_models(self, port: int = 4000) -> list[dict[str, Any]]:
+    def get_models(self, port: int = 4000) -> List[dict[str, Any]]:
         """Get list of available models from proxy."""
         import urllib.request
         try:

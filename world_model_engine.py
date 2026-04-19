@@ -1,20 +1,20 @@
 """World Model Engine stub for compatibility."""
 
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class WorldModel:
     """World model representation."""
 
     def __init__(self):
-        self.entities: list[dict[str, Any]] = []
-        self.relations: list[dict[str, Any]] = []
+        self.entities: List[dict[str, Any]] = []
+        self.relations: List[dict[str, Any]] = []
 
     def add_entity(self, entity: Dict[str, Any]) -> None:
         """Add entity to model."""
         self.entities.append(entity)
 
-    def query(self, pattern: str) -> list[dict[str, Any]]:
+    def query(self, pattern: str) -> List[dict[str, Any]]:
         """Query the world model."""
         return []
 

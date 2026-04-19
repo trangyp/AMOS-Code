@@ -2,6 +2,7 @@ from __future__ import annotations
 """Repo Doctor API contracts for repository analysis and fixing."""
 
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any, Optional
 
@@ -25,11 +26,11 @@ class ScanIssue(BaseAMOSModel):
     severity: IssueSeverity = Field(..., description="Issue severity level")
     category: str = Field(..., description="Issue category (e.g., 'style', 'security')")
     file_path: str = Field(..., description="Path to the affected file")
-    line_number: int | None = Field(None, ge=1, description="Line number if applicable")
-    column: int | None = Field(None, ge=0, description="Column number if applicable")
+    line_number: Optional[int] = Field(None, ge=1, description="Line number if applicable")
+    column: Optional[int] = Field(None, ge=0, description="Column number if applicable")
     message: str = Field(..., description="Human-readable issue description")
-    rule_id: str | None = Field(None, description="Rule that triggered this issue")
-    suggested_fix: str | None = Field(None, description="Suggested code fix")
+    rule_id: Optional[str] = Field(None, description="Rule that triggered this issue")
+    suggested_fix: Optional[str] = Field(None, description="Suggested code fix")
     confidence: float = Field(
         default=1.0,
         ge=0.0,
@@ -46,7 +47,7 @@ class FileChange(BaseAMOSModel):
     """A single file change for repo fixing."""
     
     file_path: str = Field(..., description="Path to the file")
-    original_content: str | None = Field(
+    original_content: Optional[str] = Field(
         None,
         description="Original file content (for verification)"
     )
@@ -55,7 +56,7 @@ class FileChange(BaseAMOSModel):
         default="modify",
         description="Type of change: create, modify, delete"
     )
-    description: str | None = Field(
+    description: Optional[str] = Field(
         None,
         description="Human-readable description of the change"
     )
@@ -89,12 +90,12 @@ class RepoScanRequest(BaseAMOSModel):
         default_factory=lambda: ["*/tests/*", "*/venv/*", "*/.git/*"],
         description="Patterns to exclude from scanning"
     )
-    max_issues: int | None = Field(
+    max_issues: Optional[int] = Field(
         None,
         ge=1,
         description="Maximum issues to return (None for all)"
     )
-    workspace_id: str | None = Field(
+    workspace_id: Optional[str] = Field(
         None,
         description="Workspace context for the scan"
     )
@@ -136,15 +137,15 @@ class RepoScanResult(BaseAMOSModel):
         default_factory=lambda: datetime.now(timezone.utc),
         description="When the scan started"
     )
-    completed_at: datetime | None = Field(
+    completed_at: Optional[datetime] = Field(
         None,
         description="When the scan completed"
     )
-    error: str | None = Field(
+    error: Optional[str] = Field(
         None,
         description="Error message if scan failed"
     )
-    workspace_id: str | None = Field(
+    workspace_id: Optional[str] = Field(
         None,
         description="Workspace context for the scan"
     )
@@ -163,7 +164,7 @@ class RepoFixRequest(BaseAMOSModel):
     """
     
     scan_id: str = Field(..., description="Scan ID to base fixes on")
-    issue_ids: list[str] | None = Field(
+    issue_ids: Optional[list[str] ] = Field(
         None,
         description="Specific issues to fix (None for all)"
     )
@@ -175,7 +176,7 @@ class RepoFixRequest(BaseAMOSModel):
         True,
         description="If True, only preview changes without applying"
     )
-    workspace_id: str | None = Field(
+    workspace_id: Optional[str] = Field(
         None,
         description="Workspace context for the fix"
     )
@@ -221,15 +222,15 @@ class RepoFixResult(BaseAMOSModel):
         default_factory=lambda: datetime.now(timezone.utc),
         description="When the fix started"
     )
-    completed_at: datetime | None = Field(
+    completed_at: Optional[datetime] = Field(
         None,
         description="When the fix completed"
     )
-    error: str | None = Field(
+    error: Optional[str] = Field(
         None,
         description="Error message if fix failed"
     )
-    workspace_id: str | None = Field(
+    workspace_id: Optional[str] = Field(
         None,
         description="Workspace context for the fix"
     )

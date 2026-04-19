@@ -9,7 +9,7 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -21,8 +21,8 @@ class QualityReport:
     passed: bool = False
     score: float = 0.0  # 0-1 quality score
     syntax_valid: bool = False
-    style_issues: list[str] = field(default_factory=list)
-    security_issues: list[str] = field(default_factory=list)
+    style_issues: List[str] = field(default_factory=list)
+    security_issues: List[str] = field(default_factory=list)
     complexity_score: float = 0.0
     test_coverage: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -87,7 +87,7 @@ class QualityChecker:
         except SyntaxError:
             return False
 
-    def _check_style(self, content: str) -> list[str]:
+    def _check_style(self, content: str) -> List[str]:
         """Check code style issues."""
         issues = []
         lines = content.split("\n")
@@ -139,7 +139,7 @@ class QualityChecker:
         score = min(1.0, branches / 10)
         return score
 
-    def _check_security(self, content: str) -> list[str]:
+    def _check_security(self, content: str) -> List[str]:
         """Check for basic security issues."""
         issues = []
 
@@ -176,7 +176,7 @@ class QualityChecker:
 
         return max(0.0, min(1.0, score))
 
-    def check_directory(self, directory: Path) -> list[QualityReport]:
+    def check_directory(self, directory: Path) -> List[QualityReport]:
         """Check all Python files in a directory."""
         reports = []
         for file_path in directory.rglob("*.py"):
@@ -200,7 +200,7 @@ class QualityChecker:
             "syntax_valid": sum(1 for r in self.reports.values() if r.syntax_valid),
         }
 
-    def list_reports(self) -> list[dict[str, Any]]:
+    def list_reports(self) -> List[dict[str, Any]]:
         """List all quality reports."""
         return [r.to_dict() for r in self.reports.values()]
 

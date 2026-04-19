@@ -7,8 +7,6 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import heapq
 import time
@@ -16,7 +14,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -39,9 +37,9 @@ class TaskScheduleRequest(BaseModel):
 
     task: str
     priority: int = Field(default=5, ge=1, le=10)
-    context: dict[str, Any] = Field(default_factory=dict)
-    dependencies: list[str] = Field(default_factory=list)
-    deadline: str | None = None
+    context: Dict[str, Any] = Field(default_factory=dict)
+    dependencies: List[str] = Field(default_factory=list)
+    deadline: Optional[str] = None
     use_brain_optimization: bool = True
 
 
@@ -55,7 +53,7 @@ class ScheduledTask(BaseModel):
     estimated_duration_ms: int
     brain_confidence: float
     recommended_parallel: bool
-    resource_requirements: dict[str, Any]
+    resource_requirements: Dict[str, Any]
     execution_order: int
 
 
@@ -64,7 +62,7 @@ class TaskExecutionResult(BaseModel):
 
     task_id: str
     status: str
-    result: dict[str, Any]
+    result: Dict[str, Any]
     execution_time_ms: float
     started_at: str
     completed_at: str
@@ -79,18 +77,18 @@ class PrioritizedTask:
     task_id: str = field(compare=False)
     task: str = field(compare=False)
     original_priority: int = field(compare=False)
-    context: dict[str, Any] = field(compare=False, default_factory=dict)
-    dependencies: list[str] = field(compare=False, default_factory=list)
-    brain_analysis: dict[str, Any] = field(compare=False, default_factory=dict)
+    context: Dict[str, Any] = field(compare=False, default_factory=dict)
+    dependencies: List[str] = field(compare=False, default_factory=list)
+    brain_analysis: Dict[str, Any] = field(compare=False, default_factory=dict)
 
 
 class BrainTaskScheduler:
     """Brain-powered intelligent task scheduler."""
 
     def __init__(self):
-        self._task_queue: list[PrioritizedTask] = []
-        self._completed_tasks: dict[str, TaskExecutionResult] = {}
-        self._running_tasks: set[str] = set()
+        self._task_queue: List[PrioritizedTask] = []
+        self._completed_tasks: Dict[str, TaskExecutionResult] = {}
+        self._running_tasks: Set[str] = set()
         self._lock = asyncio.Lock()
         self._execution_order = 0
 
@@ -105,7 +103,7 @@ class BrainTaskScheduler:
         brain_confidence = 0.8
         estimated_duration_ms = 1000
         recommended_parallel = True
-        resource_requirements: dict[str, Any] = {"cpu": "low", "memory": "low"}
+        resource_requirements: Dict[str, Any] = {"cpu": "low", "memory": "low"}
 
         if _BRAIN_AVAILABLE and request.use_brain_optimization:
             try:
@@ -173,8 +171,8 @@ class BrainTaskScheduler:
 
     async def schedule_batch(
         self,
-        requests: list[TaskScheduleRequest],
-    ) -> list[ScheduledTask]:
+        requests: List[TaskScheduleRequest],
+    ) -> List[ScheduledTask]:
         """Schedule multiple tasks with brain-optimized ordering."""
         scheduled = []
         for request in requests:
@@ -209,7 +207,7 @@ class BrainTaskScheduler:
 
         return scheduled
 
-    async def execute_next(self) -> TaskExecutionResult | None:
+    async def execute_next(self) -> Optional[TaskExecutionResult]:
         """Execute the next task in the queue."""
         async with self._lock:
             if not self._task_queue:
@@ -293,7 +291,7 @@ class BrainTaskScheduler:
 
         return exec_result
 
-    def get_queue_status(self) -> dict[str, Any]:
+    def get_queue_status(self) -> Dict[str, Any]:
         """Get current queue status."""
         return {
             "queued_tasks": len(self._task_queue),
@@ -302,7 +300,7 @@ class BrainTaskScheduler:
             "brain_available": _BRAIN_AVAILABLE,
         }
 
-    def get_result(self, task_id: str) -> TaskExecutionResult | None:
+    def get_result(self, task_id: str) -> Optional[TaskExecutionResult]:
         """Get execution result for a task."""
         return self._completed_tasks.get(task_id)
 
@@ -318,7 +316,7 @@ async def schedule_task_endpoint(request: TaskScheduleRequest) -> ScheduledTask:
 
 
 @router.post("/schedule-batch")
-async def schedule_batch_endpoint(requests: list[TaskScheduleRequest]) -> list[ScheduledTask]:
+async def schedule_batch_endpoint(requests: List[TaskScheduleRequest]) -> List[ScheduledTask]:
     """Schedule multiple tasks with batch optimization."""
     return await scheduler.schedule_batch(requests)
 
@@ -333,7 +331,7 @@ async def execute_next_task() -> TaskExecutionResult | dict[str, str]:
 
 
 @router.get("/queue-status")
-async def get_queue_status() -> dict[str, Any]:
+async def get_queue_status() -> Dict[str, Any]:
     """Get current queue status."""
     return scheduler.get_queue_status()
 

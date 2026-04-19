@@ -1,6 +1,6 @@
 """AMOS SDK stub for compatibility."""
 
-from typing import Any
+from typing import Any, Dict
 
 
 class AMOSSDK:

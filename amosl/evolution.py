@@ -14,7 +14,7 @@ Block matrix T:
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -222,7 +222,7 @@ class EvolutionOperator:
 
     def run_steps(
         self, initial_state: List[Any], steps: int, controls: List[dict] = None
-    ) -> list[list[Any]]:
+    ) -> List[list[Any]]:
         """Run evolution for multiple steps.
 
         Returns trajectory: [S_0, S_1, ..., S_n]

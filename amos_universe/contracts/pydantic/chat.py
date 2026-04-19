@@ -1,6 +1,7 @@
 """Chat API contracts for AMOS conversational interfaces."""
 
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any, Optional
 

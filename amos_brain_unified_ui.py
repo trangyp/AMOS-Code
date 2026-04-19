@@ -15,7 +15,7 @@ import threading
 import webbrowser
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any
+from typing import Any, Set
 from urllib.parse import urlparse
 
 import websockets
@@ -23,7 +23,7 @@ import websockets
 from amos_brain import decide, think, validate
 
 # Global state for WebSocket connections
-connected_clients: set[websockets.WebSocketServerProtocol] = set()
+connected_clients: Set[websockets.WebSocketServerProtocol] = set()
 
 
 class UnifiedBrainUIHandler(BaseHTTPRequestHandler):

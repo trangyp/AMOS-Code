@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from threading import Lock
 from typing import Any
 
@@ -78,7 +79,7 @@ class MemoryGovernance:
 
         return True
 
-    def read(self, key: str) -> Any | None:
+    def read(self, key: str) -> Optional[Any]:
         """Read from memory.
 
         Args:
@@ -93,7 +94,7 @@ class MemoryGovernance:
                 return entry.value
             return None
 
-    def get_entry(self, key: str) -> MemoryEntry | None:
+    def get_entry(self, key: str) -> Optional[MemoryEntry]:
         """Get full memory entry with metadata."""
         with self._lock:
             return self._memory.get(key)

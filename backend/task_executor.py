@@ -4,15 +4,13 @@ Replaces mock Celery with real async execution via AMOS orchestrators.
 Integrates with Brain v2 for intelligent task optimization.
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 # Import real orchestrator bridge
 try:
@@ -50,16 +48,16 @@ class Task:
     priority: str
     state: TaskState = TaskState.PENDING
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    started_at: datetime | None = None
-    completed_at: datetime | None = None
-    result: dict[str, Any] = field(default_factory=dict)
-    error: str | None = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    result: Dict[str, Any] = field(default_factory=dict)
+    error: Optional[str] = None
     domain: str = "unknown"
-    engines_used: list[str] = field(default_factory=list)
+    engines_used: List[str] = field(default_factory=list)
     duration_ms: float = 0.0
     progress: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "id": self.id,
@@ -86,7 +84,7 @@ class AMOSTaskExecutor:
     for real cognitive task execution.
     """
 
-    _instance: AMOSTaskExecutor | None = None
+    _instance: Optional[AMOSTaskExecutor] = None
 
     def __new__(cls) -> AMOSTaskExecutor:
         if cls._instance is None:
@@ -97,8 +95,8 @@ class AMOSTaskExecutor:
     def __init__(self):
         if self._initialized:
             return
-        self._tasks: dict[str, Task] = {}
-        self._running_tasks: set[str] = set()
+        self._tasks: Dict[str, Task] = {}
+        self._running_tasks: Set[str] = set()
         self._bridge = get_real_orchestrator_bridge()
         self._initialized = False
         self._max_concurrent = 10
@@ -125,7 +123,7 @@ class AMOSTaskExecutor:
         name: str,
         description: str,
         priority: str = "MEDIUM",
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> Task:
         """Submit a task for execution."""
         task_id = f"task_{uuid.uuid4().hex[:12]}"
@@ -146,7 +144,7 @@ class AMOSTaskExecutor:
     async def _execute_task(
         self,
         task_id: str,
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> None:
         """Execute task through real orchestrator."""
         task = self._tasks.get(task_id)
@@ -193,11 +191,11 @@ class AMOSTaskExecutor:
             finally:
                 self._running_tasks.discard(task_id)
 
-    def get_task(self, task_id: str) -> Task | None:
+    def get_task(self, task_id: str) -> Optional[Task]:
         """Get task by ID."""
         return self._tasks.get(task_id)
 
-    def get_task_status(self, task_id: str) -> dict[str, Any]:
+    def get_task_status(self, task_id: str) -> Dict[str, Any]:
         """Get task status."""
         task = self._tasks.get(task_id)
         if not task:
@@ -206,9 +204,9 @@ class AMOSTaskExecutor:
 
     def list_tasks(
         self,
-        state: TaskState | None = None,
+        state: Optional[TaskState] = None,
         limit: int = 100,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """List tasks with optional filtering."""
         tasks = list(self._tasks.values())
 
@@ -234,7 +232,7 @@ class AMOSTaskExecutor:
 
         return False
 
-    def get_executor_status(self) -> dict[str, Any]:
+    def get_executor_status(self) -> Dict[str, Any]:
         """Get executor status."""
         bridge_status = self._bridge.get_status()
 
@@ -251,7 +249,7 @@ class AMOSTaskExecutor:
             "orchestrator_status": bridge_status,
         }
 
-    async def optimize_task_with_brain(self, task_id: str) -> dict[str, Any]:
+    async def optimize_task_with_brain(self, task_id: str) -> Dict[str, Any]:
         """Use Brain v2 to optimize task execution parameters.
 
         Args:
@@ -314,7 +312,7 @@ class AMOSTaskExecutor:
 
 
 # Global executor instance
-_executor: AMOSTaskExecutor | None = None
+_executor: Optional[AMOSTaskExecutor] = None
 
 
 def get_task_executor() -> AMOSTaskExecutor:
@@ -329,7 +327,7 @@ def get_task_executor() -> AMOSTaskExecutor:
 async def submit_agent_task(
     role: str,
     paradigm: str = "HYBRID",
-    name: str | None = None,
+    name: Optional[str] = None,
     task_description: str = "",
 ) -> str:
     """Submit an agent spawn task.
@@ -358,9 +356,9 @@ async def submit_agent_task(
 
 async def submit_orchestration_task(
     task_description: str,
-    agents: list[str] | None = None,
+    agents: Optional[List[str] ] = None,
     require_consensus: bool = True,
-    session_id: str | None = None,
+    session_id: Optional[str] = None,
 ) -> str:
     """Submit an orchestration task.
 
@@ -390,7 +388,7 @@ async def submit_orchestration_task(
     return task.id
 
 
-async def get_task_result(task_id: str) -> dict[str, Any]:
+async def get_task_result(task_id: str) -> Dict[str, Any]:
     """Get task result by ID."""
     executor = get_task_executor()
     return executor.get_task_status(task_id)
@@ -402,7 +400,7 @@ async def cancel_task(task_id: str) -> bool:
     return executor.cancel_task(task_id)
 
 
-async def get_executor_status() -> dict[str, Any]:
+async def get_executor_status() -> Dict[str, Any]:
     """Get task executor status."""
     executor = get_task_executor()
     return executor.get_executor_status()

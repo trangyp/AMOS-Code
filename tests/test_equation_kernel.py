@@ -19,7 +19,9 @@ from hypothesis import strategies as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from amos_equation_kernel import (
+from typing import List
+
+from .ast_nodes import (
     EquationKernel,
     MathematicalPattern,
     get_equation_kernel,

@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """AMOS Brain Streaming API
 
 Real-time WebSocket streaming for brain processing with ReAct steps.
 Based on research: Streaming agent outputs for responsive UX.
 """
-from __future__ import annotations
-
 
 import json
 import sys
@@ -40,15 +38,15 @@ class BrainStreamRequest(BaseModel):
 
     query: str
     mode: str = "auto"
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class BrainStreamManager:
     """Manage WebSocket connections for brain streaming."""
 
     def __init__(self):
-        self.connections: dict[str, WebSocket] = {}
-        self.processor: BrainEventProcessor | None = None
+        self.connections: Dict[str, WebSocket] = {}
+        self.processor: Optional[BrainEventProcessor] = None
         if BRAIN_STREAMING_AVAILABLE:
             self.processor = get_brain_event_processor()
 
@@ -76,7 +74,7 @@ class BrainStreamManager:
         client_id: str,
         query: str,
         mode: str = "auto",
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> None:
         """
         Stream brain processing steps to client.
@@ -197,7 +195,7 @@ async def brain_websocket(websocket: WebSocket, client_id: str) -> None:
 
 
 @router.get("/status")
-async def brain_streaming_status() -> dict[str, Any]:
+async def brain_streaming_status() -> Dict[str, Any]:
     """Get brain streaming status."""
 
     # Check fast thinking availability

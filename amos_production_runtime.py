@@ -26,7 +26,8 @@ import asyncio
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional
 
 from amos_bootstrap_orchestrator import get_bootstrap_orchestrator
 from amos_self_healing_controller import get_self_healing_controller
@@ -299,7 +300,7 @@ class AMOSProductionRuntime:
 
         return self._equation_kernel.execute_equation(name, inputs)
 
-    def search_equations(self, query: str) -> list[dict[str, Any]]:
+    def search_equations(self, query: str) -> List[dict[str, Any]]:
         """Search equations by name or domain.
 
         Args:

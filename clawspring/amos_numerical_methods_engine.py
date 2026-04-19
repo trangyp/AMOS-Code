@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class NumericalDomain(Enum):
@@ -410,8 +410,6 @@ _numerical_methods_engine: Optional[NumericalMethodsEngine] = None
 
 def get_numerical_methods_engine() -> NumericalMethodsEngine:
     """Get or create the Numerical Methods Engine singleton."""
-from __future__ import annotations
-
     global _numerical_methods_engine
     if _numerical_methods_engine is None:
         _numerical_methods_engine = NumericalMethodsEngine()

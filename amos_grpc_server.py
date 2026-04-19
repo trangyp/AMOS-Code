@@ -38,6 +38,7 @@ import logging
 from collections.abc import AsyncIterator
 from concurrent import futures
 from dataclasses import dataclass
+from typing import Dict
 
 # gRPC imports with graceful fallback
 try:
@@ -90,7 +91,7 @@ except ImportError:
     @dataclass
     class StreamRequest:
         equation_id: str
-        variable_ranges: dict[str, list[float]]
+        variable_ranges: Dict[str, list[float]]
 
     @dataclass
     class StreamResponse:

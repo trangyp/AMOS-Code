@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class TruthValue(Enum):
@@ -563,8 +563,6 @@ _logic_law_engine: Optional[LogicLawEngine] = None
 
 def get_logic_law_engine() -> LogicLawEngine:
     """Get singleton logic/law engine instance."""
-from __future__ import annotations
-
     global _logic_law_engine
     if _logic_law_engine is None:
         _logic_law_engine = LogicLawEngine()

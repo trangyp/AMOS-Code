@@ -23,7 +23,7 @@ import hashlib
 import threading
 import asyncio
 import pickle
-from typing import Any, Callable, Generic, TypeVar, Optional
+from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar
 from dataclasses import dataclass, field
 from collections import OrderedDict
 from enum import Enum
@@ -96,13 +96,13 @@ class LocalCache(Generic[T]):
         self.eviction_policy = eviction_policy
         self.default_ttl = default_ttl
 
-        self._cache: dict[str, CacheEntry[T]] = {}
+        self._cache: Dict[str, CacheEntry[T]] = {}
         self._access_order: OrderedDict[str, None] = OrderedDict()
         self._lock = threading.RLock()
         self._stats = CacheStats(memory_limit_bytes=max_memory_bytes)
 
         # TTL tracking for efficient expiration
-        self._ttl_heap: list[tuple[float, str]] = []
+        self._ttl_heap: List[tuple[float, str]] = []
         self._eviction_thread = threading.Thread(target=self._eviction_loop, daemon=True)
         self._eviction_thread.start()
 
@@ -270,7 +270,7 @@ class CacheStampedePreventer:
 
     def __init__(self, beta: float = 1.0):
         self.beta = beta
-        self._locks: dict[str, threading.Lock] = {}
+        self._locks: Dict[str, threading.Lock] = {}
         self._global_lock = threading.Lock()
 
     def should_recompute(self, entry: CacheEntry) -> bool:
@@ -395,7 +395,6 @@ class DistributedCache(Generic[T]):
     def _match_pattern(self, key: str, pattern: str) -> bool:
         """Simple pattern matching for invalidation."""
         import fnmatch
-from typing import Callable, Generic, Optional, Set, TypeVar
         return fnmatch.fnmatch(key, pattern)
 
     def get_stats(self) -> Dict[str, Any]:
@@ -422,7 +421,7 @@ class AMOSCacheManager:
     """Central cache manager for AMOS system."""
 
     def __init__(self):
-        self._caches: dict[str, DistributedCache[Any]] = {}
+        self._caches: Dict[str, DistributedCache[Any]] = {}
         self._lock = threading.RLock()
 
     def get_cache(self, name: str) -> DistributedCache[Any]:

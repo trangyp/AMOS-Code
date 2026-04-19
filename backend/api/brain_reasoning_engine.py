@@ -9,8 +9,6 @@ Provides direct reasoning operations:
 - Constraint satisfaction
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -21,7 +19,7 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
@@ -61,10 +59,10 @@ class ReasoningRequest(BaseModel):
     """Request for reasoning operation."""
 
     problem: str = Field(..., min_length=1, description="Problem statement")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     reasoning_type: ReasoningType = ReasoningType.DEDUCTIVE
-    constraints: list[str] = Field(default_factory=list)
-    premises: list[str] = Field(default_factory=list)
+    constraints: List[str] = Field(default_factory=list)
+    premises: List[str] = Field(default_factory=list)
     max_depth: int = Field(default=3, ge=1, le=10)
     confidence_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
 
@@ -74,8 +72,8 @@ class ReasoningStep(BaseModel):
 
     step_number: int
     operation: str
-    input_data: dict[str, Any]
-    output_data: dict[str, Any]
+    input_data: Dict[str, Any]
+    output_data: Dict[str, Any]
     confidence: float = Field(ge=0.0, le=1.0)
     timestamp: datetime
 
@@ -88,10 +86,10 @@ class ReasoningResult(BaseModel):
     reasoning_type: ReasoningType
     conclusion: str
     confidence: float = Field(ge=0.0, le=1.0)
-    steps: list[ReasoningStep]
-    premises_used: list[str]
-    constraints_satisfied: list[str]
-    alternative_conclusions: list[dict[str, Any]]
+    steps: List[ReasoningStep]
+    premises_used: List[str]
+    constraints_satisfied: List[str]
+    alternative_conclusions: List[dict[str, Any]]
     reasoning_time_ms: float
     created_at: datetime
 
@@ -99,7 +97,7 @@ class ReasoningResult(BaseModel):
 class DeductionRequest(BaseModel):
     """Deductive reasoning request."""
 
-    premises: list[str] = Field(..., min_length=1)
+    premises: List[str] = Field(..., min_length=1)
     conclusion: str
     validate: bool = True
 
@@ -109,24 +107,24 @@ class DeductionResult(BaseModel):
 
     is_valid: bool
     confidence: float
-    proof_steps: list[str]
-    counter_example: str | None = None
+    proof_steps: List[str]
+    counter_example: Optional[str] = None
 
 
 class AnalogyRequest(BaseModel):
     """Analogical reasoning request."""
 
-    source_domain: dict[str, Any]
-    target_domain: dict[str, Any]
-    mapping_hints: list[str] = Field(default_factory=list)
+    source_domain: Dict[str, Any]
+    target_domain: Dict[str, Any]
+    mapping_hints: List[str] = Field(default_factory=list)
 
 
 class AnalogyResult(BaseModel):
     """Analogical reasoning result."""
 
-    mappings: list[dict[str, str]]
+    mappings: List[dict[str, str]]
     similarity_score: float
-    inferences: list[str]
+    inferences: List[str]
 
 
 class CausalRequest(BaseModel):
@@ -134,8 +132,8 @@ class CausalRequest(BaseModel):
 
     cause: str
     effect: str
-    evidence: list[dict[str, Any]] = Field(default_factory=list)
-    confounders: list[str] = Field(default_factory=list)
+    evidence: List[dict[str, Any]] = Field(default_factory=list)
+    confounders: List[str] = Field(default_factory=list)
 
 
 class CausalResult(BaseModel):
@@ -144,25 +142,25 @@ class CausalResult(BaseModel):
     causal_strength: float
     confidence: float
     is_direct: bool
-    mediation_path: list[str]
-    confounding_factors: list[str]
+    mediation_path: List[str]
+    confounding_factors: List[str]
 
 
 class ConstraintProblem(BaseModel):
     """Constraint satisfaction problem."""
 
-    variables: dict[str, list[Any]]
-    constraints: list[dict[str, Any]]
-    objective: str | None = None
+    variables: Dict[str, list[Any]]
+    constraints: List[dict[str, Any]]
+    objective: Optional[str] = None
 
 
 class ConstraintSolution(BaseModel):
     """Constraint satisfaction solution."""
 
-    solution: dict[str, Any]
+    solution: Dict[str, Any]
     is_optimal: bool
     satisfaction_score: float
-    alternatives: list[dict[str, Any]]
+    alternatives: List[dict[str, Any]]
 
 
 class ReasoningEngine:
@@ -196,7 +194,7 @@ class ReasoningEngine:
         start_time = datetime.now(UTC)
         reasoning_id = str(uuid.uuid4())[:12]
 
-        steps: list[ReasoningStep] = []
+        steps: List[ReasoningStep] = []
 
         # Step 1: Analyze problem
         steps.append(
@@ -281,7 +279,7 @@ class ReasoningEngine:
             created_at=end_time,
         )
 
-    def _generate_conclusion(self, request: ReasoningRequest, knowledge: list[Any]) -> str:
+    def _generate_conclusion(self, request: ReasoningRequest, knowledge: List[Any]) -> str:
         """Generate conclusion based on reasoning type."""
         if request.reasoning_type == ReasoningType.DEDUCTIVE:
             if request.premises:
@@ -429,7 +427,7 @@ class ReasoningEngine:
 
 
 # Global engine
-_reasoning_engine: ReasoningEngine | None = None
+_reasoning_engine: Optional[ReasoningEngine] = None
 
 
 def get_reasoning_engine() -> ReasoningEngine:
@@ -489,7 +487,7 @@ async def stream_reasoning(request: ReasoningRequest) -> StreamingResponse:
 
 
 @router.get("/types")
-async def get_reasoning_types() -> list[dict[str, str]]:
+async def get_reasoning_types() -> List[dict[str, str]]:
     """Get available reasoning types."""
     return [
         {"type": rt.value, "description": f"{rt.value.capitalize()} reasoning"}
@@ -498,7 +496,7 @@ async def get_reasoning_types() -> list[dict[str, str]]:
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check for reasoning engine."""
     return {
         "status": "healthy" if _BRAIN_AVAILABLE else "degraded",

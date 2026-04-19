@@ -17,11 +17,11 @@ Evolution ID: E001 (Self-referential: this file is its own first contract)
 import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-
 UTC = timezone.utc
+
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class EvolutionStatus(Enum):
@@ -50,15 +50,15 @@ class EvolutionContract:
     # Identity
     evolution_id: str
     owner: str
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     # Target
-    target_files: list[str] = field(default_factory=list)
-    target_modules: list[str] = field(default_factory=list)
+    target_files: List[str] = field(default_factory=list)
+    target_modules: List[str] = field(default_factory=list)
 
     # Problem Definition
     problem_pattern: str = ""
-    evidence: list[str] = field(default_factory=list)
+    evidence: List[str] = field(default_factory=list)
     recurrence_count: int = 0
 
     # Expected Improvement
@@ -72,14 +72,14 @@ class EvolutionContract:
 
     # Safety Controls
     rollback_condition: str = ""
-    verification_steps: list[str] = field(default_factory=list)
+    verification_steps: List[str] = field(default_factory=list)
 
     # State
     status: EvolutionStatus = EvolutionStatus.DRAFT
-    actual_changes: list[dict[str, Any]] = field(default_factory=list)
-    measured_improvement: dict[str, Any] = None
+    actual_changes: List[dict[str, Any]] = field(default_factory=list)
+    measured_improvement: Dict[str, Any] = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize contract to dictionary."""
         data = asdict(self)
         data["status"] = self.status.name
@@ -99,7 +99,7 @@ class EvolutionContract:
         if self.status == EvolutionStatus.APPROVED:
             self.status = EvolutionStatus.IN_PROGRESS
 
-    def complete(self, measured_gain: dict[str, Any]) -> None:
+    def complete(self, measured_gain: Dict[str, Any]) -> None:
         """Mark evolution as completed with measured improvement."""
         self.measured_improvement = measured_gain
         self.status = EvolutionStatus.COMPLETED
@@ -120,7 +120,7 @@ class EvolutionContractRegistry:
     def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path("evolution_reports/contracts")
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        self._contracts: dict[str, EvolutionContract] = {}
+        self._contracts: Dict[str, EvolutionContract] = {}
         self._load_existing()
 
     def _load_existing(self) -> None:
@@ -137,7 +137,7 @@ class EvolutionContractRegistry:
             except Exception:
                 continue  # Skip corrupted contracts
 
-    def _dict_to_contract(self, data: dict[str, Any]) -> EvolutionContract:
+    def _dict_to_contract(self, data: Dict[str, Any]) -> EvolutionContract:
         """Deserialize dictionary to contract."""
         status = EvolutionStatus[data.get("status", "DRAFT")]
         data["status"] = status
@@ -165,15 +165,15 @@ class EvolutionContractRegistry:
         """Get contract by ID."""
         return self._contracts.get(evolution_id)
 
-    def list_by_status(self, status: EvolutionStatus) -> list[EvolutionContract]:
+    def list_by_status(self, status: EvolutionStatus) -> List[EvolutionContract]:
         """List all contracts with given status."""
         return [c for c in self._contracts.values() if c.status == status]
 
-    def list_active(self) -> list[EvolutionContract]:
+    def list_active(self) -> List[EvolutionContract]:
         """List all active (in-progress) evolutions."""
         return self.list_by_status(EvolutionStatus.IN_PROGRESS)
 
-    def list_completed(self) -> list[EvolutionContract]:
+    def list_completed(self) -> List[EvolutionContract]:
         """List all completed evolutions."""
         return self.list_by_status(EvolutionStatus.COMPLETED)
 
@@ -186,7 +186,7 @@ class EvolutionContractRegistry:
         self._save_contract(contract)
         return True
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get registry summary."""
         status_counts = {}
         for contract in self._contracts.values():

@@ -37,14 +37,13 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Protocol, TypeVar
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional, Protocol, Set, TypeVar
 
 import aiohttp
 import aiohttp.client_exceptions
@@ -60,17 +59,17 @@ T = TypeVar('T')
 class ChatMessage:
     role: str
     content: str
-    timestamp: str | None = None
+    timestamp: Optional[str] = None
 
 
 @dataclass
 class ChatRequest:
     message: str
     workspace_id: str
-    context: list[ChatMessage] = field(default_factory=list)
-    model: str | None = None
+    context: List[ChatMessage] = field(default_factory=list)
+    model: Optional[str] = None
     temperature: float = 0.7
-    max_tokens: int | None = None
+    max_tokens: Optional[int] = None
 
 
 @dataclass
@@ -78,17 +77,17 @@ class ChatResponse:
     id: str
     message: str
     model: str
-    usage: dict[str, int]
+    usage: Dict[str, int]
     timestamp: str
 
 
 @dataclass
 class AgentRunRequest:
     agent_type: str
-    parameters: dict[str, Any] = field(default_factory=dict)
-    target_repo: str | None = None
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    target_repo: Optional[str] = None
     priority: str = "normal"
-    callback_url: str | None = None
+    callback_url: Optional[str] = None
 
 
 @dataclass
@@ -96,18 +95,18 @@ class AgentRunResult:
     task_id: str
     status: str
     agent_type: str
-    result: dict[str, Any] | None = None
-    error: str | None = None
-    started_at: str | None = None
-    completed_at: str | None = None
-    duration_ms: int | None = None
+    result: Optional[Dict[str, Any] ] = None
+    error: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    duration_ms: Optional[int] = None
 
 
 @dataclass
 class RepoScanRequest:
     repo_url: str
     branch: str = "main"
-    scan_types: list[str] = field(default_factory=lambda: ["security", "style"])
+    scan_types: List[str] = field(default_factory=lambda: ["security", "style"])
     depth: str = "standard"
 
 
@@ -116,12 +115,12 @@ class TaskStatus:
     id: str
     type: str
     status: str
-    progress: float | None = None
-    message: str | None = None
+    progress: Optional[float] = None
+    message: Optional[str] = None
     created_at: str = ""
     updated_at: str = ""
-    completed_at: str | None = None
-    error: str | None = None
+    completed_at: Optional[str] = None
+    error: Optional[str] = None
 
 
 @dataclass
@@ -130,9 +129,9 @@ class ModelInfo:
     name: str
     provider: str
     status: str
-    capabilities: list[str] = field(default_factory=list)
+    capabilities: List[str] = field(default_factory=list)
     context_window: int = 0
-    loaded_at: str | None = None
+    loaded_at: Optional[str] = None
 
 
 # =============================================================================
@@ -145,8 +144,8 @@ class AMOSHTTPClient:
     def __init__(
         self,
         base_url: str = "https://api.amos.io",
-        api_key: str | None = None,
-        jwt_token: str | None = None,
+        api_key: Optional[str] = None,
+        jwt_token: Optional[str] = None,
     ):
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -169,9 +168,9 @@ class AMOSHTTPClient:
         self,
         method: str,
         path: str,
-        json_data: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+        json_data: Optional[Dict[str, Any] ] = None,
+        params: Optional[Dict[str, Any] ] = None,
+    ) -> Dict[str, Any]:
         """Make HTTP request to API."""
         session = await self._get_session()
         url = f"{self.base_url}/v1{path}"
@@ -191,15 +190,15 @@ class AMOSHTTPClient:
             
             return await response.json()
     
-    async def get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def get(self, path: str, params: Optional[Dict[str, Any] ] = None) -> Dict[str, Any]:
         """GET request."""
         return await self.request("GET", path, params=params)
     
-    async def post(self, path: str, json_data: dict[str, Any]) -> dict[str, Any]:
+    async def post(self, path: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """POST request."""
         return await self.request("POST", path, json_data=json_data)
     
-    async def delete(self, path: str) -> dict[str, Any]:
+    async def delete(self, path: str) -> Dict[str, Any]:
         """DELETE request."""
         return await self.request("DELETE", path)
     
@@ -232,8 +231,8 @@ class ChatAPI:
         self,
         message: str,
         workspace_id: str,
-        context: list[ChatMessage] | None = None,
-        model: str | None = None,
+        context: Optional[List[ChatMessage] ] = None,
+        model: Optional[str] = None,
         temperature: float = 0.7,
     ) -> ChatResponse:
         """Send chat message and get response."""
@@ -265,10 +264,10 @@ class AgentsAPI:
     async def run(
         self,
         agent_type: str,
-        target_repo: str | None = None,
-        parameters: dict[str, Any] | None = None,
+        target_repo: Optional[str] = None,
+        parameters: Optional[Dict[str, Any] ] = None,
         priority: str = "normal",
-        callback_url: str | None = None,
+        callback_url: Optional[str] = None,
     ) -> AgentRunResult:
         """Run an agent task."""
         request = AgentRunRequest(
@@ -318,7 +317,7 @@ class RepoAPI:
         self,
         repo_url: str,
         branch: str = "main",
-        scan_types: list[str] | None = None,
+        scan_types: Optional[List[str] ] = None,
         depth: str = "standard",
     ) -> str:
         """Start repository scan. Returns scan ID."""
@@ -332,7 +331,7 @@ class RepoAPI:
         response = await self._client.post("/repo/scan", request.__dict__)
         return response["scan_id"]
     
-    async def get_status(self, scan_id: str) -> dict[str, Any]:
+    async def get_status(self, scan_id: str) -> Dict[str, Any]:
         """Get scan status."""
         return await self._client.get(f"/repo/status/{scan_id}")
 
@@ -345,12 +344,12 @@ class TasksAPI:
     
     async def list(
         self,
-        status: str | None = None,
+        status: Optional[str] = None,
         limit: int = 20,
         offset: int = 0,
-    ) -> list[TaskStatus]:
+    ) -> List[TaskStatus]:
         """List tasks."""
-        params: dict[str, Any] = {"limit": limit, "offset": offset}
+        params: Dict[str, Any] = {"limit": limit, "offset": offset}
         if status:
             params["status"] = status
         
@@ -394,7 +393,7 @@ class ModelsAPI:
     def __init__(self, client: AMOSHTTPClient):
         self._client = client
     
-    async def list(self) -> list[ModelInfo]:
+    async def list(self) -> List[ModelInfo]:
         """List available models."""
         response = await self._client.get("/models")
         
@@ -419,11 +418,11 @@ class ModelsAPI:
 class AMOSWebSocketClient:
     """WebSocket client for real-time events."""
     
-    def __init__(self, base_url: str, jwt_token: str | None = None):
+    def __init__(self, base_url: str, jwt_token: Optional[str] = None):
         self.base_url = base_url.replace("https://", "wss://").replace("http://", "ws://")
         self.jwt_token = jwt_token
         self._ws: aiohttp.ClientWebSocketResponse | None = None
-        self._subscribed_channels: set[str] = set()
+        self._subscribed_channels: Set[str] = set()
     
     async def connect(self) -> AsyncIterator[dict[str, Any]]:
         """Connect to WebSocket and yield events."""
@@ -487,8 +486,8 @@ class AMOSClient:
     def __init__(
         self,
         base_url: str = "https://api.amos.io",
-        api_key: str | None = None,
-        jwt_token: str | None = None,
+        api_key: Optional[str] = None,
+        jwt_token: Optional[str] = None,
     ):
         self._http = AMOSHTTPClient(
             base_url=base_url,
@@ -509,11 +508,11 @@ class AMOSClient:
             jwt_token=jwt_token,
         )
     
-    async def health(self) -> dict[str, Any]:
+    async def health(self) -> Dict[str, Any]:
         """Check API health."""
         return await self._http.get("/health")
     
-    async def status(self) -> dict[str, Any]:
+    async def status(self) -> Dict[str, Any]:
         """Get system status."""
         return await self._http.get("/status")
     

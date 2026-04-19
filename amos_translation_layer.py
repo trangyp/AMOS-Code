@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS Translation Layer - Human-to-Machine Semantic Alignment Kernel
@@ -256,7 +256,7 @@ class TimeReference:
     """Temporal reference in utterance."""
 
     type: TimeReferenceType
-    value: str | None = None
+    value: Optional[str] = None
 
 
 @dataclass
@@ -278,7 +278,7 @@ class SemanticUnit:
     proposition_type: PropositionType
     entities: List[str] = field(default_factory=list)
     relations: List[Relation] = field(default_factory=list)
-    time_ref: TimeReference | None = None
+    time_ref: Optional[TimeReference] = None
     modality: Modality = field(default_factory=Modality)
     polarity: Polarity = Polarity.UNKNOWN
 
@@ -384,7 +384,7 @@ class NoiseUnit:
     distortion_risk: float = 0.0  # Risk of semantic distortion
     confidence: float = 0.0  # Classification confidence
     retain_as_state_signal: bool = False  # Some noise is diagnostically relevant
-    state_signal_role: str | None = None  # If retained: state|risk|defense indicator
+    state_signal_role: Optional[str] = None  # If retained: state|risk|defense indicator
 
 
 @dataclass
@@ -440,7 +440,7 @@ class FilteredSemanticInput:
     """
 
     primary_signal_units: List[SignalUnit] = field(default_factory=list)
-    retained_noise_units: list[dict[str, Any]] = field(default_factory=list)  # With role annotation
+    retained_noise_units: List[dict[str, Any]] = field(default_factory=list)  # With role annotation
     dropped_noise_units: List[str] = field(default_factory=list)
     ambiguity_units: List[AmbiguityUnit] = field(default_factory=list)
     effective_constraints: List[Constraint] = field(default_factory=list)
@@ -719,8 +719,8 @@ class AMOSTranslationLayer:
 
     def __init__(self) -> None:
         self.state: TranslationState = TranslationState.RAW_INPUT
-        self.current_representation: SemanticIntentRepresentation | None = None
-        self.translation_history: list[dict[str, Any]] = []
+        self.current_representation: Optional[SemanticIntentRepresentation] = None
+        self.translation_history: List[dict[str, Any]] = []
 
     # ==========================================================================
     # MAIN PIPELINE: T_AMOS = (E_parse, E_sense, E_resolve, E_ground, E_structure, E_verify, E_compile)
@@ -1446,7 +1446,7 @@ class AMOSTranslationLayer:
         signal_noise_rep.signal_units = signal_units
         return signal_units
 
-    def _classify_signal(self, clause: str) -> tuple[SignalClass | None, float, float, float]:
+    def _classify_signal(self, clause: str) -> Optional[Tuple[SignalClass ], float, float, float]:
         """Classify clause into signal class with scores."""
         clause_lower = clause.lower()
 
@@ -1818,7 +1818,7 @@ class AMOSTranslationLayer:
         intent_graph: IntentGraph,
         governance_state: Dict[str, Any],
         epistemic_state: Dict[str, Any],
-        signal_noise_rep: SignalNoiseRepresentation | None = None,
+        signal_noise_rep: Optional[SignalNoiseRepresentation] = None,
     ) -> SemanticVerification:
         """
         Verify(IGraph_t) → V_t
@@ -1891,7 +1891,7 @@ class AMOSTranslationLayer:
     async def _compile_machine_goal(
         self,
         verification: SemanticVerification,
-        signal_noise_rep: SignalNoiseRepresentation | None = None,
+        signal_noise_rep: Optional[SignalNoiseRepresentation] = None,
     ) -> CompiledMachineGoal:
         """
         Compile(V_t) -> M_t*
@@ -2077,7 +2077,7 @@ class AMOSTranslationLayer:
         self,
         verification: SemanticVerification,
         grounded: GroundedSemantics,
-        signal_noise_rep: SignalNoiseRepresentation | None = None,
+        signal_noise_rep: Optional[SignalNoiseRepresentation] = None,
     ) -> SafetyFlags:
         """Assess safety flags for the translation with Signal-Noise awareness."""
         # Check for destabilization risk
@@ -2119,7 +2119,7 @@ class AMOSTranslationLayer:
         """Get current translation state."""
         return self.state
 
-    def get_representation(self) -> SemanticIntentRepresentation | None:
+    def get_representation(self) -> Optional[SemanticIntentRepresentation]:
         """Get current semantic representation."""
         return self.current_representation
 
@@ -2166,7 +2166,7 @@ class AMOSTranslationLayer:
 # GLOBAL INSTANCE
 # =============================================================================
 
-_translation_layer: AMOSTranslationLayer | None = None
+_translation_layer: Optional[AMOSTranslationLayer] = None
 
 
 def get_translation_layer() -> AMOSTranslationLayer:
@@ -2228,6 +2228,5 @@ async def demo():
 
 if __name__ == "__main__":
     import asyncio
-    from typing import Any
 
     asyncio.run(demo())

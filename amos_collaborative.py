@@ -10,7 +10,7 @@ Version: 19.0.0
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class Permission(Enum):

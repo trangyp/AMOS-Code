@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from .facade import BrainClient
 
@@ -30,7 +31,7 @@ class IntegratedBrainAPI:
     """High-level brain API for system integration."""
 
     def __init__(self) -> None:
-        self._client: BrainClient | None = None
+        self._client: Optional[BrainClient] = None
         self._initialized = False
 
     def initialize(self) -> None:
@@ -93,7 +94,7 @@ class IntegratedBrainAPI:
 
 
 # Global instance
-_integrated_api: IntegratedBrainAPI | None = None
+_integrated_api: Optional[IntegratedBrainAPI] = None
 
 
 def get_brain_api() -> IntegratedBrainAPI:

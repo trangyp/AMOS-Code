@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .models import PortingBacklog, PortingModule
 from .permissions import ToolPermissionContext
+from typing import List, Optional, Tuple
 
 SNAPSHOT_PATH = Path(__file__).resolve().parent / "reference_data" / "tools_snapshot.json"
 
@@ -19,7 +20,7 @@ class ToolExecution:
 
 
 @lru_cache(maxsize=1)
-def load_tool_snapshot() -> tuple[PortingModule, ...]:
+def load_tool_snapshot() -> Tuple[PortingModule, ...]:
     raw_entries = json.loads(SNAPSHOT_PATH.read_text())
     return tuple(
         PortingModule(
@@ -52,8 +53,8 @@ def get_tool(name: str) -> Optional[PortingModule]:
 
 
 def filter_tools_by_permission_context(
-    tools: tuple[PortingModule, ...], permission_context: Optional[ToolPermissionContext] = None
-) -> tuple[PortingModule, ...]:
+    tools: Tuple[PortingModule, ...], permission_context: Optional[ToolPermissionContext] = None
+) -> Tuple[PortingModule, ...]:
     if permission_context is None:
         return tools
     return tuple(module for module in tools if not permission_context.blocks(module.name))
@@ -63,7 +64,7 @@ def get_tools(
     simple_mode: bool = False,
     include_mcp: bool = True,
     permission_context: Optional[ToolPermissionContext] = None,
-) -> tuple[PortingModule, ...]:
+) -> Tuple[PortingModule, ...]:
     tools = list(PORTED_TOOLS)
     if simple_mode:
         tools = [

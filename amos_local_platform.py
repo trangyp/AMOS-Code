@@ -15,8 +15,6 @@ Usage:
     python amos_local_platform.py stop    # Stop all services
 """
 
-from __future__ import annotations
-
 import argparse
 import asyncio
 import json

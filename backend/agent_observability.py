@@ -30,9 +30,10 @@ Version: 3.1.0
 import os
 import time
 import json
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 from contextlib import contextmanager
 from datetime import datetime, timezone
+UTC = timezone.utc
 from dataclasses import dataclass, field
 
 # OpenTelemetry imports
@@ -54,8 +55,6 @@ OTEL_SERVICE_NAME = os.getenv("OTEL_SERVICE_NAME", "amos-brain")
 # SuperBrain integration
 try:
     from amos_brain import get_super_brain
-from typing import Optional
-from typing import Dict, List
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
@@ -93,7 +92,7 @@ class AgentConversation:
     """Information about a multi-agent conversation."""
     conversation_id: str
     agents_involved: List[str] = field(default_factory=list)
-    messages: list[dict[str, Any]] = field(default_factory=list)
+    messages: List[dict[str, Any]] = field(default_factory=list)
     start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: datetime  = None
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -216,7 +215,7 @@ class AgentObservabilityManager:
         self,
         agent_id: str,
         action_type: str,
-        input_data: dict[str, Any ] = None
+        input_data: Dict[str, Any ] = None
     ):
         """Context manager to trace an agent action."""
         start_time = time.time()
@@ -280,7 +279,7 @@ class AgentObservabilityManager:
         self,
         conversation_id: str,
         agents: List[str],
-        metadata: dict[str, Any ] = None
+        metadata: Dict[str, Any ] = None
     ) -> AgentConversation:
         """Start tracing a multi-agent conversation."""
         conversation = AgentConversation(
@@ -349,7 +348,7 @@ class AgentObservabilityManager:
         avg_latency = sum(c.latency_ms for c in self.llm_calls) / total_calls
 
         # Group by model
-        by_model: dict[str, dict[str, Any]] = {}
+        by_model: Dict[str, dict[str, Any]] = {}
         for call in self.llm_calls:
             if call.model not in by_model:
                 by_model[call.model] = {"calls": 0, "tokens": 0, "cost": 0.0}
@@ -388,7 +387,7 @@ class AgentObservabilityManager:
             "by_type": by_type,
         }
 
-    def get_traces(self) -> list[dict[str, Any]]:
+    def get_traces(self) -> List[dict[str, Any]]:
         """Get all traces for visualization."""
         traces = []
 

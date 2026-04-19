@@ -14,15 +14,13 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 # Redis for L2 cache
 try:
@@ -67,7 +65,7 @@ class CacheEntry:
     value: Any
     created_at: float = field(default_factory=time.time)
     expires_at: float  = None
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
     hit_count: int = 0
     size_bytes: int = 0
 
@@ -108,13 +106,13 @@ class CacheManager:
 
     def __init__(self, redis_url: str  = None):
         self.redis_url = redis_url or "redis://localhost:6379/5"
-        self._l1_cache: dict[str, CacheEntry] = {}
+        self._l1_cache: Dict[str, CacheEntry] = {}
         self._l1_lock = threading.RLock()
         self._redis: redis.Redis  = None
         self._brain = None
         self._stats = CacheStats()
-        self._invalidation_callbacks: dict[str, list[Callable]] = {}
-        self._write_behind_queue: list[tuple[str, Any]] = []
+        self._invalidation_callbacks: Dict[str, list[Callable]] = {}
+        self._write_behind_queue: List[tuple[str, Any]] = []
 
         # Initialize connections
         if REDIS_AVAILABLE:
@@ -176,7 +174,7 @@ class CacheManager:
         key: str,
         data_type: str = "general",
         fetch_func: Callable[..., Any ] = None
-    ) -> Any | None:
+    ) -> Optional[Any]:
         """Get value from cache with multi-level lookup."""
         # CANONICAL: Check governance for cache access
         if SUPERBRAIN_AVAILABLE and self._brain:
@@ -285,7 +283,7 @@ class CacheManager:
         value: Any,
         data_type: str = "general",
         ttl: int  = None,
-        tags: list[str ] = None,
+        tags: List[str ] = None,
         strategy: CacheStrategy = CacheStrategy.CACHE_ASIDE
     ) -> bool:
         """Set value in cache with strategy."""
@@ -340,7 +338,7 @@ class CacheManager:
         self,
         key: str  = None,
         pattern: str  = None,
-        tags: list[str ] = None
+        tags: List[str ] = None
     ) -> int:
         """Invalidate cache entries."""
         invalidated_count = 0
@@ -419,7 +417,7 @@ class CacheManager:
         namespace: str,
         identifier: str,
         data_type: str = "general"
-    ) -> Any | None:
+    ) -> Optional[Any]:
         """Get tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
         return self.get(key, data_type)
@@ -431,7 +429,7 @@ class CacheManager:
         identifier: str,
         value: Any,
         data_type: str = "general",
-        ttl: int | None = None
+        ttl: Optional[int] = None
     ) -> bool:
         """Set tenant-scoped cached data."""
         key = self._get_cache_key(namespace, identifier, tenant_id)
@@ -491,7 +489,7 @@ class CacheManager:
 
     def warmup_cache(
         self,
-        entries: list[tuple[str, Any, str]],
+        entries: List[tuple[str, Any, str]],
         data_type: str = "general"
     ) -> int:
         """Pre-populate cache with entries."""
@@ -511,7 +509,7 @@ def cache_get(
     key: str,
     data_type: str = "general",
     fetch_func: Callable[..., Any]  = None
-) -> Any | None:
+) -> Optional[Any]:
     """Get from cache with optional fetch."""
     return cache_manager.get(key, data_type, fetch_func)
 
@@ -529,7 +527,7 @@ def cache_set(
 def cache_invalidate(
     key: str  = None,
     pattern: str  = None,
-    tags: list[str ] = None
+    tags: List[str ] = None
 ) -> int:
     """Invalidate cache entries."""
     return cache_manager.invalidate(key, pattern, tags)
@@ -540,7 +538,7 @@ def get_tenant_cache(
     namespace: str,
     identifier: str,
     data_type: str = "general"
-) -> Any | None:
+) -> Optional[Any]:
     """Get tenant-scoped cache."""
     return cache_manager.get_tenant_cached(tenant_id, namespace, identifier, data_type)
 

@@ -60,7 +60,7 @@ class TimingSynchronizer:
         self.save()
         return event
 
-    def find_patterns(self, hours: int = 24) -> list[dict[str, Any]]:
+    def find_patterns(self, hours: int = 24) -> List[dict[str, Any]]:
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.events if e.timestamp > cutoff]
         by_context = {}

@@ -44,7 +44,7 @@ from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 try:
     from fastapi import APIRouter, Response
@@ -56,7 +56,6 @@ except ImportError:
 
 try:
     from equation_tracing import create_span
-    from typing import Callable, Tuple
 
     TRACING_AVAILABLE = True
 except ImportError:
@@ -103,7 +102,7 @@ class HealthCheckService:
         self._startup_complete = False
         self._shutdown_requested = False
         self._shutdown_event = asyncio.Event()
-        self._component_checks: dict[str, Callable[[], Any]] = {}
+        self._component_checks: Dict[str, Callable[[], Any]] = {}
         self._version = "2.1.0"
 
     def register_component(
@@ -137,7 +136,7 @@ class HealthCheckService:
         """Get application uptime in seconds."""
         return time.time() - self._start_time
 
-    async def check_liveness(self) -> tuple[dict[str, Any], int]:
+    async def check_liveness(self) -> Tuple[dict[str, Any], int]:
         """Liveness probe - is the application running?
 
         Returns:
@@ -147,7 +146,7 @@ class HealthCheckService:
         # Unless we're completely stuck
         return {"status": HealthStatus.HEALTHY.value}, 200
 
-    async def check_readiness(self) -> tuple[dict[str, Any], int]:
+    async def check_readiness(self) -> Tuple[dict[str, Any], int]:
         """Readiness probe - is the application ready for traffic?
 
         Returns:
@@ -185,7 +184,7 @@ class HealthCheckService:
 
         return {"status": HealthStatus.HEALTHY.value}, 200
 
-    async def check_startup(self) -> tuple[dict[str, Any], int]:
+    async def check_startup(self) -> Tuple[dict[str, Any], int]:
         """Startup probe - has the application finished starting?
 
         Returns:

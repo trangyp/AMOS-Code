@@ -12,7 +12,8 @@ import asyncio
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, Optional
 
 from amos_circuit_breaker import get_circuit_breaker_registry
 from amos_tracing import init_tracing, shutdown_tracing

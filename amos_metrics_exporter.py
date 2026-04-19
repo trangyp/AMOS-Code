@@ -32,7 +32,7 @@ Phase: 14
 
 import time
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Optional, Tuple
 
 # Prometheus client
 try:

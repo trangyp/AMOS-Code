@@ -1,7 +1,7 @@
 """AMOS Economics/Finance Engine - Economic analysis and financial systems."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -277,7 +277,7 @@ class AMOSEconEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, EconAnalysis]:
+    ) -> Dict[str, EconAnalysis]:
         """Run economic analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -389,7 +389,7 @@ def get_econ_engine() -> AMOSEconEngine:
 def analyze_economics(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, EconAnalysis]:
+) -> Dict[str, EconAnalysis]:
     """Quick helper for economics analysis."""
     return get_econ_engine().analyze(description, domains)
 

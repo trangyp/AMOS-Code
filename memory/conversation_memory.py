@@ -11,7 +11,7 @@ import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -152,7 +152,7 @@ class ConversationMemoryManager:
         self._save_session(session)
         return message
 
-    def get_context_window(self, session_id: str, window_size: int = None) -> list[dict[str, str]]:
+    def get_context_window(self, session_id: str, window_size: int = None) -> List[dict[str, str]]:
         """
         Get recent conversation context for LLM prompt.
 

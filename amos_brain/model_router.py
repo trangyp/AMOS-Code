@@ -42,7 +42,7 @@ class ModelRouter:
         self._models: dict[str, ModelConfig] = {}
         self._lock = Lock()
         self._query_count = 0
-        self._fabric_gateway: ModelFabricGateway | None = None
+        self._fabric_gateway: Optional[ModelFabricGateway] = None
         self._initialized = False
 
     def _ensure_gateway(self) -> ModelFabricGateway:

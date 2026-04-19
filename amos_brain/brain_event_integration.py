@@ -11,6 +11,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 @dataclass
@@ -20,9 +21,9 @@ class BrainProcessingEvent:
     query_id: str
     step: str
     iteration: int
-    thought: str | None
-    action: str | None
-    observation: str | None
+    thought: Optional[str]
+    action: Optional[str]
+    observation: Optional[str]
     latency_ms: float
     timestamp: str
 
@@ -94,7 +95,7 @@ class BrainEventProcessor:
 
 
 # Global instance
-_processor: BrainEventProcessor | None = None
+_processor: Optional[BrainEventProcessor] = None
 
 
 def get_brain_event_processor() -> BrainEventProcessor:

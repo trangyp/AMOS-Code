@@ -21,7 +21,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -135,7 +135,7 @@ class EpisodicMemory:
 
     def __init__(self):
         self.episodes: Dict[str, MemoryEntry] = {}
-        self.episode_chains: list[list[str]] = []  # Linked episodes
+        self.episode_chains: List[list[str]] = []  # Linked episodes
 
     def record_episode(self, event: str, context: dict, outcome: str = None) -> MemoryEntry:
         """Record a specific episode/event."""

@@ -68,8 +68,8 @@ class CanonReasoningEngine:
         self,
         problem: str,
         domain: str = "general",
-        options: list[str] | None = None,
-        criteria: list[str] | None = None,
+        options: Optional[list[str] ] = None,
+        criteria: Optional[list[str] ] = None,
     ) -> ReasoningResult:
         """Perform Canon-aware reasoning on a problem.
 
@@ -151,7 +151,7 @@ class CanonReasoningEngine:
         self,
         problem: str,
         domain: str,
-        options: list[str] | None,
+        options: Optional[list[str] ],
         canon_entries: list[CanonKnowledgeEntry],
     ) -> list[ReasoningOption]:
         """Generate or enrich decision options."""
@@ -240,7 +240,7 @@ class CanonReasoningEngine:
     def _evaluate_options(
         self,
         options: list[ReasoningOption],
-        criteria: list[str] | None,
+        criteria: Optional[list[str] ],
         canon_entries: list[CanonKnowledgeEntry],
     ) -> list[ReasoningOption]:
         """Evaluate options against criteria and Canon knowledge."""
@@ -291,7 +291,7 @@ class CanonReasoningEngine:
 
 
 # Global instance
-_canon_reasoning_engine: CanonReasoningEngine | None = None
+_canon_reasoning_engine: Optional[CanonReasoningEngine] = None
 
 
 def get_canon_reasoning_engine() -> CanonReasoningEngine:
@@ -306,7 +306,7 @@ def get_canon_reasoning_engine() -> CanonReasoningEngine:
 def canon_reason(
     problem: str,
     domain: str = "general",
-    options: list[str] | None = None,
+    options: Optional[list[str] ] = None,
 ) -> ReasoningResult:
     """Convenience function for Canon-aware reasoning.
 

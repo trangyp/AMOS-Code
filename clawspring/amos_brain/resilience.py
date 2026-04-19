@@ -5,8 +5,6 @@ Automatic failure detection, recovery, and graceful degradation
 for production reliability.
 """
 
-from __future__ import annotations
-
 
 import sys
 import threading
@@ -15,7 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -140,10 +138,10 @@ class ResilienceManager:
     """Manages system resilience and self-healing."""
 
     def __init__(self):
-        self.failures: list[Failure] = []
-        self.circuit_breakers: dict[str, CircuitBreaker] = {}
+        self.failures: List[Failure] = []
+        self.circuit_breakers: Dict[str, CircuitBreaker] = {}
         self.retry_policy = RetryPolicy()
-        self.recovery_handlers: dict[str, Callable] = {}
+        self.recovery_handlers: Dict[str, Callable] = {}
         self._running = False
         self._monitor_thread: threading.Thread = None
         self._lock = threading.Lock()
@@ -151,8 +149,8 @@ class ResilienceManager:
     def register_component(
         self,
         name: str,
-        circuit_breaker: CircuitBreaker | None = None,
-        recovery_handler: Callable | None = None,
+        circuit_breaker: Optional[CircuitBreaker] = None,
+        recovery_handler: Optional[Callable] = None,
     ) -> None:
         """Register a component for resilience management."""
         if circuit_breaker:
@@ -268,12 +266,12 @@ class ResilienceManager:
         if len(recent_failures) > 10:
             print(f"[Resilience] WARNING: {len(recent_failures)} recent failures")
 
-    def get_resilience_report(self) -> dict[str, Any]:
+    def get_resilience_report(self) -> Dict[str, Any]:
         """Get resilience status report."""
         with self._lock:
             total = len(self.failures)
             resolved = sum(1 for f in self.failures if f.resolved)
-            by_type: dict[str, int] = {}
+            by_type: Dict[str, int] = {}
 
             for f in self.failures:
                 ft = f.failure_type.value
@@ -290,7 +288,7 @@ class ResilienceManager:
 
 
 # Global instance
-_resilience: ResilienceManager | None = None
+_resilience: Optional[ResilienceManager] = None
 
 
 def get_resilience() -> ResilienceManager:

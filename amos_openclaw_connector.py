@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict, List
 
 """
 AMOS-OpenClaw Unified Connector
@@ -351,9 +351,6 @@ class OpenClawPluginGenerator:
  */
 
     import type { OpenClawPluginApi } from "openclaw/plugin-sdk";
-    from datetime import timezone
-from typing import Optional, Any, List, Set, List, Set
-from typing import Set
 
 export function register(api: OpenClawPluginApi) {
   // Register AMOS tools

@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -42,7 +42,7 @@ class OrganismHealthMonitor:
         self.checks: Dict[str, Any] = {}
         self.health_history: List[dict] = []
 
-    def check_all_subsystems(self) -> dict[str, SubsystemHealth]:
+    def check_all_subsystems(self) -> Dict[str, SubsystemHealth]:
         """Run health checks on all subsystems."""
         from AMOS_ORGANISM_OS import SUBSYSTEMS, get_subsystem
 

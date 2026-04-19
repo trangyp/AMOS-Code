@@ -25,7 +25,7 @@ Endpoints:
 """
 
 import json
-from typing import Any
+from typing import Any, Dict, List
 
 import numpy as np
 
@@ -115,7 +115,7 @@ if FASTAPI_AVAILABLE:
 
     class BatchRequest(BaseModel):
         equation: str
-        batch_params: list[dict[str, Any]]
+        batch_params: List[dict[str, Any]]
 
     class BatchResponse(BaseModel):
         equation: str
@@ -201,7 +201,7 @@ else:
 if FASTAPI_AVAILABLE and app:
 
     @app.get("/")
-    async def root() -> dict[str, str]:
+    async def root() -> Dict[str, str]:
         """Root endpoint with API info."""
         return {
             "name": "AMOS Equation API",
@@ -231,7 +231,7 @@ if FASTAPI_AVAILABLE and app:
         domain: str = Query(None, description="Filter by domain"),
         pattern: str = Query(None, description="Filter by pattern"),
         search: str = Query(None, description="Search in name/description"),
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """List all equations with optional filtering."""
         equations = KERNEL.get_all_equations()
 
@@ -362,7 +362,7 @@ if FASTAPI_AVAILABLE and app:
         )
 
     @app.get("/api/v1/patterns")
-    async def list_patterns() -> list[dict[str, Any]]:
+    async def list_patterns() -> List[dict[str, Any]]:
         """List all mathematical patterns and their equations."""
 
         from amos_equation_kernel import MathematicalPattern

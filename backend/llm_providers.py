@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List
 
 import aiohttp
 
@@ -37,7 +37,7 @@ class LLMResponse:
     content: str
     model: str
     provider: str
-    usage: dict[str, int]
+    usage: Dict[str, int]
     latency_ms: float
     timestamp: str
     raw_response: dict = None
@@ -47,7 +47,7 @@ class LLMResponse:
 class LLMRequest:
     """Standardized LLM request."""
 
-    messages: list[Message]
+    messages: List[Message]
     model: str = None
     temperature: float = 0.7
     max_tokens: int = None
@@ -81,7 +81,7 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    def get_available_models(self) -> list[str]:
+    def get_available_models(self) -> List[str]:
         """Get list of available models."""
         pass
 
@@ -112,7 +112,7 @@ class OpenAIProvider(BaseProvider):
     def __init__(self, api_key: str = None):
         super().__init__("openai", api_key or os.getenv("OPENAI_API_KEY"))
 
-    def get_available_models(self) -> list[str]:
+    def get_available_models(self) -> List[str]:
         return self.AVAILABLE_MODELS if self.is_enabled() else []
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
@@ -217,7 +217,7 @@ class AnthropicProvider(BaseProvider):
     def __init__(self, api_key: str = None):
         super().__init__("anthropic", api_key or os.getenv("ANTHROPIC_API_KEY"))
 
-    def get_available_models(self) -> list[str]:
+    def get_available_models(self) -> List[str]:
         return self.AVAILABLE_MODELS if self.is_enabled() else []
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
@@ -244,7 +244,7 @@ class AnthropicProvider(BaseProvider):
                     }
                 )
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": messages,
             "max_tokens": request.max_tokens or 4096,
@@ -314,7 +314,7 @@ class AnthropicProvider(BaseProvider):
                     }
                 )
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": messages,
             "max_tokens": request.max_tokens or 4096,
@@ -356,7 +356,7 @@ class MockProvider(BaseProvider):
         super().__init__("mock", "mock-key")
         self._enabled = True  # Always enabled for fallback
 
-    def get_available_models(self) -> list[str]:
+    def get_available_models(self) -> List[str]:
         return ["mock-gpt", "mock-claude"]
 
     async def complete(self, request: LLMRequest) -> LLMResponse:
@@ -425,7 +425,7 @@ class OllamaProvider(BaseProvider):
     def __init__(self, base_url: str = None):
         super().__init__("ollama", "local")
         self.base_url = base_url or os.getenv("OLLAMA_HOST", self.API_BASE)
-        self._available_models: list[str] = []
+        self._available_models: List[str] = []
         self._check_connection()
 
     def _check_connection(self):
@@ -438,7 +438,7 @@ class OllamaProvider(BaseProvider):
         except Exception:
             self._enabled = False
 
-    async def _get_available_models_from_ollama(self) -> list[str]:
+    async def _get_available_models_from_ollama(self) -> List[str]:
         """Fetch actually downloaded models from Ollama."""
         try:
             session = await self._get_session()
@@ -451,7 +451,7 @@ class OllamaProvider(BaseProvider):
             pass
         return []
 
-    def get_available_models(self) -> list[str]:
+    def get_available_models(self) -> List[str]:
         """Return popular models (actual availability checked at runtime)."""
         if not self.is_enabled():
             return []
@@ -476,7 +476,7 @@ class OllamaProvider(BaseProvider):
             else:
                 messages.append({"role": msg.role, "content": msg.content})
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": False,
@@ -531,7 +531,7 @@ class OllamaProvider(BaseProvider):
             else:
                 messages.append({"role": msg.role, "content": msg.content})
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": True,
@@ -561,8 +561,8 @@ class LLMRouter:
     """
 
     def __init__(self):
-        self._providers: dict[str, BaseProvider] = {}
-        self._performance_tracker: dict[str, list[float]] = {}
+        self._providers: Dict[str, BaseProvider] = {}
+        self._performance_tracker: Dict[str, list[float]] = {}
         self._initialize_providers()
 
     def _initialize_providers(self):
@@ -644,7 +644,7 @@ class LLMRouter:
         # Fall back to mock
         return enabled_providers[0]
 
-    def get_available_providers(self) -> list[dict]:
+    def get_available_providers(self) -> List[dict]:
         """Get list of available providers with their models."""
         result = []
         for name, provider in self._providers.items():

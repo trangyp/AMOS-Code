@@ -17,7 +17,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 AMOS_ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(AMOS_ROOT))
@@ -258,7 +258,7 @@ class PythonCodeParser:
             "errors": len(self.errors),
         }
 
-    def find_cycles(self) -> list[list[str]]:
+    def find_cycles(self) -> List[list[str]]:
         """Find circular dependencies."""
         visited = set()
         cycles = []

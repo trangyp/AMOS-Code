@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from .models import PortingBacklog, PortingModule
+from typing import List, Optional, Tuple
 
 SNAPSHOT_PATH = Path(__file__).resolve().parent / "reference_data" / "commands_snapshot.json"
 
@@ -18,7 +19,7 @@ class CommandExecution:
 
 
 @lru_cache(maxsize=1)
-def load_command_snapshot() -> tuple[PortingModule, ...]:
+def load_command_snapshot() -> Tuple[PortingModule, ...]:
     raw_entries = json.loads(SNAPSHOT_PATH.read_text())
     return tuple(
         PortingModule(
@@ -59,7 +60,7 @@ def get_commands(
     cwd: str = None,
     include_plugin_commands: bool = True,
     include_skill_commands: bool = True,
-) -> tuple[PortingModule, ...]:
+) -> Tuple[PortingModule, ...]:
     commands = list(PORTED_COMMANDS)
     if not include_plugin_commands:
         commands = [module for module in commands if "plugin" not in module.source_hint.lower()]

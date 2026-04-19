@@ -11,6 +11,7 @@ State-of-the-art benchmarking for autonomous systems:
 import time
 import tracemalloc
 from dataclasses import dataclass
+from typing import Dict, List
 
 
 @dataclass
@@ -192,7 +193,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def run_all_benchmarks(self) -> dict[str, list[BenchmarkResult]]:
+    def run_all_benchmarks(self) -> Dict[str, list[BenchmarkResult]]:
         """Run all benchmarks and return results."""
         print("\n" + "=" * 70)
         print("AMOS 57-Component Performance Benchmark Suite")

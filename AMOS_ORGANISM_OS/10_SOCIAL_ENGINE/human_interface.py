@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class InteractionMode(Enum):
@@ -69,7 +69,7 @@ class HumanInterface:
         self.data_dir.mkdir(exist_ok=True)
 
         self.interactions: Dict[str, HumanInteraction] = {}
-        self.user_profiles: dict[str, dict[str, Any]] = {}
+        self.user_profiles: Dict[str, dict[str, Any]] = {}
         self.current_mode: InteractionMode = InteractionMode.CONVERSATION
         self.active_context: Dict[str, Any] = {}
 
@@ -191,7 +191,7 @@ class HumanInterface:
         """Set the current interaction mode."""
         self.current_mode = mode
 
-    def get_user_history(self, user_id: str, limit: int = 10) -> list[dict[str, Any]]:
+    def get_user_history(self, user_id: str, limit: int = 10) -> List[dict[str, Any]]:
         """Get interaction history for a user."""
         user_interactions = [
             i.to_dict() for i in self.interactions.values() if i.user_id == user_id
@@ -219,7 +219,7 @@ class HumanInterface:
         }
         interactions_file.write_text(json.dumps(data, indent=2))
 
-    def list_users(self) -> list[dict[str, Any]]:
+    def list_users(self) -> List[dict[str, Any]]:
         """List all known users."""
         return [{"user_id": uid, **profile} for uid, profile in self.user_profiles.items()]
 

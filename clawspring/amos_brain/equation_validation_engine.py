@@ -47,7 +47,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Import SuperBrain components
 try:
@@ -109,7 +109,7 @@ class ValidationReport:
     failed: int
     errors: int
     skipped: int
-    by_domain: dict[str, list[ValidationResult]]
+    by_domain: Dict[str, list[ValidationResult]]
     performance_summary: Dict[str, float]
     coverage_percentage: float
 
@@ -242,7 +242,7 @@ class EquationValidationEngine:
 
         return {"invariants": ["low loss for correct predictions"], "passed": True}
 
-    def _test_fedavg(self) -> dict[str, Any]:
+    def _test_fedavg(self) -> Dict[str, Any]:
         """Test Federated Averaging invariants."""
         if not self._bridge:
             return {"error": "Bridge not available"}
@@ -336,7 +336,7 @@ class EquationValidationEngine:
 
         self._results = []
         passed = failed = errors = skipped = 0
-        by_domain: dict[str, list[ValidationResult]] = {}
+        by_domain: Dict[str, list[ValidationResult]] = {}
 
         total_start = time.time()
 

@@ -1,6 +1,7 @@
 import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +32,7 @@ def _load_text_file(path: Path) -> str:
 
 def _parse_brain(raw: str) -> dict[str, dict[str, str]]:
     sections: dict[str, dict[str, str]] = {}
-    current: str | None = None
+    current: Optional[str] = None
     for line in raw.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):

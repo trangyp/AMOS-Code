@@ -13,7 +13,7 @@ import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 # Add repo root to path to import amos_alerting
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -84,7 +84,7 @@ class AlertManager:
         # Console channel (always available)
         self.alerting.add_channel("console", ConsoleChannel())
 
-    def evaluate_and_alert(self, metrics: Dict[str, float]) -> list[dict[str, Any]]:
+    def evaluate_and_alert(self, metrics: Dict[str, float]) -> List[dict[str, Any]]:
         """Evaluate metrics and send alerts if needed."""
         alerts = self.alerting.evaluate_rules(metrics)
 
@@ -120,11 +120,11 @@ class AlertManager:
             "timestamp": alert.timestamp.isoformat(),
         }
 
-    def get_active_alerts(self) -> list[dict[str, Any]]:
+    def get_active_alerts(self) -> List[dict[str, Any]]:
         """Get all active alerts."""
         return [self._alert_to_dict(a) for a in self.alerting.active_alerts.values()]
 
-    def get_alert_history(self, limit: int = 100) -> list[dict[str, Any]]:
+    def get_alert_history(self, limit: int = 100) -> List[dict[str, Any]]:
         """Get alert history."""
         history = self.alerting.alert_history[-limit:]
         return [self._alert_to_dict(a) for a in history]

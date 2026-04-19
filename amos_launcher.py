@@ -31,7 +31,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))

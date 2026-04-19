@@ -82,7 +82,7 @@ class ComplianceAuditor:
         self.data_dir.mkdir(exist_ok=True)
 
         self.audit_history: List[AuditResult] = []
-        self.compliance_standards: dict[str, dict[str, Any]] = {}
+        self.compliance_standards: Dict[str, dict[str, Any]] = {}
 
         self._init_default_standards()
 
@@ -120,7 +120,7 @@ class ComplianceAuditor:
         self,
         target: str,
         audit_type: AuditType = AuditType.COMPREHENSIVE,
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> AuditResult:
         """Perform a compliance audit."""
         start_time = datetime.now(UTC)
@@ -169,7 +169,7 @@ class ComplianceAuditor:
         self.audit_history.append(result)
         return result
 
-    def _audit_security(self, context: dict[str, Any]) -> List[AuditFinding]:
+    def _audit_security(self, context: Dict[str, Any]) -> List[AuditFinding]:
         """Perform security audit."""
         findings = []
 
@@ -199,7 +199,7 @@ class ComplianceAuditor:
 
         return findings
 
-    def _audit_privacy(self, context: dict[str, Any]) -> List[AuditFinding]:
+    def _audit_privacy(self, context: Dict[str, Any]) -> List[AuditFinding]:
         """Perform privacy audit."""
         findings = []
 
@@ -218,7 +218,7 @@ class ComplianceAuditor:
 
         return findings
 
-    def _audit_operational(self, context: dict[str, Any]) -> List[AuditFinding]:
+    def _audit_operational(self, context: Dict[str, Any]) -> List[AuditFinding]:
         """Perform operational audit."""
         findings = []
 
@@ -236,7 +236,7 @@ class ComplianceAuditor:
 
         return findings
 
-    def get_audit_history(self, limit: int = 10) -> list[dict[str, Any]]:
+    def get_audit_history(self, limit: int = 10) -> List[dict[str, Any]]:
         """Get recent audit history."""
         return [a.to_dict() for a in self.audit_history[-limit:]]
 

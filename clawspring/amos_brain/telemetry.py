@@ -13,7 +13,7 @@ from collections import deque
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -51,7 +51,7 @@ class MetricsCollector:
         self._counters: Dict[str, int] = {}
         self._gauges: Dict[str, float] = {}
 
-    def record(self, name: str, value: float, labels: dict[str, str] = None) -> None:
+    def record(self, name: str, value: float, labels: Dict[str, str] = None) -> None:
         """Record a metric value."""
         with self._lock:
             if name not in self.metrics:
@@ -72,7 +72,7 @@ class MetricsCollector:
             self._gauges[name] = value
             self.record(name, value)
 
-    def get_metrics(self, name: str = None) -> dict[str, list[dict]]:
+    def get_metrics(self, name: str = None) -> Dict[str, list[dict]]:
         """Get collected metrics."""
         with self._lock:
             if name:
@@ -139,7 +139,7 @@ class HealthMonitor:
     """Monitors system health."""
 
     def __init__(self):
-        self.checks: dict[str, Callable[[], HealthCheck]] = {}
+        self.checks: Dict[str, Callable[[], HealthCheck]] = {}
         self.results: deque = deque(maxlen=1000)
         self._lock = threading.Lock()
 

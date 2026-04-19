@@ -47,7 +47,7 @@ Requirements:
 import asyncio
 import time
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import Any, List, Optional
 
 try:
     import strawberry
@@ -279,7 +279,7 @@ if STRAWBERRY_AVAILABLE:
         async def batch_compute(
             self,
             info: Info,
-            ids: list[strawberry.ID],
+            ids: List[strawberry.ID],
         ) -> TaskStatus:
             """Trigger batch computation."""
             task_id = f"batch-{len(ids)}-{time.time()}"

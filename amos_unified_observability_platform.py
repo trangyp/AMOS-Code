@@ -15,7 +15,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +97,9 @@ class AMOSTelemetryCollector:
     """Collects telemetry from all 26 AMOS phases."""
 
     def __init__(self):
-        self.metrics: dict[str, list[TelemetryPoint]] = defaultdict(list)
+        self.metrics: Dict[str, list[TelemetryPoint]] = defaultdict(list)
         self.logs: List[TelemetryPoint] = []
-        self.traces: dict[str, list[TelemetryPoint]] = defaultdict(list)
+        self.traces: Dict[str, list[TelemetryPoint]] = defaultdict(list)
         self._lock = asyncio.Lock()
 
     async def collect_metric(self, phase: int, component: str, metric: str, value: float) -> None:
@@ -116,7 +116,7 @@ class AMOSTelemetryCollector:
             key = f"{phase}:{component}:{metric}"
             self.metrics[key].append(point)
 
-    def get_metrics(self, phase: int = None, limit: int = 100) -> dict[str, list[TelemetryPoint]]:
+    def get_metrics(self, phase: int = None, limit: int = 100) -> Dict[str, list[TelemetryPoint]]:
         """Get metrics with optional filtering."""
         if phase is None:
             return dict(self.metrics)

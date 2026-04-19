@@ -76,7 +76,7 @@ Architecture layer implementation following AMOS structural integrity.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 @dataclass
 class SystemComponent:
@@ -297,7 +297,7 @@ class AIModule:
 class AMOSCodingEngine:
     """Unified coding engine with 9 layers."""
 
-    LAYERS: dict[str, type[CodingLayer]] = {
+    LAYERS: Dict[str, type[CodingLayer]] = {
         "architecture": ArchitectureLayer,
         "backend": BackendLayer,
         "database": DatabaseLayer,

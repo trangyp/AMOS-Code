@@ -15,6 +15,7 @@ import json
 import urllib.error
 import urllib.request
 from datetime import datetime
+from typing import Tuple
 
 GIST_TAG = "[clawspring]"
 _API = "https://api.github.com"
@@ -101,7 +102,7 @@ def upload_session(
     return result["id"], None
 
 
-def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str]:
+def list_sessions(token: str, max_results: int = 20) -> Tuple[list[dict], str]:
     """List Gists tagged as clawspring sessions.
     Returns (list of {id, description, updated_at, url}), error).
     """

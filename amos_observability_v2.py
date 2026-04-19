@@ -12,8 +12,9 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class MetricType(Enum):
@@ -56,9 +57,9 @@ class AMOSObservabilityV2:
     """
 
     def __init__(self) -> None:
-        self._metrics: dict[str, list[EngineMetric]] = {}
+        self._metrics: Dict[str, list[EngineMetric]] = {}
         self._health_status: Dict[str, HealthStatus] = {}
-        self._collectors: list[Callable[[], Awaitable[list[EngineMetric]]]] = []
+        self._collectors: List[Callable[[], Awaitable[list[EngineMetric]]]] = []
         self._running = False
         self._collection_task: asyncio.Task = None
 

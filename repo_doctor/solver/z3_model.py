@@ -111,7 +111,6 @@ class Z3Model:
     def check(self) -> Z3Result:
         """Check satisfiability of all invariants."""
         import time
-from typing import Callable
 
         if not self.is_available():
             return Z3Result(satisfiable=True, proof_time_ms=0)

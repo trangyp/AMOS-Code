@@ -9,6 +9,8 @@ Version: 1.0.0
 
 from __future__ import annotations
 
+
+
 import asyncio
 import logging
 
@@ -17,7 +19,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from amos_canon_integration import get_canon_loader
@@ -53,7 +55,7 @@ class CanonBridge:
     - StandardsRegistry (standards from glossary and kernels)
     """
 
-    _instance: CanonBridge | None = None
+    _instance: Optional[CanonBridge] = None
     _lock = asyncio.Lock()
 
     def __new__(cls) -> CanonBridge:
@@ -67,15 +69,15 @@ class CanonBridge:
         self._initialized = True
 
         self._loader = None
-        self._canon_enforcer: CanonEnforcer | None = None
-        self._standards_registry: StandardsRegistry | None = None
-        self._status: CanonBridgeStatus | None = None
+        self._canon_enforcer: Optional[CanonEnforcer] = None
+        self._standards_registry: Optional[StandardsRegistry] = None
+        self._status: Optional[CanonBridgeStatus] = None
         self._loaded = False
 
     async def initialize(
         self,
-        canon_enforcer: CanonEnforcer | None = None,
-        standards_registry: StandardsRegistry | None = None,
+        canon_enforcer: Optional[CanonEnforcer] = None,
+        standards_registry: Optional[StandardsRegistry] = None,
     ) -> bool:
         """Initialize canon bridge and sync with _00_AMOS_CANON.
 
@@ -262,14 +264,14 @@ class CanonBridge:
 
         return count
 
-    def get_agent(self, agent_id: str) -> dict[str, Any] | None:
+    def get_agent(self, agent_id: str) -> Optional[Dict[str, Any] ]:
         """Get an agent definition from canon registry."""
         if not self._loader:
             return None
         registry = self._loader.get_agent_registry()
         return registry.get("agents", {}).get(agent_id)
 
-    def get_engine_spec(self, engine_name: str) -> dict[str, Any] | None:
+    def get_engine_spec(self, engine_name: str) -> Optional[Dict[str, Any] ]:
         """Get an engine specification from brain OS."""
         if not self._loader:
             return None
@@ -283,20 +285,20 @@ class CanonBridge:
                 return engines[engine_name]
         return None
 
-    def get_glossary_term(self, term: str) -> dict[str, Any] | None:
+    def get_glossary_term(self, term: str) -> Optional[Dict[str, Any] ]:
         """Look up a term in the canonical glossary."""
         if not self._loader:
             return None
         return self._loader.get_glossary_term(term)
 
-    def get_cognitive_module(self, domain: str, module: str) -> dict[str, Any] | None:
+    def get_cognitive_module(self, domain: str, module: str) -> Optional[Dict[str, Any] ]:
         """Get a cognitive module from the stack."""
         if not self._loader:
             return None
         stack = self._loader.get_cognitive_stack()
         return stack.get(domain, {}).get(module)
 
-    def get_status(self) -> CanonBridgeStatus | None:
+    def get_status(self) -> Optional[CanonBridgeStatus]:
         """Get current bridge status."""
         return self._status
 
@@ -312,9 +314,9 @@ def get_canon_bridge() -> CanonBridge:
 
 # Convenience function for organism initialization
 async def initialize_canon_integration(
-    canon_enforcer: CanonEnforcer | None = None,
-    standards_registry: StandardsRegistry | None = None,
-) -> CanonBridge | None:
+    canon_enforcer: Optional[CanonEnforcer] = None,
+    standards_registry: Optional[StandardsRegistry] = None,
+) -> Optional[CanonBridge]:
     """Initialize canon integration for the organism.
 
     Args:

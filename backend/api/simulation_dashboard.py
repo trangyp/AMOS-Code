@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
@@ -40,7 +40,7 @@ except ImportError:
 router = APIRouter(prefix="/simulation", tags=["Simulation Dashboard"])
 
 # Active simulation sessions
-_simulation_sessions: dict[str, dict[str, Any]] = {}
+_simulation_sessions: Dict[str, dict[str, Any]] = {}
 
 
 class SimulationRunRequest(BaseModel):
@@ -48,7 +48,7 @@ class SimulationRunRequest(BaseModel):
 
     target: str = Field(..., description="PR number or commit to simulate")
     simulation_type: str = Field(default="deployment_impact", description="Type of simulation")
-    scenarios: list[dict[str, Any]] = Field(
+    scenarios: List[dict[str, Any]] = Field(
         default_factory=lambda: [
             {"name": "normal", "load_factor": 1.0},
             {"name": "peak", "load_factor": 2.0},
@@ -98,9 +98,9 @@ class SimulationResult(BaseModel):
     status: str
     target: str
     confidence_score: float
-    scenarios: list[ScenarioResult]
+    scenarios: List[ScenarioResult]
     impact: ImpactSummary
-    recommendations: list[RecommendationItem]
+    recommendations: List[RecommendationItem]
     started_at: str
     completed_at: str = None
 
@@ -109,8 +109,8 @@ class SimulationDashboard:
     """Real-time simulation dashboard manager."""
 
     def __init__(self):
-        self.active_simulations: dict[str, dict[str, Any]] = {}
-        self.subscribers: dict[str, set[WebSocket]] = {}
+        self.active_simulations: Dict[str, dict[str, Any]] = {}
+        self.subscribers: Dict[str, set[WebSocket]] = {}
 
     async def run_simulation(self, request: SimulationRunRequest) -> SimulationResult:
         """Run simulation and track progress."""
@@ -237,7 +237,7 @@ async def run_simulation(request: SimulationRunRequest) -> SimulationResult:
 
 
 @router.get("/status/{simulation_id}")
-async def get_simulation_status(simulation_id: str) -> dict[str, Any]:
+async def get_simulation_status(simulation_id: str) -> Dict[str, Any]:
     """Get current status of a simulation."""
     if simulation_id not in _dashboard.active_simulations:
         raise HTTPException(status_code=404, detail="Simulation not found")
@@ -252,7 +252,7 @@ async def get_simulation_status(simulation_id: str) -> dict[str, Any]:
 
 
 @router.get("/active")
-async def get_active_simulations() -> list[dict[str, Any]]:
+async def get_active_simulations() -> List[dict[str, Any]]:
     """List all active simulations."""
     return [
         {
@@ -334,7 +334,7 @@ async def simulation_websocket(websocket: WebSocket, simulation_id: str):
 
 
 @router.get("/health")
-async def simulation_health() -> dict[str, Any]:
+async def simulation_health() -> Dict[str, Any]:
     """Check simulation engine health."""
     return {
         "available": _SIMULATION_AVAILABLE,

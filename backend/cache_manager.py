@@ -16,6 +16,8 @@ Version: 3.0.0
 from __future__ import annotations
 
 
+
+
 import hashlib
 import json
 import os
@@ -49,7 +51,7 @@ class CacheManager:
                 self._redis = MockCache()
         return self._redis
 
-    async def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> Optional[Any]:
         """Get value from cache."""
         if not self._enabled:
             return None

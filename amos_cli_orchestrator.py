@@ -10,7 +10,7 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from amos_production_orchestrator import get_orchestrator
 

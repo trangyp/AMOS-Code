@@ -46,14 +46,13 @@ import secrets
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Any
+from typing import Any, Dict, List, Literal, Optional
 
 # Pydantic Settings v2 imports with graceful fallback
 try:
     from pydantic_settings import BaseSettings, SettingsConfigDict
     from pydantic import Field, validator, field_validator, model_validator
     from pydantic import ValidationError, SecretStr, PostgresDsn, RedisDsn
-from typing import Any, Set
     PYDANTIC_SETTINGS_AVAILABLE = True
 except ImportError:
     PYDANTIC_SETTINGS_AVAILABLE = False

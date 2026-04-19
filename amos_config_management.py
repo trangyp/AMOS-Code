@@ -34,7 +34,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from cryptography.fernet import Fernet
 
@@ -78,7 +78,7 @@ class ConfigEntry:
     tags: List[str] = field(default_factory=list)
     is_encrypted: bool = False
     is_hot_reload: bool = True
-    previous_versions: list[dict[str, Any]] = field(default_factory=list)
+    previous_versions: List[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -125,7 +125,7 @@ class ConfigSchema:
         key_pattern: str,
         value_type: ConfigValueType,
         validator: Callable[[Any, bool]] = None,
-        constraints: dict[str, Any] = None,
+        constraints: Dict[str, Any] = None,
     ):
         self.key_pattern = key_pattern
         self.value_type = value_type
@@ -188,15 +188,15 @@ class AMOSConfigManager:
 
         # Configuration storage
         self._config: Dict[str, ConfigEntry] = {}
-        self._scopes: dict[ConfigScope, set[str]] = defaultdict(set)
-        self._environments: set[str] = set()
-        self._services: set[str] = set()
+        self._scopes: Dict[ConfigScope, set[str]] = defaultdict(set)
+        self._environments: Set[str] = set()
+        self._services: Set[str] = set()
 
         # Schema registry
         self._schemas: Dict[str, ConfigSchema] = {}
 
         # Change listeners (hot reload)
-        self._listeners: dict[str, list[Callable[[ConfigChangeEvent], None]]] = defaultdict(list)
+        self._listeners: Dict[str, list[Callable[[ConfigChangeEvent], None]]] = defaultdict(list)
 
         # Audit log
         self._audit_log: List[ConfigChangeEvent] = []
@@ -246,7 +246,7 @@ class AMOSConfigManager:
         environment: str = "default",
         service: str = None,
         description: str = "",
-        tags: list[str] = None,
+        tags: List[str] = None,
         is_secret: bool = False,
         user: str = "system",
         reason: str = "",
@@ -479,7 +479,7 @@ class AMOSConfigManager:
         """Register a schema for configuration validation."""
         self._schemas[key_pattern] = schema
 
-    def get_history(self, key: str) -> list[dict[str, Any]]:
+    def get_history(self, key: str) -> List[dict[str, Any]]:
         """Get version history for a key."""
         with self._lock:
             if key not in self._config:
@@ -543,7 +543,7 @@ class AMOSConfigManager:
             count += 1
         return count
 
-    def _init_encryption(self) -> Fernet | None:
+    def _init_encryption(self) -> Optional[Fernet]:
         """Initialize Fernet encryption with key from environment or generate new one."""
         key_file = self.storage_path / ".secret.key"
 

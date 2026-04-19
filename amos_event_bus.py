@@ -6,12 +6,9 @@ import time
 from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 try:
-    from collections.abc import Callable
-    from typing import List, Optional
-
     import redis
 
     REDIS_AVAILABLE = True
@@ -36,7 +33,7 @@ class EventSubscription:
     """Subscription to event types."""
 
     subscriber_id: str
-    event_types: list[str]
+    event_types: List[str]
     callback: Callable[[Event], Any]
     async_callback: bool = False
 
@@ -57,7 +54,7 @@ class AMOSEventBus:
 
     def __init__(self, redis_url: str = None):
         """Initialize the event bus."""
-        self.subscriptions: dict[str, list[EventSubscription]] = defaultdict(list)
+        self.subscriptions: Dict[str, list[EventSubscription]] = defaultdict(list)
         self.event_history: deque[Event] = deque(maxlen=1000)
         self.max_history = 1000
         self.event_count = 0
@@ -75,7 +72,7 @@ class AMOSEventBus:
     def subscribe(
         self,
         subscriber_id: str,
-        event_types: list[str],
+        event_types: List[str],
         callback: Callable[[Event], Any],
         async_callback: bool = False,
     ) -> EventSubscription:
@@ -99,7 +96,7 @@ class AMOSEventBus:
 
         return subscription
 
-    def unsubscribe(self, subscriber_id: str, event_types: list[str] = None):
+    def unsubscribe(self, subscriber_id: str, event_types: List[str] = None):
         """Unsubscribe from events."""
         types_to_check = event_types or list(self.subscriptions.keys())
 
@@ -151,7 +148,7 @@ class AMOSEventBus:
         event = Event(type=event_type, payload=payload, source=source, priority=priority)
         return self.publish(event)
 
-    def get_event_history(self, event_type: str = None, limit: int = 100) -> list[Event]:
+    def get_event_history(self, event_type: str = None, limit: int = 100) -> List[Event]:
         """Get event history, optionally filtered by type."""
         events = self.event_history
         if event_type:
@@ -216,7 +213,7 @@ EVENT_TYPES = {
 
 
 # Global event bus instance
-_global_event_bus: AMOSEventBus | None = None
+_global_event_bus: Optional[AMOSEventBus] = None
 
 
 def get_event_bus() -> AMOSEventBus:

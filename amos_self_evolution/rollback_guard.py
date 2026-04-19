@@ -10,8 +10,6 @@ Version: 1.0.0
 Evolution ID: E004
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import shutil
@@ -19,7 +17,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from .evolution_contract_registry import EvolutionContract
 
@@ -31,11 +29,11 @@ class RollbackSnapshot:
     snapshot_id: str
     evolution_id: str
     timestamp: str
-    file_hashes: dict[str, str] = field(default_factory=dict)
+    file_hashes: Dict[str, str] = field(default_factory=dict)
     backup_path: str = ""
     description: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "snapshot_id": self.snapshot_id,
             "evolution_id": self.evolution_id,
@@ -56,9 +54,9 @@ class RollbackResult:
     restored_files: List[str] = field(default_factory=list)
     failed_files: List[str] = field(default_factory=list)
     error_message: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "success": self.success,
             "evolution_id": self.evolution_id,
@@ -99,7 +97,7 @@ class RollbackGuard:
         self.backup_dir.mkdir(parents=True, exist_ok=True)
 
         # Registry of snapshots
-        self._snapshots: dict[str, RollbackSnapshot] = {}
+        self._snapshots: Dict[str, RollbackSnapshot] = {}
         self._registry_file = self.backup_dir / "snapshot_registry.json"
         self._load_registry()
 
@@ -125,7 +123,7 @@ class RollbackGuard:
         """Save snapshot registry to disk."""
         data = {
             "snapshots": [s.to_dict() for s in self._snapshots.values()],
-            "last_updated": datetime.now(UTC).isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
         self._registry_file.write_text(json.dumps(data, indent=2))
 
@@ -145,13 +143,13 @@ class RollbackGuard:
         Captures current state of all target files for potential rollback.
         """
         snapshot_id = f"snap_{contract.evolution_id}_{int(time.time())}"
-        timestamp = datetime.now(UTC).isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         # Create backup directory for this snapshot
         snapshot_backup_dir = self.backup_dir / snapshot_id
         snapshot_backup_dir.mkdir(parents=True, exist_ok=True)
 
-        file_hashes: dict[str, str] = {}
+        file_hashes: Dict[str, str] = {}
 
         # Backup each target file
         for target_file in contract.target_files:
@@ -292,7 +290,7 @@ class RollbackGuard:
         """Get all snapshots associated with an evolution."""
         return [s for s in self._snapshots.values() if s.evolution_id == evolution_id]
 
-    def list_all_snapshots(self) -> list[dict[str, Any]]:
+    def list_all_snapshots(self) -> List[dict[str, Any]]:
         """List all snapshots with metadata."""
         return [s.to_dict() for s in self._snapshots.values()]
 

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class RoutingCondition(Enum):
@@ -447,8 +447,6 @@ _vomni_engine: Optional[VOmniKernelEngine] = None
 
 def get_vomni_engine() -> VOmniKernelEngine:
     """Get or create the vOmni Engine singleton."""
-from __future__ import annotations
-
     global _vomni_engine
     if _vomni_engine is None:
         _vomni_engine = VOmniKernelEngine()

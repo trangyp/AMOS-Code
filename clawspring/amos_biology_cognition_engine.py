@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class BiologicalLevel(Enum):
@@ -23,7 +23,7 @@ class BiologicalEntity:
     name: str
     entity_type: str
     level: BiologicalLevel
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
 
 class MolecularGeneticKernel:
@@ -53,7 +53,7 @@ class MolecularGeneticKernel:
     ]
 
     def __init__(self):
-        self.entities: dict[str, BiologicalEntity] = {}
+        self.entities: Dict[str, BiologicalEntity] = {}
         self.pathways: List[dict] = []
 
     def define_entity(
@@ -133,7 +133,7 @@ class CellularTissueKernel:
     ]
 
     def __init__(self):
-        self.cells: dict[str, BiologicalEntity] = {}
+        self.cells: Dict[str, BiologicalEntity] = {}
         self.tissues: List[dict] = []
 
     def define_cell(
@@ -213,7 +213,7 @@ class OrganSystemKernel:
     ]
 
     def __init__(self):
-        self.organs: dict[str, BiologicalEntity] = {}
+        self.organs: Dict[str, BiologicalEntity] = {}
         self.systems: List[dict] = []
 
     def define_organ(
@@ -403,10 +403,10 @@ class BiologyCognitionEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Run biology/cognition analysis across specified domains."""
         domains = domains or ["molecular", "cellular", "organ", "cognition", "pathology"]
-        results: dict[str, Any] = {}
+        results: Dict[str, Any] = {}
 
         if "molecular" in domains:
             results["molecular"] = self._analyze_molecular(description)
@@ -550,8 +550,6 @@ _biology_cognition_engine: Optional[BiologyCognitionEngine] = None
 
 def get_biology_cognition_engine() -> BiologyCognitionEngine:
     """Get singleton biology/cognition engine instance."""
-from __future__ import annotations
-
     global _biology_cognition_engine
     if _biology_cognition_engine is None:
         _biology_cognition_engine = BiologyCognitionEngine()

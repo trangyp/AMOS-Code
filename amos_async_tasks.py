@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 """AMOS Async Task Queue v1.0.0
+from amos_async_tasks import spawn_agent_task
+from celery import Celery, Task
+from celery.exceptions import MaxRetriesExceededError
+from celery.result import AsyncResult
+import redis
+from amos_config import settings
+from amos_unified_system import AMOSUnifiedSystem
+from amos_unified_system import AMOSUnifiedSystem
+from amos_vector_memory import AMOSVectorMemory
+from amos_self_evolution import AMOSSelfEvolution
 ===========================
 
 Distributed task processing with Celery and Redis.
@@ -39,7 +49,6 @@ Usage:
   celery -A amos_async_tasks flower --port=5555
 
   # Submit task from FastAPI
-    from amos_async_tasks import spawn_agent_task
   task = spawn_agent_task.delay(role="architect", paradigm="HYBRID")
   return {"task_id": task.id, "status": "queued"}
 
@@ -54,17 +63,15 @@ Version: 1.0.0
 import json
 import sys
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Try to import Celery
 try:
-    from celery import Celery, Task
-    from celery.exceptions import MaxRetriesExceededError
-    from celery.result import AsyncResult
     CELERY_AVAILABLE = True
 except ImportError:
     CELERY_AVAILABLE = False
@@ -72,14 +79,12 @@ except ImportError:
 
 # Try to import Redis
 try:
-    import redis
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
 
 # Import AMOS configuration
 try:
-    from amos_config import settings
     CONFIG_AVAILABLE = True
 except ImportError:
     CONFIG_AVAILABLE = False
@@ -234,7 +239,6 @@ if CELERY_AVAILABLE:
             Agent info dict
         """
         try:
-            from amos_unified_system import AMOSUnifiedSystem
 
             # Initialize AMOS
             amos = AMOSUnifiedSystem()
@@ -300,7 +304,6 @@ if CELERY_AVAILABLE:
             Orchestration result dict
         """
         try:
-            from amos_unified_system import AMOSUnifiedSystem
 
             # Initialize AMOS
             amos = AMOSUnifiedSystem()
@@ -383,7 +386,6 @@ if CELERY_AVAILABLE:
             Indexing result
         """
         try:
-            from amos_vector_memory import AMOSVectorMemory
 
             vm = AMOSVectorMemory()
             if not vm.initialize():
@@ -444,8 +446,6 @@ if CELERY_AVAILABLE:
             Evolution result awaiting approval
         """
         try:
-            from amos_self_evolution import AMOSSelfEvolution
-from typing import List, Optional
 
             evo = AMOSSelfEvolution()
             if not evo.initialize():

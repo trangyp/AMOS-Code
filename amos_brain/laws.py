@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -79,7 +80,7 @@ class GlobalLaws:
         self._violations: list[str] = []
         self._enforcement_hooks: dict[str, Callable] = {}
 
-    def get_law(self, law_id: str) -> Law | None:
+    def get_law(self, law_id: str) -> Optional[Law]:
         """Get law by ID."""
         return self.LAWS.get(law_id)
 

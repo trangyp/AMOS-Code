@@ -4,16 +4,15 @@ Real executable tools for agent use. These are actual functions that agents
 can invoke to perform real work - not mock implementations.
 """
 
-from __future__ import annotations
-
 import os
 import re
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -22,8 +21,8 @@ class ToolResult:
 
     success: bool
     output: str
-    error: str | None = None
-    data: dict[str, Any] | None = None
+    error: Optional[str] = None
+    data: Optional[Dict[str, Any] ] = None
     duration_ms: float = 0.0
 
 
@@ -31,7 +30,7 @@ class AgentToolRegistry:
     """Registry of executable tools for agents."""
 
     def __init__(self):
-        self._tools: dict[str, Callable[..., ToolResult]] = {}
+        self._tools: Dict[str, Callable[..., ToolResult]] = {}
         self._register_default_tools()
 
     def register(self, name: str, func: Callable[..., ToolResult]) -> None:
@@ -42,7 +41,7 @@ class AgentToolRegistry:
         """Get a tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> list[dict[str, str]]:
+    def list_tools(self) -> List[dict[str, str]]:
         """List all available tools."""
         return [
             {"name": name, "description": func.__doc__ or "No description"}

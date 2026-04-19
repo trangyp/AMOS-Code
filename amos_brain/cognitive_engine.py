@@ -3,13 +3,12 @@
 Provides structured cognitive operations for the AMOS brain.
 """
 
-from __future__ import annotations
-
 
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, Optional
 
 from .canon_bridge import get_canon_bridge
 from .facade import BrainClient
@@ -24,14 +23,14 @@ class CognitiveResult:
     domain: str
     processing_time_ms: float
     timestamp: str
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class CognitiveEngine:
     """Core cognitive processing engine with Canon integration."""
 
     def __init__(self) -> None:
-        self._client: BrainClient | None = None
+        self._client: Optional[BrainClient] = None
         self._canon_bridge = None
 
     async def initialize(self) -> None:
@@ -42,7 +41,7 @@ class CognitiveEngine:
             self._canon_bridge = await get_canon_bridge()
 
     async def process(
-        self, query: str, domain: str = "general", context: dict[str, Any] = None
+        self, query: str, domain: str = "general", context: Dict[str, Any] = None
     ) -> CognitiveResult:
         """Process a cognitive query.
 
@@ -112,7 +111,7 @@ class CognitiveEngine:
 
 
 # Global engine instance
-_cognitive_engine: CognitiveEngine | None = None
+_cognitive_engine: Optional[CognitiveEngine] = None
 
 
 def get_cognitive_engine() -> CognitiveEngine:

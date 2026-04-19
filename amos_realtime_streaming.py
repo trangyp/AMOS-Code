@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 """AMOS Real-Time Streaming Service
 ======================================
@@ -83,7 +83,7 @@ class AMOSStreamProcessor:
     def __init__(self, brain_processor=None):
         self.brain_processor = brain_processor
         self._active_streams: Dict[str, StreamConfig] = {}
-        self._callbacks: dict[str, list[Callable]] = {}
+        self._callbacks: Dict[str, list[Callable]] = {}
 
     async def process_with_brain(self, data: Any, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Process data through AMOS brain before streaming."""

@@ -15,8 +15,9 @@ import subprocess
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -391,7 +392,6 @@ class IntelligentModernizer:
 async def main():
     """Main entry point."""
     import argparse
-from typing import Dict, List, Optional, Set, Tuple, Union
 
     parser = argparse.ArgumentParser(description="AMOS Intelligent Modernizer")
     parser.add_argument("--root", type=str, default=".", help="Root path to analyze")

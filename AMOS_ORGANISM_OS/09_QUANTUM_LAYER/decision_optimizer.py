@@ -9,7 +9,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class DecisionCriteria(Enum):
@@ -45,7 +45,7 @@ class Decision:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    options: list[dict[str, Any]] = field(default_factory=list)
+    options: List[dict[str, Any]] = field(default_factory=list)
     criteria: DecisionCriteria = DecisionCriteria.BALANCED
     weights: Dict[str, float] = field(default_factory=dict)
     selected_option: str = None
@@ -83,7 +83,7 @@ class DecisionOptimizer:
         name: str,
         description: str = "",
         criteria: DecisionCriteria = DecisionCriteria.BALANCED,
-        weights: dict[str, float] = None,
+        weights: Dict[str, float] = None,
     ) -> Decision:
         """Create a new decision context."""
         decision = Decision(
@@ -104,7 +104,7 @@ class DecisionOptimizer:
         risk: float = 0.5,
         cost: float = 0.0,
         time: float = 0.0,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> bool:
         """Add an option to a decision."""
         decision = self.decisions.get(decision_id)
@@ -191,7 +191,7 @@ class DecisionOptimizer:
 
     def _calculate_confidence(
         self,
-        scored_options: list[tuple[dict[str, Any], float]],
+        scored_options: List[tuple[dict[str, Any], float]],
     ) -> float:
         """Calculate confidence based on score separation."""
         if len(scored_options) < 2:
@@ -207,7 +207,7 @@ class DecisionOptimizer:
             return min(0.95, 0.5 + separation)
         return 0.5
 
-    def get_decision_report(self, decision_id: str) -> dict[str, Any]:
+    def get_decision_report(self, decision_id: str) -> Dict[str, Any]:
         """Get detailed report for a decision."""
         decision = self.decisions.get(decision_id)
         if not decision:
@@ -224,7 +224,7 @@ class DecisionOptimizer:
             "confidence": decision.outcome.confidence if decision.outcome else 0,
         }
 
-    def list_decisions(self) -> list[dict[str, Any]]:
+    def list_decisions(self) -> List[dict[str, Any]]:
         """List all decisions."""
         return [d.to_dict() for d in self.decisions.values()]
 

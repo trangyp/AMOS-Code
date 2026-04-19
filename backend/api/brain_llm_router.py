@@ -7,15 +7,13 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import time
 from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -43,16 +41,16 @@ router = APIRouter(prefix="/api/v1/brain/llm", tags=["Brain LLM Router"])
 class BrainRoutingRequest(BaseModel):
     """Request for brain-powered LLM routing."""
 
-    messages: list[dict[str, Any]]
-    model: str | None = None
+    messages: List[dict[str, Any]]
+    model: Optional[str] = None
     temperature: float = 0.7
-    max_tokens: int | None = None
+    max_tokens: Optional[int] = None
     stream: bool = False
     priority: int = Field(default=5, ge=1, le=10)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     require_privacy: bool = False  # Force local/ollama
     require_quality: bool = False  # Force premium models
-    budget_limit: float | None = None  # Cost constraint
+    budget_limit: Optional[float] = None  # Cost constraint
 
 
 class RoutingDecision(BaseModel):
@@ -67,7 +65,7 @@ class RoutingDecision(BaseModel):
     privacy_compliant: bool
     quality_score: float
     legality_score: float
-    alternatives: list[dict[str, Any]]
+    alternatives: List[dict[str, Any]]
     timestamp: str
 
 
@@ -78,7 +76,7 @@ class BrainLLMResponse(BaseModel):
     model: str
     provider: str
     routing_decision: RoutingDecision
-    usage: dict[str, int]
+    usage: Dict[str, int]
     latency_ms: float
     timestamp: str
 
@@ -87,8 +85,8 @@ class BrainLLMRouter:
     """Brain-powered intelligent LLM router."""
 
     def __init__(self):
-        self._routing_history: list[dict[str, Any]] = []
-        self._performance_cache: dict[str, dict[str, Any]] = {}
+        self._routing_history: List[dict[str, Any]] = []
+        self._performance_cache: Dict[str, dict[str, Any]] = {}
         self._lock = asyncio.Lock()
 
     async def route_with_brain(
@@ -268,7 +266,7 @@ class BrainLLMRouter:
     def _fallback_decision(
         self,
         request: BrainRoutingRequest,
-        error: str | None = None,
+        error: Optional[str] = None,
     ) -> RoutingDecision:
         """Fallback decision when brain unavailable."""
         # Prefer ollama if privacy required, otherwise use first available
@@ -293,14 +291,14 @@ class BrainLLMRouter:
             timestamp=datetime.now(UTC).isoformat(),
         )
 
-    def _get_available_providers(self) -> list[dict[str, Any]]:
+    def _get_available_providers(self) -> List[dict[str, Any]]:
         """Get list of available providers from base router."""
         return base_llm_router.get_available_providers()
 
     def _build_provider_options(
         self,
         request: BrainRoutingRequest,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Build provider options for brain decision."""
         options = []
         providers = self._get_available_providers()
@@ -318,7 +316,7 @@ class BrainLLMRouter:
 
         return options
 
-    def _build_routing_criteria(self, request: BrainRoutingRequest) -> list[str]:
+    def _build_routing_criteria(self, request: BrainRoutingRequest) -> List[str]:
         """Build routing criteria based on request."""
         criteria = ["quality", "latency"]
 
@@ -401,9 +399,9 @@ class BrainLLMRouter:
 
     def _build_alternatives(
         self,
-        brain_result: dict[str, Any],
+        brain_result: Dict[str, Any],
         selected_provider: str,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Build list of alternative providers."""
         alternatives = []
         all_options = brain_result.get("all_scores", {})
@@ -422,7 +420,7 @@ class BrainLLMRouter:
         alternatives.sort(key=lambda x: x["score"], reverse=True)
         return alternatives[:3]  # Top 3 alternatives
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get router statistics."""
         total = len(self._routing_history)
         if total == 0:
@@ -460,12 +458,12 @@ async def complete_stream(request: BrainRoutingRequest):
 
 
 @router.get("/stats")
-async def get_router_stats() -> dict[str, Any]:
+async def get_router_stats() -> Dict[str, Any]:
     """Get brain LLM router statistics."""
     return brain_llm_router.get_stats()
 
 
 @router.get("/providers")
-async def get_available_providers() -> list[dict[str, Any]]:
+async def get_available_providers() -> List[dict[str, Any]]:
     """Get available LLM providers."""
     return base_llm_router.get_available_providers()

@@ -21,7 +21,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 class HumanState(Enum):
@@ -109,7 +109,7 @@ class SignalDetectionEngine:
         "false_binary": ["either or", "only two", "must choose", "no other way"],
     }
 
-    def analyze(self, message: str, history: list[str] = None) -> MessageAnalysis:
+    def analyze(self, message: str, history: List[str] = None) -> MessageAnalysis:
         """Extract signal from noise in message."""
         analysis = MessageAnalysis(surface_text=message)
 
@@ -196,7 +196,7 @@ class StateRegulationEngine:
     """
 
     def classify(
-        self, analysis: MessageAnalysis, history: list[str] = None
+        self, analysis: MessageAnalysis, history: List[str] = None
     ) -> Tuple[HumanState, float]:
         """Classify state and estimate safe intervention intensity."""
         # Calculate overload indicators
@@ -279,7 +279,7 @@ class InterventionSelectionEngine:
         analysis: MessageAnalysis,
         state: HumanState,
         capacity: float,
-        history: list[str] = None,
+        history: List[str] = None,
     ) -> InterventionMode:
         """Select optimal intervention for current state."""
         # High-risk or shutdown states - only grounding
@@ -406,7 +406,7 @@ class VerificationEngine:
 
     def verify(
         self, response: str, analysis: MessageAnalysis, state: HumanState
-    ) -> tuple[bool, dict[str, float]]:
+    ) -> Tuple[bool, dict[str, float]]:
         """Verify response safety and quality."""
         risks = {
             "overload": self._score_overload_risk(response, state),

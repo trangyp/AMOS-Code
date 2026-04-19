@@ -61,7 +61,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class CollaborationMode(Enum):
@@ -137,7 +137,7 @@ class CollaborativeReasoningChain:
     started_at: float
 
     # Chain elements (alternating human and AI contributions)
-    elements: list[dict[str, Any]] = field(default_factory=list)
+    elements: List[dict[str, Any]] = field(default_factory=list)
 
     # State
     current_focus: str = ""

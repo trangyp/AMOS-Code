@@ -86,7 +86,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 class TEEBackend(Enum):
@@ -192,7 +192,7 @@ class SimulatedTEEBackend(TEEBackendInterface):
     """Simulated TEE backend for development/testing."""
 
     def __init__(self) -> None:
-        self.enclaves: dict[str, dict[str, Any]] = {}
+        self.enclaves: Dict[str, dict[str, Any]] = {}
 
     async def create_enclave(
         self,

@@ -10,7 +10,7 @@ import uuid
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 import asyncpg
 import redis.asyncio as redis
@@ -60,7 +60,7 @@ class Database:
             row = await conn.fetchrow(query, *args)
             return dict(row) if row else None
 
-    async def fetch_many(self, query: str, *args) -> list[dict[str, Any]]:
+    async def fetch_many(self, query: str, *args) -> List[dict[str, Any]]:
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(query, *args)
             return [dict(row) for row in rows]
@@ -345,7 +345,7 @@ class CreateIncidentRequest(BaseModel):
     title: str
     description: str = None
     severity: str
-    affected_service_ids: list[uuid.UUID] = Field(default_factory=list)
+    affected_service_ids: List[uuid.UUID] = Field(default_factory=list)
 
 
 class TriggerAgentRequest(BaseModel):
@@ -402,7 +402,7 @@ class Repository:
     @staticmethod
     async def list_people(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM people WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -435,7 +435,7 @@ class Repository:
     @staticmethod
     async def list_repositories(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM repositories WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -471,7 +471,7 @@ class Repository:
     @staticmethod
     async def list_services(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM services WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -573,7 +573,7 @@ class Repository:
     @staticmethod
     async def list_incidents(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM incidents WHERE tenant_id = $1 ORDER BY started_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -584,7 +584,7 @@ class Repository:
     @staticmethod
     async def list_alerts(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM alerts WHERE tenant_id = $1 ORDER BY first_fired_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -622,7 +622,7 @@ class Repository:
     @staticmethod
     async def list_agents(
         tenant_id: uuid.UUID, limit: int = 20, offset: int = 0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         return await db.fetch_many(
             "SELECT * FROM agents WHERE tenant_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
             tenant_id,
@@ -984,7 +984,7 @@ class CommandProcessor:
     @staticmethod
     async def _get_related_objects(
         object_type: str, object_id: str, tenant_id: uuid.UUID
-    ) -> dict[str, list]:
+    ) -> Dict[str, list]:
         """Get related objects from graph"""
         # Simplified - would query Neo4j in production
         return {"depends_on": [], "depended_by": [], "owned_by": [], "monitored_by": []}

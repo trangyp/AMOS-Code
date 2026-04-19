@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class EthicalFramework(Enum):
@@ -61,7 +61,7 @@ class EthicalDilemma:
     scenario: str
     stakeholders: List[str]
     options: List[str]
-    consequences: dict[str, list[str]]
+    consequences: Dict[str, list[str]]
     principles_involved: List[str]
 
 
@@ -589,8 +589,6 @@ _ethics_engine: Optional[EthicsSafetyEngine] = None
 
 def get_ethics_safety_engine() -> EthicsSafetyEngine:
     """Get or create the Ethics & Safety Engine singleton."""
-from __future__ import annotations
-
     global _ethics_engine
     if _ethics_engine is None:
         _ethics_engine = EthicsSafetyEngine()

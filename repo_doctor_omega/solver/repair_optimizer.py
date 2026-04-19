@@ -218,7 +218,7 @@ class RepairOptimizer:
         message: str,
         location: str,
         remediation: str,
-    ) -> RepairCandidate | None:
+    ) -> Optional[RepairCandidate]:
         """Convert a violation to a repair candidate."""
         # Parse location
         if ":" in location:

@@ -8,8 +8,9 @@ Author: AMOS System
 Version: 1.0.0
 """
 
-from datetime import datetime
-from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
+from datetime import datetime, timezone
+from typing import Any, Dict, Generic, List, Optional, Protocol, TypeVar, runtime_checkable
+UTC = timezone.utc
 
 # SQLAlchemy imports
 from sqlalchemy import func, select
@@ -147,9 +148,9 @@ class UnitOfWork:
     def __init__(self, session: Optional[AsyncSession] = None):
         self._session = session
         self._owns_session = session is None
-        self._repositories: dict[type, BaseRepository] = {}
+        self._repositories: Dict[type, BaseRepository] = {}
 
-    async def __aenter__(self) -> UnitOfWork:
+    async def __aenter__(self) -> "UnitOfWork":
         if self._session is None:
             self._session = AsyncSessionLocal()
         return self
@@ -204,7 +205,7 @@ class BaseService(Generic[T, ID]):
                 return await self.create({"email": email, "name": name})
     """
 
-    def __init__(self, model_class: type[T], uow: Optional[UnitOfWork] = None):
+    def __init__(self, model_class: type[T], uow: Optional["UnitOfWork"] = None):
         self.model_class = model_class
         self._uow = uow
         self._repo: BaseRepository[T, ID] = None
@@ -294,10 +295,10 @@ class ServiceFactory:
         user_service = factory.user_service()
     """
 
-    def __init__(self, uow: Optional[UnitOfWork] = None):
+    def __init__(self, uow: Optional["UnitOfWork"] = None):
         self._uow = uow
 
-    def _get_uow(self) -> UnitOfWork:
+    def _get_uow(self) -> "UnitOfWork":
         """Get or create Unit of Work."""
         if self._uow is None:
             raise RuntimeError("No UnitOfWork available")
@@ -309,7 +310,7 @@ class ServiceFactory:
 # ============================================================================
 
 
-async def get_unit_of_work() -> UnitOfWork:
+async def get_unit_of_work() -> "UnitOfWork":
     """FastAPI dependency for Unit of Work."""
     async with UnitOfWork() as uow:
         yield uow

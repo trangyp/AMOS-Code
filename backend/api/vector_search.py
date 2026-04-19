@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Vector search with embeddings - Real semantic search for AMOS.
 
@@ -8,8 +8,6 @@ Production-ready vector search using:
 - Brain-integrated relevance scoring
 - Async batch processing
 """
-from __future__ import annotations
-
 
 import asyncio
 import hashlib
@@ -40,7 +38,7 @@ class IndexRequest(BaseModel):
 
     id: str
     text: str
-    metadata: dict[str, Any] = {}
+    metadata: Dict[str, Any] = {}
 
 
 class SearchRequest(BaseModel):
@@ -49,7 +47,7 @@ class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
     use_brain_ranking: bool = True
-    filter_metadata: dict[str, Any] = None
+    filter_metadata: Dict[str, Any] = None
 
 
 class SearchResult(BaseModel):
@@ -58,15 +56,15 @@ class SearchResult(BaseModel):
     id: str
     text: str
     score: float
-    brain_score: float | None = None
-    metadata: dict[str, Any]
+    brain_score: Optional[float] = None
+    metadata: Dict[str, Any]
 
 
 class SearchResponse(BaseModel):
     """Search response."""
 
     query: str
-    results: list[SearchResult]
+    results: List[SearchResult]
     total_indexed: int
     search_time_ms: float
     brain_enhanced: bool
@@ -78,8 +76,8 @@ class VectorDocument:
 
     id: str
     text: str
-    embedding: list[float]
-    metadata: dict[str, Any]
+    embedding: List[float]
+    metadata: Dict[str, Any]
     indexed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def compute_hash(self) -> str:
@@ -93,10 +91,10 @@ class SimpleVectorIndex:
 
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
-        self.documents: dict[str, VectorDocument] = {}
+        self.documents: Dict[str, VectorDocument] = {}
         self._lock = asyncio.Lock()
 
-    def _simple_embedding(self, text: str) -> list[float]:
+    def _simple_embedding(self, text: str) -> List[float]:
         """Generate simple deterministic embedding.
 
         In production, replace with sentence-transformers:
@@ -114,7 +112,7 @@ class SimpleVectorIndex:
             embedding.append(val)
         return embedding
 
-    def _cosine_similarity(self, a: list[float], b: list[float]) -> float:
+    def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
         """Compute cosine similarity between two vectors."""
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = sum(x * x for x in a) ** 0.5
@@ -130,10 +128,10 @@ class SimpleVectorIndex:
 
     async def search(
         self,
-        query_embedding: list[float],
+        query_embedding: List[float],
         top_k: int = 5,
-        filter_metadata: dict[str, Any] = None,
-    ) -> list[tuple[str, float]]:
+        filter_metadata: Dict[str, Any] = None,
+    ) -> List[tuple[str, float]]:
         """Search for similar documents."""
         async with self._lock:
             scores = []
@@ -159,7 +157,7 @@ class SimpleVectorIndex:
                 return True
             return False
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get index statistics."""
         return {
             "total_documents": len(self.documents),
@@ -175,7 +173,7 @@ class BrainEnhancedSearcher:
         self.index = SimpleVectorIndex()
         self.kernel = AMOSKernelRuntime()
 
-    async def index_document(self, request: IndexRequest) -> dict[str, Any]:
+    async def index_document(self, request: IndexRequest) -> Dict[str, Any]:
         """Index a document with embedding."""
         embedding = self.index._simple_embedding(request.text)
 
@@ -269,7 +267,7 @@ class BrainEnhancedSearcher:
             brain_enhanced=request.use_brain_ranking,
         )
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get searcher statistics."""
         return self.index.get_stats()
 
@@ -279,7 +277,7 @@ _searcher = BrainEnhancedSearcher()
 
 
 @router.post("/index", response_model=dict[str, Any])
-async def index_document(request: IndexRequest) -> dict[str, Any]:
+async def index_document(request: IndexRequest) -> Dict[str, Any]:
     """Index a document for vector search."""
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
@@ -303,7 +301,7 @@ async def search_documents(request: SearchRequest) -> SearchResponse:
 
 
 @router.delete("/document/{doc_id}")
-async def delete_document(doc_id: str) -> dict[str, bool]:
+async def delete_document(doc_id: str) -> Dict[str, bool]:
     """Delete a document from the index."""
     deleted = await _searcher.index.delete_document(doc_id)
     if not deleted:
@@ -312,13 +310,13 @@ async def delete_document(doc_id: str) -> dict[str, bool]:
 
 
 @router.get("/stats")
-async def get_stats() -> dict[str, Any]:
+async def get_stats() -> Dict[str, Any]:
     """Get vector search index statistics."""
     return _searcher.get_stats()
 
 
 @router.post("/batch/index")
-async def batch_index(documents: list[IndexRequest]) -> dict[str, Any]:
+async def batch_index(documents: List[IndexRequest]) -> Dict[str, Any]:
     """Index multiple documents in batch."""
     results = []
     for doc in documents:

@@ -18,7 +18,8 @@ import statistics
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass
@@ -206,7 +207,7 @@ class FailurePatternDetector:
     def __init__(self):
         self.failures: List[dict] = []
         self.failure_patterns: Dict[str, int] = defaultdict(int)
-        self.context_signatures: dict[str, list[str]] = {}
+        self.context_signatures: Dict[str, list[str]] = {}
 
     def record_failure(self, failure_type: str, context: dict, action_taken: str, consequence: str):
         """Record a failure for pattern analysis."""
@@ -290,7 +291,7 @@ class ParameterAdapter:
             "attention_noise": 0.1,
         }
         self.param_history: List[dict] = []
-        self.update_signals: dict[str, list[float]] = defaultdict(list)
+        self.update_signals: Dict[str, list[float]] = defaultdict(list)
 
     def compute_update_signal(
         self, param_name: str, performance_delta: float, gradient: float
@@ -337,7 +338,7 @@ class ParameterAdapter:
             }
         )
 
-    def get_params(self) -> dict[str, float]:
+    def get_params(self) -> Dict[str, float]:
         """Get current adapted parameters."""
         return self.current_params.copy()
 
@@ -371,7 +372,7 @@ class ConfidenceCalibrator:
 
     def __init__(self):
         self.confidence_predictions: List[tuple] = []  # (confidence, outcome)
-        self.calibration_curve: dict[float, float] = {}
+        self.calibration_curve: Dict[float, float] = {}
 
     def record(self, confidence: float, success: bool):
         """Record confidence prediction and outcome."""

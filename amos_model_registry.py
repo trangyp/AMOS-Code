@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class ModelStage(Enum):
@@ -85,7 +85,7 @@ class ModelVersion:
 
     # Performance metrics
     metrics: Dict[str, float] = field(default_factory=dict)
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -124,7 +124,7 @@ class RegisteredModel:
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
     owner: str = "system"
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
 
     def get_production_version(self) -> Optional[ModelVersion]:
         """Get the current production version."""
@@ -222,7 +222,7 @@ class AMOSModelRegistry:
         self.storage = storage or LocalArtifactStorage()
 
         # Metrics tracking
-        self.performance_history: dict[str, list[dict[str, Any]]] = {}
+        self.performance_history: Dict[str, list[dict[str, Any]]] = {}
 
     async def initialize(self) -> None:
         """Initialize model registry."""
@@ -239,7 +239,7 @@ class AMOSModelRegistry:
         framework: ModelFramework,
         task_type: str,
         owner: str = "system",
-        tags: list[str] = None,
+        tags: List[str] = None,
     ) -> RegisteredModel:
         """Register a new model in the registry."""
         model_id = f"model_{name.lower().replace(' ', '_')}"
@@ -267,7 +267,7 @@ class AMOSModelRegistry:
         version: str,
         description: str = "",
         source_experiment: str = None,
-        metrics: dict[str, float] = None,
+        metrics: Dict[str, float] = None,
         parent_version: str = None,
         created_by: str = "system",
     ) -> ModelVersion:
@@ -350,7 +350,7 @@ class AMOSModelRegistry:
 
     def list_models(
         self, framework: Optional[ModelFramework] = None, task_type: str = None, tag: str = None
-    ) -> list[RegisteredModel]:
+    ) -> List[RegisteredModel]:
         """List registered models with optional filtering."""
         results = []
 
@@ -426,7 +426,7 @@ class AMOSModelRegistry:
         n = deployment.inference_count
         deployment.avg_latency_ms = (deployment.avg_latency_ms * (n - 1) + latency_ms) / n
 
-    def get_deployment_stats(self, deployment_id: str) -> dict[str, Any]:
+    def get_deployment_stats(self, deployment_id: str) -> Dict[str, Any]:
         """Get deployment statistics."""
         if deployment_id not in self.deployments:
             return None

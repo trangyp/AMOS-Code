@@ -9,7 +9,8 @@ import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Protocol
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional, Protocol
 
 from amos_brain.integrated_brain_api import (
     BrainResponse,
@@ -60,7 +61,7 @@ class BrainEventProcessor:
     ):
         self.brain = brain or get_brain_api()
         self.emitter = event_emitter
-        self._active_queries: dict[str, dict[str, Any]] = {}
+        self._active_queries: Dict[str, dict[str, Any]] = {}
 
     async def process_with_events(
         self,
@@ -248,7 +249,7 @@ class BrainEventProcessor:
         if self.emitter:
             await self.emitter.emit(event_type, payload, "brain")
 
-    def get_active_queries(self) -> dict[str, dict[str, Any]]:
+    def get_active_queries(self) -> Dict[str, dict[str, Any]]:
         """Get currently active queries."""
         return self._active_queries.copy()
 

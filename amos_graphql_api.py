@@ -50,7 +50,7 @@ Version: 2.3.0
 import asyncio
 from collections.abc import AsyncGenerator
 from datetime import datetime
-from typing import Any
+from typing import Any, List, Optional
 
 # Try to import Strawberry
 try:
@@ -191,7 +191,7 @@ if STRAWBERRY_AVAILABLE:
         terminated_at: datetime
 
         @strawberry.field
-        async def tasks(self, info: Info) -> list["Task"]:
+        async def tasks(self, info: Info) -> List["Task"]:
             """Get agent tasks."""
             # Use DataLoader to prevent N+1
             loader = info.context["task_loader"]
@@ -201,7 +201,7 @@ if STRAWBERRY_AVAILABLE:
         @strawberry.field
         async def memories(
             self, info: Info, memory_type: Optional[MemoryTypeEnum] = None
-        ) -> list["Memory"]:
+        ) -> List["Memory"]:
             """Get agent memories."""
             loader = info.context["memory_loader"]
             memories = await loader.load(self.id)

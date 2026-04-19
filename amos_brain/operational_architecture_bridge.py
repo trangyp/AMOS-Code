@@ -10,11 +10,9 @@ Provides API for:
 - Idempotency verification
 """
 
-from __future__ import annotations
-
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Import operational architecture engine
 try:
@@ -41,16 +39,16 @@ class OperationalArchitectureBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: OperationalArchitectureEngine | None = None
+        self._engine: Optional[OperationalArchitectureEngine] = None
 
     @property
-    def engine(self) -> OperationalArchitectureEngine | None:
+    def engine(self) -> Optional[OperationalArchitectureEngine]:
         """Lazy initialization of operational engine."""
         if self._engine is None and OPERATIONAL_AVAILABLE:
             self._engine = OperationalArchitectureEngine()
         return self._engine
 
-    def assess_operational_integrity(self) -> dict[str, Any]:
+    def assess_operational_integrity(self) -> Dict[str, Any]:
         """Perform comprehensive operational architecture assessment."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}
@@ -66,7 +64,7 @@ class OperationalArchitectureBridge:
         source_of_truth: str = None,
         ttl_seconds: int = None,
         staleness_bound_ms: int = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Validate cache configuration (I_cache)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}
@@ -111,15 +109,15 @@ class OperationalArchitectureBridge:
     def validate_fallback_topology(
         self,
         service_id: str,
-        levels: dict[str, list[str]],
-        triggers: dict[str, str] = None,
-    ) -> dict[str, Any]:
+        levels: Dict[str, list[str]],
+        triggers: Dict[str, str] = None,
+    ) -> Dict[str, Any]:
         """Validate fallback topology (I_fallback)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}
 
         # Parse levels
-        parsed_levels: dict[FallbackLevel, list[str]] = {}
+        parsed_levels: Dict[FallbackLevel, list[str]] = {}
         for level_str, features in levels.items():
             try:
                 level = FallbackLevel(level_str)
@@ -128,7 +126,7 @@ class OperationalArchitectureBridge:
                 return {"error": f"Invalid fallback level: {level_str}"}
 
         # Parse triggers
-        parsed_triggers: dict[str, FallbackLevel] = {}
+        parsed_triggers: Dict[str, FallbackLevel] = {}
         if triggers:
             for condition, level_str in triggers.items():
                 try:
@@ -191,7 +189,7 @@ class OperationalArchitectureBridge:
         dlq_enabled: bool = False,
         deduplication: bool = False,
         dedup_window_ms: int = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Validate queue configuration (I_queue)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}
@@ -240,7 +238,7 @@ class OperationalArchitectureBridge:
         idempotent: bool,
         key_extractor: str = None,
         storage_backend: str = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Validate idempotency configuration (I_idempotency)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}
@@ -271,7 +269,7 @@ class OperationalArchitectureBridge:
             "invariant": "I_idempotency",
         }
 
-    def get_operational_insights(self) -> dict[str, Any]:
+    def get_operational_insights(self) -> Dict[str, Any]:
         """Get operational architecture insights."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
             return {"error": "operational_engine not available"}

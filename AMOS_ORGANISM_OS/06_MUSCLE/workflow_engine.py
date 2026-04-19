@@ -8,7 +8,7 @@ from datetime import datetime
 from datetime import timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 UTC = timezone.utc
 
@@ -34,7 +34,7 @@ class WorkflowStep:
     error: str = ""
     start_time: str = ""
     end_time: str = ""
-    depends_on: list[str] = field(default_factory=list)
+    depends_on: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {**asdict(self), "status": self.status.value}
@@ -47,7 +47,7 @@ class Workflow:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    steps: list[WorkflowStep] = field(default_factory=list)
+    steps: List[WorkflowStep] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "draft"  # draft, running, completed, failed
     context: Dict[str, Any] = field(default_factory=dict)
@@ -57,7 +57,7 @@ class Workflow:
         name: str,
         action: str,
         params: Dict[str, Any] = None,
-        depends_on: list[str] = None,
+        depends_on: List[str] = None,
     ) -> WorkflowStep:
         """Add a step to the workflow."""
         step = WorkflowStep(
@@ -176,6 +176,6 @@ class WorkflowEngine:
         self._workflows[workflow_id] = workflow
         return workflow
 
-    def list_workflows(self) -> list[Workflow]:
+    def list_workflows(self) -> List[Workflow]:
         """List all workflows."""
         return list(self._workflows.values())

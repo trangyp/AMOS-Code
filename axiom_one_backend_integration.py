@@ -22,6 +22,7 @@ from axiom_one_code_generator import (
     TestGenerator,
 )
 from axiom_one_completion import CompletionEngine
+from typing import List
 
 # Canon integration for domain-aware code generation
 try:
@@ -47,7 +48,7 @@ class RealCodeIntelligence:
 
     async def complete_code(
         self, code_prefix: str, language: str = "python", domain: str = "general"
-    ) -> list[dict]:
+    ) -> List[dict]:
         """Real code completion using AST analysis with Canon context."""
         # Enrich with Canon context if available
         canon_context = {}

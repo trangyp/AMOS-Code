@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -19,7 +19,7 @@ class PluginInfo:
     author: str
     description: str
     entry_point: str
-    hooks: list[str] = field(default_factory=list)
+    hooks: List[str] = field(default_factory=list)
     enabled: bool = True
     loaded_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -30,7 +30,7 @@ class PluginHook:
 
     name: str
     description: str
-    callbacks: list[Callable] = field(default_factory=list)
+    callbacks: List[Callable] = field(default_factory=list)
 
 
 class AMOSPluginManager:
@@ -72,7 +72,7 @@ class AMOSPluginManager:
         }
         self.loaded_count = 0
 
-    def discover_plugins(self) -> list[Path]:
+    def discover_plugins(self) -> List[Path]:
         """Discover available plugins in plugin directory."""
         plugins = []
         for file_path in self.plugin_dir.glob("*.py"):
@@ -146,7 +146,7 @@ class AMOSPluginManager:
 
         return True
 
-    def execute_hook(self, hook_name: str, *args, **kwargs) -> list[Any]:
+    def execute_hook(self, hook_name: str, *args, **kwargs) -> List[Any]:
         """Execute all callbacks for a hook."""
         results = []
 
@@ -167,7 +167,7 @@ class AMOSPluginManager:
         """Get information about a plugin."""
         return self.plugins.get(plugin_name)
 
-    def list_plugins(self) -> list[PluginInfo]:
+    def list_plugins(self) -> List[PluginInfo]:
         """List all loaded plugins."""
         return list(self.plugins.values())
 

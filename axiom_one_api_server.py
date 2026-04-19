@@ -16,7 +16,7 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.resolve()
@@ -80,7 +80,7 @@ class WorkflowResponse(BaseModel):
     name: str
     description: str
     status: str
-    tasks: list[dict[str, Any]]
+    tasks: List[dict[str, Any]]
     created_at: str
     completed_at: str = None
 

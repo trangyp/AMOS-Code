@@ -82,7 +82,7 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 # Mock ClickHouse for demo
@@ -90,7 +90,7 @@ class MockClickHouse:
     """Mock ClickHouse client for demonstration."""
 
     def __init__(self):
-        self._data: dict[str, list[dict]] = {
+        self._data: Dict[str, list[dict]] = {
             "events_raw": [],
             "tenant_metrics_hourly": [],
             "agent_performance_daily": [],
@@ -634,7 +634,7 @@ class AnalyticsEngine:
             print(f"[AnalyticsEngine] Query failed: {e}")
             return []
 
-    async def query_custom(self, query: AnalyticsQuery) -> list[dict[str, Any]]:
+    async def query_custom(self, query: AnalyticsQuery) -> List[dict[str, Any]]:
         """Execute custom analytics query.
 
         Args:

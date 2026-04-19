@@ -112,7 +112,7 @@ class ImmuneSystem:
         self._policies: List[SafetyPolicy] = []
         self._audit_logs: List[AuditLog] = []
         self._threat_history: List[dict] = []
-        self._validators: dict[ActionType, Callable] = {}
+        self._validators: Dict[ActionType, Callable] = {}
         self.AUDIT_DIR.mkdir(parents=True, exist_ok=True)
         self._setup_default_policies()
         self._register_validators()

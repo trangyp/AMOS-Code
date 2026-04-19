@@ -6,8 +6,9 @@ import ast
 import os
 import sys
 from amos_brain_working import think
+from typing import Tuple
 
-def check_syntax(filepath: str) -> tuple[bool, str]:
+def check_syntax(filepath: str) -> Tuple[bool, str]:
     """Check if file has valid syntax."""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:

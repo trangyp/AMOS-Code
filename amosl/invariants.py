@@ -4,6 +4,7 @@ Validates the 8 invariant laws across all substrates.
 """
 
 from .ast_nodes import Program
+from typing import List, Tuple
 
 
 class InvariantViolation(Exception):
@@ -164,7 +165,7 @@ class InvariantChecker:
             )
 
 
-def validate_invariants(program: Program) -> tuple[bool, list[str]]:
+def validate_invariants(program: Program) -> Tuple[bool, list[str]]:
     """Validate all AMOSL invariants.
 
     Returns (success, violations).

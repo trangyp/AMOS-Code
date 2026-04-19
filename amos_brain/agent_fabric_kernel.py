@@ -13,6 +13,7 @@ import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import StrEnum
 from typing import Any
 
@@ -234,8 +235,8 @@ class AgentRun:
     """Single agent execution context."""
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:16])
-    agent: AgentIdentity | None = None
-    task: AgentTask | None = None
+    agent: Optional[AgentIdentity] = None
+    task: Optional[AgentTask] = None
     budget: AgentBudget = field(default_factory=AgentBudget)
     permissions: AgentPermissions = field(default_factory=AgentPermissions)
     phase: str = AgentRunPhase.OBSERVE
@@ -473,7 +474,7 @@ class AgentFabricKernel:
         self,
         agent_class: str,
         authorized_by: str,
-        custom_permissions: AgentPermissions | None = None,
+        custom_permissions: Optional[AgentPermissions] = None,
     ) -> AgentIdentity:
         """Register new agent with class-defined permissions."""
 
@@ -772,11 +773,11 @@ class AgentFabricKernel:
 
         return receipt
 
-    def get_run(self, run_id: str) -> AgentRun | None:
+    def get_run(self, run_id: str) -> Optional[AgentRun]:
         """Get agent run by ID."""
         return self._runs.get(run_id)
 
-    def get_receipt(self, run_id: str) -> AgentReceipt | None:
+    def get_receipt(self, run_id: str) -> Optional[AgentReceipt]:
         """Get receipt for completed run."""
         for receipt in self._receipts:
             if receipt.run_id == run_id:
@@ -797,7 +798,7 @@ class AgentFabricKernel:
 
 
 # Global kernel instance
-_agent_fabric_kernel: AgentFabricKernel | None = None
+_agent_fabric_kernel: Optional[AgentFabricKernel] = None
 
 
 def get_agent_fabric_kernel() -> AgentFabricKernel:

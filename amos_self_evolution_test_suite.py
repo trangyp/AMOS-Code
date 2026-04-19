@@ -12,8 +12,9 @@ import tempfile
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 import hashlib
 import json
 
@@ -43,7 +44,7 @@ class SafetyReport:
 class EvolutionSafetyChecker(Protocol):
     """Protocol for evolution safety validators."""
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         """Return (passed, violations)."""
         ...
 
@@ -51,7 +52,7 @@ class EvolutionSafetyChecker(Protocol):
 class SyntaxValidator:
     """Validate generated code syntax."""
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         code = context.get("proposed_code", "")
         if not code:
             return False, ["No code provided"]
@@ -77,7 +78,7 @@ class ImportSafetyValidator:
         "__import__", "importlib", "sys.modules"
     }
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         code = context.get("proposed_code", "")
         violations = []
 
@@ -91,7 +92,7 @@ class ImportSafetyValidator:
 class BehavioralConsistencyValidator:
     """Validate behavior matches specification."""
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         spec = context.get("specification", {})
         if not spec:
             return True, []  # No spec to validate against
@@ -112,7 +113,7 @@ class BehavioralConsistencyValidator:
 class SemanticDriftValidator:
     """Validate semantic consistency with original."""
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         original_hash = context.get("original_hash")
         proposed_code = context.get("proposed_code", "")
 
@@ -134,7 +135,7 @@ class SemanticDriftValidator:
 
         return len(violations) == 0, violations
 
-    def _extract_fingerprint(self, code: str) -> dict[str, str]:
+    def _extract_fingerprint(self, code: str) -> Dict[str, str]:
         """Extract function signatures from code."""
         fingerprint = {}
         for line in code.split("\n"):
@@ -149,7 +150,7 @@ class SemanticDriftValidator:
 class TestCoverageValidator:
     """Validate tests exist and pass for evolved code."""
 
-    async def validate(self, context: Dict[str, Any]) -> tuple[bool, list[str]]:
+    async def validate(self, context: Dict[str, Any]) -> Tuple[bool, list[str]]:
         test_code = context.get("test_code", "")
 
         if not test_code:
@@ -248,7 +249,7 @@ class SelfEvolutionTestSuite:
 
         return report
 
-    def _extract_fingerprint(self, code: str) -> dict[str, str]:
+    def _extract_fingerprint(self, code: str) -> Dict[str, str]:
         """Extract semantic fingerprint from code."""
         fingerprint = {}
         for line in code.split("\n"):
@@ -305,7 +306,6 @@ class SelfEvolutionTestSuite:
 
             # Attempt import (catches many runtime errors)
             import importlib.util
-from typing import Final, Protocol
             spec = importlib.util.spec_from_file_location(
                 f"evolution_{context.evolution_id}",
                 test_file

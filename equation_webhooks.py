@@ -14,6 +14,7 @@ import hmac
 import json
 import secrets
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 
 from pydantic import BaseModel, Field, HttpUrl
@@ -260,6 +261,7 @@ Usage in FastAPI routes:
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 

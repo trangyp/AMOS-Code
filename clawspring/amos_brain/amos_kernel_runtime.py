@@ -8,8 +8,6 @@ This module provides the concrete implementation of:
 Architecture: Observe → Update → Generate → Simulate → Filter → Collapse → Execute
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import math
@@ -17,8 +15,9 @@ from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 # ============================================================================
 # Core AMOS Data Structures
@@ -29,10 +28,10 @@ from typing import Any
 class StateGraph:
     """U_t = (V_t, E_t, S_t, Λ_t) - Universal state graph at time t."""
 
-    vertices: set[str] = field(default_factory=set)
-    edges: dict[tuple[str, str], dict[str, Any]] = field(default_factory=dict)
-    state_vars: dict[str, float] = field(default_factory=dict)
-    active_laws: set[str] = field(default_factory=set)
+    vertices: Set[str] = field(default_factory=set)
+    edges: Dict[tuple[str, str], dict[str, Any]] = field(default_factory=dict)
+    state_vars: Dict[str, float] = field(default_factory=dict)
+    active_laws: Set[str] = field(default_factory=set)
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def compute_hash(self) -> str:
@@ -66,7 +65,7 @@ class StateVariables:
     omega: float = 0.0  # Ω: Uncertainty/entropy
     kappa: float = 1.0  # K: Knowledge/confidence
     phi: float = 1.0  # Φ: Coherence score
-    invariants: list[Invariant] = field(default_factory=list)  # I: Active constraints
+    invariants: List[Invariant] = field(default_factory=list)  # I: Active constraints
     state_hash: str = ""  # S: Canonical representation
 
     @property
@@ -105,7 +104,7 @@ class LegalityAssessment:
     is_legal: bool
     legality_score: float
     drift_coefficient: float
-    violations: list[LawViolation]
+    violations: List[LawViolation]
     required_mode: OperatingMode
 
 
@@ -141,10 +140,10 @@ class Morph:
     id: str
     target: str
     operation: str
-    scope: dict[str, Any] = field(default_factory=dict)
-    preconditions: list[str] = field(default_factory=list)
-    postconditions: list[str] = field(default_factory=list)
-    rollback_fn: Callable[[], None] | None = None
+    scope: Dict[str, Any] = field(default_factory=dict)
+    preconditions: List[str] = field(default_factory=list)
+    postconditions: List[str] = field(default_factory=list)
+    rollback_fn: Optional[Callable[[], None]] = None
     estimated_cost: float = 1.0
     risk: float = 0.1
 
@@ -156,9 +155,9 @@ class Branch:
     id: str
     source_state: StateGraph
     target_state: StateGraph
-    morphs: list[Morph] = field(default_factory=list)
-    scores: AMOSScores | None = None
-    legality: LegalityAssessment | None = None
+    morphs: List[Morph] = field(default_factory=list)
+    scores: Optional[AMOSScores] = None
+    legality: Optional[LegalityAssessment] = None
 
 
 # ============================================================================
@@ -183,7 +182,7 @@ class BrainKernel:
     """
 
     def __init__(self):
-        self.invariant_registry: dict[str, Invariant] = {}
+        self.invariant_registry: Dict[str, Invariant] = {}
         self._register_default_invariants()
 
     def _register_default_invariants(self) -> None:
@@ -201,7 +200,7 @@ class BrainKernel:
             priority=2,
         )
 
-    def ingest(self, observation: dict[str, Any]) -> StateGraph:
+    def ingest(self, observation: Dict[str, Any]) -> StateGraph:
         """
         Stage 1: Ingest current state into U_t.
 
@@ -318,8 +317,8 @@ class BrainKernel:
         )
 
     def generate_branches(
-        self, U_t: StateGraph, assessment: LegalityAssessment, goal: dict[str, Any]
-    ) -> list[Branch]:
+        self, U_t: StateGraph, assessment: LegalityAssessment, goal: Dict[str, Any]
+    ) -> List[Branch]:
         """
         Stage 4: Generate candidate branches.
 
@@ -351,10 +350,10 @@ class BrainKernel:
         self,
         branch_id: str,
         U_t: StateGraph,
-        goal: dict[str, Any],
+        goal: Dict[str, Any],
         risk_aversion: float,
         exploration: float,
-    ) -> Branch | None:
+    ) -> Optional[Branch]:
         """Create a single candidate branch."""
         # Generate target state
         target = deepcopy(U_t)
@@ -385,7 +384,7 @@ class BrainKernel:
 
     def _generate_morphs(
         self, source: StateGraph, target: StateGraph, risk_aversion: float
-    ) -> list[Morph]:
+    ) -> List[Morph]:
         """Generate morphs to transform source to target."""
         morphs = []
 
@@ -409,8 +408,8 @@ class BrainKernel:
         return morphs
 
     def simulate(
-        self, branches: list[Branch], U_t: StateGraph, goal: dict[str, Any]
-    ) -> list[Branch]:
+        self, branches: List[Branch], U_t: StateGraph, goal: Dict[str, Any]
+    ) -> List[Branch]:
         """
         Stage 5: Simulate each branch.
 
@@ -457,7 +456,7 @@ class BrainKernel:
 
         return scored_branches
 
-    def pass_to_collapse(self, branches: list[Branch]) -> list[Branch]:
+    def pass_to_collapse(self, branches: List[Branch]) -> List[Branch]:
         """
         Stage 6: Pass lawful branches to collapse.
 
@@ -488,7 +487,7 @@ class CollapseKernel:
     IS:  "constrained optimization over legal branches"
     """
 
-    def receive_branches(self, branches: list[Branch]) -> list[Branch]:
+    def receive_branches(self, branches: List[Branch]) -> List[Branch]:
         """
         Stage 1: Receive simulated branch field.
 
@@ -500,7 +499,7 @@ class CollapseKernel:
                 validated.append(b)
         return validated
 
-    def apply_collapse_function(self, branches: list[Branch]) -> Branch | None:
+    def apply_collapse_function(self, branches: List[Branch]) -> Optional[Branch]:
         """
         Stage 2: Apply lawful collapse.
 
@@ -529,7 +528,7 @@ class CollapseKernel:
         best = max(feasible, key=lambda b: b.scores.composite)
         return best
 
-    def validate_selection(self, selected: Branch, candidates: list[Branch]) -> bool:
+    def validate_selection(self, selected: Branch, candidates: List[Branch]) -> bool:
         """
         Stage 3: Verify selection.
 
@@ -537,7 +536,7 @@ class CollapseKernel:
         """
         return selected in candidates
 
-    def emit_to_cascade(self, B_star: Branch) -> dict[str, Any]:
+    def emit_to_cascade(self, B_star: Branch) -> Dict[str, Any]:
         """
         Stage 4: Emit B* to Cascade.
 
@@ -569,9 +568,9 @@ class CascadeKernel:
     """
 
     def __init__(self):
-        self.execution_log: list[dict[str, Any]] = []
+        self.execution_log: List[dict[str, Any]] = []
 
-    def accept_branch(self, cascade_input: dict[str, Any]) -> list[Morph]:
+    def accept_branch(self, cascade_input: Dict[str, Any]) -> List[Morph]:
         """
         Stage 1: Accept B* from Collapse.
 
@@ -580,7 +579,7 @@ class CascadeKernel:
         branch = cascade_input.get("branch")
         return branch.morphs if branch else []
 
-    def normalize(self, morphs: list[Morph]) -> list[Morph]:
+    def normalize(self, morphs: List[Morph]) -> List[Morph]:
         """
         Stage 2: Normalize morphs.
 
@@ -605,7 +604,7 @@ class CascadeKernel:
             )
         return normalized
 
-    def check(self, normalized: list[Morph], current_state: StateGraph) -> bool:
+    def check(self, normalized: List[Morph], current_state: StateGraph) -> bool:
         """
         Stage 3: Check preconditions.
 
@@ -617,7 +616,7 @@ class CascadeKernel:
                     return False
         return True
 
-    def stage(self, normalized: list[Morph]) -> dict[str, Any]:
+    def stage(self, normalized: List[Morph]) -> Dict[str, Any]:
         """
         Stage 4: Stage execution.
 
@@ -629,7 +628,7 @@ class CascadeKernel:
             "staged_at": datetime.now(timezone.utc).isoformat(),
         }
 
-    def snapshot(self, staged: dict[str, Any], current_state: StateGraph) -> dict[str, Any]:
+    def snapshot(self, staged: Dict[str, Any], current_state: StateGraph) -> Dict[str, Any]:
         """
         Stage 5: Create rollback snapshot.
 
@@ -641,7 +640,7 @@ class CascadeKernel:
             "snapshot_at": datetime.now(timezone.utc).isoformat(),
         }
 
-    def apply(self, snapshot: dict[str, Any]) -> StateGraph:
+    def apply(self, snapshot: Dict[str, Any]) -> StateGraph:
         """
         Stage 6: Apply morphs.
 
@@ -691,7 +690,7 @@ class CascadeKernel:
         verified.timestamp = datetime.now(timezone.utc)
         return verified
 
-    def rollback(self, snapshot: dict[str, Any], reason: str) -> StateGraph:
+    def rollback(self, snapshot: Dict[str, Any], reason: str) -> StateGraph:
         """
         Rollback Handler.
 
@@ -722,7 +721,7 @@ class ConstitutionGate:
     def __init__(self, threshold: float = 0.5):
         self.threshold = threshold
 
-    def admit(self, proposal: Any, context: StateGraph) -> dict[str, Any]:
+    def admit(self, proposal: Any, context: StateGraph) -> Dict[str, Any]:
         """
         Check proposal against constitution.
 
@@ -781,7 +780,7 @@ class AMOSKernelRuntime:
         self.cascade = CascadeKernel()
         self.constitution = ConstitutionGate()
 
-    def execute_cycle(self, observation: dict[str, Any], goal: dict[str, Any]) -> dict[str, Any]:
+    def execute_cycle(self, observation: Dict[str, Any], goal: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute full AMOS cycle.
 
@@ -874,7 +873,7 @@ class AMOSKernelRuntime:
 
 
 # Singleton instance
-_kernel_runtime: AMOSKernelRuntime | None = None
+_kernel_runtime: Optional[AMOSKernelRuntime] = None
 
 
 def get_kernel_runtime() -> AMOSKernelRuntime:

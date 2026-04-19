@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class StrategyDomain(Enum):
@@ -47,7 +47,7 @@ class NormalFormKernel:
         return player
 
     def nash_equilibrium_check_2x2(
-        self, payoff_matrix_a: list[list[float]], payoff_matrix_b: list[list[float]]
+        self, payoff_matrix_a: List[list[float]], payoff_matrix_b: List[list[float]]
     ) -> dict:
         """Check for pure strategy Nash equilibrium in 2x2 game."""
         # Simplified check: find best responses
@@ -72,7 +72,7 @@ class NormalFormKernel:
             "equilibria": equilibria,
         }
 
-    def dominant_strategy_check(self, payoffs: list[list[float]]) -> dict:
+    def dominant_strategy_check(self, payoffs: List[list[float]]) -> dict:
         """Check for dominant strategy."""
         if len(payoffs) < 2:
             return {"error": "Need at least 2 strategies"}
@@ -314,8 +314,6 @@ _strategy_game_engine: Optional[StrategyGameEngine] = None
 
 def get_strategy_game_engine() -> StrategyGameEngine:
     """Get or create the Strategy Game Engine singleton."""
-from __future__ import annotations
-
     global _strategy_game_engine
     if _strategy_game_engine is None:
         _strategy_game_engine = StrategyGameEngine()

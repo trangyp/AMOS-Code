@@ -6,7 +6,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -28,7 +28,7 @@ class SystemState:
 
     # Organism state
     organism_initialized: bool = False
-    subsystems_active: list[str] = field(default_factory=list)
+    subsystems_active: List[str] = field(default_factory=list)
 
     # Knowledge state
     knowledge_files_loaded: int = 0
@@ -72,7 +72,7 @@ class AMOSStateManager:
         self.state_dir.mkdir(exist_ok=True)
 
         self.current_state = SystemState()
-        self.snapshots: list[StateSnapshot] = []
+        self.snapshots: List[StateSnapshot] = []
         self.max_snapshots = 10
 
         # File paths
@@ -138,7 +138,7 @@ class AMOSStateManager:
                 return True
         return False
 
-    def list_snapshots(self) -> list[dict[str, Any]]:
+    def list_snapshots(self) -> List[dict[str, Any]]:
         """List all available snapshots."""
         return [
             {

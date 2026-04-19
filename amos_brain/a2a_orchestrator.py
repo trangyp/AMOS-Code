@@ -15,8 +15,12 @@ import threading
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
+
+from amos_brain import get_super_brain
+from amos_brain.tools_extended import calculate
 
 
 class TaskState(Enum):
@@ -45,7 +49,7 @@ class AgentCard:
     description: str
     version: str
     capabilities: List[str]
-    skills: list[dict[str, Any]]
+    skills: List[dict[str, Any]]
     endpoint: str
     authentication: Dict[str, Any] = field(default_factory=dict)
 
@@ -109,8 +113,8 @@ class A2ATask:
     """
     id: str
     state: TaskState
-    messages: list[A2AMessage]
-    artifacts: list[dict[str, Any]]
+    messages: List[A2AMessage]
+    artifacts: List[dict[str, Any]]
     created_at: datetime
     updated_at: datetime
     assigned_agent: str  = None
@@ -189,7 +193,7 @@ class A2AAgent:
             skills=[{"name": c, "description": f"Can perform {c}"} for c in capabilities],
             endpoint=f"/a2a/agents/{name.lower().replace(' ', '-')}",
         )
-        self.tasks: dict[str, A2ATask] = {}
+        self.tasks: Dict[str, A2ATask] = {}
         self._lock = threading.Lock()
 
     def get_card(self) -> AgentCard:
@@ -240,7 +244,6 @@ class AMOSSuperBrainAgent(A2AAgent):
 
     def __init__(self, brain=None):
         """Initialize with SuperBrain instance."""
-        from amos_brain import get_super_brain
 
         self.brain = brain or get_super_brain()
         state = self.brain.get_state()
@@ -292,9 +295,6 @@ class AMOSSuperBrainAgent(A2AAgent):
         msg_lower = message.lower()
 
         if "calculate" in msg_lower or any(c.isdigit() for c in message):
-            from amos_brain.tools_extended import calculate
-from typing import Callable, List, Optional, Protocol
-from typing import Dict
             expr = message.replace("calculate", "").strip()
             result = calculate(expr)
             return f"Calculation result: {result}"
@@ -330,8 +330,8 @@ class A2AHostAgent:
 
     def __init__(self):
         """Initialize host agent."""
-        self.agents: dict[str, A2AAgent] = {}
-        self.tasks: dict[str, A2ATask] = {}
+        self.agents: Dict[str, A2AAgent] = {}
+        self.tasks: Dict[str, A2ATask] = {}
         self._lock = threading.Lock()
 
     def register_agent(self, agent: A2AAgent) -> bool:

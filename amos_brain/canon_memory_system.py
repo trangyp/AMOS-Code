@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any
 
 from .canon_knowledge_engine import get_canon_knowledge_engine, CanonKnowledgeEntry
@@ -61,7 +62,7 @@ class CanonMemorySystem:
         self,
         content: str,
         domain: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: Optional[dict[str, Any] ] = None,
     ) -> CanonMemory:
         """Store a memory with Canon context.
 
@@ -109,7 +110,7 @@ class CanonMemorySystem:
 
         return memory
 
-    def retrieve(self, memory_id: str) -> CanonMemory | None:
+    def retrieve(self, memory_id: str) -> Optional[CanonMemory]:
         """Retrieve a memory by ID."""
         if not self._initialized:
             self.initialize()
@@ -119,7 +120,7 @@ class CanonMemorySystem:
             memory.access_count += 1
         return memory
 
-    def search(self, query: str, domain: str | None = None) -> list[CanonMemory]:
+    def search(self, query: str, domain: Optional[str] = None) -> list[CanonMemory]:
         """Search memories with Canon-enhanced relevance.
 
         Args:
@@ -260,7 +261,7 @@ class CanonMemorySystem:
 
 
 # Global instance
-_canon_memory_system: CanonMemorySystem | None = None
+_canon_memory_system: Optional[CanonMemorySystem] = None
 
 
 def get_canon_memory_system() -> CanonMemorySystem:
@@ -272,13 +273,13 @@ def get_canon_memory_system() -> CanonMemorySystem:
     return _canon_memory_system
 
 
-def canon_store(content: str, domain: str, metadata: dict | None = None) -> CanonMemory:
+def canon_store(content: str, domain: str, metadata: Optional[dict] = None) -> CanonMemory:
     """Store memory with Canon context - convenience function."""
     system = get_canon_memory_system()
     return system.store(content, domain, metadata)
 
 
-def canon_search(query: str, domain: str | None = None) -> list[CanonMemory]:
+def canon_search(query: str, domain: Optional[str] = None) -> list[CanonMemory]:
     """Search memories with Canon enhancement - convenience function."""
     system = get_canon_memory_system()
     return system.search(query, domain)

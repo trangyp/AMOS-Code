@@ -14,6 +14,7 @@ All backends capture raw PCM: 16 kHz, 16-bit signed little-endian, mono.
 import shutil
 import subprocess
 import threading
+from typing import List, Tuple
 
 SAMPLE_RATE = 16000
 CHANNELS = 1

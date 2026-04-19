@@ -37,7 +37,7 @@ Environment Variables:
 import os
 import secrets
 import uuid
-from typing import Any
+from typing import Any, Dict
 
 try:
     from fastapi import Request, Response
@@ -59,7 +59,7 @@ def generate_nonce() -> str:
     return secrets.token_urlsafe(16)
 
 
-def get_security_headers(csp_nonce: str = None) -> dict[str, str]:
+def get_security_headers(csp_nonce: str = None) -> Dict[str, str]:
     """Generate security headers dictionary.
 
     Args:

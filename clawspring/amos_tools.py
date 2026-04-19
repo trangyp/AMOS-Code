@@ -11,7 +11,7 @@ Version: 2.0.0
 
 from datetime import datetime
 from functools import wraps
-from typing import Any
+from typing import Any, Dict
 
 from tool_registry import ToolDef, register_tool
 

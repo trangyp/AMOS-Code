@@ -1,5 +1,3 @@
-from typing import Any
-
 """
 Fast Document Reader Runtime.
 ==============================
@@ -28,6 +26,7 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 # ============================================================================
 # Stage 1: Format Detection
@@ -49,11 +48,11 @@ class FormatSignature:
     """Immutable signature for format detection."""
 
     extension: str
-    mime_hint: str | None = None
-    header_bytes: bytes | None = None
+    mime_hint: Optional[str] = None
+    header_bytes: Optional[bytes] = None
 
 
-def detect_format(file_path: Path, header_bytes: bytes | None = None) -> DocumentFormat:
+def detect_format(file_path: Path, header_bytes: Optional[bytes] = None) -> DocumentFormat:
     """Fast format detection based on extension and optional header bytes."""
     ext = file_path.suffix.lower()
 
@@ -154,7 +153,7 @@ class QuickIndexer:
     }
 
     @classmethod
-    def build_index(cls, file_path: Path, content: str | None = None) -> DocumentIndex:
+    def build_index(cls, file_path: Path, content: Optional[str] = None) -> DocumentIndex:
         """Build quick index in <200ms target."""
         start_time = time.perf_counter()
 
@@ -372,7 +371,7 @@ class DocumentCacheEntry:
 class DocumentCache:
     """Persistent document cache with LRU eviction."""
 
-    def __init__(self, cache_dir: Path | None = None, max_entries: int = 100):
+    def __init__(self, cache_dir: Optional[Path] = None, max_entries: int = 100):
         self.cache_dir = cache_dir or Path.home() / ".cache" / "fast_document_reader"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.max_entries = max_entries
@@ -381,7 +380,7 @@ class DocumentCache:
         self._lock = threading.RLock()
         self._access_order: List[str] = []  # LRU tracking
 
-    def get(self, file_path: Path) -> DocumentCacheEntry | None:
+    def get(self, file_path: Path) -> Optional[DocumentCacheEntry]:
         """Get cached entry if valid."""
         cache_key = self._get_cache_key(file_path)
 
@@ -473,7 +472,7 @@ class DocumentCache:
         except Exception as e:
             print(f"[cache] Failed to save {cache_key}: {e}")
 
-    def _load_from_disk(self, cache_key: str) -> DocumentCacheEntry | None:
+    def _load_from_disk(self, cache_key: str) -> Optional[DocumentCacheEntry]:
         """Load entry from disk cache."""
         cache_file = self.cache_dir / f"{cache_key}.pkl"
         try:
@@ -505,7 +504,7 @@ class QueryPlan:
 
     query_class: QueryClass
     needs_deep_parse: bool
-    target_sections: list[int] | None = None  # Section indices to read
+    target_sections: Optional[list[int] ] = None  # Section indices to read
     target_lines: Tuple[int, int] = None  # Line range to read
     use_semantic: bool = False
     verify_result: bool = False
@@ -837,7 +836,7 @@ class FastDocumentReader:
     Never: Open → ParseEverything → UnderstandEverything → Answer
     """
 
-    def __init__(self, cache_dir: Path | None = None):
+    def __init__(self, cache_dir: Optional[Path] = None):
         self.cache = DocumentCache(cache_dir)
         self.indexer = QuickIndexer()
         self.router = QueryRouter()
@@ -1003,10 +1002,10 @@ class FastDocumentReader:
 # Convenience Functions
 # ============================================================================
 
-_global_reader: FastDocumentReader | None = None
+_global_reader: Optional[FastDocumentReader] = None
 
 
-def get_reader(cache_dir: Path | None = None) -> FastDocumentReader:
+def get_reader(cache_dir: Optional[Path] = None) -> FastDocumentReader:
     """Get or create global reader instance."""
     global _global_reader
     if _global_reader is None:

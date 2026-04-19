@@ -13,6 +13,7 @@ Design principles:
 
 
 from datetime import datetime
+from typing import Any, List
 
 MIN_MESSAGES_TO_CONSOLIDATE = 8  # don't consolidate trivial sessions
 
@@ -63,7 +64,6 @@ def consolidate_session(messages: list, config: dict) -> List[str]:
         from providers import AssistantTurn, stream
 
         from .store import MemoryEntry, check_conflict, save_memory
-from typing import List
 
         # Build condensed transcript from the last 40 messages (≈ 20 turns)
         recent = messages[-40:]

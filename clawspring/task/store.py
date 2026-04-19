@@ -4,7 +4,7 @@ import json
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 from .types import Task, TaskStatus
 
@@ -100,7 +100,7 @@ def update_task(
     add_blocks: List[str] = None,
     add_blocked_by: List[str] = None,
     metadata: Dict[str, Any] = None,
-) -> tuple[Task, list[str]]:
+) -> Tuple[Task, list[str]]:
     """Update a task. Returns (updated_task, list_of_updated_fields)."""
     with _lock:
         _load()

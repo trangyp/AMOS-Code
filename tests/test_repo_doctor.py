@@ -12,8 +12,9 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from repo_doctor import (
 from typing import List
+
+from .ast_nodes import (
     InvariantEngine,
     RepoStateVector,
     SensorResult,

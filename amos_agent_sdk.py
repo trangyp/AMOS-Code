@@ -18,7 +18,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class SDKAgentStatus(Enum):
@@ -84,7 +84,7 @@ class TaskResult:
 
     # Output
     output_data: Dict[str, Any] = field(default_factory=dict)
-    artifacts: list[dict[str, Any]] = field(default_factory=list)
+    artifacts: List[dict[str, Any]] = field(default_factory=list)
 
     # Metadata
     execution_time_ms: float = 0.0
@@ -194,7 +194,7 @@ class AMOSAgent:
         self.client = SimpleAMOSClient(config.amos_endpoint, config.api_key)
 
         # Handlers
-        self.handlers: dict[str, Callable[[TaskRequest], Awaitable[TaskResult]]] = {}
+        self.handlers: Dict[str, Callable[[TaskRequest], Awaitable[TaskResult]]] = {}
         self.tools: Dict[str, ToolDefinition] = {}
 
         # State

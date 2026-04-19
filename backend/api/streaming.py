@@ -13,7 +13,7 @@ import json
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -25,7 +25,7 @@ class ConnectionManager:
     """Manages WebSocket connections for streaming."""
 
     def __init__(self):
-        self.active_connections: dict[str, set] = {
+        self.active_connections: Dict[str, set] = {
             "superbrain": set(),
             "world_model": set(),
             "governance": set(),
@@ -44,7 +44,7 @@ class ConnectionManager:
         if stream_type in self.active_connections:
             self.active_connections[stream_type].discard(websocket)
 
-    async def broadcast(self, stream_type: str, message: dict[str, Any]):
+    async def broadcast(self, stream_type: str, message: Dict[str, Any]):
         """Broadcast message to all connections of a stream type."""
         if stream_type not in self.active_connections:
             return
@@ -267,7 +267,7 @@ async def knowledge_stream(websocket: WebSocket):
 
 
 @router.post("/broadcast/{stream_type}")
-async def broadcast_event(stream_type: str, event: dict[str, Any]):
+async def broadcast_event(stream_type: str, event: Dict[str, Any]):
     """
     Broadcast an event to all connected clients of a stream type.
 
@@ -315,7 +315,7 @@ async def get_streaming_status():
 # ============================================================================
 
 
-async def emit_superbrain_event(event_type: str, payload: dict[str, Any]):
+async def emit_superbrain_event(event_type: str, payload: Dict[str, Any]):
     """
     Emit an event from SuperBrain to the streaming layer.
 

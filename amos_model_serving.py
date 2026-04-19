@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 
 class ServingMode(Enum):
@@ -112,7 +112,7 @@ class PredictionResponse:
     timestamp: float = field(default_factory=time.time)
 
     # Explanation (if enabled)
-    explanation: dict[str, Any] = None
+    explanation: Dict[str, Any] = None
 
 
 @dataclass
@@ -123,7 +123,7 @@ class ModelEnsemble:
     name: str
 
     # Models in ensemble
-    models: list[dict[str, Any]] = field(default_factory=list)
+    models: List[dict[str, Any]] = field(default_factory=list)
 
     # Aggregation method
     aggregation: str = "weighted_average"  # weighted_average, voting, stacking
@@ -161,7 +161,7 @@ class AMOSModelServing:
         self.responses: Dict[str, PredictionResponse] = {}
 
         # Performance tracking
-        self.endpoint_metrics: dict[str, dict[str, Any]] = {}
+        self.endpoint_metrics: Dict[str, dict[str, Any]] = {}
 
     async def initialize(self) -> None:
         """Initialize model serving."""
@@ -291,7 +291,7 @@ class AMOSModelServing:
         self,
         endpoint_id: str,
         inputs: Dict[str, Any],
-        feature_values: dict[str, Any] = None,
+        feature_values: Dict[str, Any] = None,
         timeout_ms: int = 5000,
     ) -> PredictionResponse:
         """Make a prediction request."""
@@ -383,7 +383,7 @@ class AMOSModelServing:
             return {"prediction": "result", "version": model_version}
 
     async def batch_predict(
-        self, endpoint_id: str, batch_inputs: list[dict[str, Any]]
+        self, endpoint_id: str, batch_inputs: List[dict[str, Any]]
     ) -> List[PredictionResponse]:
         """Batch prediction."""
         responses = []
@@ -397,9 +397,9 @@ class AMOSModelServing:
     def create_ensemble(
         self,
         name: str,
-        models: list[dict[str, Any]],
+        models: List[dict[str, Any]],
         aggregation: str = "weighted_average",
-        weights: list[float] = None,
+        weights: List[float] = None,
     ) -> str:
         """Create a model ensemble."""
         ensemble_id = f"ens_{uuid.uuid4().hex[:8]}"

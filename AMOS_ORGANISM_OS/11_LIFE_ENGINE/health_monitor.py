@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class HealthStatus(Enum):
@@ -93,10 +93,10 @@ class HealthMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.metrics: dict[str, list[HealthMetric]] = {}
+        self.metrics: Dict[str, list[HealthMetric]] = {}
         self.healing_actions: Dict[str, HealingAction] = {}
-        self.healing_log: list[dict[str, Any]] = []
-        self.health_history: list[dict[str, Any]] = []
+        self.healing_log: List[dict[str, Any]] = []
+        self.health_history: List[dict[str, Any]] = []
 
         self._init_default_metrics()
 

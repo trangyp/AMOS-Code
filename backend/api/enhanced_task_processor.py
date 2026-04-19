@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Enhanced Task Processor with AMOS Brain Integration.
 
 Processes tasks using AMOS cognitive architecture for intelligent
 routing, execution, and error recovery.
 """
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -29,7 +27,7 @@ for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_
 router = APIRouter(prefix="/api/v1/enhanced-tasks", tags=["Enhanced Tasks"])
 
 # Lazy imports for brain components
-_brain_available: bool | None = None
+_brain_available: Optional[bool] = None
 _kernel_class: Any = None
 
 
@@ -78,11 +76,11 @@ class TaskRequest(BaseModel):
     """Request to process a task."""
 
     task_type: TaskType
-    payload: dict[str, Any] = Field(default_factory=dict)
+    payload: Dict[str, Any] = Field(default_factory=dict)
     priority: TaskPriority = TaskPriority.NORMAL
     use_brain: bool = Field(default=True, description="Use AMOS brain for processing")
     timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskResult(BaseModel):
@@ -92,8 +90,8 @@ class TaskResult(BaseModel):
     result: Any
     processing_time_ms: float
     brain_enhanced: bool
-    cognitive_score: float | None = None
-    error_message: str | None = None
+    cognitive_score: Optional[float] = None
+    error_message: Optional[str] = None
 
 
 class TaskResponse(BaseModel):
@@ -101,7 +99,7 @@ class TaskResponse(BaseModel):
 
     task_id: str
     status: str
-    result: TaskResult | None = None
+    result: Optional[TaskResult] = None
     timestamp: str
 
 
@@ -113,7 +111,7 @@ class TaskResponse(BaseModel):
 class BaseTaskProcessor:
     """Base class for task processors."""
 
-    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         """Process the task payload."""
         raise NotImplementedError
 
@@ -121,7 +119,7 @@ class BaseTaskProcessor:
 class CodeAnalysisProcessor(BaseTaskProcessor):
     """Analyze code using cognitive patterns."""
 
-    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         code = payload.get("code", "")
         language = payload.get("language", "python")
 
@@ -148,7 +146,7 @@ class CodeAnalysisProcessor(BaseTaskProcessor):
 class EquationExecutionProcessor(BaseTaskProcessor):
     """Execute equations with error handling."""
 
-    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         equation_name = payload.get("equation", "")
         params = payload.get("parameters", {})
 
@@ -175,7 +173,7 @@ class EquationExecutionProcessor(BaseTaskProcessor):
 class CognitiveReasoningProcessor(BaseTaskProcessor):
     """Use AMOS brain for cognitive reasoning tasks."""
 
-    async def process(self, payload: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
+    async def process(self, payload: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
         if not _check_brain():
             return {"error": "AMOS Brain not available", "brain_enhanced": False}
 
@@ -211,7 +209,7 @@ class CognitiveReasoningProcessor(BaseTaskProcessor):
 # Task Router
 # ============================================================================
 
-_PROCESSORS: dict[TaskType, BaseTaskProcessor] = {
+_PROCESSORS: Dict[TaskType, BaseTaskProcessor] = {
     TaskType.CODE_ANALYSIS: CodeAnalysisProcessor(),
     TaskType.EQUATION_EXECUTION: EquationExecutionProcessor(),
     TaskType.COGNITIVE_REASONING: CognitiveReasoningProcessor(),
@@ -293,7 +291,7 @@ async def process_task(request: TaskRequest) -> TaskResponse:
 @router.post("/process-async")
 async def process_task_async(
     request: TaskRequest, background_tasks: BackgroundTasks
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Submit task for async processing."""
     task_id = f"async-task-{datetime.now(UTC).strftime('%Y%m%d%H%M%S%f')}"
 
@@ -308,7 +306,7 @@ async def process_task_async(
 
 
 @router.get("/status/{task_id}")
-async def get_task_status(task_id: str) -> dict[str, Any]:
+async def get_task_status(task_id: str) -> Dict[str, Any]:
     """Get status of a task (placeholder for full implementation)."""
     return {
         "task_id": task_id,
@@ -318,7 +316,7 @@ async def get_task_status(task_id: str) -> dict[str, Any]:
 
 
 @router.get("/health")
-async def task_processor_health() -> dict[str, Any]:
+async def task_processor_health() -> Dict[str, Any]:
     """Check task processor health."""
     return {
         "status": "healthy",
@@ -329,7 +327,7 @@ async def task_processor_health() -> dict[str, Any]:
 
 
 @router.get("/types")
-async def list_task_types() -> list[dict[str, Any]]:
+async def list_task_types() -> List[dict[str, Any]]:
     """List available task types."""
     return [
         {

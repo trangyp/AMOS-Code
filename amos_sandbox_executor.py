@@ -19,7 +19,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Try to import E2B
 try:
@@ -52,7 +52,7 @@ class SandboxResult:
     exit_code: int
     execution_time_ms: float
     files_created: List[str]
-    network_requests: list[dict[str, Any]]
+    network_requests: List[dict[str, Any]]
     memory_peak_mb: float
     cpu_time_ms: float
     timestamp: str
@@ -131,8 +131,8 @@ class AMOSSandboxExecutor:
         self,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] = None,
-        environment_vars: dict[str, str] = None,
+        context_files: Dict[str, str] = None,
+        environment_vars: Dict[str, str] = None,
     ) -> SandboxResult:
         """
         Execute code in secure sandbox.
@@ -314,7 +314,7 @@ class AMOSSandboxExecutor:
         # Implementation depends on E2B capabilities
         return []
 
-    async def _get_network_activity(self) -> list[dict[str, Any]]:
+    async def _get_network_activity(self) -> List[dict[str, Any]]:
         """Get network requests made during execution."""
         # Implementation depends on E2B monitoring
         return []

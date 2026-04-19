@@ -6,7 +6,7 @@ Author: AMOS Search Team
 Version: 2.0.0
 """
 
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
@@ -45,7 +45,7 @@ class SearchResultItem(BaseModel):
     tags: List[str]
     author: str
     created_at: str
-    highlights: dict[str, list[str]]
+    highlights: Dict[str, list[str]]
 
 
 class FacetCounts(BaseModel):

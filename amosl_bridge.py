@@ -23,7 +23,7 @@ Version: 1.0.0
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, Optional
 
 from amosl_ledger import EntryType, StateLedger, TransactionLog
 from amosl_verification import VerificationEngine
@@ -145,7 +145,7 @@ class BridgeExecutor:
         self.ledger = ledger or StateLedger()
         self.verifier = verifier or VerificationEngine(self.ledger)
         self.tx_log = TransactionLog(self.ledger)
-        self.adapters: dict[SubstrateType, SubstrateAdapter] = {}
+        self.adapters: Dict[SubstrateType, SubstrateAdapter] = {}
         self._initialize_adapters()
 
     def _initialize_adapters(self):

@@ -68,7 +68,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class PrinciplePriority(Enum):
@@ -177,7 +177,7 @@ class BehavioralDriftMetrics:
     drift_dimensions: List[str] = field(default_factory=list)
 
     # History
-    drift_history: list[tuple[float, float]] = field(default_factory=list)
+    drift_history: List[tuple[float, float]] = field(default_factory=list)
     last_calibration: float = field(default_factory=time.time)
 
 
@@ -623,7 +623,7 @@ class ConstitutionalGovernance:
 
     def _generate_correction(
         self, action_type: str, action_params: Dict[str, Any], checks: List[ConstraintCheck]
-    ) -> tuple[str, dict[str, Any]]:
+    ) -> Tuple[str, dict[str, Any]]:
         """Generate correction strategy and modified action."""
         # Find the most significant violation
         worst_check = min(checks, key=lambda c: c.compliance_score)
@@ -817,7 +817,7 @@ class ConstitutionalGovernance:
 
     # 2025 SOTA: Recursive reward modeling validation
     def validate_reward_model(
-        self, reward_function: Callable[[dict[str, Any]], float], test_cases: list[dict[str, Any]]
+        self, reward_function: Callable[[dict[str, Any]], float], test_cases: List[dict[str, Any]]
     ) -> Dict[str, Any]:
         """
         Validate reward function against constitutional principles.

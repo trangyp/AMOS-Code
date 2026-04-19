@@ -368,7 +368,7 @@ class ContinuousMonitoringBridge:
         self.history = ArchitectureHealthHistory()
         self.checker = IncrementalArchitectureChecker(repo_path)
         self.git_validator = GitHookValidator(repo_path)
-        self._observer: Any | None = None
+        self._observer: Optional[Any] = None
         self._watching = False
 
     def take_health_snapshot(self) -> ArchitectureHealthSnapshot:

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Real-time Analytics API - Time-Series Metrics & Anomaly Detection
 
@@ -8,8 +8,6 @@ time-series queries, and anomaly detection.
 Owner: Trang Phan
 Version: 2.0.0
 """
-from __future__ import annotations
-
 
 import time
 
@@ -31,17 +29,17 @@ class MetricRecordRequest(BaseModel):
     name: str = Field(..., description="Metric name")
     value: float = Field(..., description="Metric value")
     metric_type: str = Field(default="gauge", description="Metric type: counter, gauge, histogram")
-    labels: dict[str, str] = Field(default_factory=dict, description="Metric labels/tags")
+    labels: Dict[str, str] = Field(default_factory=dict, description="Metric labels/tags")
 
 
 class MetricQueryRequest(BaseModel):
     """Request to query metrics."""
 
     metric_name: str = Field(..., description="Metric name to query")
-    start_time: float | None = Field(None, description="Start timestamp (epoch)")
-    end_time: float | None = Field(None, description="End timestamp (epoch)")
-    labels: dict[str, str] = Field(default_factory=dict, description="Label filters")
-    aggregation: str | None = Field(None, description="Aggregation: avg, sum, min, max, count")
+    start_time: Optional[float] = Field(None, description="Start timestamp (epoch)")
+    end_time: Optional[float] = Field(None, description="End timestamp (epoch)")
+    labels: Dict[str, str] = Field(default_factory=dict, description="Label filters")
+    aggregation: Optional[str] = Field(None, description="Aggregation: avg, sum, min, max, count")
     bucket_seconds: int = Field(default=60, ge=1, description="Aggregation bucket size")
 
 
@@ -50,7 +48,7 @@ class AnomalyDetectRequest(BaseModel):
 
     metric_name: str = Field(..., description="Metric to analyze")
     current_value: float = Field(..., description="Current value to check")
-    labels: dict[str, str] = Field(default_factory=dict, description="Label filters")
+    labels: Dict[str, str] = Field(default_factory=dict, description="Label filters")
     sensitivity: float = Field(default=2.0, ge=0.5, le=5.0, description="Z-score threshold")
 
 
@@ -59,7 +57,7 @@ class MetricPointResponse(BaseModel):
 
     timestamp: float
     value: float
-    labels: dict[str, str]
+    labels: Dict[str, str]
 
 
 class MetricStatsResponse(BaseModel):
@@ -82,7 +80,7 @@ class AnomalyResponse(BaseModel):
     std: float
     threshold: float
     current_value: float
-    reason: str | None = None
+    reason: Optional[str] = None
 
 
 class SpikeDetectResponse(BaseModel):
@@ -105,7 +103,7 @@ async def record_metric_endpoint(
     request: MetricRecordRequest,
     service: AnalyticsService = Depends(get_analytics_service),
     current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Record a metric value.
 
     Supports counter, gauge, and histogram metric types.
@@ -136,7 +134,7 @@ async def query_metrics_endpoint(
     request: MetricQueryRequest,
     service: AnalyticsService = Depends(get_analytics_service),
     current_user: User = Depends(get_current_user),
-) -> list[MetricPointResponse]:
+) -> List[MetricPointResponse]:
     """Query time-series metrics.
 
     Returns metric points with optional aggregation.
@@ -160,7 +158,7 @@ async def query_metrics_endpoint(
 @router.get("/stats/{metric_name}", response_model=MetricStatsResponse)
 async def get_metric_stats(
     metric_name: str,
-    labels: str | None = Query(None, description="Labels as JSON string"),
+    labels: Optional[str] = Query(None, description="Labels as JSON string"),
     service: AnalyticsService = Depends(get_analytics_service),
     current_user: User = Depends(get_current_user),
 ) -> MetricStatsResponse:
@@ -220,9 +218,9 @@ async def detect_anomaly_endpoint(
 async def increment_counter(
     name: str,
     value: float = 1.0,
-    labels: str | None = Query(None, description="Labels as JSON string"),
+    labels: Optional[str] = Query(None, description="Labels as JSON string"),
     service: AnalyticsService = Depends(get_analytics_service),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Increment a counter metric."""
 
     label_dict = json.loads(labels) if labels else {}
@@ -235,9 +233,9 @@ async def increment_counter(
 async def record_timing(
     name: str,
     duration_seconds: float,
-    labels: str | None = Query(None, description="Labels as JSON string"),
+    labels: Optional[str] = Query(None, description="Labels as JSON string"),
     service: AnalyticsService = Depends(get_analytics_service),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Record a timing measurement."""
     label_dict = json.loads(labels) if labels else {}
     service.record_timing(name, duration_seconds, label_dict)

@@ -18,7 +18,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Add parent to path
 AMOS_ROOT = Path(__file__).parent

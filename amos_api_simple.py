@@ -25,7 +25,7 @@ import json
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))

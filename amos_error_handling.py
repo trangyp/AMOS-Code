@@ -42,7 +42,7 @@ Phase: 14 Enhancement
 from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # FastAPI imports
 try:
@@ -66,7 +66,6 @@ except ImportError:
 # Try to import structured logging
 try:
     from collections.abc import Callable
-    from typing import Generic, Optional
 
     from amos_structured_logging import get_correlation_id, get_logger, log_exception
 
@@ -111,7 +110,7 @@ class AMOSException(Exception):
         message: str,
         error_code: str,
         status_code: int = 500,
-        details: dict[str, Any] = None,
+        details: Dict[str, Any] = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
         category: ErrorCategory = ErrorCategory.INTERNAL,
     ):
@@ -141,7 +140,7 @@ class AMOSException(Exception):
 class ValidationException(AMOSException):
     """Exception for validation errors."""
 
-    def __init__(self, message: str = "Validation error", details: dict[str, Any] = None):
+    def __init__(self, message: str = "Validation error", details: Dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="VALIDATION_ERROR",
@@ -155,7 +154,7 @@ class ValidationException(AMOSException):
 class NotFoundException(AMOSException):
     """Exception for resource not found errors."""
 
-    def __init__(self, resource_type: str, resource_id: str = None, details: dict[str, Any] = None):
+    def __init__(self, resource_type: str, resource_id: str = None, details: Dict[str, Any] = None):
         message = f"{resource_type} not found"
         if resource_id:
             message = f"{resource_type} '{resource_id}' not found"
@@ -199,7 +198,7 @@ class AuthorizationException(AMOSException):
 class ConflictException(AMOSException):
     """Exception for resource conflict errors."""
 
-    def __init__(self, message: str = "Resource conflict", details: dict[str, Any] = None):
+    def __init__(self, message: str = "Resource conflict", details: Dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="RESOURCE_CONFLICT",
@@ -213,7 +212,7 @@ class ConflictException(AMOSException):
 class DatabaseException(AMOSException):
     """Exception for database errors."""
 
-    def __init__(self, message: str = "Database error", details: dict[str, Any] = None):
+    def __init__(self, message: str = "Database error", details: Dict[str, Any] = None):
         super().__init__(
             message=message,
             error_code="DATABASE_ERROR",

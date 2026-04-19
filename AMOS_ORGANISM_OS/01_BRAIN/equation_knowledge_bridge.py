@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 # AMOS Brain imports
 from brain_os import BrainOS, Plan, Thought
@@ -160,8 +160,8 @@ class EquationKnowledgeGraph:
     def __init__(self):
         self.equations: Dict[str, EquationEntry] = {}
         self.languages: Dict[str, LanguageProfile] = {}
-        self.invariant_index: dict[InvariantType, set[str]] = {t: set() for t in InvariantType}
-        self.category_index: dict[EquationCategory, set[str]] = {c: set() for c in EquationCategory}
+        self.invariant_index: Dict[InvariantType, set[str]] = {t: set() for t in InvariantType}
+        self.category_index: Dict[EquationCategory, set[str]] = {c: set() for c in EquationCategory}
         self._build_time: str = None
 
     def add_equation(self, eq: EquationEntry) -> str:
@@ -218,7 +218,7 @@ class EquationKnowledgeGraph:
 
     def validate_invariant_compatibility(
         self, eq_ids: List[str], target_invariant: InvariantType
-    ) -> tuple[bool, list[str]]:
+    ) -> Tuple[bool, list[str]]:
         """
         Check if a set of equations can satisfy a target invariant.
         Returns (is_compatible, violations)
@@ -831,7 +831,7 @@ def integrate_with_math_framework(graph: EquationKnowledgeGraph) -> Dict[str, An
 
 
 def validate_equation_with_invariants(
-    equation: EquationEntry, test_values: dict[str, float] = None
+    equation: EquationEntry, test_values: Dict[str, float] = None
 ) -> Dict[str, Any]:
     """Validate an equation against mathematical invariants.
 
@@ -916,7 +916,7 @@ def validate_equation_with_invariants(
     }
 
 
-def validate_language_invariant(equation: EquationEntry) -> dict[str, str]:
+def validate_language_invariant(equation: EquationEntry) -> Dict[str, str]:
     """Validate language-specific invariants for an equation."""
     # Language-specific validation rules
     lang_rules = {

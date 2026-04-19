@@ -25,8 +25,9 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class EntryType(Enum):
@@ -95,15 +96,15 @@ class StateLedger:
     """
 
     def __init__(self):
-        self._entries: list[LedgerEntry] = []
+        self._entries: List[LedgerEntry] = []
         self._current_hash: str = "0" * 32  # Genesis hash
-        self._state_cache: dict[int, dict[str, Any]] = {}
+        self._state_cache: Dict[int, dict[str, Any]] = {}
 
     def append(
         self,
         entry_type: EntryType,
         state_data: Dict[str, Any],
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> LedgerEntry:
         """Append new entry to ledger.
 
@@ -170,11 +171,11 @@ class StateLedger:
             return self._entries[index]
         return None
 
-    def get_state_at(self, index: int) -> dict[str, Any]:
+    def get_state_at(self, index: int) -> Dict[str, Any]:
         """Get reconstructed state at specific ledger index."""
         return self._state_cache.get(index)
 
-    def get_audit_trail(self, start_index: int = 0, end_index: int = None) -> list[LedgerEntry]:
+    def get_audit_trail(self, start_index: int = 0, end_index: int = None) -> List[LedgerEntry]:
         """Get audit trail for range of entries.
 
         Args:
@@ -279,7 +280,7 @@ class TransactionLog:
 
     def __init__(self, ledger: StateLedger):
         self.ledger = ledger
-        self._active_transactions: dict[str, dict[str, Any]] = {}
+        self._active_transactions: Dict[str, dict[str, Any]] = {}
 
     def begin_transaction(
         self, tx_id: str, operation: str, substrate: str = "local"

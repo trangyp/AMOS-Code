@@ -81,7 +81,7 @@ Architecture:
 import time
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List
 
 
 class HorizonStrategy(Enum):
@@ -195,7 +195,7 @@ class PredictiveWorldModel:
         self.current_substrate = substrate
 
     def simulate_future(
-        self, initial_state: Dict[str, Any], actions: list[dict[str, Any]], target_horizon: int = 5
+        self, initial_state: Dict[str, Any], actions: List[dict[str, Any]], target_horizon: int = 5
     ) -> SimulationResult:
         """Simulate future states using adaptive lookahead.
 
@@ -252,7 +252,7 @@ class PredictiveWorldModel:
         return result
 
     def evaluate_simulation(
-        self, simulation: SimulationResult, actual_future: list[dict[str, Any]]
+        self, simulation: SimulationResult, actual_future: List[dict[str, Any]]
     ) -> List[SimulationError]:
         """Evaluate simulation accuracy against actual outcomes."""
         errors = []
@@ -388,8 +388,8 @@ class PredictiveWorldModel:
     def validate_improvements(
         self,
         improvements: List[ModelImprovement],
-        test_data: list[tuple[dict, list[dict]]],  # (initial, actions) -> actual outcomes
-    ) -> dict[str, float]:
+        test_data: List[tuple[dict, list[dict]]],  # (initial, actions) -> actual outcomes
+    ) -> Dict[str, float]:
         """Validate improvements on held-out test data."""
         validation_scores = {}
 
@@ -417,8 +417,8 @@ class PredictiveWorldModel:
     def full_recursive_loop(
         self,
         initial_state: Dict[str, Any],
-        actions: list[dict[str, Any]],
-        actual_future: list[dict[str, Any]],
+        actions: List[dict[str, Any]],
+        actual_future: List[dict[str, Any]],
     ) -> Dict[str, Any]:
         """Execute one full loop: Simulate → Evaluate → Reflect → Improve."""
         # 1. Simulate
@@ -536,7 +536,7 @@ class PredictiveWorldModel:
 
     def _compute_error_metrics(
         self, predicted: Dict[str, Any], actual: Dict[str, Any]
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Compute error metrics between predicted and actual states."""
         # Simple state difference metric
         diff_keys = set(predicted.keys()) ^ set(actual.keys())

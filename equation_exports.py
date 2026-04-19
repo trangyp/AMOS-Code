@@ -64,7 +64,7 @@ import csv
 import json
 import logging
 from enum import Enum
-from typing import Any, AsyncIterator, BinaryIO, Callable
+from typing import Any, AsyncIterator, BinaryIO, Callable, Dict, List, Optional
 from datetime import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -236,7 +236,7 @@ class ExportTemplate:
     column_headers: Dict[str, str]  = None
     column_formats: Dict[str, str]  = None
     filters: Optional[ExportFilters] = None
-    sorting: list[tuple[str, str]]  = None
+    sorting: List[tuple[str, str]]  = None
 
 
 # ============================================================================
@@ -252,7 +252,7 @@ class BaseExportHandler:
 
     async def export(
         self,
-        data: list[dict[str, Any]],
+        data: List[dict[str, Any]],
         columns: List[str]  = None,
         template: Optional[ExportTemplate] = None
     ) -> bytes:
@@ -285,7 +285,7 @@ class CSVExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: list[dict[str, Any]],
+        data: List[dict[str, Any]],
         columns: List[str]  = None,
         template: Optional[ExportTemplate] = None
     ) -> bytes:
@@ -322,7 +322,7 @@ class JSONExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: list[dict[str, Any]],
+        data: List[dict[str, Any]],
         columns: List[str]  = None,
         template: Optional[ExportTemplate] = None
     ) -> bytes:
@@ -348,7 +348,7 @@ class ExcelExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: list[dict[str, Any]],
+        data: List[dict[str, Any]],
         columns: List[str]  = None,
         template: Optional[ExportTemplate] = None
     ) -> bytes:
@@ -399,7 +399,7 @@ class PDFExportHandler(BaseExportHandler):
 
     async def export(
         self,
-        data: list[dict[str, Any]],
+        data: List[dict[str, Any]],
         columns: List[str]  = None,
         template: Optional[ExportTemplate] = None
     ) -> bytes:
@@ -461,7 +461,7 @@ class PDFExportHandler(BaseExportHandler):
 class ExportHandlerRegistry:
     """Registry for export format handlers."""
 
-    _handlers: dict[ExportFormat, BaseExportHandler] = {}
+    _handlers: Dict[ExportFormat, BaseExportHandler] = {}
 
     @classmethod
     def register(cls, format: ExportFormat, handler: BaseExportHandler) -> None:
@@ -610,7 +610,7 @@ class ExportManager:
         self,
         entity_type: EntityType,
         filters: ExportFilters
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Fetch data for export.
 
         Args:
@@ -746,7 +746,7 @@ def get_template(name: str) -> Optional[ExportTemplate]:
     return DEFAULT_TEMPLATES.get(name)
 
 
-def list_templates() -> list[dict[str, Any]]:
+def list_templates() -> List[dict[str, Any]]:
     """List available templates."""
     return [
         {"name": name, "format": template.format.value, "columns": template.columns}
@@ -866,5 +866,4 @@ async def example_usage():
 if __name__ == "__main__":
     import os
     import asyncio
-from typing import Callable, List
     asyncio.run(example_usage())

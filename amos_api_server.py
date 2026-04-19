@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 """AMOS Brain API Server
+import time
+from database import db
+from database import db
+from database import db
+from workflow_engine import WorkflowEngine
+from workflow_engine import WorkflowEngine
+from pipeline_engine import PipelineEngine
+from pipeline_engine import PipelineEngine
+from alert_manager import AlertManager
+from alert_manager import AlertManager
+from AMOS_MASTER_ORCHESTRATOR import AMOSOrganismOrchestrator
 ====================
 
 Exposes AMOS cognitive capabilities via REST API for neurosyncai.tech
@@ -93,9 +104,7 @@ def brain_status():
 @app.route("/think", methods=["POST"])
 def think_endpoint():
     """Think endpoint - cognitive analysis."""
-    import time
 
-    from database import db
 
     start_time = time.time()
     try:
@@ -337,7 +346,6 @@ def admin_static(filename):
 @app.route("/api/history", methods=["GET"])
 def get_history():
     """Get query history."""
-    from database import db
 
     limit = request.args.get("limit", 100, type=int)
     history = db.get_query_history(limit=limit)
@@ -347,7 +355,6 @@ def get_history():
 @app.route("/api/stats", methods=["GET"])
 def get_stats():
     """Get API usage statistics."""
-    from database import db
 
     stats = db.get_usage_stats(days=days)
     return jsonify({"success": True, "stats": stats})
@@ -359,7 +366,6 @@ def api_workflows_list():
     try:
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "06_MUSCLE"))
-        from workflow_engine import WorkflowEngine
 
         engine = WorkflowEngine()
         workflows = [
@@ -377,7 +383,6 @@ def api_workflow_run(workflow_id):
     try:
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "06_MUSCLE"))
-        from workflow_engine import WorkflowEngine
 
         engine = WorkflowEngine()
         result = engine.run_workflow(workflow_id)
@@ -400,7 +405,6 @@ def api_pipelines_list():
     try:
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "07_METABOLISM"))
-        from pipeline_engine import PipelineEngine
 
         engine = PipelineEngine()
         pipelines = [
@@ -419,7 +423,6 @@ def api_pipeline_run(pipeline_id):
         data = request.get_json() or {}
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "07_METABOLISM"))
-        from pipeline_engine import PipelineEngine
 
         engine = PipelineEngine()
         result = engine.execute_pipeline(pipeline_id, initial_data=data.get("data"))
@@ -435,7 +438,6 @@ def organism_alerts_active():
     try:
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "03_IMMUNE"))
-        from alert_manager import AlertManager
 
         manager = AlertManager(organism_root)
         alerts = manager.get_active_alerts()
@@ -452,7 +454,6 @@ def api_alerts_evaluate():
         metrics = data.get("metrics", {})
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root / "03_IMMUNE"))
-        from alert_manager import AlertManager
 
         manager = AlertManager(organism_root)
         alerts = manager.evaluate_and_alert(metrics)
@@ -468,8 +469,6 @@ def api_orchestrator_cycle():
     try:
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root))
-        from AMOS_MASTER_ORCHESTRATOR import AMOSOrganismOrchestrator
-from typing import List
 
         orch = AMOSOrganismOrchestrator(organism_root)
         result = orch.cycle()

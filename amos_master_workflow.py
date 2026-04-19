@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Master Workflow - Continuous cognitive orchestration.
 
 Integrates all AMOS components into a single pipeline:

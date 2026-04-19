@@ -3,7 +3,7 @@
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class SystemState(Enum):
@@ -41,7 +41,7 @@ class LifecycleManager:
 
     def __init__(self):
         self.states: Dict[str, str] = {}
-        self.transitions: dict[str, list[str]] = {
+        self.transitions: Dict[str, list[str]] = {
             "initializing": ["active", "shutdown"],
             "active": ["degraded", "maintenance", "shutdown"],
             "degraded": ["active", "maintenance", "shutdown"],
@@ -67,7 +67,7 @@ class HealthMonitor:
 
     def __init__(self):
         self.health_scores: Dict[str, float] = {}
-        self.check_history: dict[str, list[tuple[float, float]]] = {}
+        self.check_history: Dict[str, list[tuple[float, float]]] = {}
 
     def check_component(self, name: str, dependencies: List[str]) -> float:
         """Calculate health score for component."""
@@ -101,8 +101,8 @@ class DependencyResolver:
     """Resolves component dependencies."""
 
     def __init__(self):
-        self.dependencies: dict[str, set[str]] = {}
-        self.dependents: dict[str, set[str]] = {}
+        self.dependencies: Dict[str, set[str]] = {}
+        self.dependents: Dict[str, set[str]] = {}
 
     def register(self, name: str, deps: List[str]) -> None:
         """Register component dependencies."""
@@ -114,7 +114,7 @@ class DependencyResolver:
 
     def get_start_order(self) -> List[str]:
         """Get topological start order."""
-        visited: set[str] = set()
+        visited: Set[str] = set()
         order: List[str] = []
 
         def visit(name: str) -> None:
@@ -135,8 +135,8 @@ class DependencyResolver:
 
     def check_circular(self) -> List[str]:
         """Check for circular dependencies."""
-        path: set[str] = set()
-        visited: set[str] = set()
+        path: Set[str] = set()
+        visited: Set[str] = set()
         cycles: List[str] = []
 
         def dfs(name: str) -> bool:
@@ -186,7 +186,7 @@ class ResourceBalancer:
         current = self.allocations.get(component, 0.0)
         self.allocations[component] = max(0.0, current - amount)
 
-    def get_utilization(self) -> dict[str, float]:
+    def get_utilization(self) -> Dict[str, float]:
         """Get resource utilization by component."""
         util = {}
         for comp, allocated in self.allocations.items():
@@ -383,8 +383,6 @@ _systems_core: Optional[SystemsCoreEngine] = None
 
 def get_systems_core_engine() -> SystemsCoreEngine:
     """Get or create the Systems Core Engine singleton."""
-from __future__ import annotations
-
     global _systems_core
     if _systems_core is None:
         _systems_core = SystemsCoreEngine()

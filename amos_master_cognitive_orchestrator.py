@@ -12,7 +12,7 @@ Version: 2.0.0
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_cognitive_router import CognitiveRouter
 from amos_engine_activator import EngineActivator
@@ -177,7 +177,7 @@ class MasterCognitiveOrchestrator:
             "ready": True,
         }
 
-    def process(self, task: str, context: dict[str, Any] = None) -> OrchestratorResult:
+    def process(self, task: str, context: Dict[str, Any] = None) -> OrchestratorResult:
         """Process a task through the complete AMOS pipeline.
 
         Pipeline:

@@ -3,13 +3,12 @@
 Provides async cross-repo event communication.
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import os
-from typing import Any, AsyncIterator, Callable
+from typing import Any, AsyncIterator, Callable, Dict
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 import redis.asyncio as redis
 
@@ -20,7 +19,7 @@ class EventBus:
     def __init__(self, redis_url: str = "redis://localhost:6379"):
         self._redis_url = redis_url
         self._redis: redis.Redis | None = None
-        self._subscribers: dict[str, list[Callable]] = {}
+        self._subscribers: Dict[str, list[Callable]] = {}
         self._connected = False
     
     async def connect(self):
@@ -38,7 +37,7 @@ class EventBus:
     def is_connected(self) -> bool:
         return self._connected and self._redis is not None
     
-    async def publish(self, event_type: str, payload: dict[str, Any]):
+    async def publish(self, event_type: str, payload: Dict[str, Any]):
         """Publish event to the bus."""
         if not self._redis:
             return

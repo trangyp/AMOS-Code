@@ -8,7 +8,7 @@ AMOS_ORGANISM_OS components for a single unified interface.
 import argparse
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths for both systems
 sys.path.insert(0, str(Path(__file__).parent))
@@ -378,7 +378,7 @@ class UnifiedCLI:
             print(f"Error: {e}")
             return 1
 
-    def run(self, args: list[str] = None) -> int:
+    def run(self, args: List[str] = None) -> int:
         """Main CLI entry point."""
         parser = argparse.ArgumentParser(
             prog="amos-unified", description="AMOS Ecosystem Unified CLI - Cognitive + Organism"

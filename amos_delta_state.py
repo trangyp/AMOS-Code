@@ -12,7 +12,7 @@ import time
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class StateView(Protocol):
@@ -50,7 +50,7 @@ class DeltaState:
     state_id: str
     base_state: Dict[str, Any] = field(default_factory=dict)
     deltas: List[StateDelta] = field(default_factory=list)
-    parent_id: str | None = None
+    parent_id: Optional[str] = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def apply_delta(self, delta: StateDelta) -> DeltaState:
@@ -181,7 +181,7 @@ class DeltaStateManager:
         self._states[state.state_id] = state
         return state
 
-    def apply_delta(self, state_id: str, delta: StateDelta) -> DeltaState | None:
+    def apply_delta(self, state_id: str, delta: StateDelta) -> Optional[DeltaState]:
         """
         Apply delta to existing state.
         Returns new state or None if parent not found.
@@ -231,7 +231,7 @@ class DeltaStateManager:
             return None
         return self._states[state_id].get_value()
 
-    def compact_state(self, state_id: str) -> DeltaState | None:
+    def compact_state(self, state_id: str) -> Optional[DeltaState]:
         """Compact state to reduce delta chain."""
         if state_id not in self._states:
             return None
@@ -265,7 +265,7 @@ class DeltaStateManager:
 
 
 # Global singleton
-_manager: DeltaStateManager | None = None
+_manager: Optional[DeltaStateManager] = None
 
 
 def get_delta_manager() -> DeltaStateManager:
@@ -284,7 +284,7 @@ def create_delta(path: str, value: Any, operation: str = "set") -> StateDelta:
 
 def apply_state_delta(
     state_id: str, path: str, value: Any, operation: str = "set"
-) -> DeltaState | None:
+) -> Optional[DeltaState]:
     """Apply delta to state and return new state."""
     delta = create_delta(path, value, operation)
     return get_delta_manager().apply_delta(state_id, delta)

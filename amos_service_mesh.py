@@ -53,7 +53,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 import structlog
@@ -203,7 +203,7 @@ class ServiceRegistry:
     def __init__(self, redis_url: str = SERVICE_REGISTRY_URL):
         self.redis_url = redis_url
         self._redis: Optional[Any] = None
-        self._local_cache: dict[str, list[ServiceEndpoint]] = {}
+        self._local_cache: Dict[str, list[ServiceEndpoint]] = {}
 
     async def initialize(self) -> None:
         """Initialize Redis connection."""
@@ -214,7 +214,7 @@ class ServiceRegistry:
                 )
                 logger.info("service_registry.initialized")
             except Exception as e:
-                logger.error("service_registry.init_failed", error=str(e))
+                logger.error("service_registry.init_failed: %s", str(e))
 
     async def register(self, endpoint: ServiceEndpoint, ttl_seconds: int = 60) -> bool:
         """
@@ -265,7 +265,7 @@ class ServiceRegistry:
             return True
 
         except Exception as e:
-            logger.error("service.register_failed", error=str(e))
+            logger.error("service.register_failed: %s", str(e))
             return False
 
     async def deregister(self, service_name: str, instance_id: str) -> bool:
@@ -286,7 +286,7 @@ class ServiceRegistry:
             return True
 
         except Exception as e:
-            logger.error("service.deregister_failed", error=str(e))
+            logger.error("service.deregister_failed: %s", str(e))
             return False
 
     async def discover(
@@ -782,7 +782,7 @@ class TracingManager:
 
     def inject_trace_context(
         self, headers: Dict[str, str], context: TraceContext
-    ) -> dict[str, str]:
+    ) -> Dict[str, str]:
         """Inject trace context into HTTP headers (W3C format)."""
         headers["traceparent"] = (
             f"00-{context.trace_id}-{context.span_id}-" f"{'01' if context.sampled else '00'}"

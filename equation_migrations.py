@@ -50,7 +50,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Alembic imports
 try:
@@ -439,7 +439,7 @@ else:
 
     def history(
         self, verbose: bool = False, indicate_current: bool = False
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get migration history.
 
         Args:
@@ -565,7 +565,7 @@ class DataMigration:
 
     @staticmethod
     def batch_update(
-        op: Any, table_name: str, updates: list[dict[str, Any]], batch_size: int = 1000
+        op: Any, table_name: str, updates: List[dict[str, Any]], batch_size: int = 1000
     ) -> None:
         """Perform batch update during migration.
 

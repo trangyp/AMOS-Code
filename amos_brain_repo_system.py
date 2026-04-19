@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 """AMOS Brain Repository System - Full Brain Integration
 

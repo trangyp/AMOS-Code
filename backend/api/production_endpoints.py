@@ -9,15 +9,13 @@ Implements state-of-art FastAPI patterns:
 Based on: zhanymkanov/fastapi-best-practices (GitHub)
 """
 
-from __future__ import annotations
-
 
 import logging
 import time
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -66,7 +64,7 @@ class TaskCreate(CustomBaseModel):
     """Task creation with validation."""
 
     title: str = Field(min_length=1, max_length=200)
-    description: str | None = Field(default=None, max_length=1000)
+    description: Optional[str] = Field(default=None, max_length=1000)
     priority: int = Field(ge=1, le=5, default=3)
 
 
@@ -75,19 +73,19 @@ class TaskResponse(CustomBaseModel):
 
     id: UUID
     title: str
-    description: str | None
+    description: Optional[str]
     priority: int
     status: str
     created_at: datetime
-    completed_at: datetime | None
+    completed_at: Optional[datetime]
 
 
 # In-memory storage (replace with DB in production)
-_users: dict[UUID, dict[str, Any]] = {}
-_tasks: dict[UUID, dict[str, Any]] = {}
+_users: Dict[UUID, dict[str, Any]] = {}
+_tasks: Dict[UUID, dict[str, Any]] = {}
 
 
-async def validate_user_id(user_id: UUID) -> dict[str, Any]:
+async def validate_user_id(user_id: UUID) -> Dict[str, Any]:
     """Dependency: Validate user exists."""
     user = _users.get(user_id)
     if not user:
@@ -98,7 +96,7 @@ async def validate_user_id(user_id: UUID) -> dict[str, Any]:
     return user
 
 
-async def validate_task_id(task_id: UUID) -> dict[str, Any]:
+async def validate_task_id(task_id: UUID) -> Dict[str, Any]:
     """Dependency: Validate task exists."""
     task = _tasks.get(task_id)
     if not task:
@@ -140,7 +138,7 @@ async def create_user(user: UserCreate) -> UserResponse:
 
 
 @router.get("/users/{user_id}", response_model=UserResponse)
-async def get_user(user: dict[str, Any] = Depends(validate_user_id)) -> UserResponse:
+async def get_user(user: Dict[str, Any] = Depends(validate_user_id)) -> UserResponse:
     """Get user by ID. Uses dependency for validation."""
     return UserResponse(**user)
 
@@ -148,7 +146,7 @@ async def get_user(user: dict[str, Any] = Depends(validate_user_id)) -> UserResp
 @router.put("/users/{user_id}", response_model=UserResponse)
 async def update_user(
     update_data: UserCreate,
-    user: dict[str, Any] = Depends(validate_user_id),
+    user: Dict[str, Any] = Depends(validate_user_id),
 ) -> UserResponse:
     """Update user. Uses dependency for validation."""
     user.update(
@@ -165,7 +163,7 @@ async def update_user(
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-    user: dict[str, Any] = Depends(validate_user_id),
+    user: Dict[str, Any] = Depends(validate_user_id),
 ) -> None:
     """Delete user."""
     user_id = user["id"]
@@ -176,7 +174,7 @@ async def delete_user(
 @router.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     task: TaskCreate,
-    user: dict[str, Any] = Depends(validate_user_id),
+    user: Dict[str, Any] = Depends(validate_user_id),
 ) -> TaskResponse:
     """Create task for user."""
     task_id = UUID(int=len(_tasks) + 1)
@@ -198,7 +196,7 @@ async def create_task(
 
 @router.get("/tasks/{task_id}", response_model=TaskResponse)
 async def get_task(
-    task: dict[str, Any] = Depends(validate_task_id),
+    task: Dict[str, Any] = Depends(validate_task_id),
 ) -> TaskResponse:
     """Get task by ID."""
     return TaskResponse(**task)
@@ -206,7 +204,7 @@ async def get_task(
 
 @router.patch("/tasks/{task_id}/complete", response_model=TaskResponse)
 async def complete_task(
-    task: dict[str, Any] = Depends(validate_task_id),
+    task: Dict[str, Any] = Depends(validate_task_id),
 ) -> TaskResponse:
     """Mark task as complete."""
     if task["status"] == "completed":
@@ -224,9 +222,9 @@ async def complete_task(
 
 @router.get("/users/{user_id}/tasks", response_model=list[TaskResponse])
 async def list_user_tasks(
-    user: dict[str, Any] = Depends(validate_user_id),
-    status_filter: str | None = None,
-) -> list[TaskResponse]:
+    user: Dict[str, Any] = Depends(validate_user_id),
+    status_filter: Optional[str] = None,
+) -> List[TaskResponse]:
     """List all tasks for user with optional status filter."""
     user_id = user["id"]
     tasks = [t for t in _tasks.values() if t["user_id"] == user_id]
@@ -238,7 +236,7 @@ async def list_user_tasks(
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check endpoint."""
     return {
         "status": "healthy",

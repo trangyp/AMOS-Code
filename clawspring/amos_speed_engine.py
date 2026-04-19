@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class SpeedMode(Enum):
@@ -240,8 +240,6 @@ _speed_engine: Optional[SpeedEngine] = None
 
 def get_speed_engine() -> SpeedEngine:
     """Get or create the Speed Engine singleton."""
-from __future__ import annotations
-
     global _speed_engine
     if _speed_engine is None:
         _speed_engine = SpeedEngine()

@@ -1,7 +1,7 @@
 """AMOS Society/Culture Engine - Social and cultural analysis."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -299,7 +299,7 @@ class AMOSSocietyEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, SocietyAnalysis]:
+    ) -> Dict[str, SocietyAnalysis]:
         """Run society/culture analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -412,7 +412,7 @@ def get_society_engine() -> AMOSSocietyEngine:
 def analyze_society(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, SocietyAnalysis]:
+) -> Dict[str, SocietyAnalysis]:
     """Quick helper for society/culture analysis."""
     return get_society_engine().analyze(description, domains)
 

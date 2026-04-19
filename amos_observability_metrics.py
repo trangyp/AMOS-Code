@@ -119,14 +119,14 @@ class AMOSMetrics:
 
     def update_module_metrics(
         self,
-        modules: Dict[str, Any],
-        tier_counts: Dict[str, int],
+        modules: dict[str, Any],
+        tier_counts: dict[str, int],
     ) -> None:
         """Update module-related metrics."""
         for tier, count in tier_counts.items():
             self.modules_total.labels(tier=tier).set(count)
 
-        activated_by_tier: Dict[str, int] = {}
+        activated_by_tier: dict[str, int] = {}
         for module in modules.values():
             tier = module.tier.name
             activated_by_tier[tier] = activated_by_tier.get(tier, 0)
@@ -143,10 +143,10 @@ class AMOSMetrics:
         health = 1.0 if rate > 0.8 else 0.5 if rate > 0.5 else 0.0
         self.system_health.set(health)
 
-    def update_memory_bridge_metrics(self, bridges: List[Any]) -> None:
+    def update_memory_bridge_metrics(self, bridges: list[Any]) -> None:
         """Update memory bridge metrics."""
-        by_type: Dict[str, int] = {}
-        active_by_type: Dict[str, int] = {}
+        by_type: dict[str, int] = {}
+        active_by_type: dict[str, int] = {}
 
         for bridge in bridges:
             memory_type = bridge.memory_type.value

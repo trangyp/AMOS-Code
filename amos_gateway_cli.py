@@ -17,8 +17,6 @@ Usage:
     python amos_gateway_cli.py agent --type repo_scan --task "Analyze codebase"
 """
 
-from __future__ import annotations
-
 import argparse
 import asyncio
 import sys

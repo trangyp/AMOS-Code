@@ -24,6 +24,8 @@ Version: 3.0.0
 from __future__ import annotations
 
 
+
+
 import os
 import sys
 from contextlib import asynccontextmanager
@@ -63,7 +65,7 @@ except ImportError as e:
 from config import get_settings
 
 
-def create_amos_app() -> Any | None:
+def create_amos_app() -> Optional[Any]:
     """Create and configure the AMOS FastAPI application."""
 
     if not HAS_FASTAPI:

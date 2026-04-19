@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS RAG Engine - Real Retrieval Augmented Generation with brain.
 
@@ -8,8 +8,6 @@ Production-ready RAG implementation:
 - Brain-augmented context selection
 - Source attribution and citations
 """
-from __future__ import annotations
-
 
 import hashlib
 import sys
@@ -40,7 +38,7 @@ class DocumentChunk(BaseModel):
     content: str
     source: str
     chunk_index: int
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class RAGQuery(BaseModel):
@@ -60,7 +58,7 @@ class RAGResult(BaseModel):
     content: str
     source: str
     relevance_score: float
-    brain_score: float | None = None
+    brain_score: Optional[float] = None
 
 
 class RAGResponse(BaseModel):
@@ -68,7 +66,7 @@ class RAGResponse(BaseModel):
 
     query: str
     context: str
-    sources: list[dict[str, Any]]
+    sources: List[dict[str, Any]]
     total_chunks_searched: int
     retrieval_time_ms: float
     brain_enhanced: bool
@@ -79,7 +77,7 @@ class ChunkEmbedding:
     """Document chunk with embedding."""
 
     chunk: DocumentChunk
-    embedding: list[float]
+    embedding: List[float]
 
 
 class SimpleEmbedder:
@@ -88,7 +86,7 @@ class SimpleEmbedder:
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
 
-    def embed(self, text: str) -> list[float]:
+    def embed(self, text: str) -> List[float]:
         """Generate embedding for text."""
         # Simple hash-based embedding for demo
         hash_val = hashlib.sha256(text.encode()).hexdigest()
@@ -99,7 +97,7 @@ class SimpleEmbedder:
             embedding.append(val)
         return embedding
 
-    def similarity(self, a: list[float], b: list[float]) -> float:
+    def similarity(self, a: List[float], b: List[float]) -> float:
         """Cosine similarity."""
         dot = sum(x * y for x, y in zip(a, b))
         norm_a = sum(x * x for x in a) ** 0.5
@@ -113,7 +111,7 @@ class AMOSRAGStore:
     """RAG document store with brain integration."""
 
     def __init__(self):
-        self._chunks: dict[str, ChunkEmbedding] = {}
+        self._chunks: Dict[str, ChunkEmbedding] = {}
         self._embedder = SimpleEmbedder()
         self._kernel = AMOSKernelRuntime()
 
@@ -121,9 +119,9 @@ class AMOSRAGStore:
         self,
         content: str,
         source: str,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
         chunk_size: int = 500,
-    ) -> list[str]:
+    ) -> List[str]:
         """Add document, chunk it, and store embeddings."""
         # Simple chunking by sentences
         sentences = content.replace(". ", ".|").replace("? ", "?|").replace("! ", "!|").split("|")
@@ -237,7 +235,7 @@ class AMOSRAGStore:
             brain_enhanced=request.use_brain_ranking,
         )
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get store statistics."""
         sources = set(c.chunk.source for c in self._chunks.values())
         return {
@@ -249,7 +247,7 @@ class AMOSRAGStore:
 
 
 # Global RAG store
-_rag_store: AMOSRAGStore | None = None
+_rag_store: Optional[AMOSRAGStore] = None
 
 
 def get_rag_store() -> AMOSRAGStore:
@@ -287,8 +285,8 @@ async def rag_query(request: RAGQuery) -> RAGResponse:
 
 @router.post("/index")
 async def index_document(
-    content: str, source: str, metadata: dict[str, Any] = None
-) -> dict[str, Any]:
+    content: str, source: str, metadata: Dict[str, Any] = None
+) -> Dict[str, Any]:
     """Index a new document into the RAG store."""
     store = get_rag_store()
     chunk_ids = store.add_document(content, source, metadata)
@@ -300,7 +298,7 @@ async def index_document(
 
 
 @router.get("/stats")
-async def get_rag_stats() -> dict[str, Any]:
+async def get_rag_stats() -> Dict[str, Any]:
     """Get RAG store statistics."""
     store = get_rag_store()
     return store.get_stats()

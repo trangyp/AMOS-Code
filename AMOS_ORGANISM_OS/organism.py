@@ -13,6 +13,7 @@ import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -30,35 +31,35 @@ for _subsystem in [
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
-# Import subsystems (through alias modules)
-from BLOOD import BudgetManager, CashflowTracker, ResourceEngine
-from BRAIN import BrainOS, MemoryLayer, RoutingDecision, SystemRouter
-from FACTORY import AgentFactory, BuilderEngine, CodeGenerator, QualityChecker
-from IMMUNE import ActionType, ComplianceEngine, ImmuneSystem, ThreatDetector
-from LEGAL_BRAIN import (
+# Import subsystems (through alias modules - relative imports)
+from .BLOOD import BudgetManager, CashflowTracker, ResourceEngine
+from .BRAIN import BrainOS, MemoryLayer, RoutingDecision, SystemRouter
+from .FACTORY import AgentFactory, BuilderEngine, CodeGenerator, QualityChecker
+from .IMMUNE import ActionType, ComplianceEngine, ImmuneSystem, ThreatDetector
+from .LEGAL_BRAIN import (
     ComplianceAuditor,
     ContractManager,
     PolicyEngine,
     RiskGovernor,
 )
-from LIFE_ENGINE import (
+from .LIFE_ENGINE import (
     AdaptationSystem,
     GrowthEngine,
     HealthMonitor,
     LifecycleManager,
 )
-from METABOLISM import IORouter, PipelineEngine, TransformEngine
-from MUSCLE import CodeRunner, MuscleExecutor, WorkflowEngine
-from QUANTUM_LAYER import DecisionOptimizer, MonteCarloSimulator, ScenarioEngine
-from SENSES import ContextGatherer, EnvironmentScanner, SignalDetector
-from SKELETON import ConstraintEngine, RuleValidator, StructuralIntegrity
-from SOCIAL_ENGINE import (
+from .METABOLISM import IORouter, PipelineEngine, TransformEngine
+from .MUSCLE import CodeRunner, MuscleExecutor, WorkflowEngine
+from .QUANTUM_LAYER import DecisionOptimizer, MonteCarloSimulator, ScenarioEngine
+from .SENSES import ContextGatherer, EnvironmentScanner, SignalDetector
+from .SKELETON import ConstraintEngine, RuleValidator, StructuralIntegrity
+from .SOCIAL_ENGINE import (
     AgentCoordinator,
     CommunicationBridge,
     HumanInterface,
     NegotiationEngine,
 )
-from WORLD_MODEL import ContextMapper, KnowledgeGraph, SemanticIndex
+from .WORLD_MODEL import ContextMapper, KnowledgeGraph, SemanticIndex
 
 
 @dataclass
@@ -277,7 +278,7 @@ class AmosOrganism:
 
         # QUANTUM_LAYER: Timing
         self.state.current_subsystem = "12_QUANTUM_LAYER"
-        results["quantum"] = {"timestamp": datetime.now(UTC).isoformat()}
+        results["quantum"] = {"timestamp": datetime.now(timezone.utc).isoformat()}
 
         # MUSCLE: Execute pending actions
         self.state.current_subsystem = "06_MUSCLE"

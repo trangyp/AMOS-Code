@@ -38,7 +38,7 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths
 REPO_ROOT = Path(__file__).parent
@@ -57,7 +57,7 @@ class AMOSMCPServer:
         self.amos = None
         self.tools = self._define_tools()
 
-    def _define_tools(self) -> list[dict[str, Any]]:
+    def _define_tools(self) -> List[dict[str, Any]]:
         """Define MCP tools."""
         return [
             {
@@ -360,7 +360,6 @@ class AMOSMCPServer:
         action = args.get("action", "list")
 
         from amos_brain.extended_knowledge_loader import get_comprehensive_knowledge
-from typing import List, Optional, Protocol
 
         system = get_comprehensive_knowledge()
         if not system.initialized:

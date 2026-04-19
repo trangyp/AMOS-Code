@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class EconFinanceDomain(Enum):
@@ -394,8 +394,6 @@ _econ_finance_engine: Optional[EconFinanceEngine] = None
 
 def get_econ_finance_engine() -> EconFinanceEngine:
     """Get or create the Econ Finance Engine singleton."""
-from __future__ import annotations
-
     global _econ_finance_engine
     if _econ_finance_engine is None:
         _econ_finance_engine = EconFinanceEngine()

@@ -180,6 +180,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path("{self.repo_path}")))
 
 from repo_doctor.invariants import InvariantEngine
+from typing import Optional
 
 engine = InvariantEngine("{self.repo_path}")
 result = engine.check_specific("{invariant_name}")

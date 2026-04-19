@@ -13,6 +13,7 @@ import json
 import sys
 import webbrowser
 from datetime import datetime, timezone
+UTC = timezone.utc
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import urlparse

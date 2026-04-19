@@ -5,7 +5,7 @@ import logging
 import sys
 import uuid
 from contextvars import ContextVar
-from typing import Any
+from typing import Any, Optional
 
 _correlation_id: ContextVar[str] = ContextVar("correlation_id", default="")
 

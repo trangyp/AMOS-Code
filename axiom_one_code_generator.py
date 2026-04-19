@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """Axiom One - Real Code Generator.
 
 Generates actual working Python code:
@@ -135,7 +133,7 @@ class {class_name}{bases}:
     def generate(
         cls,
         class_name: str,
-        attributes: list[tuple[str, str, Any]],
+        attributes: List[tuple[str, str, Any]],
         methods: List[str] = None,
         bases: List[str] = None,
         docstring: str = "",
@@ -294,7 +292,7 @@ class Test{class_name}:
 
     @classmethod
     def generate(
-        cls, target: str, module: str, params: list[tuple[str, Any]], class_name: str = ""
+        cls, target: str, module: str, params: List[tuple[str, Any]], class_name: str = ""
     ) -> GeneratedCode:
         """Generate test cases."""
         test_name = target.lower().replace("test_", "")

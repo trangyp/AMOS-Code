@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """AMOS 57-Component Master Orchestrator - System Activation Layer.
 
+from amos_meta_architecture import MetaGovernance
+from amos_formal_core import AMOSFormalSystem
+from amos_meta_ontological import AMOSMetaOntological
+from amos_coherence_engine import AMOSCoherenceEngine
+from amos_meta_architecture import MetaGovernance
+from amos_formal_core import AMOSFormalSystem
+import sys
 This is the main entry point for the complete 57-component autonomous system.
 It orchestrates all layers, monitors health, executes self-healing, and
 provides operational APIs.
@@ -20,7 +27,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -108,7 +115,6 @@ class AMOS57MasterOrchestrator:
         try:
             # Step 1: Initialize Meta-Architecture (10 systems)
             print("\n[1/4] Initializing Meta-Architecture Layer (10 systems)...")
-            from amos_meta_architecture import MetaGovernance
 
             self.meta_governance = MetaGovernance()
             print("   ✅ Meta-Architecture: Promise, Breach, Identity, Equivalence,")
@@ -117,7 +123,6 @@ class AMOS57MasterOrchestrator:
 
             # Step 2: Initialize 21-Tuple Formal Core
             print("\n[2/4] Initializing 21-Tuple Formal Core...")
-            from amos_formal_core import AMOSFormalSystem
 
             self.formal_core = AMOSFormalSystem()
             print("   ✅ Formal Core: State Bundle, Intent, Syntax, Ontology,")
@@ -128,7 +133,6 @@ class AMOS57MasterOrchestrator:
 
             # Step 3: Initialize Meta-Ontological (12 components)
             print("\n[3/4] Initializing Meta-Ontological Layer (12 components)...")
-            from amos_meta_ontological import AMOSMetaOntological
 
             self.meta_ontological = AMOSMetaOntological()
             print("   ✅ Meta-Ontological: Energy Budget, Temporal Hierarchy,")
@@ -139,7 +143,6 @@ class AMOS57MasterOrchestrator:
 
             # Step 4: Initialize Production System
             print("\n[4/4] Initializing Production System...")
-            from amos_coherence_engine import AMOSCoherenceEngine
 
             self.coherence_engine = AMOSCoherenceEngine()
             print("   ✅ Production: Coherence Engine, API Server, Monitoring")
@@ -367,12 +370,10 @@ class AMOS57MasterOrchestrator:
         try:
             # Re-initialize failing components
             if self.current_health and self.current_health.meta_architecture_health < 0.5:
-                from amos_meta_architecture import MetaGovernance
                 self.meta_governance = MetaGovernance()
                 print("   ✅ Meta-Architecture re-initialized")
 
             if self.current_health and self.current_health.formal_core_health < 0.5:
-                from amos_formal_core import AMOSFormalSystem
                 self.formal_core = AMOSFormalSystem()
                 print("   ✅ Formal Core re-initialized")
 
@@ -431,8 +432,6 @@ class AMOS57MasterOrchestrator:
 
 def main():
     """Main entry point for AMOS 57-Component Master Orchestrator."""
-    import sys
-from typing import Final, Tuple
 
     # Parse arguments
     command = sys.argv[1] if len(sys.argv) > 1 else "start"

@@ -48,7 +48,7 @@ class BrainMasterKnowledgeLoader:
         self.loaded = False
         self.stats = {"total_entries": 0, "domains": 0, "memory_mb": 0}
 
-    def load_brain_master(self, path: Path | None = None) -> dict[str, Any]:
+    def load_brain_master(self, path: Optional[Path] = None) -> dict[str, Any]:
         """Load Brain_Master_Os_v0.json knowledge base.
 
         Args:
@@ -182,7 +182,7 @@ class BrainMasterKnowledgeLoader:
         keys = self.domains[domain]
         return [e for e in self.entries if e.key in keys]
 
-    def get_entry(self, key: str) -> KnowledgeEntry | None:
+    def get_entry(self, key: str) -> Optional[KnowledgeEntry]:
         """Get specific entry by key."""
         for entry in self.entries:
             if entry.key == key:
@@ -215,7 +215,7 @@ class KnowledgeEnhancedBrain:
         self.knowledge_loader = BrainMasterKnowledgeLoader()
         self.initialized = False
 
-    def initialize(self, knowledge_path: Path | None = None) -> dict[str, Any]:
+    def initialize(self, knowledge_path: Optional[Path] = None) -> dict[str, Any]:
         """Initialize brain with knowledge base."""
         print("🧠 Initializing Knowledge-Enhanced Brain...")
 
@@ -274,7 +274,7 @@ class KnowledgeEnhancedBrain:
 
 
 # Global instance
-_brain_knowledge: KnowledgeEnhancedBrain | None = None
+_brain_knowledge: Optional[KnowledgeEnhancedBrain] = None
 
 
 def get_knowledge_brain() -> KnowledgeEnhancedBrain:
@@ -285,7 +285,7 @@ def get_knowledge_brain() -> KnowledgeEnhancedBrain:
     return _brain_knowledge
 
 
-def load_brain_knowledge(path: Path | None = None) -> dict[str, Any]:
+def load_brain_knowledge(path: Optional[Path] = None) -> dict[str, Any]:
     """Convenience function to load brain knowledge."""
     brain = get_knowledge_brain()
     return brain.initialize(path)

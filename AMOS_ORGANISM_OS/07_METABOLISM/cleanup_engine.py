@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Cleanup Engine — Resource cleanup and maintenance
 
 Manages cleanup tasks, temporary file removal, and
@@ -11,6 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class CleanupPolicy(Enum):
@@ -51,7 +51,7 @@ class CleanupTask:
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     enabled: bool = True
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "policy": self.policy.value,
@@ -66,14 +66,14 @@ class CleanupEngine:
     general maintenance tasks.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.tasks: dict[str, CleanupTask] = []
-        self.cleanup_handlers: dict[CleanupPolicy, Callable] = {}
+        self.tasks: Dict[str, CleanupTask] = []
+        self.cleanup_handlers: Dict[CleanupPolicy, Callable] = {}
 
         self._load_tasks()
         self._register_default_handlers()
@@ -178,7 +178,7 @@ class CleanupEngine:
         self.save()
         return task
 
-    def execute_task(self, task_id: str, base_path: Path | None = None) -> dict[str, Any]:
+    def execute_task(self, task_id: str, base_path: Optional[Path] = None) -> Dict[str, Any]:
         """Execute a specific cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -212,7 +212,7 @@ class CleanupEngine:
             self.save()
             return {"success": False, "error": str(e)}
 
-    def execute_all(self, base_path: Path | None = None) -> dict[str, Any]:
+    def execute_all(self, base_path: Optional[Path] = None) -> Dict[str, Any]:
         """Execute all enabled cleanup tasks."""
         results = []
         total_cleaned = 0
@@ -240,7 +240,7 @@ class CleanupEngine:
         }
 
     # Cleanup handlers
-    def _handle_delete(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
+    def _handle_delete(self, task: CleanupTask, base_path: Path) -> Dict[str, Any]:
         """Handle delete policy."""
         import glob
 
@@ -279,7 +279,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def _handle_archive(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
+    def _handle_archive(self, task: CleanupTask, base_path: Path) -> Dict[str, Any]:
         """Handle archive policy."""
         import glob
         import shutil
@@ -319,7 +319,7 @@ class CleanupEngine:
             "archive_dir": str(archive_dir),
         }
 
-    def _handle_truncate(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
+    def _handle_truncate(self, task: CleanupTask, base_path: Path) -> Dict[str, Any]:
         """Handle truncate policy for log files."""
         import glob
 
@@ -345,7 +345,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def get_task_status(self, task_id: str) -> dict[str, Any]:
+    def get_task_status(self, task_id: str) -> Dict[str, Any]:
         """Get status of a cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -372,7 +372,7 @@ class CleanupEngine:
 
         return next_run.isoformat()
 
-    def list_tasks(self, enabled_only: bool = False) -> list[dict]:
+    def list_tasks(self, enabled_only: bool = False) -> List[dict]:
         """List all cleanup tasks."""
         tasks = self.tasks
         if enabled_only:
@@ -393,10 +393,10 @@ class CleanupEngine:
 
 
 # Global instance
-_ENGINE: CleanupEngine | None = None
+_ENGINE: Optional[CleanupEngine] = None
 
 
-def get_cleanup_engine(data_dir: Path | None = None) -> CleanupEngine:
+def get_cleanup_engine(data_dir: Optional[Path] = None) -> CleanupEngine:
     """Get or create global cleanup engine."""
     global _ENGINE
     if _ENGINE is None:

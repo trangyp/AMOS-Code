@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+from amos_superbrain_equation_bridge import (
+import sys
 AMOS AI Frameworks Equation Bridge
 ==================================
 
@@ -29,15 +31,16 @@ import re
 import json
 from pathlib import Path
 from dataclasses import dataclass, field, asdict
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 from enum import Enum, auto
 from functools import lru_cache
 import hashlib
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 # Import SuperBrain bridge for integration
 try:
-    from amos_superbrain_equation_bridge import (
+    from amos_superbrain_bridge import (
         MathematicalPattern,
         Domain,
         EquationMetadata,
@@ -198,12 +201,12 @@ class AIFrameworkKnowledgeGraph:
 
     def __init__(self):
         self.frameworks: Dict[str, AIFrameworkEntry] = {}
-        self.section_index: dict[int, str] = {}  # section_num -> id
-        self.category_index: dict[AIFrameworkCategory, set[str]] = {
+        self.section_index: Dict[int, str] = {}  # section_num -> id
+        self.category_index: Dict[AIFrameworkCategory, set[str]] = {
             cat: set() for cat in AIFrameworkCategory
         }
-        self.tag_index: dict[str, set[str]] = {}
-        self.paper_index: dict[str, set[str]] = {}
+        self.tag_index: Dict[str, set[str]] = {}
+        self.paper_index: Dict[str, set[str]] = {}
         self.metadata = AIFRameworkMetadata()
 
     def add_framework(self, fw: AIFrameworkEntry) -> str:
@@ -523,7 +526,7 @@ class AIFrameworkSuperBrainIntegration:
         self.ai_graph = ai_graph
         self.domain_mappings = self._build_domain_mappings()
 
-    def _build_domain_mappings(self) -> dict[AIFrameworkCategory, Domain]:
+    def _build_domain_mappings(self) -> Dict[AIFrameworkCategory, Domain]:
         """Map AI framework categories to SuperBrain domains."""
         return {
             AIFrameworkCategory.TRANSFORMERS: Domain.TRANSFORMER_CIRCUITS,
@@ -544,7 +547,7 @@ class AIFrameworkSuperBrainIntegration:
         """Get corresponding SuperBrain domain for AI category."""
         return self.domain_mappings.get(category)
 
-    def find_cross_domain_equations(self, fw_id: str) -> list[dict[str, Any]]:
+    def find_cross_domain_equations(self, fw_id: str) -> List[dict[str, Any]]:
         """Find equations in other domains related to an AI framework."""
         if fw_id not in self.ai_graph.frameworks:
             return []
@@ -690,8 +693,7 @@ def integrate_with_superbrain(
 
 # CLI interface
 if __name__ == "__main__":
-    import sys
-from typing import Callable, Dict
+    from typing import Callable, Dict
 
     if len(sys.argv) > 1 and sys.argv[1] == "build":
         # Build knowledge base

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 """Production Security Middleware for AMOS Backend.
 
@@ -20,7 +20,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
         self.burst_size = burst_size
-        self.requests: dict[str, list[float]] = {}
+        self.requests: Dict[str, list[float]] = {}
 
     async def dispatch(self, request: Request, call_next):
         client_ip = request.client.host if request.client else "unknown"

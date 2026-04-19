@@ -10,8 +10,6 @@ This module ACTUALLY uses the AMOS brain to perform real cognitive tasks:
 Integrates directly with amos_active_brain for real brain processing.
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -20,7 +18,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -43,7 +41,7 @@ class FileAnalysisRequest(BaseModel):
     """Request to analyze a file."""
 
     file_path: str = Field(..., min_length=1, description="Path to file to analyze")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class FileAnalysisResponse(BaseModel):
@@ -89,14 +87,14 @@ class RefactoringResponse(BaseModel):
     status: str
     suggestions: str
     cognitive_steps: int
-    tools_used: list[str]
+    tools_used: List[str]
     timestamp: datetime
 
 
 class BatchAnalysisRequest(BaseModel):
     """Request to analyze multiple files."""
 
-    file_paths: list[str] = Field(..., min_length=1, max_length=20)
+    file_paths: List[str] = Field(..., min_length=1, max_length=20)
     analysis_type: str = Field(default="general", description="Type of analysis")
 
 
@@ -104,8 +102,8 @@ class BatchAnalysisResponse(BaseModel):
     """Response from batch analysis."""
 
     files_analyzed: int
-    results: list[dict[str, Any]]
-    architecture_issues: list[dict[str, Any]]
+    results: List[dict[str, Any]]
+    architecture_issues: List[dict[str, Any]]
     summary: str
     timestamp: datetime
 
@@ -124,7 +122,7 @@ class ActiveBrainEngine:
             await self._brain.initialize()
         return self._brain
 
-    async def analyze_file(self, file_path: str, context: dict[str, Any]) -> FileAnalysisResponse:
+    async def analyze_file(self, file_path: str, context: Dict[str, Any]) -> FileAnalysisResponse:
         """Analyze a file using REAL brain cognitive processing."""
         start_time = datetime.now(UTC)
 
@@ -198,7 +196,7 @@ class ActiveBrainEngine:
         )
 
     async def analyze_batch(
-        self, file_paths: list[str], analysis_type: str
+        self, file_paths: List[str], analysis_type: str
     ) -> BatchAnalysisResponse:
         """Analyze multiple files using REAL brain architecture detection."""
         # Get brain
@@ -275,7 +273,7 @@ class ActiveBrainEngine:
                 "timestamp": datetime.now(UTC).isoformat(),
             }
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get brain usage statistics."""
         if self._brain:
             return self._brain.get_brain_stats()
@@ -283,7 +281,7 @@ class ActiveBrainEngine:
 
 
 # Global engine
-_active_engine: ActiveBrainEngine | None = None
+_active_engine: Optional[ActiveBrainEngine] = None
 
 
 def get_active_engine() -> ActiveBrainEngine:
@@ -353,7 +351,7 @@ async def stream_file_analysis(
 
 
 @router.get("/stats")
-async def get_brain_stats() -> dict[str, Any]:
+async def get_brain_stats() -> Dict[str, Any]:
     """Get REAL brain usage statistics.
 
     Returns actual metrics from the active brain.
@@ -363,7 +361,7 @@ async def get_brain_stats() -> dict[str, Any]:
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Check if brain is active and operational."""
     try:
         engine = get_active_engine()

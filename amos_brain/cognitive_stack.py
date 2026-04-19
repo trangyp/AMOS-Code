@@ -1,5 +1,6 @@
 """Cognitive Stack - Domain engine management and orchestration."""
 
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
@@ -13,12 +14,12 @@ class DomainEngine:
     domain: str
     version: str
     description: str = ""
-    core_principles: dict[str, str] = field(default_factory=dict)
-    processing_pipeline: list[str] = field(default_factory=list)
-    safety_constraints: dict[str, bool] = field(default_factory=dict)
+    core_principles: Dict[str, str] = field(default_factory=dict)
+    processing_pipeline: List[str] = field(default_factory=list)
+    safety_constraints: Dict[str, bool] = field(default_factory=dict)
     active: bool = True
 
-    def process(self, input_data: dict[str, Any]) -> dict[str, Any]:
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process input through this domain engine."""
         # Check safety constraints
         for constraint, enabled in self.safety_constraints.items():
@@ -42,12 +43,12 @@ class DomainEngine:
             "principles_applied": list(self.core_principles.keys()),
         }
 
-    def _check_constraint(self, constraint: str, data: dict[str, Any]) -> bool:
+    def _check_constraint(self, constraint: str, data: Dict[str, Any]) -> bool:
         """Check if input satisfies safety constraint."""
         # Placeholder: actual constraints would be domain-specific
         return True
 
-    def _apply_step(self, step: str, data: dict[str, Any]) -> dict[str, Any]:
+    def _apply_step(self, step: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Apply a processing step."""
         # Placeholder: actual steps would be domain-specific
         data[f"step_{step}"] = "processed"
@@ -79,8 +80,8 @@ class CognitiveStack:
 
     def __init__(self, core_path: str  = None):
         self.core_path = core_path
-        self.engines: dict[str, DomainEngine] = {}
-        self._routing_table: dict[str, list[str]] = {}
+        self.engines: Dict[str, DomainEngine] = {}
+        self._routing_table: Dict[str, list[str]] = {}
         self._load_engines()
 
     def _load_engines(self) -> None:
@@ -139,7 +140,7 @@ class CognitiveStack:
         }
         self._routing_table = keywords
 
-    def route_query(self, query: str) -> list[str]:
+    def route_query(self, query: str) -> List[str]:
         """Determine which engines should handle a query."""
         query_lower = query.lower()
         matched_engines = set()
@@ -159,7 +160,7 @@ class CognitiveStack:
 
         return list(matched_engines)
 
-    def execute(self, query: str, context: dict[str, Any]  = None) -> dict[str, Any]:
+    def execute(self, query: str, context: Dict[str, Any]  = None) -> Dict[str, Any]:
         """Execute query through appropriate engines."""
         engines_to_use = self.route_query(query)
         results = []
@@ -177,11 +178,11 @@ class CognitiveStack:
             "coverage": len(results) / len(engines_to_use) if engines_to_use else 0,
         }
 
-    def get_engine(self, name: str) -> DomainEngine | None:
+    def get_engine(self, name: str) -> Optional[DomainEngine]:
         """Get specific engine by name."""
         return self.engines.get(name)
 
-    def list_engines(self) -> list[str]:
+    def list_engines(self) -> List[str]:
         """List all available engines."""
         return list(self.engines.keys())
 
@@ -199,7 +200,7 @@ class CognitiveStack:
             return True
         return False
 
-    def get_domain_coverage(self) -> dict[str, list[str]]:
+    def get_domain_coverage(self) -> Dict[str, list[str]]:
         """Get coverage by domain category."""
         coverage = {}
         for engine in self.engines.values():

@@ -19,7 +19,6 @@ if sys.version_info >= (3, 11):
 else:
     try:
         import tomli as tomllib
-from typing import List
     except ImportError:
         tomllib = None
 

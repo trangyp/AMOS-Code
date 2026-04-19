@@ -32,7 +32,7 @@ References:
 import json
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -123,7 +123,7 @@ class TaskResponse(BaseModel):
     task_id: str
     state: str
     assigned_agent: str
-    messages: list[dict[str, Any]]
+    messages: List[dict[str, Any]]
     created_at: str
 
 
@@ -138,7 +138,7 @@ class MemorySearchRequest(BaseModel):
 class MemorySearchResponse(BaseModel):
     """Memory search response model."""
 
-    entries: list[dict[str, Any]]
+    entries: List[dict[str, Any]]
     total_count: int
 
 

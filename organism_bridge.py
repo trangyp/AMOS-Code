@@ -3,7 +3,7 @@
 Provides integration between organism and brain components.
 """
 
-from typing import Any
+from typing import Any, Dict, Optional
 
 
 class OrganismBridge:

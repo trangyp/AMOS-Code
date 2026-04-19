@@ -22,9 +22,10 @@ import importlib.util
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 import time
 import hashlib
 import json
@@ -224,7 +225,6 @@ class EquationKernelIntegration:
         except Exception as e:
             print(f"\n❌ Integration layer initialization failed: {e}")
             import traceback
-from typing import Callable, List
             traceback.print_exc()
             return False
 

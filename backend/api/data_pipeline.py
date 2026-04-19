@@ -6,14 +6,15 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from typing import Dict
+from __future__ import annotations
+
+from typing import Any
 import time
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from backend.auth import User, get_current_user
-from typing import Any, List, Optional
 
 from backend.data_pipeline import (
     DataPipelineService,
@@ -158,7 +159,7 @@ async def get_job_status(
 async def list_jobs(
     service: DataPipelineService = Depends(get_pipeline_service),
     current_user: User = Depends(get_current_user),
-) -> List[JobResponse]:
+) -> list[JobResponse]:
     """List all ETL jobs."""
     jobs = service.list_jobs()
     return [
@@ -179,7 +180,7 @@ async def create_stream_processor_endpoint(
     request: StreamProcessorRequest,
     service: DataPipelineService = Depends(get_pipeline_service),
     current_user: User = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Create a new stream processor with windowing."""
     processor = service.create_stream_processor(
         name=request.name, window_type=request.window_type, window_size=request.window_size
@@ -202,7 +203,7 @@ async def ingest_to_stream(
     request: IngestRequest,
     service: DataPipelineService = Depends(get_pipeline_service),
     current_user: User = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Ingest records into stream processor."""
     stats = service.get_processor_stats(processor_name)
     if not stats:
@@ -247,6 +248,6 @@ async def get_stream_stats(
 async def get_pipeline_stats(
     service: DataPipelineService = Depends(get_pipeline_service),
     current_user: User = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get overall pipeline statistics."""
     return service.get_stats()

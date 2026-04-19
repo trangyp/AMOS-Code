@@ -9,7 +9,7 @@ Version: 3.0.0
 
 import os
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -60,7 +60,7 @@ USERS_DB = {
 class TokenData:
     """Token data model."""
 
-    def __init__(self, username: str = None, scopes: list[str] = None):
+    def __init__(self, username: str = None, scopes: List[str] = None):
         self.username = username
         self.scopes = scopes or []
 
@@ -75,12 +75,12 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(username: str) -> dict[str, Any]:
+def get_user(username: str) -> Dict[str, Any]:
     """Get user from database."""
     return USERS_DB.get(username)
 
 
-def authenticate_user(username: str, password: str) -> dict[str, Any]:
+def authenticate_user(username: str, password: str) -> Dict[str, Any]:
     """Authenticate a user."""
     user = get_user(username)
     if not user:
@@ -90,7 +90,7 @@ def authenticate_user(username: str, password: str) -> dict[str, Any]:
     return user
 
 
-def create_access_token(data: dict[str, Any], expires_delta: timedelta = None) -> str:
+def create_access_token(data: Dict[str, Any], expires_delta: timedelta = None) -> str:
     """Create a JWT access token."""
     to_encode = data.copy()
 
@@ -112,7 +112,7 @@ def create_refresh_token(username: str) -> str:
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict[str, Any]:
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
     """Get current user from JWT token."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -144,8 +144,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict[str, Any
 
 
 async def get_current_active_user(
-    current_user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    current_user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get current active user."""
     if current_user.get("disabled", False):
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -156,8 +156,8 @@ def require_scope(scope: str):
     """Decorator to require a specific scope/permission."""
 
     async def check_scope(
-        current_user: dict[str, Any] = Depends(get_current_active_user),
-    ) -> dict[str, Any]:
+        current_user: Dict[str, Any] = Depends(get_current_active_user),
+    ) -> Dict[str, Any]:
         user_permissions = current_user.get("permissions", [])
         if scope not in user_permissions:
             raise HTTPException(
@@ -183,15 +183,15 @@ ROLES = {
 }
 
 
-def check_permission(user: dict[str, Any], permission: str) -> bool:
+def check_permission(user: Dict[str, Any], permission: str) -> bool:
     """Check if user has a specific permission."""
     user_permissions = user.get("permissions", [])
     return permission in user_permissions
 
 
 async def require_admin(
-    current_user: dict[str, Any] = Depends(get_current_active_user),
-) -> dict[str, Any]:
+    current_user: Dict[str, Any] = Depends(get_current_active_user),
+) -> Dict[str, Any]:
     """Require admin role."""
     if "admin" not in current_user.get("roles", []):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
@@ -208,7 +208,7 @@ API_KEYS = {
 }
 
 
-def verify_api_key(api_key: str) -> dict[str, Any]:
+def verify_api_key(api_key: str) -> Dict[str, Any]:
     """Verify an API key."""
     for service_id, service_data in API_KEYS.items():
         if service_data["key"] == api_key:

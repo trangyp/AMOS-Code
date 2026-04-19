@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -28,8 +28,8 @@ class EngineActivator:
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
         self.activated_engines: Dict[str, ActivatedEngine] = {}
-        self.capability_index: dict[str, list[str]] = {}
-        self.category_index: dict[str, list[str]] = {}
+        self.capability_index: Dict[str, list[str]] = {}
+        self.category_index: Dict[str, list[str]] = {}
         self._invoke_handlers: Dict[str, Callable] = {}
         self._initialize_handlers()
 

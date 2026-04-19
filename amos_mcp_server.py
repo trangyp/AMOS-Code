@@ -28,7 +28,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -58,7 +58,7 @@ class AMOSMCPServer:
         self.amos = get_amos_integration()
         self.tools = self._define_tools()
 
-    def _define_tools(self) -> dict[str, Tool]:
+    def _define_tools(self) -> Dict[str, Tool]:
         """Define MCP tools."""
         return {
             "amos_reasoning": Tool(

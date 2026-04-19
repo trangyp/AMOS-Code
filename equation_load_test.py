@@ -4,7 +4,7 @@
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
+from typing import Any, Dict, List
 
 try:
     import requests
@@ -28,7 +28,7 @@ class EquationAPILoadTest:
 
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.base_url = base_url
-        self.results: list[dict[str, Any]] = []
+        self.results: List[dict[str, Any]] = []
 
     def test_health_endpoint(self, iterations: int = 100) -> Dict[str, Any]:
         """Test health check endpoint."""

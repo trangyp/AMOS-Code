@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict
 
 import psutil
 
@@ -38,8 +38,8 @@ class HealthStatus:
     timestamp: str
     version: str
     uptime_seconds: float
-    checks: dict[str, Any] = field(default_factory=dict)
-    details: dict[str, Any] = None
+    checks: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = None
 
 
 @dataclass
@@ -50,7 +50,7 @@ class ComponentCheck:
     status: str  # "pass", "fail", "warn"
     response_time_ms: float
     message: str = None
-    metadata: dict[str, Any] = None
+    metadata: Dict[str, Any] = None
 
 
 class HealthChecker:
@@ -60,8 +60,8 @@ class HealthChecker:
 
     def __init__(self):
         self._start_time = time.time()
-        self._checks: dict[str, callable] = {}
-        self._last_checks: dict[str, ComponentCheck] = {}
+        self._checks: Dict[str, callable] = {}
+        self._last_checks: Dict[str, ComponentCheck] = {}
         self._register_default_checks()
 
     def _register_default_checks(self) -> None:
@@ -93,7 +93,7 @@ class HealthChecker:
         Should check all dependencies (database, external services, etc.)
         """
         start_time = time.time()
-        checks: dict[str, Any] = {}
+        checks: Dict[str, Any] = {}
         all_passed = True
 
         # Run all registered checks
@@ -241,7 +241,7 @@ class HealthChecker:
         """Add a custom health check."""
         self._checks[name] = check_fn
 
-    def get_last_checks(self) -> dict[str, ComponentCheck]:
+    def get_last_checks(self) -> Dict[str, ComponentCheck]:
         """Get results from last health check run."""
         return self._last_checks.copy()
 

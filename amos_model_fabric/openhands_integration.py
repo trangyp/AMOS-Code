@@ -4,14 +4,12 @@ Real integration with OpenHands for autonomous repo work.
 https://docs.openhands.dev/
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +108,7 @@ class OpenHandsIntegration:
 
         return subprocess.Popen(cmd)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get OpenHands integration status."""
         return {
             "docker_available": self.is_docker_available(),

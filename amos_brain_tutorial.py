@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """AMOS Brain Interactive Tutorial - Learn brain features hands-on.
 
+from amos_brain.cognitive_stack import CognitiveStack
 Guides users through:
   1. Rule of 2 (dual perspective decision analysis)
   2. Rule of 4 (four quadrant systems analysis)
@@ -170,8 +171,6 @@ def demo_analyze(amos, memory):
     print()
 
     # Route to engines
-    from amos_brain.cognitive_stack import CognitiveStack
-from typing import Final
 
     stack = CognitiveStack()
     engines = stack.route_query(topic)

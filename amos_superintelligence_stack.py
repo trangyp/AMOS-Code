@@ -28,10 +28,10 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from functools import reduce
-from typing import Optional, Any, TypeVar, Callable, Self, Any, Callable, TypeVar
-from typing import TypeVar, Callable
+from typing import Any, Callable, Callable, Callable, Dict, List, Optional, Self, Set, TypeVar, TypeVar, TypeVar
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -151,7 +151,7 @@ class Concept:
 
     id: str
     name: str
-    invariants: list[dict[str, Any]] = field(default_factory=list)
+    invariants: List[dict[str, Any]] = field(default_factory=list)
     instances: List[str] = field(default_factory=list)
     abstraction_level: AbstractionLevel = AbstractionLevel.PATTERN
     compression_ratio: float = 0.0
@@ -228,7 +228,7 @@ class OntologyVersion:
     version_id: str
     timestamp: str
     types: Set[str] = field(default_factory=set)
-    relations: set[tuple[str, str, str]] = field(default_factory=set)
+    relations: Set[tuple[str, str, str]] = field(default_factory=set)
     mappings: Dict[str, str] = field(default_factory=dict)  # old → new
 
 @dataclass
@@ -261,7 +261,7 @@ class ValueSystem:
     """A learned or inferred value system."""
 
     values: Dict[str, float] = field(default_factory=dict)  # value → weight
-    conflicts: list[tuple[str, str, float]] = field(
+    conflicts: List[tuple[str, str, float]] = field(
         default_factory=list
     )  # (v1, v2, conflict_strength)
     uncertainty: Dict[str, float] = field(default_factory=dict)
@@ -275,7 +275,7 @@ class BoundaryState:
     self_model: Dict[str, Any] = field(default_factory=dict)
     user_model: Dict[str, Any] = field(default_factory=dict)
     world_model: Dict[str, Any] = field(default_factory=dict)
-    confidence_map: dict[BoundaryType, float] = field(default_factory=dict)
+    confidence_map: Dict[BoundaryType, float] = field(default_factory=dict)
     ambiguity_zones: List[str] = field(default_factory=list)
 
 @dataclass
@@ -385,7 +385,7 @@ class UnderstandingKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("understanding_kernel")
-        self.explanations: dict[str, dict[str, Any]] = {}
+        self.explanations: Dict[str, dict[str, Any]] = {}
         self.explanation_validity: Dict[str, float] = {}
         self.transfer_successes: defaultdict[str, list[bool]] = defaultdict(list)
         self.prediction_accuracy: defaultdict[str, list[bool]] = defaultdict(list)
@@ -455,7 +455,7 @@ class UnderstandingKernel(CognitiveKernel):
             "truly_understands": understanding_score > 0.7,
         }
 
-    async def _generate_explanations(self, content: str) -> list[dict[str, Any]]:
+    async def _generate_explanations(self, content: str) -> List[dict[str, Any]]:
         """Generate multiple forms of explanation."""
         explanations = []
 
@@ -547,7 +547,7 @@ class ConceptFormationKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("concept_formation_kernel")
         self.concepts: Dict[str, Concept] = {}
-        self.instance_cache: dict[str, dict[str, Any]] = {}
+        self.instance_cache: Dict[str, dict[str, Any]] = {}
         self.invariant_extractor: Optional[Callable] = None
 
     async def _initialize_impl(self) -> None:
@@ -630,7 +630,7 @@ class ConceptFormationKernel(CognitiveKernel):
             "abstraction_level": concept.abstraction_level.name,
         }
 
-    def _extract_invariants(self, instances: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _extract_invariants(self, instances: List[dict[str, Any]]) -> List[dict[str, Any]]:
         """Extract invariant structure across instances."""
         if not instances:
             return []
@@ -657,7 +657,7 @@ class ConceptFormationKernel(CognitiveKernel):
 
     def match_instance(
         self, features: Dict[str, Any], concept_id: Optional[str] = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Match features against stored concepts."""
         matches = []
 
@@ -681,7 +681,7 @@ class ConceptFormationKernel(CognitiveKernel):
         """Get a concept by ID."""
         return self.concepts.get(concept_id)
 
-    def get_all_concepts(self) -> dict[str, Concept]:
+    def get_all_concepts(self) -> Dict[str, Concept]:
         """Get all formed concepts."""
         return self.concepts.copy()
 
@@ -700,8 +700,8 @@ class AbstractionKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("abstraction_kernel")
         self.ladder_state: Dict[str, AbstractionLevel] = {}
-        self.abstractions: dict[str, dict[str, Any]] = {}
-        self.descents: dict[str, list[str]] = defaultdict(list)  # abstract → concrete
+        self.abstractions: Dict[str, dict[str, Any]] = {}
+        self.descents: Dict[str, list[str]] = defaultdict(list)  # abstract → concrete
 
     async def _initialize_impl(self) -> None:
         """Initialize the abstraction kernel."""
@@ -818,9 +818,9 @@ class CausalModelBuilderKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("causal_model_builder_kernel")
-        self.models: dict[str, dict[str, Any]] = {}
-        self.edges: dict[str, list[CausalEdge]] = defaultdict(list)
-        self.intervention_history: list[dict[str, Any]] = []
+        self.models: Dict[str, dict[str, Any]] = {}
+        self.edges: Dict[str, list[CausalEdge]] = defaultdict(list)
+        self.intervention_history: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the causal model builder."""
@@ -894,7 +894,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
         }
 
     def _infer_causal_edges(
-        self, variables: List[str], observations: list[dict[str, Any]]
+        self, variables: List[str], observations: List[dict[str, Any]]
     ) -> List[CausalEdge]:
         """Infer causal edges from observations."""
         edges = []
@@ -921,7 +921,7 @@ class CausalModelBuilderKernel(CognitiveKernel):
         return edges
 
     def _identify_mechanisms(
-        self, edges: List[CausalEdge], observations: list[dict[str, Any]]
+        self, edges: List[CausalEdge], observations: List[dict[str, Any]]
     ) -> List[str]:
         """Identify mediating mechanisms."""
         mechanisms = []
@@ -998,7 +998,7 @@ class ActiveInferenceKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("active_inference_kernel")
         self.experiments: Dict[str, Experiment] = {}
-        self.experiment_history: list[dict[str, Any]] = []
+        self.experiment_history: List[dict[str, Any]] = []
         self.uncertainty_model: Dict[str, float] = {}
 
     async def _initialize_impl(self) -> None:
@@ -1177,8 +1177,8 @@ class CalibrationKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("calibration_kernel")
         self.calibration_records: List[CalibrationRecord] = []
-        self.confidence_bins: dict[int, list[bool]] = defaultdict(list)
-        self.calibration_curve: list[tuple[float, float]] = []
+        self.confidence_bins: Dict[int, list[bool]] = defaultdict(list)
+        self.calibration_curve: List[tuple[float, float]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the calibration kernel."""
@@ -1347,8 +1347,8 @@ class OntologyManagementKernel(CognitiveKernel):
         super().__init__("ontology_management_kernel")
         self.current_ontology: Optional[OntologyVersion] = None
         self.ontology_history: List[OntologyVersion] = []
-        self.type_system: dict[str, dict[str, Any]] = {}
-        self.relation_system: set[tuple[str, str, str]] = set()
+        self.type_system: Dict[str, dict[str, Any]] = {}
+        self.relation_system: Set[tuple[str, str, str]] = set()
 
     async def _initialize_impl(self) -> None:
         """Initialize the ontology management kernel."""
@@ -1493,7 +1493,7 @@ class OntologyManagementKernel(CognitiveKernel):
                 return onto
         return None
 
-    def detect_bad_ontology(self, observations: list[dict[str, Any]]) -> List[str]:
+    def detect_bad_ontology(self, observations: List[dict[str, Any]]) -> List[str]:
         """Detect signs of bad ontology."""
         issues = []
 
@@ -1529,7 +1529,7 @@ class CompressionKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("compression_kernel")
         self.compressed_representations: Dict[str, CompressedRepresentation] = {}
-        self.compression_stats: dict[str, dict[str, float]] = {}
+        self.compression_stats: Dict[str, dict[str, float]] = {}
 
     async def _initialize_impl(self) -> None:
         """Initialize the compression kernel."""
@@ -1663,7 +1663,7 @@ class CompressionKernel(CognitiveKernel):
     def _factor_common_structures(self, compressed: Dict[str, Any]) -> Dict[str, Any]:
         """Factor out common structures to reduce redundancy."""
         # Find duplicate values
-        value_counts: dict[str, tuple[Any, int]] = {}
+        value_counts: Dict[str, tuple[Any, int]] = {}
         for k, v in compressed.items():
             v_str = str(v)
             if v_str in value_counts:
@@ -1731,8 +1731,8 @@ class ProblemFindingKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("problem_finding_kernel")
         self.discovered_problems: Dict[str, DiscoveredProblem] = {}
-        self.pattern_library: dict[str, dict[str, Any]] = {}
-        self.search_history: list[dict[str, Any]] = []
+        self.pattern_library: Dict[str, dict[str, Any]] = {}
+        self.search_history: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the problem finding kernel."""
@@ -1974,8 +1974,8 @@ class ValueLearningKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("value_learning_kernel")
         self.value_systems: Dict[str, ValueSystem] = {}
-        self.inferred_values: dict[str, dict[str, float]] = {}
-        self.value_conflicts: list[dict[str, Any]] = []
+        self.inferred_values: Dict[str, dict[str, float]] = {}
+        self.value_conflicts: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the value learning kernel."""
@@ -2053,8 +2053,8 @@ class ValueLearningKernel(CognitiveKernel):
         }
 
     def _infer_values_from_observations(
-        self, observations: list[dict[str, Any]], vs: ValueSystem
-    ) -> dict[str, tuple[float, float]]:
+        self, observations: List[dict[str, Any]], vs: ValueSystem
+    ) -> Dict[str, tuple[float, float]]:
         """Infer values from behavioral observations."""
         inferred = {}
 
@@ -2078,7 +2078,7 @@ class ValueLearningKernel(CognitiveKernel):
 
         return inferred
 
-    def _detect_value_conflicts(self, vs: ValueSystem) -> list[tuple[str, str, float]]:
+    def _detect_value_conflicts(self, vs: ValueSystem) -> List[tuple[str, str, float]]:
         """Detect conflicts between values."""
         conflicts = []
 
@@ -2125,7 +2125,7 @@ class ValueLearningKernel(CognitiveKernel):
         return considerations
 
     def make_value_aligned_decision(
-        self, vs_key: str, world_model: Dict[str, Any], options: list[dict[str, Any]]
+        self, vs_key: str, world_model: Dict[str, Any], options: List[dict[str, Any]]
     ) -> Dict[str, Any]:
         """Make a decision aligned with learned values."""
         vs = self.value_systems.get(vs_key)
@@ -2180,8 +2180,8 @@ class SelfWorldBoundaryKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("self_world_boundary_kernel")
         self.boundary_states: Dict[str, BoundaryState] = {}
-        self.confusion_events: list[dict[str, Any]] = []
-        self.boundary_rules: list[dict[str, Any]] = []
+        self.confusion_events: List[dict[str, Any]] = []
+        self.boundary_rules: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the boundary kernel."""
@@ -2362,8 +2362,8 @@ class TransferKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("transfer_kernel")
         self.transfer_mappings: Dict[str, TransferMapping] = {}
-        self.domain_structures: dict[str, dict[str, Any]] = {}
-        self.transfer_history: list[dict[str, Any]] = []
+        self.domain_structures: Dict[str, dict[str, Any]] = {}
+        self.transfer_history: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the transfer kernel."""
@@ -2519,7 +2519,7 @@ class TransferKernel(CognitiveKernel):
             else "Discard",
         }
 
-    def find_transfer_opportunities(self, source_domain: str) -> list[dict[str, Any]]:
+    def find_transfer_opportunities(self, source_domain: str) -> List[dict[str, Any]]:
         """Find potential domains for transfer from source."""
         opportunities = []
 
@@ -2553,8 +2553,8 @@ class ToolSynthesisKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("tool_synthesis_kernel")
         self.invented_tools: Dict[str, InventedTool] = {}
-        self.synthesis_patterns: list[dict[str, Any]] = []
-        self.tool_usage_stats: dict[str, dict[str, Any]] = {}
+        self.synthesis_patterns: List[dict[str, Any]] = []
+        self.tool_usage_stats: Dict[str, dict[str, Any]] = {}
 
     async def _initialize_impl(self) -> None:
         """Initialize the tool synthesis kernel."""
@@ -2757,9 +2757,9 @@ class AdversarialRobustnessKernel(CognitiveKernel):
 
     def __init__(self) -> None:
         super().__init__("adversarial_robustness_kernel")
-        self.threat_patterns: dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
-        self.defense_mechanisms: dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
-        self.incident_history: list[dict[str, Any]] = []
+        self.threat_patterns: Dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
+        self.defense_mechanisms: Dict[AdversarialThreat, list[dict[str, Any]]] = defaultdict(list)
+        self.incident_history: List[dict[str, Any]] = []
         self.blocked_ips: Set[str] = set()
 
     async def _initialize_impl(self) -> None:
@@ -2992,9 +2992,9 @@ class TheoremBuildingKernel(CognitiveKernel):
     def __init__(self) -> None:
         super().__init__("theorem_building_kernel")
         self.theorems: Dict[str, Theorem] = {}
-        self.proof_library: dict[str, list[str]] = {}
+        self.proof_library: Dict[str, list[str]] = {}
         self.axioms: List[str] = []
-        self.cross_domain_mappings: list[dict[str, Any]] = []
+        self.cross_domain_mappings: List[dict[str, Any]] = []
 
     async def _initialize_impl(self) -> None:
         """Initialize the theorem building kernel."""
@@ -3078,7 +3078,7 @@ class TheoremBuildingKernel(CognitiveKernel):
         }
 
     def _construct_proof(
-        self, statement: str, evidence: list[dict[str, Any]], assumptions: List[str]
+        self, statement: str, evidence: List[dict[str, Any]], assumptions: List[str]
     ) -> List[str]:
         """Construct a proof for the theorem."""
         proof_steps = []
@@ -3139,7 +3139,7 @@ class TheoremBuildingKernel(CognitiveKernel):
         return applications
 
     def _calculate_theorem_confidence(
-        self, evidence: list[dict[str, Any]], proof: List[str]
+        self, evidence: List[dict[str, Any]], proof: List[str]
     ) -> float:
         """Calculate confidence in the theorem."""
         base_confidence = 0.5
@@ -3153,7 +3153,7 @@ class TheoremBuildingKernel(CognitiveKernel):
         return min(base_confidence + evidence_boost + proof_boost, 0.95)
 
     async def verify_theorem(
-        self, theorem_id: str, test_cases: list[dict[str, Any]]
+        self, theorem_id: str, test_cases: List[dict[str, Any]]
     ) -> Dict[str, Any]:
         """Verify a theorem with test cases."""
         theorem = self.theorems.get(theorem_id)
@@ -3184,7 +3184,7 @@ class TheoremBuildingKernel(CognitiveKernel):
             "verified": verification_rate > 0.8,
         }
 
-    def find_unifying_laws(self, theorems: List[str]) -> list[dict[str, Any]]:
+    def find_unifying_laws(self, theorems: List[str]) -> List[dict[str, Any]]:
         """Find laws that unify multiple theorems."""
         unifying_laws = []
 
@@ -3251,7 +3251,7 @@ class SuperIntelligenceStack:
             "theorem_building_kernel",
         ]
         self.stack_state = "uninitialized"
-        self.metrics_history: list[dict[str, Any]] = []
+        self.metrics_history: List[dict[str, Any]] = []
 
     async def initialize(self) -> bool:
         """Initialize all kernels in the stack."""

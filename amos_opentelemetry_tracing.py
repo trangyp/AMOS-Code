@@ -45,7 +45,7 @@ import functools
 import os
 from collections.abc import Callable
 from contextlib import contextmanager
-from typing import Any, TypeVar
+from typing import Any, Dict, Optional, TypeVar
 
 # OpenTelemetry imports
 try:

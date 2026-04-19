@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Resource Engine — Core resource tracking and allocation
 
 Manages the "blood" of the organism - computational resources, tokens,
@@ -11,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 class ResourceType(Enum):
@@ -35,9 +34,9 @@ class ResourceAllocation:
     allocated_to: str = ""  # Subsystem or task
     purpose: str = ""
     allocated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    expires_at: str | None = None
+    expires_at: Optional[str] = None
     returned: bool = False
-    returned_at: str | None = None
+    returned_at: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -78,8 +77,8 @@ class ResourcePool:
         amount: float,
         allocated_to: str,
         purpose: str = "",
-        duration_hours: int | None = None,
-    ) -> ResourceAllocation | None:
+        duration_hours: Optional[int] = None,
+    ) -> Optional[ResourceAllocation]:
         """Allocate resources from this pool."""
         if amount > self.available:
             return None
@@ -140,7 +139,7 @@ class ResourceEngine:
     monitors utilization, and enforces limits.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
@@ -225,7 +224,7 @@ class ResourceEngine:
         }
         pools_file.write_text(json.dumps(data, indent=2))
 
-    def get_pool(self, name: str) -> ResourcePool | None:
+    def get_pool(self, name: str) -> Optional[ResourcePool]:
         """Get a resource pool by name."""
         return self.pools.get(name)
 
@@ -235,8 +234,8 @@ class ResourceEngine:
         amount: float,
         allocated_to: str,
         purpose: str = "",
-        duration_hours: int | None = None,
-    ) -> ResourceAllocation | None:
+        duration_hours: Optional[int] = None,
+    ) -> Optional[ResourceAllocation]:
         """Allocate resources from a specific pool."""
         pool = self.pools.get(pool_name)
         if not pool:
@@ -258,7 +257,7 @@ class ResourceEngine:
             self.save()
         return result
 
-    def cleanup(self) -> dict[str, int]:
+    def cleanup(self) -> Dict[str, int]:
         """Cleanup expired allocations across all pools."""
         results = {}
         for name, pool in self.pools.items():
@@ -307,10 +306,10 @@ class ResourceEngine:
 
 
 # Global instance
-_ENGINE: ResourceEngine | None = None
+_ENGINE: Optional[ResourceEngine] = None
 
 
-def get_resource_engine(data_dir: Path | None = None) -> ResourceEngine:
+def get_resource_engine(data_dir: Optional[Path] = None) -> ResourceEngine:
     """Get or create global resource engine."""
     global _ENGINE
     if _ENGINE is None:

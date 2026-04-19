@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 class LogicType(Enum):
@@ -144,7 +144,7 @@ class ModalLogicKernel:
             "modal_depth": statement.count("□") + statement.count("◇"),
         }
 
-    def evaluate_kripke_frame(self, worlds: List[str], accessibility: dict[str, list[str]], formula: str) -> dict[str, bool]:
+    def evaluate_kripke_frame(self, worlds: List[str], accessibility: Dict[str, list[str]], formula: str) -> Dict[str, bool]:
         """Evaluate formula in Kripke frame."""
         results = {}
         for world in worlds:
@@ -237,7 +237,7 @@ class InferenceEngine:
                         changed = True
         return new_facts
 
-    def backward_chain(self, goal: str, facts: Set[str]) -> list[list[str]]:
+    def backward_chain(self, goal: str, facts: Set[str]) -> List[list[str]]:
         """Backward chaining to prove goal."""
         proofs = []
         if goal in facts:
@@ -447,8 +447,6 @@ _logic_core: Optional[LogicCoreEngine] = None
 
 def get_logic_core_engine() -> LogicCoreEngine:
     """Get or create the Logic Core Engine singleton."""
-from __future__ import annotations
-
     global _logic_core
     if _logic_core is None:
         _logic_core = LogicCoreEngine()

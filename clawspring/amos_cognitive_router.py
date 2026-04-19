@@ -3,7 +3,7 @@
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -115,7 +115,7 @@ class CognitiveRouter:
     ]
 
     def __init__(self):
-        self._global_laws: dict[str, Any] = None
+        self._global_laws: Dict[str, Any] = None
 
     @property
     def global_laws(self) -> Dict[str, Any]:
@@ -246,7 +246,7 @@ class CognitiveRouter:
 
         return list(dict.fromkeys(engines))  # Remove duplicates
 
-    def _check_quadrants(self, task_lower: str, domains: List[str]) -> dict[str, bool]:
+    def _check_quadrants(self, task_lower: str, domains: List[str]) -> Dict[str, bool]:
         """Check Rule of 4: biological, technical, economic, environmental."""
         return {
             "biological": any(d in ["ubi", "medical", "health"] for d in domains),

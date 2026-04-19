@@ -1,6 +1,7 @@
 """Layer 18 Bridge - Distributed Systems Physics Engine Bridge."""
 
 from __future__ import annotations
+from typing import Optional
 
 try:
     from repo_doctor.layer18_physics_engine import DistributedPhysicsEngine
@@ -14,7 +15,7 @@ class DistributedPhysicsBridge:
 
 
     def __init__(self) -> None:
-        self.engine: DistributedPhysicsEngine | None = None
+        self.engine: Optional[DistributedPhysicsEngine] = None
         if _ENGINE_AVAILABLE:
             self.engine = DistributedPhysicsEngine()
         self.bridge_id = f"PHYSICS-BRIDGE-{id(self):x}"
@@ -103,7 +104,7 @@ class DistributedPhysicsBridge:
         }
 
 
-_bridge_instance: DistributedPhysicsBridge | None = None
+_bridge_instance: Optional[DistributedPhysicsBridge] = None
 
 
 def get_distributed_physics_bridge() -> DistributedPhysicsBridge:

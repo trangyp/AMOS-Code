@@ -6,8 +6,6 @@ production deployments. Ensures clean resource cleanup and
 state persistence during termination.
 """
 
-from __future__ import annotations
-
 
 import atexit
 import json
@@ -18,7 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -39,7 +37,7 @@ class LifecycleManager:
     def __init__(self, app_name: str = "amos-ecosystem"):
         self.app_name = app_name
         self.state = LifecycleState(status="starting", start_time=datetime.now())
-        self._cleanup_handlers: list[Callable[[], None]] = []
+        self._cleanup_handlers: List[Callable[[], None]] = []
         self._shutdown_event = threading.Event()
         self._lock = threading.Lock()
         self._state_file = Path(f".amos_lifecycle_{app_name}.json")
@@ -176,7 +174,7 @@ class LifecycleManager:
         with self._lock:
             return self.state.status == "running"
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current lifecycle status."""
         with self._lock:
             uptime = None
@@ -218,7 +216,7 @@ class ResourceManager:
 
     def __init__(self, lifecycle: LifecycleManager):
         self.lifecycle = lifecycle
-        self._resources: dict[str, Any] = {}
+        self._resources: Dict[str, Any] = {}
 
         # Register cleanup handler
         lifecycle.register_cleanup_handler(self._cleanup_all)
@@ -244,7 +242,7 @@ class ResourceManager:
 
 
 # Global instance
-_lifecycle_manager: LifecycleManager | None = None
+_lifecycle_manager: Optional[LifecycleManager] = None
 
 
 def get_lifecycle_manager() -> LifecycleManager:

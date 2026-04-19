@@ -84,7 +84,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class CognitionMode(Enum):
@@ -129,13 +129,13 @@ class NeuralPerceptionResult:
     timestamp: float
 
     # Extracted entities
-    entities: list[dict[str, Any]] = field(default_factory=list)
+    entities: List[dict[str, Any]] = field(default_factory=list)
 
     # Detected patterns
     patterns: List[str] = field(default_factory=list)
 
     # Feature vectors
-    features: dict[str, list[float]] = field(default_factory=dict)
+    features: Dict[str, list[float]] = field(default_factory=dict)
 
     # Confidence scores
     confidence: float = 0.0
@@ -156,7 +156,7 @@ class SymbolicReasoningResult:
     conclusions: List[str] = field(default_factory=list)
 
     # Inference chain
-    inference_chain: list[dict[str, Any]] = field(default_factory=list)
+    inference_chain: List[dict[str, Any]] = field(default_factory=list)
 
     # Knowledge triples used
     knowledge_base_triples: List[KnowledgeTriple] = field(default_factory=list)
@@ -187,7 +187,7 @@ class QuantumComputationResult:
 
     # Results
     optimization_value: float = None
-    search_results: list[dict[str, Any]] = field(default_factory=list)
+    search_results: List[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -250,7 +250,7 @@ class NeuroSymbolicQuantumHybrid:
         self.perception_models: Dict[str, Callable] = {}
 
         # Symbolic inference rules
-        self.inference_rules: list[dict[str, Any]] = []
+        self.inference_rules: List[dict[str, Any]] = []
 
         # Quantum circuit templates
         self.quantum_templates: Dict[str, Any] = {}
@@ -745,7 +745,7 @@ class NeuroSymbolicQuantumHybrid:
         return min(1.0, confidence)
 
     # Simulated neural perception functions
-    def _extract_entities(self, text: str) -> list[dict[str, Any]]:
+    def _extract_entities(self, text: str) -> List[dict[str, Any]]:
         """Extract entities from text (simulated)."""
         # Simulated entity extraction
         common_entities = [
@@ -800,7 +800,7 @@ class NeuroSymbolicQuantumHybrid:
         return patterns
 
     def _generate_explanation(
-        self, inference_chain: list[dict[str, Any]], reasoning_type: ReasoningType
+        self, inference_chain: List[dict[str, Any]], reasoning_type: ReasoningType
     ) -> str:
         """Generate human-readable explanation."""
         if not inference_chain:

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """
 AMOS Learning-Memory Persistence Layer
@@ -12,13 +12,12 @@ Core integration:
     - Cross-session memory continuity
     - Memory export/import for backup
 """
-from __future__ import annotations
-
 
 import asyncio
 import json
 import sqlite3
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from sqlite3 import Connection
 
@@ -163,7 +162,7 @@ class MemoryPersistenceLayer:
 
     async def load_memories(
         self,
-        memory_type: MemoryType | None = None,
+        memory_type: Optional[MemoryType] = None,
         min_importance: float = 0.0,
         limit: int = 1000,
     ) -> List[MemoryRecord]:
@@ -202,7 +201,7 @@ class MemoryPersistenceLayer:
 
         return records
 
-    def _row_to_memory(self, row: sqlite3.Row) -> MemoryRecord | None:
+    def _row_to_memory(self, row: sqlite3.Row) -> Optional[MemoryRecord]:
         """Convert database row to MemoryRecord."""
         try:
             return MemoryRecord(

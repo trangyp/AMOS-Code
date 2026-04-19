@@ -14,7 +14,7 @@ Runs as part of 15_KNOWLEDGE_CORE in the AMOS Master Orchestrator.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
@@ -117,7 +117,7 @@ class EquationIntegrationHandler:
         self,
         domain: str = None,
         language: str = None,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Query equations across all sources."""
         if not self.equation_api:
             return []

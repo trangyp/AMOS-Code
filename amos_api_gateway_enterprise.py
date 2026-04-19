@@ -31,8 +31,9 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 # FastAPI imports
 try:
@@ -174,7 +175,7 @@ class TransformationRule:
 # Tier Configurations
 # ============================================
 
-TIER_CONFIGS: dict[Tier, RateLimitConfig] = {
+TIER_CONFIGS: Dict[Tier, RateLimitConfig] = {
     Tier.FREE: RateLimitConfig(
         requests_per_window=100,
         window_seconds=3600,
@@ -227,7 +228,7 @@ class RateLimiter:
 
     async def is_allowed(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """
         Check if request is allowed under rate limit.
 
@@ -243,7 +244,7 @@ class RateLimiter:
 
     async def _sliding_window_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Sliding window rate limiting."""
         prefix = f"ratelimit:sw:{tenant_id}:{key}" if tenant_id else f"ratelimit:sw:{key}"
         now = time.time()
@@ -282,7 +283,7 @@ class RateLimiter:
 
     async def _token_bucket_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Token bucket rate limiting."""
         prefix = f"ratelimit:tb:{tenant_id}:{key}" if tenant_id else f"ratelimit:tb:{key}"
 
@@ -327,7 +328,7 @@ class RateLimiter:
 
     async def _fixed_window_check(
         self, key: str, config: RateLimitConfig, tenant_id: str = None
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Fixed window rate limiting."""
         now = int(time.time())
         window = now // config.window_seconds

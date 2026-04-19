@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain-Powered API Endpoints - Direct brain integration for main backend.
 
 These endpoints use the real AMOS brain kernel for cognitive processing.
 Add these to main.py via: app.include_router(brain_powered_router)
 """
-from __future__ import annotations
-
 
 import sys
 import time
@@ -27,7 +25,7 @@ for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_
 router = APIRouter(prefix="/api/v1/brain-powered", tags=["Brain Powered"])
 
 # Lazy imports
-_brain_available: bool | None = None
+_brain_available: Optional[bool] = None
 
 
 def _check_brain() -> bool:
@@ -54,7 +52,7 @@ class CognitiveQueryRequest(BaseModel):
     """Request for brain-powered cognitive query."""
 
     query: str = Field(..., min_length=1, max_length=10000)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     goal_type: str = Field(default="cognitive_task")
     timeout_ms: int = Field(default=5000, ge=100, le=30000)
 
@@ -87,9 +85,9 @@ class BrainStatusResponse(BaseModel):
 class StateAnalysisRequest(BaseModel):
     """Request for state graph analysis."""
 
-    entities: list[str] = Field(default_factory=list)
-    relations: list[dict[str, Any]] = Field(default_factory=list)
-    metrics: dict[str, float] = Field(default_factory=dict)
+    entities: List[str] = Field(default_factory=list)
+    relations: List[dict[str, Any]] = Field(default_factory=list)
+    metrics: Dict[str, float] = Field(default_factory=dict)
 
 
 class StateAnalysisResponse(BaseModel):
@@ -243,7 +241,7 @@ async def analyze_state(request: StateAnalysisRequest) -> StateAnalysisResponse:
 
 
 @router.get("/recent-activity")
-async def get_recent_brain_activity(limit: int = 10) -> list[dict[str, Any]]:
+async def get_recent_brain_activity(limit: int = 10) -> List[dict[str, Any]]:
     """Get recent brain activity from memory."""
     if not _check_brain():
         return []

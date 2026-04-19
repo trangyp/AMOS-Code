@@ -3,17 +3,18 @@
 Intelligent request routing based on capability, health, and load.
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import logging
 import random
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 from .providers import BaseProvider, create_provider
-from .schemas import (
+from typing import Dict, List, Optional
+
+from amos_model_fabric.models import (
     FabricRequest,
     FabricResponse,
     ProviderHealth,
@@ -62,7 +63,7 @@ class LiteLLMRouter:
         self.strategy = strategy
         self.default_timeout = default_timeout
         self.max_failures = max_failures
-        self._providers: dict[ProviderType, ProviderInstance] = {}
+        self._providers: Dict[ProviderType, ProviderInstance] = {}
         self._round_robin_index = 0
         self._lock = asyncio.Lock()
 
@@ -98,7 +99,7 @@ class LiteLLMRouter:
             await instance.provider.close()
             logger.info(f"Unregistered {provider_type.value}")
 
-    async def health_check_all(self) -> dict[ProviderType, ProviderHealth]:
+    async def health_check_all(self) -> Dict[ProviderType, ProviderHealth]:
         """Run health checks on all providers."""
         results = {}
 
@@ -130,7 +131,7 @@ class LiteLLMRouter:
 
         return results
 
-    def _get_healthy_providers(self) -> list[ProviderInstance]:
+    def _get_healthy_providers(self) -> List[ProviderInstance]:
         """Get list of healthy providers."""
         return [
             p
@@ -139,8 +140,8 @@ class LiteLLMRouter:
         ]
 
     async def _select_provider(
-        self, request: FabricRequest | None = None
-    ) -> ProviderInstance | None:
+        self, request: Optional[FabricRequest] = None
+    ) -> Optional[ProviderInstance]:
         """Select a provider based on routing strategy."""
         healthy = self._get_healthy_providers()
 
@@ -216,7 +217,7 @@ class LiteLLMRouter:
             logger.error(f"Stream failed on {instance.provider.provider_type.value}: {e}")
             raise
 
-    async def get_available_providers(self) -> list[dict]:
+    async def get_available_providers(self) -> List[dict]:
         """Get list of registered providers with health status."""
         return [
             {

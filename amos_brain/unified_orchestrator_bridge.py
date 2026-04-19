@@ -32,10 +32,10 @@ class UnifiedOrchestratorBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: UnifiedArchitectureOrchestrator | None = None
+        self._engine: Optional[UnifiedArchitectureOrchestrator] = None
 
     @property
-    def engine(self) -> UnifiedArchitectureOrchestrator | None:
+    def engine(self) -> Optional[UnifiedArchitectureOrchestrator]:
         """Lazy initialization of unified orchestrator."""
         if self._engine is None and UNIFIED_AVAILABLE:
             self._engine = UnifiedArchitectureOrchestrator()

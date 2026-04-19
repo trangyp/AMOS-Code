@@ -22,8 +22,9 @@ import threading
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 # Redis for tenant data
 try:
@@ -42,8 +43,6 @@ except ImportError:
 # Import existing modules
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Set
-from typing import Dict, List, Optional, Tuple
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -139,7 +138,7 @@ class MultiTenantManager:
     """Central multi-tenancy manager with SuperBrain governance."""
 
     # Default quotas by tier
-    DEFAULT_QUOTAS: dict[TenantTier, ResourceQuota] = {
+    DEFAULT_QUOTAS: Dict[TenantTier, ResourceQuota] = {
         TenantTier.FREE: ResourceQuota(
             max_requests_per_minute=20,
             max_storage_mb=100,

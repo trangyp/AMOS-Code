@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Caching & Performance Layer - Phase 19
 ================================================
 
@@ -30,7 +32,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, TypeVar, cast
+from typing import Any, Dict, List, Optional, TypeVar, cast
 
 # Redis imports
 try:
@@ -156,7 +158,7 @@ class AMOSCache:
     Multi-tenant Redis cache manager with async support.
     """
 
-    _instance: AMOSCache | None = None
+    _instance: Optional[AMOSCache] = None
     _lock = asyncio.Lock()
 
     def __new__(cls) -> AMOSCache:
@@ -169,7 +171,7 @@ class AMOSCache:
         if self._initialized:
             return
 
-        self._redis: Redis | None = None
+        self._redis: Optional[Redis] = None
         self._stats = CacheStats()
         self._local_cache: Dict[str, CacheEntry] = {}
         self._initialized = True
@@ -213,7 +215,7 @@ class AMOSCache:
             return f"{prefix}:{namespace}:{key}"
         return f"{prefix}:{key}"
 
-    async def get(self, key: str, tenant_id: str = None, namespace: str = None) -> Any | None:
+    async def get(self, key: str, tenant_id: str = None, namespace: str = None) -> Optional[Any]:
         """
         Get value from cache.
 
@@ -551,7 +553,7 @@ class EquationCache:
         param_str = json.dumps(params, sort_keys=True, default=str)
         return hashlib.md5(f"{name}:{param_str}".encode()).hexdigest()
 
-    async def get_result(self, name: str, params: dict, tenant_id: str = None) -> Any | None:
+    async def get_result(self, name: str, params: dict, tenant_id: str = None) -> Optional[Any]:
         """Get cached equation result."""
         key = self._build_equation_key(name, params)
         return await self._cache.get(key, tenant_id=tenant_id, namespace="equation")
@@ -587,7 +589,7 @@ class CacheWarmer:
 
     def __init__(self):
         self._cache = AMOSCache()
-        self._warmers: list[Callable[[], Awaitable[dict]]] = []
+        self._warmers: List[Callable[[], Awaitable[dict]]] = []
 
     def register_warmer(self, func: Callable[[], Awaitable[dict]]) -> None:
         """Register a cache warming function."""

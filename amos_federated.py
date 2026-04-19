@@ -81,7 +81,7 @@ Version: 23.0.0
 import random
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class NodeStatus(Enum):
@@ -128,7 +128,7 @@ class FederatedNode:
     config: NodeConfig
     status: NodeStatus = NodeStatus.ONLINE
     current_model: Dict[str, Any] = field(default_factory=dict)
-    local_updates: list[dict[str, Any]] = field(default_factory=list)
+    local_updates: List[dict[str, Any]] = field(default_factory=list)
     last_round_participated: int = 0
     reputation_score: float = 1.0  # For Byzantine fault detection
 
@@ -177,7 +177,7 @@ class AMOSFederated:
 
         # Statistics
         self.total_rounds_completed: int = 0
-        self.aggregation_history: list[dict[str, Any]] = []
+        self.aggregation_history: List[dict[str, Any]] = []
 
     def register_node(self, node_id: str, config: NodeConfig) -> Dict[str, Any]:
         """Register a new node for federated learning."""
@@ -320,8 +320,8 @@ class AMOSFederated:
         return weights
 
     def _detect_byzantine_nodes(
-        self, node_ids: List[str], local_weights: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+        self, node_ids: List[str], local_weights: List[dict[str, Any]]
+    ) -> List[dict[str, Any]]:
         """
         Detect and filter out Byzantine (malicious) nodes.
 
@@ -348,7 +348,7 @@ class AMOSFederated:
 
         return honest_updates
 
-    def _secure_aggregate(self, local_weights: list[dict[str, Any]]) -> Dict[str, Any]:
+    def _secure_aggregate(self, local_weights: List[dict[str, Any]]) -> Dict[str, Any]:
         """
         Secure multi-party aggregation.
 
@@ -378,7 +378,7 @@ class AMOSFederated:
 
         return aggregated
 
-    def _federated_average(self, local_weights: list[dict[str, Any]]) -> Dict[str, Any]:
+    def _federated_average(self, local_weights: List[dict[str, Any]]) -> Dict[str, Any]:
         """Standard Federated Averaging (FedAvg) algorithm."""
         if not local_weights:
             return {}

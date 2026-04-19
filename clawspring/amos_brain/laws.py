@@ -1,6 +1,7 @@
 """AMOS Global Laws - In-memory representation of AMOS legal framework."""
 
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -26,9 +27,9 @@ class GlobalLaws:
     }
 
     def __init__(self):
-        self.violations: list[LawViolation] = []
+        self.violations: List[LawViolation] = []
 
-    def check_output(self, text: str) -> list[LawViolation]:
+    def check_output(self, text: str) -> List[LawViolation]:
         """Check text output for law violations."""
         violations = []
         text_lower = text.lower()
@@ -61,8 +62,8 @@ class GlobalLaws:
     def validate_decision(
         self,
         decision: str,
-        quadrants_checked: list[str] = None,
-    ) -> list[LawViolation]:
+        quadrants_checked: List[str] = None,
+    ) -> List[LawViolation]:
         """Validate a decision follows Rule of 4."""
         violations = []
 

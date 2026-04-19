@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 UTC = timezone.utc
 
@@ -33,7 +33,7 @@ class Forecast:
     metric: str = ""  # What is being forecasted
     model: ForecastModel = ForecastModel.AVERAGE
     horizon_days: int = 30
-    predictions: list[dict[str, Any]] = field(default_factory=list)
+    predictions: List[dict[str, Any]] = field(default_factory=list)
     confidence_interval: float = 0.8  # 80% confidence
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     based_on_data_points: int = 0
@@ -59,7 +59,7 @@ class ForecastEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.forecasts: list[Forecast] = []
+        self.forecasts: List[Forecast] = []
         self._load_forecasts()
 
     def _load_forecasts(self):
@@ -96,7 +96,7 @@ class ForecastEngine:
 
     def forecast_cashflow(
         self,
-        historical_data: list[dict[str, Any]],
+        historical_data: List[dict[str, Any]],
         horizon_days: int = 30,
         model: ForecastModel = ForecastModel.AVERAGE,
     ) -> Forecast:
@@ -127,7 +127,7 @@ class ForecastEngine:
 
     def forecast_resource_usage(
         self,
-        utilization_history: list[float],
+        utilization_history: List[float],
         capacity: float,
         horizon_days: int = 30,
         model: ForecastModel = ForecastModel.TREND,
@@ -196,10 +196,10 @@ class ForecastEngine:
 
     def _generate_predictions(
         self,
-        historical: list[float],
+        historical: List[float],
         horizon: int,
         model: ForecastModel,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Generate predictions based on model."""
         if not historical:
             return []
@@ -298,7 +298,7 @@ class ForecastEngine:
             notes="No historical data available for forecasting",
         )
 
-    def get_forecast_summary(self, forecast_id: str) -> dict[str, Any]:
+    def get_forecast_summary(self, forecast_id: str) -> Dict[str, Any]:
         """Get summary of a specific forecast."""
         for fc in self.forecasts:
             if fc.id == forecast_id:
@@ -315,7 +315,7 @@ class ForecastEngine:
                 }
         return None
 
-    def list_forecasts(self) -> list[dict[str, Any]]:
+    def list_forecasts(self) -> List[dict[str, Any]]:
         """List all forecasts."""
         return [
             {

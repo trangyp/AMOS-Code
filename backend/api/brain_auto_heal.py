@@ -7,14 +7,12 @@ Uses amos_brain_working.think() to:
 - Learn from healing outcomes
 """
 
-from __future__ import annotations
-
 import sys
 from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -33,7 +31,7 @@ class AutoHealRequest(BaseModel):
     file_path: str
     code: str
     issue_type: str = "auto_detect"
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class HealPrescription(BaseModel):
@@ -57,7 +55,7 @@ class AutoHealResult(BaseModel):
     brain_status: str
     brain_confidence: float
     issues_found: int
-    prescriptions: list[HealPrescription]
+    prescriptions: List[HealPrescription]
     applied_fixes: int
     healing_report: str
 
@@ -139,7 +137,7 @@ Generate healing prescriptions:
 
 
 @router.post("/apply-heal")
-async def apply_heal(heal_id: str, prescription_id: str) -> dict[str, Any]:
+async def apply_heal(heal_id: str, prescription_id: str) -> Dict[str, Any]:
     """Apply a specific healing prescription."""
     # REAL BRAIN USAGE - Validate fix before applying
     validate_input = f"Validate healing prescription {prescription_id} for safety"
@@ -162,7 +160,7 @@ async def apply_heal(heal_id: str, prescription_id: str) -> dict[str, Any]:
 
 
 @router.get("/healing-history/{file_path:path}")
-async def healing_history(file_path: str) -> dict[str, Any]:
+async def healing_history(file_path: str) -> Dict[str, Any]:
     """Get healing history for a file using brain memory."""
     # REAL BRAIN USAGE - Query healing patterns
     memory_input = f"Query healing history for {file_path}"
@@ -180,7 +178,7 @@ async def healing_history(file_path: str) -> dict[str, Any]:
 
 
 @router.get("/brain-heal-status")
-async def brain_heal_status() -> dict[str, Any]:
+async def brain_heal_status() -> Dict[str, Any]:
     """Get brain auto-heal system status."""
     # REAL BRAIN USAGE - System health check
     health_result = brain_think("Auto-heal system health check", {"check": True})

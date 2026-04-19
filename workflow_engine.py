@@ -50,7 +50,7 @@ class Workflow:
 
     def __init__(self, name: str):
         self.name = name
-        self.steps: list[dict[str, Any]] = []
+        self.steps: List[dict[str, Any]] = []
         self._activities: List[Any] = []
 
     def add_step(self, func: Callable, args: Dict[str, Any] = None) -> None:

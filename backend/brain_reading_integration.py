@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional, Tuple
 
 """AMOS Brain Reading Kernel Integration
 
@@ -90,7 +90,7 @@ class ReadingKernelService:
         context: Dict[str, Any]  = None,
         memory_context: Dict[str, Any]  = None,
         world_context: Dict[str, Any]  = None,
-    ) -> tuple[Optional[StableRead], float]:
+    ) -> Tuple[Optional[StableRead], float]:
         """Process text through reading pipeline.
 
         Returns:
@@ -100,8 +100,6 @@ class ReadingKernelService:
             return None, 0.0
 
         import time
-from typing import Optional, Any, Tuple, Tuple
-from typing import Dict
 
         start = time.time()
 
@@ -188,7 +186,7 @@ async def get_kernel_status() -> Dict[str, Any]:
     return service.get_status()
 
 @router.post("/reset")
-async def reset_kernel() -> dict[str, str]:
+async def reset_kernel() -> Dict[str, str]:
     """Reset reading kernel state."""
     global _reading_service
     _reading_service = None

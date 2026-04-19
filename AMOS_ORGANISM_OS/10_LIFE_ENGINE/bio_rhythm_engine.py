@@ -48,7 +48,7 @@ class SleepSession:
     end_time: str = None
     duration_minutes: int = 0
     quality_score: float = 0.0  # 0-1
-    phases: list[dict[str, Any]] = field(default_factory=list)
+    phases: List[dict[str, Any]] = field(default_factory=list)
     interruptions: int = 0
     notes: str = ""
 

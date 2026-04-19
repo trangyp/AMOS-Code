@@ -4,6 +4,7 @@ IR_AMOS = CIR ⊕ QIR ⊕ BIR ⊕ HIR
 """
 
 from dataclasses import dataclass, field
+from typing import List, Tuple
 
 # =============================================================================
 # Classical IR (CIR)

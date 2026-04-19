@@ -1,17 +1,16 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain-Powered Analytics Engine
 
 Integrates brain processing with analytics for intelligent insights.
 Based on research: Cognitive analytics with agent-based reasoning.
 """
-from __future__ import annotations
-
 
 import asyncio
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from amos_brain.integrated_brain_api import get_brain_api
 
@@ -25,8 +24,8 @@ class AnalyticsInsight:
     description: str
     confidence: float
     severity: str  # low, medium, high, critical
-    suggested_action: str | None
-    raw_data: dict[str, Any]
+    suggested_action: Optional[str]
+    raw_data: Dict[str, Any]
     timestamp: str
 
 
@@ -43,15 +42,15 @@ class BrainAnalyticsEngine:
 
     def __init__(self):
         self.brain = get_brain_api()
-        self._insight_history: list[AnalyticsInsight] = []
-        self._metric_context: dict[str, dict[str, Any]] = {}
+        self._insight_history: List[AnalyticsInsight] = []
+        self._metric_context: Dict[str, dict[str, Any]] = {}
 
     async def analyze_metric(
         self,
         metric_name: str,
         current_value: float,
-        historical_values: list[float],
-        threshold: float | None = None,
+        historical_values: List[float],
+        threshold: Optional[float] = None,
     ) -> AnalyticsInsight:
         """
         Analyze a metric using brain-powered reasoning.
@@ -125,9 +124,9 @@ What does this indicate and what action should be taken?"""
     async def predict_trend(
         self,
         metric_name: str,
-        historical_values: list[float],
+        historical_values: List[float],
         forecast_horizon: int = 10,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Predict future trend using brain reasoning.
 
@@ -195,9 +194,9 @@ What will the likely values be and why?"""
 
     async def generate_recommendations(
         self,
-        metrics_summary: dict[str, float],
-        system_health: dict[str, Any],
-    ) -> list[dict[str, Any]]:
+        metrics_summary: Dict[str, float],
+        system_health: Dict[str, Any],
+    ) -> List[dict[str, Any]]:
         """
         Generate intelligent recommendations using brain.
 
@@ -240,7 +239,7 @@ What are the top 3 recommendations to improve system performance?"""
         self,
         response: str,
         current_value: float,
-        threshold: float | None,
+        threshold: Optional[float],
     ) -> str:
         """Classify insight type from brain response."""
         response_lower = response.lower()
@@ -260,7 +259,7 @@ What are the top 3 recommendations to improve system performance?"""
         else:
             return "observation"
 
-    def _extract_action(self, response: str) -> str | None:
+    def _extract_action(self, response: str) -> Optional[str]:
         """Extract suggested action from brain response."""
         # Look for action keywords
         action_indicators = [
@@ -281,7 +280,7 @@ What are the top 3 recommendations to improve system performance?"""
 
         return None
 
-    def _parse_recommendations(self, response: str) -> list[str]:
+    def _parse_recommendations(self, response: str) -> List[str]:
         """Parse recommendations from brain response."""
         lines = response.split("\n")
         recommendations = []
@@ -299,9 +298,9 @@ What are the top 3 recommendations to improve system performance?"""
 
     def get_insight_history(
         self,
-        metric_name: str | None = None,
+        metric_name: Optional[str] = None,
         limit: int = 100,
-    ) -> list[AnalyticsInsight]:
+    ) -> List[AnalyticsInsight]:
         """Get historical insights."""
         insights = self._insight_history
 
@@ -312,7 +311,7 @@ What are the top 3 recommendations to improve system performance?"""
 
 
 # Global instance
-_global_analytics_engine: BrainAnalyticsEngine | None = None
+_global_analytics_engine: Optional[BrainAnalyticsEngine] = None
 
 
 def get_brain_analytics() -> BrainAnalyticsEngine:

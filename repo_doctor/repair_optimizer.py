@@ -340,7 +340,6 @@ class RepairOptimizer:
         """
         try:
             import z3
-from typing import Final
 
             solver = z3.Solver()
 

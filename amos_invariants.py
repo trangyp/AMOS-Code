@@ -8,8 +8,6 @@ Implements 200+ equations from exhaustive internet research:
 - Observability (SLOs, burn rate, error budgets)
 """
 
-from __future__ import annotations
-
 import asyncio
 import hashlib
 import math
@@ -17,7 +15,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 class InvariantSeverity(Enum):
@@ -39,7 +37,7 @@ class InvariantViolation:
     expected: Any
     actual: Any
     timestamp: datetime = field(default_factory=datetime.now)
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -47,8 +45,8 @@ class BuildState:
     """State of a build for correctness checking."""
 
     target: str
-    inputs: dict[str, str]  # path -> hash
-    dependencies: list[str]
+    inputs: Dict[str, str]  # path -> hash
+    dependencies: List[str]
     output_hash: str = None
     built_at: datetime = None
 
@@ -60,7 +58,7 @@ class BuildSystemInvariants:
     """
 
     @staticmethod
-    def check_correctness(target: BuildState, dependency_states: list[BuildState]) -> bool:
+    def check_correctness(target: BuildState, dependency_states: List[BuildState]) -> bool:
         """Check build correctness: ∀ target: Build(target) = Correct ⟺
         ∀ dep ∈ Dependencies(target): Build(dep) = Correct ∧ dep.modified > target.built
         """
@@ -72,14 +70,14 @@ class BuildSystemInvariants:
         return True
 
     @staticmethod
-    def compute_minimal_build_set(targets: list[str], states: dict[str, BuildState]) -> set[str]:
+    def compute_minimal_build_set(targets: List[str], states: Dict[str, BuildState]) -> set[str]:
         """Compute minimal set of targets to build.
 
         MinimalBuildSet = {t | t ∈ targets ∨ ∃ dep ∈ TransitiveDeps(t): dep.modified > dep.built}
         """
         to_build = set()
 
-        def needs_build(target: str, visited: set[str] = None) -> bool:
+        def needs_build(target: str, visited: Set[str] = None) -> bool:
             if visited is None:
                 visited = set()
             if target in visited:
@@ -107,7 +105,7 @@ class BuildSystemInvariants:
         return to_build
 
     @staticmethod
-    def verify_deterministic(inputs: dict[str, bytes], expected_hash: str) -> bool:
+    def verify_deterministic(inputs: Dict[str, bytes], expected_hash: str) -> bool:
         """Verify deterministic build: Build(env₁) = Build(env₂) ⟺ ∀ input: Hash(input) = constant"""
         combined = b"".join(sorted(inputs.values()))
         actual_hash = hashlib.sha256(combined).hexdigest()
@@ -137,7 +135,7 @@ class ArchitectureInvariants:
     @staticmethod
     def halstead_metrics(
         operators: int, operands: int, unique_operators: int, unique_operands: int
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Compute Halstead complexity metrics.
 
         Returns:
@@ -218,11 +216,11 @@ class AISafetyInvariants:
 
     @staticmethod
     def detect_reward_hacking(
-        proxy_rewards: list[float],
-        true_rewards: list[float],
+        proxy_rewards: List[float],
+        true_rewards: List[float],
         proxy_threshold: float = 2.0,
         true_threshold: float = 0.5,
-    ) -> list[int]:
+    ) -> List[int]:
         """Detect reward hacking: ProxyReward ≫ Proxy* ∧ TrueReward ≪ True*
 
         Returns:
@@ -252,7 +250,7 @@ class AISafetyInvariants:
 
     @staticmethod
     def alignment_score(
-        intended_outcomes: list[float], actual_outcomes: list[float], tolerance: float = 0.1
+        intended_outcomes: List[float], actual_outcomes: List[float], tolerance: float = 0.1
     ) -> float:
         """Measure alignment between intended and actual outcomes.
 
@@ -288,7 +286,7 @@ class TestingInvariants:
     @staticmethod
     def check_rip_conditions(
         test_reaches_mutant: bool, test_infects_state: bool, test_propagates_output: bool
-    ) -> dict[str, bool]:
+    ) -> Dict[str, bool]:
         """RIP model: MutantKilled = R ∧ I ∧ P
 
         Returns:
@@ -305,7 +303,7 @@ class TestingInvariants:
         }
 
     @staticmethod
-    def coverage_adequacy(covered: int, total: int, threshold: float = 80.0) -> tuple[float, bool]:
+    def coverage_adequacy(covered: int, total: int, threshold: float = 80.0) -> Tuple[float, bool]:
         """Coverage = covered / total × 100%
 
         Returns:
@@ -384,9 +382,9 @@ class DependencyResolutionInvariants:
     @staticmethod
     def check_version_compatibility(
         required_version: str,
-        available_versions: list[str],
+        available_versions: List[str],
         constraint: str,  # '=', '>=', '<=', '^', '~'
-    ) -> list[str]:
+    ) -> List[str]:
         """Check which versions satisfy a constraint.
 
         Returns:
@@ -421,7 +419,7 @@ class DependencyResolutionInvariants:
         return False
 
     @staticmethod
-    def diamond_dependency_check(path1_version: str, path2_version: str) -> tuple[bool, str]:
+    def diamond_dependency_check(path1_version: str, path2_version: str) -> Tuple[bool, str]:
         """Check for diamond dependency problem.
 
         Returns:
@@ -451,8 +449,8 @@ class AMOSInvariantChecker:
         self.observability = ObservabilityInvariants()
         self.dependencies = DependencyResolutionInvariants()
 
-        self.violations: list[InvariantViolation] = []
-        self.rules: dict[str, Callable] = {}
+        self.violations: List[InvariantViolation] = []
+        self.rules: Dict[str, Callable] = {}
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -606,7 +604,7 @@ class AMOSInvariantChecker:
             )
         return None
 
-    def check_all(self, data: dict[str, dict]) -> list[InvariantViolation]:
+    def check_all(self, data: Dict[str, dict]) -> List[InvariantViolation]:
         """Run all applicable invariant checks."""
         violations = []
 
@@ -630,7 +628,7 @@ class AMOSInvariantChecker:
         self.violations.extend(violations)
         return violations
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get summary of all violations."""
         by_severity = {"fatal": [], "critical": [], "warning": [], "info": []}
 

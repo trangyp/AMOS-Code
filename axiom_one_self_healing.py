@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 AMOS_ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(AMOS_ROOT))
@@ -113,7 +113,7 @@ class SelfHealingAgentExecutor(AgentExecutor):
         self.monitoring = False
         self.monitor_thread: threading.Thread = None
         self._lock = threading.Lock()
-        self.recovery_strategies: dict[str, Callable[[str], bool]] = {}
+        self.recovery_strategies: Dict[str, Callable[[str], bool]] = {}
         self._setup_recovery_strategies()
 
     def _setup_recovery_strategies(self) -> None:

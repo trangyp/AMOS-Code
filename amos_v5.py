@@ -16,7 +16,7 @@ v5 transforms AMOS from economic organism to civilization-scale actor.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 # ============================================================================
 # 1. POLITICAL / INSTITUTIONAL LAYER (Pi)
@@ -38,7 +38,7 @@ class InstitutionalActor:
     actor_id: str
     name: str
     actor_type: str  # state, corporation, ngo, individual, coalition
-    power_base: dict[PowerType, float] = field(default_factory=dict)
+    power_base: Dict[PowerType, float] = field(default_factory=dict)
     interests: List[str] = field(default_factory=list)
     constraints: List[str] = field(default_factory=list)
     relationships: Dict[str, float] = field(default_factory=dict)  # actor_id -> trust/alignment
@@ -67,7 +67,7 @@ class PoliticalLandscape:
         self.actors[actor.actor_id] = actor
         self.power_distribution[actor.actor_id] = actor.total_power()
 
-    def calculate_alignments(self) -> dict[tuple[str, str], float]:
+    def calculate_alignments(self) -> Dict[tuple[str, str], float]:
         """Calculate alignment between all actor pairs."""
         alignments = {}
         for id1, actor1 in self.actors.items():
@@ -80,7 +80,7 @@ class PoliticalLandscape:
                     alignments[(id1, id2)] = min(1.0, max(-1.0, alignment))
         return alignments
 
-    def identify_coalitions(self) -> list[set[str]]:
+    def identify_coalitions(self) -> List[set[str]]:
         """Identify potential coalitions based on alignment."""
         alignments = self.calculate_alignments()
 
@@ -321,7 +321,7 @@ class NarrativeEngine:
 
     def __init__(self):
         self.active_narratives: Dict[str, Narrative] = {}
-        self.audience_profiles: dict[str, list[str]] = {}
+        self.audience_profiles: Dict[str, list[str]] = {}
 
     def craft_narrative(
         self, objective: str, target_audiences: List[str], constraints: List[str]
@@ -498,7 +498,7 @@ class CivilizationMemory:
     def __init__(self):
         self.patterns: Dict[str, CivilizationPattern] = {}
         self.historical_trajectories: List[dict] = []
-        self.futures_cache: dict[str, list[dict]] = {}
+        self.futures_cache: Dict[str, list[dict]] = {}
 
     def record_pattern(self, pattern: CivilizationPattern):
         """Record civilization-scale pattern."""

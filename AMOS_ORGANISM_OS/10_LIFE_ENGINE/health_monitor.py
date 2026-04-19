@@ -176,7 +176,7 @@ class HealthMonitor:
         self,
         metric_type: Optional[MetricType] = None,
         hours: int = 24,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get recent metrics."""
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
 
@@ -229,7 +229,7 @@ class HealthMonitor:
         else:
             return HealthStatus.GOOD.value
 
-    def get_active_alerts(self) -> list[dict[str, Any]]:
+    def get_active_alerts(self) -> List[dict[str, Any]]:
         """Get active (unresolved) alerts."""
         active = [a for a in self.alerts if not a.resolved]
         return sorted(

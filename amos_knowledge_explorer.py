@@ -15,6 +15,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -47,11 +48,11 @@ class KnowledgeExplorer:
     across 1,110+ knowledge files, 55 kernels, 54 country packs, etc.
     """
 
-    def __init__(self, brain_root: Path | None = None):
+    def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self._index: list[KnowledgeFile] = []
-        self._categories: dict[str, int] = {}
-        self._domains: dict[str, int] = {}
+        self._index: List[KnowledgeFile] = []
+        self._categories: Dict[str, int] = {}
+        self._domains: Dict[str, int] = {}
         self._indexed = False
 
     def index(self) -> KnowledgeExplorer:
@@ -204,7 +205,7 @@ class KnowledgeExplorer:
             self._categories[file_info.category] = self._categories.get(file_info.category, 0) + 1
             self._domains[file_info.domain] = self._domains.get(file_info.domain, 0) + 1
 
-    def search(self, query: str, top_n: int = 10) -> list[KnowledgeFile]:
+    def search(self, query: str, top_n: int = 10) -> List[KnowledgeFile]:
         """Search knowledge base for matching files."""
         if not self._indexed:
             self.index()
@@ -271,7 +272,7 @@ class KnowledgeExplorer:
             size_bytes /= 1024
         return f"{size_bytes:.1f} PB"
 
-    def recommend_engines(self, problem: str) -> list[KnowledgeFile]:
+    def recommend_engines(self, problem: str) -> List[KnowledgeFile]:
         """Recommend cognitive engines for a given problem."""
         if not self._indexed:
             self.index()
@@ -323,7 +324,7 @@ class KnowledgeExplorer:
         return unique_results[:15]
 
 
-def print_search_results(results: list[KnowledgeFile], query: str):
+def print_search_results(results: List[KnowledgeFile], query: str):
     """Pretty print search results."""
     print(f"\n{'=' * 70}")
     print(f'  SEARCH RESULTS: "{query}"')

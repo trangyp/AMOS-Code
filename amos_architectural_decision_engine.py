@@ -13,8 +13,10 @@ import ast
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
+from typing import Dict, List
 
 
 class Law(Enum):
@@ -151,7 +153,7 @@ class ArchitecturalDecisionEngine:
 
             if result.returncode == 0:
                 # Parse git history for ownership
-                file_owners: dict[str, set[str]] = {}
+                file_owners: Dict[str, set[str]] = {}
                 current_author = ""
 
                 for line in result.stdout.split("\n"):
@@ -273,7 +275,7 @@ class ArchitecturalDecisionEngine:
         ]
 
         # Group by law
-        law_violations: dict[Law, list[Violation]] = {law: [] for law in Law}
+        law_violations: Dict[Law, list[Violation]] = {law: [] for law in Law}
         for v in self.violations:
             law_violations[v.law].append(v)
 

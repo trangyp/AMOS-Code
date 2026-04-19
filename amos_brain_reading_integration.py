@@ -13,6 +13,7 @@ Connects the Brain-Reading Kernel to the AMOS ecosystem:
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from amos_brain_reading_kernel import (
     IntentType,
@@ -234,7 +235,7 @@ class BrainReadingIntegrator:
             "routing_distribution": self._compute_routing_distribution(),
         }
 
-    def _compute_routing_distribution(self) -> dict[str, int]:
+    def _compute_routing_distribution(self) -> Dict[str, int]:
         """Compute distribution of routing decisions."""
         distribution: Dict[str, int] = {}
         for read in self.reading_history:
@@ -266,8 +267,8 @@ try:
         coherence: float
         routing: str
         priority: float
-        chunks: list[dict[str, Any]]
-        conflicts: list[dict[str, Any]]
+        chunks: List[dict[str, Any]]
+        conflicts: List[dict[str, Any]]
         execution_plan: Dict[str, Any] = None
 
     def create_brain_reading_router() -> APIRouter:

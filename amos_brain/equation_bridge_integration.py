@@ -13,7 +13,7 @@ Date: April 2026
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
@@ -23,8 +23,6 @@ if str(AMOS_ROOT) not in sys.path:
     sys.path.insert(0, str(AMOS_ROOT))
 
 from amos_superbrain_equation_bridge import (
-from typing import List
-from typing import Dict, Optional
     AMOSSuperBrainBridge,
     Domain,
     MathematicalPattern,
@@ -166,7 +164,7 @@ class EquationBridgeIntegration:
         return list(self._bridge.registry.equations.keys())
 
     def get_equation_info(self, equation_name: str
-                          ) -> dict[str, Any ]:
+                          ) -> Dict[str, Any ]:
         """Get metadata for an equation."""
         if equation_name not in self._bridge.registry.metadata:
             return None

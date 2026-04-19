@@ -28,7 +28,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -79,7 +79,7 @@ class AnalyticsDashboard:
 
     def __init__(self):
         self.start_time = time.time()
-        self.layer_metrics: dict[int, LayerMetrics] = {}
+        self.layer_metrics: Dict[int, LayerMetrics] = {}
         self.system_metrics = SystemMetrics()
         self.historical_data: List[SystemMetrics] = []
         self._initialize_layer_tracking()
@@ -187,7 +187,7 @@ class AnalyticsDashboard:
         secs = int(seconds % 60)
         return f"{hours}h {minutes}m {secs}s"
 
-    def get_layer_performance(self) -> list[dict[str, Any]]:
+    def get_layer_performance(self) -> List[dict[str, Any]]:
         """Get performance metrics for all layers."""
         return [
             {
@@ -225,7 +225,7 @@ class AnalyticsDashboard:
             "cache_efficiency": f"{self.system_metrics.cache_hit_rate:.1%}",
         }
 
-    def get_top_performers(self, n: int = 5) -> list[dict[str, Any]]:
+    def get_top_performers(self, n: int = 5) -> List[dict[str, Any]]:
         """Get top N performing layers by request count."""
         sorted_layers = sorted(self.layer_metrics.values(), key=lambda m: m.requests, reverse=True)
 
@@ -282,7 +282,7 @@ class AnalyticsDashboard:
         if len(self.historical_data) > 100:
             self.historical_data = self.historical_data[-100:]
 
-    def get_trends(self) -> dict[str, list[Any]]:
+    def get_trends(self) -> Dict[str, list[Any]]:
         """Get metric trends over time."""
         if not self.historical_data:
             return {}

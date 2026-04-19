@@ -43,6 +43,7 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent))
 
 from amos_brain import get_amos_integration
+from typing import List
 
 # Pydantic models for request/response
 if FASTAPI_AVAILABLE:

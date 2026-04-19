@@ -9,6 +9,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Dict, List
 
 
 @dataclass
@@ -35,7 +36,7 @@ class AnalysisResult:
     singleton_pattern_violations: List[str] = field(default_factory=list)
     hidden_dependencies: List[str] = field(default_factory=list)
 
-    def get_issues_by_category(self) -> dict[str, list[ArchitectureIssue]]:
+    def get_issues_by_category(self) -> Dict[str, list[ArchitectureIssue]]:
         result = defaultdict(list)
         for issue in self.issues:
             result[issue.category].append(issue)

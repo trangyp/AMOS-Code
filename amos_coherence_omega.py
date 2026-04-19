@@ -25,8 +25,9 @@ Usage:
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_axiom_validator import AxiomCheck, AxiomValidator, ValidationLevel, ValidationReport
 from amos_coherence_engine import (
@@ -459,7 +460,7 @@ class CoherenceOmega:
             "axiom_breakdown": self._calculate_axiom_breakdown(),
         }
 
-    def _calculate_axiom_breakdown(self) -> dict[str, float]:
+    def _calculate_axiom_breakdown(self) -> Dict[str, float]:
         """Calculate satisfaction rate per coherence axiom."""
         if not self.interaction_history:
             return {}

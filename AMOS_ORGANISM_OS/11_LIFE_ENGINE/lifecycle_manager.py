@@ -88,7 +88,7 @@ class LifecycleManager:
         self.stage_entry_time: str = datetime.now(UTC).isoformat()
         self.events: List[LifecycleEvent] = []
         self.milestones: Dict[str, LifecycleMilestone] = {}
-        self.history: list[dict[str, Any]] = []
+        self.history: List[dict[str, Any]] = []
 
         self._init_default_milestones()
         self._record_birth()

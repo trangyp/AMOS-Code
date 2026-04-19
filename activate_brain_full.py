@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Brain - Full Repository Analysis & Fix System
 
@@ -178,7 +178,7 @@ def analyze_repository(repo_path: str) -> Dict[str, Any]:
     }
 
 
-def apply_fixes(repo_path: str, files: List[Path]) -> dict[str, int]:
+def apply_fixes(repo_path: str, files: List[Path]) -> Dict[str, int]:
     """Apply automatic fixes to repository."""
     print(f"\n{'=' * 70}")
     print("AMOS BRAIN: Applying Fixes")

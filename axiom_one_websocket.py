@@ -10,7 +10,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class StreamEventType(Enum):
@@ -46,8 +46,8 @@ class AxiomOneStreamManager:
 
     def __init__(self):
         self._connections: Dict[str, Any] = {}
-        self._session_subscribers: dict[str, set[str]] = {}
-        self._event_history: dict[str, list[StreamEvent]] = {}
+        self._session_subscribers: Dict[str, set[str]] = {}
+        self._event_history: Dict[str, list[StreamEvent]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: Any, session_id: str) -> str:

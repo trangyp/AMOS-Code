@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 import aiohttp
+from typing import Dict, List
 
 
 @dataclass
@@ -32,8 +33,8 @@ class LoadTestResult:
     total_requests: int = 0
     successful: int = 0
     failed: int = 0
-    response_times: list[float] = field(default_factory=list)
-    errors: dict[str, int] = field(default_factory=dict)
+    response_times: List[float] = field(default_factory=list)
+    errors: Dict[str, int] = field(default_factory=dict)
     start_time: datetime = None
     end_time: datetime = None
 

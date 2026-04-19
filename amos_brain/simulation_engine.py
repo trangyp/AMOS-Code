@@ -10,6 +10,7 @@ import asyncio
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
 from typing import Any
 
@@ -556,7 +557,7 @@ class SimulationEngine:
 
         return min(0.99, base_confidence + scenario_bonus - issue_penalty)
 
-    def get_result(self, simulation_id: str) -> SimulationResult | None:
+    def get_result(self, simulation_id: str) -> Optional[SimulationResult]:
         """Get simulation result by ID."""
         if simulation_id in self._active_simulations:
             return self._active_simulations[simulation_id]
@@ -568,7 +569,7 @@ class SimulationEngine:
 
 
 # Global instance
-_simulation_engine: SimulationEngine | None = None
+_simulation_engine: Optional[SimulationEngine] = None
 
 
 def get_simulation_engine() -> SimulationEngine:

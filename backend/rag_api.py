@@ -11,9 +11,10 @@ import os
 import uuid
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from flask import Blueprint, request, jsonify
 
@@ -41,7 +42,7 @@ class DocumentProcessor:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
 
-    def process_file(self, file_path: str, filename: str) -> tuple[list[str], DocumentUpload]:
+    def process_file(self, file_path: str, filename: str) -> Tuple[list[str], DocumentUpload]:
         """
         Process uploaded file into chunks.
 
@@ -150,8 +151,6 @@ class RAGManager:
         """Get or initialize vector memory."""
         if self._vector_memory is None:
             from amos_vector_memory import AMOSVectorMemory, get_vector_memory
-from typing import List
-from typing import Dict
             self._vector_memory = get_vector_memory()
             if not self._vector_memory._initialized:
                 self._vector_memory.initialize()
@@ -196,7 +195,7 @@ from typing import Dict
             self.documents[metadata.document_id] = metadata
             return metadata
 
-    def retrieve_context(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+    def retrieve_context(self, query: str, top_k: int = 5) -> List[dict[str, Any]]:
         """
         Retrieve relevant document chunks for query.
 

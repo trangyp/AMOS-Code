@@ -20,8 +20,9 @@ Phase: 18
 
 import os
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Celery imports
 try:

@@ -11,7 +11,7 @@ import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List
 
 
 class TruthValue(Enum):
@@ -78,7 +78,7 @@ class ModalLogic:
     """Modal logic operations for AMOSL."""
 
     def __init__(self):
-        self.futures: list[Callable[[], StratifiedTruth]] = []
+        self.futures: List[Callable[[], StratifiedTruth]] = []
         self.observations: Dict[str, Any] = {}
 
     def necessity(
@@ -250,7 +250,7 @@ class AdmissibilityLogic:
 
     def __init__(self, modal_logic: ModalLogic):
         self.modal = modal_logic
-        self.constraints: list[Callable[[Any], StratifiedTruth]] = []
+        self.constraints: List[Callable[[Any], StratifiedTruth]] = []
 
     def add_constraint(self, constraint: Callable[[Any], StratifiedTruth]):
         """Add hard constraint."""

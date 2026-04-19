@@ -12,6 +12,7 @@ overview of available memories.
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Tuple
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 
@@ -276,7 +277,6 @@ def touch_last_used(file_path: str) -> None:
     Called by MemorySearch when a memory is returned so staleness/utility
     tracking stays current. Silent on any error.
     """
-    from datetime import date
 
     fp = Path(file_path)
     if not fp.exists():

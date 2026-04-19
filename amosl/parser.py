@@ -4,8 +4,8 @@ Parses AMOSL source code into AST.
 Grammar based on 9-tuple: (O, S, D, C, E, M, U, V, A, R)
 """
 
-from __future__ import annotations
 
+from typing import Any, List
 
 from .ast_nodes import (
     ActionDecl,
@@ -90,7 +90,7 @@ class Lexer:
         self.pos = 0
         self.line = 1
         self.col = 1
-        self.tokens: list[Token] = []
+        self.tokens: List[Token] = []
 
     def error(self, msg: str) -> None:
         raise ParseError(f"Line {self.line}, Col {self.col}: {msg}")
@@ -147,7 +147,7 @@ class Lexer:
             self.advance()
         return "".join(result)
 
-    def tokenize(self) -> list[Token]:
+    def tokenize(self) -> List[Token]:
         while self.pos < len(self.source):
             self.skip_whitespace()
             self.skip_comment()
@@ -198,7 +198,7 @@ class Lexer:
 class Parser:
     """AMOSL recursive descent parser."""
 
-    def __init__(self, tokens: list[Token]):
+    def __init__(self, tokens: List[Token]):
         self.tokens = tokens
         self.pos = 0
 
@@ -303,7 +303,7 @@ class Parser:
         self.expect("}")
         return decl
 
-    def parse_classical_entities(self) -> list[EntityDecl]:
+    def parse_classical_entities(self) -> List[EntityDecl]:
         """Parse classical entity declarations."""
         self.expect("CLASSICAL")
         self.expect("{")
@@ -334,7 +334,7 @@ class Parser:
         self.expect("}")
         return entities
 
-    def parse_quantum_entities(self) -> list[QuantumEntityDecl]:
+    def parse_quantum_entities(self) -> List[QuantumEntityDecl]:
         """Parse quantum entity declarations."""
         self.expect("QUANTUM")
         self.expect("{")
@@ -356,7 +356,7 @@ class Parser:
         self.expect("}")
         return entities
 
-    def parse_bio_entities(self) -> list[BioEntityDecl]:
+    def parse_bio_entities(self) -> List[BioEntityDecl]:
         """Parse biological entity declarations."""
         self.expect("BIOLOGICAL")
         self.expect("{")
@@ -375,7 +375,7 @@ class Parser:
         self.expect("}")
         return entities
 
-    def parse_hybrid_entities(self) -> list[HybridEntityDecl]:
+    def parse_hybrid_entities(self) -> List[HybridEntityDecl]:
         """Parse hybrid entity declarations."""
         self.expect("HYBRID")
         self.expect("{")
@@ -414,7 +414,7 @@ class Parser:
         self.expect("}")
         return decl
 
-    def parse_classical_state(self) -> list[StateVar]:
+    def parse_classical_state(self) -> List[StateVar]:
         """Parse classical state variables."""
         self.expect("CLASSICAL")
         self.expect("{")
@@ -434,7 +434,7 @@ class Parser:
         self.expect("}")
         return vars_list
 
-    def parse_quantum_state(self) -> list[QuantumState]:
+    def parse_quantum_state(self) -> List[QuantumState]:
         """Parse quantum state variables."""
         self.expect("QUANTUM")
         self.expect("{")
@@ -450,7 +450,7 @@ class Parser:
         self.expect("}")
         return vars_list
 
-    def parse_bio_state(self) -> list[BioState]:
+    def parse_bio_state(self) -> List[BioState]:
         """Parse biological state variables."""
         self.expect("BIOLOGICAL")
         self.expect("{")
@@ -466,7 +466,7 @@ class Parser:
         self.expect("}")
         return vars_list
 
-    def parse_hybrid_state(self) -> list[HybridState]:
+    def parse_hybrid_state(self) -> List[HybridState]:
         """Parse hybrid state variables."""
         self.expect("HYBRID")
         self.expect("{")

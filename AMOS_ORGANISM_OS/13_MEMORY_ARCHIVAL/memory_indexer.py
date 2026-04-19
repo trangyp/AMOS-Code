@@ -31,8 +31,8 @@ class MemoryIndex:
     index_id: str
     name: str
     entries: Dict[str, IndexEntry] = field(default_factory=dict)
-    tag_index: dict[str, set[str]] = field(default_factory=dict)
-    keyword_index: dict[str, set[str]] = field(default_factory=dict)
+    tag_index: Dict[str, set[str]] = field(default_factory=dict)
+    keyword_index: Dict[str, set[str]] = field(default_factory=dict)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -193,7 +193,7 @@ class MemoryIndexer:
 
         return sorted_entries[:limit]
 
-    def get_index_stats(self, index_id: str) -> dict[str, Any]:
+    def get_index_stats(self, index_id: str) -> Dict[str, Any]:
         """Get statistics for an index."""
         if index_id not in self.indices:
             return None

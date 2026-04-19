@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain Dashboard API - Real-time analytics and control for AMOS Brain.
 
@@ -8,8 +8,6 @@ Provides endpoints for:
 - Brain health metrics
 - Real-time dashboard data
 """
-from __future__ import annotations
-
 
 import sys
 from datetime import datetime, timezone
@@ -29,7 +27,7 @@ for p in [AMOS_ROOT, AMOS_ROOT / "clawspring", AMOS_ROOT / "clawspring" / "amos_
 router = APIRouter(prefix="/api/v1/brain-dashboard", tags=["Brain Dashboard"])
 
 # Lazy imports
-_brain_available: bool | None = None
+_brain_available: Optional[bool] = None
 _dashboard_class: Any = None
 
 
@@ -61,7 +59,7 @@ class BrainHealthMetrics(BaseModel):
     status: str
     kernel_available: bool
     memory_entries: int
-    last_activity: str | None
+    last_activity: Optional[str]
     cognitive_cycles_today: int
     avg_response_time_ms: float
 
@@ -103,9 +101,9 @@ class BrainDashboardResponse(BaseModel):
     timestamp: str
     health: BrainHealthMetrics
     summary: ReasoningSummary
-    recent_cycles: list[CognitiveCycleEntry]
-    domain_patterns: list[DomainPattern]
-    insights: list[str]
+    recent_cycles: List[CognitiveCycleEntry]
+    domain_patterns: List[DomainPattern]
+    insights: List[str]
 
 
 class AnalyticsRequest(BaseModel):
@@ -204,7 +202,7 @@ async def get_reasoning_summary(days: int = Query(default=7, ge=1, le=90)) -> Re
 @router.get("/recent-cycles", response_model=list[CognitiveCycleEntry])
 async def get_recent_cycles(
     limit: int = Query(default=10, ge=1, le=100),
-) -> list[CognitiveCycleEntry]:
+) -> List[CognitiveCycleEntry]:
     """Get recent cognitive cycle entries."""
     if not _check_brain():
         return []
@@ -232,7 +230,7 @@ async def get_recent_cycles(
 
 
 @router.get("/domain-patterns", response_model=list[DomainPattern])
-async def get_domain_patterns(days: int = Query(default=7, ge=1, le=90)) -> list[DomainPattern]:
+async def get_domain_patterns(days: int = Query(default=7, ge=1, le=90)) -> List[DomainPattern]:
     """Get domain usage patterns."""
     if not _check_brain():
         return []
@@ -258,7 +256,7 @@ async def get_domain_patterns(days: int = Query(default=7, ge=1, le=90)) -> list
 
 
 @router.get("/insights")
-async def get_insights(days: int = Query(default=7, ge=1, le=90)) -> dict[str, Any]:
+async def get_insights(days: int = Query(default=7, ge=1, le=90)) -> Dict[str, Any]:
     """Get AI-generated insights from brain activity."""
     if not _check_brain():
         return {"insights": [], "status": "brain_unavailable"}
@@ -302,7 +300,7 @@ async def get_full_dashboard(days: int = Query(default=7, ge=1, le=90)) -> Brain
 
 
 @router.post("/analytics")
-async def get_analytics(request: AnalyticsRequest) -> dict[str, Any]:
+async def get_analytics(request: AnalyticsRequest) -> Dict[str, Any]:
     """Get detailed analytics report."""
     if not _check_brain():
         raise HTTPException(status_code=503, detail="Brain dashboard not available")
@@ -316,7 +314,7 @@ async def get_analytics(request: AnalyticsRequest) -> dict[str, Any]:
 
 
 @router.get("/realtime")
-async def get_realtime_data() -> dict[str, Any]:
+async def get_realtime_data() -> Dict[str, Any]:
     """Get real-time brain metrics for live dashboard updates."""
     if not _check_brain():
         return {

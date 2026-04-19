@@ -4,8 +4,6 @@ Connects SuperBrain to local/offline LLM backends with intelligent routing.
 Integrates: Ollama, LM Studio, llama.cpp, vLLM, SGLang via LiteLLM proxy.
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import logging
@@ -26,7 +24,9 @@ from .providers import (
     VLLMProvider,
     create_provider,
 )
-from .schemas import (
+from typing import Dict, List, Optional
+
+from amos_model_fabric.models import (
     FabricRequest,
     FabricResponse,
     ModelCapability,
@@ -59,7 +59,7 @@ class GatewayMetrics:
     failed_requests: int = 0
     avg_latency_ms: float = 0.0
     cache_hits: int = 0
-    provider_health: dict[ProviderType, ProviderHealth] = field(default_factory=dict)
+    provider_health: Dict[ProviderType, ProviderHealth] = field(default_factory=dict)
 
     def record_request(self, success: bool, latency_ms: float):
         """Record a request metric."""
@@ -78,11 +78,11 @@ class LiteLLMRouter:
     """LiteLLM-based router for unified API access."""
 
     def __init__(self):
-        self._model_list: list[dict] = []
+        self._model_list: List[dict] = []
         self._litellm_proxy_process: subprocess.Popen = None
         self._proxy_url: str = "http://localhost:4000"
 
-    def build_model_list(self, registry: CapabilityRegistry) -> list[dict]:
+    def build_model_list(self, registry: CapabilityRegistry) -> List[dict]:
         """Build LiteLLM model list from capability registry."""
         models = []
 
@@ -131,7 +131,7 @@ class LiteLLMRouter:
             },
         }
 
-    def start_proxy(self, config_path: Path | None = None) -> bool:
+    def start_proxy(self, config_path: Optional[Path] = None) -> bool:
         """Start LiteLLM proxy server if available."""
         try:
             # Check if litellm proxy is already running
@@ -189,8 +189,8 @@ class RoutingStrategy:
 
     def select_provider(
         self,
-        required_capabilities: list[ModelCapability],
-        preferred_provider: ProviderType | None = None,
+        required_capabilities: List[ModelCapability],
+        preferred_provider: Optional[ProviderType] = None,
         task_type: str = "general",
     ) -> RoutingDecision:
         """Select the best provider for a task."""
@@ -265,7 +265,7 @@ class ModelFabricGateway:
         self.router = LiteLLMRouter()
         self.routing_strategy = RoutingStrategy(self.registry)
         self.metrics = GatewayMetrics()
-        self._providers: dict[ProviderType, BaseProvider] = {}
+        self._providers: Dict[ProviderType, BaseProvider] = {}
         self._initialized = False
         self._last_health_check: datetime = None
 
@@ -390,7 +390,7 @@ class ModelFabricGateway:
         async for chunk in provider.complete_stream(request):
             yield chunk
 
-    def _infer_required_capabilities(self, request: FabricRequest) -> list[ModelCapability]:
+    def _infer_required_capabilities(self, request: FabricRequest) -> List[ModelCapability]:
         """Infer required capabilities from request."""
         caps = [ModelCapability.CHAT]
 
@@ -406,7 +406,7 @@ class ModelFabricGateway:
 
         return caps
 
-    async def health_check(self) -> dict[ProviderType, bool]:
+    async def health_check(self) -> Dict[ProviderType, bool]:
         """Check health of all providers."""
         results = {}
 
@@ -424,7 +424,7 @@ class ModelFabricGateway:
         """Get current gateway metrics."""
         return self.metrics
 
-    def list_available_models(self) -> list[ModelInfo]:
+    def list_available_models(self) -> List[ModelInfo]:
         """List all available models."""
         return self.registry.list_models()
 
@@ -436,7 +436,7 @@ class ModelFabricGateway:
 
 
 # Singleton instance
-_gateway: ModelFabricGateway | None = None
+_gateway: Optional[ModelFabricGateway] = None
 
 
 def get_gateway() -> ModelFabricGateway:

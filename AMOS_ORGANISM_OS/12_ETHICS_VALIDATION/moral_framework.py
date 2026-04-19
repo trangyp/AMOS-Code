@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Moral Framework — Moral Principles & Value Systems
 
 Defines moral principles, value hierarchies, and ethical frameworks
@@ -11,6 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Dict, List
 
 
 class ValuePriority(Enum):
@@ -51,7 +51,7 @@ class ValueSystem:
     id: str
     name: str
     description: str
-    principles: list[MoralPrinciple]
+    principles: List[MoralPrinciple]
     created_at: datetime
 
 
@@ -62,7 +62,7 @@ class MoralDecision:
     context: str
     action: str
     framework_used: FrameworkType
-    principles_considered: list[str]
+    principles_considered: List[str]
     value_alignment_score: float
     recommendation: str
     timestamp: datetime
@@ -76,9 +76,9 @@ class MoralFramework:
     """
 
     def __init__(self):
-        self.principles: dict[str, MoralPrinciple] = {}
-        self.value_systems: dict[str, ValueSystem] = {}
-        self.decisions: list[MoralDecision] = []
+        self.principles: Dict[str, MoralPrinciple] = {}
+        self.value_systems: Dict[str, ValueSystem] = {}
+        self.decisions: List[MoralDecision] = []
         self._load_default_principles()
         self._load_default_value_systems()
 
@@ -193,15 +193,15 @@ class MoralFramework:
         self.decisions.append(decision)
         return decision
 
-    def get_principle(self, principle_id: str) -> MoralPrinciple | None:
+    def get_principle(self, principle_id: str) -> Optional[MoralPrinciple]:
         """Get a moral principle."""
         return self.principles.get(principle_id)
 
-    def get_principles_by_priority(self, priority: ValuePriority) -> list[MoralPrinciple]:
+    def get_principles_by_priority(self, priority: ValuePriority) -> List[MoralPrinciple]:
         """Get principles by priority level."""
         return [p for p in self.principles.values() if p.priority == priority]
 
-    def get_core_values(self) -> list[MoralPrinciple]:
+    def get_core_values(self) -> List[MoralPrinciple]:
         """Get all core values."""
         return self.get_principles_by_priority(ValuePriority.CORE)
 

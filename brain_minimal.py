@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """Minimal brain interface - guaranteed to work.
 
 Uses only amos_brain_working.think - no complex imports.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Direct import of working brain
 from amos_brain_working import think as _brain_think
@@ -19,14 +19,14 @@ class MinimalBrainResponse:
     confidence: float
     law_compliant: bool
     reasoning: str
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class MinimalBrain:
     """Minimal brain that JUST WORKS."""
 
     def think(
-        self, query: str, domain: str = "general", context: dict | None = None
+        self, query: str, domain: str = "general", context: Optional[dict] = None
     ) -> MinimalBrainResponse:
         """Think using the real amos_brain_working.think."""
         ctx = context or {}
@@ -51,7 +51,7 @@ class MinimalBrain:
 
 
 # Global instance
-_brain_instance: MinimalBrain | None = None
+_brain_instance: Optional[MinimalBrain] = None
 
 
 def get_minimal_brain() -> MinimalBrain:

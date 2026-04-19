@@ -41,10 +41,10 @@ class ConstitutionalBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: ConstitutionalArchitectureEngine | None = None
+        self._engine: Optional[ConstitutionalArchitectureEngine] = None
 
     @property
-    def engine(self) -> ConstitutionalArchitectureEngine | None:
+    def engine(self) -> Optional[ConstitutionalArchitectureEngine]:
         """Lazy initialization of constitutional engine."""
         if self._engine is None and CONSTITUTIONAL_AVAILABLE:
             self._engine = ConstitutionalArchitectureEngine()

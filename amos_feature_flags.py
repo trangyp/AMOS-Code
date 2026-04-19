@@ -18,7 +18,8 @@ import random
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any, Protocol
 
@@ -53,7 +54,7 @@ class TargetingRule:
     operator: Operator
     value: Any
 
-    def matches(self, context: Dict[str, Any]) -> bool:
+    def matches(self, context: dict[str, Any]) -> bool:
         """Check if context matches this rule."""
         context_value = context.get(self.attribute)
 
@@ -91,21 +92,21 @@ class FeatureFlag:
 
     # A/B test settings
     variants: list[dict[str, Any]] = field(default_factory=list)
-    weights: List[float] = field(default_factory=list)
+    weights: list[float] = field(default_factory=list)
 
     # Targeting
-    targeting_rules: List[TargetingRule] = field(default_factory=list)
+    targeting_rules: list[TargetingRule] = field(default_factory=list)
 
     # Component scope
-    component_whitelist: set[str] = None
+    component_whitelist: Optional[set[str] ] = None
     component_blacklist: set[str] = field(default_factory=set)
 
     # Metadata
-    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
-    updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     owner: str = "system"
 
-    def get_variant_for_context(self, context: Dict[str, Any]) -> Any:
+    def get_variant_for_context(self, context: dict[str, Any]) -> Any:
         """Get flag value for given context."""
         if not self.enabled:
             return self.default_value
@@ -139,14 +140,14 @@ class FeatureFlag:
 
         return self.default_value
 
-    def _check_gradual_rollout(self, context: Dict[str, Any]) -> bool:
+    def _check_gradual_rollout(self, context: dict[str, Any]) -> bool:
         """Check if context is in rollout percentage."""
         user_id = context.get("user_id", context.get("session_id", str(random.random())))
         hash_value = hashlib.md5(f"{self.flag_id}:{user_id}".encode()).hexdigest()
         user_bucket = int(hash_value[:8], 16) % 100
         return user_bucket < self.rollout_percentage
 
-    def _assign_variant(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _assign_variant(self, context: dict[str, Any]) -> dict[str, Any]:
         """Assign A/B test variant using consistent hashing."""
         user_id = context.get("user_id", context.get("session_id", str(uuid.uuid4())))
         hash_value = hashlib.md5(f"{self.flag_id}:{user_id}".encode()).hexdigest()
@@ -175,14 +176,14 @@ class Experiment:
 
     # Metrics
     primary_metric: str = ""
-    secondary_metrics: List[str] = field(default_factory=list)
+    secondary_metrics: list[str] = field(default_factory=list)
 
     # Sample size
     min_sample_size: int = 1000
     target_sample_size: int = 10000
 
     # Results
-    results: Dict[str, Any] = field(default_factory=dict)
+    results: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -193,7 +194,7 @@ class FlagEvaluation:
     value: Any
     variant_id: str = None
     timestamp: float = field(default_factory=time.time)
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 class MetricsCollector(Protocol):
@@ -245,10 +246,10 @@ class AMOSFeatureFlags:
     """
 
     def __init__(self, metrics_collector: Optional[MetricsCollector] = None):
-        self.flags: Dict[str, FeatureFlag] = {}
-        self.experiments: Dict[str, Experiment] = {}
+        self.flags: dict[str, FeatureFlag] = {}
+        self.experiments: dict[str, Experiment] = {}
         self.metrics = metrics_collector or InMemoryMetricsCollector()
-        self.evaluations: List[FlagEvaluation] = []
+        self.evaluations: list[FlagEvaluation] = []
         self._max_evaluations = 10000
 
     async def initialize(self) -> None:
@@ -286,8 +287,8 @@ class AMOSFeatureFlags:
         name: str,
         hypothesis: str,
         flag_id: str,
-        variants: List[str],
-        weights: list[float] = None,
+        variants: list[str],
+        weights: Optional[list[float] ] = None,
         primary_metric: str = "conversion",
     ) -> Experiment:
         """Create a new A/B test experiment."""
@@ -318,7 +319,7 @@ class AMOSFeatureFlags:
         print(f"[FeatureFlags] Experiment created: {name}")
         return experiment
 
-    def evaluate(self, flag_id: str, context: Dict[str, Any]) -> Any:
+    def evaluate(self, flag_id: str, context: dict[str, Any]) -> Any:
         """Evaluate feature flag for given context."""
         flag = self.flags.get(flag_id)
         if not flag:
@@ -364,7 +365,7 @@ class AMOSFeatureFlags:
         if flag_id not in self.flags:
             return False
         self.flags[flag_id].enabled = True
-        self.flags[flag_id].updated_at = datetime.now().isoformat()
+        self.flags[flag_id].updated_at = datetime.now(timezone.utc).isoformat()
         print(f"[FeatureFlags] Enabled: {flag_id}")
         return True
 
@@ -373,7 +374,7 @@ class AMOSFeatureFlags:
         if flag_id not in self.flags:
             return False
         self.flags[flag_id].enabled = False
-        self.flags[flag_id].updated_at = datetime.now().isoformat()
+        self.flags[flag_id].updated_at = datetime.now(timezone.utc).isoformat()
         print(f"[FeatureFlags] Disabled (kill switch): {flag_id}")
         return True
 
@@ -397,7 +398,7 @@ class AMOSFeatureFlags:
 
         exp = self.experiments[experiment_id]
         exp.status = "running"
-        exp.start_date = datetime.now().isoformat()
+        exp.start_date = datetime.now(timezone.utc).isoformat()
 
         # Enable associated flag
         self.enable_flag(exp.flag_id)
@@ -412,12 +413,12 @@ class AMOSFeatureFlags:
 
         exp = self.experiments[experiment_id]
         exp.status = "completed"
-        exp.end_date = datetime.now().isoformat()
+        exp.end_date = datetime.now(timezone.utc).isoformat()
 
         print(f"[FeatureFlags] Experiment completed: {exp.name}")
         return True
 
-    def get_experiment_results(self, experiment_id: str) -> Dict[str, Any]:
+    def get_experiment_results(self, experiment_id: str) -> dict[str, Any]:
         """Get current experiment results."""
         if experiment_id not in self.experiments:
             return {"error": "Experiment not found"}
@@ -456,7 +457,7 @@ class AMOSFeatureFlags:
             "owner": flag.owner,
         }
 
-    def get_all_flags_summary(self) -> Dict[str, Any]:
+    def get_all_flags_summary(self) -> dict[str, Any]:
         """Get summary of all flags."""
         by_type = {}
         for flag in self.flags.values():

@@ -16,7 +16,7 @@ import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 try:
     import redis
@@ -32,8 +32,6 @@ except ImportError:
 
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Optional
-from typing import Dict, List
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -69,7 +67,7 @@ class LexicalEngine:
     B = 0.75
 
     def __init__(self):
-        self._inverted_index: dict[str, dict[str, int]] = defaultdict(dict)
+        self._inverted_index: Dict[str, dict[str, int]] = defaultdict(dict)
         self._doc_lengths: Dict[str, int] = {}
         self._avg_doc_length: float = 0.0
         self._total_docs: int = 0
@@ -98,7 +96,7 @@ class LexicalEngine:
             self._inverted_index[term][doc.doc_id] = count
             self._doc_freqs[term] += 1
 
-    def search(self, query: str, top_k: int = 10) -> list[tuple[str, float]]:
+    def search(self, query: str, top_k: int = 10) -> List[tuple[str, float]]:
         query_tokens = self._tokenize(query)
         scores: Dict[str, float] = defaultdict(float)
         for term in query_tokens:
@@ -120,7 +118,7 @@ class LexicalEngine:
 class VectorEngine:
     """Vector similarity search engine."""
     def __init__(self, vector_dim: int = 768):
-        self._vectors: dict[str, list[float]] = {}
+        self._vectors: Dict[str, list[float]] = {}
         self._dim = vector_dim
 
     def add_document(self, doc: SearchDocument):
@@ -135,7 +133,7 @@ class VectorEngine:
             return 0.0
         return dot / (norm1 * norm2)
 
-    def search(self, query_vector: List[float], top_k: int = 10) -> list[tuple[str, float]]:
+    def search(self, query_vector: List[float], top_k: int = 10) -> List[tuple[str, float]]:
         scores = []
         for doc_id, vector in self._vectors.items():
             sim = self._cosine_similarity(query_vector, vector)
@@ -150,10 +148,10 @@ class HybridEngine:
 
     def fuse_results(
         self,
-        lexical_results: list[tuple[str, float]],
-        vector_results: list[tuple[str, float]],
+        lexical_results: List[tuple[str, float]],
+        vector_results: List[tuple[str, float]],
         top_k: int = 10
-    ) -> list[tuple[str, float]]:
+    ) -> List[tuple[str, float]]:
         lexical_ranks = {doc_id: rank + 1 for rank, (doc_id, _) in enumerate(lexical_results)}
         vector_ranks = {doc_id: rank + 1 for rank, (doc_id, _) in enumerate(vector_results)}
         all_docs = set(lexical_ranks.keys()) | set(vector_ranks.keys())

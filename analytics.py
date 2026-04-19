@@ -6,6 +6,7 @@ Provides usage analytics, trend analysis, and reporting.
 from datetime import datetime
 
 from database import db
+from typing import List
 
 
 class Analytics:

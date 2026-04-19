@@ -15,7 +15,7 @@ from tool_registry import execute_tool as _registry_execute
 
 # ── AskUserQuestion state ──────────────────────────────────────────────────────
 # The main REPL loop drains _pending_questions and fills _question_answers.
-_pending_questions: list[
+_pending_questions: List[
     dict
 ] = []  # [{id, question, options, allow_freetext, event, result_holder}]
 _ask_lock = threading.Lock()
@@ -853,7 +853,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
 def _ask_user_question(
     question: str,
-    options: list[dict ] = None,
+    options: List[dict ] = None,
     allow_freetext: bool = True,
 ) -> str:
     """Block the agent loop and surface a question to the user in the terminal.
@@ -862,8 +862,6 @@ def _ask_user_question(
     to render any questions and collect answers.  We use a threading.Event to
     block this call until the user responds.
     """
-from __future__ import annotations
-
     event = threading.Event()
     result_holder: List[str] = []
     entry = {
@@ -1173,6 +1171,7 @@ except Exception as _plugin_err:
 # ── Task tools (TaskCreate, TaskUpdate, TaskGet, TaskList) ─────────────────────
 # task/tools.py registers all four tools into the central registry on import.
 import task.tools as _task_tools  # noqa: F401
+from typing import List, Tuple
 
 # ── AMOS Brain Integration ────────────────────────────────────────────────────
 # AMOS cognitive runtime integration - provides Rule of 2/4 reasoning with

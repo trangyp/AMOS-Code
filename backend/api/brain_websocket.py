@@ -6,12 +6,10 @@ Provides WebSocket endpoints for real-time cognitive processing:
 - Real-time security vulnerability detection
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -31,7 +29,7 @@ class BrainAnalysisMessage(BaseModel):
     type: str
     code: str = ""
     language: str = "python"
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 async def stream_brain_analysis(websocket: WebSocket, code: str, language: str):

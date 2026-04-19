@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """
 AMOS Authentication & Authorization System (2025 SOTA)
 =====================================================
@@ -27,6 +25,8 @@ Owner: Trang
 Version: 6.0.0
 """
 
+from __future__ import annotations
+
 
 import base64
 import hashlib
@@ -39,7 +39,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 
 
 class TokenAlgorithm(Enum):
@@ -70,7 +70,7 @@ class User:
     id: str
     username: str
     email: str
-    roles: list[str] = field(default_factory=list)
+    roles: List[str] = field(default_factory=list)
     permissions: Set[str] = field(default_factory=set)
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: float = field(default_factory=time.time)
@@ -93,7 +93,7 @@ class Role:
     name: str
     description: str
     permissions: Set[str] = field(default_factory=set)
-    parent_roles: list[str] = field(default_factory=list)
+    parent_roles: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def get_all_permissions(self, role_registry: Dict[str, "Role"]) -> set[str]:
@@ -124,15 +124,15 @@ class JWTPayload:
     # Standard claims (RFC 7519)
     iss: str  # Issuer - MUST validate
     sub: str  # Subject (user ID)
-    aud: list[str]  # Audience - MUST validate
+    aud: List[str]  # Audience - MUST validate
     exp: float  # Expiration time
     nbf: float  # Not before
     iat: float  # Issued at
     jti: str  # JWT ID (for revocation)
 
     # Custom claims
-    roles: list[str] = field(default_factory=list)
-    permissions: list[str] = field(default_factory=list)
+    roles: List[str] = field(default_factory=list)
+    permissions: List[str] = field(default_factory=list)
     token_type: str = TokenType.ACCESS.value
 
     def to_dict(self) -> Dict[str, Any]:
@@ -172,7 +172,7 @@ class AuthResult:
     """Result of authentication/authorization check."""
 
     success: bool
-    user: User | None = None
+    user: Optional[User] = None
     token: str = None
     error: str = None
     permissions: Set[str] = field(default_factory=set)
@@ -193,7 +193,7 @@ class JWTManager:
     def __init__(
         self,
         issuer: str = "https://amos.api",
-        audience: list[str] = None,
+        audience: List[str] = None,
         algorithm: TokenAlgorithm = TokenAlgorithm.ES256,
         access_token_ttl: int = 3600,  # 1 hour
         refresh_token_ttl: int = 604800,  # 7 days
@@ -236,7 +236,7 @@ class JWTManager:
         self,
         user: User,
         token_type: TokenType = TokenType.ACCESS,
-        custom_claims: dict[str, Any] = None,
+        custom_claims: Dict[str, Any] = None,
     ) -> str:
         """
         Create JWT token following best practices.
@@ -305,7 +305,7 @@ class JWTManager:
         self,
         token: str,
         expected_type: TokenType = TokenType.ACCESS,
-        required_permissions: list[str] = None,
+        required_permissions: List[str] = None,
     ) -> AuthResult:
         """
         Validate JWT token following 2025 best practices.
@@ -427,7 +427,7 @@ class RBACManager:
         self._users: Dict[str, User] = {}
         self._roles: Dict[str, Role] = {}
         self._permissions: Dict[str, Permission] = {}
-        self._permission_cache: dict[str, set[str]] = {}
+        self._permission_cache: Dict[str, set[str]] = {}
         self._lock = threading.RLock()
 
         # Initialize default roles
@@ -583,17 +583,17 @@ class RBACManager:
 
             return False
 
-    def get_user(self, user_id: str) -> User | None:
+    def get_user(self, user_id: str) -> Optional[User]:
         """Get user by ID."""
         with self._lock:
             return self._users.get(user_id)
 
-    def list_roles(self) -> list[Role]:
+    def list_roles(self) -> List[Role]:
         """List all roles."""
         with self._lock:
             return list(self._roles.values())
 
-    def list_users(self) -> list[User]:
+    def list_users(self) -> List[User]:
         """List all users."""
         with self._lock:
             return list(self._users.values())
@@ -611,15 +611,15 @@ class APIKeyManager:
     """
 
     def __init__(self):
-        self._keys: dict[str, dict[str, Any]] = {}
+        self._keys: Dict[str, dict[str, Any]] = {}
         self._lock = threading.RLock()
 
     def generate_key(
         self,
         service_name: str,
-        roles: list[str],
+        roles: List[str],
         expires_in_days: int = 365,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> str:
         """Generate new API key."""
         with self._lock:
@@ -644,7 +644,7 @@ class APIKeyManager:
 
             return full_key
 
-    def validate_key(self, key: str) -> dict[str, Any]:
+    def validate_key(self, key: str) -> Dict[str, Any]:
         """Validate and return key info."""
         with self._lock:
             key_hash = hashlib.sha256(key.encode()).hexdigest()
@@ -792,7 +792,7 @@ class AuthSystem:
 
 
 # Global auth system instance
-_global_auth_system: AuthSystem | None = None
+_global_auth_system: Optional[AuthSystem] = None
 
 
 def get_auth_system() -> AuthSystem:

@@ -84,7 +84,7 @@ class MemoryLayer:
         self.storage_dir.mkdir(parents=True, exist_ok=True)
 
         # In-memory stores
-        self._memories: dict[str, list[Memory]] = {layer: [] for layer in self.LAYERS}
+        self._memories: Dict[str, list[Memory]] = {layer: [] for layer in self.LAYERS}
         self._index: Dict[str, Memory] = {}  # ID -> Memory lookup
 
         # Load persistent layers
@@ -235,7 +235,7 @@ class MemoryLayer:
             },
         }
 
-    def dump(self, layer: str = None) -> list[dict[str, Any]]:
+    def dump(self, layer: str = None) -> List[dict[str, Any]]:
         """Export memories as dicts."""
         layers = [layer] if layer else self.LAYERS
         result = []

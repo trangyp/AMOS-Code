@@ -19,7 +19,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Dict, List
 
 # ============================================================================
 # 1. ENHANCED WORLD MODEL (Y_t) - With Signal Filtering & Uncertainty
@@ -55,9 +55,9 @@ class WorldModelEngineV4:
 
     def __init__(self, history_window: int = 100):
         self.signals: deque = deque(maxlen=history_window)
-        self.source_reliability: dict[str, list[float]] = defaultdict(list)
+        self.source_reliability: Dict[str, list[float]] = defaultdict(list)
         self.market_state: Dict[str, float] = {}
-        self.uncertainty_bounds: dict[str, tuple[float, float]] = {}
+        self.uncertainty_bounds: Dict[str, tuple[float, float]] = {}
         self.model_version = 0
 
         # Kalman-filter-like state estimates
@@ -134,7 +134,7 @@ class WorldModelEngineV4:
             "sources": len(relevant_signals),
         }
 
-    def get_market_state(self) -> dict[str, dict]:
+    def get_market_state(self) -> Dict[str, dict]:
         """Get current filtered market state with uncertainty."""
         topics = [
             "opportunity_index",
@@ -203,11 +203,11 @@ class AdaptiveResourceAllocator:
 
     def __init__(self):
         self.policy = AllocationPolicy()
-        self.returns_history: dict[str, list[float]] = defaultdict(list)
+        self.returns_history: Dict[str, list[float]] = defaultdict(list)
 
     def allocate_with_learning(
         self, demands: List[dict], world_state: dict
-    ) -> dict[str, dict[str, float]]:
+    ) -> Dict[str, dict[str, float]]:
         """Allocate resources with adaptive learning."""
         # ε-greedy: sometimes explore randomly
         if random.random() < self.policy.exploration_rate:
@@ -496,7 +496,7 @@ class FeedbackCompressor:
     """
 
     def __init__(self):
-        self.leading_indicators: dict[str, list[Callable]] = {}
+        self.leading_indicators: Dict[str, list[Callable]] = {}
         self.partial_outcomes: deque = deque(maxlen=100)
         self.surrogate_models: Dict[str, Any] = {}
 

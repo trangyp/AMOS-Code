@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Cashflow Tracker — Income and expense monitoring
 
 Tracks cash movements, balances, and flow analysis over time.
@@ -8,6 +7,7 @@ import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -179,7 +179,7 @@ class CashflowTracker:
             CashflowType.EXPENSE, amount, description, category, destination=destination
         )
 
-    def get_balance(self, include_pending: bool = False) -> dict[str, float]:
+    def get_balance(self, include_pending: bool = False) -> Dict[str, float]:
         """Calculate current balance."""
         completed = [r for r in self.records if r.status == CashflowStatus.COMPLETED]
 
@@ -288,10 +288,10 @@ class CashflowTracker:
 
 
 # Global instance
-_TRACKER: CashflowTracker | None = None
+_TRACKER: Optional[CashflowTracker] = None
 
 
-def get_cashflow_tracker(data_dir: Path | None = None) -> CashflowTracker:
+def get_cashflow_tracker(data_dir: Optional[Path] = None) -> CashflowTracker:
     """Get or create global cashflow tracker."""
     global _TRACKER
     if _TRACKER is None:

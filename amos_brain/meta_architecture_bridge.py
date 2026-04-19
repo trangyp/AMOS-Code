@@ -33,6 +33,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 
 # Import meta-pathology detection
 try:
@@ -110,16 +111,16 @@ class MetaArchitectureBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: MetaPathologyEngine | None = None
+        self._engine: Optional[MetaPathologyEngine] = None
 
     @property
-    def engine(self) -> MetaPathologyEngine | None:
+    def engine(self) -> Optional[MetaPathologyEngine]:
         """Lazy initialization of meta-pathology engine."""
         if self._engine is None and META_PATHOLOGY_AVAILABLE:
             self._engine = get_meta_pathology_engine(self.repo_path)
         return self._engine
 
-    def get_meta_context(self) -> MetaArchitectureContext | None:
+    def get_meta_context(self) -> Optional[MetaArchitectureContext]:
         """Get complete meta-architecture context."""
         if not META_PATHOLOGY_AVAILABLE or self.engine is None:
             return None

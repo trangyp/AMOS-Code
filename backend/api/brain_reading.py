@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Brain-Reading API Endpoints
 
@@ -36,8 +36,8 @@ class BrainReadRequest(BaseModel):
     """Request for brain-level reading."""
 
     text: str = Field(..., description="Input text to read cognitively")
-    context: dict[str, Any] = Field(default_factory=dict, description="AMOS context")
-    goals: list[str] = Field(default_factory=list, description="Active goals")
+    context: Dict[str, Any] = Field(default_factory=dict, description="AMOS context")
+    goals: List[str] = Field(default_factory=list, description="Active goals")
 
 
 class BrainReadResponse(BaseModel):
@@ -52,11 +52,11 @@ class BrainReadResponse(BaseModel):
     priority: float
     compiled_goal_type: str
     compiled_objective: str
-    constraints: list[str]
-    references: list[str]
-    conflicts: list[dict[str, Any]]
-    ambiguities: list[dict[str, Any]]
-    execution_plan: dict[str, Any] = None
+    constraints: List[str]
+    references: List[str]
+    conflicts: List[dict[str, Any]]
+    ambiguities: List[dict[str, Any]]
+    execution_plan: Dict[str, Any] = None
 
 
 @router.post("/read", response_model=BrainReadResponse)
@@ -117,7 +117,7 @@ async def brain_read(request: BrainReadRequest) -> BrainReadResponse:
 
 
 @router.get("/status")
-async def brain_reading_status() -> dict[str, Any]:
+async def brain_reading_status() -> Dict[str, Any]:
     """Get Brain-Reading Kernel status."""
     if not _BRAIN_READING_AVAILABLE:
         return {"available": False, "error": "Brain-Reading Kernel not imported"}

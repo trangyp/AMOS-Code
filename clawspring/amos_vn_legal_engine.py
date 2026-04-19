@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class LegalDomain(Enum):
@@ -507,8 +507,6 @@ _vn_legal_engine: Optional[VNLegalEngine] = None
 
 def get_vn_legal_engine() -> VNLegalEngine:
     """Get or create the VN Legal Engine singleton."""
-from __future__ import annotations
-
     global _vn_legal_engine
     if _vn_legal_engine is None:
         _vn_legal_engine = VNLegalEngine()

@@ -1,17 +1,16 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain-Powered Health Diagnostics
 
 Intelligent health analysis and remediation using brain reasoning.
 Based on research: Cognitive system monitoring with predictive healing.
 """
-from __future__ import annotations
-
 
 import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from amos_brain.integrated_brain_api import get_brain_api
 
@@ -45,14 +44,14 @@ class BrainHealthDiagnostics:
 
     def __init__(
         self,
-        health_check_fn: Callable | None = None,
-        remediation_fn: Callable | None = None,
+        health_check_fn: Optional[Callable] = None,
+        remediation_fn: Optional[Callable] = None,
     ):
         self.brain = get_brain_api()
         self.health_check_fn = health_check_fn
         self.remediation_fn = remediation_fn
         self._diagnostic_history: List[HealthDiagnostic] = []
-        self._component_history: dict[str, list[dict[str, Any]]] = {}
+        self._component_history: Dict[str, list[dict[str, Any]]] = {}
 
     async def diagnose_component(
         self,
@@ -131,7 +130,7 @@ What is the likely root cause and recommended fix?"""
 
     async def analyze_system_health(
         self,
-        all_health_data: dict[str, dict[str, Any]],
+        all_health_data: Dict[str, dict[str, Any]],
     ) -> Dict[str, Any]:
         """
         Analyze overall system health with brain reasoning.
@@ -228,7 +227,7 @@ Provide step-by-step remediation instructions."""
             "raw_analysis": result.response,
         }
 
-    def _extract_root_cause(self, response: str) -> str | None:
+    def _extract_root_cause(self, response: str) -> Optional[str]:
         """Extract root cause from brain response."""
         # Look for root cause indicators
         indicators = ["root cause:", "cause:", "due to", "because", "reason:"]
@@ -262,7 +261,7 @@ Provide step-by-step remediation instructions."""
         component: str,
         status: str,
         response: str,
-    ) -> str | None:
+    ) -> Optional[str]:
         """Estimate recovery time based on brain analysis."""
         # Look for time indicators
         if "immediate" in response.lower() or "now" in response.lower():
@@ -284,8 +283,8 @@ Provide step-by-step remediation instructions."""
 
     def _prioritize_components(
         self,
-        health_data: dict[str, dict[str, Any]],
-    ) -> list[dict[str, Any]]:
+        health_data: Dict[str, dict[str, Any]],
+    ) -> List[dict[str, Any]]:
         """Prioritize components by urgency."""
         priority_order = {"critical": 0, "unhealthy": 1, "degraded": 2, "healthy": 3}
 
@@ -320,7 +319,7 @@ Provide step-by-step remediation instructions."""
 
     def get_diagnostic_history(
         self,
-        component: str | None = None,
+        component: Optional[str] = None,
         limit: int = 50,
     ) -> List[HealthDiagnostic]:
         """Get diagnostic history."""
@@ -331,7 +330,7 @@ Provide step-by-step remediation instructions."""
 
         return diagnostics[-limit:]
 
-    def get_common_issues(self) -> list[dict[str, Any]]:
+    def get_common_issues(self) -> List[dict[str, Any]]:
         """Get commonly diagnosed issues."""
         from collections import Counter
 
@@ -351,7 +350,7 @@ Provide step-by-step remediation instructions."""
 
 
 # Global instance
-_global_health_diagnostics: BrainHealthDiagnostics | None = None
+_global_health_diagnostics: Optional[BrainHealthDiagnostics] = None
 
 
 def get_brain_health_diagnostics() -> BrainHealthDiagnostics:

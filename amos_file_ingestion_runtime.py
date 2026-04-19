@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any
 
 """AMOS Streaming File Ingestion Runtime
 
@@ -36,11 +36,12 @@ from collections import defaultdict
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 
 # Format detection registry
-FORMAT_SIGNATURES: dict[bytes, str] = {
+FORMAT_SIGNATURES: Dict[bytes, str] = {
     b"%PDF": "pdf",
     b"PK\x03\x04": "zip",
     b"<?xml": "xml",
@@ -118,10 +119,10 @@ class DocSegment:
     content: str
     content_type: ContentType
     position: Position
-    parent_id: str | None = None
-    children_ids: tuple[str, ...] = ()
+    parent_id: Optional[str] = None
+    children_ids: Tuple[str, ...] = ()
     semantic_tags: frozenset[str] = field(default_factory=frozenset)
-    embedding_hint: str | None = None  # For chunk routing
+    embedding_hint: Optional[str] = None  # For chunk routing
 
     def __hash__(self) -> int:
         return hash(self.id)
@@ -144,7 +145,7 @@ class TableStructure:
     """Parsed table with cell structure."""
 
     id: str
-    caption: str | None = None
+    caption: Optional[str] = None
     cells: List[TableCell] = field(default_factory=list)
     num_rows: int = 0
     num_cols: int = 0
@@ -156,7 +157,7 @@ class TableStructure:
             return ""
 
         # Group by row
-        rows: dict[int, list[TableCell]] = defaultdict(list)
+        rows: Dict[int, list[TableCell]] = defaultdict(list)
         for cell in self.cells:
             rows[cell.row].append(cell)
 
@@ -182,15 +183,15 @@ class DocumentIndex:
     """Multi-level document index for fast retrieval."""
 
     # Quick lookup structures
-    page_map: dict[int, list[str]] = field(default_factory=lambda: defaultdict(list))
+    page_map: Dict[int, list[str]] = field(default_factory=lambda: defaultdict(list))
     section_map: Dict[str, str] = field(default_factory=dict)  # heading -> segment_id
-    heading_tree: list[dict[str, Any]] = field(default_factory=list)
+    heading_tree: List[dict[str, Any]] = field(default_factory=list)
     table_map: Dict[str, TableStructure] = field(default_factory=dict)
-    entity_index: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
-    reference_index: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
+    entity_index: Dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
+    reference_index: Dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
 
     # Semantic indices
-    keyword_index: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
+    keyword_index: Dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     position_index: Dict[str, Position] = field(default_factory=dict)
 
     # Metadata
@@ -239,7 +240,7 @@ class ParsedDocument:
     """Complete parsed document with all indices and cache state."""
 
     doc_id: str
-    source_path: str | None = None
+    source_path: Optional[str] = None
     format_type: FileFormat = FileFormat.UNKNOWN
 
     # Content storage
@@ -250,7 +251,7 @@ class ParsedDocument:
     index: DocumentIndex = field(default_factory=DocumentIndex)
 
     # Chunking
-    semantic_chunks: list[list[str]] = field(default_factory=list)  # Groups of segment IDs
+    semantic_chunks: List[list[str]] = field(default_factory=list)  # Groups of segment IDs
 
     # State management
     parse_version: str = "1.0.0"
@@ -261,13 +262,13 @@ class ParsedDocument:
     # Incremental update tracking
     dirty_segments: Set[str] = field(default_factory=set)
 
-    def get_segment(self, segment_id: str) -> DocSegment | None:
+    def get_segment(self, segment_id: str) -> Optional[DocSegment]:
         """Get segment by ID with access tracking."""
         self.access_count += 1
         self.last_accessed = datetime.now(timezone.utc).isoformat()
         return self.segments.get(segment_id)
 
-    def get_table(self, table_id: str) -> TableStructure | None:
+    def get_table(self, table_id: str) -> Optional[TableStructure]:
         """Get table by ID."""
         return self.tables.get(table_id)
 
@@ -300,7 +301,7 @@ class DocumentCache:
         """Generate cache key from source path and content hash."""
         return hashlib.sha256(f"{source}:{content_hash}".encode()).hexdigest()[:32]
 
-    async def get(self, source: str, content_hash: str) -> ParsedDocument | None:
+    async def get(self, source: str, content_hash: str) -> Optional[ParsedDocument]:
         """Get cached document if available."""
         async with self._lock:
             key = self._make_key(source, content_hash)
@@ -360,7 +361,7 @@ class FormatDetector:
     }
 
     @classmethod
-    def detect(cls, content: bytes, file_path: str | None = None) -> FileFormat:
+    def detect(cls, content: bytes, file_path: Optional[str] = None) -> FileFormat:
         """Detect format from content and/or path."""
         # Try extension first
         if file_path:
@@ -395,7 +396,7 @@ class StreamingParser(ABC):
 
     @abstractmethod
     def parse_stream(
-        self, content_stream: AsyncIterator[bytes], file_path: str | None = None
+        self, content_stream: AsyncIterator[bytes], file_path: Optional[str] = None
     ) -> AsyncIterator[DocSegment]:
         """Parse document as stream of segments."""
         yield  # type: ignore[misc]
@@ -425,7 +426,7 @@ class PlainTextStreamingParser(StreamingParser):
         }
 
     async def parse_stream(
-        self, content_stream: AsyncIterator[bytes], file_path: str | None = None
+        self, content_stream: AsyncIterator[bytes], file_path: Optional[str] = None
     ) -> AsyncIterator[DocSegment]:
         """Stream-parse text document into segments."""
         buffer = ""
@@ -521,12 +522,12 @@ class AdaptiveChunker:
         self.max_chunk_size = max_chunk_size
         self.overlap_size = overlap_size
 
-    def create_chunks(self, segments: List[DocSegment]) -> list[list[str]]:
+    def create_chunks(self, segments: List[DocSegment]) -> List[list[str]]:
         """Group segments into semantic chunks."""
         if not segments:
             return []
 
-        chunks: list[list[str]] = []
+        chunks: List[list[str]] = []
         current_chunk: List[str] = []
         current_size = 0
 
@@ -569,7 +570,7 @@ class TaskRouter:
     """Routes queries to fast or deep processing paths."""
 
     # Pattern -> TaskType mapping
-    PATTERNS: dict[TaskType, list[re.Pattern]] = {
+    PATTERNS: Dict[TaskType, list[re.Pattern]] = {
         TaskType.SIMPLE_LOOKUP: [
             re.compile(r"what is the (title|author|date|version)", re.I),
             re.compile(r"who (wrote|created|authored)", re.I),
@@ -619,7 +620,7 @@ class TaskRouter:
 class FastPathRetriever:
     """Fast retrieval for simple queries."""
 
-    async def retrieve(self, doc: ParsedDocument, query: str, task_type: TaskType) -> str | None:
+    async def retrieve(self, doc: ParsedDocument, query: str, task_type: TaskType) -> Optional[str]:
         """Attempt fast retrieval. Returns None if fast path fails."""
 
         if task_type == TaskType.SIMPLE_LOOKUP:
@@ -631,7 +632,7 @@ class FastPathRetriever:
 
         return None
 
-    async def _lookup_simple(self, doc: ParsedDocument, query: str) -> str | None:
+    async def _lookup_simple(self, doc: ParsedDocument, query: str) -> Optional[str]:
         """Fast lookup for simple properties."""
         query_lower = query.lower()
 
@@ -645,7 +646,7 @@ class FastPathRetriever:
 
         return None
 
-    async def _extract_page(self, doc: ParsedDocument, query: str) -> str | None:
+    async def _extract_page(self, doc: ParsedDocument, query: str) -> Optional[str]:
         """Extract content from specific page."""
         # Extract page number
         match = re.search(r"page (\d+)", query.lower())
@@ -663,7 +664,7 @@ class FastPathRetriever:
 
         return None
 
-    async def _find_pattern(self, doc: ParsedDocument, query: str) -> str | None:
+    async def _find_pattern(self, doc: ParsedDocument, query: str) -> Optional[str]:
         """Find pattern in document."""
         query_lower = query.lower()
 
@@ -697,8 +698,8 @@ class DocumentIngestionRuntime:
     async def ingest(
         self,
         content: bytes | str | AsyncIterator[bytes],
-        source: str | None = None,
-        format_hint: FileFormat | None = None,
+        source: Optional[str] = None,
+        format_hint: Optional[FileFormat] = None,
     ) -> ParsedDocument:
         """Ingest document with full indexing and caching."""
 
@@ -737,7 +738,7 @@ class DocumentIngestionRuntime:
         return doc
 
     async def _parse_and_index(
-        self, content: bytes, fmt: FileFormat, source: str | None, content_hash: str
+        self, content: bytes, fmt: FileFormat, source: Optional[str], content_hash: str
     ) -> ParsedDocument:
         """Parse content and build full index."""
 
@@ -837,7 +838,7 @@ class DocumentIngestionRuntime:
 
 
 # Global runtime instance
-_runtime: DocumentIngestionRuntime | None = None
+_runtime: Optional[DocumentIngestionRuntime] = None
 
 
 def get_ingestion_runtime() -> DocumentIngestionRuntime:
@@ -848,7 +849,7 @@ def get_ingestion_runtime() -> DocumentIngestionRuntime:
     return _runtime
 
 
-async def quick_ingest(content: bytes | str, source: str | None = None) -> ParsedDocument:
+async def quick_ingest(content: bytes | str, source: Optional[str] = None) -> ParsedDocument:
     """Quick convenience function for document ingestion."""
     runtime = get_ingestion_runtime()
     return await runtime.ingest(content, source)

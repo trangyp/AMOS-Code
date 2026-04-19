@@ -184,7 +184,7 @@ class BrainHandler(SubsystemHandler):
             print(f"[01_BRAIN] Bridge initialization error: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _route_pending_tasks(self, organism_root: Path, tasks: List[str]) -> list[dict[str, Any]]:
+    def _route_pending_tasks(self, organism_root: Path, tasks: List[str]) -> List[dict[str, Any]]:
         """Route pending tasks to optimal workers."""
         if not self._worker_bridge:
             self._initialize_worker_bridge(organism_root)

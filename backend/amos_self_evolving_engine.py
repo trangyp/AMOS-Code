@@ -31,9 +31,10 @@ Version: 3.1.0
 
 import os
 import asyncio
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from enum import Enum
 import json
 from collections import defaultdict
@@ -93,7 +94,7 @@ class EvolutionOpportunity:
     current_performance: float
     target_performance: float
     confidence: float  # 0-1
-    evidence: list[dict[str, Any]]
+    evidence: List[dict[str, Any]]
     proposed_solution: str
     estimated_impact: str
     risks: List[str]
@@ -130,9 +131,9 @@ class PerformanceTracker:
     """Track and analyze agent performance."""
 
     def __init__(self):
-        self.metrics_history: dict[str, list[PerformanceMetrics]] = defaultdict(list)
+        self.metrics_history: Dict[str, list[PerformanceMetrics]] = defaultdict(list)
         self.baselines: Dict[str, PerformanceMetrics] = {}
-        self.trends: dict[str, dict[str, list[float]]] = defaultdict(
+        self.trends: Dict[str, dict[str, list[float]]] = defaultdict(
             lambda: defaultdict(list)
         )
 
@@ -230,7 +231,7 @@ class EvolutionOpportunityDetector:
         self.opportunities: List[EvolutionOpportunity] = []
         self.detection_rules = self._load_detection_rules()
 
-    def _load_detection_rules(self) -> list[dict[str, Any]]:
+    def _load_detection_rules(self) -> List[dict[str, Any]]:
         """Load rules for detecting improvement opportunities."""
         return [
             {
@@ -375,7 +376,7 @@ class SelfImprovementEngine:
         self.active_improvements: Dict[str, ImprovementResult] = {}
         self.improvement_strategies: Dict[str, Callable] = self._load_strategies()
 
-    def _load_strategies(self) -> dict[str, Callable]:
+    def _load_strategies(self) -> Dict[str, Callable]:
         """Load improvement strategies."""
         return {
             ImprovementType.PROMPT_ENGINEERING.value: self._improve_prompts,
@@ -446,7 +447,7 @@ class SelfImprovementEngine:
 
         return result
 
-    def _get_current_metrics(self, agent_id: str) -> dict[str, float]:
+    def _get_current_metrics(self, agent_id: str) -> Dict[str, float]:
         """Get current performance metrics."""
         history = self.performance_tracker.metrics_history.get(agent_id, [])
         if not history:
@@ -590,8 +591,8 @@ class MultiAgentConsensus:
     """Multi-agent consensus and voting system."""
 
     def __init__(self):
-        self.votes: dict[str, list[ConsensusVote]] = defaultdict(list)
-        self.proposals: dict[str, dict[str, Any]] = {}
+        self.votes: Dict[str, list[ConsensusVote]] = defaultdict(list)
+        self.proposals: Dict[str, dict[str, Any]] = {}
 
     async def propose(
         self,
@@ -630,8 +631,6 @@ class MultiAgentConsensus:
     ) -> bool:
         """Cast a vote on a proposal."""
         import uuid
-from typing import Callable
-from typing import Dict, List
 
         consensus_vote = ConsensusVote(
             agent_id=agent_id,

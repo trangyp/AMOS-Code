@@ -60,7 +60,7 @@ class CanonQueryEngine:
         self,
         query: str,
         domain: str = "general",
-        context: dict[str, Any] | None = None,
+        context: Optional[dict[str, Any] ] = None,
     ) -> CanonQueryResult:
         """Process a query with Canon context enrichment.
 
@@ -114,7 +114,7 @@ class CanonQueryEngine:
         self,
         query: str,
         domains: list[str],
-        context: dict[str, Any] | None = None,
+        context: Optional[dict[str, Any] ] = None,
     ) -> list[CanonQueryResult]:
         """Query across multiple domains and aggregate results.
 
@@ -165,7 +165,7 @@ class CanonQueryEngine:
 
 
 # Singleton instance
-_canon_query_engine: CanonQueryEngine | None = None
+_canon_query_engine: Optional[CanonQueryEngine] = None
 
 
 async def get_canon_query_engine() -> CanonQueryEngine:
@@ -180,7 +180,7 @@ async def get_canon_query_engine() -> CanonQueryEngine:
 async def canon_query(
     query: str,
     domain: str = "general",
-    context: dict[str, Any] | None = None,
+    context: Optional[dict[str, Any] ] = None,
 ) -> CanonQueryResult:
     """Convenience function for Canon-aware queries.
 

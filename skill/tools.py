@@ -4,6 +4,7 @@
 from tool_registry import ToolDef, register_tool
 
 from .loader import find_skill, load_skills, substitute_arguments
+from typing import List
 
 _SKILL_SCHEMA = {
     "name": "Skill",
@@ -61,7 +62,6 @@ def _skill_tool(params: dict, config: dict) -> str:
 
     # Run inline via agent and collect text output
     import agent as _agent
-from typing import List
 
     system_prompt = config.get("_system_prompt", "")
 

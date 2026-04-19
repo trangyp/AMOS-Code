@@ -3,7 +3,7 @@
 import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class PowerDomain(Enum):
@@ -360,8 +360,6 @@ _electrical_power_engine: Optional[ElectricalPowerEngine] = None
 
 def get_electrical_power_engine() -> ElectricalPowerEngine:
     """Get or create the Electrical Power Engine singleton."""
-from __future__ import annotations
-
     global _electrical_power_engine
     if _electrical_power_engine is None:
         _electrical_power_engine = ElectricalPowerEngine()

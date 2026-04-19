@@ -25,7 +25,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amosl_bridge import BridgeExecutor, BridgeResult, SubstrateType
 from amosl_ledger import EntryType, StateLedger
@@ -53,8 +53,8 @@ class EvolutionStep:
     source_state: Dict[str, Any]
     target_state: Dict[str, Any]
     operator_applied: str
-    verification_result: VerificationResult | None = None
-    bridge_result: BridgeResult | None = None
+    verification_result: Optional[VerificationResult] = None
+    bridge_result: Optional[BridgeResult] = None
     duration_ms: int = 0
     status: str = "pending"
 
@@ -85,9 +85,9 @@ class EvolutionOperator:
 
     def __init__(
         self,
-        ledger: StateLedger | None = None,
-        verifier: VerificationEngine | None = None,
-        bridge: BridgeExecutor | None = None,
+        ledger: Optional[StateLedger] = None,
+        verifier: Optional[VerificationEngine] = None,
+        bridge: Optional[BridgeExecutor] = None,
     ):
         self.ledger = ledger or StateLedger()
         self.verifier = verifier or VerificationEngine(self.ledger)
@@ -165,7 +165,7 @@ class EvolutionOperator:
         return state
 
     def create_evolution_chain(
-        self, initial_state: Dict[str, Any], substrate_path: list[SubstrateType] = None
+        self, initial_state: Dict[str, Any], substrate_path: List[SubstrateType] = None
     ) -> EvolutionChain:
         """Create new evolution chain.
 
@@ -200,7 +200,7 @@ class EvolutionOperator:
         self,
         chain_id: str,
         operator: str = "compose",
-        target_substrate: SubstrateType | None = None,
+        target_substrate: Optional[SubstrateType] = None,
     ) -> EvolutionStep:
         """Execute one evolution step: Σ_t → Σ_{t+1}.
 
@@ -324,7 +324,7 @@ class EvolutionOperator:
 
             raise
 
-    def get_chain(self, chain_id: str) -> EvolutionChain | None:
+    def get_chain(self, chain_id: str) -> Optional[EvolutionChain]:
         """Get evolution chain by ID."""
         return self.chains.get(chain_id)
 

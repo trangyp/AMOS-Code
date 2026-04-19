@@ -17,6 +17,7 @@ Usage:
 import os
 import sys
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Dict, List, Optional
 
 # Add parent path for amos_brain

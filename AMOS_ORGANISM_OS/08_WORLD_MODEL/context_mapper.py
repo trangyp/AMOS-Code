@@ -29,7 +29,7 @@ class ContextMapper:
 
     def __init__(self):
         self._maps: Dict[str, ContextMap] = {}
-        self._tag_index: dict[str, list[str]] = {}
+        self._tag_index: Dict[str, list[str]] = {}
 
     def map_context(
         self, source: str, context_type: str = None, properties: Dict[str, Any] = None
@@ -139,7 +139,7 @@ class ContextMapper:
             "by_type": self._count_by_type(),
         }
 
-    def _count_by_type(self) -> dict[str, int]:
+    def _count_by_type(self) -> Dict[str, int]:
         """Count maps by type."""
         counts: Dict[str, int] = {}
         for map_obj in self._maps.values():

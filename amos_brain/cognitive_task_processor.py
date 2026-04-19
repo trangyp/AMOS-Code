@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """Cognitive Task Processor - Brain-powered task execution.
 
@@ -8,6 +8,7 @@ result tracking and error handling.
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from .facade import BrainClient
 
@@ -19,14 +20,14 @@ class CognitiveTaskResponse:
     task_id: str
     success: bool
     domain: str
-    engines_used: list[str]
+    engines_used: List[str]
     duration_ms: float
     timestamp: str
-    result: dict[str, Any]
+    result: Dict[str, Any]
 
 
 def process_cognitive_task(
-    description: str, priority: str = "MEDIUM", context: dict[str, Any] = None
+    description: str, priority: str = "MEDIUM", context: Dict[str, Any] = None
 ) -> CognitiveTaskResponse:
     """Process a cognitive task using the brain.
 

@@ -9,7 +9,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class BuildStatus(Enum):
@@ -27,9 +27,9 @@ class BuildResult:
     """Result of a build task."""
 
     success: bool = False
-    artifacts: list[str] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
+    artifacts: List[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
     duration_seconds: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
@@ -46,7 +46,7 @@ class BuildTask:
     description: str = ""
     component_type: str = ""  # subsystem, module, alias, test
     target_path: str = ""
-    dependencies: list[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
     parameters: Dict[str, Any] = field(default_factory=dict)
     status: BuildStatus = BuildStatus.PENDING
     result: Optional[BuildResult] = None
@@ -75,8 +75,8 @@ class BuilderEngine:
         self.organism_root = organism_root
 
         self.tasks: Dict[str, BuildTask] = {}
-        self.build_queue: list[str] = []
-        self.completed_builds: list[str] = []
+        self.build_queue: List[str] = []
+        self.completed_builds: List[str] = []
 
     def create_task(
         self,
@@ -84,8 +84,8 @@ class BuilderEngine:
         component_type: str,
         target_path: str,
         description: str = "",
-        dependencies: list[str] = None,
-        parameters: dict[str, Any] = None,
+        dependencies: List[str] = None,
+        parameters: Dict[str, Any] = None,
     ) -> BuildTask:
         """Create a new build task."""
         task = BuildTask(
@@ -206,7 +206,7 @@ class BuilderEngine:
             artifacts=[task.target_path],
         )
 
-    def execute_all(self) -> dict[str, BuildResult]:
+    def execute_all(self) -> Dict[str, BuildResult]:
         """Execute all pending build tasks."""
         results = {}
         # Sort by dependencies
@@ -219,14 +219,14 @@ class BuilderEngine:
 
         return results
 
-    def get_task_status(self, task_id: str) -> dict[str, Any]:
+    def get_task_status(self, task_id: str) -> Dict[str, Any]:
         """Get status of a build task."""
         task = self.tasks.get(task_id)
         if not task:
             return None
         return task.to_dict()
 
-    def list_tasks(self) -> list[dict[str, Any]]:
+    def list_tasks(self) -> List[dict[str, Any]]:
         """List all build tasks."""
         return [t.to_dict() for t in self.tasks.values()]
 

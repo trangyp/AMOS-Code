@@ -1,5 +1,6 @@
 """Pathology-Aware Architecture Bridge.
 
+from repo_doctor.arch_pathologies import (
 Integrates the Deep Architectural Pathology Engine with the AMOS Brain
 to provide pre-decision pathology validation.
 
@@ -17,15 +18,12 @@ Invariants enforced:
 """
 from __future__ import annotations
 
-
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Import architecture bridge components
 from .architecture_bridge import (
-from typing import Dict, List, Optional
     ArchitecturalCognitionBridge,
     ArchitecturalContext,
     get_architecture_bridge,

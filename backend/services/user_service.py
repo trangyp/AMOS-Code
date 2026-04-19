@@ -6,7 +6,7 @@ for user management operations.
 """
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_db_sqlalchemy import User
 from amos_error_handling import ValidationError
@@ -65,7 +65,7 @@ class UserService(BaseService[User, str]):
         self, user_id: str, email: str = None, username: str = None, is_active: bool = None
     ) -> User:
         """Update user with partial data."""
-        data: dict[str, Any] = {}
+        data: Dict[str, Any] = {}
 
         if email is not None:
             data["email"] = email

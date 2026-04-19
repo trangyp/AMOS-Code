@@ -8,7 +8,7 @@ Uses BrainClient for intelligent analysis when available.
 import ast
 import re
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 
 class SyntaxFixer:
@@ -23,7 +23,7 @@ class SyntaxFixer:
         self.fixed_count = 0
         self.failed_count = 0
 
-    def find_syntax_errors(self, root: Path = Path('.')) -> list[tuple[str, int, str]]:
+    def find_syntax_errors(self, root: Path = Path('.')) -> List[tuple[str, int, str]]:
         """Find all Python files with syntax errors."""
         errors = []
         for py_file in root.rglob('*.py'):

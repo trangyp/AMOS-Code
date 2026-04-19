@@ -4,7 +4,7 @@ Integrates the signal detection/coherence induction system with
 the local LLM runtime for privacy-preserving cognitive support.
 """
 
-from typing import Any
+from typing import Any, Dict, Optional
 
 from amos_brain.local_runtime import AMOSLocalRuntime, create_local_runtime
 from amos_coherence_engine import (

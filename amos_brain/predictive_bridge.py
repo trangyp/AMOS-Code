@@ -42,10 +42,10 @@ class PredictiveIntelligenceBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: PredictiveArchitectureEngine | None = None
+        self._engine: Optional[PredictiveArchitectureEngine] = None
 
     @property
-    def engine(self) -> PredictiveArchitectureEngine | None:
+    def engine(self) -> Optional[PredictiveArchitectureEngine]:
         """Lazy initialization of predictive engine."""
         if self._engine is None and PREDICTIVE_AVAILABLE:
             self._engine = get_predictive_engine(self.repo_path)

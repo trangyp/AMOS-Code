@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Unified API (Layer 19)
 ============================
 
@@ -25,7 +27,7 @@ System: AMOS vInfinity
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -120,7 +122,7 @@ class AMOS:
             session_id=self.session_id,
         )
 
-    def decide(self, problem: str, options: list[str] = None) -> AMOSResult:
+    def decide(self, problem: str, options: List[str] = None) -> AMOSResult:
         """Decision making with analysis."""
         if not self._initialized:
             self.initialize()
@@ -165,7 +167,7 @@ class AMOS:
     # ===== LAYER 12: COGNITIVE COOKBOOK =====
 
     def architecture_decision(
-        self, question: str, context: dict = None, options: list[str] = None
+        self, question: str, context: dict = None, options: List[str] = None
     ) -> AMOSResult:
         """Architecture Decision Record workflow."""
         if not self._initialized:
@@ -636,7 +638,7 @@ def think(query: str, domain: str = "general") -> AMOSResult:
     return get_amos().think(query, domain)
 
 
-def decide(problem: str, options: list[str] = None) -> AMOSResult:
+def decide(problem: str, options: List[str] = None) -> AMOSResult:
     """Quick decide function."""
     return get_amos().decide(problem, options)
 

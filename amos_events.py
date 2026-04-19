@@ -75,7 +75,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 
 # Try to import Kafka
 try:
@@ -202,7 +202,7 @@ class AMOSEvent:
 
 
 # Event schemas (Avro)
-EVENT_SCHEMAS: dict[str, dict[str, Any]] = {
+EVENT_SCHEMAS: Dict[str, dict[str, Any]] = {
     "agent_spawned": {
         "type": "record",
         "name": "AgentSpawned",

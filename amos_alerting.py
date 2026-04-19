@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 """AMOS Alerting - Production alerting system.
 
+from amos_health_monitor import get_health_monitor
+from amos_metrics_collector import get_metrics_collector
+import aiohttp
+import aiohttp
 Monitors system health and metrics, sends alerts when thresholds are exceeded.
 """
 
@@ -8,6 +14,7 @@ import asyncio
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
@@ -190,8 +197,6 @@ def init_default_alerting() -> AlertManager:
 
 async def monitor_loop(check_interval: int = 60):
     """Run continuous monitoring loop."""
-    from amos_health_monitor import get_health_monitor
-    from amos_metrics_collector import get_metrics_collector
 
     health_monitor = get_health_monitor()
     alert_manager = get_alert_manager()
@@ -289,7 +294,6 @@ class WebhookChannel:
 
     async def send(self, alert: BaseAlert) -> bool:
         """Send alert to webhook."""
-        import aiohttp
         try:
             async with aiohttp.ClientSession() as session:
                 payload = {
@@ -316,8 +320,6 @@ class SlackChannel:
 
     async def send(self, alert: BaseAlert) -> bool:
         """Send alert to Slack."""
-        import aiohttp
-from typing import Callable
         try:
             async with aiohttp.ClientSession() as session:
                 text = f"*{alert.severity.value.upper()}*: {alert.message}\n"

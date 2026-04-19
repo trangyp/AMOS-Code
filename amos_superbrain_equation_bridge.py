@@ -15,8 +15,6 @@ Version: 7.0.0
 Date: April 2026
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import math
@@ -352,7 +350,7 @@ class DistributedSystemsEquations:
     @staticmethod
     def cap_theorem_consistency(
         consistency_level: str, availability_required: bool, partition_tolerance: bool = True
-    ) -> dict[str, bool]:
+    ) -> Dict[str, bool]:
         """
         CAP Theorem: Consistency, Availability, Partition Tolerance
         Can only guarantee 2 of 3 during network partition
@@ -461,7 +459,7 @@ class QueueingTheoryEquations:
         return arrival_rate * avg_service_time
 
     @staticmethod
-    def mm1_queue_metrics(arrival_rate: float, service_rate: float) -> dict[str, float]:
+    def mm1_queue_metrics(arrival_rate: float, service_rate: float) -> Dict[str, float]:
         """
         M/M/1 Queue metrics
 
@@ -493,7 +491,7 @@ class FederatedLearningEquations:
     """
 
     @staticmethod
-    def fedavg_aggregate(local_weights: list[np.ndarray], sample_counts: List[int]) -> np.ndarray:
+    def fedavg_aggregate(local_weights: List[np.ndarray], sample_counts: List[int]) -> np.ndarray:
         """
         Federated Averaging (McMahan et al. 2017)
         w_{t+1} = Σ (n_k/n) · w_{t+1}^k
@@ -541,7 +539,7 @@ class TPUXLASpmdEquations:
     """
 
     @staticmethod
-    def device_mesh_shape(devices: int, mesh_config: List[int]) -> tuple[int, ...]:
+    def device_mesh_shape(devices: int, mesh_config: List[int]) -> Tuple[int, ...]:
         """
         Device Mesh Configuration
         M[d₁, d₂, ..., d_n] where Π d_i = total_devices
@@ -566,7 +564,7 @@ class TPUXLASpmdEquations:
 
     @staticmethod
     def tensor_sharding_spec(
-        tensor_shape: tuple[int, ...], partition_spec: tuple[str, ...]
+        tensor_shape: Tuple[int, ...], partition_spec: Tuple[str, ...]
     ) -> Dict[str, Any]:
         """
         XLA SPMD Tensor Sharding
@@ -594,7 +592,7 @@ class EffectSystemEquations:
     """
 
     @staticmethod
-    def compose_handlers(handler_stack: list[dict[str, Callable]]) -> Callable:
+    def compose_handlers(handler_stack: List[dict[str, Callable]]) -> Callable:
         """
         Handler Composition
         Handle (op(v; k)) with H → H_op(v, λx. Handle (k x) with H)
@@ -752,7 +750,7 @@ class CRDTEquations:
         return set1.union(set2)
 
     @staticmethod
-    def check_semilattice_properties(merge_fn: Callable) -> dict[str, bool]:
+    def check_semilattice_properties(merge_fn: Callable) -> Dict[str, bool]:
         """
         Verify CRDT Semi-lattice Properties
         - Commutative: a ⊔ b = b ⊔ a
@@ -789,7 +787,7 @@ class QuantumComputingEquations:
     """
 
     @staticmethod
-    def vqe_expectation(hamiltonian_terms: list[tuple[str, float]], shots: int = 1024) -> float:
+    def vqe_expectation(hamiltonian_terms: List[tuple[str, float]], shots: int = 1024) -> float:
         """
         Variational Quantum Eigensolver (VQE) Energy Expectation
         E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩ = Σᵢ cᵢ ⟨ψ(θ)|Pᵢ|ψ(θ)⟩
@@ -807,7 +805,7 @@ class QuantumComputingEquations:
         return energy
 
     @staticmethod
-    def qaoa_maxcut_cost(graph_edges: list[tuple[int, int]], bitstring: str) -> float:
+    def qaoa_maxcut_cost(graph_edges: List[tuple[int, int]], bitstring: str) -> float:
         """
         QAOA MaxCut Cost Function
         C(z) = Σ⟨ᵢⱼ∈E⟩ (1 - zᵢzⱼ)/2 where zᵢ ∈ {-1, +1}
@@ -847,7 +845,7 @@ class QuantumComputingEquations:
         }
 
     @staticmethod
-    def surface_code_threshold(p_error: float, lattice_size: int) -> dict[str, float]:
+    def surface_code_threshold(p_error: float, lattice_size: int) -> Dict[str, float]:
         """
         Surface Code Error Threshold
 
@@ -897,7 +895,7 @@ class FundamentalPhysicsEquations:
     """
 
     @staticmethod
-    def noether_conservation(symmetry: str) -> dict[str, str]:
+    def noether_conservation(symmetry: str) -> Dict[str, str]:
         """
         Noether's Theorem - Conservation Laws
 
@@ -947,7 +945,7 @@ class FundamentalPhysicsEquations:
         }
 
     @staticmethod
-    def black_hole_thermo(mass_kg: float) -> dict[str, float]:
+    def black_hole_thermo(mass_kg: float) -> Dict[str, float]:
         """
         Black Hole Thermodynamics
 
@@ -1023,7 +1021,7 @@ class QuantumErrorMitigationEquations:
     @staticmethod
     def cdr_mitigation(
         noisy_expectation: float,
-        training_circuits_results: list[tuple[float, float]],
+        training_circuits_results: List[tuple[float, float]],
         model: str = "linear",
     ) -> float:
         """
@@ -1081,7 +1079,7 @@ class QuantumErrorMitigationEquations:
         return int(np.ceil(gamma**2 / epsilon**2))
 
     @staticmethod
-    def quasi_probability_decomposition(noise_channel: Dict[str, float]) -> dict[str, float]:
+    def quasi_probability_decomposition(noise_channel: Dict[str, float]) -> Dict[str, float]:
         """
         Quasi-Probability Decomposition (QPD) for PEC.
 
@@ -1118,7 +1116,7 @@ class VariationalQuantumAlgorithms:
 
     @staticmethod
     def qaoa_expectation(
-        cost_hamiltonian: list[tuple[str, float]],
+        cost_hamiltonian: List[tuple[str, float]],
         p_level: int,
         beta_params: List[float],
         gamma_params: List[float],
@@ -1152,7 +1150,7 @@ class VariationalQuantumAlgorithms:
 
     @staticmethod
     def vqe_gradient(
-        params: List[float], hamiltonian_terms: list[tuple[str, float]], shift: float = np.pi / 2
+        params: List[float], hamiltonian_terms: List[tuple[str, float]], shift: float = np.pi / 2
     ) -> List[float]:
         """
         Parameter-Shift Rule for VQE gradients.
@@ -1285,7 +1283,7 @@ class QuantumFieldTheoryEquations:
     @staticmethod
     def wilson_loop_expectation(
         gauge_field: np.ndarray,
-        loop_path: list[tuple[float, float, float]],
+        loop_path: List[tuple[float, float, float]],
         representation_dim: int,
     ) -> complex:
         """
@@ -1382,7 +1380,7 @@ class StateSpaceModelEquations:
     @staticmethod
     def ssm_discretization(
         A: np.ndarray, B: np.ndarray, delta: float
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Discretize continuous SSM: (A, B) → (A_bar, B_bar).
 
@@ -1405,7 +1403,7 @@ class StateSpaceModelEquations:
     @staticmethod
     def selective_scan_step(
         h_prev: np.ndarray, x: float, A_bar: np.ndarray, B_bar: np.ndarray, C: np.ndarray, D: float
-    ) -> tuple[np.ndarray, float]:
+    ) -> Tuple[np.ndarray, float]:
         """
         Single step of selective scan (Mamba core).
 
@@ -1503,7 +1501,7 @@ class MoEEquations:
     """
 
     @staticmethod
-    def top_k_routing(logits: np.ndarray, k: int = 2) -> tuple[np.ndarray, np.ndarray]:
+    def top_k_routing(logits: np.ndarray, k: int = 2) -> Tuple[np.ndarray, np.ndarray]:
         """
         Top-k routing for MoE.
 
@@ -1627,7 +1625,7 @@ class QuantizationEquations:
     """
 
     @staticmethod
-    def symmetric_quantize(x: np.ndarray, bits: int) -> tuple[np.ndarray, float]:
+    def symmetric_quantize(x: np.ndarray, bits: int) -> Tuple[np.ndarray, float]:
         """
         Symmetric linear quantization to b bits.
 
@@ -1956,7 +1954,7 @@ class AgenticPlanningEquations:
 
     @staticmethod
     def plan_complexity(
-        num_steps: int, dependencies: list[tuple[int, int]], avg_branching: float
+        num_steps: int, dependencies: List[tuple[int, int]], avg_branching: float
     ) -> float:
         """
         Complexity of an agentic plan.
@@ -4815,7 +4813,7 @@ class AMOSSuperBrainBridge:
         self.execution_history.append(result)
         return result
 
-    def batch_compute(self, computations: list[tuple[str, Dict]]) -> List[ExecutionResult]:
+    def batch_compute(self, computations: List[tuple[str, Dict]]) -> List[ExecutionResult]:
         """Execute multiple equations"""
         return [self.compute(name, inputs) for name, inputs in computations]
 
@@ -4840,7 +4838,7 @@ class AMOSSuperBrainBridge:
             "cross_domain_isomorphisms": self._find_isomorphisms(),
         }
 
-    def _find_isomorphisms(self) -> list[dict[str, str]]:
+    def _find_isomorphisms(self) -> List[dict[str, str]]:
         """Find structural similarities across domains"""
         isomorphisms = []
 
@@ -4957,7 +4955,7 @@ class AMOSSuperBrainBridge:
         except Exception as e:
             return {"error": f"Integration failed: {str(e)}", "integration_status": "failed"}
 
-    def _generate_cross_refs(self, equation_name: str, metadata: Any) -> list[dict[str, str]]:
+    def _generate_cross_refs(self, equation_name: str, metadata: Any) -> List[dict[str, str]]:
         """Generate cross-references between SuperBrain and Math Framework."""
         cross_refs = []
 

@@ -26,7 +26,7 @@ Environment Variables:
 
 import os
 import time
-from typing import Any
+from typing import Any, Optional
 
 try:
     from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
@@ -375,7 +375,7 @@ class MetricsCollector:
 
 
 # Global metrics instance
-_metrics: MetricsCollector | None = None
+_metrics: Optional[MetricsCollector] = None
 
 
 def get_metrics() -> MetricsCollector:
@@ -440,7 +440,7 @@ class MetricsMiddleware:
             )
 
 
-def create_metrics_endpoint(app: FastAPI | None = None) -> Any:
+def create_metrics_endpoint(app: Optional[FastAPI] = None) -> Any:
     """Create metrics endpoint handler.
 
     Args:

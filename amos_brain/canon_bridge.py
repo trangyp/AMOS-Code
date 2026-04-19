@@ -4,10 +4,8 @@ Provides real-time access to canonical definitions during cognitive processing.
 Uses CanonKnowledgeEngine to parse actual Canon JSON files.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_canon_integration import get_canon_loader, initialize_canon
 
@@ -17,11 +15,11 @@ class CanonContext:
     """Canonical context for brain operations."""
 
     domain: str
-    glossary_terms: dict[str, Any]
-    applicable_agents: list[str]
-    relevant_engines: list[str]
-    brain_os_config: dict | None
-    knowledge_entries: list[Any] = None
+    glossary_terms: Dict[str, Any]
+    applicable_agents: List[str]
+    relevant_engines: List[str]
+    brain_os_config: Optional[dict] = None
+    knowledge_entries: Optional[List[Any]] = None
 
 
 class CanonBrainBridge:
@@ -134,7 +132,7 @@ class CanonBrainBridge:
 
 
 # Global bridge instance
-_bridge: CanonBrainBridge | None = None
+_bridge: Optional[CanonBrainBridge] = None
 
 
 async def get_canon_bridge() -> CanonBrainBridge:

@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class MathDomain(Enum):
@@ -570,8 +570,6 @@ _eng_math_engine: Optional[EngineeringMathematicsEngine] = None
 
 def get_engineering_math_engine() -> EngineeringMathematicsEngine:
     """Get singleton engineering/math engine instance."""
-from __future__ import annotations
-
     global _eng_math_engine
     if _eng_math_engine is None:
         _eng_math_engine = EngineeringMathematicsEngine()

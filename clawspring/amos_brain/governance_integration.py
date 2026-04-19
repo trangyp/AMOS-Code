@@ -5,22 +5,22 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
+from .governance_config_manager import GovernanceConfigManager, GovernanceMode
+from .unified_governance_coordinator import UnifiedGovernanceCoordinator
+from .governance_streaming_api import GovernanceStreamingAPI
 try:
-    from .governance_config_manager import GovernanceConfigManager, GovernanceMode
     CONFIG_AVAILABLE = True
 except ImportError:
     CONFIG_AVAILABLE = False
 
 try:
-    from .unified_governance_coordinator import UnifiedGovernanceCoordinator
     COORDINATOR_AVAILABLE = True
 except ImportError:
     COORDINATOR_AVAILABLE = False
 
 try:
-    from .governance_streaming_api import GovernanceStreamingAPI
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -31,7 +31,7 @@ class GovernanceIntegration:
 
     def __init__(
         self,
-        config_path: Path | None = None,
+        config_path: Optional[Path] = None,
         environment: str = "development",
         enable_streaming: bool = True,
     ):
@@ -39,9 +39,9 @@ class GovernanceIntegration:
         self.environment = environment
         self.enable_streaming = enable_streaming
 
-        self._config: GovernanceConfigManager | None = None
-        self._coordinator: UnifiedGovernanceCoordinator | None = None
-        self._streaming: GovernanceStreamingAPI | None = None
+        self._config: Optional[GovernanceConfigManager] = None
+        self._coordinator: Optional[UnifiedGovernanceCoordinator] = None
+        self._streaming: Optional[GovernanceStreamingAPI] = None
 
         self._initialized = False
         self._running = False
@@ -162,7 +162,7 @@ class GovernanceIntegration:
                 print(f"[GovernanceIntegration] Coordinator error: {e}")
                 time.sleep(60)
 
-    def get_health(self) -> dict[str, Any]:
+    def get_health(self) -> Dict[str, Any]:
         """Get integrated system health."""
         health = {
             "timestamp": datetime.now().isoformat(),
@@ -224,12 +224,10 @@ class GovernanceIntegration:
 # =============================================================================
 
 def create_integrated_governance(
-    config_path: Path | None = None,
+    config_path: Optional[Path] = None,
     environment: str = "development",
 ) -> GovernanceIntegration:
     """Factory function to create integrated governance system."""
-from __future__ import annotations
-
     integration = GovernanceIntegration(
         config_path=config_path,
         environment=environment,

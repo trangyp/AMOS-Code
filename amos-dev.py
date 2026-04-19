@@ -24,7 +24,7 @@ import os
 import subprocess
 import sys
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict
 
 
 class Colors:
@@ -55,7 +55,7 @@ class ServiceManager:
 
     def __init__(self):
         self.project_root = os.path.dirname(os.path.abspath(__file__))
-        self.services: dict[str, dict[str, Any]] = {
+        self.services: Dict[str, dict[str, Any]] = {
             "postgres": {
                 "port": 5432,
                 "health_url": None,
@@ -265,7 +265,7 @@ class ServiceManager:
         except Exception as e:
             log(f"Error stopping infrastructure: {e}", "error")
 
-    async def check_status(self) -> dict[str, bool]:
+    async def check_status(self) -> Dict[str, bool]:
         """Check health of all services."""
         log("Checking service health...", "info")
 

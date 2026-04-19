@@ -10,7 +10,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -157,7 +157,7 @@ class TransformEngine:
     def apply_transforms(
         self,
         data: Any,
-        transform_ids: list[str],
+        transform_ids: List[str],
         context: Optional[TransformContext] = None,
     ) -> Dict[str, Any]:
         """Apply multiple transforms in sequence."""
@@ -227,7 +227,7 @@ class TransformEngine:
         _flatten_recursive(data)
         return result
 
-    def list_transforms(self) -> list[dict]:
+    def list_transforms(self) -> List[dict]:
         """List all transforms."""
         return [
             {

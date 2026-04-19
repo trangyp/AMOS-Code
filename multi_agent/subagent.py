@@ -8,7 +8,7 @@ import uuid
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # ── Agent definition ───────────────────────────────────────────────────────
 
@@ -169,7 +169,7 @@ def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
     )
 
 
-def load_agent_definitions() -> dict[str, AgentDefinition]:
+def load_agent_definitions() -> Dict[str, AgentDefinition]:
     """Load all agent definitions: built-ins → user-level → project-level.
 
     Search paths:

@@ -26,9 +26,10 @@ import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 # Encryption
 from cryptography.fernet import Fernet
@@ -491,7 +492,7 @@ def rotate_secret(name: str, new_value: str) -> bool:
     return get_secrets_manager().rotate_secret(name, new_value)
 
 # Environment loader
-def load_env_secrets(prefix: str = "AMOS_SECRET_") -> dict[str, str]:
+def load_env_secrets(prefix: str = "AMOS_SECRET_") -> Dict[str, str]:
     """Load secrets from environment variables into manager."""
     mgr = get_secrets_manager()
     loaded = {}

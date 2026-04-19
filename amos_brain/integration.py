@@ -1,7 +1,8 @@
 """Integration layer connecting AMOS Brain to ClawSpring agent."""
 
+from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
 from .cognitive_stack import CognitiveStack
 from .laws import GlobalLaws, UBILaws
@@ -19,8 +20,6 @@ class AMOSBrainIntegration:
     - Cognitive stack orchestration
     - Pre/post-processing hooks for agent
     """
-from __future__ import annotations
-
 
     def __init__(self):
         self._brain = None
@@ -222,7 +221,7 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
 
 
 # Singleton instance
-_amos_integration: AMOSBrainIntegration | None = None
+_amos_integration: Optional[AMOSBrainIntegration] = None
 
 
 def get_amos_integration() -> AMOSBrainIntegration:

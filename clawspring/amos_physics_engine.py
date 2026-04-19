@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class PhysicsDomain(Enum):
@@ -525,8 +525,6 @@ _physics_engine: Optional[PhysicsCosmosEngine] = None
 
 def get_physics_engine() -> PhysicsCosmosEngine:
     """Get singleton physics engine instance."""
-from __future__ import annotations
-
     global _physics_engine
     if _physics_engine is None:
         _physics_engine = PhysicsCosmosEngine()

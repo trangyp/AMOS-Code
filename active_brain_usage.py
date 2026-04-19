@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from amos_brain import BrainClient
 from amos_brain.cognitive_engine import get_cognitive_engine
+from typing import List
 
 
 def use_brain_to_analyze(filepath: Path) -> dict:
@@ -44,7 +45,7 @@ def use_brain_to_analyze(filepath: Path) -> dict:
     }
 
 
-def use_brain_to_decide_fix_priority(files: list[Path]) -> list[Path]:
+def use_brain_to_decide_fix_priority(files: List[Path]) -> List[Path]:
     """ACTUALLY use brain to decide which files to fix first."""
     brain = BrainClient()
 

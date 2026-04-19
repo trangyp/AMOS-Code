@@ -16,7 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class HealthStatus(Enum):
@@ -68,13 +68,13 @@ class HealthMonitor:
             check_interval: Seconds between health checks
         """
         self.check_interval = check_interval
-        self._components: dict[str, Callable[[], ComponentHealth]] = {}
+        self._components: Dict[str, Callable[[], ComponentHealth]] = {}
         self._history: List[SystemHealth] = []
         self._max_history = 1000
         self._lock = threading.Lock()
         self._running = False
         self._monitor_thread: threading.Thread = None
-        self._alert_handlers: list[Callable[[str], None]] = []
+        self._alert_handlers: List[Callable[[str], None]] = []
 
     def register_component(self, name: str, health_check: Callable[[], ComponentHealth]) -> None:
         """Register a component for health monitoring.
@@ -220,7 +220,7 @@ class HealthMonitor:
 
     def get_component_trend(
         self, component_name: str, last_n: int = 100
-    ) -> list[tuple[datetime, float]]:
+    ) -> List[tuple[datetime, float]]:
         """Get health score trend for a component.
 
         Args:

@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List
-
 """AMOS Formal Semantics Kernel (FSK).
 
 The layer that converts equations, invariants, and architecture into

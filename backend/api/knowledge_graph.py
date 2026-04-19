@@ -7,10 +7,8 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from __future__ import annotations
 
-
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -44,9 +42,9 @@ class NodeCreateRequest(BaseModel):
     node_id: str = Field(..., description="Unique node identifier")
     node_type: str = Field(..., description="Node type: entity, concept, document, chunk")
     name: str = Field(..., description="Node name/label")
-    properties: dict[str, Any] = Field(default_factory=dict, description="Node properties")
-    vector: list[float] | None = Field(None, description="Optional embedding vector")
-    source_doc: str | None = Field(None, description="Source document ID")
+    properties: Dict[str, Any] = Field(default_factory=dict, description="Node properties")
+    vector: Optional[List[float] ] = Field(None, description="Optional embedding vector")
+    source_doc: Optional[str] = Field(None, description="Source document ID")
 
 
 class RelationshipCreateRequest(BaseModel):
@@ -55,7 +53,7 @@ class RelationshipCreateRequest(BaseModel):
     source_id: str = Field(..., description="Source node ID")
     target_id: str = Field(..., description="Target node ID")
     rel_type: str = Field(..., description="Relationship type")
-    properties: dict[str, Any] = Field(default_factory=dict, description="Relationship properties")
+    properties: Dict[str, Any] = Field(default_factory=dict, description="Relationship properties")
     weight: float = Field(default=1.0, description="Relationship weight")
 
 
@@ -63,14 +61,14 @@ class EntityExtractRequest(BaseModel):
     """Request to extract entities from text."""
 
     text: str = Field(..., description="Text to analyze")
-    doc_id: str | None = Field(None, description="Optional document ID")
+    doc_id: Optional[str] = Field(None, description="Optional document ID")
 
 
 class GraphRAGRequest(BaseModel):
     """Request for GraphRAG retrieval."""
 
     query: str = Field(..., description="Search query")
-    query_vector: list[float] | None = Field(None, description="Optional query embedding")
+    query_vector: Optional[List[float] ] = Field(None, description="Optional query embedding")
     depth: int = Field(default=2, ge=1, le=5, description="Graph traversal depth")
     top_k: int = Field(default=10, ge=1, le=50, description="Number of results")
 
@@ -81,8 +79,8 @@ class NodeResponse(BaseModel):
     node_id: str
     node_type: str
     name: str
-    properties: dict[str, Any]
-    source_doc: str | None
+    properties: Dict[str, Any]
+    source_doc: Optional[str]
     created_at: float
 
 
@@ -94,7 +92,7 @@ class RelationshipResponse(BaseModel):
     target_id: str
     rel_type: str
     weight: float
-    properties: dict[str, Any]
+    properties: Dict[str, Any]
 
 
 class GraphRAGResult(BaseModel):
@@ -111,8 +109,8 @@ class GraphStatsResponse(BaseModel):
 
     total_nodes: int
     total_relationships: int
-    nodes_by_type: dict[str, int]
-    relationships_by_type: dict[str, int]
+    nodes_by_type: Dict[str, int]
+    relationships_by_type: Dict[str, int]
     backend: str
 
 
@@ -221,7 +219,7 @@ async def extract_entities_endpoint(
     request: EntityExtractRequest,
     service: KnowledgeGraphService = Depends(get_graph_service),
     current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Extract entities and relationships from text.
 
     Automatically creates nodes and relationships in the graph.
@@ -255,7 +253,7 @@ async def graph_rag_retrieve(
     request: GraphRAGRequest,
     service: KnowledgeGraphService = Depends(get_graph_service),
     current_user: User = Depends(get_current_user),
-) -> list[GraphRAGResult]:
+) -> List[GraphRAGResult]:
     """GraphRAG retrieval - combines vector similarity with graph traversal.
 
     Provides more contextual and accurate retrieval than vector-only RAG.
@@ -303,14 +301,14 @@ async def get_graph_stats(
 
 @router.get("/query")
 async def query_graph(
-    node_types: str | None = Query(None, description="Comma-separated node types"),
-    rel_types: str | None = Query(None, description="Comma-separated relationship types"),
-    start_node: str | None = Query(None, description="Starting node for traversal"),
+    node_types: Optional[str] = Query(None, description="Comma-separated node types"),
+    rel_types: Optional[str] = Query(None, description="Comma-separated relationship types"),
+    start_node: Optional[str] = Query(None, description="Starting node for traversal"),
     depth: int = Query(default=2, ge=1, le=5),
     limit: int = Query(default=100, ge=1, le=1000),
     service: KnowledgeGraphService = Depends(get_graph_service),
     current_user: User = Depends(get_current_user),
-) -> list[dict[str, Any]]:
+) -> List[dict[str, Any]]:
     """Query the knowledge graph with filters."""
     query = GraphQuery(
         node_types=node_types.split(",") if node_types else None,
@@ -341,10 +339,10 @@ async def query_graph(
 
 @router.post("/brain-analyze")
 async def brain_analyze_graph(
-    focus: str | None = Query(None, description="Analysis focus"),
+    focus: Optional[str] = Query(None, description="Analysis focus"),
     service: KnowledgeGraphService = Depends(get_graph_service),
     current_user: User = Depends(get_current_user),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Brain-powered knowledge graph analysis."""
     if not _BRAIN_KG_AVAILABLE:
         return {"analysis": "brain_not_available"}

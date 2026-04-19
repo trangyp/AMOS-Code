@@ -16,7 +16,7 @@ import sqlite3
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -174,7 +174,7 @@ class WorkflowPersistence:
                 return dict(row)
             return None
 
-    def get_workflow_tasks(self, workflow_id: str) -> list[dict[str, Any]]:
+    def get_workflow_tasks(self, workflow_id: str) -> List[dict[str, Any]]:
         """Get all tasks for a workflow."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -184,7 +184,7 @@ class WorkflowPersistence:
 
             return [dict(row) for row in rows]
 
-    def list_workflows(self, limit: int = 100) -> list[dict[str, Any]]:
+    def list_workflows(self, limit: int = 100) -> List[dict[str, Any]]:
         """List recent workflows."""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -305,7 +305,7 @@ class PersistedAxiomFleet:
         tasks = self.persistence.get_workflow_tasks(workflow_id)
         return {"workflow": workflow, "tasks": tasks}
 
-    def list_history(self, limit: int = 100) -> list[dict[str, Any]]:
+    def list_history(self, limit: int = 100) -> List[dict[str, Any]]:
         """List workflow history."""
         return self.persistence.list_workflows(limit)
 

@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 
 class StoreType(Enum):
@@ -157,7 +157,7 @@ class AMOSFeatureStore:
         self.feature_sets: Dict[str, FeatureSet] = {}
 
         # Stores
-        self.online_store: dict[
+        self.online_store: Dict[
             str, dict[str, FeatureValue]
         ] = {}  # entity_id -> {feature_id -> value}
         self.offline_store: List[FeatureValue] = []  # Append-only batch store
@@ -166,7 +166,7 @@ class AMOSFeatureStore:
         self.materialization_jobs: Dict[str, MaterializationJob] = {}
 
         # Search index
-        self.feature_search_index: dict[str, list[str]] = {}  # tag -> feature_ids
+        self.feature_search_index: Dict[str, list[str]] = {}  # tag -> feature_ids
 
     async def initialize(self) -> None:
         """Initialize the feature store."""
@@ -356,7 +356,7 @@ class AMOSFeatureStore:
 
     def get_offline_features(
         self, entity_ids: List[str], feature_ids: List[str], timestamp: float
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get point-in-time correct features for training."""
         # Point-in-time correct join: Get feature values as of specific timestamp
         results = []
@@ -431,7 +431,7 @@ class AMOSFeatureStore:
 
         return job
 
-    def search_features(self, query: str, tags: list[str] = None) -> List[FeatureDefinition]:
+    def search_features(self, query: str, tags: List[str] = None) -> List[FeatureDefinition]:
         """Search for features by name or tags."""
         results = []
 

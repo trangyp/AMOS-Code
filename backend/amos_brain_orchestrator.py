@@ -31,7 +31,7 @@ import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 from agent_knowledge import knowledge_manager, recall
 from agent_messaging import AgentMessage, message_bus
@@ -75,9 +75,9 @@ class AgentContext:
     agent_id: str
     agent_type: str
     status: str = "initializing"
-    capabilities: list[str] = field(default_factory=list)
-    memory: dict[str, Any] = field(default_factory=dict)
-    config: dict[str, Any] = field(default_factory=dict)
+    capabilities: List[str] = field(default_factory=list)
+    memory: Dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     last_active: str = None
     total_tasks: int = 0
@@ -91,9 +91,9 @@ class TaskRequest:
     task_id: str
     agent_id: str
     task_type: str
-    input_data: dict[str, Any]
+    input_data: Dict[str, Any]
     priority: int = 2
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
     use_reasoning: bool = True
     use_knowledge: bool = True
     use_governance: bool = True
@@ -109,10 +109,10 @@ class TaskResult:
     success: bool
     output: Any
     reasoning_chain: str = None
-    knowledge_used: list[str] = field(default_factory=list)
+    knowledge_used: List[str] = field(default_factory=list)
     cost_usd: float = 0.0
     latency_ms: float = 0.0
-    violations: list[str] = field(default_factory=list)
+    violations: List[str] = field(default_factory=list)
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
@@ -120,10 +120,10 @@ class AMOSBrainOrchestrator:
     """Central orchestrator for the AMOS Cognitive Operating System."""
 
     def __init__(self):
-        self.agents: dict[str, AgentContext] = {}
+        self.agents: Dict[str, AgentContext] = {}
         self.task_queue: asyncio.PriorityQueue = asyncio.PriorityQueue()
-        self.running_tasks: dict[str, asyncio.Task] = {}
-        self.system_health: dict[str, Any] = {"status": "initializing", "subsystems": {}}
+        self.running_tasks: Dict[str, asyncio.Task] = {}
+        self.system_health: Dict[str, Any] = {"status": "initializing", "subsystems": {}}
         self.initialized = False
         self._shutdown_event = asyncio.Event()
 
@@ -161,7 +161,7 @@ class AMOSBrainOrchestrator:
             return False
 
     async def create_agent(
-        self, agent_type: str, capabilities: list[str] = None, config: dict[str, Any] = None
+        self, agent_type: str, capabilities: List[str] = None, config: Dict[str, Any] = None
     ) -> AgentContext:
         """Create and register a new agent."""
         import uuid
@@ -329,7 +329,7 @@ class AMOSBrainOrchestrator:
         # Default execution
         return f"Executed {task.task_type} with input: {task.input_data}"
 
-    async def get_agent_status(self, agent_id: str) -> dict[str, Any]:
+    async def get_agent_status(self, agent_id: str) -> Dict[str, Any]:
         """Get detailed agent status."""
         agent = self.agents.get(agent_id)
         if not agent:
@@ -349,7 +349,7 @@ class AMOSBrainOrchestrator:
             "last_active": agent.last_active,
         }
 
-    async def get_system_health(self) -> dict[str, Any]:
+    async def get_system_health(self) -> Dict[str, Any]:
         """Get comprehensive system health status."""
         # Aggregate subsystem health
         health = {
@@ -378,7 +378,7 @@ class AMOSBrainOrchestrator:
 
         return health
 
-    async def broadcast_system_message(self, message_type: str, content: dict[str, Any]) -> bool:
+    async def broadcast_system_message(self, message_type: str, content: Dict[str, Any]) -> bool:
         """Broadcast a message to all agents."""
         await message_bus.broadcast("system", {"type": message_type, "content": content})
         return True
@@ -415,13 +415,13 @@ async def initialize_amos() -> bool:
     return await amos_brain.initialize()
 
 
-async def create_agent(agent_type: str, capabilities: list[str] = None) -> AgentContext:
+async def create_agent(agent_type: str, capabilities: List[str] = None) -> AgentContext:
     """Create a new agent."""
     return await amos_brain.create_agent(agent_type, capabilities)
 
 
 async def execute_task(
-    agent_id: str, task_type: str, input_data: dict[str, Any], priority: int = 2
+    agent_id: str, task_type: str, input_data: Dict[str, Any], priority: int = 2
 ) -> TaskResult:
     """Execute a task."""
     import uuid
@@ -436,7 +436,7 @@ async def execute_task(
     return await amos_brain.execute_task(task)
 
 
-async def get_health() -> dict[str, Any]:
+async def get_health() -> Dict[str, Any]:
     """Get system health."""
     return await amos_brain.get_system_health()
 

@@ -23,6 +23,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 # Add minimal_real_brain to path
@@ -92,7 +93,7 @@ class AMOSRealBrain:
         self.brain = MinimalBrain()
 
         # Session management
-        self.sessions: dict[str, dict[str, Any]] = {}
+        self.sessions: Dict[str, dict[str, Any]] = {}
 
         # Metrics
         self.total_queries: int = 0

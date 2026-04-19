@@ -21,6 +21,7 @@ from flask import Flask, g, jsonify, request
 from amos_alerting import init_default_alerting
 from amos_health_monitor import init_default_health_checks
 from amos_metrics_collector import get_metrics_collector
+from typing import Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

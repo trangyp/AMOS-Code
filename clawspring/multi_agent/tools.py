@@ -8,12 +8,11 @@ Registers the following tools into the central tool_registry:
   ListAgentTypes   — list available agent type definitions
 """
 
-from __future__ import annotations
-
 
 from tool_registry import ToolDef, register_tool
 
 from .subagent import SubAgentManager, get_agent_definition, load_agent_definitions
+from typing import Optional
 
 # ── Singleton manager ──────────────────────────────────────────────────────
 

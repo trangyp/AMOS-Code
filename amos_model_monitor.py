@@ -19,7 +19,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class DriftType(Enum):
@@ -58,7 +58,7 @@ class MonitoringWindow:
 
     # Statistics
     prediction_count: int = 0
-    feature_stats: dict[str, dict[str, float]] = field(default_factory=dict)
+    feature_stats: Dict[str, dict[str, float]] = field(default_factory=dict)
     prediction_stats: Dict[str, float] = field(default_factory=dict)
 
     # Drift scores
@@ -171,7 +171,7 @@ class AMOSModelMonitor:
         self.baseline_windows: Dict[str, MonitoringWindow] = {}
         self.current_windows: Dict[str, MonitoringWindow] = {}
         self.alerts: Dict[str, DriftAlert] = {}
-        self.performance_history: dict[str, list[ModelPerformance]] = {}
+        self.performance_history: Dict[str, list[ModelPerformance]] = {}
 
         # Model health status
         self.model_status: Dict[str, ModelStatus] = {}
@@ -225,7 +225,7 @@ class AMOSModelMonitor:
         model_version: str,
         baseline_data: Dict[str, Any],
         drift_threshold: float = 0.1,
-        monitored_features: list[str] = None,
+        monitored_features: List[str] = None,
     ) -> str:
         """Register a model for monitoring."""
         config_id = f"config_{model_id}_{model_version}"

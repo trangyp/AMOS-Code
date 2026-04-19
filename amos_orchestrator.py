@@ -46,8 +46,9 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Set
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -301,7 +302,7 @@ class AMOSOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self.agents: dict[AgentType, BaseAgent] = {}
+        self.agents: Dict[AgentType, BaseAgent] = {}
         self.workflows: Dict[str, Workflow] = {}
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         self._initialize_agents()
@@ -314,7 +315,7 @@ class AMOSOrchestrator:
         self.agents[AgentType.PROVER] = ProverAgent()
         self.agents[AgentType.HEALER] = HealerAgent()
 
-    def create_workflow(self, name: str, metadata: dict[str, Any] = None) -> Workflow:
+    def create_workflow(self, name: str, metadata: Dict[str, Any] = None) -> Workflow:
         """Create new workflow."""
         workflow_id = str(uuid.uuid4())[:8]
         workflow = Workflow(workflow_id=workflow_id, name=name, tasks={}, metadata=metadata or {})
@@ -328,7 +329,7 @@ class AMOSOrchestrator:
         agent_type: AgentType,
         operation: str,
         parameters: Dict[str, Any],
-        depends_on: list[str] = None,
+        depends_on: List[str] = None,
     ) -> Task:
         """Add task to workflow."""
         task = Task(
@@ -442,7 +443,7 @@ class AMOSOrchestrator:
 
         return result
 
-    def get_pipeline_templates(self) -> dict[str, list[dict[str, Any]]]:
+    def get_pipeline_templates(self) -> Dict[str, list[dict[str, Any]]]:
         """Get pre-defined pipeline templates."""
         return {
             "extract_verify_execute": [

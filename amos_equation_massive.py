@@ -10,6 +10,7 @@ import numpy as np
 
 from amos_equation_jax import JAXEquationKernel
 from amos_equation_kernel import EquationMetadata, MathematicalPattern
+from typing import Dict, List
 
 
 class MassiveEquationKernel(JAXEquationKernel):
@@ -856,7 +857,7 @@ class MassiveEquationKernel(JAXEquationKernel):
                 parameters={},
             )
 
-    def count_equations_by_domain(self) -> dict[str, int]:
+    def count_equations_by_domain(self) -> Dict[str, int]:
         """Count equations in each domain."""
         counts: Dict[str, int] = {}
         for meta in self._metadata.values():

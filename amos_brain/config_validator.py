@@ -7,7 +7,7 @@ to provide early, actionable error messages.
 import os
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -15,9 +15,9 @@ class ValidationResult:
     """Result of configuration validation."""
 
     valid: bool
-    errors: list[str]
-    warnings: list[str]
-    config: dict[str, Any]
+    errors: List[str]
+    warnings: List[str]
+    config: Dict[str, Any]
 
 
 class ConfigValidator:
@@ -33,9 +33,9 @@ class ConfigValidator:
     }
 
     def __init__(self):
-        self.errors: list[str] = []
-        self.warnings: list[str] = []
-        self.config: dict[str, Any] = {}
+        self.errors: List[str] = []
+        self.warnings: List[str] = []
+        self.config: Dict[str, Any] = {}
 
     def validate(self) -> ValidationResult:
         """Validate all configuration settings.

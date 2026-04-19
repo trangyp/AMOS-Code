@@ -10,7 +10,7 @@ import uuid
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +110,6 @@ def _parse_agent_md(path: Path, source: str = "user") -> AgentDefinition:
 
         System prompt body goes here...
     """
-from __future__ import annotations
-
     content = path.read_text()
     name = path.stem
     description = ""
@@ -155,7 +153,7 @@ from __future__ import annotations
     )
 
 
-def load_agent_definitions() -> dict[str, AgentDefinition]:
+def load_agent_definitions() -> Dict[str, AgentDefinition]:
     """Load all agent definitions: built-ins → user-level → project-level.
 
     Search paths:

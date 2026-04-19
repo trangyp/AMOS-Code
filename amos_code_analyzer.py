@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Code Analyzer
 ====================
@@ -27,8 +27,8 @@ class AnalysisResult:
     """Result of code analysis."""
 
     file: str
-    issues: list[CodeIssue] = field(default_factory=list)
-    metrics: dict[str, Any] = field(default_factory=dict)
+    issues: List[CodeIssue] = field(default_factory=list)
+    metrics: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def has_errors(self) -> bool:
@@ -80,7 +80,7 @@ class AMOSCodeAnalyzer:
             )
 
         # Run analysis
-        issues: list[CodeIssue] = []
+        issues: List[CodeIssue] = []
         for rule in self.rules:
             found = rule(path, tree, lines)
             issues.extend(found)
@@ -100,7 +100,7 @@ class AMOSCodeAnalyzer:
         directory: str | Path,
         pattern: str = "*.py",
         max_files: int = 100,
-    ) -> list[AnalysisResult]:
+    ) -> List[AnalysisResult]:
         """Analyze all files in directory."""
         results = []
         path = Path(directory)
@@ -115,8 +115,8 @@ class AMOSCodeAnalyzer:
         return results
 
     def _check_bare_except(
-        self, filepath: Path, tree: ast.AST, lines: list[str]
-    ) -> list[CodeIssue]:
+        self, filepath: Path, tree: ast.AST, lines: List[str]
+    ) -> List[CodeIssue]:
         """Check for bare except clauses."""
         issues = []
 
@@ -135,7 +135,7 @@ class AMOSCodeAnalyzer:
 
         return issues
 
-    def _check_long_lines(self, filepath: Path, tree: ast.AST, lines: list[str]) -> list[CodeIssue]:
+    def _check_long_lines(self, filepath: Path, tree: ast.AST, lines: List[str]) -> List[CodeIssue]:
         """Check for lines that are too long."""
         issues = []
         max_length = 100
@@ -155,8 +155,8 @@ class AMOSCodeAnalyzer:
         return issues[:10]  # Limit to avoid overwhelming output
 
     def _check_unused_imports(
-        self, filepath: Path, tree: ast.AST, lines: list[str]
-    ) -> list[CodeIssue]:
+        self, filepath: Path, tree: ast.AST, lines: List[str]
+    ) -> List[CodeIssue]:
         """Check for potentially unused imports."""
         issues = []
 
@@ -193,8 +193,8 @@ class AMOSCodeAnalyzer:
         return issues[:5]
 
     def _check_mutable_defaults(
-        self, filepath: Path, tree: ast.AST, lines: list[str]
-    ) -> list[CodeIssue]:
+        self, filepath: Path, tree: ast.AST, lines: List[str]
+    ) -> List[CodeIssue]:
         """Check for mutable default arguments."""
         issues = []
 
@@ -215,7 +215,7 @@ class AMOSCodeAnalyzer:
         return issues
 
 
-def generate_report(results: list[AnalysisResult]) -> str:
+def generate_report(results: List[AnalysisResult]) -> str:
     """Generate human-readable report."""
     lines = ["# Code Analysis Report", ""]
 

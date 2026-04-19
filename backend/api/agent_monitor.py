@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -34,7 +34,7 @@ except ImportError:
 router = APIRouter(prefix="/agent-monitor", tags=["Agent Monitor"])
 
 # Active monitoring sessions
-_monitor_sessions: dict[str, dict[str, Any]] = {}
+_monitor_sessions: Dict[str, dict[str, Any]] = {}
 
 
 @dataclass
@@ -55,8 +55,8 @@ class AgentMonitor:
     """Real-time agent monitoring with brain integration."""
 
     def __init__(self):
-        self.subscribers: dict[str, set[WebSocket]] = {}
-        self.metrics_history: dict[str, list[AgentMetrics]] = {}
+        self.subscribers: Dict[str, set[WebSocket]] = {}
+        self.metrics_history: Dict[str, list[AgentMetrics]] = {}
         self._running = False
         self._task: asyncio.Task = None
 
@@ -288,7 +288,7 @@ async def agent_monitor_websocket(websocket: WebSocket, run_id: str):
 
 
 @router.get("/runs/active")
-async def get_active_runs() -> list[dict]:
+async def get_active_runs() -> List[dict]:
     """Get list of currently active agent runs."""
     if not _BRAIN_AVAILABLE:
         return []

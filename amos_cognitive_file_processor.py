@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
 
 """AMOS Cognitive File Processor - Production Implementation
 
@@ -41,7 +43,6 @@ except ImportError:
 
 try:
     from collections.abc import Callable
-    from typing import Any
 
     from amos_brain import BrainClient, get_super_brain, think
 
@@ -72,8 +73,8 @@ class CognitiveChunk:
     content_type: ContentType
     stable_read: Dict[str, Any] = None
     confidence: float = 0.0
-    read_type: str | None = None
-    primary_signal: str | None = None
+    read_type: Optional[str] = None
+    primary_signal: Optional[str] = None
     noise_score: float = 0.0
     processing_time_ms: float = 0.0
     position: Dict[str, Any] = field(default_factory=dict)
@@ -84,7 +85,7 @@ class CognitiveDocument:
     """Complete cognitive processing result."""
 
     doc_id: str
-    source_path: str | None
+    source_path: Optional[str]
     state: ProcessingState
     chunks: List[CognitiveChunk] = field(default_factory=list)
     cognitive_summary: Dict[str, Any] = field(default_factory=dict)
@@ -152,9 +153,9 @@ class CognitiveFileProcessor:
         self._enable_brain = enable_brain and BRAIN_AVAILABLE
         self._progress_callback = progress_callback
         self._semaphore = asyncio.Semaphore(max_concurrent)
-        self._brain: Any | None = None
+        self._brain: Optional[Any] = None
 
-    async def _get_brain(self) -> Any | None:
+    async def _get_brain(self) -> Optional[Any]:
         """Lazy brain initialization."""
         if self._brain is None and self._enable_brain and BRAIN_AVAILABLE:
             try:
@@ -166,7 +167,7 @@ class CognitiveFileProcessor:
     async def process_file(
         self,
         content: bytes | str,
-        source: str | None = None,
+        source: Optional[str] = None,
         context: Dict[str, Any] = None,
     ) -> CognitiveDocument:
         """Process file through full cognitive pipeline.
@@ -360,7 +361,7 @@ class CognitiveFileProcessor:
     async def stream_process(
         self,
         content_stream: AsyncIterator[bytes],
-        source: str | None = None,
+        source: Optional[str] = None,
         context: Dict[str, Any] = None,
     ) -> AsyncIterator[CognitiveChunk]:
         """Stream process file content in real-time.
@@ -396,7 +397,7 @@ class CognitiveFileProcessor:
 
 
 # Production convenience functions
-_processor: CognitiveFileProcessor | None = None
+_processor: Optional[CognitiveFileProcessor] = None
 
 
 async def get_cognitive_processor(
@@ -413,7 +414,7 @@ async def get_cognitive_processor(
 
 async def process_file_cognitively(
     content: bytes | str,
-    source: str | None = None,
+    source: Optional[str] = None,
     context: Dict[str, Any] = None,
     max_concurrent: int = 5,
     enable_brain: bool = True,

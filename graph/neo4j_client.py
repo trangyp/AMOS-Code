@@ -12,7 +12,7 @@ Version: 2.0.0
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from neo4j import AsyncGraphDatabase
 
@@ -42,8 +42,8 @@ class Relationship:
 class ConceptPath:
     """Path through the knowledge graph."""
 
-    nodes: list[dict[str, Any]]
-    relationships: list[dict[str, Any]]
+    nodes: List[dict[str, Any]]
+    relationships: List[dict[str, Any]]
     length: int
 
 
@@ -137,7 +137,7 @@ class EquationGraph:
         equation_id: str,
         rel_type: str = None,
         depth: int = 1,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get equations related to given equation."""
         if rel_type:
             query = (
@@ -222,7 +222,7 @@ class EquationGraph:
                 length=record["path_length"],
             )
 
-    async def get_prerequisites(self, equation_id: str) -> list[dict[str, Any]]:
+    async def get_prerequisites(self, equation_id: str) -> List[dict[str, Any]]:
         """Get prerequisite equations/concepts."""
         query = """
         MATCH (prereq)-[:PREREQUISITE_FOR]->(e:Equation {id: $id})
@@ -243,7 +243,7 @@ class EquationGraph:
                 for r in records
             ]
 
-    async def get_derivatives(self, equation_id: str) -> list[dict[str, Any]]:
+    async def get_derivatives(self, equation_id: str) -> List[dict[str, Any]]:
         """Get equations derived from this equation."""
         query = """
         MATCH (e:Equation {id: $id})-[:DERIVES_FROM]->(derived:Equation)
@@ -268,7 +268,7 @@ class EquationGraph:
         user_id: str,
         known_equations: List[str],
         limit: int = 10,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Recommend equations based on known equations (collaborative filtering)."""
         query = """
         MATCH (u:User {id: $user_id})-[:KNOWS]->(known:Equation)
@@ -301,7 +301,7 @@ class EquationGraph:
                 for r in records
             ]
 
-    async def search_concepts(self, query_text: str, limit: int = 20) -> list[dict[str, Any]]:
+    async def search_concepts(self, query_text: str, limit: int = 20) -> List[dict[str, Any]]:
         """Full-text search on concepts and equations."""
         query = """
         CALL db.index.fulltext.queryNodes('conceptSearch', $query) YIELD node, score
@@ -411,7 +411,7 @@ class GraphAnalytics:
     def __init__(self, graph: EquationGraph):
         self.graph = graph
 
-    async def get_central_equations(self, limit: int = 10) -> list[dict[str, Any]]:
+    async def get_central_equations(self, limit: int = 10) -> List[dict[str, Any]]:
         """Find most central equations by relationship count (degree centrality)."""
         query = """
         MATCH (e:Equation)-[r]-()
@@ -425,7 +425,7 @@ class GraphAnalytics:
             records = await result.data()
             return [{"id": r["id"], "name": r["name"], "connections": r["degree"]} for r in records]
 
-    async def get_communities(self) -> list[dict[str, Any]]:
+    async def get_communities(self) -> List[dict[str, Any]]:
         """Detect equation communities using Louvain (if available)."""
         query = """
         CALL gds.louvain.stream('equation-graph')
@@ -452,7 +452,7 @@ class GraphAnalytics:
         except Exception:
             return []  # GDS not available
 
-    async def get_difficulty_progression(self) -> list[dict[str, Any]]:
+    async def get_difficulty_progression(self) -> List[dict[str, Any]]:
         """Analyze difficulty progression paths."""
         query = """
         MATCH path = (start:Equation)-[:PREREQUISITE_FOR*3..5]->(end:Equation)

@@ -6,6 +6,7 @@ Supports SQLite (development) and PostgreSQL (production).
 import os
 import sqlite3
 from contextlib import contextmanager
+from typing import List
 
 # Database configuration
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///app/data/amos.db")

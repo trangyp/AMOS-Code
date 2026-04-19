@@ -12,10 +12,8 @@ Usage:
     response = await client.chat("Hello", session_id="sess-123")
 """
 
-from __future__ import annotations
-
 import os
-from typing import Any
+from typing import Any, List, Optional
 
 try:
     import httpx
@@ -43,7 +41,7 @@ from amos_brain.api_contracts import (
 class AMOSClientError(Exception):
     """Error from AMOS API Hub."""
     
-    def __init__(self, message: str, status_code: int | None = None, details: dict | None = None):
+    def __init__(self, message: str, status_code: Optional[int] = None, details: Optional[dict] = None):
         super().__init__(message)
         self.status_code = status_code
         self.details = details or {}
@@ -58,8 +56,8 @@ class AMOSClient:
     
     def __init__(
         self,
-        api_url: str | None = None,
-        api_key: str | None = None,
+        api_url: Optional[str] = None,
+        api_key: Optional[str] = None,
         timeout: float = 30.0,
     ):
         """Initialize AMOS client.
@@ -146,10 +144,10 @@ class AMOSClient:
         self,
         message: str,
         session_id: str,
-        conversation_id: str | None = None,
-        workspace_id: str | None = None,
-        model: str | None = None,
-        history: list[dict] | None = None,
+        conversation_id: Optional[str] = None,
+        workspace_id: Optional[str] = None,
+        model: Optional[str] = None,
+        history: Optional[List[dict] ] = None,
     ) -> ChatResponse:
         """Send chat message to AMOS.
         
@@ -185,7 +183,7 @@ class AMOSClient:
     async def brain_run(
         self,
         input_data: dict,
-        session_id: str | None = None,
+        session_id: Optional[str] = None,
         max_branches: int = 5,
         collapse_strategy: str = "best",
     ) -> BrainRunResponse:
@@ -219,7 +217,7 @@ class AMOSClient:
     async def repo_scan(
         self,
         repo_path: str,
-        scan_types: list[str] | None = None,
+        scan_types: Optional[List[str] ] = None,
     ) -> RepoScanResult:
         """Scan repository for issues.
         
@@ -241,7 +239,7 @@ class AMOSClient:
     async def repo_fix(
         self,
         scan_id: str,
-        issue_ids: list[str] | None = None,
+        issue_ids: Optional[List[str] ] = None,
         dry_run: bool = True,
     ) -> RepoFixResult:
         """Apply fixes to repository issues.
@@ -267,7 +265,7 @@ class AMOSClient:
     # Models API
     # ========================================================================
     
-    async def list_models(self) -> list[ModelInfo]:
+    async def list_models(self) -> List[ModelInfo]:
         """List available LLM models.
         
         Returns:
@@ -281,7 +279,7 @@ class AMOSClient:
         model_id: str,
         prompt: str,
         temperature: float = 0.7,
-        max_tokens: int | None = None,
+        max_tokens: Optional[int] = None,
     ) -> ModelResponse:
         """Run inference on specific model.
         
@@ -311,7 +309,7 @@ class AMOSClient:
     async def run_workflow(
         self,
         workflow_id: str,
-        inputs: dict | None = None,
+        inputs: Optional[dict] = None,
         synchronous: bool = True,
     ) -> WorkflowRunResponse:
         """Execute AMOS workflow.

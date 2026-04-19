@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """AMOS Brain API Integration - FastAPI routes for brain-powered endpoints.
 
@@ -9,8 +9,6 @@ Real backend integration providing:
 
 Owner: Trang Phan
 """
-from __future__ import annotations
-
 
 try:
     from .cognitive_task_processor import process_cognitive_task
@@ -102,7 +100,7 @@ class BrainAPIIntegration:
 
 
 # Singleton
-_api_integration: BrainAPIIntegration | None = None
+_api_integration: Optional[BrainAPIIntegration] = None
 
 
 async def get_brain_api() -> BrainAPIIntegration:

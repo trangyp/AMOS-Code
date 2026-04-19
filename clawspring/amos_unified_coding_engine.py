@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class CodingLayer(Enum):
@@ -357,8 +357,6 @@ _unified_coding_engine: Optional[UnifiedCodingEngine] = None
 
 def get_unified_coding_engine() -> UnifiedCodingEngine:
     """Get or create the Unified Coding Engine singleton."""
-from __future__ import annotations
-
     global _unified_coding_engine
     if _unified_coding_engine is None:
         _unified_coding_engine = UnifiedCodingEngine()

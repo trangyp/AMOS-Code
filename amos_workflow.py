@@ -115,7 +115,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 
 
 class WorkflowStatus(Enum):
@@ -202,7 +202,7 @@ class WorkflowInstance:
     context: Dict[str, Any] = field(default_factory=dict)
     input_data: Dict[str, Any] = field(default_factory=dict)
     output_data: Dict[str, Any] = field(default_factory=dict)
-    history: list[dict[str, Any]] = field(default_factory=list)
+    history: List[dict[str, Any]] = field(default_factory=list)
     step_results: Dict[str, Any] = field(default_factory=dict)
     created_at: float = field(default_factory=lambda: time.time())
     updated_at: float = field(default_factory=lambda: time.time())
@@ -254,11 +254,11 @@ class AMOSWorkflowEngine:
         self.step_executions: Dict[str, StepExecution] = {}
 
         # Action handlers
-        self.action_handlers: dict[str, Callable[..., Any]] = {}
-        self.compensation_handlers: dict[str, Callable[..., Any]] = {}
+        self.action_handlers: Dict[str, Callable[..., Any]] = {}
+        self.compensation_handlers: Dict[str, Callable[..., Any]] = {}
 
         # Human task queue
-        self.human_tasks: list[tuple[str, str, str]] = []  # (instance_id, step_id, description)
+        self.human_tasks: List[tuple[str, str, str]] = []  # (instance_id, step_id, description)
 
         # Statistics
         self.total_workflows_created: int = 0
@@ -616,7 +616,7 @@ class AMOSWorkflowEngine:
             "output_keys": list(instance.output_data.keys())
         }
 
-    def get_human_tasks(self) -> list[dict[str, str]]:
+    def get_human_tasks(self) -> List[dict[str, str]]:
         """Get list of pending human tasks."""
         return [
             {
@@ -671,7 +671,6 @@ class AMOSWorkflowEngine:
 def main():
     """CLI demo for workflow engine."""
     import argparse
-from typing import Callable, Final
 
     parser = argparse.ArgumentParser(
         description="AMOS Workflow Engine (Phase 29)"

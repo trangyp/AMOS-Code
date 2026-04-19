@@ -10,6 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class BiasType(Enum):
@@ -76,7 +77,7 @@ class BiasDetector:
     of bias and provides mitigation strategies.
     """
 
-    def __init__(self, sensitive_attributes: list[str] = None):
+    def __init__(self, sensitive_attributes: List[str] = None):
         self.findings: List[BiasFinding] = []
         self.mitigations: List[MitigationAction] = []
         self.sensitive_attributes = sensitive_attributes or [

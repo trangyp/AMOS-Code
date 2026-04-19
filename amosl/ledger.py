@@ -12,7 +12,7 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 @dataclass(frozen=True)
@@ -52,9 +52,9 @@ class LedgerEntry:
 class TraceTensor:
     """Trace tensor for comprehensive recording."""
 
-    inputs: list[dict[str, Any]] = field(default_factory=list)
-    observations: list[dict[str, Any]] = field(default_factory=list)
-    actions: list[dict[str, Any]] = field(default_factory=list)
+    inputs: List[dict[str, Any]] = field(default_factory=list)
+    observations: List[dict[str, Any]] = field(default_factory=list)
+    actions: List[dict[str, Any]] = field(default_factory=list)
     constraints: List[str] = field(default_factory=list)
     verification: List[bool] = field(default_factory=list)
     outputs: List[Any] = field(default_factory=list)
@@ -172,7 +172,7 @@ class Ledger:
         # state transformation. For now, we return the state.
         return state
 
-    def verify_chain(self) -> tuple[bool, list[str]]:
+    def verify_chain(self) -> Tuple[bool, list[str]]:
         """Verify ledger integrity (hash chain)."""
         errors = []
 

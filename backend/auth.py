@@ -11,14 +11,18 @@ Version: 3.0.0
 from __future__ import annotations
 
 
+
+
 import os
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from typing import List
 
 # Security configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "amos-development-secret-key-change-in-production")
@@ -47,7 +51,7 @@ class TokenData(BaseModel):
 
     username: str = None
     user_id: str = None
-    permissions: list[str] = []
+    permissions: List[str] = []
 
 
 class User(BaseModel):
@@ -58,7 +62,7 @@ class User(BaseModel):
     email: str = None
     full_name: str = None
     disabled: bool = False
-    permissions: list[str] = []
+    permissions: List[str] = []
 
 
 class UserInDB(User):
@@ -107,12 +111,12 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(username: str) -> UserInDB | None:
+def get_user(username: str) -> Optional[UserInDB]:
     """Retrieve user from database."""
     return DEMO_USERS.get(username)
 
 
-def authenticate_user(username: str, password: str) -> UserInDB | None:
+def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
     """Authenticate user with username and password."""
     user = get_user(username)
     if not user:
@@ -222,7 +226,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 class PermissionChecker:
     """Check if user has required permissions."""
 
-    def __init__(self, required_permissions: list[str]):
+    def __init__(self, required_permissions: List[str]):
         self.required_permissions = required_permissions
 
     def __call__(self, user: User = Depends(get_current_active_user)) -> User:

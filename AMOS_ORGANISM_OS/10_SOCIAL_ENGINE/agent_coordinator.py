@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class TaskStatus(Enum):
@@ -34,7 +34,7 @@ class AgentTask:
     parameters: Dict[str, Any] = field(default_factory=dict)
     status: TaskStatus = TaskStatus.PENDING
     assigned_agent: str = None
-    result: dict[str, Any] = None
+    result: Dict[str, Any] = None
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     completed_at: str = None
 
@@ -52,10 +52,10 @@ class AgentPool:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     agent_type: str = ""
-    capabilities: list[str] = field(default_factory=list)
-    agent_ids: list[str] = field(default_factory=list)
+    capabilities: List[str] = field(default_factory=list)
+    agent_ids: List[str] = field(default_factory=list)
     max_concurrent: int = 5
-    active_tasks: list[str] = field(default_factory=list)
+    active_tasks: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -76,7 +76,7 @@ class AgentCoordinator:
 
         self.pools: Dict[str, AgentPool] = {}
         self.tasks: Dict[str, AgentTask] = {}
-        self.agent_status: dict[str, dict[str, Any]] = {}
+        self.agent_status: Dict[str, dict[str, Any]] = {}
 
         self._init_default_pools()
 
@@ -113,7 +113,7 @@ class AgentCoordinator:
         self,
         name: str,
         agent_type: str,
-        capabilities: list[str],
+        capabilities: List[str],
         max_concurrent: int = 5,
     ) -> AgentPool:
         """Create a new agent pool."""
@@ -194,7 +194,7 @@ class AgentCoordinator:
         self._save_tasks()
         return True
 
-    def get_pool_status(self, pool_id: str) -> dict[str, Any]:
+    def get_pool_status(self, pool_id: str) -> Dict[str, Any]:
         """Get status of an agent pool."""
         pool = self.pools.get(pool_id)
         if not pool:
@@ -209,7 +209,7 @@ class AgentCoordinator:
 
     def aggregate_results(
         self,
-        task_ids: list[str],
+        task_ids: List[str],
         aggregation_type: str = "merge",
     ) -> Dict[str, Any]:
         """Aggregate results from multiple tasks."""
@@ -254,11 +254,11 @@ class AgentCoordinator:
         }
         tasks_file.write_text(json.dumps(data, indent=2))
 
-    def list_pools(self) -> list[dict[str, Any]]:
+    def list_pools(self) -> List[dict[str, Any]]:
         """List all agent pools."""
         return [p.to_dict() for p in self.pools.values()]
 
-    def list_tasks(self, status: Optional[TaskStatus] = None) -> list[dict[str, Any]]:
+    def list_tasks(self, status: Optional[TaskStatus] = None) -> List[dict[str, Any]]:
         """List tasks, optionally filtered by status."""
         tasks = self.tasks.values()
         if status:

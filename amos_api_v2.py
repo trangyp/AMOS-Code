@@ -1,6 +1,6 @@
 """AMOS API v2.0 - REST Endpoints for New Engines."""
 
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -28,7 +28,7 @@ class SafetyRequest(BaseModel):
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
+async def health() -> Dict[str, str]:
     return {"status": "healthy", "version": "2.0.0"}
 
 

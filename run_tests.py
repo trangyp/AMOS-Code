@@ -21,6 +21,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+from typing import List
 
 
 def run_command(cmd: List[str], description: str) -> int:

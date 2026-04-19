@@ -7,9 +7,7 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
@@ -19,7 +17,7 @@ from amos_brain.canon_query_engine import CanonQueryEngine
 router = APIRouter(prefix="/canon-brain", tags=["Canon Brain"])
 
 # Initialize engine singleton
-_canon_query_engine: CanonQueryEngine | None = None
+_canon_query_engine: Optional[CanonQueryEngine] = None
 
 
 async def get_engine() -> CanonQueryEngine:
@@ -36,7 +34,7 @@ class CanonQueryRequest(BaseModel):
 
     query: str
     domain: str = "general"
-    context: dict[str, Any] | None = None
+    context: Optional[Dict[str, Any] ] = None
 
 
 class CanonQueryResponse(BaseModel):
@@ -44,18 +42,18 @@ class CanonQueryResponse(BaseModel):
 
     query: str
     domain: str
-    canon_terms_used: list[str]
-    canon_agents_consulted: list[str]
-    canon_engines_referenced: list[str]
+    canon_terms_used: List[str]
+    canon_agents_consulted: List[str]
+    canon_engines_referenced: List[str]
     response: str
     confidence: float
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 @router.get("/domains/suggest")
 async def suggest_domains(
     q: str = Query(..., description="Query string to analyze"),
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Get domain suggestions based on query content.
 
     Example:
@@ -115,8 +113,8 @@ async def canon_query_endpoint(
 @router.post("/query/multi-domain")
 async def multi_domain_query(
     request: CanonQueryRequest,
-    domains: list[str] = Query(..., description="Domains to query"),
-) -> list[CanonQueryResponse]:
+    domains: List[str] = Query(..., description="Domains to query"),
+) -> List[CanonQueryResponse]:
     """Query across multiple domains and aggregate results.
 
     Example:
@@ -158,7 +156,7 @@ class CanonOrchestrateRequest(BaseModel):
 
     task: str
     domain: str = "general"
-    context: dict[str, Any] | None = None
+    context: Optional[Dict[str, Any] ] = None
 
 
 class CanonOrchestrateResponse(BaseModel):
@@ -167,10 +165,10 @@ class CanonOrchestrateResponse(BaseModel):
     task_id: str
     success: bool
     result: str
-    canon_context: dict[str, Any]
-    reasoning_path: list[str]
-    memories_accessed: list[str]
-    patterns_applied: list[str]
+    canon_context: Dict[str, Any]
+    reasoning_path: List[str]
+    memories_accessed: List[str]
+    patterns_applied: List[str]
     processing_time_ms: float
 
 
@@ -221,7 +219,7 @@ async def canon_orchestrate_endpoint(
 
 
 @router.get("/canon/status")
-async def canon_status() -> dict[str, Any]:
+async def canon_status() -> Dict[str, Any]:
     """Get Canon integration status.
 
     Returns information about Canon loader status, available terms,

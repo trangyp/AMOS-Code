@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .store import list_plugins
 from .types import PluginEntry, PluginScope
+from typing import List, Optional
 
 
 def load_all_plugins(scope: Optional[PluginScope] = None) -> List[PluginEntry]:

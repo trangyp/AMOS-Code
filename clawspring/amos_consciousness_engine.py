@@ -1,7 +1,7 @@
 """AMOS Consciousness Engine - Self-modeling and meta-cognitive awareness."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -264,7 +264,7 @@ class AMOSConsciousnessEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, ConsciousnessAnalysis]:
+    ) -> Dict[str, ConsciousnessAnalysis]:
         """Run consciousness analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -379,7 +379,7 @@ def get_consciousness_engine() -> AMOSConsciousnessEngine:
 def analyze_consciousness(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, ConsciousnessAnalysis]:
+) -> Dict[str, ConsciousnessAnalysis]:
     """Quick helper for consciousness analysis."""
     return get_consciousness_engine().analyze(description, domains)
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """
 AMOS Cognitive Processing API
@@ -16,8 +16,6 @@ Pipeline:
 Creator: Trang Phan
 Version: 1.0.0
 """
-from __future__ import annotations
-
 
 import sys
 import time
@@ -42,7 +40,7 @@ class CognitiveRequest(BaseModel):
     """Cognitive processing request."""
 
     input: str = Field(..., description="Raw natural language input")
-    context: dict[str, Any] = Field(default_factory=dict, description="Processing context")
+    context: Dict[str, Any] = Field(default_factory=dict, description="Processing context")
     priority: str = Field(default="MEDIUM", description="Task priority (LOW/MEDIUM/HIGH/CRITICAL)")
     enable_execution: bool = Field(default=False, description="Allow actual task execution")
 
@@ -77,13 +75,13 @@ class BrainAnalysis(BaseModel):
 class OrchestrationResult(BaseModel):
     """Orchestration results."""
 
-    task_id: str | None
+    task_id: Optional[str]
     domain: str
-    engines: list[str]
+    engines: List[str]
     execution_time_ms: float
     success: bool
-    output: str | None = None
-    error: str | None = None
+    output: Optional[str] = None
+    error: Optional[str] = None
 
 
 class CognitiveResponse(BaseModel):
@@ -102,7 +100,7 @@ class CognitiveResponse(BaseModel):
     brain: BrainAnalysis
 
     # Stage 4: Orchestration
-    orchestration: OrchestrationResult | None
+    orchestration: Optional[OrchestrationResult]
 
     # Overall
     total_time_ms: float
@@ -225,7 +223,7 @@ async def cognitive_process(request: CognitiveRequest) -> CognitiveResponse:
 
 
 @router.post("/process-fast")
-async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
+async def cognitive_process_fast(request: CognitiveRequest) -> Dict[str, Any]:
     """
     Fast cognitive processing with dual-process brain.
 
@@ -274,7 +272,7 @@ async def cognitive_process_fast(request: CognitiveRequest) -> dict[str, Any]:
 
 
 @router.get("/health")
-async def cognitive_health() -> dict[str, Any]:
+async def cognitive_health() -> Dict[str, Any]:
     """Check cognitive subsystem health."""
     health = {
         "translation_layer": False,

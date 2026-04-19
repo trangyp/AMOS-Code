@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Standards Registry — Standards & Compliance Tracking
 
 Maintains registry of industry standards, compliance requirements,
@@ -11,7 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class StandardType(Enum):
@@ -44,7 +43,7 @@ class Standard:
     standard_type: StandardType
     version: str
     description: str
-    requirements: list[str]
+    requirements: List[str]
     reference_url: str = None
     effective_date: datetime = None
 
@@ -58,7 +57,7 @@ class ComplianceRecord:
     assessed_at: datetime
     assessed_by: str
     notes: str
-    evidence: dict[str, Any] = field(default_factory=dict)
+    evidence: Dict[str, Any] = field(default_factory=dict)
     next_review_date: datetime = None
 
 
@@ -70,8 +69,8 @@ class StandardsRegistry:
     """
 
     def __init__(self):
-        self.standards: dict[str, Standard] = {}
-        self.compliance_records: dict[str, ComplianceRecord] = {}
+        self.standards: Dict[str, Standard] = {}
+        self.compliance_records: Dict[str, ComplianceRecord] = {}
         self._load_default_standards()
 
     def _load_default_standards(self):
@@ -119,7 +118,7 @@ class StandardsRegistry:
         status: ComplianceStatus,
         assessed_by: str,
         notes: str = "",
-        evidence: dict[str, Any] = None,
+        evidence: Dict[str, Any] = None,
     ) -> bool:
         """Record a compliance assessment."""
         if standard_id not in self.standards:
@@ -137,24 +136,24 @@ class StandardsRegistry:
         self.compliance_records[standard_id] = record
         return True
 
-    def get_compliance_status(self, standard_id: str) -> ComplianceStatus | None:
+    def get_compliance_status(self, standard_id: str) -> Optional[ComplianceStatus]:
         """Get compliance status for a standard."""
         if standard_id not in self.compliance_records:
             return None
         return self.compliance_records[standard_id].status
 
-    def get_standard(self, standard_id: str) -> Standard | None:
+    def get_standard(self, standard_id: str) -> Optional[Standard]:
         """Get a standard definition."""
         return self.standards.get(standard_id)
 
-    def list_standards(self, standard_type: StandardType | None = None) -> list[Standard]:
+    def list_standards(self, standard_type: Optional[StandardType] = None) -> List[Standard]:
         """List all standards, optionally filtered by type."""
         standards = list(self.standards.values())
         if standard_type:
             standards = [s for s in standards if s.standard_type == standard_type]
         return standards
 
-    def get_compliance_summary(self) -> dict[str, int]:
+    def get_compliance_summary(self) -> Dict[str, int]:
         """Get summary of compliance status across all standards."""
         summary = {
             "total": len(self.standards),
@@ -184,7 +183,7 @@ class StandardsRegistry:
 
         return summary
 
-    def get_non_compliant_standards(self) -> list[Standard]:
+    def get_non_compliant_standards(self) -> List[Standard]:
         """Get all standards that are not fully compliant."""
         non_compliant = []
         for standard_id, record in self.compliance_records.items():

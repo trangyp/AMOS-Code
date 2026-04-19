@@ -5,7 +5,8 @@ import json
 import logging
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
-from typing import Any, Callable, Optional
+UTC = timezone.utc
+from typing import Any, Callable, Dict, List, Optional
 from contextlib import asynccontextmanager
 
 import nats
@@ -21,7 +22,7 @@ class NATSMessage:
     """Standard message envelope for all AMOS NATS communications."""
     
     topic: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     source: str  # Repo name that sent the message
     timestamp: str
     correlation_id: Optional[str] = None
@@ -31,7 +32,7 @@ class NATSMessage:
     def create(
         cls,
         topic: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         source: str,
         correlation_id: Optional[str] = None,
         reply_to: Optional[str] = None
@@ -68,7 +69,7 @@ class AMOSNATSClient:
         
         self._nc: Optional[NATSClient] = None
         self._js: Optional[JetStreamContext] = None
-        self._subscriptions: list[Subscription] = []
+        self._subscriptions: List[Subscription] = []
         
     async def connect(self) -> None:
         """Connect to NATS server."""
@@ -108,9 +109,9 @@ class AMOSNATSClient:
     async def request(
         self,
         subject: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         timeout: float = 30.0
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Send synchronous request and wait for reply."""
         if not self._nc:
             raise RuntimeError("NATS not connected")
@@ -180,7 +181,7 @@ class AMOSNATSClient:
     async def publish(
         self,
         subject: str,
-        payload: dict[str, Any]
+        payload: Dict[str, Any]
     ) -> None:
         """Publish async event."""
         if not self._nc:
@@ -229,7 +230,7 @@ class AMOSNATSClient:
     async def js_publish(
         self,
         subject: str,
-        payload: dict[str, Any]
+        payload: Dict[str, Any]
     ) -> None:
         """Publish to JetStream with persistence."""
         if not self._js:
@@ -283,10 +284,10 @@ class AMOSNATSClient:
     async def scatter_gather(
         self,
         subject_pattern: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         expected_responses: int,
         timeout: float = 30.0
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Scatter request to multiple services and gather responses."""
         if not self._nc:
             raise RuntimeError("NATS not connected")

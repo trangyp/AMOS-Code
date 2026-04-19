@@ -99,7 +99,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -252,7 +252,7 @@ class SimplePredictor(Predictor):
     def __init__(self, latent_dim: int) -> None:
         self.latent_dim = latent_dim
         # Action embedding matrix
-        self.action_weights: dict[str, np.ndarray] = {
+        self.action_weights: Dict[str, np.ndarray] = {
             at.value: np.random.randn(latent_dim, latent_dim) * 0.1 for at in ActionType
         }
 
@@ -335,7 +335,7 @@ class AMOSWorldModel:
     ) -> None:
         self.name = name
         self.latent_dim = latent_dim
-        self.levels: dict[PredictionLevel, WorldModelLevel] = {}
+        self.levels: Dict[PredictionLevel, WorldModelLevel] = {}
 
         # Initialize hierarchical levels
         level_types = [

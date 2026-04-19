@@ -12,12 +12,10 @@ High M_ij means:
 - They may need contract isolation
 """
 
-from __future__ import annotations
-
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Import entanglement matrix
 try:
@@ -43,10 +41,10 @@ class EntanglementContext:
     high_entanglement_edges: int = 0
 
     # Coupling details
-    strongly_coupled_modules: list[tuple[str, float]] = field(default_factory=list)
-    import_coupled: list[str] = field(default_factory=list)
-    test_coupled: list[str] = field(default_factory=list)
-    git_coupled: list[str] = field(default_factory=list)
+    strongly_coupled_modules: List[tuple[str, float]] = field(default_factory=list)
+    import_coupled: List[str] = field(default_factory=list)
+    test_coupled: List[str] = field(default_factory=list)
+    git_coupled: List[str] = field(default_factory=list)
 
     # Risk assessment
     entanglement_risk_score: float = 0.0  # 0-1, higher = more risky
@@ -58,11 +56,11 @@ class ChangeImpactPrediction:
     """Predicted impact of changing a module."""
 
     target_module: str
-    predicted_affected_modules: list[str]
+    predicted_affected_modules: List[str]
     risk_score: float
-    test_recommendations: list[str]
-    bisect_recommendations: list[str]
-    isolation_suggestions: list[str]
+    test_recommendations: List[str]
+    bisect_recommendations: List[str]
+    isolation_suggestions: List[str]
 
 
 @dataclass
@@ -90,21 +88,21 @@ class EntanglementCognitionBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._matrix: EntanglementMatrix | None = None
-        self._edges: list[EntanglementEdge] = []
+        self._matrix: Optional[EntanglementMatrix] = None
+        self._edges: List[EntanglementEdge] = []
         self._threshold_critical = 0.7
         self._threshold_high = 0.5
         self._threshold_medium = 0.3
 
     @property
-    def matrix(self) -> EntanglementMatrix | None:
+    def matrix(self) -> Optional[EntanglementMatrix]:
         """Lazy initialization of entanglement matrix."""
         if self._matrix is None and ENTANGLEMENT_AVAILABLE:
             self._matrix = EntanglementMatrix(self.repo_path)
             self._edges = self._matrix.analyze()
         return self._matrix
 
-    def get_entanglement_context(self, module_name: str) -> EntanglementContext | None:
+    def get_entanglement_context(self, module_name: str) -> Optional[EntanglementContext]:
         """Get complete entanglement context for a module."""
         if not ENTANGLEMENT_AVAILABLE or self.matrix is None:
             return None
@@ -158,7 +156,7 @@ class EntanglementCognitionBridge:
         self,
         target_module: str,
         include_secondary: bool = True,
-    ) -> ChangeImpactPrediction | None:
+    ) -> Optional[ChangeImpactPrediction]:
         """Predict impact of changing a module.
 
         Args:
@@ -204,7 +202,7 @@ class EntanglementCognitionBridge:
             isolation_suggestions=isolation_recs,
         )
 
-    def check_entanglement_alerts(self) -> list[EntanglementAlert]:
+    def check_entanglement_alerts(self) -> List[EntanglementAlert]:
         """Check for high entanglement issues across the repository."""
         alerts = []
 
@@ -253,7 +251,7 @@ class EntanglementCognitionBridge:
 
         return sorted(alerts, key=lambda x: -x.entanglement_score)
 
-    def get_global_entanglement_summary(self) -> dict[str, Any]:
+    def get_global_entanglement_summary(self) -> Dict[str, Any]:
         """Get global entanglement summary for the repository."""
         if not ENTANGLEMENT_AVAILABLE or self.matrix is None:
             return {}
@@ -278,12 +276,12 @@ class EntanglementCognitionBridge:
             "medium_edges": sum(1 for w in weights if w >= self._threshold_medium),
         }
 
-    def get_most_entangled_modules(self, n: int = 10) -> list[tuple[str, float]]:
+    def get_most_entangled_modules(self, n: int = 10) -> List[tuple[str, float]]:
         """Get the most entangled modules by average coupling."""
         if not ENTANGLEMENT_AVAILABLE or self.matrix is None:
             return []
 
-        module_entanglement: dict[str, list[float]] = {}
+        module_entanglement: Dict[str, list[float]] = {}
 
         for edge in self._edges:
             for module in [edge.module_a, edge.module_b]:
@@ -300,8 +298,8 @@ class EntanglementCognitionBridge:
     def _generate_test_recommendations(
         self,
         target_module: str,
-        affected_modules: list[str],
-    ) -> list[str]:
+        affected_modules: List[str],
+    ) -> List[str]:
         """Generate test recommendations based on entanglement."""
         recs = []
 
@@ -319,8 +317,8 @@ class EntanglementCognitionBridge:
     def _generate_bisect_recommendations(
         self,
         target_module: str,
-        affected_modules: list[str],
-    ) -> list[str]:
+        affected_modules: List[str],
+    ) -> List[str]:
         """Generate bisect recommendations based on entanglement."""
         recs = []
 
@@ -333,7 +331,7 @@ class EntanglementCognitionBridge:
         self,
         target_module: str,
         context: EntanglementContext,
-    ) -> list[str]:
+    ) -> List[str]:
         """Generate contract isolation suggestions."""
         recs = []
 

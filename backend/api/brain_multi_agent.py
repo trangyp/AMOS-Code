@@ -8,8 +8,6 @@ Uses AMOS brain for:
 - Performance prediction and monitoring
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -18,7 +16,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -53,7 +51,7 @@ class AgentRegistrationRequest(BaseModel):
 
     name: str = Field(..., min_length=1)
     description: str = Field(default="")
-    capabilities: list[str] = Field(default_factory=list)
+    capabilities: List[str] = Field(default_factory=list)
     agent_type: str = Field(default="internal")
     endpoint_url: str = None
     max_concurrent: int = Field(default=5, ge=1)
@@ -65,7 +63,7 @@ class AgentRegistrationResponse(BaseModel):
     agent_id: str
     name: str
     status: str
-    registered_capabilities: list[str]
+    registered_capabilities: List[str]
     timestamp: datetime
 
 
@@ -74,8 +72,8 @@ class TaskDelegationRequest(BaseModel):
 
     task_type: str = Field(..., min_length=1)
     description: str = Field(..., min_length=1)
-    input_data: dict[str, Any] = Field(default_factory=dict)
-    required_skills: list[str] = Field(default_factory=list)
+    input_data: Dict[str, Any] = Field(default_factory=dict)
+    required_skills: List[str] = Field(default_factory=list)
     priority: str = Field(default="normal")
     preferred_agent: str = None
 
@@ -85,7 +83,7 @@ class TaskDelegationResponse(BaseModel):
 
     task_id: str
     assigned_agent: str
-    alternative_agents: list[str]
+    alternative_agents: List[str]
     reasoning: str
     estimated_duration: float
     confidence: float = Field(ge=0.0, le=1.0)
@@ -97,8 +95,8 @@ class CollaborationRequest(BaseModel):
 
     name: str = Field(..., min_length=1)
     description: str = Field(default="")
-    agent_ids: list[str] = Field(..., min_length=2)
-    task_chain: list[dict[str, Any]] = Field(default_factory=list)
+    agent_ids: List[str] = Field(..., min_length=2)
+    task_chain: List[dict[str, Any]] = Field(default_factory=list)
     coordinator_id: str = None
 
 
@@ -107,9 +105,9 @@ class CollaborationResponse(BaseModel):
 
     session_id: str
     name: str
-    participants: list[str]
+    participants: List[str]
     coordinator: str
-    optimized_order: list[str]
+    optimized_order: List[str]
     efficiency_gain: float
     timestamp: datetime
 
@@ -117,10 +115,10 @@ class CollaborationResponse(BaseModel):
 class AgentMatchRequest(BaseModel):
     """Request to find matching agents for a task."""
 
-    skill_requirements: list[str] = Field(..., min_length=1)
+    skill_requirements: List[str] = Field(..., min_length=1)
     min_success_rate: float = Field(default=0.8, ge=0.0, le=1.0)
     max_results: int = Field(default=5, ge=1, le=20)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentMatch(BaseModel):
@@ -129,7 +127,7 @@ class AgentMatch(BaseModel):
     agent_id: str
     name: str
     match_score: float = Field(ge=0.0, le=1.0)
-    relevant_skills: list[str]
+    relevant_skills: List[str]
     estimated_completion: float
     current_load: int
 
@@ -137,7 +135,7 @@ class AgentMatch(BaseModel):
 class AgentMatchResponse(BaseModel):
     """Agent matching results."""
 
-    matches: list[AgentMatch]
+    matches: List[AgentMatch]
     brain_recommendation: str
     total_available: int
     timestamp: datetime
@@ -147,7 +145,7 @@ class MultiAgentEngine:
     """Engine for multi-agent coordination using AMOS brain."""
 
     def __init__(self) -> None:
-        self._orchestrator: AMOSMultiAgentOrchestrator | None = None
+        self._orchestrator: Optional[AMOSMultiAgentOrchestrator] = None
         self._brain = None
         self._lock = asyncio.Lock()
 
@@ -175,7 +173,7 @@ class MultiAgentEngine:
         self,
         name: str,
         description: str,
-        capabilities: list[str],
+        capabilities: List[str],
         agent_type: str,
         endpoint_url: str,
         max_concurrent: int,
@@ -214,8 +212,8 @@ class MultiAgentEngine:
         self,
         task_type: str,
         description: str,
-        input_data: dict[str, Any],
-        required_skills: list[str],
+        input_data: Dict[str, Any],
+        required_skills: List[str],
         priority: str,
         preferred_agent: str,
     ) -> TaskDelegationResponse:
@@ -271,8 +269,8 @@ Analyze agent capabilities and current load to recommend optimal assignment."""
         self,
         name: str,
         description: str,
-        agent_ids: list[str],
-        task_chain: list[dict[str, Any]],
+        agent_ids: List[str],
+        task_chain: List[dict[str, Any]],
         coordinator_id: str,
     ) -> CollaborationResponse:
         """Create optimized collaboration session."""
@@ -308,10 +306,10 @@ Suggest optimal execution order and identify efficiency gains."""
 
     async def match_agents(
         self,
-        skill_requirements: list[str],
+        skill_requirements: List[str],
         min_success_rate: float,
         max_results: int,
-        context: dict[str, Any],
+        context: Dict[str, Any],
     ) -> AgentMatchResponse:
         """Find matching agents using brain analysis."""
         orchestrator = await self._get_orchestrator()
@@ -385,7 +383,7 @@ Rank agents by relevance and performance."""
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get orchestrator statistics."""
         if self._orchestrator:
             return self._orchestrator.get_orchestrator_summary()
@@ -393,7 +391,7 @@ Rank agents by relevance and performance."""
 
 
 # Global engine
-_multi_agent_engine: MultiAgentEngine | None = None
+_multi_agent_engine: Optional[MultiAgentEngine] = None
 
 
 def get_multi_agent_engine() -> MultiAgentEngine:
@@ -489,14 +487,14 @@ async def stream_collaboration(
 
 
 @router.get("/stats")
-async def get_orchestrator_stats() -> dict[str, Any]:
+async def get_orchestrator_stats() -> Dict[str, Any]:
     """Get multi-agent orchestrator statistics."""
     engine = get_multi_agent_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Check multi-agent orchestrator health."""
     return {
         "status": "healthy" if _ORCHESTRATOR_AVAILABLE else "degraded",

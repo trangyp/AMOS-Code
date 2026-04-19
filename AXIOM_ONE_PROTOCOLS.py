@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 AXIOM ONE: Technical State Machine Protocols
 Full executable specification for the six core engines.
@@ -6,7 +8,9 @@ Full executable specification for the six core engines.
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
+
 from typing import Any, Protocol
 
 # ============================================================================
@@ -37,7 +41,7 @@ class ActorRef:
     actor_type: str  # human|agent|system
     actor_id: str
     workspace_id: str
-    permissions: tuple[str, ...]
+    permissions: Tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -106,7 +110,7 @@ class KernelEngine(Protocol):
 
     async def get_object(self, object_id: str, at_version: int = None) -> Optional[AxiomObject]: ...
 
-    async def get_object_history(self, object_id: str) -> list[tuple[AxiomObject, str]]: ...
+    async def get_object_history(self, object_id: str) -> List[tuple[AxiomObject, str]]: ...
 
     async def evaluate_policy(
         self, action: ActionRef, target: ObjectRef, actor: ActorRef
@@ -153,7 +157,7 @@ class Edge:
 @dataclass
 class ImpactReport:
     center_object: str
-    affected_objects: list[tuple[str, int]]  # (object_id, depth)
+    affected_objects: List[tuple[str, int]]  # (object_id, depth)
     risk_score: float
     recommended_actions: List[str]
 
@@ -180,7 +184,7 @@ class GraphEngine(Protocol):
 
     async def find_paths(
         self, source: str, target: str, allowed_edges: List[EdgeType] = None
-    ) -> list[list[Edge]]: ...
+    ) -> List[list[Edge]]: ...
 
     async def compute_blast_radius(self, center_object: str, depth: int = 3) -> ImpactReport: ...
 
@@ -468,8 +472,8 @@ class StaticIssue:
 class AutopsyResult:
     repo_id: str
     static_issues: List[StaticIssue]
-    safe_fixes: list[dict[str, Any]]
-    patches: list[dict[str, Any]]
+    safe_fixes: List[dict[str, Any]]
+    patches: List[dict[str, Any]]
     residual_risk: List[str]
 
 

@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional
 
 from temporalio import activity, workflow
 from temporalio.common import RetryPolicy
@@ -30,7 +31,7 @@ class RepoScanOutput:
     status: str  # success, partial, failed
     issues_found: int
     files_scanned: int
-    issues: list[dict[str, Any]]
+    issues: List[dict[str, Any]]
     timestamp: str
     duration_seconds: float
 
@@ -38,7 +39,7 @@ class RepoScanOutput:
 @dataclass
 class MultiRepoFixInput:
     """Input for multi-repository fix workflow."""
-    repos: list[RepoScanInput]
+    repos: List[RepoScanInput]
     fix_strategy: str = "auto"  # auto, conservative, aggressive
     dry_run: bool = True
     approval_required: bool = True
@@ -49,7 +50,7 @@ class MultiRepoFixOutput:
     """Output from multi-repository fix workflow."""
     workflow_id: str
     status: str
-    results: list[dict[str, Any]]
+    results: List[dict[str, Any]]
     repos_fixed: int
     repos_failed: int
     repos_pending_approval: int
@@ -60,7 +61,7 @@ class MultiRepoFixOutput:
 class CrossRepoReleaseInput:
     """Input for cross-repository release workflow."""
     version: str
-    repos: list[str]  # List of repo names to release
+    repos: List[str]  # List of repo names to release
     release_notes: str
     skip_tests: bool = False
     require_approval: bool = True
@@ -72,8 +73,8 @@ class CrossRepoReleaseOutput:
     release_id: str
     version: str
     status: str
-    repo_results: dict[str, Any]
-    packages_published: list[str]
+    repo_results: Dict[str, Any]
+    packages_published: List[str]
     timestamp: str
 
 
@@ -81,8 +82,8 @@ class CrossRepoReleaseOutput:
 class KnowledgeSyncInput:
     """Input for knowledge synchronization workflow."""
     source_repo: str
-    target_repos: list[str]
-    knowledge_types: list[str]  # schemas, equations, invariants
+    target_repos: List[str]
+    knowledge_types: List[str]  # schemas, equations, invariants
     force_update: bool = False
 
 
@@ -92,7 +93,7 @@ class KnowledgeSyncOutput:
     sync_id: str
     items_synced: int
     repos_updated: int
-    conflicts: list[dict[str, Any]]
+    conflicts: List[dict[str, Any]]
     timestamp: str
 
 
@@ -103,7 +104,6 @@ class KnowledgeSyncOutput:
 @activity.defn
 async def scan_repository(input: RepoScanInput) -> RepoScanOutput:
     """Activity: Scan a single repository for issues."""
-    from datetime import datetime
     import time
     
     start_time = time.time()
@@ -135,7 +135,7 @@ async def scan_repository(input: RepoScanInput) -> RepoScanOutput:
 
 
 @activity.defn
-async def apply_fixes(repo_name: str, issues: list[dict], dry_run: bool) -> dict[str, Any]:
+async def apply_fixes(repo_name: str, issues: List[dict], dry_run: bool) -> Dict[str, Any]:
     """Activity: Apply fixes to a repository."""
     activity.heartbeat(f"Applying fixes to {repo_name}...")
     
@@ -168,7 +168,7 @@ async def wait_for_approval(workflow_id: str, repo_name: str) -> bool:
 
 
 @activity.defn
-async def run_tests(repo_name: str, branch: str) -> dict[str, Any]:
+async def run_tests(repo_name: str, branch: str) -> Dict[str, Any]:
     """Activity: Run tests on a repository."""
     activity.heartbeat(f"Running tests on {repo_name}...")
     
@@ -189,7 +189,7 @@ async def run_tests(repo_name: str, branch: str) -> dict[str, Any]:
 
 
 @activity.defn
-async def build_package(repo_name: str, version: str) -> dict[str, Any]:
+async def build_package(repo_name: str, version: str) -> Dict[str, Any]:
     """Activity: Build package for a repository."""
     activity.heartbeat(f"Building {repo_name} v{version}...")
     
@@ -202,7 +202,7 @@ async def build_package(repo_name: str, version: str) -> dict[str, Any]:
 
 
 @activity.defn
-async def publish_package(repo_name: str, version: str) -> dict[str, Any]:
+async def publish_package(repo_name: str, version: str) -> Dict[str, Any]:
     """Activity: Publish package to registry."""
     activity.heartbeat(f"Publishing {repo_name} v{version}...")
     
@@ -218,8 +218,8 @@ async def publish_package(repo_name: str, version: str) -> dict[str, Any]:
 async def sync_knowledge_to_repo(
     source_repo: str,
     target_repo: str,
-    knowledge_types: list[str]
-) -> dict[str, Any]:
+    knowledge_types: List[str]
+) -> Dict[str, Any]:
     """Activity: Sync knowledge from source to target repo."""
     activity.heartbeat(f"Syncing knowledge from {source_repo} to {target_repo}...")
     
@@ -241,8 +241,8 @@ async def sync_knowledge_to_repo(
 @activity.defn
 async def notify_stakeholders(
     message: str,
-    channels: list[str] = None
-) -> dict[str, Any]:
+    channels: List[str] = None
+) -> Dict[str, Any]:
     """Activity: Send notifications to stakeholders."""
     channels = channels or ["slack", "email"]
     
@@ -285,7 +285,7 @@ class MultiRepoScanWorkflow:
     """Workflow: Scan multiple repositories in parallel."""
     
     @workflow.run
-    async def run(self, repos: list[RepoScanInput]) -> list[RepoScanOutput]:
+    async def run(self, repos: List[RepoScanInput]) -> List[RepoScanOutput]:
         # Execute scans in parallel
         tasks = [
             workflow.execute_child_workflow(

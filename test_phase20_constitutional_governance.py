@@ -8,7 +8,7 @@ Tests cover:
 - Edge cases and error handling
 """
 
-from typing import Any
+from typing import Any, Dict
 
 import pytest
 

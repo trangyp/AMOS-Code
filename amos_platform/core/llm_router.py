@@ -4,11 +4,9 @@ Routes LLM requests to appropriate local backends (Ollama, LM Studio, vLLM, etc.
 This is the ONLY component that connects directly to local LLM providers.
 """
 
-from __future__ import annotations
-
 import asyncio
 from enum import Enum
-from typing import Any, AsyncIterator
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 import httpx
 
@@ -40,7 +38,7 @@ class LLMRouter:
     }
     
     def __init__(self):
-        self._backends: dict[LLMBackend, str] = {}
+        self._backends: Dict[LLMBackend, str] = {}
         self._client = httpx.AsyncClient(timeout=30.0)
         self._initialized = False
     
@@ -49,7 +47,7 @@ class LLMRouter:
         await self.discover_backends()
         self._initialized = True
     
-    async def discover_backends(self) -> list[LLMBackend]:
+    async def discover_backends(self) -> List[LLMBackend]:
         """Auto-discover available local backends."""
         available = []
         
@@ -65,7 +63,7 @@ class LLMRouter:
         
         return available
     
-    async def list_models(self) -> list[dict[str, Any]]:
+    async def list_models(self) -> List[dict[str, Any]]:
         """List models from all discovered backends."""
         models = []
         
@@ -78,7 +76,7 @@ class LLMRouter:
         
         return models
     
-    async def _list_for_backend(self, backend: LLMBackend, url: str) -> list[dict[str, Any]]:
+    async def _list_for_backend(self, backend: LLMBackend, url: str) -> List[dict[str, Any]]:
         """List models for a specific backend."""
         if backend == LLMBackend.OLLAMA:
             resp = await self._client.get(f"{url}/api/tags")
@@ -109,11 +107,11 @@ class LLMRouter:
     async def chat(
         self,
         model: str,
-        messages: list[dict],
+        messages: List[dict],
         temperature: float = 0.7,
-        max_tokens: int | None = None,
+        max_tokens: Optional[int] = None,
         stream: bool = False
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Send chat request to appropriate backend."""
         parts = model.split("/", 1)
         if len(parts) != 2:
@@ -134,9 +132,9 @@ class LLMRouter:
         raise ValueError(f"Unsupported backend: {backend}")
     
     async def _chat_ollama(
-        self, url: str, model: str, messages: list[dict],
-        temperature: float, max_tokens: int | None
-    ) -> dict[str, Any]:
+        self, url: str, model: str, messages: List[dict],
+        temperature: float, max_tokens: Optional[int]
+    ) -> Dict[str, Any]:
         """Chat with Ollama backend."""
         payload = {
             "model": model,
@@ -161,9 +159,9 @@ class LLMRouter:
         }
     
     async def _chat_openai_compatible(
-        self, url: str, model: str, messages: list[dict],
-        temperature: float, max_tokens: int | None
-    ) -> dict[str, Any]:
+        self, url: str, model: str, messages: List[dict],
+        temperature: float, max_tokens: Optional[int]
+    ) -> Dict[str, Any]:
         """Chat with OpenAI-compatible backend (LM Studio, vLLM)."""
         payload = {
             "model": model,

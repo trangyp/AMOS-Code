@@ -7,12 +7,10 @@ Usage:
     uvicorn amos_api_hub:app --host 0.0.0.0 --port 8000
 """
 
-from __future__ import annotations
-
 import os
 import sys
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List
 
 # Ensure amos_brain is importable
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -251,7 +249,7 @@ async def repo_fix(request: RepoFixRequest) -> RepoFixResult:
 # ============================================================================
 
 @app.get("/v1/models", response_model=list[ModelInfo])
-async def list_models() -> list[ModelInfo]:
+async def list_models() -> List[ModelInfo]:
     """List available LLM models.
     
     Returns models from:

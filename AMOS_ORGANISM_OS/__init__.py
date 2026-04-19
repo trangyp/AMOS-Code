@@ -9,9 +9,23 @@ Primary Loop: BRAIN → SENSES → SKELETON → WORLD_MODEL → QUANTUM_LAYER �
 __version__ = "1.0.0"
 __author__ = "Trang"
 
+import sys
 from pathlib import Path
 
 ORGANISM_ROOT = Path(__file__).resolve().parent
+
+# Add subsystem paths for imports (transitional pattern)
+for _subsystem in [
+    "01_BRAIN", "02_SENSES", "03_IMMUNE", "04_BLOOD", "05_SKELETON",
+    "06_MUSCLE", "07_METABOLISM", "08_WORLD_MODEL",
+    "09_SOCIAL_ENGINE", "09_QUANTUM_LAYER", "10_LIFE_ENGINE",
+    "11_LEGAL_BRAIN", "11_LIFE_ENGINE",
+    "12_QUANTUM_LAYER", "12_LEGAL_BRAIN", "13_FACTORY", "13_MEMORY_ARCHIVAL",
+    "14_INTERFACES", "15_KNOWLEDGE_CORE",
+]:
+    _path = ORGANISM_ROOT / _subsystem
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 
 # Core exports
 try:

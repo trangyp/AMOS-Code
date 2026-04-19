@@ -44,11 +44,10 @@ import os
 import time
 from collections.abc import Callable, Coroutine
 from enum import Enum, auto
-from typing import Any, TypeVar
+from typing import Any, Dict, TypeVar
 
 try:
     from equation_tracing import create_span
-from typing import Callable, Optional, TypeVar
     _tracing_available = True
 except ImportError:
     _tracing_available = False
@@ -241,7 +240,7 @@ def circuit_breaker(
     return decorator
 
 
-def get_all_breaker_metrics() -> dict[str, dict[str, Any]]:
+def get_all_breaker_metrics() -> Dict[str, dict[str, Any]]:
     """Get metrics for all circuit breakers.
 
     Returns:

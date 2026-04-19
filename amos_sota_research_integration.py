@@ -24,7 +24,7 @@ import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class ResearchDomain(Enum):
@@ -45,14 +45,14 @@ class ResearchPaper:
     """SOTA research paper entry."""
 
     title: str
-    authors: list[str]
+    authors: List[str]
     url: str
     domain: ResearchDomain
     published_date: datetime
     abstract: str = ""
     code_url: str = None
     citations: int = 0
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
     integrated: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,8 +80,8 @@ class BCIProtocol:
     channels: int
     spatial_resolution_mm: float
     temporal_resolution_ms: float
-    use_cases: list[str] = field(default_factory=list)
-    compatible_hardware: list[str] = field(default_factory=list)
+    use_cases: List[str] = field(default_factory=list)
+    compatible_hardware: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -188,7 +188,7 @@ class AMOSSOTAResearchIntegration:
         for protocol in protocols:
             self._bci_protocols[protocol.name] = protocol
 
-    def get_bci_protocols(self) -> list[BCIProtocol]:
+    def get_bci_protocols(self) -> List[BCIProtocol]:
         """Get all registered BCI protocols."""
         return list(self._bci_protocols.values())
 
@@ -201,11 +201,11 @@ class AMOSSOTAResearchIntegration:
         key = f"{paper.title[:50]}_{paper.published_date.timestamp()}"
         self._papers[key] = paper
 
-    def get_papers_by_domain(self, domain: ResearchDomain) -> list[ResearchPaper]:
+    def get_papers_by_domain(self, domain: ResearchDomain) -> List[ResearchPaper]:
         """Get papers filtered by domain."""
         return [p for p in self._papers.values() if p.domain == domain]
 
-    async def load_latest_papers(self) -> list[ResearchPaper]:
+    async def load_latest_papers(self) -> List[ResearchPaper]:
         """
         Load latest papers from research sources.
 
@@ -267,7 +267,7 @@ class AMOSSOTAResearchIntegration:
             ],
         }
 
-    def recommend_for_amos(self) -> list[dict[str, Any]]:
+    def recommend_for_amos(self) -> List[dict[str, Any]]:
         """Recommend research relevant to AMOS integration."""
         recommendations = []
 

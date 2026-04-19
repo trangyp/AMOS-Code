@@ -9,14 +9,13 @@ Real autonomous code healing using AMOS brain cognition.
 - Validates fixes with syntax checks
 """
 
-from __future__ import annotations
-
 import ast
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Optional
 
 # Import brain
 try:
@@ -34,7 +33,7 @@ class CodeIssue:
     issue_type: str
     description: str
     severity: str  # error, warning, info
-    suggested_fix: str | None = None
+    suggested_fix: Optional[str] = None
     applied: bool = False
 
 
@@ -44,9 +43,9 @@ class HealingReport:
 
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     files_scanned: int = 0
-    issues_found: list[CodeIssue] = field(default_factory=list)
-    issues_fixed: list[CodeIssue] = field(default_factory=list)
-    failures: list[dict[str, Any]] = field(default_factory=list)
+    issues_found: List[CodeIssue] = field(default_factory=list)
+    issues_fixed: List[CodeIssue] = field(default_factory=list)
+    failures: List[dict[str, Any]] = field(default_factory=list)
 
 
 class BrainPoweredCodeHealer:
@@ -171,15 +170,15 @@ class BrainPoweredCodeHealer:
                 )
                 self.report.issues_found.append(issue)
 
-            # Check for datetime.utcnow() (deprecated)
-            if "datetime.utcnow()" in line:
+            # Check for datetime.now(timezone.utc) (deprecated)
+            if "datetime.now(timezone.utc)" in line:
                 issue = CodeIssue(
                     file_path=file_path,
                     line_number=i,
                     issue_type="deprecated_datetime",
-                    description="datetime.utcnow() is deprecated - use datetime.now(timezone.utc)",
+                    description="datetime.now(timezone.utc) is deprecated - use datetime.now(timezone.utc)",
                     severity="error",
-                    suggested_fix=line.replace("datetime.utcnow()", "datetime.now(timezone.utc)"),
+                    suggested_fix=line.replace("datetime.now(timezone.utc)", "datetime.now(timezone.utc)"),
                 )
                 self.report.issues_found.append(issue)
 

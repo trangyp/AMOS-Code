@@ -13,6 +13,7 @@ Reference: https://modelcontextprotocol.io/docs/learn/architecture
 import re
 import subprocess
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

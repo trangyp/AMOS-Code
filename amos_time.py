@@ -14,7 +14,7 @@ Key concepts:
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -152,7 +152,7 @@ class EventStore:
 
     def __init__(self):
         self.events: List[Event] = []
-        self.event_index: dict[str, list[Event]] = defaultdict(list)
+        self.event_index: Dict[str, list[Event]] = defaultdict(list)
 
     def append(self, event: Event):
         """Append event to store (immutable)."""

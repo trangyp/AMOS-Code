@@ -1,7 +1,7 @@
 """AMOS Emotion Engine - Affective, somatic, and motivational analysis."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -296,7 +296,7 @@ class AMOSEmotionEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, EmotionAnalysis]:
+    ) -> Dict[str, EmotionAnalysis]:
         """Run emotion analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -415,7 +415,7 @@ def get_emotion_engine() -> AMOSEmotionEngine:
 def analyze_emotion(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, EmotionAnalysis]:
+) -> Dict[str, EmotionAnalysis]:
     """Quick helper for emotion analysis."""
     return get_emotion_engine().analyze(description, domains)
 

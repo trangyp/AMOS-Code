@@ -21,7 +21,7 @@ import pickle
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # ============================================================================
 # 1. PERSISTENCE LAYER (Pe)
@@ -148,7 +148,7 @@ class EconomicEngine:
         self.state = EconomicState()
         self.transaction_history: List[dict] = []
 
-    def evaluate_action(self, action: dict) -> dict[str, float]:
+    def evaluate_action(self, action: dict) -> Dict[str, float]:
         """Evaluate action by economic criteria.
         Returns: {revenue, cost, risk, leverage, compounding, net_value}
         """
@@ -232,7 +232,7 @@ class ResourceAllocator:
         self.pool = ResourcePool()
         self.allocation_history: List[dict] = []
 
-    def allocate(self, demands: List[dict]) -> dict[str, dict[str, float]]:
+    def allocate(self, demands: List[dict]) -> Dict[str, dict[str, float]]:
         """q_t* = argmax_q Σ ω_i · Return_i(q)
         Constraint: Σ Resource(g_i) ≤ Q_t
         """

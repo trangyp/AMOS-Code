@@ -41,7 +41,7 @@ Environment Variables:
 
 import os
 import sys
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -126,7 +126,7 @@ class ResearchResult(BaseModel):
     status: str = Field(description="Research status: success or error")
     query: str = Field(description="Original search query")
     results_count: int = Field(description="Number of results found")
-    results: list[dict[str, Any]] = Field(description="List of search results")
+    results: List[dict[str, Any]] = Field(description="List of search results")
     provider: str = Field(description="Research provider used")
 
 
@@ -134,9 +134,9 @@ class ExecutionStatusResult(BaseModel):
     """Status of execution platform."""
 
     healthy: bool = Field(description="Overall platform health")
-    sandbox_providers: list[str] = Field(description="Available sandbox providers")
-    browser_providers: list[str] = Field(description="Available browser providers")
-    research_providers: list[str] = Field(description="Available research providers")
+    sandbox_providers: List[str] = Field(description="Available sandbox providers")
+    browser_providers: List[str] = Field(description="Available browser providers")
+    research_providers: List[str] = Field(description="Available research providers")
     metrics: Dict[str, int] = Field(description="Usage metrics")
 
 
@@ -208,7 +208,7 @@ async def execute_code(
 @mcp.tool()
 async def browse_web(
     url: str,
-    actions: list[dict[str, Any]] = None,
+    actions: List[dict[str, Any]] = None,
     capture_screenshot: bool = False,
     wait_for_selector: str = None,
 ) -> WebBrowseResult:

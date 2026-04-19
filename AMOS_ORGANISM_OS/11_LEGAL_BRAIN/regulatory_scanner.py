@@ -249,7 +249,7 @@ class RegulatoryScanner:
         self.save()
         return assessment
 
-    def get_upcoming_deadlines(self, days: int = 30) -> list[dict[str, Any]]:
+    def get_upcoming_deadlines(self, days: int = 30) -> List[dict[str, Any]]:
         """Get regulations with upcoming compliance deadlines."""
         cutoff = (datetime.now(UTC) + timedelta(days=days)).isoformat()
 
@@ -305,7 +305,7 @@ class RegulatoryScanner:
         self,
         jurisdiction: str = None,
         reg_type: Optional[RegulationType] = None,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get applicable regulations."""
         regs = [r for r in self.regulations if r.applicable]
 

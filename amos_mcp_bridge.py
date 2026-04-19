@@ -31,7 +31,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class TransportType(Enum):
@@ -78,7 +78,7 @@ class MCPServerManager:
 
     def __init__(self):
         self.servers: Dict[str, MCPServer] = {}
-        self.processes: dict[str, subprocess.Popen] = {}
+        self.processes: Dict[str, subprocess.Popen] = {}
         self.tools: Dict[str, MCPTool] = {}
 
     def register(self, server: MCPServer) -> bool:
@@ -175,10 +175,9 @@ class SecureToolExecutor:
         self.manager = manager
         self.history: List[ToolResult] = []
 
-    def validate(self, tool: str, params: dict) -> tuple[bool, list[str]]:
+    def validate(self, tool: str, params: dict) -> Tuple[bool, list[str]]:
         """Validate against L1-L6."""
         from amos_brain import GlobalLaws
-from typing import List, Protocol
 
         laws = GlobalLaws()
         violations = []

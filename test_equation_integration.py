@@ -5,7 +5,7 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 import requests
 
@@ -19,7 +19,7 @@ class EquationIntegrationTest:
 
     def __init__(self, base_url: str = "http://localhost:8000") -> None:
         self.base_url = base_url
-        self.results: list[dict[str, Any]] = []
+        self.results: List[dict[str, Any]] = []
         self.passed = 0
         self.failed = 0
 

@@ -10,10 +10,9 @@ organism.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Optional, Any, Generic, Protocol, TypeVar, runtime_checkable, Self, Any, Generic, Protocol, TypeVar, runtime_checkable
-from typing import Protocol, TypeVar, runtime_checkable, runtime_checkable
-from typing import Generic, TypeVar, TypeVar
+from typing import Any, Dict, Generic, Generic, List, Optional, Protocol, Protocol, Protocol, Self, Tuple, TypeVar, TypeVar, TypeVar, runtime_checkable, runtime_checkable, runtime_checkable, runtime_checkable, Generic, TypeVar, TypeVar
 
 # ============================================================================
 # TENSOR TYPES (Type-Safe Shape Annotations)
@@ -44,7 +43,7 @@ class Tensor(Generic[N, F, H, B]):
 class GraphTensor(Generic[N]):
     """Graph adjacency matrix G_t with shape [N, N], dtype binary"""
 
-    def __init__(self, adjacency: list[list[int]]) -> None:
+    def __init__(self, adjacency: List[list[int]]) -> None:
         self.adjacency = adjacency
 
 class BranchTensor(Generic[K, N, F]):
@@ -62,13 +61,13 @@ class EnergyTensor(Generic[N]):
 class ResourceTensor(Generic[N, R]):
     """Per-node resources across R channels Q_t with shape [N, R]"""
 
-    def __init__(self, resources: list[list[float]]) -> None:
+    def __init__(self, resources: List[list[float]]) -> None:
         self.resources = resources
 
 class HumanTensor(Generic[P, S_co]):
     """Human state dimensions H_t with shape [P, S]"""
 
-    def __init__(self, state_matrix: list[list[float]]) -> None:
+    def __init__(self, state_matrix: List[list[float]]) -> None:
         self.state_matrix = state_matrix
 
 class WorldTensor(Generic[M_co, T_dim, C_co]):
@@ -250,7 +249,7 @@ class GraphNode:
 
     id: str
     type: NodeType
-    features: dict[str, float | str | bool] = field(default_factory=dict)
+    features: Dict[str, float | str | bool] = field(default_factory=dict)
     health: float = 1.0  # 0-1
     load: float = 0.0  # 0-1
     risk: float = 0.0  # 0-1
@@ -583,11 +582,11 @@ class Patch:
 class SelfModificationState:
     """INV_MOD_001: Any-modification state tracking."""
 
-    params: dict[str, float | str | bool] = field(default_factory=dict)
-    policies: dict[str, dict[str, Any]] = field(default_factory=dict)
+    params: Dict[str, float | str | bool] = field(default_factory=dict)
+    policies: Dict[str, dict[str, Any]] = field(default_factory=dict)
     routes: Dict[str, str] = field(default_factory=dict)
-    memory_schemas: dict[str, dict[str, Any]] = field(default_factory=dict)
-    tool_schemas: dict[str, dict[str, Any]] = field(default_factory=dict)
+    memory_schemas: Dict[str, dict[str, Any]] = field(default_factory=dict)
+    tool_schemas: Dict[str, dict[str, Any]] = field(default_factory=dict)
     eval_weights: Dict[str, float] = field(default_factory=dict)
     pending_patches: List[Patch] = field(default_factory=list)
 
@@ -675,9 +674,9 @@ class GovernanceState:
 
     law_stack: List[str] = field(default_factory=list)  # Ordered by precedence
     active_restrictions: List[str] = field(default_factory=list)
-    permission_policies: dict[str, dict[str, Any]] = field(default_factory=dict)
-    rollback_policies: dict[str, dict[str, Any]] = field(default_factory=dict)
-    escalation_rules: dict[str, dict[str, Any]] = field(default_factory=dict)
+    permission_policies: Dict[str, dict[str, Any]] = field(default_factory=dict)
+    rollback_policies: Dict[str, dict[str, Any]] = field(default_factory=dict)
+    escalation_rules: Dict[str, dict[str, Any]] = field(default_factory=dict)
 
 @dataclass(frozen=True)
 class PersistenceState:
@@ -724,6 +723,7 @@ class AMOSState:
             memory_budget=1024.0,  # MB
             bandwidth=100.0,  # Mbps
         )
+    )
     economics: EconomicState = field(
         default_factory=lambda: EconomicState(
             opportunity=0.0,
@@ -733,11 +733,13 @@ class AMOSState:
             leverage=1.0,
             compounding=0.0,
         )
+    )
     external_world: ExternalWorldState = field(default_factory=ExternalWorldState)
     hardware: HardwareState = field(
         default_factory=lambda: HardwareState(
             cpu=0.0, gpu=0.0, npu=0.0, ram=0.0, vram=0.0, disk=0.0, net=0.0, bus=0.0
         )
+    )
     self_modification: SelfModificationState = field(default_factory=SelfModificationState)
     distribution: DistributedState = field(default_factory=DistributedState)
     execution: ExecutionState = field(default_factory=ExecutionState)
@@ -765,7 +767,7 @@ class Observer(ABC):
     async def observe(
         self,
         raw_inputs: List[Signal],
-        tool_results: list[dict[str, Any]],
+        tool_results: List[dict[str, Any]],
         telemetry: Dict[str, Any],
         world_signals: List[Signal],
     ) -> List[Event]:
@@ -794,7 +796,7 @@ class MemoryService(ABC):
         query: str,
         memory_state: MemoryState,
         k: int = 5,
-    ) -> tuple[list[MemoryItem], float, list[str]]:
+    ) -> Tuple[list[MemoryItem], float, list[str]]:
         """
         retrieve_memory(query, memory_state, k) ->
             (memory_items, confidence, source_trace)
@@ -832,7 +834,7 @@ class SignalProcessor(ABC):
         self,
         message: str,
         history: List[Event],
-    ) -> tuple[dict[str, Any], dict[str, float], HumanState]:
+    ) -> Tuple[dict[str, Any], dict[str, float], HumanState]:
         """
         extract_signal_noise(message, history) ->
             (signal, noise_scores, human_state_estimate)
@@ -854,7 +856,7 @@ class HumanCoherenceService(ABC):
     async def compute_safe_intensity(
         self,
         human_state: HumanState,
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """
         compute_safe_intensity(human_state) ->
             {speed, depth, density, challenge}
@@ -924,7 +926,7 @@ class BranchSimulator(ABC):
         branch: Branch,
         horizon: float,
         budget: float,
-    ) -> tuple[dict[str, Any], dict[str, float]]:
+    ) -> Tuple[dict[str, Any], dict[str, float]]:
         """
         simulate_branch(world_graph, branch, horizon, budget) ->
             (predicted_state, score_vector)
@@ -932,7 +934,7 @@ class BranchSimulator(ABC):
         ...
 
     @abstractmethod
-    async def score_branch(self, branch: Branch) -> dict[str, float]:
+    async def score_branch(self, branch: Branch) -> Dict[str, float]:
         """
         score_branch(branch) ->
             {goal_fit, risk, cost, coherence, drift, reversibility, confidence}
@@ -966,7 +968,7 @@ class ResourceAllocator(ABC):
         resource_state: ResourceState,
         economic_state: EconomicState,
         world_state: ExternalWorldState,
-    ) -> dict[str, dict[str, float]]:
+    ) -> Dict[str, dict[str, float]]:
         """
         allocate_resources(goals, resource_state, economic_state, world_state) ->
             allocation_plan
@@ -977,7 +979,7 @@ class EconomicService(ABC):
     """F011: Economic reasoning service."""
 
     @abstractmethod
-    async def evaluate_opportunity(self, option: Goal) -> dict[str, float]:
+    async def evaluate_opportunity(self, option: Goal) -> Dict[str, float]:
         """
         evaluate_opportunity(option) ->
             {revenue, cost, risk, leverage, compounding}
@@ -1116,7 +1118,7 @@ class DistributedService(ABC):
     @abstractmethod
     async def merge_node_outputs(
         self,
-        node_outputs: list[dict[str, Any]],
+        node_outputs: List[dict[str, Any]],
         trust_weights: List[float],
         consensus_mode: ConsensusMode,
     ) -> Dict[str, Any]:

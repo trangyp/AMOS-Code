@@ -21,7 +21,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class EvalMetricType(Enum):
@@ -193,7 +193,7 @@ class ABTest:
 
     # Variants
     control_config: Dict[str, Any]  # Baseline configuration
-    variant_configs: list[dict[str, Any]]  # Test configurations
+    variant_configs: List[dict[str, Any]]  # Test configurations
 
     # Test parameters
     test_case_ids: List[str]
@@ -202,7 +202,7 @@ class ABTest:
 
     # Results
     control_results: List[TestResult] = field(default_factory=list)
-    variant_results: list[list[TestResult]] = field(default_factory=list)
+    variant_results: List[list[TestResult]] = field(default_factory=list)
 
     # Analysis
     winner: str = None
@@ -339,11 +339,11 @@ class AMOSAgentEvaluator:
         expected_behavior: str = None,
         domain: str = "general",
         difficulty: str = "medium",
-        tags: list[str] = None,
+        tags: List[str] = None,
         is_edge_case: bool = False,
         min_acceptable_score: float = 0.7,
         critical: bool = False,
-        variables: dict[str, Any] = None,
+        variables: Dict[str, Any] = None,
     ) -> TestCase:
         """Create a new test case."""
         test_id = f"test_{uuid.uuid4().hex[:12]}"
@@ -375,7 +375,7 @@ class AMOSAgentEvaluator:
         description: str,
         domain: str,
         test_case_ids: List[str],
-        tags: list[str] = None,
+        tags: List[str] = None,
     ) -> BenchmarkDataset:
         """Create a benchmark dataset."""
         dataset_id = f"bench_{uuid.uuid4().hex[:12]}"
@@ -407,7 +407,7 @@ class AMOSAgentEvaluator:
         target_id: str,
         target_version: str,
         test_case_ids: List[str],
-        agent_config: dict[str, Any] = None,
+        agent_config: Dict[str, Any] = None,
     ) -> EvalRun:
         """Run a complete evaluation."""
         run_id = f"run_{uuid.uuid4().hex[:12]}"
@@ -691,7 +691,7 @@ class AMOSAgentEvaluator:
         name: str,
         description: str,
         control_config: Dict[str, Any],
-        variant_configs: list[dict[str, Any]],
+        variant_configs: List[dict[str, Any]],
         test_case_ids: List[str],
         sample_size: int = 100,
     ) -> ABTest:
@@ -811,7 +811,7 @@ class AMOSAgentEvaluator:
         eval_run = self.eval_runs[run_id]
 
         # Metric breakdown
-        metric_scores: dict[str, list[float]] = {}
+        metric_scores: Dict[str, list[float]] = {}
         for result in eval_run.results:
             for metric in result.metrics:
                 if metric.metric_name not in metric_scores:

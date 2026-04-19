@@ -22,8 +22,9 @@ import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 # Redis for feature store
 try:
@@ -42,8 +43,6 @@ except ImportError:
 # Import existing modules
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Callable, Set
-from typing import Dict, List, Optional
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False

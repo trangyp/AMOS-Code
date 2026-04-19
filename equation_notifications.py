@@ -40,7 +40,7 @@ Environment Variables:
 import json
 import os
 import time
-from typing import Any
+from typing import Any, Dict, Optional, Set
 
 try:
     from fastapi import WebSocket, WebSocketDisconnect
@@ -64,9 +64,9 @@ class ConnectionManager:
 
     def __init__(self) -> None:
         # Map of user_id -> set of WebSocket connections
-        self._user_connections: dict[str, set[Any]] = {}
+        self._user_connections: Dict[str, set[Any]] = {}
         # Map of websocket -> user_id for reverse lookup
-        self._connection_users: dict[Any, str] = {}
+        self._connection_users: Dict[Any, str] = {}
         # All active connections
         self._all_connections: Set[Any] = set()
 

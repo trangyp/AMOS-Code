@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """AMOS Tools Registry
 ====================
@@ -50,7 +50,7 @@ class AMOSToolRegistry:
         except Exception as e:
             return {"error": str(e)}
 
-    def list_tools(self) -> list[dict[str, str]]:
+    def list_tools(self) -> List[dict[str, str]]:
         """List all registered tools."""
         return [
             {

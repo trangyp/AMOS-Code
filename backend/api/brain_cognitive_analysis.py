@@ -7,11 +7,9 @@ Uses amos_brain_working.think() for cognitive processing of:
 - Performance optimization suggestions
 """
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -30,7 +28,7 @@ class CodeAnalysisRequest(BaseModel):
 
     code: str
     language: str = "python"
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class CognitiveAnalysisResponse(BaseModel):
@@ -41,7 +39,7 @@ class CognitiveAnalysisResponse(BaseModel):
     legality: float
     mode: str
     analysis: str
-    recommendations: list[str]
+    recommendations: List[str]
     risk_level: str
 
 
@@ -49,8 +47,8 @@ class ArchitectureDecisionRequest(BaseModel):
     """Request for architecture decision support."""
 
     decision: str
-    options: list[str]
-    constraints: dict[str, Any] = {}
+    options: List[str]
+    constraints: Dict[str, Any] = {}
 
 
 class SecurityScanRequest(BaseModel):
@@ -120,7 +118,7 @@ Provide analysis of:
 
 
 @router.post("/architecture-decision")
-async def architecture_decision(request: ArchitectureDecisionRequest) -> dict[str, Any]:
+async def architecture_decision(request: ArchitectureDecisionRequest) -> Dict[str, Any]:
     """Get brain-powered architecture decision support."""
     # REAL BRAIN USAGE
     options_text = "\n".join([f"{i+1}. {opt}" for i, opt in enumerate(request.options)])
@@ -156,7 +154,7 @@ Recommend the best option with justification."""
 
 
 @router.post("/security-scan")
-async def security_scan(request: SecurityScanRequest) -> dict[str, Any]:
+async def security_scan(request: SecurityScanRequest) -> Dict[str, Any]:
     """Scan code for security vulnerabilities using brain."""
     # REAL BRAIN USAGE
     brain_input = f"""Security vulnerability scan for {request.language} code:
@@ -204,7 +202,7 @@ Rate severity: Critical, High, Medium, Low"""
 
 
 @router.get("/brain-health")
-async def brain_health() -> dict[str, Any]:
+async def brain_health() -> Dict[str, Any]:
     """Check brain cognitive engine health."""
     # REAL BRAIN USAGE - Health check
     result = brain_think("Brain health check diagnostic", {"check": True})

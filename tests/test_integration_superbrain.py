@@ -26,6 +26,7 @@ References:
 import json
 import pytest
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Generator
 
 # FastAPI testing
@@ -439,7 +440,6 @@ class TestPerformance:
     def test_health_endpoint_performance(self, client: TestClient) -> None:
         """Test health endpoint responds quickly."""
         import time
-from typing import List
 
         start = time.time()
         response = client.get("/health")

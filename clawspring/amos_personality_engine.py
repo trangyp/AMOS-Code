@@ -2,7 +2,7 @@
 
 
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -289,7 +289,7 @@ class AMOSPersonalityEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, PersonalityAnalysis]:
+    ) -> Dict[str, PersonalityAnalysis]:
         """Run personality analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -415,15 +415,13 @@ def get_personality_engine() -> AMOSPersonalityEngine:
 def analyze_personality(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, PersonalityAnalysis]:
+) -> Dict[str, PersonalityAnalysis]:
     """Quick helper for personality analysis."""
     return get_personality_engine().analyze(description, domains)
 
 
 def get_amos_identity() -> dict:
     """Get AMOS core identity profile."""
-from __future__ import annotations
-
     return get_personality_engine().get_amos_identity()
 
 

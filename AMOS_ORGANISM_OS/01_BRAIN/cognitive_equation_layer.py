@@ -8,7 +8,7 @@ Enables formal reasoning about code using mathematical invariants.
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # Import equation bridge
 sys.path.insert(0, str(Path(__file__).parent))
@@ -89,7 +89,7 @@ class CognitiveEquationLayer:
             ),
         }
 
-    def suggest_for_code(self, code_snippet: str, language: str = None) -> list[dict[str, Any]]:
+    def suggest_for_code(self, code_snippet: str, language: str = None) -> List[dict[str, Any]]:
         """Suggest relevant equations for code."""
         if not self._initialized or not self.reasoning_engine:
             return []

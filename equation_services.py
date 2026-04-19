@@ -38,6 +38,8 @@ Integration:
     - equation_notifications: WebSocket for real-time updates
 """
 
+from __future__ import annotations
+
 import hashlib
 import logging
 from abc import ABC
@@ -678,7 +680,7 @@ class ExecutionService(BaseService[EquationExecution]):
 
     async def get_execution_history(
         self, equation_id: int = None, user_id: int = None, limit: int = 100
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get execution history."""
         if equation_id:
             executions = await self.uow.executions.get_recent_by_equation(equation_id, limit)
@@ -925,6 +927,5 @@ async def example_usage():
 
 if __name__ == "__main__":
     import asyncio
-    from typing import Generic, TypeVar
 
     asyncio.run(example_usage())

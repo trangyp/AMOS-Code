@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Probability Engine for AMOS"""
 
 import json
@@ -7,13 +6,14 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass
 class ProbabilityDistribution:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
-    outcomes: dict[str, float] = field(default_factory=dict)
+    outcomes: Dict[str, float] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self):
@@ -21,10 +21,10 @@ class ProbabilityDistribution:
 
 
 class ProbabilityEngine:
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path(__file__).parent / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.distributions: list[ProbabilityDistribution] = []
+        self.distributions: List[ProbabilityDistribution] = []
         self._load_data()
 
     def _load_data(self):
@@ -56,7 +56,7 @@ class ProbabilityEngine:
             )
         )
 
-    def create_distribution(self, name: str, outcomes: dict[str, float]) -> ProbabilityDistribution:
+    def create_distribution(self, name: str, outcomes: Dict[str, float]) -> ProbabilityDistribution:
         total = sum(outcomes.values())
         if total > 0:
             outcomes = {k: v / total for k, v in outcomes.items()}
@@ -71,13 +71,13 @@ class ProbabilityEngine:
                 return -sum(p * math.log2(p) for p in d.outcomes.values() if p > 0)
         return 0.0
 
-    def get_expected_value(self, dist_id: str, value_map: dict[str, float]) -> float:
+    def get_expected_value(self, dist_id: str, value_map: Dict[str, float]) -> float:
         for d in self.distributions:
             if d.id == dist_id:
                 return sum(p * value_map.get(k, 0) for k, p in d.outcomes.items())
         return 0.0
 
-    def monte_carlo_sample(self, dist_id: str, n_samples: int = 1000) -> dict[str, int]:
+    def monte_carlo_sample(self, dist_id: str, n_samples: int = 1000) -> Dict[str, int]:
         import random
 
         for d in self.distributions:
@@ -90,7 +90,7 @@ class ProbabilityEngine:
         return {}
 
 
-_ENGINE: ProbabilityEngine | None = None
+_ENGINE: Optional[ProbabilityEngine] = None
 
 
 def get_probability_engine(data_dir=None):

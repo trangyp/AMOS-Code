@@ -25,7 +25,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -256,7 +256,7 @@ class ConfigWatcher:
         self.config_path = config_path
         self.poll_interval = poll_interval
         self._configs: Dict[str, ServiceConfig] = {}
-        self._callbacks: list[Callable[[str, ServiceConfig], None]] = []
+        self._callbacks: List[Callable[[str, ServiceConfig], None]] = []
         self._running = False
         self._task: asyncio.Task = None
         self._last_modified: float = None
@@ -418,7 +418,7 @@ class AMOSResilienceEngine:
 
         return await cb.call(retry_operation)
 
-    def get_circuit_states(self) -> dict[str, dict[str, Any]]:
+    def get_circuit_states(self) -> Dict[str, dict[str, Any]]:
         """Get all circuit breaker states."""
         return {name: cb.get_state() for name, cb in self.circuit_breakers.items()}
 
@@ -450,7 +450,7 @@ class SelfHealingManager:
     def __init__(self, resilience_engine: AMOSResilienceEngine) -> None:
         self.resilience_engine = resilience_engine
         self.incidents: List[Incident] = []
-        self.healing_actions: dict[str, Callable[[str], Any]] = {
+        self.healing_actions: Dict[str, Callable[[str], Any]] = {
             "restart": self._action_restart,
             "reload_config": self._action_reload_config,
             "isolate": self._action_isolate,
@@ -636,7 +636,7 @@ class ChaosEngineering:
 
     def __init__(self, resilience_engine: AMOSResilienceEngine) -> None:
         self.resilience_engine = resilience_engine
-        self._experiments: list[dict[str, Any]] = []
+        self._experiments: List[dict[str, Any]] = []
         self._running = False
 
     async def run_experiment(
@@ -763,7 +763,6 @@ def generate_default_config() -> Dict[str, Any]:
 if __name__ == "__main__":
     import sys
     from collections.abc import Callable
-    from typing import TypeVar
 
     if len(sys.argv) > 1 and sys.argv[1] == "init":
         # Generate default config

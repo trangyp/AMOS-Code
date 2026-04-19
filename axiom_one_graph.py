@@ -28,7 +28,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 import neo4j
 from neo4j import AsyncGraphDatabase
@@ -579,7 +579,7 @@ class AxiomGraph:
 
     async def query_cross_domain(
         self, start_domain: DomainType, target_domain: DomainType, start_node_id: str
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """
         Query across domains - the key Axiom One capability.
 

@@ -4,7 +4,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class TaskStatus(Enum):
@@ -562,8 +562,6 @@ _workflow_orchestrator: Optional[WorkflowOrchestratorEngine] = None
 
 def get_workflow_orchestrator() -> WorkflowOrchestratorEngine:
     """Get singleton workflow orchestrator instance."""
-from __future__ import annotations
-
     global _workflow_orchestrator
     if _workflow_orchestrator is None:
         _workflow_orchestrator = WorkflowOrchestratorEngine()

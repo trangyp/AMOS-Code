@@ -10,7 +10,7 @@ Version: 3.0.0
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any, Literal
+from typing import Any, Dict, List, Literal
 
 from pydantic import BaseModel, Field
 
@@ -24,13 +24,13 @@ class MessageSchema(BaseModel):
 
     role: Literal["system", "user", "assistant", "tool"] = Field(..., description="Message role")
     content: str = Field(..., description="Message content")
-    metadata: dict[str, Any] = Field(None, description="Additional metadata")
+    metadata: Dict[str, Any] = Field(None, description="Additional metadata")
 
 
 class ChatRequest(BaseModel):
     """LLM chat completion request."""
 
-    messages: list[MessageSchema] = Field(..., description="Conversation messages")
+    messages: List[MessageSchema] = Field(..., description="Conversation messages")
     model: str = Field(None, description="Model to use (e.g., llama3.2, gpt-4o)")
     provider: str = Field(None, description="Provider preference (ollama, openai, anthropic)")
     temperature: float = Field(0.7, ge=0, le=2, description="Sampling temperature")
@@ -44,7 +44,7 @@ class ChatResponse(BaseModel):
     content: str = Field(..., description="Generated content")
     model: str = Field(..., description="Model used")
     provider: str = Field(..., description="Provider used")
-    usage: dict[str, int] = Field(..., description="Token usage statistics")
+    usage: Dict[str, int] = Field(..., description="Token usage statistics")
     latency_ms: float = Field(..., description="Request latency in milliseconds")
     timestamp: datetime = Field(..., description="Response timestamp")
 
@@ -53,14 +53,14 @@ class ProviderInfo(BaseModel):
     """LLM provider information."""
 
     name: str = Field(..., description="Provider name")
-    models: list[str] = Field(..., description="Available models")
+    models: List[str] = Field(..., description="Available models")
     enabled: bool = Field(..., description="Whether provider is available")
 
 
 class ProvidersResponse(BaseModel):
     """List of available providers."""
 
-    providers: list[ProviderInfo] = Field(..., description="Available LLM providers")
+    providers: List[ProviderInfo] = Field(..., description="Available LLM providers")
 
 
 # ============================================================================
@@ -79,7 +79,7 @@ class AgentTaskRequest(BaseModel):
     priority: Literal["low", "normal", "high", "critical"] = Field(
         "normal", description="Task priority"
     )
-    context: dict[str, Any] = Field(None, description="Task context/data")
+    context: Dict[str, Any] = Field(None, description="Task context/data")
 
 
 class AgentTaskResponse(BaseModel):
@@ -96,14 +96,14 @@ class AgentTaskResponse(BaseModel):
     priority: str = Field(..., description="Task priority")
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(None, description="Last update timestamp")
-    result: dict[str, Any] = Field(None, description="Task result if completed")
+    result: Dict[str, Any] = Field(None, description="Task result if completed")
     error: str = Field(None, description="Error message if failed")
 
 
 class TaskListResponse(BaseModel):
     """List of agent tasks."""
 
-    tasks: list[AgentTaskResponse] = Field(..., description="Agent tasks")
+    tasks: List[AgentTaskResponse] = Field(..., description="Agent tasks")
     total: int = Field(..., description="Total task count")
     running: int = Field(..., description="Number of running tasks")
     pending: int = Field(..., description="Number of pending tasks")
@@ -120,8 +120,8 @@ class SystemStatus(BaseModel):
     version: str = Field(..., description="AMOS version")
     status: Literal["healthy", "degraded", "critical"] = Field(..., description="System health")
     uptime_seconds: float = Field(..., description="System uptime")
-    components: dict[str, Any] = Field(..., description="Component statuses")
-    providers: list[ProviderInfo] = Field(..., description="Available LLM providers")
+    components: Dict[str, Any] = Field(..., description="Component statuses")
+    providers: List[ProviderInfo] = Field(..., description="Available LLM providers")
 
 
 class EvolutionStatus(BaseModel):
@@ -175,7 +175,7 @@ class WSMessage(BaseModel):
     """WebSocket message wrapper."""
 
     type: str = Field(..., description="Message type")
-    payload: dict[str, Any] = Field(..., description="Message payload")
+    payload: Dict[str, Any] = Field(..., description="Message payload")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -198,7 +198,7 @@ class EquationInfo(BaseModel):
     latex: str = Field(..., description="LaTeX representation")
     description: str = Field(..., description="Equation description")
     domain: str = Field(..., description="Domain (physics, math, etc.)")
-    variables: list[str] = Field(default_factory=list, description="Variables in equation")
+    variables: List[str] = Field(default_factory=list, description="Variables in equation")
 
 
 class MathQueryRequest(BaseModel):
@@ -212,7 +212,7 @@ class MathQueryRequest(BaseModel):
 class MathQueryResponse(BaseModel):
     """Math framework query response."""
 
-    equations: list[EquationInfo] = Field(..., description="Matching equations")
+    equations: List[EquationInfo] = Field(..., description="Matching equations")
     total: int = Field(..., description="Total matches")
     domain: str = Field(None, description="Domain queried")
 
@@ -229,7 +229,7 @@ class EquationValidationResponse(BaseModel):
 
     valid: bool = Field(..., description="Whether equation is valid")
     message: str = Field(..., description="Validation message")
-    suggestions: list[str] = Field(default_factory=list, description="Suggested fixes")
+    suggestions: List[str] = Field(default_factory=list, description="Suggested fixes")
 
 
 class MathFrameworkStatus(BaseModel):
@@ -238,5 +238,5 @@ class MathFrameworkStatus(BaseModel):
     available: bool = Field(..., description="Whether framework is available")
     initialized: bool = Field(..., description="Whether framework is initialized")
     total_equations: int = Field(0, description="Total equations in framework")
-    domains: list[str] = Field(default_factory=list, description="Available domains")
+    domains: List[str] = Field(default_factory=list, description="Available domains")
     version: str = Field("1.0.0", description="Framework version")

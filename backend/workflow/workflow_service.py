@@ -22,8 +22,9 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple
 
 try:
     import redis.asyncio as redis
@@ -39,8 +40,6 @@ except ImportError:
 
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Callable, Optional
-from typing import Dict, List, Tuple
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -99,7 +98,7 @@ class WorkflowInstance:
     completed_at: Optional[float] = None
     error_message: Optional[str] = None
     parent_workflow_id: Optional[str] = None
-    saga_compensations: list[dict[str, Any]] = field(default_factory=list)
+    saga_compensations: List[dict[str, Any]] = field(default_factory=list)
 
 
 class SagaOrchestrator:
@@ -110,7 +109,7 @@ class SagaOrchestrator:
 
     def __init__(self):
         self._active_sagas: Dict[str, WorkflowInstance] = {}
-        self._compensation_log: list[dict[str, Any]] = []
+        self._compensation_log: List[dict[str, Any]] = []
 
     async def execute_saga(
         self,
@@ -272,7 +271,7 @@ class CompensationManager:
     async def get_compensation_log(
         self,
         workflow_id: str
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Retrieve compensation history for workflow."""
         if not self._redis:
             return []
@@ -302,7 +301,7 @@ class WorkflowService:
         self._saga_orchestrator = SagaOrchestrator()
         self._compensation_manager = CompensationManager(redis_url)
         self._workflows: Dict[str, WorkflowInstance] = {}
-        self._workflow_definitions: dict[str, list[WorkflowActivity]] = {}
+        self._workflow_definitions: Dict[str, list[WorkflowActivity]] = {}
 
         if REDIS_AVAILABLE:
             try:

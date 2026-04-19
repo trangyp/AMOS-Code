@@ -15,7 +15,8 @@ Key constraints:
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -110,7 +111,7 @@ class EnergyAllocator:
         """Register an energy consumer."""
         self.consumers[consumer.consumer_id] = consumer
 
-    def compute_allocations(self) -> dict[str, float]:
+    def compute_allocations(self) -> Dict[str, float]:
         """Compute proportional allocation based on priority and demand."""
         # Total weighted demand
         total_weighted_demand = sum(
@@ -136,7 +137,7 @@ class EnergyAllocator:
 
         return allocations
 
-    def allocate(self) -> dict[str, float]:
+    def allocate(self) -> Dict[str, float]:
         """Execute allocation to all registered consumers."""
         allocations = self.compute_allocations()
 
@@ -223,7 +224,7 @@ class EnergyMonitor:
     def __init__(self, pool: EnergyPool):
         self.pool = pool
         self.usage_history: List[dict] = []
-        self.efficiency_metrics: dict[str, list[float]] = defaultdict(list)
+        self.efficiency_metrics: Dict[str, list[float]] = defaultdict(list)
 
     def record_usage(self, consumer_id: str, energy_used: float, output_produced: float):
         """Record energy usage and output."""
@@ -360,7 +361,7 @@ class AMOSEnergySystem:
         if pool_name in self.allocators:
             self.allocators[pool_name].register_consumer(consumer)
 
-    def allocate_all(self) -> dict[str, dict[str, float]]:
+    def allocate_all(self) -> Dict[str, dict[str, float]]:
         """Execute allocation across all pools."""
         allocations = {}
         for pool_name, allocator in self.allocators.items():

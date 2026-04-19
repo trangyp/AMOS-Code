@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Reasoning Service - Real cognitive reasoning implementation.
 
 Implements 7-tier reasoning hierarchy connecting to AMOSL kernel.
 Each level builds on the previous with increasing abstraction.
 """
-from __future__ import annotations
-
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -35,16 +33,16 @@ class ReasoningLevel:
     tier: ReasoningTier
     complexity: str
     active: bool = False
-    capabilities: list[str] = field(default_factory=list)
+    capabilities: List[str] = field(default_factory=list)
     amosl_equivalent: str = ""
-    last_activated: str | None = None
+    last_activated: Optional[str] = None
 
 
 class ReasoningEngine:
     """Real reasoning engine with AMOSL integration."""
 
     def __init__(self):
-        self._levels: dict[str, ReasoningLevel] = {}
+        self._levels: Dict[str, ReasoningLevel] = {}
         self._current_level: str = "L1"
         self._initialized = False
         self._setup_levels()
@@ -128,7 +126,7 @@ class ReasoningEngine:
             ),
         }
 
-    def get_all_levels(self) -> list[dict[str, Any]]:
+    def get_all_levels(self) -> List[dict[str, Any]]:
         """Get all reasoning levels."""
         return [
             {
@@ -145,11 +143,11 @@ class ReasoningEngine:
             for level in self._levels.values()
         ]
 
-    def get_level(self, level_id: str) -> ReasoningLevel | None:
+    def get_level(self, level_id: str) -> Optional[ReasoningLevel]:
         """Get specific reasoning level."""
         return self._levels.get(level_id)
 
-    def activate_level(self, level_id: str) -> dict[str, Any]:
+    def activate_level(self, level_id: str) -> Dict[str, Any]:
         """Activate a reasoning level with proper hierarchy."""
         if level_id not in self._levels:
             raise ValueError(f"Unknown level: {level_id}")
@@ -179,7 +177,7 @@ class ReasoningEngine:
         """Get currently active reasoning level."""
         return self._current_level
 
-    def process_with_reasoning(self, input_data: str, target_level: str) -> dict[str, Any]:
+    def process_with_reasoning(self, input_data: str, target_level: str) -> Dict[str, Any]:
         """Process input through reasoning hierarchy."""
         level = self._levels.get(target_level, self._levels["L1"])
 
@@ -198,7 +196,7 @@ class ReasoningEngine:
             "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def _process_at_level(self, input_data: str, level_id: str) -> dict[str, Any]:
+    def _process_at_level(self, input_data: str, level_id: str) -> Dict[str, Any]:
         """Simulate processing at a specific level."""
         level = self._levels[level_id]
 
@@ -211,7 +209,7 @@ class ReasoningEngine:
 
 
 # Global reasoning engine instance
-_reasoning_engine: ReasoningEngine | None = None
+_reasoning_engine: Optional[ReasoningEngine] = None
 
 
 def get_reasoning_engine() -> ReasoningEngine:

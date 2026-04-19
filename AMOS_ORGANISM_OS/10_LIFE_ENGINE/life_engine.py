@@ -13,6 +13,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -52,7 +53,7 @@ class LifeGoal:
     title: str
     category: str  # career, health, learning, relationships
     deadline: str = None
-    milestones: list[dict[str, Any]] = field(default_factory=list)
+    milestones: List[dict[str, Any]] = field(default_factory=list)
     progress: float = 0.0
     status: str = "active"  # active, completed, paused
 
@@ -276,7 +277,7 @@ class LifeEngine:
                 return True
         return False
 
-    def get_today_schedule(self) -> list[dict[str, Any]]:
+    def get_today_schedule(self) -> List[dict[str, Any]]:
         """Get today's schedule with routines."""
         today = datetime.now(UTC).strftime("%Y-%m-%d")
 
@@ -313,7 +314,7 @@ class LifeEngine:
             "total_completions_all": sum(h.total_completions for h in self.habits),
         }
 
-    def calculate_life_balance(self) -> dict[str, float]:
+    def calculate_life_balance(self) -> Dict[str, float]:
         """Calculate life balance across categories."""
         categories = ["health", "work", "learning", "rest", "relationships"]
         balance = dict.fromkeys(categories, 5.0)  # Default middle score

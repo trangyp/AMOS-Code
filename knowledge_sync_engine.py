@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
+from typing import Dict, List
 
 
 class SyncStatus(Enum):
@@ -22,8 +23,8 @@ class EquationSignature:
     name: str
     formula: str
     domain: str
-    invariants: list[str]
-    parameters: list[str]
+    invariants: List[str]
+    parameters: List[str]
     description: str
     source_file: str
     line_number: int
@@ -36,11 +37,11 @@ class KnowledgeSyncEngine:
     def __init__(self, docs_path: str = ".", code_path: str = "amos_superbrain_equation_bridge.py"):
         self.docs_path = Path(docs_path)
         self.code_path = Path(code_path)
-        self.doc_equations: dict[str, EquationSignature] = {}
-        self.code_equations: dict[str, EquationSignature] = {}
-        self.sync_state: dict[str, SyncStatus] = {}
+        self.doc_equations: Dict[str, EquationSignature] = {}
+        self.code_equations: Dict[str, EquationSignature] = {}
+        self.sync_state: Dict[str, SyncStatus] = {}
 
-    def scan_documentation(self) -> dict[str, EquationSignature]:
+    def scan_documentation(self) -> Dict[str, EquationSignature]:
         """Scan markdown documents for equation definitions."""
         equations = {}
         doc_files = [
@@ -80,7 +81,7 @@ class KnowledgeSyncEngine:
         self.doc_equations = equations
         return equations
 
-    def scan_implementations(self) -> dict[str, EquationSignature]:
+    def scan_implementations(self) -> Dict[str, EquationSignature]:
         """Scan code for implemented equations."""
         equations = {}
         if not self.code_path.exists():
@@ -109,7 +110,7 @@ class KnowledgeSyncEngine:
         self.code_equations = equations
         return equations
 
-    def compute_diff(self) -> dict[str, SyncStatus]:
+    def compute_diff(self) -> Dict[str, SyncStatus]:
         """Compute differential sync state."""
         all_names = set(self.doc_equations.keys()) | set(self.code_equations.keys())
 
@@ -168,7 +169,7 @@ class KnowledgeSyncEngine:
             return "fundamental_physics"
         return "general"
 
-    def _extract_parameters(self, formula: str) -> list[str]:
+    def _extract_parameters(self, formula: str) -> List[str]:
         """Extract parameters from LaTeX formula."""
         params = re.findall(r"([a-zA-Z])\s*[=\)]", formula)
         return list(set(params))

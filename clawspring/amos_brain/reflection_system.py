@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Self-Reflection System for AMOS Brain
 
@@ -11,8 +11,6 @@ Architecture:
 3. Revise based on critique
 4. Iterate until satisfied or max iterations
 """
-from __future__ import annotations
-
 
 import asyncio
 from collections.abc import Callable
@@ -38,11 +36,11 @@ class Critique:
     """Critique of generated output."""
 
     critique_text: str
-    issues: list[str]
+    issues: List[str]
     severity: float  # 0-1
-    suggestions: list[str]
+    suggestions: List[str]
     validated: bool
-    validation_data: dict[str, Any] = None
+    validation_data: Dict[str, Any] = None
 
 
 @dataclass
@@ -50,7 +48,7 @@ class Revision:
     """Revised output."""
 
     output: str
-    changes_made: list[str]
+    changes_made: List[str]
     confidence: float
     iteration: int
 
@@ -64,7 +62,7 @@ class SelfReflectionSystem:
 
     def __init__(
         self,
-        kernel: AMOSKernelRuntime | None = None,
+        kernel: Optional[AMOSKernelRuntime] = None,
         max_iterations: int = 3,
         improvement_threshold: float = 0.1,
     ):
@@ -73,12 +71,12 @@ class SelfReflectionSystem:
         self.improvement_threshold = improvement_threshold
 
         # Revision history
-        self._history: list[dict[str, Any]] = []
+        self._history: List[dict[str, Any]] = []
 
     async def refine(
         self,
         initial_output: str,
-        context: dict[str, Any],
+        context: Dict[str, Any],
         critique_fn: Callable[[str, dict], Critique] = None,
         revise_fn: Callable[[str, Critique, dict], str] = None,
     ) -> Revision:
@@ -152,7 +150,7 @@ class SelfReflectionSystem:
     async def _generate_critique(
         self,
         output: str,
-        context: dict[str, Any],
+        context: Dict[str, Any],
         custom_fn: Callable[[str, dict], Critique],
     ) -> Critique:
         """Generate critique of output."""
@@ -195,7 +193,7 @@ class SelfReflectionSystem:
         self,
         output: str,
         critique: Critique,
-        context: dict[str, Any],
+        context: Dict[str, Any],
         custom_fn: Callable[[str, Critique, dict], str],
     ) -> str:
         """Generate revised output based on critique."""
@@ -239,13 +237,13 @@ class SelfReflectionSystem:
         similarity = len(common) / len(union) if union else 1.0
         return 1.0 - similarity
 
-    def get_history(self) -> list[dict[str, Any]]:
+    def get_history(self) -> List[dict[str, Any]]:
         """Get refinement history."""
         return self._history.copy()
 
 
 # Global reflection system
-_global_reflection: SelfReflectionSystem | None = None
+_global_reflection: Optional[SelfReflectionSystem] = None
 
 
 def get_reflection_system() -> SelfReflectionSystem:

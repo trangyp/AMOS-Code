@@ -48,8 +48,9 @@ import json
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 from datetime import datetime, timezone
+UTC = timezone.utc
 from collections import defaultdict, deque
 
 try:
@@ -177,7 +178,7 @@ class AMOSKnowledgeGraph:
     def __init__(self):
         self.nodes: Dict[str, KnowledgeNode] = {}
         self.edges: Dict[str, KnowledgeEdge] = {}
-        self.adjacency: dict[str, list[str]] = defaultdict(list)
+        self.adjacency: Dict[str, list[str]] = defaultdict(list)
         self.embedding_engine = EmbeddingEngine()
         self.superbrain = AMOSSuperBrainBridge() if SUPERBRAIN_AVAILABLE else None
 
@@ -359,7 +360,7 @@ class AMOSKnowledgeGraph:
         node_id: str,
         relationship: Optional[RelationshipType] = None,
         depth: int = 1
-    ) -> list[tuple[KnowledgeNode, KnowledgeEdge]]:
+    ) -> List[tuple[KnowledgeNode, KnowledgeEdge]]:
         """
         Find related nodes.
 
@@ -591,7 +592,6 @@ class AMOSKnowledgeGraph:
 def main():
     """CLI for knowledge graph."""
     import argparse
-from typing import List
 
     parser = argparse.ArgumentParser(
         description="AMOS Knowledge Graph - Semantic Mathematical Network"

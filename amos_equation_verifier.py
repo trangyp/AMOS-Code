@@ -34,7 +34,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from z3 import (
@@ -132,7 +132,7 @@ class ProofCertificate:
     timestamp: str
     proof_hash: str
     verification_time_ms: float
-    counterexample: dict[str, Any] = None
+    counterexample: Dict[str, Any] = None
     assumptions: List[str] = field(default_factory=list)
     proof_object: str = None  # Serialized Z3 proof
 

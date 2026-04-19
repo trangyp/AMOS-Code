@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import ast
 import builtins
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 
 class EquationExecutionError(Exception):
@@ -217,7 +217,7 @@ class SecureEquationRunner:
             name: getattr(builtins, name) for name in safe_names if hasattr(builtins, name)
         }
 
-    def validate_code(self, code: str) -> Tuple[bool, str]:
+    def validate_code(self, code: str) -> tuple[bool, str]:
         """
         Validate equation code for dangerous operations.
 
@@ -269,7 +269,7 @@ class SecureEquationRunner:
 
         return True, ""
 
-    def execute_equation(self, code: str, timeout: float = None) -> Dict[str, Any]:
+    def execute_equation(self, code: str, timeout: Optional[float] = None) -> dict[str, Any]:
         """
         Execute equation code in secure sandbox.
 
@@ -353,7 +353,7 @@ class SecureEquationRunner:
                 "error": f"Execution error: {type(e).__name__}: {e}",
             }
 
-    def find_function(self, namespace: Dict[str, Any]) -> Optional[Any]:
+    def find_function(self, namespace: dict[str, Any]) -> Optional[Any]:
         """
         Find callable function in namespace.
 
@@ -370,7 +370,7 @@ class SecureEquationRunner:
 
 
 # Convenience function for direct use
-def secure_exec_equation(code: str, timeout: float = None) -> Dict[str, Any]:
+def secure_exec_equation(code: str, timeout: Optional[float] = None) -> dict[str, Any]:
     """
     Convenience function to securely execute equation code.
 

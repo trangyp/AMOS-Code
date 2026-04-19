@@ -63,8 +63,8 @@ class KnowledgeGraph:
     def __init__(self):
         self._entities: Dict[str, Entity] = {}
         self._relations: List[Relation] = []
-        self._index_by_type: dict[EntityType, set[str]] = {}
-        self._index_by_name: dict[str, set[str]] = {}
+        self._index_by_type: Dict[EntityType, set[str]] = {}
+        self._index_by_name: Dict[str, set[str]] = {}
 
     def add_entity(self, entity: Entity) -> str:
         """Add an entity to the graph."""

@@ -19,6 +19,7 @@ import os
 import struct
 
 from .recorder import BYTES_PER_SAMPLE, CHANNELS, SAMPLE_RATE
+from typing import List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -241,7 +242,7 @@ def _keyterms_to_prompt(keyterms: List[str]) -> str:
 
 def transcribe(
     pcm_bytes: bytes,
-    keyterms: list[str] = None,
+    keyterms: List[str] = None,
     language: str = "auto",
 ) -> str:
     """Transcribe raw PCM audio to text.

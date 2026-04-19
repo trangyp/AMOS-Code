@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Brain Workflow Engine - Workflow steps powered by brain.
 
@@ -9,13 +9,12 @@ Integrates workflow system with cognitive processing:
 
 Owner: Trang Phan
 """
-from __future__ import annotations
-
 
 import asyncio
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 try:
     from .api_integration import brain_get_result, brain_process_sync, brain_submit_task
@@ -31,10 +30,10 @@ class WorkflowStep:
     name: str
     description: str
     status: str = "pending"
-    brain_task_id: str | None = None
-    result: dict[str, Any] = field(default_factory=dict)
-    started_at: str | None = None
-    completed_at: str | None = None
+    brain_task_id: Optional[str] = None
+    result: Dict[str, Any] = field(default_factory=dict)
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
 
 
 @dataclass
@@ -43,20 +42,20 @@ class WorkflowInstance:
 
     id: str
     name: str
-    steps: list[WorkflowStep]
+    steps: List[WorkflowStep]
     current_step: int = 0
     status: str = "pending"
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    completed_at: str | None = None
+    completed_at: Optional[str] = None
 
 
 class BrainWorkflowEngine:
     """Workflow engine using brain for cognitive step processing."""
 
     def __init__(self):
-        self._workflows: dict[str, WorkflowInstance] = {}
+        self._workflows: Dict[str, WorkflowInstance] = {}
 
-    async def create_workflow(self, name: str, step_descriptions: list[str]) -> str:
+    async def create_workflow(self, name: str, step_descriptions: List[str]) -> str:
         """Create new workflow with brain-powered steps."""
         workflow_id = f"wf-{uuid.uuid4().hex[:8]}"
 
@@ -78,7 +77,7 @@ class BrainWorkflowEngine:
         self._workflows[workflow_id] = workflow
         return workflow_id
 
-    async def execute_step(self, workflow_id: str, step_index: int) -> dict[str, Any]:
+    async def execute_step(self, workflow_id: str, step_index: int) -> Dict[str, Any]:
         """Execute single workflow step using brain."""
         workflow = self._workflows.get(workflow_id)
         if not workflow:
@@ -105,7 +104,7 @@ class BrainWorkflowEngine:
 
         return step.result
 
-    async def execute_workflow(self, workflow_id: str) -> dict[str, Any]:
+    async def execute_workflow(self, workflow_id: str) -> Dict[str, Any]:
         """Execute all workflow steps sequentially."""
         workflow = self._workflows.get(workflow_id)
         if not workflow:
@@ -138,17 +137,17 @@ class BrainWorkflowEngine:
             "step_results": results,
         }
 
-    def get_workflow(self, workflow_id: str) -> WorkflowInstance | None:
+    def get_workflow(self, workflow_id: str) -> Optional[WorkflowInstance]:
         """Get workflow instance."""
         return self._workflows.get(workflow_id)
 
-    def list_workflows(self) -> list[WorkflowInstance]:
+    def list_workflows(self) -> List[WorkflowInstance]:
         """List all workflows."""
         return list(self._workflows.values())
 
 
 # Singleton
-_engine: BrainWorkflowEngine | None = None
+_engine: Optional[BrainWorkflowEngine] = None
 
 
 def get_workflow_engine() -> BrainWorkflowEngine:
@@ -159,13 +158,13 @@ def get_workflow_engine() -> BrainWorkflowEngine:
     return _engine
 
 
-async def create_brain_workflow(name: str, steps: list[str]) -> str:
+async def create_brain_workflow(name: str, steps: List[str]) -> str:
     """Convenience function to create workflow."""
     engine = get_workflow_engine()
     return await engine.create_workflow(name, steps)
 
 
-async def run_brain_workflow(workflow_id: str) -> dict[str, Any]:
+async def run_brain_workflow(workflow_id: str) -> Dict[str, Any]:
     """Convenience function to run workflow."""
     engine = get_workflow_engine()
     return await engine.execute_workflow(workflow_id)

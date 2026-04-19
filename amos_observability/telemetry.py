@@ -1,7 +1,7 @@
 """OpenTelemetry setup and configuration for AMOS."""
 
 import os
-from typing import Any
+from typing import Any, Optional
 
 try:
     from opentelemetry import metrics, trace

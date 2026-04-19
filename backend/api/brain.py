@@ -1,10 +1,8 @@
 """AMOS Brain API - Real brain-powered endpoints."""
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -22,7 +20,7 @@ class BrainRequest(BaseModel):
     """Request to brain."""
 
     message: str
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class BrainResponse(BaseModel):
@@ -52,7 +50,7 @@ async def brain_think(request: BrainRequest) -> BrainResponse:
 
 
 @router.get("/status")
-async def brain_status() -> dict[str, Any]:
+async def brain_status() -> Dict[str, Any]:
     """Get brain status."""
     result = think("Check brain status", {"check": True})
     return {

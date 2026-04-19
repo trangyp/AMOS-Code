@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """AMOS Metrics Aggregation System - Production Observability Layer
 
@@ -25,6 +25,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 
 class MetricType(Enum):
@@ -57,11 +58,11 @@ class MetricsRegistry:
     def __init__(self):
         self._counters: Dict[str, float] = defaultdict(float)
         self._gauges: Dict[str, float] = {}
-        self._histograms: dict[str, list[float]] = defaultdict(list)
-        self._labels: dict[str, dict[str, str]] = {}
+        self._histograms: Dict[str, list[float]] = defaultdict(list)
+        self._labels: Dict[str, dict[str, str]] = {}
         self._lock = threading.RLock()
         self._help_texts: Dict[str, str] = {}
-        self._collectors: list[Callable[[], list[MetricFamily]]] = []
+        self._collectors: List[Callable[[], list[MetricFamily]]] = []
 
     def register_collector(self, collector: Callable[[], list[MetricFamily]]) -> None:
         """Register a custom metrics collector."""

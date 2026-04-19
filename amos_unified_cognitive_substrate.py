@@ -33,10 +33,14 @@ Architecture:
     └─────────────────────────────────────────────────────────────┘
 """
 
+from __future__ import annotations
+
+
+
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class ReasoningMode(Enum):
@@ -63,11 +67,11 @@ class SubstrateState:
     equation_cache: Dict[str, Any] = field(default_factory=dict)
 
     # Causal graph state
-    causal_graph: dict[str, list[tuple[str, float]]] = field(default_factory=dict)
+    causal_graph: Dict[str, list[tuple[str, float]]] = field(default_factory=dict)
 
     # World model spatial state
-    world_objects: dict[str, dict[str, Any]] = field(default_factory=dict)
-    spatial_relations: list[tuple[str, str, str]] = field(default_factory=list)
+    world_objects: Dict[str, dict[str, Any]] = field(default_factory=dict)
+    spatial_relations: List[tuple[str, str, str]] = field(default_factory=list)
 
     # Consensus state from multi-agent orchestration
     agent_confidences: Dict[str, float] = field(default_factory=dict)
@@ -88,7 +92,7 @@ class ReasoningResult:
     execution_time_ms: float
     invariant_violations: List[str] = field(default_factory=list)
     used_equations: List[str] = field(default_factory=list)
-    causal_chains: list[list[str]] = field(default_factory=list)
+    causal_chains: List[list[str]] = field(default_factory=list)
 
 
 class UnifiedCognitiveSubstrate:
@@ -267,7 +271,7 @@ class UnifiedCognitiveSubstrate:
         ]
         return "\n".join(lines)
 
-    def _identify_root_causes(self, symptom: str, data: Dict[str, Any]) -> list[tuple[str, float]]:
+    def _identify_root_causes(self, symptom: str, data: Dict[str, Any]) -> List[tuple[str, float]]:
         """Identify potential root causes of symptom."""
         # Simplified causal analysis
         root_causes = []

@@ -3,6 +3,7 @@
 from tool_registry import ToolDef, register_tool
 
 from .loader import find_skill, load_skills, substitute_arguments
+from typing import List
 
 _SKILL_SCHEMA = {
     "name": "Skill",
@@ -64,7 +65,7 @@ def _skill_tool(params: dict, config: dict) -> str:
     system_prompt = config.get("_system_prompt", "")
 
     # Collect output text
-    output_parts: list[str] = []
+    output_parts: List[str] = []
     sub_state = _agent.AgentState()
     sub_config = {**config, "_depth": config.get("_depth", 0) + 1}
     try:

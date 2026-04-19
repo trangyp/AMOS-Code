@@ -15,6 +15,10 @@ Owner: Trang
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
+
+
 import asyncio
 import json
 import sys
@@ -23,7 +27,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Add paths for imports
 _AMOS_ROOT = Path(__file__).parent.resolve()

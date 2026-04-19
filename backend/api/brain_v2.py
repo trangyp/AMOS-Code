@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Brain v2 API - Production brain-powered endpoints.
 
@@ -9,8 +9,6 @@ Real cognitive task processing via:
 
 Owner: Trang Phan
 """
-from __future__ import annotations
-
 
 import sys
 from pathlib import Path
@@ -68,11 +66,11 @@ class TaskResponse(BaseModel):
 
     task_id: str
     status: str
-    domain: str | None = None
+    domain: Optional[str] = None
     success: bool = False
     duration_ms: float = 0.0
-    engines_used: list[str] = []
-    result: dict[str, Any] = {}
+    engines_used: List[str] = []
+    result: Dict[str, Any] = {}
 
 
 class TaskStatusResponse(BaseModel):
@@ -82,11 +80,11 @@ class TaskStatusResponse(BaseModel):
     status: str
     description: str
     priority: str
-    created_at: str | None = None
-    started_at: str | None = None
-    completed_at: str | None = None
-    result: dict[str, Any] = None
-    error: str | None = None
+    created_at: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    result: Dict[str, Any] = None
+    error: Optional[str] = None
 
 
 class HealthResponse(BaseModel):
@@ -185,7 +183,7 @@ class IntegratedQueryRequest(BaseModel):
 
     query: str
     mode: str = "auto"
-    context: dict[str, Any] = {}
+    context: Dict[str, Any] = {}
 
 
 class IntegratedQueryResponse(BaseModel):
@@ -195,7 +193,7 @@ class IntegratedQueryResponse(BaseModel):
     latency_ms: float
     mode: str
     confidence: float
-    components_used: list[str]
+    components_used: List[str]
 
 
 @router.post("/query", response_model=IntegratedQueryResponse)
@@ -219,7 +217,7 @@ async def integrated_query(request: IntegratedQueryRequest) -> IntegratedQueryRe
 
 
 @router.post("/think-fast")
-async def brain_think_fast(request: IntegratedQueryRequest) -> dict[str, Any]:
+async def brain_think_fast(request: IntegratedQueryRequest) -> Dict[str, Any]:
     """Fast thinking using dual-process brain (<100ms target)."""
     import time
 
@@ -267,7 +265,7 @@ async def brain_think_fast(request: IntegratedQueryRequest) -> dict[str, Any]:
 
 
 @router.get("/stats")
-async def brain_stats() -> dict[str, Any]:
+async def brain_stats() -> Dict[str, Any]:
     """Get brain system statistics."""
     if not INTEGRATED_BRAIN_AVAILABLE:
         return {"error": "Integrated brain not available"}

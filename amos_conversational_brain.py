@@ -47,8 +47,9 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -58,7 +59,6 @@ except ImportError:
 
 try:
     from amos_neural_symbolic import NeuralSymbolicEngine
-from typing import List
     NEURAL_AVAILABLE = True
 except ImportError:
     NEURAL_AVAILABLE = False
@@ -459,7 +459,7 @@ class ResponseGenerator:
     def __init__(self):
         self.templates = self._load_templates()
 
-    def _load_templates(self) -> dict[str, str]:
+    def _load_templates(self) -> Dict[str, str]:
         """Load response templates."""
         return {
             "execute_success": """
@@ -513,7 +513,7 @@ What would you like to explore?
     def generate(
         self,
         intent: ParsedIntent,
-        tool_results: list[dict[str, Any]]
+        tool_results: List[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate conversational response."""
 
@@ -546,7 +546,7 @@ What would you like to explore?
     def _generate_execute_response(
         self,
         intent: ParsedIntent,
-        results: list[dict[str, Any]]
+        results: List[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate response for execution."""
         if not results:
@@ -594,7 +594,7 @@ What would you like to explore?
     def _generate_prove_response(
         self,
         intent: ParsedIntent,
-        results: list[dict[str, Any]]
+        results: List[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate response for theorem proving."""
         if not results:
@@ -631,7 +631,7 @@ What would you like to explore?
     def _generate_explain_response(
         self,
         intent: ParsedIntent,
-        results: list[dict[str, Any]]
+        results: List[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate explanation response."""
         if not results or "error" in results[0]:
@@ -672,7 +672,7 @@ What would you like to explore?
     def _generate_list_response(
         self,
         intent: ParsedIntent,
-        results: list[dict[str, Any]]
+        results: List[dict[str, Any]]
     ) -> ConversationalResponse:
         """Generate list response."""
         if not results:
@@ -775,7 +775,7 @@ class ConversationalBrain:
 
         return response.natural_language
 
-    def get_history(self) -> list[dict[str, Any]]:
+    def get_history(self) -> List[dict[str, Any]]:
         """Get conversation history."""
         return [
             {

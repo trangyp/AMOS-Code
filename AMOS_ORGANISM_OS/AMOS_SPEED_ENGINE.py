@@ -12,7 +12,8 @@ Version: 1.0.0
 import json
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -80,13 +81,15 @@ class AmosSpeedEngine:
 
         total_size = 0
         for f in registry_files:
-            if f.exists():
-                total_size += f.stat().st_size
-                try:
-                    with open(f, encoding="utf-8") as fp:
-                        json.load(fp)
-                except Exception:
-                    pass
+            try:
+                # Single stat call checks existence and gets size
+                stat = f.stat()
+                total_size += stat.st_size
+                with open(f, encoding="utf-8") as fp:
+                    json.load(fp)
+            except (OSError, IOError):
+                # File doesn't exist or can't be read
+                pass
 
         duration = (time.perf_counter() - start) * 1000
 
@@ -104,7 +107,7 @@ class AmosSpeedEngine:
         """Generate complete speed profile."""
         if not self.benchmarks:
             return SpeedProfile(
-                timestamp=datetime.now(UTC).isoformat() + "Z",
+                timestamp=datetime.now(timezone.utc).isoformat() + "Z",
                 overall_score=0.0,
                 benchmarks=[],
                 recommendations=["No benchmarks run yet"],

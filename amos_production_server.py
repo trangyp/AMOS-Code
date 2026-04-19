@@ -33,7 +33,9 @@ import json
 import sys
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
+from typing import List
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -144,7 +146,6 @@ def initialize_components():
     # Initialize Repo Doctor Omega
     try:
         from repo_doctor_omega.engine import RepoDoctorEngine
-from typing import List, Optional
         repo_doctor = RepoDoctorEngine(".")
         print("  ✓ Repo Doctor Omega initialized")
     except Exception as e:

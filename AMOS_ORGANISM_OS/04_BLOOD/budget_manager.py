@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Budget Manager — Financial planning and category tracking
 
 Handles budgeting across categories, expense tracking, and
@@ -9,6 +8,7 @@ import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -112,7 +112,7 @@ class BudgetManager:
     Integrates with the resource engine for unified resource management.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
@@ -279,7 +279,7 @@ class BudgetManager:
 
         return expense
 
-    def get_budget_status(self, budget_id: str) -> dict[str, Any] | None:
+    def get_budget_status(self, budget_id: str) -> Optional[Dict[str, Any] ]:
         """Get detailed status for a budget."""
         budget = self.budgets.get(budget_id)
         if not budget:
@@ -345,10 +345,10 @@ class BudgetManager:
 
 
 # Global instance
-_MANAGER: BudgetManager | None = None
+_MANAGER: Optional[BudgetManager] = None
 
 
-def get_budget_manager(data_dir: Path | None = None) -> BudgetManager:
+def get_budget_manager(data_dir: Optional[Path] = None) -> BudgetManager:
     """Get or create global budget manager."""
     global _MANAGER
     if _MANAGER is None:

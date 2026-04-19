@@ -37,7 +37,7 @@ Environment Variables:
 """
 
 import os
-from typing import Any
+from typing import Any, Dict, List
 
 try:
     from celery import Celery, states
@@ -49,7 +49,6 @@ except ImportError:
     states = None  # type: ignore[assignment, misc]
 
 try:
-    from typing import List
 
     from equation_tracing import create_span, set_span_error
 
@@ -121,7 +120,7 @@ if CELERY_AVAILABLE and celery is not None:
     @celery.task(bind=True, max_retries=2)
     def batch_compute_task(
         self: Any,
-        equation_ids: list[str],
+        equation_ids: List[str],
         computation_type: str = "verify",
     ) -> Dict[str, Any]:
         """Batch equation computation task.
@@ -150,7 +149,7 @@ if CELERY_AVAILABLE and celery is not None:
         return results
 
     @celery.task
-    def warm_cache_task(equation_ids: list[str]) -> Dict[str, Any]:
+    def warm_cache_task(equation_ids: List[str]) -> Dict[str, Any]:
         """Pre-compute and cache equation results.
 
         Args:

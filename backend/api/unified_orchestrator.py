@@ -8,13 +8,11 @@ Exposes the real MasterOrchestrator from clawspring/amos_brain with:
 - Mathematical framework analysis
 """
 
-from __future__ import annotations
-
 
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -47,7 +45,7 @@ except ImportError:
 router = APIRouter(prefix="/orchestrator", tags=["Unified Orchestrator"])
 
 # Global orchestrator instance
-_orchestrator: MasterOrchestrator | None = None
+_orchestrator: Optional[MasterOrchestrator] = None
 
 
 def get_orchestrator() -> MasterOrchestrator:
@@ -64,7 +62,7 @@ class OrchestrateRequest(BaseModel):
 
     task_description: str = Field(..., min_length=1)
     priority: str = Field(default="MEDIUM", pattern="LOW|MEDIUM|HIGH|CRITICAL")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     enable_prediction: bool = Field(default=True)
     enable_organism: bool = Field(default=True)
 
@@ -73,7 +71,7 @@ class OrchestrationAnalysis(BaseModel):
     """Analysis results from orchestration."""
 
     domain: str
-    recommended_engines: list[str]
+    recommended_engines: List[str]
     risk_level: str
     confidence: float
 
@@ -83,7 +81,7 @@ class OrchestrationPrediction(BaseModel):
 
     success_probability: float
     estimated_duration_ms: float
-    risk_factors: list[str]
+    risk_factors: List[str]
 
 
 class OrchestrationExecution(BaseModel):
@@ -93,7 +91,7 @@ class OrchestrationExecution(BaseModel):
     output: str
     error: str
     execution_type: str
-    engines_used: list[str]
+    engines_used: List[str]
 
 
 class OrchestrationOrganismEnhancement(BaseModel):
@@ -102,7 +100,7 @@ class OrchestrationOrganismEnhancement(BaseModel):
     coherence_boost: float
     health_awareness: bool
     stress_level: str
-    enhancements_applied: list[str]
+    enhancements_applied: List[str]
 
 
 class OrchestrateResponse(BaseModel):
@@ -120,7 +118,7 @@ class OrchestrateResponse(BaseModel):
     organism_enhancements: OrchestrationOrganismEnhancement
 
     # Raw data
-    raw_result: dict[str, Any]
+    raw_result: Dict[str, Any]
 
 
 @router.post("/orchestrate", response_model=OrchestrateResponse)
@@ -216,7 +214,7 @@ async def orchestrate_task(request: OrchestrateRequest) -> OrchestrateResponse:
 
 
 @router.get("/history")
-async def get_orchestration_history(limit: int = 10) -> list[dict[str, Any]]:
+async def get_orchestration_history(limit: int = 10) -> List[dict[str, Any]]:
     """Get recent orchestration history."""
     if not _ORCHESTRATOR_AVAILABLE:
         raise HTTPException(status_code=503, detail="MasterOrchestrator not available")
@@ -240,7 +238,7 @@ async def get_orchestration_history(limit: int = 10) -> list[dict[str, Any]]:
 
 
 @router.get("/status")
-async def get_orchestrator_status() -> dict[str, Any]:
+async def get_orchestrator_status() -> Dict[str, Any]:
     """Get MasterOrchestrator status."""
     if not _ORCHESTRATOR_AVAILABLE:
         return {
@@ -276,7 +274,7 @@ async def get_orchestrator_status() -> dict[str, Any]:
 
 
 @router.post("/quick")
-async def quick_orchestrate(task_description: str, priority: str = "MEDIUM") -> dict[str, Any]:
+async def quick_orchestrate(task_description: str, priority: str = "MEDIUM") -> Dict[str, Any]:
     """Quick orchestration endpoint with minimal response."""
     if not _ORCHESTRATOR_AVAILABLE:
         raise HTTPException(status_code=503, detail="MasterOrchestrator not available")

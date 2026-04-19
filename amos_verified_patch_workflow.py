@@ -15,6 +15,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 from amos_brain.global_laws import GlobalLaws
@@ -22,6 +23,7 @@ from amos_brain.global_laws import GlobalLaws
 # AMOS Imports
 from amos_brain.clawspring_bridge import create_amos_agent
 from amos_openclaw_connector import BridgeConfig, StateSynchronizer
+from typing import List, Optional
 
 
 @dataclass

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """
 AMOS Cascade Brain Integration v2 — Fixed Import Paths
 
@@ -17,7 +19,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict, Optional
 
 # Setup paths for AMOS imports
 _AMOS_ROOT = Path(__file__).parent.resolve()

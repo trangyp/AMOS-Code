@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List, Optional
-
 """AMOS Cognitive Architecture - State-of-Art Implementation.
 
 Based on research findings:
@@ -14,11 +10,15 @@ Based on research findings:
 This is REAL code implementing actual cognitive features.
 """
 
+from __future__ import annotations
+
 import asyncio
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
+from typing import Any
 
 # Use our working integration
 from amos_real_brain_integration import CognitiveRequest, get_amos_real_brain
@@ -34,14 +34,14 @@ class Tool:
     name: str
     description: str
     handler: Callable[..., Any]
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
     preconditions: list[Callable[[Any], bool]] = field(default_factory=list)
     postconditions: list[Callable[[Any, Any], bool]] = field(default_factory=list)
     risk_level: float = 0.0
     cost: float = 1.0
     async_mode: bool = False
 
-    async def execute(self, **kwargs) -> Dict[str, Any]:
+    async def execute(self, **kwargs) -> dict[str, Any]:
         """Execute tool with contract verification."""
         start = time.perf_counter()
 
@@ -95,7 +95,7 @@ class CognitiveStep:
     step_type: str  # perception, reasoning, tool_call, verification
     content: str
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
-    observations: List[str] = field(default_factory=list)
+    observations: list[str] = field(default_factory=list)
     confidence: float = 1.0
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -104,8 +104,8 @@ class ToolRegistry:
     """Registry of available tools with state-of-art patterns."""
 
     def __init__(self):
-        self._tools: Dict[str, Tool] = {}
-        self._usage_stats: Dict[str, int] = {}
+        self._tools: dict[str, Tool] = {}
+        self._usage_stats: dict[str, int] = {}
 
     def register(self, tool: Tool) -> None:
         """Register a tool."""
@@ -116,7 +116,7 @@ class ToolRegistry:
         """Get tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> List[str]:
+    def list_tools(self) -> list[str]:
         """List available tools."""
         return list(self._tools.keys())
 
@@ -140,10 +140,10 @@ class CognitiveLoop:
     def __init__(self, brain=None, tools: Optional[ToolRegistry] = None):
         self.brain = brain or get_amos_real_brain()
         self.tools = tools or ToolRegistry()
-        self.steps: List[CognitiveStep] = []
+        self.steps: list[CognitiveStep] = []
         self.max_iterations: int = 10
 
-    async def run(self, query: str, context: dict[str, Any] = None) -> Dict[str, Any]:
+    async def run(self, query: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Run cognitive loop until completion or max iterations."""
         self.steps = []
         context = context or {}
@@ -193,7 +193,7 @@ class CognitiveLoop:
 
         return {"success": False, "response": "Loop terminated", "steps": len(self.steps)}
 
-    async def _think(self, query: str, context: Dict[str, Any], iteration: int) -> Dict[str, Any]:
+    async def _think(self, query: str, context: dict[str, Any], iteration: int) -> dict[str, Any]:
         """Think step using brain."""
         # Use brain for reasoning
         request = CognitiveRequest(
@@ -221,7 +221,7 @@ class CognitiveLoop:
 
         return {"complete": True, "response": result.response}
 
-    async def _act(self, tool_call: Dict[str, Any]) -> Dict[str, Any]:
+    async def _act(self, tool_call: dict[str, Any]) -> dict[str, Any]:
         """Execute tool call."""
         tool = self.tools.get(tool_call["name"])
         if not tool:
@@ -242,7 +242,7 @@ class CognitiveLoop:
 
         return available[0] if available else None
 
-    def _get_tools_used(self) -> List[str]:
+    def _get_tools_used(self) -> list[str]:
         """Get list of tools used in this session."""
         tools = []
         for step in self.steps:
@@ -252,7 +252,7 @@ class CognitiveLoop:
 
 
 # Real tool implementations
-def search_knowledge(query: str) -> Dict[str, Any]:
+def search_knowledge(query: str) -> dict[str, Any]:
     """Search knowledge base."""
     return {"results": [f"Knowledge about: {query}"], "count": 1}
 
@@ -327,7 +327,7 @@ def get_cognitive_loop() -> CognitiveLoop:
     return _cognitive_loop
 
 
-async def cognitive_process(query: str, **kwargs) -> Dict[str, Any]:
+async def cognitive_process(query: str, **kwargs) -> dict[str, Any]:
     """Convenience: run cognitive process."""
     loop = get_cognitive_loop()
     return await loop.run(query, kwargs)

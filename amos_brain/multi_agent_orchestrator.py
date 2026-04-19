@@ -35,6 +35,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 @dataclass
@@ -75,7 +76,7 @@ class OrchestrationResult:
     orchestration_id: str
     task: str
     agents_used: List[str]
-    agent_results: list[dict[str, Any]]
+    agent_results: List[dict[str, Any]]
     consensus: str
     conflicts: List[str]
     final_decision: str
@@ -108,7 +109,7 @@ class MultiAgentOrchestrator:
         self.orchestrator_id = f"MAO-{uuid.uuid4().hex[:8]}"
 
     def spawn_agent(
-        self, name: str, domain: str, capabilities: list[str ] = None
+        self, name: str, domain: str, capabilities: List[str ] = None
     ) -> Agent:
         """Spawn a new cognitive agent with domain specialization.
 
@@ -134,7 +135,7 @@ class MultiAgentOrchestrator:
         self.agents[agent_id] = agent
         return agent
 
-    def list_agents(self) -> list[dict[str, Any]]:
+    def list_agents(self) -> List[dict[str, Any]]:
         """List all active agents."""
         return [
             {
@@ -159,7 +160,7 @@ class MultiAgentOrchestrator:
         return False
 
     def orchestrate(
-        self, task: str, agents: list[Agent ] = None, mode: str = "parallel"
+        self, task: str, agents: List[Agent ] = None, mode: str = "parallel"
     ) -> OrchestrationResult:
         """Orchestrate multiple agents on a collaborative task.
 
@@ -202,7 +203,7 @@ class MultiAgentOrchestrator:
         self.orchestrations[orch_id] = result
         return result
 
-    def _execute_parallel(self, task: str, agents: List[Agent]) -> list[dict[str, Any]]:
+    def _execute_parallel(self, task: str, agents: List[Agent]) -> List[dict[str, Any]]:
         """Execute task in parallel across agents."""
         results = []
 
@@ -219,7 +220,7 @@ class MultiAgentOrchestrator:
 
         return results
 
-    def _execute_sequential(self, task: str, agents: List[Agent]) -> list[dict[str, Any]]:
+    def _execute_sequential(self, task: str, agents: List[Agent]) -> List[dict[str, Any]]:
         """Execute task sequentially through agents."""
         results = []
 
@@ -229,7 +230,7 @@ class MultiAgentOrchestrator:
 
         return results
 
-    def _build_consensus(self, results: list[dict[str, Any]]) -> str :
+    def _build_consensus(self, results: List[dict[str, Any]]) -> str :
         """Attempt to build consensus from agent results."""
         # Extract key reasoning points
         all_points = []
@@ -244,7 +245,7 @@ class MultiAgentOrchestrator:
         else:
             return None
 
-    def _identify_conflicts(self, results: list[dict[str, Any]]) -> List[str]:
+    def _identify_conflicts(self, results: List[dict[str, Any]]) -> List[str]:
         """Identify conflicts between agent results."""
         conflicts = []
 
@@ -263,7 +264,7 @@ class MultiAgentOrchestrator:
     def _make_decision(
         self,
         task: str,
-        results: list[dict[str, Any]],
+        results: List[dict[str, Any]],
         consensus: str ,
         conflicts: List[str],
     ) -> str:
@@ -308,12 +309,12 @@ def get_multi_agent_orchestrator() -> MultiAgentOrchestrator:
     return _mao_instance
 
 
-def spawn_agent(name: str, domain: str, capabilities: list[str ] = None) -> Agent:
+def spawn_agent(name: str, domain: str, capabilities: List[str ] = None) -> Agent:
     """Quick agent spawn."""
     return get_multi_agent_orchestrator().spawn_agent(name, domain, capabilities)
 
 
-def orchestrate_task(task: str, agents: list[Agent ] = None) -> OrchestrationResult:
+def orchestrate_task(task: str, agents: List[Agent ] = None) -> OrchestrationResult:
     """Quick task orchestration."""
     return get_multi_agent_orchestrator().orchestrate(task, agents)
 

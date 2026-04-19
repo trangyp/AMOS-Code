@@ -8,7 +8,7 @@ across the entire AMOS codebase efficiently.
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Common undefined names and their fixes
 TYPING_IMPORTS = {

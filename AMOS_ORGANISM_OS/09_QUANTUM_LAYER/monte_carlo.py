@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Monte Carlo Simulator — Probabilistic Decision Analysis
 
 Runs Monte Carlo simulations to evaluate decision outcomes
@@ -11,7 +10,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -42,7 +41,7 @@ class MonteCarloSimulator:
     providing confidence intervals and risk assessment.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
         self.simulations: Dict[str, SimulationResult] = {}
 
@@ -108,7 +107,7 @@ class MonteCarloSimulator:
     def simulate_risk_scenario(
         self,
         base_value: float,
-        risk_factors: list[dict[str, Any]],
+        risk_factors: List[dict[str, Any]],
         iterations: int = 1000,
     ) -> SimulationResult:
         """Simulate a risk scenario with multiple risk factors.
@@ -159,16 +158,16 @@ class MonteCarloSimulator:
 
     def compare_strategies(
         self,
-        strategies: dict[str, Callable[[], float]],
+        strategies: Dict[str, Callable[[], float]],
         iterations: int = 1000,
-    ) -> dict[str, SimulationResult]:
+    ) -> Dict[str, SimulationResult]:
         """Compare multiple strategies via simulation."""
         results = {}
         for name, func in strategies.items():
             results[name] = self.run_simulation(func, iterations, name)
         return results
 
-    def _calculate_distribution(self, outcomes: list[float]) -> dict[str, float]:
+    def _calculate_distribution(self, outcomes: List[float]) -> Dict[str, float]:
         """Calculate outcome distribution buckets."""
         if not outcomes:
             return {}
@@ -242,10 +241,10 @@ class MonteCarloSimulator:
         }
 
 
-_SIMULATOR: MonteCarloSimulator | None = None
+_SIMULATOR: Optional[MonteCarloSimulator] = None
 
 
-def get_monte_carlo_simulator(data_dir: Path | None = None) -> MonteCarloSimulator:
+def get_monte_carlo_simulator(data_dir: Optional[Path] = None) -> MonteCarloSimulator:
     """Get or create global Monte Carlo simulator."""
     global _SIMULATOR
     if _SIMULATOR is None:

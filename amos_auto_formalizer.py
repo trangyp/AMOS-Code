@@ -11,7 +11,7 @@ Usage:
 import re
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge
@@ -58,7 +58,7 @@ class LaTeXParser:
         r"\\$\\$(.*?)\\$\\$",
     ]
 
-    def extract_math(self, text: str) -> list[dict[str, Any]]:
+    def extract_math(self, text: str) -> List[dict[str, Any]]:
         equations = []
         for pattern in self.MATH_PATTERNS:
             for match in re.findall(pattern, text, re.DOTALL):

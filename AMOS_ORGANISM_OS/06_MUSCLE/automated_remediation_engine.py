@@ -393,7 +393,7 @@ class AutomatedRemediationEngine:
             "fix_types": self._count_fix_types(),
         }
 
-    def _count_fix_types(self) -> dict[str, int]:
+    def _count_fix_types(self) -> Dict[str, int]:
         """Count fix types in history."""
         counts = {}
         for record in self.history:

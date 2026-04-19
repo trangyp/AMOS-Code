@@ -1029,7 +1029,7 @@ class AgentInvariantAuditor:
             "failure_class": result.failure_class.value if result.failure_class else None,
         }
 
-    def get_failure_signatures(self, audit: AgentTaskAudit) -> list[dict[str, Any]]:
+    def get_failure_signatures(self, audit: AgentTaskAudit) -> List[dict[str, Any]]:
         """Identify anti-pattern signatures from audit results."""
         all_results = (
             audit.artifact_results

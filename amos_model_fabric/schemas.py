@@ -3,14 +3,12 @@
 Type definitions for the unified model fabric.
 """
 
-from __future__ import annotations
-
 
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class ModelCapability(Enum):
@@ -57,7 +55,7 @@ class ProviderType(Enum):
 class CapabilitySet:
     """Set of capabilities a model supports."""
 
-    capabilities: set[ModelCapability] = field(default_factory=set)
+    capabilities: Set[ModelCapability] = field(default_factory=set)
     context_window: int = 4096
     max_output_tokens: int = 4096
     supports_streaming: bool = True
@@ -66,10 +64,10 @@ class CapabilitySet:
     def has_capability(self, capability: ModelCapability) -> bool:
         return capability in self.capabilities
 
-    def has_all(self, capabilities: list[ModelCapability]) -> bool:
+    def has_all(self, capabilities: List[ModelCapability]) -> bool:
         return all(c in self.capabilities for c in capabilities)
 
-    def has_any(self, capabilities: list[ModelCapability]) -> bool:
+    def has_any(self, capabilities: List[ModelCapability]) -> bool:
         return any(c in self.capabilities for c in capabilities)
 
 
@@ -96,14 +94,14 @@ class ModelInfo:
     # Provider-specific config
     endpoint_url: str = None
     api_key: str = None
-    extra_headers: dict[str, str] = field(default_factory=dict)
+    extra_headers: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
 class FabricRequest:
     """Unified request to the model fabric."""
 
-    messages: list[dict[str, str]]  # [{"role": "user", "content": "..."}]
+    messages: List[dict[str, str]]  # [{"role": "user", "content": "..."}]
     model: str = None  # Specific model ID, or None for auto-select
 
     # Generation parameters
@@ -114,14 +112,14 @@ class FabricRequest:
     repetition_penalty: float = 1.0
 
     # Routing hints
-    required_capabilities: list[ModelCapability] = field(default_factory=list)
-    preferred_providers: list[ProviderType] = field(default_factory=list)
+    required_capabilities: List[ModelCapability] = field(default_factory=list)
+    preferred_providers: List[ProviderType] = field(default_factory=list)
     routing_strategy: RoutingStrategy = RoutingStrategy.CAPABILITY_MATCH
 
     # Features
     stream: bool = False
-    tools: list[dict] = None
-    response_format: dict[str, Any] = None  # JSON schema for structured output
+    tools: List[dict] = None
+    response_format: Dict[str, Any] = None  # JSON schema for structured output
 
     # Metadata
     request_id: str = None
@@ -129,7 +127,7 @@ class FabricRequest:
     timeout_seconds: float = 120.0
 
     # AMOS-specific
-    amos_context: dict[str, Any] = field(default_factory=dict)  # Repo state, file context, etc.
+    amos_context: Dict[str, Any] = field(default_factory=dict)  # Repo state, file context, etc.
 
 
 @dataclass
@@ -165,10 +163,10 @@ class FabricResponse:
     finish_reason: str = None  # "stop", "length", "tool_calls", etc.
 
     # Tool calls (if applicable)
-    tool_calls: list[dict] = None
+    tool_calls: List[dict] = None
 
     # Raw provider response for debugging
-    raw_response: dict[str, Any] = None
+    raw_response: Dict[str, Any] = None
 
 
 @dataclass
@@ -185,7 +183,7 @@ class FabricStreamChunk:
     finish_reason: str = None
 
     # Usage (usually only in final chunk)
-    usage: FabricUsage | None = None
+    usage: Optional[FabricUsage] = None
 
 
 @dataclass
@@ -197,7 +195,7 @@ class ProviderHealth:
     endpoint_url: str
 
     # Models available on this provider
-    available_models: list[str] = field(default_factory=list)
+    available_models: List[str] = field(default_factory=list)
 
     # Performance metrics
     avg_latency_ms: float = None

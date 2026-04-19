@@ -1,5 +1,3 @@
-from typing import Any, Optional
-
 """AMOS ML Inference API - Model Serving & Feature Store
 
 Production-grade ML model serving endpoints.
@@ -8,12 +6,15 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 import time
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from typing import List, Optional
 
 from backend.ml_inference.model_serving import (
     InferenceMode,
@@ -34,9 +35,9 @@ class RegisterModelRequest(BaseModel):
     version: str = Field(..., description="Model version (semver)")
     framework: str = Field(..., description="pytorch, tensorflow, sklearn, onnx, custom")
     artifact_path: str = Field(..., description="Path to model artifacts")
-    input_schema: Dict[str, Any] = Field(default_factory=dict)
-    output_schema: Dict[str, Any] = Field(default_factory=dict)
-    features_required: List[str] = Field(default_factory=list)
+    input_schema: dict[str, Any] = Field(default_factory=dict)
+    output_schema: dict[str, Any] = Field(default_factory=dict)
+    features_required: list[str] = Field(default_factory=list)
 
 
 class InferenceRequest(BaseModel):
@@ -44,7 +45,7 @@ class InferenceRequest(BaseModel):
 
     model_id: str = Field(..., description="Model identifier")
     version: Optional[str] = Field(None, description="Specific version (default: latest)")
-    inputs: Dict[str, Any] = Field(..., description="Model inputs")
+    inputs: dict[str, Any] = Field(..., description="Model inputs")
     mode: str = Field(default="realtime", description="realtime, batch, or shadow")
 
 
@@ -52,7 +53,7 @@ class FeatureLookupRequest(BaseModel):
     """Feature store lookup request."""
 
     entity_id: str = Field(..., description="Entity identifier")
-    feature_names: List[str] = Field(..., description="Features to retrieve")
+    feature_names: list[str] = Field(..., description="Features to retrieve")
 
 
 class ModelResponse(BaseModel):
@@ -71,7 +72,7 @@ class InferenceResponse(BaseModel):
 
     model_id: str
     version: str
-    predictions: Dict[str, Any]
+    predictions: dict[str, Any]
     latency_ms: float
     timestamp: float
 
@@ -80,7 +81,7 @@ class FeatureResponse(BaseModel):
     """Feature values response."""
 
     entity_id: str
-    features: Dict[str, Any]
+    features: dict[str, Any]
     timestamp: float
 
 
@@ -159,8 +160,8 @@ async def run_inference(
 
 @router.post("/batch_infer")
 async def run_batch_inference(
-    requests: List[InferenceRequest], service: InferenceService = Depends(get_inference_service)
-) -> List[InferenceResponse]:
+    requests: list[InferenceRequest], service: InferenceService = Depends(get_inference_service)
+) -> list[InferenceResponse]:
     """Run batch inference on multiple inputs."""
     results = []
 
@@ -212,7 +213,7 @@ async def promote_model(
     version: str,
     target_status: str,
     service: InferenceService = Depends(get_inference_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Promote model version to production or archive."""
     status_enum = ModelStatus(target_status.lower())
 
@@ -242,10 +243,10 @@ async def lookup_features(
 @router.post("/features/store")
 async def store_features(
     entity_id: str,
-    features: Dict[str, Any],
+    features: dict[str, Any],
     ttl_seconds: int = 86400,
     service: InferenceService = Depends(get_inference_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Store entity features in feature store."""
     success = service.feature_store.store_features(
         entity_id=entity_id, features=features, ttl_seconds=ttl_seconds
@@ -259,7 +260,7 @@ async def get_model_metrics(
     model_id: str,
     version: Optional[str] = None,
     service: InferenceService = Depends(get_inference_service),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get model inference metrics."""
     metrics = service.get_model_metrics(model_id, version)
 
@@ -271,7 +272,7 @@ async def list_models(
     framework: Optional[str] = None,
     status: Optional[str] = None,
     service: InferenceService = Depends(get_inference_service),
-) -> List[ModelResponse]:
+) -> list[ModelResponse]:
     """List all registered models with optional filters."""
     models = service.list_models()
 

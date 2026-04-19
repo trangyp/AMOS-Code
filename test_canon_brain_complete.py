@@ -7,8 +7,6 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 
 def test_all_canon_components():
     """Test all Canon components via brain's public API."""

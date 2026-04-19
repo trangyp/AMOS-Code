@@ -69,7 +69,7 @@ import csv
 import json
 import logging
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -242,7 +242,7 @@ class ImportJob:
     error_count: int = 0
     errors: List[ValidationError] = field(default_factory=list)
     completed_at: datetime  = None
-    preview_data: list[dict[str, Any]]  = None
+    preview_data: List[dict[str, Any]]  = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -295,7 +295,7 @@ class BaseFileReader:
     def __init__(self, format: ImportFormat):
         self.format = format
 
-    def read(self, file_path: str) -> list[dict[str, Any]]:
+    def read(self, file_path: str) -> List[dict[str, Any]]:
         """Read file and return list of rows."""
         raise NotImplementedError
 
@@ -303,7 +303,7 @@ class BaseFileReader:
         """Read file as iterator for large files."""
         raise NotImplementedError
 
-    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
         """Preview first N rows."""
         raise NotImplementedError
 
@@ -314,7 +314,7 @@ class CSVFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.CSV)
 
-    def read(self, file_path: str) -> list[dict[str, Any]]:
+    def read(self, file_path: str) -> List[dict[str, Any]]:
         """Read CSV file."""
         rows = []
         with open(file_path, "r", encoding="utf-8") as f:
@@ -332,7 +332,7 @@ class CSVFileReader(BaseFileReader):
             for row in reader:
                 yield dict(row)
 
-    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
         """Preview CSV rows."""
         result = []
         with open(file_path, "r", encoding="utf-8") as f:
@@ -350,7 +350,7 @@ class ExcelFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.EXCEL)
 
-    def read(self, file_path: str, sheet_name: str  = None) -> list[dict[str, Any]]:
+    def read(self, file_path: str, sheet_name: str  = None) -> List[dict[str, Any]]:
         """Read Excel file."""
         if not PANDAS_AVAILABLE or not pd:
             raise ImportError("pandas required for Excel import")
@@ -392,7 +392,7 @@ class ExcelFileReader(BaseFileReader):
             if offset >= MAX_IMPORT_ROWS:
                 break
 
-    def preview(self, file_path: str, rows: int = 10, sheet_name: str  = None) -> list[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10, sheet_name: str  = None) -> List[dict[str, Any]]:
         """Preview Excel rows."""
         if not PANDAS_AVAILABLE or not pd:
             raise ImportError("pandas required for Excel import")
@@ -418,7 +418,7 @@ class JSONFileReader(BaseFileReader):
     def __init__(self):
         super().__init__(ImportFormat.JSON)
 
-    def read(self, file_path: str) -> list[dict[str, Any]]:
+    def read(self, file_path: str) -> List[dict[str, Any]]:
         """Read JSON file."""
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -437,7 +437,7 @@ class JSONFileReader(BaseFileReader):
                 if line:
                     yield json.loads(line)
 
-    def preview(self, file_path: str, rows: int = 10) -> list[dict[str, Any]]:
+    def preview(self, file_path: str, rows: int = 10) -> List[dict[str, Any]]:
         """Preview JSON rows."""
         data = self.read(file_path)
         return data[:rows]
@@ -450,7 +450,7 @@ class JSONFileReader(BaseFileReader):
 class FileReaderRegistry:
     """Registry for file readers."""
 
-    _readers: dict[ImportFormat, BaseFileReader] = {}
+    _readers: Dict[ImportFormat, BaseFileReader] = {}
 
     @classmethod
     def register(cls, format: ImportFormat, reader: BaseFileReader) -> None:
@@ -548,7 +548,7 @@ class ImportManager:
         format: ImportFormat,
         field_mapping: Optional[FieldMapping] = None,
         rows: int = IMPORT_PREVIEW_ROWS
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Preview import data before processing.
 
         Args:
@@ -659,7 +659,7 @@ class ImportManager:
 
             # Process in batches
             job.status = ImportStatus.PROCESSING
-            batch: list[dict[str, Any]] = []
+            batch: List[dict[str, Any]] = []
 
             for row_number, row in enumerate(reader.read_streaming(job.file_path), 1):
                 job.processed_rows = row_number
@@ -737,7 +737,7 @@ class ImportManager:
     async def _process_batch(
         self,
         job: ImportJob,
-        batch: list[dict[str, Any]],
+        batch: List[dict[str, Any]],
         duplicate_action: DuplicateAction,
         allow_update: bool
     ) -> None:
@@ -996,5 +996,4 @@ quadratic,x=(-b+sqrt(b^2-4ac))/2a,algebra"""
 
 if __name__ == "__main__":
     import asyncio
-from typing import List
     asyncio.run(example_usage())

@@ -5,7 +5,7 @@ import os
 import socket
 from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Dict
 
 try:
     from opentelemetry import metrics, trace
@@ -115,7 +115,7 @@ def set_span_error(span: Span, exception: Exception) -> None:
         span.record_exception(exception)
 
 
-def get_trace_context() -> dict[str, str]:
+def get_trace_context() -> Dict[str, str]:
     """Get current trace context for propagation."""
     if not _otel_available:
         return {}

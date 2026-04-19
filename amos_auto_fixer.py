@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Auto Fixer - Round 16: Automated Technical Debt Fixing.
 
 Automatically fixes common lint issues:
@@ -21,6 +23,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+
 from typing import Any
 
 
@@ -51,7 +54,7 @@ class AMOSAutoFixer:
         self.results: list[FixResult] = []
         self.preview_mode = False
 
-    def analyze(self, preview: bool = False) -> Dict[str, Any]:
+    def analyze(self, preview: bool = False) -> dict[str, Any]:
         """Analyze all files and optionally fix."""
         self.preview_mode = preview
 
@@ -97,6 +100,18 @@ class AMOSAutoFixer:
 
         return self._generate_report()
 
+    def get_priority(self, issue_type: str) -> int:
+        """Get priority for sorting (lower = higher priority)."""
+        priorities: dict[str, int] = {
+            "unused_import": 1,
+            "long_line": 2,
+            "trailing_whitespace": 3,
+            "blank_line_whitespace": 4,
+            "unused_variable": 5,
+            "f_string_issue": 6,
+        }
+        return priorities.get(issue_type, 99)
+
     def _fix_file(self, file_path: Path) -> None:
         """Fix a single file."""
         try:
@@ -126,7 +141,7 @@ class AMOSAutoFixer:
         except Exception as e:
             print(f"  ❌ Error processing {file_path}: {e}")
 
-    def _fix_unused_imports(self, lines: list[str], file_path: Path) -> list[str]:
+    def _fix_unused_imports(self, lines: List[str], file_path: Path) -> List[str]:
         """Remove unused imports."""
         content = "\n".join(lines)
 
@@ -177,7 +192,7 @@ class AMOSAutoFixer:
 
         return new_lines
 
-    def _fix_long_lines(self, lines: list[str], file_path: Path) -> list[str]:
+    def _fix_long_lines(self, lines: List[str], file_path: Path) -> List[str]:
         """Break lines exceeding 79 characters."""
         new_lines = []
 
@@ -242,7 +257,7 @@ class AMOSAutoFixer:
 
         return new_lines
 
-    def _fix_trailing_whitespace(self, lines: list[str], file_path: Path) -> list[str]:
+    def _fix_trailing_whitespace(self, lines: List[str], file_path: Path) -> List[str]:
         """Remove trailing whitespace."""
         new_lines = []
 
@@ -262,7 +277,7 @@ class AMOSAutoFixer:
 
         return new_lines
 
-    def _fix_blank_line_whitespace(self, lines: list[str], file_path: Path) -> list[str]:
+    def _fix_blank_line_whitespace(self, lines: List[str], file_path: Path) -> List[str]:
         """Remove whitespace from blank lines."""
         new_lines = []
 

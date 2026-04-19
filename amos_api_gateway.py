@@ -22,7 +22,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
@@ -213,7 +213,7 @@ class AMOSAPIGateway:
             },
         }
 
-    def aggregate_request(self, requests: list[dict[str, Any]]) -> Dict[str, Any]:
+    def aggregate_request(self, requests: List[dict[str, Any]]) -> Dict[str, Any]:
         """
         Aggregate multiple requests into single response.
 

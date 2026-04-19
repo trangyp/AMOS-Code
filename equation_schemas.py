@@ -33,7 +33,7 @@ import re
 import sys
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Pydantic imports with graceful fallback
 try:
@@ -158,7 +158,7 @@ class ErrorResponse(BaseResponse):
         description="Additional error context",
     )
 
-    field_errors: list[dict[str, Any]] = Field(
+    field_errors: List[dict[str, Any]] = Field(
         default=None,
         description="Validation errors per field",
     )
@@ -339,7 +339,7 @@ class EquationResponseV1(BaseResponse):
 class BatchEquationRequestV1(BaseRequest):
     """Batch equation execution request."""
 
-    equations: list[EquationRequestV1] = Field(
+    equations: List[EquationRequestV1] = Field(
         ...,
         description="List of equation execution requests",
         min_length=1,
@@ -360,7 +360,7 @@ class BatchEquationRequestV1(BaseRequest):
 
     @field_validator("equations")
     @classmethod
-    def validate_equations(cls, v: list[EquationRequestV1]) -> list[EquationRequestV1]:
+    def validate_equations(cls, v: List[EquationRequestV1]) -> List[EquationRequestV1]:
         """Validate batch constraints."""
         if not v:
             raise ValueError("At least one equation required")
@@ -376,7 +376,7 @@ class BatchEquationRequestV1(BaseRequest):
 class BatchEquationResponseV1(BaseResponse):
     """Batch equation execution response."""
 
-    results: list[EquationResponseV1] = Field(
+    results: List[EquationResponseV1] = Field(
         ...,
         description="List of execution results",
     )
@@ -395,7 +395,7 @@ class VerificationRequestV1(BaseRequest):
 
     equation_name: str = Field(..., description="Equation to verify")
 
-    test_cases: list[dict[str, Any]] = Field(
+    test_cases: List[dict[str, Any]] = Field(
         ...,
         description="Test case inputs",
         min_length=1,
@@ -436,7 +436,7 @@ class VerificationResponseV1(BaseResponse):
     total_tests: int = Field(..., description="Total test cases")
     passed_tests: int = Field(..., description="Number of passed tests")
     failed_tests: int = Field(..., description="Number of failed tests")
-    results: list[VerificationResultV1] = Field(..., description="Detailed results")
+    results: List[VerificationResultV1] = Field(..., description="Detailed results")
     verification_time_ms: float = Field(..., ge=0)
 
 
@@ -656,7 +656,7 @@ def to_json_schema(model_class: type[BaseModel]) -> Dict[str, Any]:
     return model_class.model_json_schema()
 
 
-def get_all_models() -> dict[str, type[BaseModel]]:
+def get_all_models() -> Dict[str, type[BaseModel]]:
     """Get all available model classes.
 
     Returns:

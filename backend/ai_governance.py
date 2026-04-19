@@ -22,16 +22,15 @@ Research Sources:
 Creator: Trang Phan
 Version: 3.0.0
 """
-from __future__ import annotations
-
 
 import os
 import re
 import json
 import hashlib
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 
 # Governance configuration
@@ -66,7 +65,7 @@ class GovernancePolicy:
     name: str
     policy_type: str
     description: str
-    rules: list[dict[str, Any]]
+    rules: List[dict[str, Any]]
     severity: str
     enabled: bool = True
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
@@ -222,7 +221,7 @@ class AIGovernanceEngine:
         self,
         agent_id: str,
         user_input: str,
-        context: dict[str, Any ] = None
+        context: Dict[str, Any ] = None
     ) -> Dict[str, Any]:
         """Validate user input against governance policies."""
         violations = []
@@ -285,7 +284,7 @@ class AIGovernanceEngine:
         agent_id: str,
         user_input: str,
         ai_output: str,
-        context: dict[str, Any ] = None
+        context: Dict[str, Any ] = None
     ) -> Dict[str, Any]:
         """Validate AI output against governance policies."""
         violations = []
@@ -360,7 +359,7 @@ class AIGovernanceEngine:
         policies_applied: List[str],
         violations: List[str],
         latency_ms: float,
-        metadata: dict[str, Any ] = None
+        metadata: Dict[str, Any ] = None
     ) -> bool:
         """Log an audit entry for the request."""
         if not AUDIT_LOGGING_ENABLED:
@@ -392,7 +391,7 @@ class AIGovernanceEngine:
         severity: str  = None,
         since: str  = None,
         limit: int = 100
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get policy violations with optional filtering."""
         violations = self.violations
 
@@ -411,7 +410,7 @@ class AIGovernanceEngine:
         agent_id: str  = None,
         since: str  = None,
         limit: int = 100
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get audit log entries with optional filtering."""
         entries = self.audit_log
 
@@ -455,8 +454,6 @@ class AIGovernanceEngine:
     def _generate_id(self) -> str:
         """Generate a unique ID."""
         import uuid
-from typing import Callable, List
-from typing import Dict, Optional
         return str(uuid.uuid4())[:8]
 
     def _violation_to_dict(self, violation: PolicyViolation) -> Dict[str, Any]:

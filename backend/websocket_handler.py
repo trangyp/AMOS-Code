@@ -18,9 +18,10 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 
 from fastapi import WebSocket, WebSocketDisconnect
+from typing import Dict
 
 # Active connections store
-active_connections: dict[str, set[WebSocket]] = {
+active_connections: Dict[str, set[WebSocket]] = {
     "dashboard": set(),
     "agents": set(),
     "system": set(),

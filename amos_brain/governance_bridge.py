@@ -43,10 +43,10 @@ class AutonomousGovernanceBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: AutonomousGovernanceEngine | None = None
+        self._engine: Optional[AutonomousGovernanceEngine] = None
 
     @property
-    def engine(self) -> AutonomousGovernanceEngine | None:
+    def engine(self) -> Optional[AutonomousGovernanceEngine]:
         """Lazy initialization of governance engine."""
         if self._engine is None and GOVERNANCE_AVAILABLE:
             self._engine = get_governance_engine(self.repo_path)

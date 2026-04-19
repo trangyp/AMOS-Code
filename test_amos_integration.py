@@ -19,6 +19,7 @@ Tests:
 import argparse
 import sys
 from pathlib import Path
+from typing import List
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
@@ -32,7 +33,7 @@ class TestRunner:
         self.verbose = verbose
         self.passed = 0
         self.failed = 0
-        self.results: list[tuple[str, bool, str]] = []
+        self.results: List[tuple[str, bool, str]] = []
 
     def run(self) -> bool:
         """Run all tests. Returns True if all passed."""

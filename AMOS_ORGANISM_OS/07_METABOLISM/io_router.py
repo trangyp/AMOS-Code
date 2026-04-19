@@ -1,4 +1,3 @@
-from __future__ import annotations
 """IO Router — Input/Output routing and dispatch
 
 Routes data between subsystems, external interfaces, and
@@ -12,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 
 class RouteType(Enum):
@@ -81,15 +80,15 @@ class IORouter:
     and tracks delivery status.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
         self.routes: Dict[str, Route] = {}
-        self.pending_messages: list[RoutedMessage] = []
-        self.delivered_messages: list[RoutedMessage] = []
+        self.pending_messages: List[RoutedMessage] = []
+        self.delivered_messages: List[RoutedMessage] = []
         self.handlers: Dict[str, Callable] = {}
 
         self._load_routes()
@@ -136,7 +135,7 @@ class IORouter:
         source: str,
         destination: str,
         route_type: RouteType = RouteType.INTERNAL,
-        config: RouteConfig | None = None,
+        config: Optional[RouteConfig] = None,
     ) -> Route:
         """Create a new route."""
         route = Route(
@@ -241,7 +240,7 @@ class IORouter:
             "remaining": len(self.pending_messages),
         }
 
-    def get_route_stats(self, route_id: str) -> dict[str, Any]:
+    def get_route_stats(self, route_id: str) -> Dict[str, Any]:
         """Get statistics for a route."""
         route = self.routes.get(route_id)
         if not route:
@@ -257,7 +256,7 @@ class IORouter:
             "total_messages": route.message_count,
         }
 
-    def list_routes(self, active_only: bool = False) -> list[dict]:
+    def list_routes(self, active_only: bool = False) -> List[dict]:
         """List all routes."""
         routes = self.routes.values()
         if active_only:
@@ -278,10 +277,10 @@ class IORouter:
 
 
 # Global instance
-_ROUTER: IORouter | None = None
+_ROUTER: Optional[IORouter] = None
 
 
-def get_io_router(data_dir: Path | None = None) -> IORouter:
+def get_io_router(data_dir: Optional[Path] = None) -> IORouter:
     """Get or create global IO router."""
     global _ROUTER
     if _ROUTER is None:

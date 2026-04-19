@@ -21,15 +21,14 @@ Usage:
             print(event)
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Protocol
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional, Protocol
 from urllib.parse import urljoin
 
 # Real HTTP client
@@ -55,7 +54,7 @@ class ChatMessage:
     """Real chat message model."""
     role: str
     content: str
-    timestamp: str | None = None
+    timestamp: Optional[str] = None
 
 
 @dataclass
@@ -63,8 +62,8 @@ class ChatRequest:
     """Real chat request."""
     message: str
     workspace_id: str
-    context: list[ChatMessage] = field(default_factory=list)
-    model: str | None = None
+    context: List[ChatMessage] = field(default_factory=list)
+    model: Optional[str] = None
     temperature: float = 0.7
 
 
@@ -76,8 +75,8 @@ class ChatResponse:
     model: str
     confidence: str
     law_compliant: bool
-    violations: list[str]
-    reasoning: list[str]
+    violations: List[str]
+    reasoning: List[str]
     domain: str
     processing_time_ms: float
     timestamp: str
@@ -92,12 +91,12 @@ class AgentTask:
     agent_type: str
     paradigm: str
     progress: int = 0
-    logs: list[str] = field(default_factory=list)
-    result: dict[str, Any] | None = None
-    error: str | None = None
-    started_at: str | None = None
-    completed_at: str | None = None
-    duration_seconds: float | None = None
+    logs: List[str] = field(default_factory=list)
+    result: Optional[Dict[str, Any] ] = None
+    error: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    duration_seconds: Optional[float] = None
 
 
 # =============================================================================
@@ -110,8 +109,8 @@ class HTTPTransport:
     def __init__(
         self,
         base_url: str,
-        api_key: str | None = None,
-        jwt_token: str | None = None,
+        api_key: Optional[str] = None,
+        jwt_token: Optional[str] = None,
     ):
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -151,9 +150,9 @@ class HTTPTransport:
         self,
         method: str,
         path: str,
-        json_data: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+        json_data: Optional[Dict[str, Any] ] = None,
+        params: Optional[Dict[str, Any] ] = None,
+    ) -> Dict[str, Any]:
         """Make real HTTP request."""
         session = await self._get_session()
         url = urljoin(self.base_url + "/", path.lstrip("/"))
@@ -174,11 +173,11 @@ class HTTPTransport:
             
             return await response.json()
     
-    async def get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def get(self, path: str, params: Optional[Dict[str, Any] ] = None) -> Dict[str, Any]:
         """GET request."""
         return await self.request("GET", path, params=params)
     
-    async def post(self, path: str, json_data: dict[str, Any]) -> dict[str, Any]:
+    async def post(self, path: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """POST request."""
         return await self.request("POST", path, json_data=json_data)
     
@@ -213,8 +212,8 @@ class ChatAPI:
         self,
         message: str,
         workspace_id: str,
-        context: list[ChatMessage] | None = None,
-        model: str | None = None,
+        context: Optional[List[ChatMessage] ] = None,
+        model: Optional[str] = None,
     ) -> ChatResponse:
         """Send chat message to real brain via API."""
         request_data = {
@@ -253,8 +252,8 @@ class AgentsAPI:
         self,
         agent_type: str,
         task_description: str,
-        target_repo: str | None = None,
-        parameters: dict[str, Any] | None = None,
+        target_repo: Optional[str] = None,
+        parameters: Optional[Dict[str, Any] ] = None,
         priority: str = "normal",
         paradigm: str = "HYBRID",
     ) -> AgentTask:
@@ -322,7 +321,7 @@ class AgentsAPI:
 class WebSocketClient:
     """Real WebSocket client for brain events."""
     
-    def __init__(self, base_url: str, jwt_token: str | None = None):
+    def __init__(self, base_url: str, jwt_token: Optional[str] = None):
         self.base_url = base_url.replace("https://", "wss://").replace("http://", "ws://")
         self.jwt_token = jwt_token
         self._ws: aiohttp.ClientWebSocketResponse | None = None
@@ -372,8 +371,8 @@ class AMOSPlatformSDK:
     def __init__(
         self,
         base_url: str = "https://api.amos.io",
-        api_key: str | None = None,
-        jwt_token: str | None = None,
+        api_key: Optional[str] = None,
+        jwt_token: Optional[str] = None,
     ):
         self._transport = HTTPTransport(
             base_url=base_url,
@@ -398,7 +397,7 @@ class AMOSPlatformSDK:
         """Access HTTP transport for direct API calls."""
         return self._transport
     
-    async def health(self) -> dict[str, Any]:
+    async def health(self) -> Dict[str, Any]:
         """Check API health."""
         return await self._transport.get("/health")
     

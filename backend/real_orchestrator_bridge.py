@@ -4,14 +4,12 @@ This replaces fake task execution with real cognitive orchestration
 through the clawspring/amos_brain ecosystem.
 """
 
-from __future__ import annotations
-
 import sys
 import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 # Add clawspring to path
 CLAWSPRING_PATH = Path(__file__).parent.parent / "clawspring"
@@ -38,9 +36,9 @@ class TaskResult:
     duration_ms: float = 0.0
     execution_type: str = "unknown"
     domain: str = "unknown"
-    engines_used: list[str] = field(default_factory=list)
-    artifacts: dict[str, Any] = field(default_factory=dict)
-    organism_enhancements: dict[str, Any] = field(default_factory=dict)
+    engines_used: List[str] = field(default_factory=list)
+    artifacts: Dict[str, Any] = field(default_factory=dict)
+    organism_enhancements: Dict[str, Any] = field(default_factory=dict)
 
 
 class RealOrchestratorBridge:
@@ -54,9 +52,9 @@ class RealOrchestratorBridge:
     - Actual domain analysis
     """
 
-    _instance: Optional[RealOrchestratorBridge] = None
+    _instance: Optional["RealOrchestratorBridge"] = None
 
-    def __new__(cls) -> RealOrchestratorBridge:
+    def __new__(cls) -> "RealOrchestratorBridge":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
@@ -69,7 +67,7 @@ class RealOrchestratorBridge:
         self._task_executor: Optional[TaskExecutionIntegration] = None
         self._organism_bridge: Optional[OrganismBridge] = None
         self._initialized = False
-        self._execution_history: list[TaskResult] = []
+        self._execution_history: List[TaskResult] = []
 
     async def initialize(self) -> bool:
         """Initialize all real orchestrator connections."""
@@ -244,7 +242,7 @@ class RealOrchestratorBridge:
 
         return "analysis"
 
-    def _get_engines_for_domain(self, domain: str) -> list[str]:
+    def _get_engines_for_domain(self, domain: str) -> List[str]:
         """Get recommended engines for domain."""
         engine_map = {
             "security": ["AMOS_Deterministic_Logic_And_Law_Engine"],
@@ -258,7 +256,7 @@ class RealOrchestratorBridge:
         default = ["AMOS_Deterministic_Logic_And_Law_Engine"]
         return engine_map.get(domain, default)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get bridge and orchestrator status."""
         orchestrator_status = {}
         if self._orchestrator:
@@ -276,7 +274,7 @@ class RealOrchestratorBridge:
             "orchestrator_status": orchestrator_status,
         }
 
-    def get_execution_history(self, limit: int = 100) -> list[TaskResult]:
+    def get_execution_history(self, limit: int = 100) -> List[TaskResult]:
         """Get recent execution history."""
         return self._execution_history[-limit:]
 

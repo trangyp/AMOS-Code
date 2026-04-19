@@ -9,6 +9,7 @@ Version: 2.0.0
 import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any
 from uuid import uuid4
@@ -333,7 +334,6 @@ class ModelRegistry:
     def list_models(self, name: str  = None) -> List[ModelVersion]:
         """List all model versions."""
         from mlflow.entities.model_registry import ModelVersion as MLflowModelVersion
-from typing import Generic, List
 
         models = []
         registered_models = self.client.search_registered_models(

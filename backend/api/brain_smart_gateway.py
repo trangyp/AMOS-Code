@@ -8,15 +8,13 @@ Creator: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import time
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, Header, HTTPException, Request, Response
@@ -40,10 +38,10 @@ class RouteRequest(BaseModel):
 
     path: str
     method: str = "GET"
-    headers: dict[str, str] = Field(default_factory=dict)
-    body: dict[str, Any] = Field(default_factory=dict)
+    headers: Dict[str, str] = Field(default_factory=dict)
+    body: Dict[str, Any] = Field(default_factory=dict)
     priority: int = Field(default=5, ge=1, le=10)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class RouteDecision(BaseModel):
@@ -54,10 +52,10 @@ class RouteDecision(BaseModel):
     confidence: float
     reasoning: str
     estimated_latency_ms: int
-    cache_key: str | None = None
+    cache_key: Optional[str] = None
     should_cache: bool = False
-    suggested_headers: dict[str, str] = Field(default_factory=dict)
-    transformations: list[str] = Field(default_factory=list)
+    suggested_headers: Dict[str, str] = Field(default_factory=dict)
+    transformations: List[str] = Field(default_factory=list)
     legality_score: float
     timestamp: str
 
@@ -69,8 +67,8 @@ class RequestAnalysis(BaseModel):
     pattern_type: str
     complexity_score: float
     risk_assessment: str
-    optimization_suggestions: list[str]
-    security_flags: list[str]
+    optimization_suggestions: List[str]
+    security_flags: List[str]
     brain_recommendations: str
 
 
@@ -89,8 +87,8 @@ class BrainSmartGateway:
     """Brain-powered intelligent API gateway."""
 
     def __init__(self):
-        self.request_history: list[dict[str, Any]] = []
-        self.routing_cache: dict[str, dict[str, Any]] = {}
+        self.request_history: List[dict[str, Any]] = []
+        self.routing_cache: Dict[str, dict[str, Any]] = {}
         self.stats = {
             "total_requests": 0,
             "routed_requests": 0,
@@ -262,7 +260,7 @@ class BrainSmartGateway:
                 timestamp=datetime.now(UTC).isoformat(),
             )
 
-    def _extract_pattern_type(self, brain_result: dict[str, Any]) -> str:
+    def _extract_pattern_type(self, brain_result: Dict[str, Any]) -> str:
         """Extract pattern type from brain result."""
         response = str(brain_result.get("response", "")).lower()
         if "read" in response or "get" in response:
@@ -302,7 +300,7 @@ class BrainSmartGateway:
     def _assess_risk(
         self,
         route_req: RouteRequest,
-        brain_result: dict[str, Any],
+        brain_result: Dict[str, Any],
     ) -> str:
         """Assess request risk level."""
         # Check for high-risk patterns
@@ -319,7 +317,7 @@ class BrainSmartGateway:
 
         return "low"
 
-    def _extract_suggestions(self, brain_result: dict[str, Any]) -> list[str]:
+    def _extract_suggestions(self, brain_result: Dict[str, Any]) -> List[str]:
         """Extract optimization suggestions from brain result."""
         suggestions = []
         response = brain_result.get("response", "")
@@ -335,7 +333,7 @@ class BrainSmartGateway:
 
         return suggestions
 
-    def _check_security_flags(self, route_req: RouteRequest) -> list[str]:
+    def _check_security_flags(self, route_req: RouteRequest) -> List[str]:
         """Check for security concerns."""
         flags = []
 
@@ -353,7 +351,7 @@ class BrainSmartGateway:
     def _determine_target_service(
         self,
         route_req: RouteRequest,
-        orchestration_result: dict[str, Any],
+        orchestration_result: Dict[str, Any],
     ) -> str:
         """Determine which service should handle the request."""
         # Map paths to services
@@ -405,8 +403,8 @@ class BrainSmartGateway:
     def _generate_headers(
         self,
         route_req: RouteRequest,
-        orchestration_result: dict[str, Any],
-    ) -> dict[str, str]:
+        orchestration_result: Dict[str, Any],
+    ) -> Dict[str, str]:
         """Generate suggested headers based on routing decision."""
         headers = {}
 
@@ -422,7 +420,7 @@ class BrainSmartGateway:
 
         return headers
 
-    def _determine_transformations(self, route_req: RouteRequest) -> list[str]:
+    def _determine_transformations(self, route_req: RouteRequest) -> List[str]:
         """Determine what request/response transformations are needed."""
         transformations = []
 
@@ -517,7 +515,7 @@ async def process_request(
 
 
 @router.get("/health")
-async def gateway_health() -> dict[str, Any]:
+async def gateway_health() -> Dict[str, Any]:
     """Check gateway health and brain connectivity."""
     return {
         "status": "healthy",

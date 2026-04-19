@@ -14,7 +14,7 @@ Usage:
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List
 
 from amos_brain import get_amos_integration
 from amos_brain.memory import get_brain_memory
@@ -26,9 +26,9 @@ class WorkflowResult:
 
     workflow_name: str
     problem: str
-    analysis: dict[str, Any]
+    analysis: Dict[str, Any]
     memory_id: str
-    recommendations: list[str]
+    recommendations: List[str]
     confidence: float
 
 
@@ -48,7 +48,7 @@ class ArchitectureDecision:
     TEMPLATE_TAGS = ["architecture", "adr", "system-design"]
 
     @classmethod
-    def run(cls, problem: str, context: dict[str, Any] = None) -> WorkflowResult:
+    def run(cls, problem: str, context: Dict[str, Any] = None) -> WorkflowResult:
         """Execute architecture decision workflow.
 
         Args:
@@ -88,7 +88,7 @@ class ArchitectureDecision:
         )
 
     @classmethod
-    def _enrich_problem(cls, problem: str, context: dict[str, Any]) -> str:
+    def _enrich_problem(cls, problem: str, context: Dict[str, Any]) -> str:
         """Enrich problem with architectural context."""
         if not context:
             return problem
@@ -107,7 +107,7 @@ class ArchitectureDecision:
         return "\n".join(enrichments)
 
     @classmethod
-    def _structure_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
+    def _structure_recommendations(cls, analysis: Dict[str, Any]) -> List[str]:
         """Structure recommendations for architecture decisions."""
         recs = []
 
@@ -152,7 +152,7 @@ class ProjectPlanner:
         project: str,
         timeline: str = None,
         team: str = None,
-        constraints: list[str] = None,
+        constraints: List[str] = None,
     ) -> WorkflowResult:
         """Execute project planning workflow.
 
@@ -199,7 +199,7 @@ class ProjectPlanner:
         )
 
     @classmethod
-    def _planning_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
+    def _planning_recommendations(cls, analysis: Dict[str, Any]) -> List[str]:
         """Extract planning-specific recommendations."""
         recs = []
 
@@ -236,8 +236,8 @@ class ProblemDiagnosis:
     def run(
         cls,
         problem: str,
-        symptoms: list[str] = None,
-        checked: list[str] = None,
+        symptoms: List[str] = None,
+        checked: List[str] = None,
         timeline: str = None,
     ) -> WorkflowResult:
         """Execute problem diagnosis workflow.
@@ -290,7 +290,7 @@ class ProblemDiagnosis:
         )
 
     @classmethod
-    def _diagnosis_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
+    def _diagnosis_recommendations(cls, analysis: Dict[str, Any]) -> List[str]:
         """Structure diagnosis recommendations."""
         recs = []
 
@@ -325,9 +325,9 @@ class TechnologySelection:
     def run(
         cls,
         category: str,
-        options: list[str],
-        criteria: list[str] = None,
-        must_haves: list[str] = None,
+        options: List[str],
+        criteria: List[str] = None,
+        must_haves: List[str] = None,
     ) -> WorkflowResult:
         """Execute technology selection workflow.
 
@@ -372,7 +372,7 @@ class TechnologySelection:
         )
 
     @classmethod
-    def _selection_recommendations(cls, analysis: dict[str, Any], options: list[str]) -> list[str]:
+    def _selection_recommendations(cls, analysis: Dict[str, Any], options: List[str]) -> List[str]:
         """Structure selection recommendations."""
         recs = []
 
@@ -409,8 +409,8 @@ class RiskAssessment:
     def run(
         cls,
         action: str,
-        impacts: list[str] = None,
-        mitigations: list[str] = None,
+        impacts: List[str] = None,
+        mitigations: List[str] = None,
         severity_threshold: str = "medium",
     ) -> WorkflowResult:
         """Execute risk assessment workflow.
@@ -456,7 +456,7 @@ class RiskAssessment:
         )
 
     @classmethod
-    def _risk_recommendations(cls, analysis: dict[str, Any]) -> list[str]:
+    def _risk_recommendations(cls, analysis: Dict[str, Any]) -> List[str]:
         """Structure risk recommendations."""
         recs = []
 
@@ -486,7 +486,7 @@ def diagnose_problem(problem: str, **kwargs) -> WorkflowResult:
     return ProblemDiagnosis.run(problem, **kwargs)
 
 
-def select_technology(category: str, options: list[str], **kwargs) -> WorkflowResult:
+def select_technology(category: str, options: List[str], **kwargs) -> WorkflowResult:
     """Quick access to technology selection workflow."""
     return TechnologySelection.run(category, options, **kwargs)
 

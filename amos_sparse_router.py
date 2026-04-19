@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional, Set
 
 """
 AMOS Sparse Router
@@ -73,7 +73,7 @@ class SparseRouter:
     """
 
     # Core routing table
-    ROUTING_TABLE: dict[InterruptClass, ActiveModuleSet] = {
+    ROUTING_TABLE: Dict[InterruptClass, ActiveModuleSet] = {
         InterruptClass.QUERY: ActiveModuleSet(
             modules={ModuleType.MEMORY, ModuleType.RETRIEVAL},
             latency_budget_ms=10.0,
@@ -115,7 +115,7 @@ class SparseRouter:
     def __init__(self):
         """Initialize router."""
         self._route_count = 0
-        self._active_module_stats: dict[ModuleType, int] = {m: 0 for m in ModuleType}
+        self._active_module_stats: Dict[ModuleType, int] = {m: 0 for m in ModuleType}
 
     def route(self, classification: ClassificationResult) -> RouteResult:
         """
@@ -163,7 +163,7 @@ class SparseRouter:
 
 
 # Global singleton
-_router: SparseRouter | None = None
+_router: Optional[SparseRouter] = None
 
 
 def get_router() -> SparseRouter:
@@ -193,7 +193,7 @@ def get_latency_budget(classification: ClassificationResult) -> float:
     return result.module_set.latency_budget_ms
 
 
-def get_search_limits(classification: ClassificationResult) -> dict[str, int]:
+def get_search_limits(classification: ClassificationResult) -> Dict[str, int]:
     """Get search limits for a classification."""
     router = get_router()
     result = router.route(classification)
@@ -203,7 +203,6 @@ def get_search_limits(classification: ClassificationResult) -> dict[str, int]:
 # Test/example
 if __name__ == "__main__":
     import asyncio
-    from typing import Any
 
     from amos_fastloop_classifier import InterruptClass, classify_request
 

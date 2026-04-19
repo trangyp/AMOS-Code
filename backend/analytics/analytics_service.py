@@ -13,7 +13,7 @@ import math
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import redis
@@ -176,7 +176,7 @@ class TimeSeriesDB:
         self, points: List[MetricPoint], aggregation: str, bucket_seconds: int
     ) -> List[MetricPoint]:
         """Aggregate points into buckets."""
-        buckets: dict[int, list[float]] = {}
+        buckets: Dict[int, list[float]] = {}
 
         for point in points:
             bucket_ts = int(point.timestamp / bucket_seconds) * bucket_seconds
@@ -205,7 +205,7 @@ class TimeSeriesDB:
 
     def get_stats(
         self, metric_name: str, labels: Optional[dict[str, str]] = None
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Get statistics for a metric."""
         labels = labels or {}
         key = f"{metric_name}:{json.dumps(labels, sort_keys=True)}"
@@ -274,7 +274,7 @@ class AnomalyDetector:
 
     def __init__(self, tsdb: Optional[TimeSeriesDB] = None):
         self._tsdb = tsdb or TimeSeriesDB()
-        self._baselines: dict[str, dict[str, float]] = {}
+        self._baselines: Dict[str, dict[str, float]] = {}
 
     def detect(
         self,
@@ -282,7 +282,7 @@ class AnomalyDetector:
         current_value: float,
         labels: Optional[dict[str, str]] = None,
         sensitivity: float = 2.0,
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Detect if current value is anomalous."""
         labels = labels or {}
         stats = self._tsdb.get_stats(metric_name, labels)
@@ -332,7 +332,7 @@ class AnomalyDetector:
         window_seconds: int = 300,
         spike_factor: float = 3.0,
         labels: Optional[dict[str, str]] = None,
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Detect sudden spikes in metric."""
         labels = labels or {}
         end_time = time.time()
@@ -399,7 +399,7 @@ class AnalyticsService:
         current_value: float,
         labels: Optional[dict[str, str]] = None,
         sensitivity: float = 2.0,
-    ) -> tuple[bool, dict[str, Any]]:
+    ) -> Tuple[bool, dict[str, Any]]:
         """Detect anomalies."""
         return self._detector.detect(metric_name, current_value, labels, sensitivity)
 
@@ -417,7 +417,7 @@ class AnalyticsService:
 
     def get_stats(
         self, metric_name: str, labels: Optional[dict[str, str]] = None
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Get metric statistics."""
         return self._tsdb.get_stats(metric_name, labels)
 
@@ -449,6 +449,6 @@ def detect_anomalies(
     current_value: float,
     labels: Optional[dict[str, str]] = None,
     sensitivity: float = 2.0,
-) -> tuple[bool, dict[str, Any]]:
+) -> Tuple[bool, dict[str, Any]]:
     """Detect anomalies (convenience function)."""
     return analytics_service.detect_anomalies(metric_name, current_value, labels, sensitivity)

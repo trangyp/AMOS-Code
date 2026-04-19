@@ -51,7 +51,7 @@ class ArchInvariant(ABC):
 
     @abstractmethod
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         """Check the architectural invariant."""
         pass
@@ -77,7 +77,7 @@ class BoundaryInvariant(ArchInvariant):
     name = "boundary_integrity"
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -121,7 +121,7 @@ class AuthorityInvariant(ArchInvariant):
     name = "single_authority"
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -180,7 +180,7 @@ class PlaneSeparationInvariant(ArchInvariant):
     name = "plane_separation"
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -216,7 +216,7 @@ class HiddenInterfaceInvariant(ArchInvariant):
     dimension = StateDimension.HIDDEN_STATE
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -282,7 +282,7 @@ class FolkloreInvariant(ArchInvariant):
     dimension = StateDimension.HIDDEN_STATE
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -354,7 +354,7 @@ class ArchitectureDriftInvariant(ArchInvariant):
     name = "architecture_drift"
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -422,7 +422,7 @@ class UpgradeGeometryInvariant(ArchInvariant):
     name = "upgrade_geometry"
 
     def check(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None = None
+        self, repo_path: Path, arch_graph: Optional[ArchitectureGraph] = None
     ) -> ArchInvariantResult:
         graph = self._get_graph(repo_path, arch_graph)
 
@@ -493,7 +493,7 @@ class ArchitectureInvariantEngine:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
         self.invariants = [cls() for cls in ARCH_INVARIANT_CLASSES]
-        self._graph: ArchitectureGraph | None = None
+        self._graph: Optional[ArchitectureGraph] = None
 
     @property
     def graph(self) -> ArchitectureGraph:

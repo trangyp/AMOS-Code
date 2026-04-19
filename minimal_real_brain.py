@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 MINIMUM REAL BRAIN SPEC
@@ -27,6 +27,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 # ============================================================================
 # 1. WORLD STATE - Persistent structured world graph
@@ -44,7 +45,7 @@ class WorldNode:
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def update(self, properties: Dict[str, Any], confidence: float | None = None) -> None:
+    def update(self, properties: Dict[str, Any], confidence: Optional[float] = None) -> None:
         """Update node properties with conflict resolution."""
         for key, value in properties.items():
             if key in self.properties:
@@ -92,8 +93,8 @@ class WorldState:
     def __init__(self):
         self.nodes: Dict[str, WorldNode] = {}
         self.edges: List[WorldEdge] = []
-        self._index_by_type: dict[str, set[str]] = defaultdict(set)
-        self._causal_chains: list[list[str]] = []
+        self._index_by_type: Dict[str, set[str]] = defaultdict(set)
+        self._causal_chains: List[list[str]] = []
 
     def add_node(
         self,
@@ -157,7 +158,7 @@ class WorldState:
 
     def query(
         self,
-        node_type: str | None = None,
+        node_type: Optional[str] = None,
         properties: Dict[str, Any] = None,
         min_confidence: float = 0.0,
     ) -> List[WorldNode]:
@@ -298,7 +299,7 @@ class WorkingMemory:
         self.slots.append(slot)
         return slot
 
-    def focus(self, slot_type: str | None = None) -> List[MemorySlot]:
+    def focus(self, slot_type: Optional[str] = None) -> List[MemorySlot]:
         """Get items matching current attention focus."""
         if not slot_type:
             # Return highest activation items
@@ -309,7 +310,7 @@ class WorkingMemory:
             s.access()
         return sorted(typed, key=lambda s: s.activation, reverse=True)
 
-    def retrieve_from_rehearsal(self, predicate: Callable[[Any], bool]) -> MemorySlot | None:
+    def retrieve_from_rehearsal(self, predicate: Callable[[Any], bool]) -> Optional[MemorySlot]:
         """Try to retrieve a displaced item from rehearsal buffer."""
         for slot in reversed(self._rehearsal_buffer):
             if predicate(slot.content):
@@ -374,7 +375,7 @@ class Plan:
     steps: List[PlanStep]
     total_cost: float
     estimated_success: float
-    alternative_branches: list[list[PlanStep]] = field(default_factory=list)
+    alternative_branches: List[list[PlanStep]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -395,7 +396,7 @@ class NeuralProposer:
 
     def __init__(self, world: WorldState):
         self.world = world
-        self._action_templates: dict[str, dict[str, Any]] = {}
+        self._action_templates: Dict[str, dict[str, Any]] = {}
         self._success_history: defaultdict[str, list[bool]] = defaultdict(list)
 
     def learn_template(self, action_type: str, template: Dict[str, Any]) -> None:
@@ -467,7 +468,7 @@ class Planner:
         self.proposer = NeuralProposer(world)
         self._search_budget: int = 100  # Max nodes to expand
 
-    def plan(self, goal: str, max_steps: int = 5) -> Plan | None:
+    def plan(self, goal: str, max_steps: int = 5) -> Optional[Plan]:
         """
         Generate plan to achieve goal.
         Combines neural proposals with symbolic forward search.
@@ -510,7 +511,7 @@ class Planner:
 
         return best_plan
 
-    def _build_plan(self, seed: PlanStep, goal: str, max_steps: int) -> list[PlanStep] | None:
+    def _build_plan(self, seed: PlanStep, goal: str, max_steps: int) -> Optional[List[PlanStep] ]:
         """Build plan via forward search from seed."""
         plan = [seed]
         current_state = set(seed.effects)
@@ -544,7 +545,7 @@ class Planner:
             p_success *= step.confidence
         return p_success ** (1.0 / len(steps))  # Geometric mean
 
-    def replan(self, failed_step: int, reason: str) -> Plan | None:
+    def replan(self, failed_step: int, reason: str) -> Optional[Plan]:
         """Replan from a failed step, using alternative branch."""
         # Add failure to working memory
         self.wm.add(f"step_{failed_step}_failed:{reason}", "error", priority=1.0)
@@ -581,8 +582,8 @@ class Verifier:
 
     def __init__(self, world: WorldState):
         self.world = world
-        self._hard_constraints: list[Callable[[Plan, WorldState], str]] = []
-        self._soft_constraints: list[Callable[[Plan, WorldState], tuple[str, float]]] = []
+        self._hard_constraints: List[Callable[[Plan, WorldState], str]] = []
+        self._soft_constraints: List[Callable[[Plan, WorldState], tuple[str, float]]] = []
 
     def add_hard_constraint(self, name: str, check: Callable[[Plan, WorldState], str]) -> None:
         """Add a hard constraint (plan rejected if violated)."""
@@ -632,7 +633,7 @@ class Verifier:
     def setup_default_constraints(self) -> None:
         """Setup default safety/resource constraints."""
 
-        def resource_limit_check(plan: Plan, world: WorldState) -> str | None:
+        def resource_limit_check(plan: Plan, world: WorldState) -> Optional[str]:
             """Check if plan exceeds available resources."""
             total_cost = sum(s.estimated_cost for s in plan.steps)
             # Query available resources from world
@@ -643,7 +644,7 @@ class Verifier:
                     return f"Resource limit: plan cost {total_cost:.1f} > available {available:.1f}"
             return None
 
-        def circular_action_check(plan: Plan, world: WorldState) -> str | None:
+        def circular_action_check(plan: Plan, world: WorldState) -> Optional[str]:
             """Check for circular action sequences."""
             actions = [s.action for s in plan.steps]
             for i in range(len(actions)):
@@ -652,7 +653,7 @@ class Verifier:
                         return f"Circular action detected: {actions[i]} at positions {i}, {j}"
             return None
 
-        def precondition_check(plan: Plan, world: WorldState) -> str | None:
+        def precondition_check(plan: Plan, world: WorldState) -> Optional[str]:
             """Check if initial preconditions are satisfied in world."""
             if not plan.steps:
                 return None
@@ -687,9 +688,9 @@ class ErrorPattern:
 
     error_type: str
     context_hash: str  # Hash of world state when error occurred
-    plan_step: str | None
+    plan_step: Optional[str]
     failure_reason: str
-    correction_applied: str | None
+    correction_applied: Optional[str]
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     recurrence_count: int = 1
 
@@ -708,15 +709,15 @@ class ErrorMemory:
         self.errors: List[ErrorPattern] = []
         self._signature_counts: defaultdict[str, int] = defaultdict(int)
         self._context_errors: defaultdict[str, list[ErrorPattern]] = defaultdict(list)
-        self._error_chains: list[list[ErrorPattern]] = []
+        self._error_chains: List[list[ErrorPattern]] = []
 
     def record(
         self,
         error_type: str,
         world_state: WorldState,
-        plan_step: str | None,
+        plan_step: Optional[str],
         failure_reason: str,
-        correction: str | None = None,
+        correction: Optional[str] = None,
     ) -> ErrorPattern:
         """Record a new error occurrence."""
         context_hash = world_state.snapshot_hash()
@@ -752,7 +753,7 @@ class ErrorMemory:
         return pattern
 
     def is_recurrence(
-        self, error_type: str, plan_step: str | None, failure_reason: str
+        self, error_type: str, plan_step: Optional[str], failure_reason: str
     ) -> Tuple[bool, int]:
         """Check if this error has occurred before."""
         sig = f"{error_type}:{plan_step}:{failure_reason}"

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS FastLoop Interrupt Classifier
@@ -175,7 +175,7 @@ class InterruptClassifier:
 
 
 # Global singleton instance
-_classifier: InterruptClassifier | None = None
+_classifier: Optional[InterruptClassifier] = None
 
 
 def get_classifier() -> InterruptClassifier:

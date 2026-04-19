@@ -21,17 +21,16 @@ Architecture:
                         └──────────────┘
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # ClawSpring imports
 from clawspring.providers import stream_ollama
@@ -66,7 +65,7 @@ class OpenClawSession:
     enable_security_gates: bool = True
     auto_verify_patches: bool = True
     max_repair_attempts: int = 3
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -79,7 +78,7 @@ class PatchProposal:
     proposed_content: str
     description: str
     agent_reasoning: str
-    verification_receipt: VerificationReceipt | None = None
+    verification_receipt: Optional[VerificationReceipt] = None
     status: str = "pending"  # pending, verifying, blocked, approved, applied
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -93,7 +92,7 @@ class OllamaNativeProvider:
 
     def __init__(self, base_url: str = "http://localhost:11434"):
         self.base_url = base_url.rstrip("/")
-        self._available_models: list[str] = []
+        self._available_models: List[str] = []
 
     async def check_health(self) -> bool:
         """Check if Ollama is available."""
@@ -105,7 +104,7 @@ class OllamaNativeProvider:
         except Exception:
             return False
 
-    async def list_models(self) -> list[str]:
+    async def list_models(self) -> List[str]:
         """List available Ollama models."""
         import aiohttp
         try:
@@ -124,8 +123,8 @@ class OllamaNativeProvider:
         self,
         model: str,
         system: str,
-        messages: list[dict],
-        tool_schemas: list[dict] | None = None,
+        messages: List[dict],
+        tool_schemas: Optional[List[dict] ] = None,
         context_limit: int = 128000,
     ):
         """Stream from Ollama native API with tool support."""
@@ -147,9 +146,9 @@ class SecurityGate:
     All patches must pass through this gate before being applied.
     """
 
-    def __init__(self, verification_engine: SecurityVerificationEngine | None = None):
+    def __init__(self, verification_engine: Optional[SecurityVerificationEngine] = None):
         self.engine = verification_engine or SecurityVerificationEngine()
-        self._patch_history: list[PatchProposal] = []
+        self._patch_history: List[PatchProposal] = []
 
     async def verify_patch(
         self,
@@ -201,7 +200,7 @@ class SecurityGate:
         self._patch_history.append(patch)
         return patch
 
-    def get_blocking_findings(self, patch: PatchProposal) -> list[str]:
+    def get_blocking_findings(self, patch: PatchProposal) -> List[str]:
         """Get human-readable list of blocking issues."""
         if not patch.verification_receipt:
             return ["No verification receipt available"]
@@ -229,14 +228,14 @@ class OpenClawBridge:
     def __init__(
         self,
         ollama_url: str = "http://localhost:11434",
-        workspace_dir: Path | None = None,
+        workspace_dir: Optional[Path] = None,
     ):
         self.ollama = OllamaNativeProvider(ollama_url)
         self.security_gate = SecurityGate()
         self.workspace_dir = workspace_dir or Path.cwd()
-        self._sessions: dict[str, OpenClawSession] = {}
-        self._memory: MemoryStore | None = None
-        self._active_patches: dict[str, PatchProposal] = {}
+        self._sessions: Dict[str, OpenClawSession] = {}
+        self._memory: Optional[MemoryStore] = None
+        self._active_patches: Dict[str, PatchProposal] = {}
 
     async def initialize(self) -> bool:
         """Initialize bridge and verify Ollama connection."""
@@ -318,8 +317,8 @@ class OpenClawBridge:
         session: OpenClawSession,
         issue_description: str,
         file_path: str,
-        max_attempts: int | None = None,
-    ) -> PatchProposal | None:
+        max_attempts: Optional[int] = None,
+    ) -> Optional[PatchProposal]:
         """Iterative repair loop with security verification.
 
         Attempts to fix an issue, verifies the fix, and retries if
@@ -412,7 +411,7 @@ Provide the complete fixed version of this file. Your fix must:
 
 Return ONLY the fixed file content, no explanations."""
 
-    async def _generate_repair(self, session: OpenClawSession, prompt: str) -> str | None:
+    async def _generate_repair(self, session: OpenClawSession, prompt: str) -> Optional[str]:
         """Generate repair using Ollama."""
         messages = [{"role": "user", "content": prompt}]
 
@@ -431,7 +430,7 @@ Return ONLY the fixed file content, no explanations."""
             logger.error(f"Generation failed: {e}")
             return None
 
-    def get_session_status(self, session_id: str) -> dict[str, Any]:
+    def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get status of an OpenClaw session."""
         if session_id not in self._sessions:
             return {"error": "Session not found"}
@@ -453,12 +452,12 @@ Return ONLY the fixed file content, no explanations."""
 
 
 # Global singleton
-_openclaw_bridge: OpenClawBridge | None = None
+_openclaw_bridge: Optional[OpenClawBridge] = None
 
 
 def get_openclaw_bridge(
     ollama_url: str = "http://localhost:11434",
-    workspace_dir: Path | None = None,
+    workspace_dir: Optional[Path] = None,
 ) -> OpenClawBridge:
     """Get or create global OpenClaw bridge."""
     global _openclaw_bridge

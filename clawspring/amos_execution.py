@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 """AMOS Execution Kernel - Layer 6 Integration and Output Production."""
 
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 from amos_runtime import AMOSRuntime, get_runtime
 
@@ -20,10 +18,10 @@ class ExecutionPlan:
 
     task: str
     reasoning_result: dict
-    steps: list[dict] = field(default_factory=list)
+    steps: List[dict] = field(default_factory=list)
     output_type: str = "structured_explanation"
-    constraints: list[str] = field(default_factory=list)
-    assumptions: list[str] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
+    assumptions: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -32,10 +30,10 @@ class ProductionResult:
 
     content: str
     format_type: str
-    quality_passed: dict[str, bool]
-    law_compliance: dict[str, bool]
+    quality_passed: Dict[str, bool]
+    law_compliance: Dict[str, bool]
     gap_acknowledgment: str
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class CodingEngine:
@@ -147,7 +145,7 @@ class AMOSExecutionKernel:
         "audit": DiagnosticEngine(),
     }
 
-    def __init__(self, runtime: AMOSRuntime | None = None):
+    def __init__(self, runtime: Optional[AMOSRuntime] = None):
         self._runtime = runtime
 
     @property
@@ -223,7 +221,7 @@ class AMOSExecutionKernel:
             },
         )
 
-    def _run_quality_checks(self, content: str, plan: ExecutionPlan) -> dict[str, bool]:
+    def _run_quality_checks(self, content: str, plan: ExecutionPlan) -> Dict[str, bool]:
         """Run layer_6 quality checks."""
         return {
             "structural_integrity_passed": len(plan.steps) >= 2,
@@ -232,7 +230,7 @@ class AMOSExecutionKernel:
             "language_precise": len(content) > 100 and "vibration" not in content.lower(),
         }
 
-    def _check_law_compliance(self, plan: ExecutionPlan) -> dict[str, bool]:
+    def _check_law_compliance(self, plan: ExecutionPlan) -> Dict[str, bool]:
         """Verify compliance with all 6 global laws."""
         laws = self.runtime.get_law_summary()
         return {law["id"]: True for law in laws[:6]}
@@ -255,7 +253,7 @@ Laws: {sum(result.law_compliance.values())}/{len(result.law_compliance)} complia
 
 
 # Singleton instance
-_execution_kernel: AMOSExecutionKernel | None = None
+_execution_kernel: Optional[AMOSExecutionKernel] = None
 
 
 def get_execution_kernel() -> AMOSExecutionKernel:

@@ -1,10 +1,8 @@
 """AMOS Master Orchestrator - Unified command layer for all ecosystem components."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 # Import all ecosystem components
 from .organism_bridge import get_organism_bridge
@@ -19,10 +17,10 @@ class OrchestrationResult:
     task_id: str
     timestamp: str
     domain: str
-    analysis: dict[str, Any]
-    prediction: dict[str, Any]
-    execution: dict[str, Any]
-    organism_enhancements: dict[str, Any]
+    analysis: Dict[str, Any]
+    prediction: Dict[str, Any]
+    execution: Dict[str, Any]
+    organism_enhancements: Dict[str, Any]
     overall_success: bool
     total_duration_ms: float
     mathematical_analysis: Optional[dict[str, Any]] = None
@@ -38,7 +36,7 @@ class MasterOrchestrator:
         self._predictive = None
         self._task_executor = None
         self._math_engine = None
-        self._orchestration_history: list[OrchestrationResult] = []
+        self._orchestration_history: List[OrchestrationResult] = []
         self._initialized = False
 
     def initialize(self) -> bool:
@@ -183,7 +181,7 @@ class MasterOrchestrator:
 
         return "analysis"
 
-    def _get_recommended_engines(self, domain: str) -> list[str]:
+    def _get_recommended_engines(self, domain: str) -> List[str]:
         """Get recommended engines for domain."""
         engine_map = {
             "security": ["AMOS_Deterministic_Logic_And_Law_Engine"],
@@ -195,7 +193,7 @@ class MasterOrchestrator:
         }
         return engine_map.get(domain, ["AMOS_Deterministic_Logic_And_Law_Engine"])
 
-    def get_ecosystem_status(self) -> dict[str, Any]:
+    def get_ecosystem_status(self) -> Dict[str, Any]:
         """Get complete ecosystem status."""
         organism_status = self._organism_bridge.get_status() if self._organism_bridge else {}
         predictive_status = self._predictive.get_status() if self._predictive else {}

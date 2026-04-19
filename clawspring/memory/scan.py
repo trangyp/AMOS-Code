@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .store import INDEX_FILENAME, get_memory_dir, parse_frontmatter
+from typing import List
 
 MAX_MEMORY_FILES = 200
 

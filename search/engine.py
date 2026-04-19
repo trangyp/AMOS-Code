@@ -13,7 +13,7 @@ Version: 2.0.0
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
@@ -31,7 +31,7 @@ class SearchResult:
     tags: List[str]
     author: str
     created_at: datetime
-    highlight: dict[str, list[str]]  # Matched text snippets
+    highlight: Dict[str, list[str]]  # Matched text snippets
 
 
 @dataclass
@@ -41,7 +41,7 @@ class SearchResponse:
     total: int
     took_ms: int
     results: List[SearchResult]
-    facets: dict[str, dict[str, int]]  # Tag counts, category counts
+    facets: Dict[str, dict[str, int]]  # Tag counts, category counts
     suggestions: List[str]  # Auto-suggest completions
 
 
@@ -162,7 +162,7 @@ class EquationSearchEngine:
             document=doc,
         )
 
-    async def bulk_index(self, equations: list[dict[str, Any]]) -> Tuple[int, int]:
+    async def bulk_index(self, equations: List[dict[str, Any]]) -> Tuple[int, int]:
         """Bulk index multiple equations."""
         actions = []
         for eq in equations:
@@ -196,7 +196,7 @@ class EquationSearchEngine:
     async def search(
         self,
         query: str,
-        filters: dict[str, Any] = None,
+        filters: Dict[str, Any] = None,
         sort_by: str = "relevance",
         page: int = 1,
         per_page: int = 20,
@@ -319,7 +319,7 @@ class EquationSearchEngine:
             suggestions=suggestions,
         )
 
-    def _build_sort(self, sort_by: str) -> list[dict[str, Any]]:
+    def _build_sort(self, sort_by: str) -> List[dict[str, Any]]:
         """Build sort configuration."""
         if sort_by == "relevance":
             return [{"_score": {"order": "desc"}}]
@@ -412,7 +412,7 @@ class EquationSearchEngine:
         """Remove equation from index."""
         await self.es.delete(index=self.INDEX_NAME, id=equation_id)
 
-    async def reindex_all(self, equations: list[dict[str, Any]]) -> Tuple[int, int]:
+    async def reindex_all(self, equations: List[dict[str, Any]]) -> Tuple[int, int]:
         """Delete and reindex all equations."""
         # Delete existing index
         if await self.es.indices.exists(index=self.INDEX_NAME):

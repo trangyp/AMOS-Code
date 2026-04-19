@@ -15,12 +15,16 @@ Version: 1.0.0
 """
 
 
+import asyncio
+import concurrent.futures
 import json
 import sys
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
+from typing import Any, Callable, Dict, List, Set
 
 # Add parent paths
 _AMOS_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -39,7 +43,6 @@ from amos_brain.task_processor import BrainTaskProcessor
 # Cognitive Bridge and Production Integration
 from amos_cognitive_bridge_v2 import get_cognitive_bridge_sync, AMOSCognitiveBridge
 from amos_mcp_production_integration import (
-from typing import Dict, List, Set
     get_mcp_production_interface_sync,
     AMOSMCPProductionInterface,
 )
@@ -73,7 +76,7 @@ class MCPPrompt:
     """MCP Prompt definition."""
     name: str
     description: str
-    arguments: list[dict[str, Any]]
+    arguments: List[dict[str, Any]]
     template_provider: Callable[..., str]
 
 
@@ -741,7 +744,6 @@ class AMOSMCPServer:
         """Handle brain_think tool via cognitive bridge."""
         try:
             # Use cognitive bridge for real processing through kernel
-            import asyncio
 
             async def process():
                 return await self.state.cognitive_bridge.process_tool_call(
@@ -757,7 +759,6 @@ class AMOSMCPServer:
             try:
                 loop = asyncio.get_running_loop()
                 # Schedule task in existing loop and wait for it
-                import concurrent.futures
                 with concurrent.futures.ThreadPoolExecutor() as pool:
                     future = pool.submit(lambda: asyncio.run(process()))
                     result = future.result()

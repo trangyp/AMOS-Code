@@ -39,10 +39,10 @@ class RecoveryResilienceBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: RecoveryResilienceEngine | None = None
+        self._engine: Optional[RecoveryResilienceEngine] = None
 
     @property
-    def engine(self) -> RecoveryResilienceEngine | None:
+    def engine(self) -> Optional[RecoveryResilienceEngine]:
         """Lazy initialization of resilience engine."""
         if self._engine is None and RESILIENCE_AVAILABLE:
             self._engine = RecoveryResilienceEngine()

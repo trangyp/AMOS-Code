@@ -3,6 +3,7 @@
 import json
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Optional
 
 
 class APIServer:

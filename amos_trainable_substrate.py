@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """
 AMOS Trainable Cognitive Substrate (TCS)
@@ -44,6 +44,7 @@ import uuid
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 import numpy as np
 
@@ -158,7 +159,7 @@ class LearnedParameters:
         # Value function
         self.value_weights = rng.randn(1, state_dim) * 0.01
 
-    def compute_gradients(self, losses: Dict[str, float]) -> dict[str, np.ndarray]:
+    def compute_gradients(self, losses: Dict[str, float]) -> Dict[str, np.ndarray]:
         """
         Compute parameter gradients from multi-objective losses.
 
@@ -192,7 +193,7 @@ class LearnedParameters:
 
         return gradients
 
-    def apply_gradients(self, gradients: dict[str, np.ndarray], lr: float = 0.001) -> None:
+    def apply_gradients(self, gradients: Dict[str, np.ndarray], lr: float = 0.001) -> None:
         """Apply gradient updates to parameters."""
         for name, grad in gradients.items():
             if hasattr(self, name):
@@ -804,13 +805,13 @@ class BenchmarkHarness:
 
     def __init__(self):
         self.results: deque[BenchmarkResult] = deque(maxlen=10000)
-        self.performance_history: dict[str, deque[float]] = {
+        self.performance_history: Dict[str, deque[float]] = {
             family: deque(maxlen=100) for family in self.TASK_FAMILIES
         }
 
     def run_benchmark(
         self, substrate: TrainableCognitiveSubstrate, task_family: str, n_tasks: int = 10
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """
         Run benchmark suite on substrate.
         Returns performance metrics.
@@ -946,7 +947,7 @@ class TrainingOrchestrator:
         substrate: TrainableCognitiveSubstrate,
         benchmark: BenchmarkHarness,
         n_benchmark_tasks: int = 10,
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """
         Single training step:
         1. Run benchmarks to measure current performance

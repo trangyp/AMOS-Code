@@ -5,7 +5,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent))
 

@@ -8,8 +8,6 @@ Executes tasks using the real AMOS brain with:
 - Simulation Engine for prediction
 """
 
-from __future__ import annotations
-
 
 import sys
 import time
@@ -18,7 +16,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -59,8 +57,8 @@ except ImportError:
 router = APIRouter(prefix="/brain-tasks", tags=["Brain Task Execution"])
 
 # Global instances
-_brain_client: BrainClient | None = None
-_orchestrator: MasterOrchestrator | None = None
+_brain_client: Optional[BrainClient] = None
+_orchestrator: Optional[MasterOrchestrator] = None
 
 
 def get_brain_client() -> BrainClient:
@@ -84,7 +82,7 @@ class BrainTaskRequest(BaseModel):
     """Request for brain-powered task execution."""
 
     task: str = Field(..., min_length=1, description="Task description")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     mode: str = Field(default="think", pattern="think|decide|validate|execute")
     priority: str = Field(default="MEDIUM", pattern="LOW|MEDIUM|HIGH|CRITICAL")
 
@@ -94,7 +92,7 @@ class BrainTaskResult(BaseModel):
 
     task_id: str
     status: str
-    result: dict[str, Any]
+    result: Dict[str, Any]
     brain_used: bool
     processing_time_ms: float
     timestamp: str
@@ -104,7 +102,7 @@ class ComplexWorkflowRequest(BaseModel):
     """Request for complex workflow execution."""
 
     workflow_description: str = Field(..., min_length=1)
-    steps: list[dict[str, Any]] = Field(default_factory=list)
+    steps: List[dict[str, Any]] = Field(default_factory=list)
     require_approval: bool = Field(default=False)
 
 
@@ -114,7 +112,7 @@ class AgentSpawnRequest(BaseModel):
     objective: str = Field(..., min_length=1)
     agent_class: str = Field(default="explorer")
     budget: float = Field(default=1.0, ge=0.0)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class AgentSpawnResult(BaseModel):
@@ -133,18 +131,18 @@ class RepoAutopsyRequest(BaseModel):
     error_message: str = Field(..., min_length=1)
     error_type: str = Field(default="runtime_exception")
     stack_trace: str = None
-    files_involved: list[str] = Field(default_factory=list)
+    files_involved: List[str] = Field(default_factory=list)
 
 
 class SimulationRequest(BaseModel):
     """Request for deployment simulation."""
 
     target: str = Field(..., min_length=1, description="PR or commit to simulate")
-    scenarios: list[str] = Field(default_factory=lambda: ["normal", "peak"])
+    scenarios: List[str] = Field(default_factory=lambda: ["normal", "peak"])
 
 
 # Store for task results
-_task_results: dict[str, dict[str, Any]] = {}
+_task_results: Dict[str, dict[str, Any]] = {}
 
 
 @router.post("/think", response_model=BrainTaskResult)
@@ -358,7 +356,7 @@ async def brain_spawn_agent(request: AgentSpawnRequest) -> AgentSpawnResult:
 
 
 @router.post("/autopsy", response_model=dict[str, Any])
-async def brain_autopsy(request: RepoAutopsyRequest) -> dict[str, Any]:
+async def brain_autopsy(request: RepoAutopsyRequest) -> Dict[str, Any]:
     """Run repo autopsy using Repo Autopsy Engine.
 
     Uses BrainClient.autopsy_repo() for automatic debugging.
@@ -392,7 +390,7 @@ async def brain_autopsy(request: RepoAutopsyRequest) -> dict[str, Any]:
 
 
 @router.post("/simulate", response_model=dict[str, Any])
-async def brain_simulate(request: SimulationRequest) -> dict[str, Any]:
+async def brain_simulate(request: SimulationRequest) -> Dict[str, Any]:
     """Run deployment simulation using Simulation Engine.
 
     Uses BrainClient.simulate_deployment() for pre-runtime prediction.
@@ -430,7 +428,7 @@ async def brain_simulate(request: SimulationRequest) -> dict[str, Any]:
 
 
 @router.get("/result/{task_id}")
-async def get_task_result(task_id: str) -> dict[str, Any]:
+async def get_task_result(task_id: str) -> Dict[str, Any]:
     """Get result of a previous brain task."""
     if task_id not in _task_results:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -439,7 +437,7 @@ async def get_task_result(task_id: str) -> dict[str, Any]:
 
 
 @router.get("/health")
-async def brain_tasks_health() -> dict[str, Any]:
+async def brain_tasks_health() -> Dict[str, Any]:
     """Check brain task execution health."""
     return {
         "brain_available": _BRAIN_AVAILABLE,

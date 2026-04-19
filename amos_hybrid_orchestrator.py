@@ -16,15 +16,14 @@ Author: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class Paradigm(Enum):
@@ -40,10 +39,10 @@ class AgentCapability:
     """Capability profile for a hybrid agent."""
 
     paradigm: Paradigm
-    strengths: list[str]
-    constraints: list[str]
-    llm_provider: str | None = None  # For neural components
-    law_enforcement: list[str] = field(default_factory=list)  # L1-L6 for symbolic
+    strengths: List[str]
+    constraints: List[str]
+    llm_provider: Optional[str] = None  # For neural components
+    law_enforcement: List[str] = field(default_factory=list)  # L1-L6 for symbolic
 
 
 @dataclass
@@ -180,10 +179,10 @@ class AgentResult:
     success: bool
     output: str
     paradigm: Paradigm
-    law_compliance: dict[str, Any]
+    law_compliance: Dict[str, Any]
     confidence: float
     execution_time: float = field(default_factory=time.time)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -191,10 +190,10 @@ class OrchestrationPlan:
     """Plan for orchestrating multiple agents."""
 
     task: str
-    required_paradigms: list[Paradigm]
-    agent_assignments: list[tuple[str, str]]  # (role, paradigm)
+    required_paradigms: List[Paradigm]
+    agent_assignments: List[tuple[str, str]]  # (role, paradigm)
     consensus_required: bool
-    steps: list[dict[str, Any]]
+    steps: List[dict[str, Any]]
 
 
 class HybridNeuralSymbolicOrchestrator:
@@ -208,10 +207,10 @@ class HybridNeuralSymbolicOrchestrator:
 
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
-        self.agents: dict[str, HybridAgent] = {}
+        self.agents: Dict[str, HybridAgent] = {}
         self.neural_engine = self._init_neural_engine()
         self.symbolic_engine = self._init_symbolic_engine()
-        self.execution_history: list[AgentResult] = []
+        self.execution_history: List[AgentResult] = []
 
     def _init_neural_engine(self) -> Any:
         """Initialize neural substrate (LLM provider manager)."""

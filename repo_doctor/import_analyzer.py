@@ -371,7 +371,6 @@ def main() -> int:
     """CLI entry point for import analysis."""
     import argparse
     import json
-from typing import Any
 
     parser = argparse.ArgumentParser(
         description="Analyze Python import dependencies using Tree-sitter"

@@ -97,7 +97,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class BackupType(str, Enum):
@@ -168,7 +168,7 @@ class BackupMetadata:
 
     # Scope
     tenant_id: str = None  # Null = full system backup
-    table_filter: list[str] = field(default_factory=list)
+    table_filter: List[str] = field(default_factory=list)
 
     # Recovery info
     wal_position: str = None  # PostgreSQL LSN
@@ -225,7 +225,7 @@ class BackupManager:
         self,
         storage_bucket: str = "amos-backups",
         primary_region: str = "us-east-1",
-        replica_regions: list[str] = None,
+        replica_regions: List[str] = None,
     ):
         """Initialize backup manager.
 
@@ -502,8 +502,8 @@ class BackupManager:
         }
 
     async def list_backups(
-        self, component: ComponentType | None = None, tenant_id: str = None, limit: int = 100
-    ) -> list[BackupMetadata]:
+        self, component: Optional[ComponentType] = None, tenant_id: str = None, limit: int = 100
+    ) -> List[BackupMetadata]:
         """List available backups."""
         backups = list(self._backups.values())
 
@@ -557,7 +557,7 @@ class BackupManager:
 
     async def get_restore_points(
         self, component: ComponentType, tenant_id: str = None, days: int = 30
-    ) -> list[RestorePoint]:
+    ) -> List[RestorePoint]:
         """Get available point-in-time restore points."""
         from_date = datetime.now(UTC) - timedelta(days=days)
 
@@ -581,7 +581,7 @@ class BackupManager:
 class DisasterRecovery:
     """Disaster recovery orchestration for AMOS."""
 
-    def __init__(self, primary_region: str = "us-east-1", dr_regions: list[str] = None):
+    def __init__(self, primary_region: str = "us-east-1", dr_regions: List[str] = None):
         """Initialize DR system."""
         self.primary_region = primary_region
         self.dr_regions = dr_regions or ["us-west-2", "eu-west-1"]
@@ -683,7 +683,7 @@ class DisasterRecovery:
             "completed_at": datetime.now(UTC).isoformat(),
         }
 
-    async def get_replication_status(self) -> list[DRStatus]:
+    async def get_replication_status(self) -> List[DRStatus]:
         """Get current replication status."""
         return list(self._replication_status.values())
 

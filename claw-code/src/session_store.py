@@ -1,12 +1,13 @@
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Optional, Tuple
 
 
 @dataclass(frozen=True)
 class StoredSession:
     session_id: str
-    messages: tuple[str, ...]
+    messages: Tuple[str, ...]
     input_tokens: int
     output_tokens: int
 

@@ -121,7 +121,6 @@ except ImportError:
 
 try:
     from equation_database import get_engine, async_session
-from typing import List, Set
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False

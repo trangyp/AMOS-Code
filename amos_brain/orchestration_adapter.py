@@ -11,6 +11,7 @@ LAW 4 COMPLIANCE: All execution flows through SuperBrain governance.
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any
 
 logger = logging.getLogger(__name__)

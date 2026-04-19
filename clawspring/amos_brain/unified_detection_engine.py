@@ -19,8 +19,6 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 
 import json
 import math
@@ -28,7 +26,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -91,7 +89,7 @@ class HallucinationScore:
 
     # Explanation
     dominant_factor: str = ""  # Which metric drove the detection
-    token_level_uncertainties: list[float] = field(default_factory=list)
+    token_level_uncertainties: List[float] = field(default_factory=list)
 
     def __post_init__(self):
         self._compute_unified_score()
@@ -128,7 +126,7 @@ class HallucinationScore:
         }
         self.dominant_factor = max(factors, key=factors.get)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "semantic_entropy": round(self.semantic_entropy, 4),
             "reppl_score": round(self.reppl_score, 4),
@@ -202,7 +200,7 @@ class IntegrityMetrics:
         else:
             self.severity = "low"
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "shannon_entropy": round(self.shannon_entropy, 4),
             "max_entropy": round(self.max_entropy, 4),
@@ -290,7 +288,7 @@ class StructuralDriftMetrics:
         else:
             self.degradation_rate = "stable"
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "spectral_radius": round(self.spectral_radius, 4),
             "spectral_gap": round(self.spectral_gap, 4),
@@ -329,8 +327,8 @@ class UnifiedDetectionReport:
 
     # Global assessment
     overall_system_health: float = 0.0
-    critical_alerts: list[str] = field(default_factory=list)
-    recommendations: list[str] = field(default_factory=list)
+    critical_alerts: List[str] = field(default_factory=list)
+    recommendations: List[str] = field(default_factory=list)
 
     def __post_init__(self):
         self._compute_overall_health()
@@ -375,7 +373,7 @@ class UnifiedDetectionReport:
                 f"Verify outputs manually - high {self.hallucination.dominant_factor} detected"
             )
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "timestamp": self.timestamp,
             "session_id": self.session_id,
@@ -414,10 +412,10 @@ class UnifiedDetectionEngine:
     - Section 33: Information Geometry (Fisher, Rényi, Tsallis)
     """
 
-    def __init__(self, config: dict[str, Any] = None):
+    def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
-        self.history: list[UnifiedDetectionReport] = []
-        self._calibration_data: dict[str, Any] = {}
+        self.history: List[UnifiedDetectionReport] = []
+        self._calibration_data: Dict[str, Any] = {}
 
         # Thresholds from config or defaults
         self.hallucination_threshold = self.config.get("hallucination_threshold", 0.7)
@@ -425,8 +423,8 @@ class UnifiedDetectionEngine:
         self.drift_threshold = self.config.get("drift_threshold", 0.5)
 
         # Integration hooks
-        self._audit_exporter: AuditExporter | None = None
-        self._temporal_bridge: Any | None = None
+        self._audit_exporter: Optional[AuditExporter] = None
+        self._temporal_bridge: Optional[Any] = None
 
         if AUDIT_AVAILABLE:
             try:
@@ -440,8 +438,8 @@ class UnifiedDetectionEngine:
 
     def detect_hallucination(
         self,
-        samples: list[str],
-        token_probabilities: list[list[float]] = None,
+        samples: List[str],
+        token_probabilities: List[list[float]] = None,
         context: str = None,
     ) -> HallucinationScore:
         """
@@ -479,7 +477,7 @@ class UnifiedDetectionEngine:
             threshold=self.hallucination_threshold,
         )
 
-    def _compute_semantic_entropy(self, samples: list[str]) -> float:
+    def _compute_semantic_entropy(self, samples: List[str]) -> float:
         """
         Compute Semantic Entropy: H_SE = -Σ P(C)·log P(C)
 
@@ -490,7 +488,7 @@ class UnifiedDetectionEngine:
             return 0.0
 
         # Simple clustering by exact match (production: use NLI model)
-        clusters: dict[str, list[int]] = defaultdict(list)
+        clusters: Dict[str, list[int]] = defaultdict(list)
 
         for i, sample in enumerate(samples):
             # Normalize for clustering
@@ -512,8 +510,8 @@ class UnifiedDetectionEngine:
 
     def _compute_reppl(
         self,
-        samples: list[str],
-        token_probs: list[list[float]],
+        samples: List[str],
+        token_probs: List[list[float]],
     ) -> float:
         """
         Compute RePPL: Recalibrated Perplexity
@@ -551,7 +549,7 @@ class UnifiedDetectionEngine:
         epsilon = 0.1
         return inner_ppl * (outer_ppl + epsilon)
 
-    def _compute_self_consistency(self, samples: list[str]) -> float:
+    def _compute_self_consistency(self, samples: List[str]) -> float:
         """
         Compute Self-Consistency: C(x) = (1/N²)·ΣΣ sim(s_i, s_j)
 
@@ -587,7 +585,7 @@ class UnifiedDetectionEngine:
 
         return intersection / union if union > 0 else 0.0
 
-    def _estimate_kl_divergence(self, samples: list[str], context: str) -> float:
+    def _estimate_kl_divergence(self, samples: List[str], context: str) -> float:
         """Estimate KL divergence between answer distribution and prompt distribution."""
         # Simplified: measure semantic divergence
         context_words = set(context.lower().split())
@@ -606,7 +604,7 @@ class UnifiedDetectionEngine:
 
     def _compute_confidence_calibration(
         self,
-        token_probs: list[list[float]],
+        token_probs: List[list[float]],
     ) -> float:
         """Compute confidence calibration score."""
         if not token_probs:
@@ -626,9 +624,9 @@ class UnifiedDetectionEngine:
 
     def check_integrity(
         self,
-        current_distribution: list[float],
-        reference_distribution: list[float] = None,
-        node_states: list[bool] = None,
+        current_distribution: List[float],
+        reference_distribution: List[float] = None,
+        node_states: List[bool] = None,
         total_nodes: int = 10,
     ) -> IntegrityMetrics:
         """
@@ -688,13 +686,13 @@ class UnifiedDetectionEngine:
             fault_tolerance_ratio=fault_ratio,
         )
 
-    def _shannon_entropy(self, dist: list[float]) -> float:
+    def _shannon_entropy(self, dist: List[float]) -> float:
         """Compute Shannon Entropy: H(X) = -Σ P(x)·log₂ P(x)"""
         if SCIPY_AVAILABLE:
             return float(scipy_entropy(dist, base=2))
         return -sum(p * math.log2(p) for p in dist if p > 0)
 
-    def _total_variation(self, p: list[float], q: list[float]) -> float:
+    def _total_variation(self, p: List[float], q: List[float]) -> float:
         """Compute Total Variation Distance: d_TV = (1/2)·||P-Q||₁"""
         # Ensure same length
         max_len = max(len(p), len(q))
@@ -703,7 +701,7 @@ class UnifiedDetectionEngine:
 
         return 0.5 * sum(abs(pi - qi) for pi, qi in zip(p, q))
 
-    def _jensen_shannon(self, p: list[float], q: list[float]) -> float:
+    def _jensen_shannon(self, p: List[float], q: List[float]) -> float:
         """
         Compute Jensen-Shannon Divergence:
         JSD = H(M) - (1/2)[H(P) + H(Q)]
@@ -724,7 +722,7 @@ class UnifiedDetectionEngine:
 
         return h_m - 0.5 * (h_p + h_q)
 
-    def _kl_divergence(self, p: list[float], q: list[float]) -> float:
+    def _kl_divergence(self, p: List[float], q: List[float]) -> float:
         """Compute KL Divergence: D_KL(P||Q) = Σ P(x)·log(P(x)/Q(x))"""
         # Ensure same length
         max_len = max(len(p), len(q))
@@ -737,7 +735,7 @@ class UnifiedDetectionEngine:
                 kl += pi * math.log2(pi / qi)
         return kl
 
-    def _wasserstein_distance(self, p: list[float], q: list[float]) -> float:
+    def _wasserstein_distance(self, p: List[float], q: List[float]) -> float:
         """
         Compute Wasserstein-1 Distance (Earth Mover's Distance).
         Simplified implementation for discrete distributions.
@@ -758,9 +756,9 @@ class UnifiedDetectionEngine:
 
     def _check_byzantine_consensus(
         self,
-        node_states: list[bool],
+        node_states: List[bool],
         total_nodes: int,
-    ) -> tuple[int, int]:
+    ) -> Tuple[int, int]:
         """
         Check Byzantine Fault Tolerance invariants.
 
@@ -791,10 +789,10 @@ class UnifiedDetectionEngine:
 
     def analyze_structural_drift(
         self,
-        adjacency_matrix: list[list[float]] = None,
-        data_points: list[list[float]] = None,
-        labels: list[int] = None,
-        previous_state: dict[str, float] = None,
+        adjacency_matrix: List[list[float]] = None,
+        data_points: List[list[float]] = None,
+        labels: List[int] = None,
+        previous_state: Dict[str, float] = None,
     ) -> StructuralDriftMetrics:
         """
         Analyze structural drift using spectral and clustering methods.
@@ -857,8 +855,8 @@ class UnifiedDetectionEngine:
 
     def _compute_spectral_properties(
         self,
-        adj_matrix: list[list[float]],
-    ) -> tuple[float, float, float]:
+        adj_matrix: List[list[float]],
+    ) -> Tuple[float, float, float]:
         """
         Compute spectral properties of adjacency matrix.
 
@@ -902,7 +900,7 @@ class UnifiedDetectionEngine:
 
     def _power_iteration_spectral_radius(
         self,
-        adj_matrix: list[list[float]],
+        adj_matrix: List[list[float]],
         max_iter: int = 100,
     ) -> float:
         """Estimate spectral radius using power iteration."""
@@ -928,7 +926,7 @@ class UnifiedDetectionEngine:
 
     def _estimate_lyapunov_exponent(
         self,
-        previous_state: dict[str, float],
+        previous_state: Dict[str, float],
     ) -> float:
         """
         Estimate Lyapunov exponent from state evolution.
@@ -950,9 +948,9 @@ class UnifiedDetectionEngine:
 
     def _compute_clustering_metrics(
         self,
-        data_points: list[list[float]],
-        labels: list[int],
-    ) -> tuple[float, float, float]:
+        data_points: List[list[float]],
+        labels: List[int],
+    ) -> Tuple[float, float, float]:
         """
         Compute clustering validity indices.
 
@@ -985,12 +983,12 @@ class UnifiedDetectionEngine:
 
     def _manual_clustering_metrics(
         self,
-        data_points: list[list[float]],
-        labels: list[int],
-    ) -> tuple[float, float, float]:
+        data_points: List[list[float]],
+        labels: List[int],
+    ) -> Tuple[float, float, float]:
         """Manual calculation of clustering metrics."""
         # Group points by cluster
-        clusters: dict[int, list[list[float]]] = defaultdict(list)
+        clusters: Dict[int, list[list[float]]] = defaultdict(list)
         for point, label in zip(data_points, labels):
             clusters[label].append(point)
 
@@ -1032,8 +1030,8 @@ class UnifiedDetectionEngine:
 
     def _compute_graph_metrics(
         self,
-        adj_matrix: list[list[float]],
-    ) -> tuple[int, float, float]:
+        adj_matrix: List[list[float]],
+    ) -> Tuple[int, float, float]:
         """Compute graph structure metrics."""
         n = len(adj_matrix)
         if n == 0:
@@ -1057,10 +1055,10 @@ class UnifiedDetectionEngine:
 
     def compute_advanced_metrics(
         self,
-        distribution: list[float],
+        distribution: List[float],
         alpha: float = 2.0,
         q_param: float = 1.5,
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """
         Compute advanced information geometry metrics.
 
@@ -1089,7 +1087,7 @@ class UnifiedDetectionEngine:
             "data_processing_score": data_processing,
         }
 
-    def _compute_fisher_information(self, dist: list[float]) -> float:
+    def _compute_fisher_information(self, dist: List[float]) -> float:
         """
         Compute Fisher Information metric (simplified).
 
@@ -1105,7 +1103,7 @@ class UnifiedDetectionEngine:
 
         return variance
 
-    def _renyi_entropy(self, dist: list[float], alpha: float) -> float:
+    def _renyi_entropy(self, dist: List[float], alpha: float) -> float:
         """
         Compute Rényi Entropy: H_α = (1/(1-α))·log(Σ P^α)
         """
@@ -1119,7 +1117,7 @@ class UnifiedDetectionEngine:
             return (1.0 / (1.0 - alpha)) * math.log2(sum_p_alpha)
         return 0.0
 
-    def _tsallis_entropy(self, dist: list[float], q: float) -> float:
+    def _tsallis_entropy(self, dist: List[float], q: float) -> float:
         """
         Compute Tsallis Entropy: S_q = (1/(q-1))·(1 - Σ P^q)
         """
@@ -1131,7 +1129,7 @@ class UnifiedDetectionEngine:
 
         return (1.0 / (q - 1.0)) * (1.0 - sum_p_q)
 
-    def _compute_data_processing_score(self, dist: list[float]) -> float:
+    def _compute_data_processing_score(self, dist: List[float]) -> float:
         """
         Compute data processing inequality score.
 
@@ -1150,19 +1148,19 @@ class UnifiedDetectionEngine:
     def detect_all(
         self,
         # Hallucination inputs
-        samples: list[str] = None,
-        token_probs: list[list[float]] = None,
+        samples: List[str] = None,
+        token_probs: List[list[float]] = None,
         context: str = None,
         # Integrity inputs
-        current_dist: list[float] = None,
-        reference_dist: list[float] = None,
-        node_states: list[bool] = None,
+        current_dist: List[float] = None,
+        reference_dist: List[float] = None,
+        node_states: List[bool] = None,
         total_nodes: int = 10,
         # Drift inputs
-        adjacency_matrix: list[list[float]] = None,
-        data_points: list[list[float]] = None,
-        labels: list[int] = None,
-        previous_state: dict[str, float] = None,
+        adjacency_matrix: List[list[float]] = None,
+        data_points: List[list[float]] = None,
+        labels: List[int] = None,
+        previous_state: Dict[str, float] = None,
     ) -> UnifiedDetectionReport:
         """
         Run complete unified detection analysis.
@@ -1258,7 +1256,7 @@ class UnifiedDetectionEngine:
         # This would integrate with the brain's audit system
         print(f"[AUDIT] Detection recorded: {report.session_id}")
 
-    def get_trend_analysis(self, window_size: int = 10) -> dict[str, Any]:
+    def get_trend_analysis(self, window_size: int = 10) -> Dict[str, Any]:
         """Analyze trends in detection history."""
         if len(self.history) < 2:
             return {"status": "insufficient_data"}
@@ -1294,7 +1292,7 @@ class UnifiedDetectionEngine:
             },
         }
 
-    def _compute_volatility(self, values: list[float]) -> float:
+    def _compute_volatility(self, values: List[float]) -> float:
         """Compute volatility (standard deviation of differences)."""
         if len(values) < 2:
             return 0.0
@@ -1309,7 +1307,7 @@ class UnifiedDetectionEngine:
         self,
         report: UnifiedDetectionReport,
         format: str = "json",
-        output_path: Path | None = None,
+        output_path: Optional[Path] = None,
     ) -> Path:
         """Export detection report to file."""
         if output_path is None:
@@ -1399,9 +1397,9 @@ def create_detection_engine(config: dict = None) -> UnifiedDetectionEngine:
 
 
 def quick_detect(
-    samples: list[str] = None,
-    distribution: list[float] = None,
-    adjacency_matrix: list[list[float]] = None,
+    samples: List[str] = None,
+    distribution: List[float] = None,
+    adjacency_matrix: List[list[float]] = None,
 ) -> UnifiedDetectionReport:
     """Quick detection with minimal inputs."""
     engine = UnifiedDetectionEngine()

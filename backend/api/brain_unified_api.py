@@ -11,8 +11,6 @@ Combines all brain capabilities into a unified interface:
 Uses real BrainClient facade and MasterOrchestrator.
 """
 
-from __future__ import annotations
-
 
 import sys
 import time
@@ -22,7 +20,7 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -74,9 +72,9 @@ class UnifiedRequest(BaseModel):
 
     operation: OperationType
     input: str = Field(..., min_length=1)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     priority: str = Field(default="MEDIUM")
-    options: dict[str, Any] = Field(default_factory=dict)
+    options: Dict[str, Any] = Field(default_factory=dict)
 
 
 class UnifiedResponse(BaseModel):
@@ -85,18 +83,18 @@ class UnifiedResponse(BaseModel):
     operation: str
     request_id: str
     status: str
-    result: dict[str, Any]
+    result: Dict[str, Any]
     brain_used: bool
     processing_time_ms: float
     timestamp: str
 
 
 # Global instances
-_brain_client: BrainClient | None = None
-_orchestrator: MasterOrchestrator | None = None
+_brain_client: Optional[BrainClient] = None
+_orchestrator: Optional[MasterOrchestrator] = None
 
 
-def _get_brain() -> BrainClient | None:
+def _get_brain() -> Optional[BrainClient]:
     """Get or initialize BrainClient."""
     global _brain_client
     if _brain_client is None and _BRAIN_AVAILABLE:
@@ -104,7 +102,7 @@ def _get_brain() -> BrainClient | None:
     return _brain_client
 
 
-def _get_orchestrator() -> MasterOrchestrator | None:
+def _get_orchestrator() -> Optional[MasterOrchestrator]:
     """Get or initialize MasterOrchestrator."""
     global _orchestrator
     if _orchestrator is None and _ORCHESTRATOR_AVAILABLE:
@@ -136,7 +134,7 @@ async def process_unified(request: UnifiedRequest) -> UnifiedResponse:
         raise HTTPException(status_code=503, detail="Brain not available")
 
     try:
-        result: dict[str, Any] = {}
+        result: Dict[str, Any] = {}
 
         if request.operation == OperationType.THINK and brain:
             result = brain.think(request.input, request.context)
@@ -214,7 +212,7 @@ async def process_unified(request: UnifiedRequest) -> UnifiedResponse:
 
 
 @router.get("/operations")
-async def list_operations() -> dict[str, Any]:
+async def list_operations() -> Dict[str, Any]:
     """List available brain operations and their status."""
     brain = _get_brain()
     orchestrator = _get_orchestrator()
@@ -263,7 +261,7 @@ def _get_operation_description(op: OperationType) -> str:
 
 
 @router.get("/health")
-async def unified_health() -> dict[str, Any]:
+async def unified_health() -> Dict[str, Any]:
     """Check unified API health and component status."""
     brain = _get_brain()
     orchestrator = _get_orchestrator()

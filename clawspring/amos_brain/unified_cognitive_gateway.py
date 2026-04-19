@@ -6,36 +6,36 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
+import sys
+from amos_api_gateway import AMOSAPIGateway
+from amos_unified_orchestrator import AMOSUnifiedOrchestrator
+from .governance_integration import GovernanceIntegration
+from .math_framework_integration import MathFrameworkIntegration
+from .equation_validation_engine import EquationValidationEngine
 try:
-    import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    from amos_api_gateway import AMOSAPIGateway
     GATEWAY_AVAILABLE = True
 except ImportError:
     GATEWAY_AVAILABLE = False
 
 try:
-    from amos_unified_orchestrator import AMOSUnifiedOrchestrator
     ORCHESTRATOR_AVAILABLE = True
 except ImportError:
     ORCHESTRATOR_AVAILABLE = False
 
 try:
-    from .governance_integration import GovernanceIntegration
     GOVERNANCE_AVAILABLE = True
 except ImportError:
     GOVERNANCE_AVAILABLE = False
 
 try:
-    from .math_framework_integration import MathFrameworkIntegration
     MATH_AVAILABLE = True
 except ImportError:
     MATH_AVAILABLE = False
 
 try:
-    from .equation_validation_engine import EquationValidationEngine
     VALIDATION_AVAILABLE = True
 except ImportError:
     VALIDATION_AVAILABLE = False
@@ -60,15 +60,15 @@ class UnifiedCognitiveGateway:
 
     def __init__(self, port: int = 9999):
         self.port = port
-        self._api_gateway: AMOSAPIGateway | None = None
-        self._orchestrator: AMOSUnifiedOrchestrator | None = None
-        self._governance: GovernanceIntegration | None = None
-        self._math_framework: MathFrameworkIntegration | None = None
-        self._validation: EquationValidationEngine | None = None
+        self._api_gateway: Optional[AMOSAPIGateway] = None
+        self._orchestrator: Optional[AMOSUnifiedOrchestrator] = None
+        self._governance: Optional[GovernanceIntegration] = None
+        self._math_framework: Optional[MathFrameworkIntegration] = None
+        self._validation: Optional[EquationValidationEngine] = None
         self._initialized = False
         self._request_count = 0
 
-    def initialize(self) -> dict[str, Any]:
+    def initialize(self) -> Dict[str, Any]:
         """Initialize all gateway components."""
         print("\n" + "=" * 70)
         print("AMOS UNIFIED COGNITIVE GATEWAY - INITIALIZATION")
@@ -152,7 +152,7 @@ class UnifiedCognitiveGateway:
         except Exception as e:
             return GatewayResponse("error", {"error": str(e)}, (time.time() - start_time) * 1000)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get comprehensive gateway status."""
         return {
             "initialized": self._initialized,
@@ -168,13 +168,11 @@ class UnifiedCognitiveGateway:
 
 
 # Global instance
-_gateway: UnifiedCognitiveGateway | None = None
+_gateway: Optional[UnifiedCognitiveGateway] = None
 
 
 def get_unified_gateway() -> UnifiedCognitiveGateway:
     """Get global UnifiedCognitiveGateway instance."""
-from __future__ import annotations
-
     global _gateway
     if _gateway is None:
         _gateway = UnifiedCognitiveGateway()

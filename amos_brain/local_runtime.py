@@ -6,11 +6,9 @@ This module implements the reversed architecture where:
 - Health checks verify actual model reachability
 """
 
-from __future__ import annotations
-
 
 import sys
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from .config_validator import validate_config
 from .integration import AMOSBrainIntegration, get_amos_integration
@@ -31,15 +29,15 @@ class AMOSLocalRuntime:
 
     def __init__(
         self,
-        amos_integration: AMOSBrainIntegration | None = None,
-        backend: ModelBackend | None = None,
+        amos_integration: Optional[AMOSBrainIntegration] = None,
+        backend: Optional[ModelBackend] = None,
     ):
         self.amos = amos_integration or get_amos_integration()
         self.backend = backend or build_backend_from_env()
         self._ready: bool = False
-        self._status: dict[str, Any] = {}
+        self._status: Dict[str, Any] = {}
 
-    def initialize(self) -> dict[str, Any]:
+    def initialize(self) -> Dict[str, Any]:
         """Initialize the runtime with full health verification.
 
         Unlike weak readiness checks, this verifies:
@@ -234,7 +232,7 @@ class AMOSLocalRuntime:
         print("Type 'quit', 'exit', or Ctrl+C to exit")
         print("-" * 60 + "\n")
 
-        history: list[dict] = []
+        history: List[dict] = []
 
         while True:
             try:
@@ -305,7 +303,7 @@ class AMOSLocalRuntime:
             print("No metrics data collected.")
         print("=" * 60)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current runtime status."""
         return {
             "ready": self._ready,
@@ -313,7 +311,7 @@ class AMOSLocalRuntime:
             "backend": self.backend.health_check() if self.backend else None,
         }
 
-    def get_metrics_summary(self) -> dict[str, Any]:
+    def get_metrics_summary(self) -> Dict[str, Any]:
         """Get metrics summary for operational visibility."""
         metrics = get_metrics()
         return metrics.get_summary()

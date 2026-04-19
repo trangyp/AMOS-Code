@@ -6,16 +6,15 @@ Based on: ReAct (Reasoning + Acting) pattern from agentic AI research 2025.
 Architecture: Thought → Action → Observation → Repeat
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 try:
     from .amos_kernel_runtime import (
@@ -54,7 +53,7 @@ class ToolCall:
     """Tool call specification."""
 
     tool_name: str
-    parameters: dict[str, Any]
+    parameters: Dict[str, Any]
     call_id: str
 
 
@@ -65,7 +64,7 @@ class ToolResult:
     call_id: str
     success: bool
     result: Any
-    error: str | None = None
+    error: Optional[str] = None
     latency_ms: float = 0.0
 
 
@@ -73,7 +72,7 @@ class ToolResult:
 class ToolExecutor(Protocol):
     """Protocol for tool execution."""
 
-    async def execute(self, tool_name: str, params: dict[str, Any]) -> ToolResult: ...
+    async def execute(self, tool_name: str, params: Dict[str, Any]) -> ToolResult: ...
 
 
 class AMOSReActAgent:
@@ -89,8 +88,8 @@ class AMOSReActAgent:
 
     def __init__(
         self,
-        kernel: AMOSKernelRuntime | None = None,
-        tool_executor: ToolExecutor | None = None,
+        kernel: Optional[AMOSKernelRuntime] = None,
+        tool_executor: Optional[ToolExecutor] = None,
         max_iterations: int = 10,
         latency_budget_ms: float = 5000.0,
     ):
@@ -105,15 +104,15 @@ class AMOSReActAgent:
         self.tool_results: List[ToolResult] = []
 
         # State tracking
-        self.current_state: StateGraph | None = None
+        self.current_state: Optional[StateGraph] = None
         self.iteration_count = 0
         self.start_time: float = 0.0
 
     async def run(
         self,
         query: str,
-        available_tools: list[str] | None = None,
-    ) -> dict[str, Any]:
+        available_tools: Optional[List[str] ] = None,
+    ) -> Dict[str, Any]:
         """
         Execute ReAct loop for a query.
 
@@ -252,8 +251,8 @@ class AMOSReActAgent:
     def _generate_thought(
         self,
         query: str,
-        observation: dict[str, Any],
-        cycle_result: dict[str, Any],
+        observation: Dict[str, Any],
+        cycle_result: Dict[str, Any],
         iteration: int,
     ) -> str:
         """Generate reasoning thought based on brain kernel output."""
@@ -285,8 +284,8 @@ class AMOSReActAgent:
     def _decide_action(
         self,
         thought: str,
-        available_tools: list[str] | None,
-    ) -> dict[str, Any]:
+        available_tools: Optional[List[str] ],
+    ) -> Dict[str, Any]:
         """Decide next action based on thought."""
         # Simple logic - could be LLM-based
         if available_tools and len(self.tool_calls) < 3:
@@ -316,7 +315,7 @@ class AMOSReActAgent:
 class SimpleToolExecutor:
     """Simple tool executor for testing."""
 
-    async def execute(self, tool_name: str, params: dict[str, Any]) -> ToolResult:
+    async def execute(self, tool_name: str, params: Dict[str, Any]) -> ToolResult:
         """Execute a tool (stub implementation)."""
         start = time.perf_counter()
 
@@ -334,7 +333,7 @@ class SimpleToolExecutor:
 
 
 # Global agent instance
-_global_react_agent: AMOSReActAgent | None = None
+_global_react_agent: Optional[AMOSReActAgent] = None
 
 
 def get_react_agent() -> AMOSReActAgent:

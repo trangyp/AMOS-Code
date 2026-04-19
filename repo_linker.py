@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, List, Optional, Tuple
 
 """AMOS Repo Linker - Link all GitHub repos into one monorepo.
 
@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 
-def get_github_repos(username: str, token: str | None = None) -> list[dict[str, Any]]:
+def get_github_repos(username: str, token: Optional[str] = None) -> List[dict[str, Any]]:
     """Fetch all repos for a GitHub user."""
     url = f"https://api.github.com/users/{username}/repos?per_page=100"
     headers = {"Accept": "application/vnd.github.v3+json"}
@@ -45,7 +45,7 @@ def get_github_repos(username: str, token: str | None = None) -> list[dict[str, 
         sys.exit(1)
 
 
-def run_cmd(cmd: List[str], cwd: Path | None = None) -> Tuple[int, str, str]:
+def run_cmd(cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, str]:
     """Run shell command and return (exit_code, stdout, stderr)."""
     try:
         result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False)
@@ -54,7 +54,7 @@ def run_cmd(cmd: List[str], cwd: Path | None = None) -> Tuple[int, str, str]:
         return 1, "", str(e)
 
 
-def create_monorepo_subtree(repos: list[dict[str, Any]], output_dir: Path) -> None:
+def create_monorepo_subtree(repos: List[dict[str, Any]], output_dir: Path) -> None:
     """Create monorepo using git subtree."""
     print(f"\n🚀 Creating monorepo with {len(repos)} repos using git subtree...")
 
@@ -113,7 +113,7 @@ This monorepo contains {len(repos)} linked repositories.
     print(f"   Total repos linked: {len(repos)}")
 
 
-def create_monorepo_submodules(repos: list[dict[str, Any]], output_dir: Path) -> None:
+def create_monorepo_submodules(repos: List[dict[str, Any]], output_dir: Path) -> None:
     """Create monorepo using git submodules."""
     print(f"\n🚀 Creating monorepo with {len(repos)} repos using git submodules...")
 

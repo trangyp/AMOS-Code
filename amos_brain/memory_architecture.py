@@ -68,7 +68,7 @@ class MemoryBackend(Protocol):
         """Store a memory entry."""
         ...
 
-    def retrieve(self, entry_id: str) -> MemoryEntry | None:
+    def retrieve(self, entry_id: str) -> Optional[MemoryEntry]:
         """Retrieve a specific entry by ID."""
         ...
 
@@ -142,7 +142,7 @@ class SQLiteMemoryBackend:
         except Exception:
             return False
 
-    def retrieve(self, entry_id: str) -> MemoryEntry | None:
+    def retrieve(self, entry_id: str) -> Optional[MemoryEntry]:
         """Retrieve entry by ID."""
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -248,7 +248,7 @@ class FileMemoryBackend:
         except Exception:
             return False
 
-    def retrieve(self, entry_id: str) -> MemoryEntry | None:
+    def retrieve(self, entry_id: str) -> Optional[MemoryEntry]:
         """Retrieve entry from file."""
         try:
             file_path = self._get_file_path(entry_id)
@@ -367,7 +367,7 @@ class TieredMemoryManager:
 
         return l2_success
 
-    def retrieve(self, entry_id: str) -> MemoryEntry | None:
+    def retrieve(self, entry_id: str) -> Optional[MemoryEntry]:
         """Retrieve entry, checking L1 → L2 → L3."""
         # Check L1 first (fastest)
         with self._cache_lock:
@@ -433,7 +433,7 @@ class TieredMemoryManager:
 
 
 # Global instance
-_memory_manager: TieredMemoryManager | None = None
+_memory_manager: Optional[TieredMemoryManager] = None
 
 
 def get_memory_manager() -> TieredMemoryManager:

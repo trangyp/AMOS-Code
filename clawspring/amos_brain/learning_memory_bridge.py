@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
 
 """
 AMOS Learning-Memory Bridge
@@ -18,8 +20,6 @@ Provides:
     - Memory injection into reasoning
     - Policy updates from experience
 """
-from __future__ import annotations
-
 
 import asyncio
 import logging
@@ -57,10 +57,10 @@ class LearningMemoryBridge:
         Reasoning → Verification → Outcome Capture → Learning → Memory Update
     """
 
-    _instance: LearningMemoryBridge | None = None
+    _instance: Optional[LearningMemoryBridge] = None
 
     def __init__(self):
-        self.lmk: AMOSLearningMemoryKernel | None = None
+        self.lmk: Optional[AMOSLearningMemoryKernel] = None
         self.initialized = False
 
     @classmethod
@@ -87,11 +87,11 @@ class LearningMemoryBridge:
 
     async def capture_reasoning_outcome(
         self,
-        reasoning_input: dict[str, Any],
-        reasoning_output: dict[str, Any],
-        verification_result: dict[str, Any] = None,
-        context: dict[str, Any] = None,
-    ) -> dict[str, Any]:
+        reasoning_input: Dict[str, Any],
+        reasoning_output: Dict[str, Any],
+        verification_result: Dict[str, Any] = None,
+        context: Dict[str, Any] = None,
+    ) -> Dict[str, Any]:
         """
         Capture outcome from reasoning process.
 
@@ -145,9 +145,9 @@ class LearningMemoryBridge:
     async def learn_from_verification_failure(
         self,
         failed_check: str,
-        failure_context: dict[str, Any],
-        correction: dict[str, Any] = None,
-    ) -> dict[str, Any]:
+        failure_context: Dict[str, Any],
+        correction: Dict[str, Any] = None,
+    ) -> Dict[str, Any]:
         """
         Learn specifically from verification failures.
 
@@ -184,8 +184,8 @@ class LearningMemoryBridge:
         return {"stored": stored, "memory_id": record.id, "policy_updated": True}
 
     async def inject_relevant_memories(
-        self, query: str | dict[str, Any], into_context: dict[str, Any], k: int = 3
-    ) -> dict[str, Any]:
+        self, query: str | dict[str, Any], into_context: Dict[str, Any], k: int = 3
+    ) -> Dict[str, Any]:
         """
         Retrieve and inject relevant memories into reasoning context.
 
@@ -213,7 +213,7 @@ class LearningMemoryBridge:
 
         return {"memories_injected": len(memories), "memory_ids": [m.id for m in memories]}
 
-    def _extract_guidance(self, memories: list[Any]) -> list[str]:
+    def _extract_guidance(self, memories: List[Any]) -> List[str]:
         """Extract actionable guidance from memories."""
         guidance = []
 
@@ -225,7 +225,7 @@ class LearningMemoryBridge:
 
         return guidance
 
-    async def consolidate_and_persist(self) -> dict[str, Any]:
+    async def consolidate_and_persist(self) -> Dict[str, Any]:
         """
         Run consolidation and persist to storage.
 
@@ -242,14 +242,14 @@ class LearningMemoryBridge:
 
         return {"consolidated": cons_result, "persisted": persist_result}
 
-    async def run_replay_learning(self, k: int = 10) -> dict[str, Any]:
+    async def run_replay_learning(self, k: int = 10) -> Dict[str, Any]:
         """Run replay learning on critical memories."""
         if not self.lmk:
             return {"error": "Bridge not initialized"}
 
         return await self.lmk.learn_from_replay(k=k)
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get learning-memory statistics."""
         if not self.lmk:
             return {"error": "Bridge not initialized"}
@@ -261,10 +261,10 @@ class LearningMemoryBridge:
 
 
 async def learn_from_reasoning(
-    reasoning_input: dict[str, Any],
-    reasoning_output: dict[str, Any],
-    verification_result: dict[str, Any] = None,
-) -> dict[str, Any]:
+    reasoning_input: Dict[str, Any],
+    reasoning_output: Dict[str, Any],
+    verification_result: Dict[str, Any] = None,
+) -> Dict[str, Any]:
     """Convenience: learn from reasoning outcome."""
     bridge = LearningMemoryBridge.get_instance()
     if not bridge.initialized:
@@ -275,7 +275,7 @@ async def learn_from_reasoning(
     )
 
 
-async def remember_for_reasoning(query: str, context: dict[str, Any], k: int = 3) -> dict[str, Any]:
+async def remember_for_reasoning(query: str, context: Dict[str, Any], k: int = 3) -> Dict[str, Any]:
     """Convenience: retrieve memories for reasoning context."""
     bridge = LearningMemoryBridge.get_instance()
     if not bridge.initialized:
@@ -285,8 +285,8 @@ async def remember_for_reasoning(query: str, context: dict[str, Any], k: int = 3
 
 
 async def learn_from_mistake(
-    check: str, context: dict[str, Any], correction: dict[str, Any] = None
-) -> dict[str, Any]:
+    check: str, context: Dict[str, Any], correction: Dict[str, Any] = None
+) -> Dict[str, Any]:
     """Convenience: learn from verification failure."""
     bridge = LearningMemoryBridge.get_instance()
     if not bridge.initialized:
@@ -305,7 +305,7 @@ class BrainOrchestrationLearningHook:
 
     @staticmethod
     async def on_reasoning_complete(
-        input_data: dict[str, Any], output_data: dict[str, Any], metadata: dict[str, Any]
+        input_data: Dict[str, Any], output_data: Dict[str, Any], metadata: Dict[str, Any]
     ) -> None:
         """Called when reasoning completes."""
         try:
@@ -314,7 +314,7 @@ class BrainOrchestrationLearningHook:
             logger.debug(f"Learning capture failed (non-critical): {e}")
 
     @staticmethod
-    async def on_verification_failure(check_name: str, failure_details: dict[str, Any]) -> None:
+    async def on_verification_failure(check_name: str, failure_details: Dict[str, Any]) -> None:
         """Called when verification fails."""
         try:
             await learn_from_mistake(check_name, failure_details)

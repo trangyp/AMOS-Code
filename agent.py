@@ -4,7 +4,7 @@ Provides agent functionality for AMOS system.
 """
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, Dict, List
 
 
 class Agent:

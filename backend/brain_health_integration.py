@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 """Brain Health Integration - Real-time brain system health monitoring.
 
@@ -9,6 +9,7 @@ Provides production-ready health checks for Kubernetes/Docker.
 import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from pathlib import Path
 
@@ -159,8 +160,6 @@ async def get_brain_health() -> BrainHealthStatus:
 
 if __name__ == "__main__":
     import asyncio
-from typing import Optional, Any
-from typing import Dict
 
     async def main():
         print("=" * 60)

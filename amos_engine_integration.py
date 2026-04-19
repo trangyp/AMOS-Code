@@ -1,7 +1,7 @@
 """AMOS Engine Integration - Unified API."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 from amos_field_dynamics import create_scalar_field
 from amos_self_evolution_test_suite import get_self_evolution_test_suite

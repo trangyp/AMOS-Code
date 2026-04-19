@@ -143,7 +143,7 @@ class MoodTracker:
 
         return (round(valence, 2), round(arousal, 2))
 
-    def get_recent_moods(self, hours: int = 24) -> list[dict[str, Any]]:
+    def get_recent_moods(self, hours: int = 24) -> List[dict[str, Any]]:
         """Get recent mood entries."""
         cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]

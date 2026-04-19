@@ -15,8 +15,6 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 
 import hashlib
 import json
@@ -25,7 +23,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Redis for queue
 try:
@@ -87,7 +85,7 @@ class Job:
     job_id: str
     task_name: str
     system: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     priority: JobPriority = JobPriority.MEDIUM
     status: JobStatus = JobStatus.PENDING
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -121,7 +119,7 @@ class TaskQueue:
     """Central task queue with SuperBrain governance."""
 
     # Task registry for 12 systems
-    TASK_REGISTRY: dict[str, dict[str, Any]] = {
+    TASK_REGISTRY: Dict[str, dict[str, Any]] = {
         # Cognitive Router tasks
         "cognitive_router.analyze_task": {
             "system": "cognitive_router",
@@ -209,7 +207,7 @@ class TaskQueue:
     }
 
     # Scheduled tasks (cron-like)
-    SCHEDULED_TASKS: list[dict[str, Any]] = [
+    SCHEDULED_TASKS: List[dict[str, Any]] = [
         {
             "task": "resilience_engine.health_check",
             "schedule": "*/5 * * * *",  # Every 5 minutes
@@ -237,9 +235,9 @@ class TaskQueue:
         self.max_workers = max_workers
         self._redis: redis.Redis = None
         self._brain = None
-        self._executor: ThreadPoolExecutor | None = None
+        self._executor: Optional[ThreadPoolExecutor] = None
         self._stats = WorkerStats()
-        self._handlers: dict[str, Callable] = {}
+        self._handlers: Dict[str, Callable] = {}
         self._running = False
 
         # Initialize connections
@@ -270,7 +268,7 @@ class TaskQueue:
     def submit_job(
         self,
         task_name: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         system: str = None,
         priority: JobPriority = JobPriority.MEDIUM,
         scheduled_for: datetime = None,
@@ -349,7 +347,7 @@ class TaskQueue:
 
         return None
 
-    def get_job(self, job_id: str) -> Job | None:
+    def get_job(self, job_id: str) -> Optional[Job]:
         """Get job by ID."""
         if not self._redis:
             return None
@@ -527,7 +525,7 @@ class TaskQueue:
             else:
                 time.sleep(1)  # No jobs, sleep briefly
 
-    def _fetch_next_job(self) -> Job | None:
+    def _fetch_next_job(self) -> Optional[Job]:
         """Fetch next job from queue (prioritized)."""
         if not self._redis:
             return None
@@ -636,7 +634,7 @@ task_queue = TaskQueue()
 # Convenience functions
 def submit_task(
     task_name: str,
-    payload: dict[str, Any],
+    payload: Dict[str, Any],
     priority: JobPriority = JobPriority.MEDIUM,
     scheduled_for: datetime = None,
     correlation_id: str = None,
@@ -651,7 +649,7 @@ def submit_task(
     )
 
 
-def get_job_status(job_id: str) -> JobStatus | None:
+def get_job_status(job_id: str) -> Optional[JobStatus]:
     """Get job status."""
     job = task_queue.get_job(job_id)
     return job.status if job else None

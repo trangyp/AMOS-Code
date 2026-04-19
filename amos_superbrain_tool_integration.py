@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """
 AMOS SuperBrain Equation Tool Integration
 Connects the 41-domain equation system to AMOS tool ecosystem.
@@ -267,7 +265,7 @@ class AMOSSuperBrainEquationTool:
                 execution_id=execution_id
             )
 
-    def list_available_equations(self, domain: str  = None) -> list[dict[str, Any]]:
+    def list_available_equations(self, domain: str  = None) -> List[dict[str, Any]]:
         """
         List all available equations, optionally filtered by domain.
 
@@ -304,7 +302,7 @@ class AMOSSuperBrainEquationTool:
 
     def batch_execute(
         self,
-        computations: list[tuple[str, dict[str, Any]]]
+        computations: List[tuple[str, dict[str, Any]]]
     ) -> List[EquationToolResult]:
         """
         Execute multiple equations in batch.

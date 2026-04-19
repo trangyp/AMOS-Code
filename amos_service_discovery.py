@@ -32,7 +32,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class HealthStatus(Enum):
@@ -62,7 +62,7 @@ class ServiceEndpoint:
     port: int
     protocol: str = "http"
     path: str = "/"
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def url(self) -> str:
@@ -110,7 +110,7 @@ class ServiceInstance:
     endpoint: ServiceEndpoint
     version: str = "1.0.0"
     tags: List[str] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     health_checks: List[HealthCheck] = field(default_factory=list)
 
     # Runtime state
@@ -136,7 +136,7 @@ class ServiceDefinition:
     name: str
     description: str = ""
     tags: List[str] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     health_check: Optional[HealthCheck] = None
 
     # Load balancing strategy
@@ -150,7 +150,7 @@ class LoadBalancer:
 
     def __init__(self, strategy: str = "round_robin"):
         self.strategy = strategy
-        self._round_robin_counters: dict[str, int] = defaultdict(int)
+        self._round_robin_counters: Dict[str, int] = defaultdict(int)
 
     def select_instance(
         self, service_name: str, instances: List[ServiceInstance]
@@ -217,18 +217,18 @@ class ServiceDiscoveryRegistry:
 
     def __init__(self):
         # Service catalog
-        self._services: dict[str, ServiceDefinition] = {}
-        self._instances: dict[str, list[ServiceInstance]] = defaultdict(list)
+        self._services: Dict[str, ServiceDefinition] = {}
+        self._instances: Dict[str, list[ServiceInstance]] = defaultdict(list)
 
         # Load balancers per service
-        self._load_balancers: dict[str, LoadBalancer] = {}
+        self._load_balancers: Dict[str, LoadBalancer] = {}
 
         # Health check threads
-        self._health_check_threads: dict[str, threading.Thread] = {}
+        self._health_check_threads: Dict[str, threading.Thread] = {}
         self._stop_health_checks: threading.Event = threading.Event()
 
         # Watchers for service changes
-        self._watchers: list[Callable[[str, str, ServiceInstance], None]] = []
+        self._watchers: List[Callable[[str, str, ServiceInstance], None]] = []
 
         # Lock for thread safety
         self._lock = threading.RLock()
@@ -375,7 +375,7 @@ class ServiceDiscoveryRegistry:
 
         instance.last_check = now
 
-    def get_service_stats(self) -> dict[str, Any]:
+    def get_service_stats(self) -> Dict[str, Any]:
         """Get registry statistics."""
         with self._lock:
             total_services = len(self._services)
@@ -414,7 +414,7 @@ class ServiceDiscoveryClient:
     ):
         self.registry = registry
         self.discovery_mode = discovery_mode
-        self._local_cache: dict[str, tuple[ServiceEndpoint, float]] = {}
+        self._local_cache: Dict[str, tuple[ServiceEndpoint, float]] = {}
         self._cache_ttl = 30  # seconds
 
     def discover(self, service_name: str, use_cache: bool = True) -> Optional[ServiceEndpoint]:

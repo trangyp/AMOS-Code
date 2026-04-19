@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Canon Learning Engine - Learning with canonical knowledge integration.
 
 Uses real AMOS Canon definitions to guide learning processes:
@@ -9,8 +11,6 @@ Uses real AMOS Canon definitions to guide learning processes:
 Creator: Trang Phan
 Version: 3.0.0
 """
-
-from __future__ import annotations
 
 import hashlib
 import time
@@ -179,7 +179,7 @@ class CanonLearningEngine:
 
     def _create_canon_pattern(
         self, entry: CanonKnowledgeEntry, domain: str, index: int
-    ) -> LearningPattern | None:
+    ) -> Optional[LearningPattern]:
         """Create a learning pattern from a Canon entry."""
         pattern_id = f"canon_{entry.key}_{index}"
 
@@ -255,7 +255,7 @@ class CanonLearningEngine:
 
 
 # Global instance
-_canon_learning_engine: CanonLearningEngine | None = None
+_canon_learning_engine: Optional[CanonLearningEngine] = None
 
 
 def get_canon_learning_engine() -> CanonLearningEngine:

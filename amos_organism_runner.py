@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_axiom_validator import AxiomValidator, ValidationReport
 from amos_coherence_engine import SignalExtractionEngine
@@ -57,7 +57,7 @@ class OrganismHealth:
     state: OrganismState = OrganismState.DORMANT
 
     # Layer health (0-1 scores)
-    layer_health: dict[int, float] = field(default_factory=dict)
+    layer_health: Dict[int, float] = field(default_factory=dict)
 
     # System metrics
     coherence_score: float = 0.0

@@ -71,8 +71,9 @@ import uuid
 import hashlib
 import re
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 from functools import wraps
 from contextvars import ContextVar
 
@@ -947,5 +948,4 @@ async def example_usage():
 
 if __name__ == "__main__":
     import asyncio
-from typing import Callable, Set
     asyncio.run(example_usage())

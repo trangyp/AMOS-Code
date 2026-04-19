@@ -32,7 +32,7 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class SemanticStatus(Enum):
@@ -89,18 +89,18 @@ class SemanticCategory:
     last_redefined: float = field(default_factory=time.time)
 
     # Relations
-    disjoint_with: set[str] = field(default_factory=set)
-    contains: set[str] = field(default_factory=set)
-    overlaps_with: set[str] = field(default_factory=set)
+    disjoint_with: Set[str] = field(default_factory=set)
+    contains: Set[str] = field(default_factory=set)
+    overlaps_with: Set[str] = field(default_factory=set)
 
     # Governance
-    linked_detectors: set[str] = field(default_factory=set)
-    linked_enforcers: set[str] = field(default_factory=set)
-    linked_governance: set[str] = field(default_factory=set)
+    linked_detectors: Set[str] = field(default_factory=set)
+    linked_enforcers: Set[str] = field(default_factory=set)
+    linked_governance: Set[str] = field(default_factory=set)
 
     # State
     status: SemanticStatus = SemanticStatus.VALID
-    drift_history: list[dict[str, Any]] = field(default_factory=list)
+    drift_history: List[dict[str, Any]] = field(default_factory=list)
 
     def is_orphaned(self) -> bool:
         """Check if category has no live machinery."""
@@ -131,7 +131,7 @@ class ConstitutionalLayer:
     description: str
 
     # What this layer governs
-    governs_layers: set[int]  # Which layer numbers this can modify
+    governs_layers: Set[int]  # Which layer numbers this can modify
 
     # Ratification requirements
     ratification_threshold: str  # "unanimous", "supermajority", "simple", "single"
@@ -146,7 +146,7 @@ class ConstitutionalLayer:
     anchor_justification: str = ""
 
     # Tracking
-    amendments: list[dict[str, Any]] = field(default_factory=list)
+    amendments: List[dict[str, Any]] = field(default_factory=list)
     created_at: float = field(default_factory=time.time)
 
 
@@ -158,14 +158,14 @@ class Actor:
 
     actor_id: str
     name: str
-    capabilities: set[str]
+    capabilities: Set[str]
     incentives: Dict[str, float]  # incentive → weight
     time_horizon: str  # "immediate", "short", "medium", "long"
     authority_level: int
 
     # Veto power
     has_veto: bool = False
-    veto_scope: set[str] = field(default_factory=set)
+    veto_scope: Set[str] = field(default_factory=set)
 
     # Coordination costs
     coordination_cost: float = 1.0
@@ -180,25 +180,25 @@ class Coalition:
 
     coalition_id: str
     name: str
-    actors: set[str]
-    shared_workflows: set[str]
+    actors: Set[str]
+    shared_workflows: Set[str]
 
     # Timing alignment
-    timing_windows: dict[str, tuple[float, float]]  # actor → (start, end)
+    timing_windows: Dict[str, tuple[float, float]]  # actor → (start, end)
 
     # Incentive compatibility
     incentive_alignment: float = 1.0  # 0 = conflict, 1 = perfect alignment
 
     # Veto analysis
     veto_required: bool = False
-    veto_actors: set[str] = field(default_factory=set)
+    veto_actors: Set[str] = field(default_factory=set)
 
     # Stability
     stability: CoalitionStability = CoalitionStability.STABLE
 
     # Externality tracking
     externalized_costs: Dict[str, float] = field(default_factory=dict)
-    successor_burdens: list[dict[str, Any]] = field(default_factory=list)
+    successor_burdens: List[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -220,7 +220,7 @@ class Evidence:
 
     # Contamination tracking
     derived_from_assumption: str = None  # Self-confirming?
-    cross_sources: set[str] = field(default_factory=set)  # Mixed sources?
+    cross_sources: Set[str] = field(default_factory=set)  # Mixed sources?
 
     # Belief update tracking
     prior_influence: float = 0.5  # How much prior dominated
@@ -244,7 +244,7 @@ class Verdict:
 
     # Appeals
     appealable: bool = True
-    appeals: list[dict[str, Any]] = field(default_factory=list)
+    appeals: List[dict[str, Any]] = field(default_factory=list)
 
     # Provenance
     formed_by: str = ""
@@ -266,14 +266,14 @@ class Concept:
     definition: str
 
     # Continuity
-    version_history: list[dict[str, Any]] = field(default_factory=list)
+    version_history: List[dict[str, Any]] = field(default_factory=list)
     continuity_path: str = "continuous"  # continuous, replacement, rupture
 
     # Relations
     predecessor: str = None
-    successors: set[str] = field(default_factory=set)
-    splits_from: set[str] = field(default_factory=set)
-    merges_into: set[str] = field(default_factory=set)
+    successors: Set[str] = field(default_factory=set)
+    splits_from: Set[str] = field(default_factory=set)
+    merges_into: Set[str] = field(default_factory=set)
 
     # Governance
     split_versioned: bool = False
@@ -288,8 +288,8 @@ class GraphView:
 
     view_id: str
     view_type: str  # authority, dependency, ownership, truth, audit, runtime
-    nodes: set[str]
-    edges: list[tuple[str, str, str]]  # (from, to, relation)
+    nodes: Set[str]
+    edges: List[tuple[str, str, str]]  # (from, to, relation)
 
     # Dual mappings
     dual_with: Dict[str, str] = field(default_factory=dict)  # view → mapping
@@ -298,8 +298,8 @@ class GraphView:
     # Shape tracking
     shape_stability_score: float = 1.0
     mutation_rate: float = 0.0
-    hidden_hubs: set[str] = field(default_factory=set)
-    fragile_bridges: set[str] = field(default_factory=set)
+    hidden_hubs: Set[str] = field(default_factory=set)
+    fragile_bridges: Set[str] = field(default_factory=set)
 
 
 @dataclass
@@ -313,12 +313,12 @@ class Purpose:
     serves_invariant: str
 
     # Alignment
-    linked_mechanisms: set[str] = field(default_factory=set)
+    linked_mechanisms: Set[str] = field(default_factory=set)
     effectiveness_score: float = 1.0
 
     # Drift tracking
     last_validated: float = field(default_factory=time.time)
-    validation_history: list[dict[str, Any]] = field(default_factory=list)
+    validation_history: List[dict[str, Any]] = field(default_factory=list)
 
     # Status
     is_means_not_end: bool = False

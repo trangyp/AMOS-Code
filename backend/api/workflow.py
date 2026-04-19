@@ -7,7 +7,9 @@ Owner: Trang Phan
 Version: 2.1.0
 """
 
-from typing import Dict
+from __future__ import annotations
+
+from typing import Any
 import sys
 from pathlib import Path
 
@@ -27,7 +29,6 @@ try:
 except ImportError:
     BRAIN_AVAILABLE = False
 
-from typing import Any, List, Optional
 
 from backend.workflow import (
     ActivityStatus,
@@ -44,7 +45,7 @@ class WorkflowCreateRequest(BaseModel):
     """Request to create a new workflow."""
 
     workflow_type: str = Field(..., description="Type of workflow to execute")
-    input_data: Dict[str, Any] = Field(default_factory=dict, description="Initial workflow input")
+    input_data: dict[str, Any] = Field(default_factory=dict, description="Initial workflow input")
     correlation_id: Optional[str] = Field(None, description="External correlation ID")
 
 
@@ -61,7 +62,7 @@ class WorkflowResponse(BaseModel):
     completed_activities: int
     failed_activities: int
     compensating_activities: int
-    result: Dict[str, Any] = None
+    result: dict[str, Any] = None
     error: Optional[str] = None
 
 
@@ -75,15 +76,15 @@ class ActivityResponse(BaseModel):
     completed_at: Optional[float] = None
     retry_count: int
     error: Optional[str] = None
-    result_preview: Dict[str, Any] = None
+    result_preview: dict[str, Any] = None
 
 
 class WorkflowListResponse(BaseModel):
     """List of workflows response."""
 
-    workflows: List[WorkflowResponse]
+    workflows: list[WorkflowResponse]
     total: int
-    by_status: Dict[str, int]
+    by_status: dict[str, int]
 
 
 class CompensationRequest(BaseModel):
@@ -97,7 +98,7 @@ class CompensationResponse(BaseModel):
 
     workflow_id: str
     compensation_status: str
-    compensated_activities: List[str]
+    compensated_activities: list[str]
     failed_compensations: list[dict[str, Any]]
 
 
@@ -159,7 +160,7 @@ async def get_workflow_activities(
     workflow_id: str,
     service: WorkflowService = Depends(get_workflow_service),
     current_user: User = Depends(get_current_user),
-) -> List[ActivityResponse]:
+) -> list[ActivityResponse]:
     """Get all activities for a workflow."""
     instance = service.get_workflow(workflow_id)
     if not instance:
@@ -231,7 +232,7 @@ async def list_workflows(
     """List all workflows with optional filtering."""
     workflows = service.list_workflows(status=status_filter, limit=limit)
 
-    by_status: Dict[str, int] = {}
+    by_status: dict[str, int] = {}
     for wf in workflows:
         s = wf.status.value
         by_status[s] = by_status.get(s, 0) + 1
@@ -246,7 +247,7 @@ async def list_workflows(
 @router.post("/{workflow_id}/pause")
 async def pause_workflow(
     workflow_id: str, service: WorkflowService = Depends(get_workflow_service)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Pause a running workflow."""
     instance = service.get_workflow(workflow_id)
     if not instance:
@@ -261,7 +262,7 @@ async def pause_workflow(
 @router.post("/{workflow_id}/resume")
 async def resume_workflow(
     workflow_id: str, service: WorkflowService = Depends(get_workflow_service)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Resume a paused workflow."""
     instance = service.get_workflow(workflow_id)
     if not instance:
@@ -298,7 +299,7 @@ def _instance_to_response(instance: WorkflowInstance) -> WorkflowResponse:
     )
 
 
-def _preview_result(result: Any) -> Dict[str, Any]:
+def _preview_result(result: Any) -> dict[str, Any]:
     """Create a preview of result data (truncate large data)."""
     if result is None:
         return None

@@ -15,7 +15,7 @@ Implements verification of all 10 axioms from the 21-tuple specification:
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 class AxiomID(Enum):
@@ -49,7 +49,7 @@ class AxiomChecker:
     def __init__(self):
         self.check_results: List[AxiomCheckResult] = []
 
-    def check_all_axioms(self, system_state: Dict[str, Any]) -> dict[AxiomID, AxiomCheckResult]:
+    def check_all_axioms(self, system_state: Dict[str, Any]) -> Dict[AxiomID, AxiomCheckResult]:
         """Check all 10 axioms against system state."""
         results = {}
 
@@ -314,7 +314,7 @@ class AxiomChecker:
         }
 
 
-def verify_maximal_spec(state: Dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+def verify_maximal_spec(state: Dict[str, Any]) -> Tuple[bool, dict[str, Any]]:
     """Verify system satisfies all 10 axioms of maximal specification.
 
     Returns: (all_satisfied, summary_dict)

@@ -17,7 +17,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class ExperimentStatus(Enum):
@@ -63,7 +63,7 @@ class Run:
     params: Dict[str, Any] = field(default_factory=dict)
 
     # Metrics (time-series)
-    metrics: dict[str, list[tuple[float, float]]] = field(default_factory=dict)
+    metrics: Dict[str, list[tuple[float, float]]] = field(default_factory=dict)
 
     # Artifacts
     artifacts: Dict[str, str] = field(default_factory=dict)
@@ -123,8 +123,8 @@ class AMOSExperimentTracker:
         self.artifacts: Dict[str, ModelArtifact] = {}
 
         # Search indexes
-        self.experiments_by_tag: dict[str, list[str]] = {}
-        self.runs_by_status: dict[ExperimentStatus, list[str]] = {
+        self.experiments_by_tag: Dict[str, list[str]] = {}
+        self.runs_by_status: Dict[ExperimentStatus, list[str]] = {
             status: [] for status in ExperimentStatus
         }
 
@@ -177,7 +177,7 @@ class AMOSExperimentTracker:
                 self.experiments_by_tag[tag].append(exp.experiment_id)
 
     def create_experiment(
-        self, name: str, description: str = "", tags: dict[str, str] = None
+        self, name: str, description: str = "", tags: Dict[str, str] = None
     ) -> str:
         """Create a new experiment."""
         experiment_id = f"exp_{uuid.uuid4().hex[:8]}"
@@ -201,8 +201,8 @@ class AMOSExperimentTracker:
         self,
         experiment_id: str,
         run_name: str = "",
-        params: dict[str, Any] = None,
-        tags: dict[str, str] = None,
+        params: Dict[str, Any] = None,
+        tags: Dict[str, str] = None,
     ) -> str:
         """Start a new run in an experiment."""
         if experiment_id not in self.experiments:
@@ -341,7 +341,7 @@ class AMOSExperimentTracker:
 
         return comparison
 
-    def search_experiments(self, query: str = "", tags: dict[str, str] = None) -> List[Experiment]:
+    def search_experiments(self, query: str = "", tags: Dict[str, str] = None) -> List[Experiment]:
         """Search experiments by name or tags."""
         results = []
 

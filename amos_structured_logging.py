@@ -44,7 +44,7 @@ import time
 import uuid
 from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Dict, Optional
 
 # FastAPI imports
 try:
@@ -58,7 +58,6 @@ except ImportError:
 # OpenTelemetry integration
 try:
     from opentelemetry import trace
-from typing import Callable, Set
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False

@@ -47,7 +47,7 @@ class BrainPoweredOrchestrator:
     - repo_doctor verification (invariant checking)
     """
 
-    def __init__(self, config: BrainExecutionConfig | None = None):
+    def __init__(self, config: Optional[BrainExecutionConfig] = None):
         self.config = config or BrainExecutionConfig()
         self._slots: dict[str, ExecutionSlot] = {}
         self._twin = Twin(self.config.repo_path)
@@ -97,7 +97,7 @@ class BrainPoweredOrchestrator:
         return self._repo_doctor
 
     def execute_intelligent(
-        self, objective: str, mode: SlotMode = SlotMode.LOCAL, context: dict[str, Any] | None = None
+        self, objective: str, mode: SlotMode = SlotMode.LOCAL, context: Optional[dict[str, Any] ] = None
     ) -> ExecutionSlot:
         """
         Execute with full brain integration.
@@ -240,7 +240,7 @@ class BrainPoweredOrchestrator:
             slot.log_event("repo_doctor_error", error=str(e))
             return {"verified": False, "error": str(e)}
 
-    def get_slot(self, slot_id: str) -> ExecutionSlot | None:
+    def get_slot(self, slot_id: str) -> Optional[ExecutionSlot]:
         """Get slot by ID."""
         return self._slots.get(slot_id)
 

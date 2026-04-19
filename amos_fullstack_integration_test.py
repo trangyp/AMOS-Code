@@ -18,13 +18,14 @@ Exit codes:
 import asyncio
 import sys
 from datetime import datetime
+from typing import List
 
 
 class IntegrationTestRunner:
     """Run full-stack integration tests."""
 
     def __init__(self):
-        self.results: list[tuple[str, bool, str]] = []
+        self.results: List[tuple[str, bool, str]] = []
 
     def test(self, name: str, passed: bool, message: str = ""):
         """Record test result."""

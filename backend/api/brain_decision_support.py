@@ -8,8 +8,6 @@ Provides decision support capabilities using AMOS cognitive architecture:
 - Decision audit trail
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -20,7 +18,7 @@ from datetime import datetime, timezone
 UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
@@ -34,7 +32,6 @@ for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
 
 # Import AMOS brain components
 try:
-    from typing import Any
 
     from cognitive_engine import CognitiveResult, get_cognitive_engine
 
@@ -74,10 +71,10 @@ class Alternative(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str
     description: str = ""
-    scores: dict[str, float] = Field(default_factory=dict)
-    pros: list[str] = Field(default_factory=list)
-    cons: list[str] = Field(default_factory=list)
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    scores: Dict[str, float] = Field(default_factory=dict)
+    pros: List[str] = Field(default_factory=list)
+    cons: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class RiskFactor(BaseModel):
@@ -100,11 +97,11 @@ class DecisionRequest(BaseModel):
 
     decision_context: str = Field(..., min_length=1, max_length=5000)
     decision_type: DecisionType = DecisionType.STRATEGIC
-    criteria: list[Criterion] = Field(default_factory=list)
-    alternatives: list[Alternative] = Field(default_factory=list)
-    risk_factors: list[RiskFactor] = Field(default_factory=list)
-    constraints: list[str] = Field(default_factory=list)
-    context: dict[str, Any] = Field(default_factory=dict)
+    criteria: List[Criterion] = Field(default_factory=list)
+    alternatives: List[Alternative] = Field(default_factory=list)
+    risk_factors: List[RiskFactor] = Field(default_factory=list)
+    constraints: List[str] = Field(default_factory=list)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class DecisionAnalysis(BaseModel):
@@ -113,7 +110,7 @@ class DecisionAnalysis(BaseModel):
     alternative_id: str
     alternative_name: str
     weighted_score: float
-    criterion_scores: dict[str, float]
+    criterion_scores: Dict[str, float]
     risk_adjusted_score: float
     ranking: int
     recommendation_strength: str
@@ -126,11 +123,11 @@ class DecisionRecommendation(BaseModel):
     decision_context: str
     decision_type: DecisionType
     recommendation: str
-    recommended_alternative: Alternative | None = None
-    alternative_analyses: list[DecisionAnalysis]
+    recommended_alternative: Optional[Alternative] = None
+    alternative_analyses: List[DecisionAnalysis]
     overall_confidence: float
-    risk_assessment: dict[str, Any]
-    reasoning: list[str]
+    risk_assessment: Dict[str, Any]
+    reasoning: List[str]
     timestamp: datetime
     amos_validated: bool = False
 
@@ -141,7 +138,7 @@ class DecisionAuditEntry(BaseModel):
     decision_id: str
     timestamp: datetime
     action: str
-    details: dict[str, Any]
+    details: Dict[str, Any]
 
 
 class DecisionSupportEngine:
@@ -149,8 +146,8 @@ class DecisionSupportEngine:
 
     def __init__(self) -> None:
         self._cognitive_engine = None
-        self._memory: BrainMemory | None = None
-        self._audit_log: list[DecisionAuditEntry] = []
+        self._memory: Optional[BrainMemory] = None
+        self._audit_log: List[DecisionAuditEntry] = []
         self._lock = asyncio.Lock()
 
     def _get_cognitive_engine(self):
@@ -159,7 +156,7 @@ class DecisionSupportEngine:
             self._cognitive_engine = get_cognitive_engine()
         return self._cognitive_engine
 
-    def _get_memory(self) -> BrainMemory | None:
+    def _get_memory(self) -> Optional[BrainMemory]:
         """Get brain memory."""
         if _BRAIN_AVAILABLE and self._memory is None:
             try:
@@ -177,7 +174,7 @@ class DecisionSupportEngine:
             cog_engine = self._get_cognitive_engine()
 
             # Analyze each alternative
-            analyses: list[DecisionAnalysis] = []
+            analyses: List[DecisionAnalysis] = []
 
             if request.alternatives:
                 for alt in request.alternatives:
@@ -263,14 +260,14 @@ class DecisionSupportEngine:
             return result
 
     async def _analyze_alternative(
-        self, alternative: Alternative, criteria: list[Criterion], risk_factors: list[RiskFactor]
+        self, alternative: Alternative, criteria: List[Criterion], risk_factors: List[RiskFactor]
     ) -> DecisionAnalysis:
         """Analyze a single alternative."""
 
         # Calculate weighted score
         total_weight = sum(c.weight for c in criteria) if criteria else 1.0
         weighted_score = 0.0
-        criterion_scores: dict[str, float] = {}
+        criterion_scores: Dict[str, float] = {}
 
         for criterion in criteria:
             score = alternative.scores.get(criterion.name, criterion.min_score)
@@ -310,7 +307,7 @@ class DecisionSupportEngine:
         )
 
     def _calculate_overall_confidence(
-        self, analyses: list[DecisionAnalysis], risk_factors: list[RiskFactor]
+        self, analyses: List[DecisionAnalysis], risk_factors: List[RiskFactor]
     ) -> float:
         """Calculate overall confidence in decision."""
         if not analyses:
@@ -330,7 +327,7 @@ class DecisionSupportEngine:
 
         return max(0.0, min(1.0, base_confidence - risk_penalty))
 
-    def _assess_risks(self, risk_factors: list[RiskFactor]) -> dict[str, Any]:
+    def _assess_risks(self, risk_factors: List[RiskFactor]) -> Dict[str, Any]:
         """Assess overall risk."""
         if not risk_factors:
             return {"overall_risk": "low", "risk_score": 0.0, "critical_risks": []}
@@ -359,12 +356,12 @@ class DecisionSupportEngine:
     async def _build_reasoning(
         self,
         request: DecisionRequest,
-        analyses: list[DecisionAnalysis],
-        recommended: Alternative | None,
+        analyses: List[DecisionAnalysis],
+        recommended: Optional[Alternative],
         cog_engine: Any,
-    ) -> list[str]:
+    ) -> List[str]:
         """Build reasoning for decision."""
-        reasoning: list[str] = []
+        reasoning: List[str] = []
 
         # Context analysis
         reasoning.append(
@@ -469,13 +466,13 @@ class DecisionSupportEngine:
             "progress": 1.0,
         }
 
-    def get_audit_trail(self, decision_id: str | None = None) -> list[DecisionAuditEntry]:
+    def get_audit_trail(self, decision_id: Optional[str] = None) -> List[DecisionAuditEntry]:
         """Get audit trail for decisions."""
         if decision_id:
             return [e for e in self._audit_log if e.decision_id == decision_id]
         return self._audit_log
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get engine statistics."""
         total_decisions = len(set(e.decision_id for e in self._audit_log))
 
@@ -489,7 +486,7 @@ class DecisionSupportEngine:
 
 
 # Global engine instance
-_decision_engine: DecisionSupportEngine | None = None
+_decision_engine: Optional[DecisionSupportEngine] = None
 
 
 def get_decision_engine() -> DecisionSupportEngine:
@@ -529,21 +526,21 @@ async def stream_decision_analysis(request: DecisionRequest) -> StreamingRespons
 
 
 @router.get("/audit/{decision_id}")
-async def get_decision_audit(decision_id: str) -> list[DecisionAuditEntry]:
+async def get_decision_audit(decision_id: str) -> List[DecisionAuditEntry]:
     """Get audit trail for a specific decision."""
     engine = get_decision_engine()
     return engine.get_audit_trail(decision_id)
 
 
 @router.get("/stats")
-async def get_decision_stats() -> dict[str, Any]:
+async def get_decision_stats() -> Dict[str, Any]:
     """Get decision support engine statistics."""
     engine = get_decision_engine()
     return engine.get_stats()
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check for decision support engine."""
     engine = get_decision_engine()
     stats = engine.get_stats()

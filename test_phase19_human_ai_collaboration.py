@@ -1,6 +1,6 @@
 """Test suite for Phase 19: Human-AI Collaborative Cognition."""
 
-from typing import Any
+from typing import Any, Dict
 
 import pytest
 

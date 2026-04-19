@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, Dict, List, Optional
 
 """
 AMOS FastLoop Brain Bridge
@@ -15,6 +15,7 @@ import asyncio
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from amos_delta_state import (
     create_delta,

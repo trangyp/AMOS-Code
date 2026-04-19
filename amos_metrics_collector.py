@@ -59,7 +59,7 @@ class AMOSMetricsCollector:
         self.requests: deque = deque(maxlen=10000)
         self.counters: Dict[str, float] = defaultdict(float)
         self.gauges: Dict[str, float] = {}
-        self.histograms: dict[str, list[float]] = defaultdict(list)
+        self.histograms: Dict[str, list[float]] = defaultdict(list)
         self._lock = threading.Lock()
         self._start_time = time.time()
 

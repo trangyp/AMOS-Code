@@ -1,8 +1,10 @@
 """AMOS Brain Dashboard - Analytics and reporting for reasoning patterns."""
 
+from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
+UTC = timezone.utc
 from typing import Any
 
 from amos_brain import get_amos_integration
@@ -27,10 +29,8 @@ class BrainDashboard:
     - Confidence score trends
     - Reasoning pattern insights
     """
-from __future__ import annotations
 
-
-    def __init__(self, memory: BrainMemory | None = None):
+    def __init__(self, memory: Optional[BrainMemory] = None):
         self.memory = memory or get_brain_memory()
         self._amos = None
 

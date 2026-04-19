@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from pathlib import Path
+from typing import Optional
 
 UTC = timezone.utc
 
@@ -208,7 +209,7 @@ class AMOSDatabase:
             conn.commit()
             return cursor.lastrowid
 
-    async def store_health(self, overall_status: str, checks: list[dict], uptime_seconds: float):
+    async def store_health(self, overall_status: str, checks: list[dict], uptime_seconds: float) -> None:
         """Store health check result."""
         async with self._lock:
             return await asyncio.get_running_loop().run_in_executor(
@@ -280,14 +281,14 @@ class AMOSDatabase:
             )
             conn.commit()
 
-    async def get_query_history(self, limit: int = 100, hours: int | None = None) -> list[dict]:
+    async def get_query_history(self, limit: int = 100, hours: Optional[int] = None) -> list[dict]:
         """Get query history."""
         async with self._lock:
             return await asyncio.get_running_loop().run_in_executor(
                 None, self._get_query_history_sync, limit, hours
             )
 
-    def _get_query_history_sync(self, limit: int, hours: int | None) -> list[dict]:
+    def _get_query_history_sync(self, limit: int, hours: Optional[int]) -> list[dict]:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
 
@@ -457,7 +458,7 @@ class AMOSDatabase:
 
 
 # Global database instance
-_db: AMOSDatabase | None = None
+_db: Optional[AMOSDatabase] = None
 
 
 def get_database() -> AMOSDatabase:

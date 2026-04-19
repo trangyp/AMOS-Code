@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 """AMOS Brain ↔ Superintelligence Core Bridge
 
@@ -18,9 +18,10 @@ Version: 29.1.0
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
-from amos_superintelligence_core import (
 from typing import Optional
+from amos_superintelligence_core import (
     AMOSSuperintelligenceCore,
     superintelligence_process,
 )

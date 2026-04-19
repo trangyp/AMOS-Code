@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """Direct Brain Kernel API - Direct integration with AMOS Kernel Runtime.
 
@@ -10,8 +10,6 @@ Provides endpoints that directly use the AMOS kernel runtime for:
 
 This is the real production implementation using clawspring.amos_brain.
 """
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -66,10 +64,10 @@ router = APIRouter(prefix="/api/v1/brain-kernel", tags=["Brain Kernel Direct"])
 class KernelCycleRequest(BaseModel):
     """Request for AMOS kernel cognitive cycle."""
 
-    observation: dict[str, Any] = Field(
+    observation: Dict[str, Any] = Field(
         default_factory=dict, description="Current state observation"
     )
-    goal: dict[str, Any] = Field(default_factory=dict, description="Target goal specification")
+    goal: Dict[str, Any] = Field(default_factory=dict, description="Target goal specification")
     timeout_ms: int = Field(default=5000, ge=100, le=60000, description="Timeout in milliseconds")
 
 
@@ -80,18 +78,18 @@ class KernelCycleResponse(BaseModel):
     status: str
     legality_score: float
     sigma: float
-    selected_branch: str | None
+    selected_branch: Optional[str]
     latency_ms: float
     timestamp: str
-    details: dict[str, Any]
+    details: Dict[str, Any]
 
 
 class StateGraphRequest(BaseModel):
     """Request to create/analyze state graph."""
 
-    vertices: list[str] = Field(default_factory=list)
-    edges: list[dict[str, Any]] = Field(default_factory=list)
-    state_vars: dict[str, float] = Field(default_factory=dict)
+    vertices: List[str] = Field(default_factory=list)
+    edges: List[dict[str, Any]] = Field(default_factory=list)
+    state_vars: Dict[str, float] = Field(default_factory=dict)
 
 
 class StateGraphResponse(BaseModel):
@@ -111,8 +109,8 @@ class StateGraphResponse(BaseModel):
 class LegalityRequest(BaseModel):
     """Request for legality assessment."""
 
-    state_data: dict[str, Any]
-    invariants: list[str] = Field(default_factory=list)
+    state_data: Dict[str, Any]
+    invariants: List[str] = Field(default_factory=list)
 
 
 class LegalityResponse(BaseModel):
@@ -121,7 +119,7 @@ class LegalityResponse(BaseModel):
     is_legal: bool
     legality_score: float
     drift_coefficient: float
-    violations: list[dict[str, Any]]
+    violations: List[dict[str, Any]]
     mode: str
 
 
@@ -293,7 +291,7 @@ async def check_legality(request: LegalityRequest) -> LegalityResponse:
 
 
 @router.get("/docs")
-async def get_kernel_docs() -> dict[str, Any]:
+async def get_kernel_docs() -> Dict[str, Any]:
     """Get AMOS kernel documentation."""
     return {
         "name": "AMOS Kernel Runtime API",

@@ -88,7 +88,7 @@ class ArchNode:
     id: str
     node_type: ArchNodeType
     name: str
-    plane: PlaneType | None = None
+    plane: Optional[PlaneType] = None
     owner: str = None
     source_file: str = None
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -189,7 +189,7 @@ class ArchitectureGraph:
     - Upgrade topology
     """
 
-    def __init__(self, repo_path: Path | None = None):
+    def __init__(self, repo_path: Optional[Path] = None):
         self.repo_path = repo_path
         self.nodes: dict[str, ArchNode] = {}
         self.edges: list[ArchEdge] = []
@@ -204,7 +204,7 @@ class ArchitectureGraph:
         node_id: str,
         node_type: ArchNodeType,
         name: str,
-        plane: PlaneType | None = None,
+        plane: Optional[PlaneType] = None,
         owner: str = None,
         source_file: str = None,
         metadata: dict[str, Any] = None,
@@ -258,7 +258,7 @@ class ArchitectureGraph:
         self.authority_claims[fact_name] = claim
         return claim
 
-    def get_node(self, node_id: str) -> ArchNode | None:
+    def get_node(self, node_id: str) -> Optional[ArchNode]:
         """Get a node by ID."""
         return self.nodes.get(node_id)
 

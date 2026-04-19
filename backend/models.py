@@ -10,12 +10,15 @@ Version: 3.0.0
 from __future__ import annotations
 
 
+
+
 import json
 from datetime import datetime, timezone
 
 UTC = timezone.utc
 
 from sqlmodel import Field, Session, SQLModel, create_engine, select
+from typing import List
 
 # Database configuration
 DATABASE_URL = "sqlite:///./amos.db"
@@ -208,11 +211,11 @@ class AgentTaskCRUD:
         return task
 
     @staticmethod
-    def get(session: Session, task_id: int) -> AgentTask | None:
+    def get(session: Session, task_id: int) -> Optional[AgentTask]:
         return session.get(AgentTask, task_id)
 
     @staticmethod
-    def list(session: Session, status: str = None, limit: int = 100) -> list[AgentTask]:
+    def list(session: Session, status: str = None, limit: int = 100) -> List[AgentTask]:
         query = select(AgentTask)
         if status:
             query = query.where(AgentTask.status == status)
@@ -220,7 +223,7 @@ class AgentTaskCRUD:
         return session.exec(query).all()
 
     @staticmethod
-    def update(session: Session, task_id: int, **kwargs) -> AgentTask | None:
+    def update(session: Session, task_id: int, **kwargs) -> Optional[AgentTask]:
         task = session.get(AgentTask, task_id)
         if task:
             for key, value in kwargs.items():
@@ -251,7 +254,7 @@ class MemoryEntryCRUD:
         return entry
 
     @staticmethod
-    def get(session: Session, entry_id: int) -> MemoryEntry | None:
+    def get(session: Session, entry_id: int) -> Optional[MemoryEntry]:
         entry = session.get(MemoryEntry, entry_id)
         if entry:
             entry.access_count += 1
@@ -262,7 +265,7 @@ class MemoryEntryCRUD:
     @staticmethod
     def search(
         session: Session, system: str = None, query: str = None, limit: int = 100
-    ) -> list[MemoryEntry]:
+    ) -> List[MemoryEntry]:
         statement = select(MemoryEntry)
         if system:
             statement = statement.where(MemoryEntry.system == system)
@@ -292,11 +295,11 @@ class CheckpointCRUD:
         return checkpoint
 
     @staticmethod
-    def get(session: Session, checkpoint_id: int) -> Checkpoint | None:
+    def get(session: Session, checkpoint_id: int) -> Optional[Checkpoint]:
         return session.get(Checkpoint, checkpoint_id)
 
     @staticmethod
-    def list(session: Session, limit: int = 100) -> list[Checkpoint]:
+    def list(session: Session, limit: int = 100) -> List[Checkpoint]:
         statement = select(Checkpoint).order_by(Checkpoint.created_at.desc()).limit(limit)
         return session.exec(statement).all()
 

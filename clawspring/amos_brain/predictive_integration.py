@@ -1,11 +1,9 @@
 """AMOS Predictive Integration - Connect Organism Predictive Engine to Cognitive System."""
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # Add organism OS to path - use relative path from this file
 ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
@@ -156,7 +154,7 @@ class PredictiveIntegration:
             except Exception:
                 pass
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get predictive integration status."""
         return {
             "initialized": self._initialized,

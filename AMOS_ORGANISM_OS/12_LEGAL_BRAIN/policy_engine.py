@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class PolicyStatus(Enum):
@@ -53,7 +53,7 @@ class Policy:
     name: str = ""
     description: str = ""
     category: str = ""  # security, privacy, operational, legal
-    rules: list[PolicyRule] = field(default_factory=list)
+    rules: List[PolicyRule] = field(default_factory=list)
     status: PolicyStatus = PolicyStatus.DRAFT
     enforcement: EnforcementLevel = EnforcementLevel.MODERATE
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -82,7 +82,7 @@ class PolicyEngine:
         self.data_dir.mkdir(exist_ok=True)
 
         self.policies: Dict[str, Policy] = {}
-        self.violations: list[dict[str, Any]] = []
+        self.violations: List[dict[str, Any]] = []
 
         self._load_policies()
         self._init_default_policies()
@@ -301,7 +301,7 @@ class PolicyEngine:
         }
         policies_file.write_text(json.dumps(data, indent=2))
 
-    def list_policies(self) -> list[dict[str, Any]]:
+    def list_policies(self) -> List[dict[str, Any]]:
         """List all policies."""
         return [p.to_dict() for p in self.policies.values()]
 

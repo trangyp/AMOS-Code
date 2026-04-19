@@ -21,6 +21,7 @@ sys.path.insert(0, str(_AMOS_ROOT / "AMOS_ORGANISM_OS"))
 sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
 
 from amos_cognitive_bridge_v2 import AMOSCognitiveBridge, get_cognitive_bridge
+from typing import List
 
 
 class MCPIntegrationTester:

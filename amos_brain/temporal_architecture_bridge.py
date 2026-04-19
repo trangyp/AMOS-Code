@@ -38,10 +38,10 @@ class TemporalArchitectureBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: TemporalArchitectureEngine | None = None
+        self._engine: Optional[TemporalArchitectureEngine] = None
 
     @property
-    def engine(self) -> TemporalArchitectureEngine | None:
+    def engine(self) -> Optional[TemporalArchitectureEngine]:
         """Lazy initialization of temporal engine."""
         if self._engine is None and TEMPORAL_AVAILABLE:
             self._engine = TemporalArchitectureEngine()

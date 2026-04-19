@@ -6,8 +6,6 @@ Real tests verifying brain integration works correctly.
 Run with: python test_gateway_integration.py
 """
 
-from __future__ import annotations
-
 import asyncio
 import sys
 from pathlib import Path

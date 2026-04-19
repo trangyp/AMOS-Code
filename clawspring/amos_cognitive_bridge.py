@@ -10,7 +10,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, Optional, Tuple
 
 from clawspring.amos_ubi_engine import AMOSUBIEngine, UBIResult
 

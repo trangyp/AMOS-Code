@@ -38,6 +38,7 @@ Example:
 from __future__ import annotations
 
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any, Literal
 
@@ -171,12 +172,12 @@ class EventMetadata(BaseAMOSModel):
         examples=["1.0", "1.1", "2.0"]
     )
     
-    trace_id: str | None = Field(
+    trace_id: Optional[str] = Field(
         default=None,
         description="Distributed trace ID for request correlation"
     )
     
-    tenant_id: str | None = Field(
+    tenant_id: Optional[str] = Field(
         default=None,
         description="Multi-tenant workspace ID (if applicable)"
     )
@@ -240,11 +241,11 @@ class ClawsSessionPayload(BaseAMOSModel):
     """Payload for claws.session.* events."""
     
     session_id: str
-    user_id: str | None = None
-    workspace_id: str | None = None
-    client_info: dict[str, Any] | None = None
-    ip_address: str | None = None
-    user_agent: str | None = None
+    user_id: Optional[str] = None
+    workspace_id: Optional[str] = None
+    client_info: Optional[dict[str, Any] ] = None
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
 
 
 class ClawsAgentPayload(BaseAMOSModel):
@@ -254,8 +255,8 @@ class ClawsAgentPayload(BaseAMOSModel):
     agent_type: str
     parameters: dict[str, Any] = Field(default_factory=dict)
     priority: EventPriority = EventPriority.NORMAL
-    target_repo: str | None = None
-    requested_by: str | None = None
+    target_repo: Optional[str] = None
+    requested_by: Optional[str] = None
 
 
 class MailinhLeadPayload(BaseAMOSModel):
@@ -263,15 +264,15 @@ class MailinhLeadPayload(BaseAMOSModel):
     
     lead_id: str
     source: str = Field(description="Lead source: 'website', 'api', 'import'")
-    email: str | None = None
-    phone: str | None = None
-    name: str | None = None
-    company: str | None = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    name: Optional[str] = None
+    company: Optional[str] = None
     form_data: dict[str, Any] = Field(default_factory=dict)
     tags: list[str] = Field(default_factory=list)
-    utm_source: str | None = None
-    utm_medium: str | None = None
-    utm_campaign: str | None = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
 
 
 class RepoScanPayload(BaseAMOSModel):
@@ -279,15 +280,15 @@ class RepoScanPayload(BaseAMOSModel):
     
     scan_id: str
     repo_url: str
-    repo_name: str | None = None
+    repo_name: Optional[str] = None
     branch: str = "main"
     scan_types: list[str] = Field(default_factory=list)
-    commit_sha: str | None = None
+    commit_sha: Optional[str] = None
     findings_count: int = 0
     findings_by_severity: dict[str, int] = Field(default_factory=dict)
-    duration_seconds: float | None = None
-    report_url: str | None = None
-    triggered_by: str | None = None
+    duration_seconds: Optional[float] = None
+    report_url: Optional[str] = None
+    triggered_by: Optional[str] = None
 
 
 class RepoFixPayload(BaseAMOSModel):
@@ -297,12 +298,12 @@ class RepoFixPayload(BaseAMOSModel):
     scan_id: str
     repo_url: str
     files_changed: list[str] = Field(default_factory=list)
-    pr_url: str | None = None
-    pr_number: int | None = None
-    commit_sha: str | None = None
+    pr_url: Optional[str] = None
+    pr_number: Optional[int] = None
+    commit_sha: Optional[str] = None
     fixes_applied: int = 0
     fixes_failed: int = 0
-    applied_by: str | None = None
+    applied_by: Optional[str] = None
 
 
 class ModelRunPayload(BaseAMOSModel):
@@ -311,29 +312,29 @@ class ModelRunPayload(BaseAMOSModel):
     run_id: str
     model_id: str
     provider: str = Field(description="Provider: 'ollama', 'lmstudio', 'vllm'")
-    prompt_tokens: int | None = None
-    completion_tokens: int | None = None
-    total_tokens: int | None = None
-    duration_ms: float | None = None
-    input_length: int | None = None
-    output_length: int | None = None
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    total_tokens: Optional[int] = None
+    duration_ms: Optional[float] = None
+    input_length: Optional[int] = None
+    output_length: Optional[int] = None
     metrics: dict[str, Any] = Field(default_factory=dict)
-    requested_by: str | None = None
+    requested_by: Optional[str] = None
 
 
 class WorkflowPayload(BaseAMOSModel):
     """Payload for workflow.* events."""
     
     workflow_id: str
-    workflow_name: str | None = None
+    workflow_name: Optional[str] = None
     execution_id: str
-    step_id: str | None = None
-    step_name: str | None = None
+    step_id: Optional[str] = None
+    step_name: Optional[str] = None
     input_data: dict[str, Any] = Field(default_factory=dict)
     output_data: dict[str, Any] = Field(default_factory=dict)
-    error_message: str | None = None
-    duration_ms: float | None = None
-    triggered_by: str | None = None
+    error_message: Optional[str] = None
+    duration_ms: Optional[float] = None
+    triggered_by: Optional[str] = None
 
 
 class UniverseSchemaPayload(BaseAMOSModel):
@@ -344,8 +345,8 @@ class UniverseSchemaPayload(BaseAMOSModel):
     change_type: Literal["created", "updated", "deprecated", "removed"]
     affected_repos: list[str] = Field(default_factory=list)
     breaking_changes: bool = False
-    migration_guide_url: str | None = None
-    published_by: str | None = None
+    migration_guide_url: Optional[str] = None
+    published_by: Optional[str] = None
 
 
 class SystemAlertPayload(BaseAMOSModel):
@@ -355,9 +356,9 @@ class SystemAlertPayload(BaseAMOSModel):
     component: str = Field(description="Component: 'api', 'database', 'redis'")
     message: str
     details: dict[str, Any] = Field(default_factory=dict)
-    remediation: str | None = None
+    remediation: Optional[str] = None
     acknowledged: bool = False
-    acknowledged_by: str | None = None
+    acknowledged_by: Optional[str] = None
 
 
 # =============================================================================

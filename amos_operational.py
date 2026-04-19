@@ -19,6 +19,7 @@ import sys
 import time
 from collections import deque
 from datetime import datetime, timedelta
+from typing import List
 
 
 class AMOSOperational:

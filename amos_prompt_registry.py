@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 
 class PromptStage(Enum):
@@ -67,7 +67,7 @@ class PromptVersion:
     # Content
     template: str
     system_prompt: str = None
-    variables: list[PromptVariable] = field(default_factory=list)
+    variables: List[PromptVariable] = field(default_factory=list)
 
     # Metadata
     description: str = ""
@@ -83,13 +83,13 @@ class PromptVersion:
     cost_total: float = 0.0
 
     # Quality metrics
-    feedback_scores: list[float] = field(default_factory=list)
+    feedback_scores: List[float] = field(default_factory=list)
     quality_score: float = 0.0  # 0-100
 
     # Versioning
     parent_version: str = None
     changelog: str = ""
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
 
     def compute_hash(self) -> str:
         """Compute content hash for immutability verification."""
@@ -150,7 +150,7 @@ class PromptABTest:
     status: str = "running"  # running, paused, completed
 
     # Variants
-    variant_version_ids: list[str] = field(default_factory=list)
+    variant_version_ids: List[str] = field(default_factory=list)
 
     # Traffic split (must sum to 100)
     control_traffic: float = 50.0
@@ -221,7 +221,7 @@ class StorageBackend(Protocol):
         """Store prompt data."""
         ...
 
-    async def retrieve(self, key: str) -> dict[str, Any]:
+    async def retrieve(self, key: str) -> Dict[str, Any]:
         """Retrieve prompt data."""
         ...
 
@@ -229,7 +229,7 @@ class StorageBackend(Protocol):
         """Delete prompt data."""
         ...
 
-    async def list_keys(self, prefix: str) -> list[str]:
+    async def list_keys(self, prefix: str) -> List[str]:
         """List keys with prefix."""
         ...
 
@@ -247,7 +247,7 @@ class LocalStorageBackend:
         file_path.write_text(json.dumps(data, indent=2))
         return True
 
-    async def retrieve(self, key: str) -> dict[str, Any]:
+    async def retrieve(self, key: str) -> Dict[str, Any]:
         file_path = self.base_path / f"{key}.json"
         if file_path.exists():
             return json.loads(file_path.read_text())
@@ -260,7 +260,7 @@ class LocalStorageBackend:
             return True
         return False
 
-    async def list_keys(self, prefix: str) -> list[str]:
+    async def list_keys(self, prefix: str) -> List[str]:
         keys = []
         for file_path in self.base_path.rglob("*.json"):
             relative = file_path.relative_to(self.base_path)
@@ -292,13 +292,13 @@ class AMOSPromptRegistry:
         self.storage = storage or LocalStorageBackend()
 
         # In-memory caches
-        self.prompts: dict[str, dict[str, PromptVersion]] = {}  # prompt_id -> {version_id: version}
+        self.prompts: Dict[str, dict[str, PromptVersion]] = {}  # prompt_id -> {version_id: version}
         self.deployments: Dict[str, PromptDeployment] = {}
         self.ab_tests: Dict[str, PromptABTest] = {}
-        self.executions: list[PromptExecution] = []
+        self.executions: List[PromptExecution] = []
 
         # Environment configs
-        self.environment_configs: dict[Environment, dict[str, str]] = {
+        self.environment_configs: Dict[Environment, dict[str, str]] = {
             Environment.DEVELOPMENT: {},
             Environment.STAGING: {},
             Environment.PRODUCTION: {},
@@ -320,10 +320,10 @@ class AMOSPromptRegistry:
         prompt_id: str,
         template: str,
         system_prompt: str = None,
-        variables: list[PromptVariable] = None,
+        variables: List[PromptVariable] = None,
         description: str = "",
         created_by: str = "system",
-        tags: list[str] = None,
+        tags: List[str] = None,
     ) -> PromptVersion:
         """Create a new prompt with initial version."""
         if prompt_id in self.prompts:
@@ -355,7 +355,7 @@ class AMOSPromptRegistry:
         template: str,
         version_bump: str = "patch",  # major, minor, patch
         system_prompt: str = None,
-        variables: list[PromptVariable] = None,
+        variables: List[PromptVariable] = None,
         description: str = "",
         created_by: str = "system",
         changelog: str = "",
@@ -467,7 +467,7 @@ class AMOSPromptRegistry:
         prompt_id: str,
         environment: Environment = Environment.DEVELOPMENT,
         request_id: str = None,
-        variables: dict[str, Any] = None,
+        variables: Dict[str, Any] = None,
     ) -> Tuple[PromptVersion, PromptDeployment]:
         """Get prompt version for a request (with A/B testing support)."""
         if prompt_id not in self.prompts:
@@ -532,9 +532,9 @@ class AMOSPromptRegistry:
         prompt_id: str,
         name: str,
         control_version: str,
-        variant_versions: list[str],
+        variant_versions: List[str],
         control_traffic: float = 50.0,
-        variant_traffic: list[float] = None,
+        variant_traffic: List[float] = None,
         primary_metric: str = "quality_score",
     ) -> PromptABTest:
         """Start A/B test for prompt variants."""
@@ -719,7 +719,7 @@ class AMOSPromptRegistry:
 
     def list_prompts(
         self, stage: Optional[PromptStage] = None, tag: str = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """List prompts with optional filtering."""
         results = []
 

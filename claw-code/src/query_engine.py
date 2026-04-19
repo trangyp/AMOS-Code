@@ -8,6 +8,7 @@ from .port_manifest import PortManifest, build_port_manifest
 from .session_store import StoredSession, load_session, save_session
 from .tools import build_tool_backlog
 from .transcript import TranscriptStore
+from typing import Dict, List, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -23,9 +24,9 @@ class QueryEngineConfig:
 class TurnResult:
     prompt: str
     output: str
-    matched_commands: tuple[str, ...]
-    matched_tools: tuple[str, ...]
-    permission_denials: tuple[PermissionDenial, ...]
+    matched_commands: Tuple[str, ...]
+    matched_tools: Tuple[str, ...]
+    permission_denials: Tuple[PermissionDenial, ...]
     usage: UsageSummary
     stop_reason: str
 
@@ -35,8 +36,8 @@ class QueryEnginePort:
     manifest: PortManifest
     config: QueryEngineConfig = field(default_factory=QueryEngineConfig)
     session_id: str = field(default_factory=lambda: uuid4().hex)
-    mutable_messages: list[str] = field(default_factory=list)
-    permission_denials: list[PermissionDenial] = field(default_factory=list)
+    mutable_messages: List[str] = field(default_factory=list)
+    permission_denials: List[PermissionDenial] = field(default_factory=list)
     total_usage: UsageSummary = field(default_factory=UsageSummary)
     transcript_store: TranscriptStore = field(default_factory=TranscriptStore)
 
@@ -59,9 +60,9 @@ class QueryEnginePort:
     def submit_message(
         self,
         prompt: str,
-        matched_commands: tuple[str, ...] = (),
-        matched_tools: tuple[str, ...] = (),
-        denied_tools: tuple[PermissionDenial, ...] = (),
+        matched_commands: Tuple[str, ...] = (),
+        matched_tools: Tuple[str, ...] = (),
+        denied_tools: Tuple[PermissionDenial, ...] = (),
     ) -> TurnResult:
         if len(self.mutable_messages) >= self.config.max_turns:
             output = f"Max turns reached before processing prompt: {prompt}"
@@ -107,9 +108,9 @@ class QueryEnginePort:
     def stream_submit_message(
         self,
         prompt: str,
-        matched_commands: tuple[str, ...] = (),
-        matched_tools: tuple[str, ...] = (),
-        denied_tools: tuple[PermissionDenial, ...] = (),
+        matched_commands: Tuple[str, ...] = (),
+        matched_tools: Tuple[str, ...] = (),
+        denied_tools: Tuple[PermissionDenial, ...] = (),
     ):
         yield {"type": "message_start", "session_id": self.session_id, "prompt": prompt}
         if matched_commands:
@@ -138,7 +139,7 @@ class QueryEnginePort:
             self.mutable_messages[:] = self.mutable_messages[-self.config.compact_after_turns :]
         self.transcript_store.compact(self.config.compact_after_turns)
 
-    def replay_user_messages(self) -> tuple[str, ...]:
+    def replay_user_messages(self) -> Tuple[str, ...]:
         return self.transcript_store.replay()
 
     def flush_transcript(self) -> None:
@@ -156,7 +157,7 @@ class QueryEnginePort:
         )
         return str(path)
 
-    def _format_output(self, summary_lines: list[str]) -> str:
+    def _format_output(self, summary_lines: List[str]) -> str:
         if self.config.structured_output:
             payload = {
                 "summary": summary_lines,
@@ -165,8 +166,8 @@ class QueryEnginePort:
             return self._render_structured_output(payload)
         return "\n".join(summary_lines)
 
-    def _render_structured_output(self, payload: dict[str, object]) -> str:
-        last_error: Exception | None = None
+    def _render_structured_output(self, payload: Dict[str, object]) -> str:
+        last_error: Optional[Exception] = None
         for _ in range(self.config.structured_retry_limit):
             try:
                 return json.dumps(payload, indent=2)

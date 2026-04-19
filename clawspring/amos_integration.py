@@ -15,6 +15,7 @@ if str(_PARENT) not in sys.path:
 
 from amos_agent_bridge import AMOSAgentBridge
 from tool_registry import ToolDef, register_tool
+from typing import Optional
 
 
 class AMOSClawspringIntegration:

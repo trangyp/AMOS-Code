@@ -11,7 +11,7 @@ Evolution Rule:
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List
 
 
 class Substrate(Enum):
@@ -64,7 +64,7 @@ class QuantumState:
     """
 
     hilbert_dim: int = 2
-    density_matrix: list[list[complex]] = None
+    density_matrix: List[list[complex]] = None
     observables: List[str] = field(default_factory=list)
     operators: List[str] = field(default_factory=list)
     registers: Dict[str, int] = field(default_factory=dict)
@@ -128,7 +128,7 @@ class HybridState:
     active_bridges: List[str] = field(default_factory=list)
     thresholds: Dict[str, float] = field(default_factory=dict)
     uncertainty_weights: Dict[str, float] = field(default_factory=dict)
-    schedule: list[tuple[str, Any]] = field(default_factory=list)
+    schedule: List[tuple[str, Any]] = field(default_factory=list)
 
     def activate_bridge(self, bridge_id: str, source: str, target: str):
         self.active_bridges.append(f"{bridge_id}:{source}->{target}")
@@ -163,7 +163,7 @@ class TimeState:
 
     t: float = 0.0
     dt: float = 1.0
-    history: list[dict[str, Any]] = field(default_factory=list)
+    history: List[dict[str, Any]] = field(default_factory=list)
 
     def tick(self):
         self.t += self.dt

@@ -32,7 +32,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, List, Optional, Tuple
 
 # ============================================================================
 # ZOOM LEVELS — Layer Selection
@@ -129,7 +129,7 @@ class Layer8Interface:
             return None
         return self.amos_infinite.evolve(state, action, world)
 
-    def check_admissibility(self, state: Any) -> tuple[bool, list[str]]:
+    def check_admissibility(self, state: Any) -> Tuple[bool, list[str]]:
         """Check if state is in Z* (total admissible space)."""
         if not self.initialized or not self.amos_infinite:
             return False, ["layer_8_not_available"]
@@ -185,7 +185,7 @@ class Layer7Interface:
 
         self.initialized = any([self.omega, self.validator, self.coherence])
 
-    def validate_axioms(self, state: Any) -> tuple[bool, list[str]]:
+    def validate_axioms(self, state: Any) -> Tuple[bool, list[str]]:
         """Validate state against 32 Ω axioms."""
         if not self.validator:
             return False, ["validator_not_available"]

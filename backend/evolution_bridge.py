@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 from event_bus import event_bus
 
@@ -29,7 +29,7 @@ class EvolutionEngineBridge:
     def __init__(self):
         self._engine = None
         self._engine_loaded = False
-        self._evolution_history: list[dict] = []
+        self._evolution_history: List[dict] = []
         self._load_engine()
 
     def _load_engine(self):
@@ -62,7 +62,7 @@ class EvolutionEngineBridge:
         except Exception as e:
             print(f"[EvolutionBridge] Failed to load engine: {e}, using fallback")
 
-    async def run_evolution_cycle(self) -> dict[str, Any]:
+    async def run_evolution_cycle(self) -> Dict[str, Any]:
         """
         Run a self-evolution cycle.
 
@@ -113,7 +113,7 @@ class EvolutionEngineBridge:
 
         return evolution_record
 
-    async def _fallback_evolution(self) -> dict[str, Any]:
+    async def _fallback_evolution(self) -> Dict[str, Any]:
         """Fallback evolution when engine is not available."""
         # Simulate evolution analysis
         await asyncio.sleep(0.1)  # Simulate processing
@@ -140,11 +140,11 @@ class EvolutionEngineBridge:
             return await asyncio.to_thread(method, *args, **kwargs)
         return await loop.run_in_executor(None, method, *args, **kwargs)
 
-    def get_evolution_history(self, limit: int = 50) -> list[dict]:
+    def get_evolution_history(self, limit: int = 50) -> List[dict]:
         """Get evolution history."""
         return self._evolution_history[-limit:][::-1]
 
-    async def detect_opportunities(self) -> list[dict]:
+    async def detect_opportunities(self) -> List[dict]:
         """
         Detect evolution opportunities in the system.
 
@@ -191,7 +191,7 @@ class EvolutionEngineBridge:
 
         return opportunities
 
-    async def apply_evolution(self, opportunity_id: str) -> dict[str, Any]:
+    async def apply_evolution(self, opportunity_id: str) -> Dict[str, Any]:
         """
         Apply a specific evolution opportunity.
 
@@ -241,7 +241,7 @@ class EvolutionEngineBridge:
 
         return evolution_record
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get evolution engine status."""
         return {
             "engine_loaded": self._engine_loaded,

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Context Cache - Prompt Caching Optimization
 
@@ -26,7 +26,7 @@ class CacheEntry:
     key: str
     context: Dict[str, Any]
     response: str
-    embedding: list[float] | None
+    embedding: Optional[List[float] ]
     timestamp: float
     access_count: int = 0
     ttl_seconds: float = 300.0
@@ -37,7 +37,7 @@ class CacheHit:
     """Result of a cache lookup."""
 
     hit: bool
-    entry: CacheEntry | None
+    entry: Optional[CacheEntry]
     level: str  # l1_exact, l2_semantic, l3_partial, l4_vector, miss
     latency_ms: float
     similarity_score: float = 0.0
@@ -67,8 +67,8 @@ class ContextCacheManager:
         self._l2_cache: Dict[str, CacheEntry] = {}
 
         # L3: Partial context index
-        self._prefix_index: dict[str, list[CacheEntry]] = {}
-        self._suffix_index: dict[str, list[CacheEntry]] = {}
+        self._prefix_index: Dict[str, list[CacheEntry]] = {}
+        self._suffix_index: Dict[str, list[CacheEntry]] = {}
 
         # Statistics
         self.stats = {
@@ -187,7 +187,7 @@ class ContextCacheManager:
         query: str,
         context: Dict[str, Any],
         response: str,
-        embedding: list[float] | None = None,
+        embedding: Optional[List[float] ] = None,
         ttl: float = 300.0,
     ) -> None:
         """
@@ -230,7 +230,7 @@ class ContextCacheManager:
         """Check if cache entry has expired."""
         return (time.time() - entry.timestamp) > entry.ttl_seconds
 
-    def _check_partial_match(self, query: str) -> CacheEntry | None:
+    def _check_partial_match(self, query: str) -> Optional[CacheEntry]:
         """Check for partial context match using prefix index."""
         # Check longest prefix first (most specific)
         prefixes = self._extract_prefixes(query, n=5)
@@ -245,7 +245,7 @@ class ContextCacheManager:
 
         return None
 
-    async def _check_vector_similarity(self, query: str, vector_service) -> CacheEntry | None:
+    async def _check_vector_similarity(self, query: str, vector_service) -> Optional[CacheEntry]:
         """Check vector similarity using embedding service."""
         try:
             # Search for similar cached responses
@@ -313,7 +313,7 @@ class ContextCacheManager:
 
 
 # Global instance
-_context_cache: ContextCacheManager | None = None
+_context_cache: Optional[ContextCacheManager] = None
 
 
 def get_context_cache() -> ContextCacheManager:

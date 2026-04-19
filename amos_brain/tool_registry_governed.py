@@ -74,7 +74,7 @@ class GovernedToolRegistry:
             self._tool_count += 1
         return True
 
-    def get(self, name: str) -> Tool | None:
+    def get(self, name: str) -> Optional[Tool]:
         """Get a tool by name."""
         with self._lock:
             return self._tools.get(name)

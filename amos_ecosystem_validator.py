@@ -20,7 +20,7 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Callable, Dict, List, Protocol
 
 
 class TestResult:
@@ -33,7 +33,7 @@ class TestResult:
         passed: bool,
         duration_ms: float,
         error: str  = None,
-        details: dict[str, Any ] = None
+        details: Dict[str, Any ] = None
     ):
         self.test_name = test_name
         self.component = component
@@ -85,7 +85,7 @@ class AMOSEcosystemValidator:
     def __init__(self):
         self.test_cases: List[TestCase] = []
         self.report = ValidationReport(timestamp=datetime.now().isoformat())
-        self._test_registry: dict[str, list[TestCase]] = {}
+        self._test_registry: Dict[str, list[TestCase]] = {}
         self._parallel_limit = 5  # Max concurrent tests
 
     def register_test(self, test: TestCase) -> None:
@@ -513,7 +513,6 @@ class AMOSEcosystemValidator:
     def export_report(self, path: str) -> None:
         """Export validation report to JSON."""
         import json
-from typing import Callable, Protocol
 
         report_data = {
             "timestamp": self.report.timestamp,

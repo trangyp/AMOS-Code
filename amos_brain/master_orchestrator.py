@@ -25,7 +25,7 @@ class MasterOrchestrator:
         self._cognitive_engine = get_cognitive_engine()
 
     def orchestrate_cognitive_task(
-        self, task: str, domain: str = "general", context: dict[str, Any] | None = None
+        self, task: str, domain: str = "general", context: Optional[dict[str, Any] ] = None
     ) -> dict[str, Any]:
         """Orchestrate a cognitive task.
 
@@ -63,7 +63,7 @@ class MasterOrchestrator:
 
 
 # Global singleton instance
-_master_orchestrator: MasterOrchestrator | None = None
+_master_orchestrator: Optional[MasterOrchestrator] = None
 
 
 def get_orchestrator() -> MasterOrchestrator:

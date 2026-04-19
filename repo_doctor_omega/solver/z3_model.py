@@ -13,7 +13,6 @@ from typing import Any
 # Optional Z3 import - gracefully handle if not installed
 try:
     import z3
-from typing import List, Optional
 
     Z3_AVAILABLE = True
 except ImportError:

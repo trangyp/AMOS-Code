@@ -1,20 +1,17 @@
 """AMOS Brain Memory Integration - Persists reasoning to clawspring memory."""
 
-
 import hashlib
 import json
 import logging
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-from typing import List, Optional, Dict
-
 # Import clawspring memory if available
 try:
-    from clawspring.memory.store import MemoryEntry, save_memory
     CLAWSPRING_MEMORY = True
 except ImportError:
     CLAWSPRING_MEMORY = False
@@ -30,8 +27,6 @@ class BrainMemory:
     - Build reasoning history/audit trail
     - Recall relevant past analyses
     """
-from __future__ import annotations
-
 
     MEMORY_NAMESPACE = "amos_brain"
     REASONING_PREFIX = "[AMOS Reasoning]"
@@ -125,7 +120,7 @@ from __future__ import annotations
             except Exception as e:
                 logger.debug(f"Failed to load memory entry: {e}")
 
-    def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> list[dict[str, Any]]:
+    def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> List[dict[str, Any]]:
         """Find past reasoning similar to current problem.
 
         Args:
@@ -197,7 +192,7 @@ from __future__ import annotations
 
     def get_reasoning_history(
         self, limit: int = 10, tag_filter: str  = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get recent reasoning history.
 
         Args:

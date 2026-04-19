@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 import numpy as np
 
@@ -47,7 +47,7 @@ class EquationEntry:
     domain: str
     formula: str
     function: Callable[..., Any]
-    invariants: tuple[str, ...]
+    invariants: Tuple[str, ...]
     status: PhaseStatus
     added_date: str
 
@@ -64,9 +64,9 @@ class UnifiedEquationRegistry:
 
     def __init__(self, repo_path: str = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
-        self._equations: dict[str, EquationEntry] = {}
-        self._phases: dict[int, list[str]] = {i: [] for i in range(1, 21)}
-        self._domains: dict[str, list[str]] = {}
+        self._equations: Dict[str, EquationEntry] = {}
+        self._phases: Dict[int, list[str]] = {i: [] for i in range(1, 21)}
+        self._domains: Dict[str, list[str]] = {}
         self._initialized = False
 
     async def initialize(self) -> None:
@@ -190,7 +190,7 @@ class UnifiedEquationRegistry:
         """Sigmoid activation."""
         return 1 / (1 + np.exp(-x))
 
-    def get(self, name: str) -> EquationEntry | None:
+    def get(self, name: str) -> Optional[EquationEntry]:
         """Get equation by name."""
         return self._equations.get(name)
 
@@ -201,19 +201,19 @@ class UnifiedEquationRegistry:
             raise ValueError(f"Equation '{name}' not found")
         return entry.function(*args, **kwargs)
 
-    def list_all(self) -> list[str]:
+    def list_all(self) -> List[str]:
         """List all registered equation names."""
         return list(self._equations.keys())
 
-    def list_by_phase(self, phase: int) -> list[str]:
+    def list_by_phase(self, phase: int) -> List[str]:
         """List equations in a phase."""
         return self._phases.get(phase, [])
 
-    def list_by_domain(self, domain: str) -> list[str]:
+    def list_by_domain(self, domain: str) -> List[str]:
         """List equations in a domain."""
         return self._domains.get(domain, [])
 
-    def search(self, query: str) -> list[str]:
+    def search(self, query: str) -> List[str]:
         """Search equations by name or formula."""
         results = []
         query_lower = query.lower()
@@ -222,7 +222,7 @@ class UnifiedEquationRegistry:
                 results.append(name)
         return results
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get registry statistics."""
         return {
             "total_equations": len(self._equations),
@@ -233,7 +233,7 @@ class UnifiedEquationRegistry:
 
 
 # Singleton instance
-_registry: UnifiedEquationRegistry | None = None
+_registry: Optional[UnifiedEquationRegistry] = None
 
 
 async def get_unified_registry(repo_path: str = None) -> UnifiedEquationRegistry:

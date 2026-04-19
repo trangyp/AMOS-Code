@@ -90,7 +90,7 @@ class SignalDetector:
             "last_check": self._last_check,
         }
 
-    def _count_by(self, field: str) -> dict[str, int]:
+    def _count_by(self, field: str) -> Dict[str, int]:
         """Count signals by field."""
         counts: Dict[str, int] = {}
         for signal in self._signals:

@@ -15,7 +15,8 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, Tuple
 
 from fastapi import Depends, FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,7 +80,7 @@ class RateLimiter:
         self._limits: Dict[str, RateLimitEntry] = {}
         self._window_seconds = 60.0
 
-    def is_allowed(self, api_key: str) -> tuple[bool, dict[str, Any]]:
+    def is_allowed(self, api_key: str) -> Tuple[bool, dict[str, Any]]:
         now = time.time()
         entry = self._limits.get(api_key, RateLimitEntry())
 
@@ -110,7 +111,7 @@ class RateLimiter:
 
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-API_KEYS: dict[str, dict[str, Any]] = {
+API_KEYS: Dict[str, dict[str, Any]] = {
     "amos-dev-key-001": {"name": "Development", "rate_limit": 100, "permissions": ["read", "write", "execute"]},
     "amos-prod-key-001": {"name": "Production", "rate_limit": 1000, "permissions": ["read", "write", "execute", "admin"]}
 }
@@ -292,5 +293,4 @@ async def get_stats(api_key: str = Depends(verify_api_key)):
 
 if __name__ == "__main__":
     import uvicorn
-from typing import Protocol
     uvicorn.run(app, host="0.0.0.0", port=8000)

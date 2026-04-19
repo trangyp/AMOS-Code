@@ -230,7 +230,7 @@ class ContractManager:
         self.save()
         return new_alerts
 
-    def get_active_contracts(self) -> list[dict[str, Any]]:
+    def get_active_contracts(self) -> List[dict[str, Any]]:
         """Get all active contracts."""
         active = [
             c
@@ -239,7 +239,7 @@ class ContractManager:
         ]
         return [c.to_dict() for c in active]
 
-    def get_pending_alerts(self) -> list[dict[str, Any]]:
+    def get_pending_alerts(self) -> List[dict[str, Any]]:
         """Get pending (unacknowledged) alerts."""
         pending = [a for a in self.alerts if not a.acknowledged]
         return sorted(

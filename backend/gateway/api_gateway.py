@@ -16,12 +16,10 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # FastAPI for gateway
 try:
@@ -96,7 +94,7 @@ class RouteConfig:
 
     path: str
     target_url: str
-    methods: list[str]
+    methods: List[str]
     requires_auth: bool = True
     requires_governance: bool = True
     rate_limit_tier: str = "standard"  # standard, premium, unlimited
@@ -107,7 +105,7 @@ class APIGateway:
     """SuperBrain API Gateway with unified access control."""
 
     # Routes for 12 systems
-    ROUTES: dict[str, RouteConfig] = {
+    ROUTES: Dict[str, RouteConfig] = {
         # Core API routes
         "production_api": RouteConfig(
             path="/api/v1/production",
@@ -228,13 +226,13 @@ class APIGateway:
         ),
     }
 
-    def __init__(self, config: GatewayConfig | None = None):
+    def __init__(self, config: Optional[GatewayConfig] = None):
         self.config = config or GatewayConfig()
         self._redis: redis.Redis = None
         self._brain = None
-        self._circuits: dict[str, CircuitState] = {}
-        self._circuit_failures: dict[str, int] = {}
-        self._circuit_last_failure: dict[str, float] = {}
+        self._circuits: Dict[str, CircuitState] = {}
+        self._circuit_failures: Dict[str, int] = {}
+        self._circuit_last_failure: Dict[str, float] = {}
 
         # Initialize connections
         if REDIS_AVAILABLE:
@@ -459,7 +457,7 @@ class APIGateway:
         except Exception:
             return True  # Fail open
 
-    def _get_rate_limit_status(self) -> dict[str, Any]:
+    def _get_rate_limit_status(self) -> Dict[str, Any]:
         """Get current rate limit status."""
         if not self._redis:
             return {"status": "redis_unavailable"}
@@ -471,7 +469,7 @@ class APIGateway:
         except Exception:
             return {"status": "error"}
 
-    async def _authenticate(self, credentials: HTTPAuthorizationCredentials) -> Role | None:
+    async def _authenticate(self, credentials: HTTPAuthorizationCredentials) -> Optional[Role]:
         """Authenticate and return user role."""
         if not credentials:
             return None
@@ -514,7 +512,7 @@ gateway = APIGateway()
 
 
 # Convenience function for creating gateway
-def create_gateway_app() -> FastAPI | None:
+def create_gateway_app() -> Optional[FastAPI]:
     """Create and return gateway FastAPI app."""
     if FASTAPI_AVAILABLE:
         return gateway.app

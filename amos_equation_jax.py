@@ -17,7 +17,7 @@ Usage:
 """
 
 
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -219,7 +219,7 @@ class JAXEquationKernel(ExtendedEquationKernel):
     def execute_batch(
         self,
         name: str,
-        batch_params: list[dict[str, Any]],
+        batch_params: List[dict[str, Any]],
         batch_key: str = "x"
     ) -> List[Any]:
         """Execute equation on a batch of inputs using vmap.
@@ -292,7 +292,7 @@ class JAXEquationKernel(ExtendedEquationKernel):
         name: str,
         parameters: Dict[str, Any],
         iterations: int = 100
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Benchmark equation execution performance.
 
         Args:
@@ -304,7 +304,6 @@ class JAXEquationKernel(ExtendedEquationKernel):
             Dictionary with timing results
         """
         import time
-from typing import Callable, List, Tuple
 
         results = {}
 

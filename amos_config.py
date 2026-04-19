@@ -42,6 +42,7 @@ Version: 1.0.0
 import sys
 from enum import Enum
 from pathlib import Path
+from typing import List
 
 # Try to import pydantic-settings
 try:

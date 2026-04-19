@@ -17,7 +17,7 @@ Usage:
 import math
 import random
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Tuple
 
 import numpy as np
 from numpy.typing import NDArray
@@ -587,7 +587,6 @@ if __name__ == "__main__":
 
     # Count by domain
     from collections import Counter
-from typing import Callable, Optional
     domains = Counter(eq.domain for eq in all_eqs)
     print("\nBy domain:")
     for domain, count in domains.most_common():

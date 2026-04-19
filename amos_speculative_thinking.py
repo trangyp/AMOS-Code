@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 """AMOS Speculative Thinking - Medusa-Style Parallel Decoding
 
@@ -234,7 +234,7 @@ class SpeculativeThinkingEngine:
 
     def _verify_states_batch(
         self, base_state: ThinkingState, candidate_states: List[ThinkingState]
-    ) -> list[tuple[ThinkingState, bool]]:
+    ) -> List[tuple[ThinkingState, bool]]:
         """
         Verify multiple candidate states against constraints.
 

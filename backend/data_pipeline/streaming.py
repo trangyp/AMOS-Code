@@ -14,8 +14,6 @@ Owner: Trang Phan
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 
 import hashlib
 import json
@@ -25,7 +23,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Kafka integration
 try:
@@ -62,13 +60,13 @@ class StreamEvent:
     event_type: str
     source_system: str
     target_system: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     correlation_id: str = None
     user_id: str = None
     requires_governance: bool = True
     processed: bool = False
-    lineage: list[dict] = field(default_factory=list)
+    lineage: List[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -116,13 +114,13 @@ class DataPipelineManager:
     def __init__(self, kafka_bootstrap: str = None, redis_url: str = None):
         self.kafka_bootstrap = kafka_bootstrap or "localhost:9092"
         self.redis_url = redis_url or "redis://localhost:6379/1"
-        self._producer: KafkaProducer | None = None
-        self._consumer: KafkaConsumer | None = None
+        self._producer: Optional[KafkaProducer] = None
+        self._consumer: Optional[KafkaConsumer] = None
         self._redis: redis.Redis = None
         self._brain = None
         self._metrics = StreamMetrics()
-        self._local_buffer: list[StreamEvent] = []
-        self._processors: dict[str, list[Callable]] = defaultdict(list)
+        self._local_buffer: List[StreamEvent] = []
+        self._processors: Dict[str, list[Callable]] = defaultdict(list)
 
         self._init_connections()
 
@@ -195,7 +193,7 @@ class DataPipelineManager:
         self,
         event_type: str,
         source_system: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         target_system: str = None,
         correlation_id: str = None,
         requires_governance: bool = True,
@@ -290,7 +288,7 @@ class DataPipelineManager:
         event.processed = True
         return True
 
-    def create_stream_topology(self, system: str) -> dict[str, Any]:
+    def create_stream_topology(self, system: str) -> Dict[str, Any]:
         """Create stream topology for a system."""
         topology = {
             "system": system,
@@ -326,7 +324,7 @@ class DataPipelineManager:
 
         return self._metrics
 
-    def get_lineage_report(self, event_id: str) -> list[dict]:
+    def get_lineage_report(self, event_id: str) -> List[dict]:
         """Get data lineage for specific event."""
         # Search in local buffer
         for event in self._local_buffer:

@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from collections.abc import Callable
 
 """AMOS Cognitive Substrate - Minimum Viable Superintelligence Stack
@@ -159,6 +157,7 @@ from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 
 import numpy as np
@@ -245,7 +244,7 @@ class Object:
     id: str
     type: str  # e.g., "system", "database", "query", "user"
     properties: Dict[str, Any] = field(default_factory=dict)
-    state_history: list[tuple[datetime, dict[str, Any]]] = field(default_factory=list)
+    state_history: List[tuple[datetime, dict[str, Any]]] = field(default_factory=list)
     belief: float = 1.0  # 0-1, certainty of existence
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     last_observed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
@@ -258,7 +257,7 @@ class Object:
         self.state_history.append((timestamp, {key: old_value}))
         self.last_observed = timestamp
 
-    def get_property_history(self, key: str) -> list[tuple[datetime, Any]]:
+    def get_property_history(self, key: str) -> List[tuple[datetime, Any]]:
         """Get history of property changes."""
         return [(t, s.get(key)) for t, s in self.state_history if key in s]
 
@@ -324,8 +323,8 @@ class Mechanism:
     inputs: List[str]  # Input variable names
     outputs: List[str]  # Output variable names
     function: Callable[[dict[str, Any]], dict[str, Any]] = None
-    preconditions: list[Callable[[dict[str, Any]], bool]] = field(default_factory=list)
-    causal_graph: dict[str, list[str]] = field(default_factory=dict)  # var -> affected vars
+    preconditions: List[Callable[[dict[str, Any]], bool]] = field(default_factory=list)
+    causal_graph: Dict[str, list[str]] = field(default_factory=dict)  # var -> affected vars
     uncertainty: float = 0.0  # Model uncertainty
 
     def apply(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
@@ -477,7 +476,7 @@ class ObjectCentricWorldModel:
         self,
         action: Dict[str, Any],
         steps: int = 1,
-    ) -> list[tuple[str, float, dict[str, Any]]]:
+    ) -> List[tuple[str, float, dict[str, Any]]]:
         """
         Predict effects of an action using mechanisms.
 
@@ -588,7 +587,7 @@ class WorkingMemoryGraph:
     def __init__(self, name: str):
         self.name = name
         self.nodes: Dict[str, GraphNode] = {}
-        self.edges: dict[tuple[str, str], GraphEdge] = {}
+        self.edges: Dict[tuple[str, str], GraphEdge] = {}
         self.node_count = 0
 
     def add_node(
@@ -648,7 +647,7 @@ class WorkingMemoryGraph:
         source: str,
         target: str,
         max_depth: int = 5,
-    ) -> list[list[str]]:
+    ) -> List[list[str]]:
         """Find paths between nodes."""
         paths = []
         queue = [(source, [source])]
@@ -785,7 +784,7 @@ class SymbolicVerifier:
     """
 
     def __init__(self):
-        self.verification_stats: dict[VerificationMethod, dict[str, Any]] = {
+        self.verification_stats: Dict[VerificationMethod, dict[str, Any]] = {
             method: {"total": 0, "passed": 0, "avg_time_ms": 0.0} for method in VerificationMethod
         }
 
@@ -1048,7 +1047,7 @@ class OnlineLearningSystem:
 
     def __init__(self, learning_rate: float = 0.1):
         self.learning_rate = learning_rate
-        self.policies: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
+        self.policies: Dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
         self.error_history: List[ErrorRecord] = []
         self.update_history: List[PolicyUpdate] = []
         self.operator_error_counts: Dict[str, int] = defaultdict(int)
@@ -1196,7 +1195,7 @@ class ActiveExperimentationSystem:
     def design_experiment(
         self,
         target_variable: str,
-        action_space: list[dict[str, Any]],
+        action_space: List[dict[str, Any]],
         world_model: Optional[ObjectCentricWorldModel] = None,
     ) -> Optional[Experiment]:
         """
@@ -1303,7 +1302,7 @@ class ActiveExperimentationSystem:
         self,
         objective: str,
         target: Optional[str] = None,
-        action_space: list[dict[str, Any]] = None,
+        action_space: List[dict[str, Any]] = None,
         world_model: Optional[ObjectCentricWorldModel] = None,
     ) -> Dict[str, Any]:
         """
@@ -1479,7 +1478,7 @@ class PlannerExpert(ExpertModule):
             processing_time_ms=elapsed,
         )
 
-    def _generate_plan(self, goal: str, context: Dict[str, Any]) -> list[Dict[str, Any]]:
+    def _generate_plan(self, goal: str, context: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Generate intelligent plan steps using cognitive reasoning."""
         if not goal:
             return []
@@ -1552,8 +1551,8 @@ class SparseExpertRouter:
     """
 
     def __init__(self):
-        self.experts: dict[ExpertType, ExpertModule] = {}
-        self.routing_history: list[dict[str, Any]] = []
+        self.experts: Dict[ExpertType, ExpertModule] = {}
+        self.routing_history: List[dict[str, Any]] = []
         self._register_default_experts()
 
     def _register_default_experts(self) -> None:
@@ -1571,7 +1570,7 @@ class SparseExpertRouter:
         self,
         input_data: Dict[str, Any],
         top_k: int = 3,
-    ) -> list[tuple[ExpertType, float]]:
+    ) -> List[tuple[ExpertType, float]]:
         """
         Route input to top-k experts.
 
@@ -1599,7 +1598,7 @@ class SparseExpertRouter:
         self,
         input_data: Dict[str, Any],
         expert_types: Optional[list[ExpertType]] = None,
-    ) -> dict[ExpertType, ExpertResult]:
+    ) -> Dict[ExpertType, ExpertResult]:
         """
         Execute input through specified experts.
 
@@ -1619,9 +1618,9 @@ class SparseExpertRouter:
 
     def arbitrate(
         self,
-        results: dict[ExpertType, ExpertResult],
+        results: Dict[ExpertType, ExpertResult],
         conflict_resolution: str = "confidence_weighted",
-    ) -> tuple[ExpertResult, dict[str, Any]]:
+    ) -> Tuple[ExpertResult, dict[str, Any]]:
         """
         Arbitrate between expert results.
 
@@ -1683,7 +1682,7 @@ class ModeSeparationController:
     def __init__(self):
         self.current_mode: Mode = Mode.READ
         self.mode_history: List[ModeTransition] = []
-        self.mode_policies: dict[Mode, dict[str, Any]] = {
+        self.mode_policies: Dict[Mode, dict[str, Any]] = {
             Mode.READ: {"allow_output": False, "allow_inference": False},
             Mode.THINK: {"allow_output": False, "allow_inference": True},
             Mode.REASON: {"allow_output": False, "allow_inference": True},
@@ -1768,7 +1767,7 @@ class ModeSeparationController:
         # Only render, no new reasoning
         return str(verified_result.get("content", ""))
 
-    def get_mode_trace(self) -> list[dict[str, Any]]:
+    def get_mode_trace(self) -> List[dict[str, Any]]:
         """Get trace of mode transitions."""
         return [
             {
@@ -1803,7 +1802,7 @@ class MetacognitiveState:
     known_facts: Dict[str, float] = field(default_factory=dict)  # fact -> certainty
 
     # Inference tracking
-    derivation_chain: list[dict[str, Any]] = field(default_factory=list)
+    derivation_chain: List[dict[str, Any]] = field(default_factory=list)
 
     # Information gaps
     information_gaps: List[str] = field(default_factory=list)
@@ -1813,7 +1812,7 @@ class MetacognitiveState:
     suspected_faulty_operator: Optional[str] = None
 
     # Confidence calibration
-    confidence_history: list[tuple[str, float, bool]] = field(
+    confidence_history: List[tuple[str, float, bool]] = field(
         default_factory=list
     )  # (claim, confidence, was_correct)
 
@@ -1883,11 +1882,11 @@ class MetacognitiveSupervisor:
         self.current_state = MetacognitiveState()
         self.state_history: List[MetacognitiveState] = []
 
-    def what_is_known(self) -> dict[str, float]:
+    def what_is_known(self) -> Dict[str, float]:
         """Report what is known with certainty levels."""
         return self.current_state.known_facts.copy()
 
-    def what_was_inferred(self, depth: int = 5) -> list[dict[str, Any]]:
+    def what_was_inferred(self, depth: int = 5) -> List[dict[str, Any]]:
         """Report recent inference chain."""
         return self.current_state.derivation_chain[-depth:]
 
@@ -2130,7 +2129,7 @@ class AMOSCognitiveSubstrate:
     def select_experiment(
         self,
         target_variable: str,
-        action_space: list[dict[str, Any]],
+        action_space: List[dict[str, Any]],
     ) -> Dict[str, Any]:
         """
         Select action to reduce uncertainty.

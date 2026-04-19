@@ -21,6 +21,7 @@ from .real_learning_engine import (
     learn_from_task,
 )
 from .reasoning import RuleOfFour, RuleOfTwo
+from typing import Optional
 
 
 @dataclass
@@ -70,7 +71,7 @@ class BrainTaskProcessor:
         self.rule_of_four = RuleOfFour()
         self._task_counter = 0
         # Real Learning Engine integration
-        self._learning_engine: RealLearningEngine | None = None
+        self._learning_engine: Optional[RealLearningEngine] = None
         # Canon integration
         self._canon_bridge = None
 

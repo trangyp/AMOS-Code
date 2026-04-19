@@ -11,7 +11,7 @@ Verifies the 17-component admissibility model 𝔐_P:
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 from amosl.axioms import AxiomChecker, verify_maximal_spec
 
@@ -57,7 +57,7 @@ class GrandAdmissibilityVerifier:
 
     def verify_model(
         self, model: Dict[str, Any]
-    ) -> dict[AdmissibilityComponent, AdmissibilityResult]:
+    ) -> Dict[AdmissibilityComponent, AdmissibilityResult]:
         """Verify all 17 components of 𝔐_P exist and satisfy axioms."""
         results = {}
 
@@ -304,7 +304,7 @@ class GrandAdmissibilityVerifier:
             evidence={"has_ledger": present, "has_explainer": has_explainer},
         )
 
-    def verify_grand_theorem(self, model: Dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+    def verify_grand_theorem(self, model: Dict[str, Any]) -> Tuple[bool, dict[str, Any]]:
         """Verify the grand admissibility theorem:
 
         A program P is AMOS-admissible iff ∃𝔐_P such that:

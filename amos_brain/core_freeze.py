@@ -9,6 +9,7 @@ Normal agents are denied mutation access.
 import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from threading import Lock
 from typing import Any

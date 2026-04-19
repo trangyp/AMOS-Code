@@ -6,7 +6,7 @@ Structured AI agent system with safety controls, bounded scope, and audit trails
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from axiom_one_graph import (
     AxiomGraph,
@@ -80,7 +80,7 @@ class AgentPlan:
     id: str
     agent_id: str
     goal: str
-    steps: list[dict[str, Any]]
+    steps: List[dict[str, Any]]
     estimated_blast_radius: str
     requires_approval: bool
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
@@ -98,7 +98,7 @@ class Agent:
     permissions: List[str]
     budget_limit: float  # Max cost per run
     approval_threshold: str  # auto, low, medium, high
-    memory: list[dict[str, Any]] = field(default_factory=list)
+    memory: List[dict[str, Any]] = field(default_factory=list)
     action_log: List[AgentAction] = field(default_factory=list)
     status: str = "inactive"
 

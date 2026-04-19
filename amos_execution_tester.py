@@ -34,6 +34,7 @@ from datetime import datetime
 TEST_CODE = """
 import sys
 import time
+from typing import List
 
 print("Starting execution test...")
 for i in range(5):

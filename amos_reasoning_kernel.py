@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 """
 AMOS Reasoning Kernel
@@ -44,6 +42,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from functools import lru_cache
 
@@ -228,7 +227,7 @@ class InferenceRule:
     mode: ReasoningMode = field(default=ReasoningMode.DEDUCTIVE)
     input_types: List[str] = field(default_factory=list)
     output_type: str = field(default="")
-    preconditions: list[Callable[..., bool]] = field(default_factory=list)
+    preconditions: List[Callable[..., bool]] = field(default_factory=list)
     transformation: Callable[..., Any] = field(default=None)
     validity_conditions: List[str] = field(default_factory=list)
     uncertainty_update: str = field(default="multiply")
@@ -241,7 +240,7 @@ class InferenceRule:
                 return False
         return True
 
-    def apply(self, premises: List[Premise]) -> Any | None:
+    def apply(self, premises: List[Premise]) -> Optional[Any]:
         """Apply the rule to premises."""
         if not self.check_preconditions(premises):
             return None
@@ -284,7 +283,7 @@ class Conclusion:
     status: ConclusionStatus = field(default=ConclusionStatus.PROPOSED)
     premise_ids: List[str] = field(default_factory=list)
     rule_ids: List[str] = field(default_factory=list)
-    justification_id: str | None = field(default=None)
+    justification_id: Optional[str] = field(default=None)
     uncertainty_propagated: bool = field(default=False)
     contradiction_checked: bool = field(default=False)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -324,7 +323,7 @@ class Justification:
     rule_id: str = field(default="")
     confidence_update: float = field(default=1.0)
     reasoning_mode: ReasoningMode = field(default=ReasoningMode.DEDUCTIVE)
-    chain: list[dict[str, Any]] = field(default_factory=list)
+    chain: List[dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -355,7 +354,7 @@ class Conflict:
     severity: ConflictSeverity = field(default=ConflictSeverity.HARD)
     conflict_score: float = field(default=0.0)
     description: str = field(default="")
-    resolution_strategy: str | None = field(default=None)
+    resolution_strategy: Optional[str] = field(default=None)
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -729,8 +728,8 @@ class JustificationGraph:
     """
 
     def __init__(self):
-        self.nodes: dict[str, dict[str, Any]] = {}
-        self.edges: list[dict[str, str]] = []
+        self.nodes: Dict[str, dict[str, Any]] = {}
+        self.edges: List[dict[str, str]] = []
 
     def add_node(self, node_id: str, node_type: str, content: Any) -> None:
         """Add a node to the justification graph."""
@@ -740,7 +739,7 @@ class JustificationGraph:
         """Add an edge to the justification graph."""
         self.edges.append({"source": source, "relation": relation.value, "target": target})
 
-    def get_justification_path(self, conclusion_id: str) -> list[dict[str, Any]]:
+    def get_justification_path(self, conclusion_id: str) -> List[dict[str, Any]]:
         """
         Get the justification path for a conclusion.
 
@@ -785,7 +784,7 @@ class TruthMaintenanceSystem:
     """
 
     def __init__(self):
-        self.dependencies: dict[str, list[str]] = defaultdict(list)
+        self.dependencies: Dict[str, list[str]] = defaultdict(list)
         self.retractions: List[Retraction] = []
 
     def register_dependency(self, premise_id: str, conclusion_id: str) -> None:
@@ -854,7 +853,7 @@ class ReasoningModeController:
     """
 
     def __init__(self):
-        self.mode_scores: dict[ReasoningMode, dict[str, float]] = {
+        self.mode_scores: Dict[ReasoningMode, dict[str, float]] = {
             ReasoningMode.DEDUCTIVE: {"fit": 0.9, "yield": 0.95, "cost": 0.3, "risk": 0.1},
             ReasoningMode.ABDUCTIVE: {"fit": 0.8, "yield": 0.7, "cost": 0.6, "risk": 0.4},
             ReasoningMode.INDUCTIVE: {"fit": 0.7, "yield": 0.6, "cost": 0.5, "risk": 0.3},
@@ -893,7 +892,7 @@ class ReasoningModeController:
         logger.debug(f"Selected reasoning mode: {best_mode.value} (score: {best_score:.3f})")
         return best_mode
 
-    def get_mode_characteristics(self, mode: ReasoningMode) -> dict[str, float]:
+    def get_mode_characteristics(self, mode: ReasoningMode) -> Dict[str, float]:
         """Get characteristics for a specific mode."""
         return self.mode_scores.get(mode, {}).copy()
 
@@ -1012,7 +1011,7 @@ class ReasoningKernel:
         return premise
 
     async def select_inference_rules(
-        self, reasoning_mode: ReasoningMode, premises: List[Premise], goals: list[Any] | None = None
+        self, reasoning_mode: ReasoningMode, premises: List[Premise], goals: Optional[List[Any] ] = None
     ) -> List[InferenceRule]:
         """
         Select applicable inference rules.
@@ -1171,7 +1170,7 @@ class ReasoningKernel:
         return self.state.uncertainty_state
 
     async def detect_reasoning_conflicts(
-        self, conclusions: List[Conclusion], constraints: list[ConstraintCheck] | None = None
+        self, conclusions: List[Conclusion], constraints: Optional[List[ConstraintCheck] ] = None
     ) -> List[Conflict]:
         """
         Detect conflicts and contradictions.
@@ -1244,7 +1243,7 @@ class ReasoningKernel:
 
     async def search_counterexamples(
         self, conclusion: Conclusion, world_model: Dict[str, Any] = None
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """
         Search for counterexamples to a conclusion.
 
@@ -1295,7 +1294,7 @@ class ReasoningKernel:
         self,
         conclusions: List[Conclusion],
         conflict_state: List[Conflict],
-        tms: TruthMaintenanceSystem | None = None,
+        tms: Optional[TruthMaintenanceSystem] = None,
     ) -> List[Retraction]:
         """
         Retract conclusions that are invalid.
@@ -1387,7 +1386,7 @@ class ReasoningKernel:
 
     async def abductive_inference(
         self, observations: List[Premise], candidate_hypotheses: List[Hypothesis]
-    ) -> Hypothesis | None:
+    ) -> Optional[Hypothesis]:
         """
         Perform abductive inference (inference to best explanation).
 
@@ -1587,7 +1586,7 @@ class ReasoningKernel:
     # ===================================================================
 
     async def reasoning_step(
-        self, goals: list[Any] | None = None, constraints: list[ConstraintCheck] | None = None
+        self, goals: Optional[List[Any] ] = None, constraints: Optional[List[ConstraintCheck] ] = None
     ) -> ReasoningState:
         """
         Execute one step of the reasoning cycle.
@@ -1657,7 +1656,7 @@ class ReasoningKernel:
         return self.state
 
     async def run_reasoning(
-        self, max_steps: int = 10, quality_threshold: float = 0.8, goals: list[Any] | None = None
+        self, max_steps: int = 10, quality_threshold: float = 0.8, goals: Optional[List[Any] ] = None
     ) -> ReasoningState:
         """
         Run multi-step reasoning until convergence or max steps.
@@ -1699,7 +1698,7 @@ class ReasoningKernel:
         """Get all committed conclusions."""
         return [c for c in self.state.conclusions.values() if c.committed]
 
-    def get_justification_path(self, conclusion_id: str) -> list[dict[str, Any]]:
+    def get_justification_path(self, conclusion_id: str) -> List[dict[str, Any]]:
         """Get justification path for a conclusion."""
         return self.justification_graph.get_justification_path(conclusion_id)
 
@@ -1770,7 +1769,7 @@ def verify_invariant_rei04(kernel: ReasoningKernel) -> bool:
     return True
 
 
-def verify_all_invariants(kernel: ReasoningKernel) -> dict[str, bool]:
+def verify_all_invariants(kernel: ReasoningKernel) -> Dict[str, bool]:
     """Verify all reasoning invariants."""
     return {"REI01": verify_invariant_rei01(kernel), "REI04": verify_invariant_rei04(kernel)}
 

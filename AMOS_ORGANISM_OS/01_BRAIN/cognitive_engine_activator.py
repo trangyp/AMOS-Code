@@ -46,7 +46,7 @@ class CognitiveEngineActivator:
         self.engines: Dict[str, CognitiveEngine] = {}
         self._loaded = False
 
-    def load_all_engines(self) -> dict[str, CognitiveEngine]:
+    def load_all_engines(self) -> Dict[str, CognitiveEngine]:
         """Load all cognitive engines from _AMOS_BRAIN/Cognitive/."""
         if not self.ENGINE_DIR.exists():
             print(f"[COGNITIVE] Engine directory not found: {self.ENGINE_DIR}")

@@ -3,7 +3,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -80,8 +80,8 @@ class AutopsyResponse(BaseModel):
     started_at: str
     completed_at: str
     summary: Dict[str, Any]
-    issues: list[dict[str, Any]]
-    validation_steps: list[dict[str, Any]]
+    issues: List[dict[str, Any]]
+    validation_steps: List[dict[str, Any]]
 
 
 class GitTreeRequest(BaseModel):
@@ -184,7 +184,7 @@ async def get_git_tree(request: GitTreeRequest) -> Dict[str, Any]:
 
 
 @app.post("/axiom-one/git/content")
-async def get_file_content(request: FileContentRequest) -> dict[str, str]:
+async def get_file_content(request: FileContentRequest) -> Dict[str, str]:
     """Get file content."""
     git = get_git_service()
     try:
@@ -252,7 +252,7 @@ async def commit(request: CommitRequest) -> Dict[str, Any]:
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
+async def health() -> Dict[str, str]:
     return {"status": "healthy", "service": "axiom-one"}
 
 

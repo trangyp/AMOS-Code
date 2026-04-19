@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 """AMOS Expression Translation - Decodes human expression into structured logic."""
 
 import re
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -12,10 +11,10 @@ class TranslatedExpression:
 
     original: str
     structured_logic: str
-    detected_domains: list[str]
+    detected_domains: List[str]
     emotional_tone: str
-    implicit_constraints: list[str]
-    suggested_kernels: list[str]
+    implicit_constraints: List[str]
+    suggested_kernels: List[str]
 
 
 class ExpressionTranslator:
@@ -102,7 +101,7 @@ class ExpressionTranslator:
             suggested_kernels=kernels,
         )
 
-    def _detect_domains(self, text: str) -> list[str]:
+    def _detect_domains(self, text: str) -> List[str]:
         """Detect relevant cognitive domains."""
         text_lower = text.lower()
         detected = []
@@ -126,7 +125,7 @@ class ExpressionTranslator:
 
         return None
 
-    def _detect_constraints(self, text: str) -> list[str]:
+    def _detect_constraints(self, text: str) -> List[str]:
         """Detect implicit constraints."""
         text_lower = text.lower()
         constraints = []
@@ -140,9 +139,9 @@ class ExpressionTranslator:
     def _build_structured_logic(
         self,
         original: str,
-        domains: list[str],
+        domains: List[str],
         emotion: str,
-        constraints: list[str],
+        constraints: List[str],
     ) -> str:
         """Build structured logic representation."""
         lines = ["# Structured Logic Representation", ""]
@@ -170,7 +169,7 @@ class ExpressionTranslator:
 
         return "\n".join(lines)
 
-    def _suggest_kernels(self, domains: list[str], constraints: list[str]) -> list[str]:
+    def _suggest_kernels(self, domains: List[str], constraints: List[str]) -> List[str]:
         """Suggest appropriate AMOS kernels."""
         kernel_map = {
             "software": "K_TECH_ENGINE",

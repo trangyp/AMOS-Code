@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 # Import self-evolution infrastructure
 from .evolution_contract_registry import (
@@ -65,14 +65,14 @@ class ExecutionResult:
 
     evolution_id: str
     success: bool
-    phases: list[ExecutionStep] = field(default_factory=list)
-    regression_report: dict[str, Any] = field(default_factory=dict)
-    rollback_result: dict[str, Any] = field(default_factory=dict)
+    phases: List[ExecutionStep] = field(default_factory=list)
+    regression_report: Dict[str, Any] = field(default_factory=dict)
+    rollback_result: Dict[str, Any] = field(default_factory=dict)
     final_status: EvolutionStatus = EvolutionStatus.DRAFT
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    lessons_learned: list[str] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    lessons_learned: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "evolution_id": self.evolution_id,
             "success": self.success,
@@ -139,12 +139,12 @@ class EvolutionExecutionEngine:
 
         # Execution state
         self._current_execution: Optional[ExecutionResult] = None
-        self._execution_log: list[ExecutionResult] = []
+        self._execution_log: List[ExecutionResult] = []
 
     def execute_evolution(
         self,
         contract: EvolutionContract,
-        patches: list[PatchOperation],
+        patches: List[PatchOperation],
         auto_commit: bool = False,
     ) -> ExecutionResult:
         """Execute an evolution with full safety pipeline.
@@ -262,7 +262,7 @@ class EvolutionExecutionEngine:
 
     def _run_phase(self, phase: ExecutionPhase, phase_func: callable) -> ExecutionStep:
         """Run a single execution phase with timing."""
-        start = datetime.now(UTC)
+        start = datetime.now(timezone.utc)
         start_time = time.perf_counter()
 
         try:
@@ -273,7 +273,7 @@ class EvolutionExecutionEngine:
             return ExecutionStep(
                 phase=phase,
                 start_time=start.isoformat(),
-                end_time=datetime.now(UTC).isoformat(),
+                end_time=datetime.now(timezone.utc).isoformat(),
                 success=True,
                 details=details if isinstance(details, str) else str(details),
                 duration_ms=duration_ms,
@@ -285,7 +285,7 @@ class EvolutionExecutionEngine:
             return ExecutionStep(
                 phase=phase,
                 start_time=start.isoformat(),
-                end_time=datetime.now(UTC).isoformat(),
+                end_time=datetime.now(timezone.utc).isoformat(),
                 success=False,
                 details=f"Error: {e}",
                 duration_ms=duration_ms,
@@ -336,7 +336,7 @@ class EvolutionExecutionEngine:
         return f"Snapshot created: {snapshot.snapshot_id}"
 
     def _phase_apply_patches(
-        self, contract: EvolutionContract, patches: list[PatchOperation]
+        self, contract: EvolutionContract, patches: List[PatchOperation]
     ) -> str:
         """Apply patch operations to files."""
         applied = []
@@ -421,14 +421,14 @@ class EvolutionExecutionEngine:
 
         return f"Evolution {contract.evolution_id} committed successfully"
 
-    def get_execution_history(self, evolution_id: str = None) -> list[dict[str, Any]]:
+    def get_execution_history(self, evolution_id: str = None) -> List[dict[str, Any]]:
         """Get execution history, optionally filtered by evolution ID."""
         results = self._execution_log
         if evolution_id:
             results = [r for r in results if r.evolution_id == evolution_id]
         return [r.to_dict() for r in results]
 
-    def can_execute(self, contract: EvolutionContract) -> tuple[bool, str]:
+    def can_execute(self, contract: EvolutionContract) -> Tuple[bool, str]:
         """Check if an evolution can be executed without attempting."""
         try:
             self._phase_safety_check(contract)

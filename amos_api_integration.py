@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS API Integration Layer - FastAPI Endpoints for Production Systems
 
@@ -60,7 +60,6 @@ except ImportError:
     SECRETS_AVAILABLE = False
 
 try:
-    from typing import Any, List
 
     from amos_metrics_aggregation import get_metrics_registry, get_prometheus_metrics
 
@@ -102,9 +101,9 @@ class SagaResponse:
     status: str
     current_step: int
     total_steps: int
-    completed_steps: list[str]
-    failed_step: str | None
-    error: str | None
+    completed_steps: List[str]
+    failed_step: Optional[str]
+    error: Optional[str]
     duration_seconds: float
 
 
@@ -114,7 +113,7 @@ class SecretMetadataResponse:
     type: str
     version_count: int
     active_versions: int
-    last_rotated: str | None
+    last_rotated: Optional[str]
     rotation_days: int
 
 
@@ -250,8 +249,8 @@ if FASTAPI_AVAILABLE:
 
     @router.get("/alerts")
     async def list_alerts(
-        severity: str | None = None, unresolved_only: bool = False
-    ) -> list[AlertResponse]:
+        severity: Optional[str] = None, unresolved_only: bool = False
+    ) -> List[AlertResponse]:
         """List alerts with optional filtering."""
         if not ALERT_AVAILABLE:
             raise HTTPException(
@@ -310,7 +309,7 @@ if FASTAPI_AVAILABLE:
         }
 
     @router.get("/sagas")
-    async def list_sagas() -> list[SagaResponse]:
+    async def list_sagas() -> List[SagaResponse]:
         """List active saga instances."""
         if not SAGA_AVAILABLE:
             raise HTTPException(
@@ -366,7 +365,7 @@ if FASTAPI_AVAILABLE:
         )
 
     @router.get("/secrets", include_in_schema=False)
-    async def list_secrets() -> list[SecretMetadataResponse]:
+    async def list_secrets() -> List[SecretMetadataResponse]:
         """List secrets metadata (admin only, no values exposed)."""
         if not SECRETS_AVAILABLE:
             raise HTTPException(

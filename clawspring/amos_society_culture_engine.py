@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class SocietyCultureDomain(Enum):
@@ -370,8 +370,6 @@ _society_culture_engine: Optional[SocietyCultureEngine] = None
 
 def get_society_culture_engine() -> SocietyCultureEngine:
     """Get or create the Society Culture Engine singleton."""
-from __future__ import annotations
-
     global _society_culture_engine
     if _society_culture_engine is None:
         _society_culture_engine = SocietyCultureEngine()

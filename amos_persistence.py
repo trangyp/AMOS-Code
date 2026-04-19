@@ -7,7 +7,7 @@ import gzip
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_database import get_database
 
@@ -20,7 +20,7 @@ class PersistenceManager:
         self.archive_path = self.base_path / "archives"
         self.archive_path.mkdir(parents=True, exist_ok=True)
 
-    def archive_old_data(self, days: int = 30) -> dict[str, int]:
+    def archive_old_data(self, days: int = 30) -> Dict[str, int]:
         """Archive data older than specified days."""
         db = get_database()
         stats = {"queries": 0, "metrics": 0, "events": 0}
@@ -130,7 +130,7 @@ class PersistenceManager:
 
     def export_data(
         self, start_date: str, end_date: str, data_type: str = "all"
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Export data for a date range."""
         db = get_database()
         results = []
@@ -150,7 +150,7 @@ class PersistenceManager:
 
         return results
 
-    def cleanup_orphaned_data(self) -> dict[str, int]:
+    def cleanup_orphaned_data(self) -> Dict[str, int]:
         """Clean up orphaned or corrupted data."""
         db = get_database()
         stats = {"queries_removed": 0, "events_removed": 0}

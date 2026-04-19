@@ -62,6 +62,21 @@ from amos_universe.contracts.pydantic.workflow import (
     WorkflowStatus,
     TaskResult,
 )
+from amos_universe.contracts.pydantic.events import (
+    BaseEvent,
+    EventType,
+    EventMetadata,
+    ClawsAgentRequestedEvent,
+    ClawsAgentCompletedEvent,
+    RepoScanCompletedEvent,
+    RepoFixCompletedEvent,
+    ModelRunCompletedEvent,
+    WorkflowStartedEvent,
+    WorkflowCompletedEvent,
+    UniverseSchemaUpdatedEvent,
+    UniverseContractPublishedEvent,
+    UniverseOntologyChangedEvent,
+)
 
 __all__ = [
     # Base
@@ -109,4 +124,18 @@ __all__ = [
     "WorkflowRunResponse",
     "WorkflowStatus",
     "TaskResult",
+    # Events
+    "BaseEvent",
+    "EventType",
+    "EventMetadata",
+    "ClawsAgentRequestedEvent",
+    "ClawsAgentCompletedEvent",
+    "RepoScanCompletedEvent",
+    "RepoFixCompletedEvent",
+    "ModelRunCompletedEvent",
+    "WorkflowStartedEvent",
+    "WorkflowCompletedEvent",
+    "UniverseSchemaUpdatedEvent",
+    "UniverseContractPublishedEvent",
+    "UniverseOntologyChangedEvent",
 ]

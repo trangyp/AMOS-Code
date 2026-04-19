@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -72,7 +72,7 @@ class User(BaseModel):
     id: str
     email: str
     name: str
-    avatar_url: str | None = None
+    avatar_url: Optional[str] = None
     role: UserRole
     workspace_ids: list[str] = Field(default_factory=list)
 
@@ -86,7 +86,7 @@ class Repository(BaseModel):
     url: str
     default_branch: str = "main"
     is_private: bool = True
-    last_synced_at: datetime | None = None
+    last_synced_at: Optional[datetime] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -95,8 +95,8 @@ class FileNode(BaseModel):
     name: str
     type: FileNodeType
     size: int = 0
-    children: list[FileNode] | None = None
-    git_status: str | None = None
+    children: Optional[list[FileNode] ] = None
+    git_status: Optional[str] = None
 
 
 class CodeChange(BaseModel):
@@ -106,7 +106,7 @@ class CodeChange(BaseModel):
     line_end: int
     old_content: str
     new_content: str
-    hunk_header: str | None = None
+    hunk_header: Optional[str] = None
 
 
 class Commit(BaseModel):
@@ -119,7 +119,7 @@ class Commit(BaseModel):
     committer_email: str
     committed_at: datetime
     parent_shas: list[str]
-    stats: dict[str, int] | None = None
+    stats: Optional[dict[str, int] ] = None
 
 
 class Branch(BaseModel):
@@ -129,22 +129,22 @@ class Branch(BaseModel):
     is_protected: bool = False
     ahead_count: int = 0
     behind_count: int = 0
-    last_commit_at: datetime | None = None
+    last_commit_at: Optional[datetime] = None
 
 
 class TerminalSession(BaseModel):
     id: str
     workspace_id: str
-    repository_id: str | None = None
+    repository_id: Optional[str] = None
     command: str
     cwd: str
     env: dict[str, str] = Field(default_factory=dict)
-    pid: int | None = None
+    pid: Optional[int] = None
     status: str
     output: list[str] = Field(default_factory=list)
-    exit_code: int | None = None
+    exit_code: Optional[int] = None
     created_at: datetime
-    finished_at: datetime | None = None
+    finished_at: Optional[datetime] = None
 
 
 class TestResult(BaseModel):
@@ -154,9 +154,9 @@ class TestResult(BaseModel):
     duration_ms: float
     suite: str
     file_path: str
-    line_number: int | None = None
-    error_message: str | None = None
-    stack_trace: str | None = None
+    line_number: Optional[int] = None
+    error_message: Optional[str] = None
+    stack_trace: Optional[str] = None
 
 
 class HealthFinding(BaseModel):
@@ -165,10 +165,10 @@ class HealthFinding(BaseModel):
     category: str
     title: str
     description: str
-    file_path: str | None = None
-    line_start: int | None = None
-    line_end: int | None = None
-    suggested_fix: str | None = None
+    file_path: Optional[str] = None
+    line_start: Optional[int] = None
+    line_end: Optional[int] = None
+    suggested_fix: Optional[str] = None
     auto_fixable: bool = False
 
 

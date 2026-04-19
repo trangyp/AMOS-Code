@@ -1,6 +1,7 @@
 """Session and user management API contracts."""
 
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Optional
 
 from pydantic import Field

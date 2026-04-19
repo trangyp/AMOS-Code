@@ -7,9 +7,7 @@ Provides REST endpoints for accessing:
 - Cognitive stack modules
 """
 
-from __future__ import annotations
-
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -38,8 +36,8 @@ class CanonStatusResponse(BaseModel):
 
     ready: bool
     timestamp: str
-    loaded_files: list[str]
-    failed_files: list[str]
+    loaded_files: List[str]
+    failed_files: List[str]
     total_terms: int
     total_agents: int
     total_engines: int
@@ -48,21 +46,21 @@ class CanonStatusResponse(BaseModel):
 class GlossaryResponse(BaseModel):
     """Canonical glossary response."""
 
-    layers: list[dict[str, Any]]
+    layers: List[dict[str, Any]]
     total_terms: int
 
 
 class AgentRegistryResponse(BaseModel):
     """Agent registry response."""
 
-    agents: dict[str, Any]
+    agents: Dict[str, Any]
     total_agents: int
 
 
 class BrainOSResponse(BaseModel):
     """Brain OS specification response."""
 
-    components: dict[str, Any]
+    components: Dict[str, Any]
     total_engines: int
 
 
@@ -115,7 +113,7 @@ async def canon_brain_os() -> BrainOSResponse:
 
 
 @router.get("/agents/{agent_id}")
-async def canon_agent_detail(agent_id: str) -> dict[str, Any]:
+async def canon_agent_detail(agent_id: str) -> Dict[str, Any]:
     """Get specific agent details from registry."""
     loader = await get_canon()
     registry = loader.get_agent_registry()
@@ -126,7 +124,7 @@ async def canon_agent_detail(agent_id: str) -> dict[str, Any]:
 
 
 @router.get("/terms/{term_id}")
-async def canon_term_detail(term_id: str) -> dict[str, Any]:
+async def canon_term_detail(term_id: str) -> Dict[str, Any]:
     """Get specific term details from glossary."""
     loader = await get_canon()
     glossary = loader.get_glossary()

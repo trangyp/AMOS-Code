@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 # Add organism to path
 ORGANISM_PATH = Path(__file__).parent.parent / "AMOS_ORGANISM_OS"
@@ -150,7 +151,7 @@ class BrainOrganismBridge:
 
 
 # Global bridge instance
-_bridge_instance: BrainOrganismBridge | None = None
+_bridge_instance: Optional[BrainOrganismBridge] = None
 
 
 def get_organism_bridge() -> BrainOrganismBridge:

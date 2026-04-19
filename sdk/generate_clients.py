@@ -305,6 +305,7 @@ npm install @amos/equation-client
 
 ```typescript
 import { Configuration, EquationsApi } from '@amos/equation-client';
+from typing import Optional
 
 const config = new Configuration({ basePath: 'http://localhost:8000' });
 const api = new EquationsApi(config);

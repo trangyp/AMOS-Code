@@ -37,9 +37,10 @@ import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths
 _AMOS_ROOT = Path(__file__).parent.resolve()

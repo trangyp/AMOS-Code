@@ -22,7 +22,7 @@ Tasks:
 import argparse
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 # Add paths
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))

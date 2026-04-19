@@ -28,11 +28,14 @@ Version: 3.1.0
 
 from __future__ import annotations
 
+
+
 import json
 import asyncio
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Callable, Coroutine
+UTC = timezone.utc
+from typing import Any, Callable, Coroutine, Dict, List
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 import os
@@ -78,13 +81,13 @@ class AgentMessage:
     recipient_id: str = ""  # Empty for broadcast
     message_type: str = "direct"
     priority: int = 2  # NORMAL
-    content: dict[str, Any] = field(default_factory=dict)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    content: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     reply_to: str  = None
     retry_count: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert message to dictionary."""
         return asdict(self)
 
@@ -93,7 +96,7 @@ class AgentMessage:
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "AgentMessage":
+    def from_dict(cls, data: Dict[str, Any]) -> "AgentMessage":
         """Create message from dictionary."""
         return cls(**data)
 
@@ -107,8 +110,8 @@ class AgentMessageBus:
     """Event-driven message bus for agent communication."""
 
     def __init__(self):
-        self.subscribers: dict[str, list[Callable[[AgentMessage], Coroutine]]] = {}
-        self.message_history: list[AgentMessage] = []
+        self.subscribers: Dict[str, list[Callable[[AgentMessage], Coroutine]]] = {}
+        self.message_history: List[AgentMessage] = []
         self.max_history = 1000
         self._lock = asyncio.Lock()
         self._redis = None
@@ -300,9 +303,9 @@ class AgentMessageBus:
         self,
         sender_id: str,
         recipient_id: str,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         conversation_id: str = "",
-        metadata: dict[str, Any ] = None
+        metadata: Dict[str, Any ] = None
     ) -> str:
         """Send a direct message to a specific agent."""
         message = AgentMessage(
@@ -320,9 +323,9 @@ class AgentMessageBus:
     async def broadcast(
         self,
         sender_id: str,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         conversation_id: str = "",
-        metadata: dict[str, Any ] = None
+        metadata: Dict[str, Any ] = None
     ) -> str:
         """Broadcast a message to all agents."""
         message = AgentMessage(
@@ -341,8 +344,8 @@ class AgentMessageBus:
         self,
         sender_id: str,
         recipient_id: str,
-        task: dict[str, Any],
-        context: dict[str, Any ] = None
+        task: Dict[str, Any],
+        context: Dict[str, Any ] = None
     ) -> str:
         """Hand off a task to another agent."""
         message = AgentMessage(
@@ -361,7 +364,7 @@ class AgentMessageBus:
         self,
         delegator_id: str,
         delegate_id: str,
-        task: dict[str, Any],
+        task: Dict[str, Any],
         deadline: str  = None
     ) -> str:
         """Delegate a task to another agent with deadline."""
@@ -385,7 +388,7 @@ class AgentMessageBus:
         self,
         conversation_id: str,
         limit: int = 50
-    ) -> list[AgentMessage]:
+    ) -> List[AgentMessage]:
         """Get message history for a conversation."""
         # Check Redis first
         redis = await self._get_redis()
@@ -407,7 +410,7 @@ class AgentMessageBus:
             if m.conversation_id == conversation_id
         ][-limit:]
 
-    async def get_message(self, message_id: str) -> AgentMessage | None:
+    async def get_message(self, message_id: str) -> Optional[AgentMessage]:
         """Get a specific message by ID."""
         # Check Redis
         redis = await self._get_redis()
@@ -447,7 +450,7 @@ class AgentMessageBus:
             except Exception as e:
                 print(f"Cleanup error: {e}")
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get message bus statistics."""
         return {
             "total_messages": len(self.message_history),
@@ -466,7 +469,7 @@ message_bus = AgentMessageBus()
 async def send_message(
     sender: str,
     recipient: str,
-    content: dict[str, Any],
+    content: Dict[str, Any],
     conversation_id: str = ""
 ) -> str:
     """Send a direct message."""
@@ -475,7 +478,7 @@ async def send_message(
 
 async def broadcast_message(
     sender: str,
-    content: dict[str, Any],
+    content: Dict[str, Any],
     conversation_id: str = ""
 ) -> str:
     """Broadcast a message."""
@@ -485,8 +488,8 @@ async def broadcast_message(
 async def handoff_task(
     from_agent: str,
     to_agent: str,
-    task: dict[str, Any],
-    context: dict[str, Any ] = None
+    task: Dict[str, Any],
+    context: Dict[str, Any ] = None
 ) -> str:
     """Hand off a task between agents."""
     return await message_bus.handoff(from_agent, to_agent, task, context)

@@ -7,7 +7,7 @@ Usage:
     derivative = engine.symbolic_diff("kinetic_energy", "v")
 """
 
-from typing import Any
+from typing import Any, Dict, List
 
 try:
     import sympy as sp
@@ -145,7 +145,7 @@ class SymbolicEquationEngine:
         except Exception:
             return f"{equation_name}"
 
-    def get_gradient(self, equation_name: str, variables: list[str]) -> Dict[str, Any]:
+    def get_gradient(self, equation_name: str, variables: List[str]) -> Dict[str, Any]:
         """Compute gradient (partial derivatives)."""
         if not SYMPY_AVAILABLE:
             return {}
@@ -154,7 +154,7 @@ class SymbolicEquationEngine:
             return {}
         return {var: diff(expr, Symbol(var)) for var in variables}
 
-    def list_symbolic_equations(self) -> list[str]:
+    def list_symbolic_equations(self) -> List[str]:
         """List all equations with symbolic representations."""
         return list(self._symbolic_registry.keys())
 

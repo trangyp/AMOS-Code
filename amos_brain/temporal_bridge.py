@@ -14,14 +14,12 @@ This allows the brain to answer:
 - "How fast is the repo state drifting?"
 """
 
-from __future__ import annotations
-
 
 import logging
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -56,17 +54,17 @@ class TemporalContext:
     drift_velocity: float = 0.0  # d/dt ||ΔΨ||
 
     # State vector amplitudes
-    current_amplitudes: dict[str, float] = field(default_factory=dict)
-    delta_amplitudes: dict[str, float] = field(default_factory=dict)
+    current_amplitudes: Dict[str, float] = field(default_factory=dict)
+    delta_amplitudes: Dict[str, float] = field(default_factory=dict)
 
     # Affected dimensions
-    affected_dimensions: list[str] = field(default_factory=list)
-    critical_dimensions: list[str] = field(default_factory=list)
+    affected_dimensions: List[str] = field(default_factory=list)
+    critical_dimensions: List[str] = field(default_factory=list)
 
     # Invariant status
-    invariants_held: list[str] = field(default_factory=list)
-    invariants_violated: list[str] = field(default_factory=list)
-    new_violations: list[str] = field(default_factory=list)  # I(t-1)=1, I(t)=0
+    invariants_held: List[str] = field(default_factory=list)
+    invariants_violated: List[str] = field(default_factory=list)
+    new_violations: List[str] = field(default_factory=list)  # I(t-1)=1, I(t)=0
 
     # Temporal trajectory
     trajectory_length: int = 0
@@ -94,7 +92,7 @@ class DriftAlert:
     message: str
     drift_norm: float
     threshold: float
-    affected_dimensions: list[str]
+    affected_dimensions: List[str]
     recommendation: str
 
 
@@ -111,7 +109,7 @@ class TemporalCognitionBridge:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
         self.analyzer = TemporalAnalyzer(str(repo_path)) if TEMPORAL_AVAILABLE else None
-        self._history_cache: list[dict[str, Any]] = []
+        self._history_cache: List[dict[str, Any]] = []
         self._drift_threshold_critical = 0.5
         self._drift_threshold_high = 0.3
         self._drift_threshold_medium = 0.1
@@ -148,8 +146,8 @@ class TemporalCognitionBridge:
 
     def get_temporal_context(
         self,
-        prev_state: dict[str, float] = None,
-        curr_state: dict[str, float] = None,
+        prev_state: Dict[str, float] = None,
+        curr_state: Dict[str, float] = None,
     ) -> TemporalContext:
         """Get complete temporal context comparing current to previous state."""
         if not TEMPORAL_AVAILABLE or not STATE_AVAILABLE:
@@ -195,7 +193,7 @@ class TemporalCognitionBridge:
         self,
         invariant_name: str,
         max_commits: int = 50,
-    ) -> FirstBadCommitResult | None:
+    ) -> Optional[FirstBadCommitResult]:
         """Find t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 
         Args:
@@ -248,9 +246,9 @@ class TemporalCognitionBridge:
 
     def check_drift_alerts(
         self,
-        prev_state: dict[str, float] = None,
-        curr_state: dict[str, float] = None,
-    ) -> list[DriftAlert]:
+        prev_state: Dict[str, float] = None,
+        curr_state: Dict[str, float] = None,
+    ) -> List[DriftAlert]:
         """Check for significant drift and return alerts."""
         alerts = []
 
@@ -300,7 +298,7 @@ class TemporalCognitionBridge:
         self,
         invariant_name: str,
         max_commits: int = 50,
-    ) -> list[tuple[str, float]]:
+    ) -> List[tuple[str, float]]:
         """Rank commits by causality: P(t) ∝ exp(-S_k[0→t])."""
         if not TEMPORAL_AVAILABLE:
             return []
@@ -312,7 +310,7 @@ class TemporalCognitionBridge:
 
         return self.analyzer.rank_causality(invariant_name, history)
 
-    def get_drift_summary(self) -> dict[str, Any]:
+    def get_drift_summary(self) -> Dict[str, Any]:
         """Get summary of temporal drift status."""
         context = self.get_temporal_context()
 
@@ -327,7 +325,7 @@ class TemporalCognitionBridge:
             "alerts": len(self.check_drift_alerts()),
         }
 
-    def _compute_current_state(self) -> dict[str, float]:
+    def _compute_current_state(self) -> Dict[str, float]:
         """Compute current repository state vector."""
         if not STATE_AVAILABLE:
             return {}
@@ -340,7 +338,7 @@ class TemporalCognitionBridge:
 
         return state
 
-    def _get_state_at_commit(self, commit: str) -> dict[str, float]:
+    def _get_state_at_commit(self, commit: str) -> Dict[str, float]:
         """Get state vector at a specific commit."""
         # This would require checking out or reading cached state
         # For now, return None to indicate unavailable
@@ -362,9 +360,9 @@ class TemporalCognitionBridge:
 
     def _compute_delta_amplitudes(
         self,
-        prev: dict[str, float],
-        curr: dict[str, float],
-    ) -> dict[str, float]:
+        prev: Dict[str, float],
+        curr: Dict[str, float],
+    ) -> Dict[str, float]:
         """Compute delta amplitudes for each dimension."""
         delta = {}
         for dim in StateDimension:
@@ -373,12 +371,12 @@ class TemporalCognitionBridge:
             delta[dim.value] = curr_val - prev_val
         return delta
 
-    def _get_affected_dimensions(self, delta: dict[str, float]) -> list[str]:
+    def _get_affected_dimensions(self, delta: Dict[str, float]) -> List[str]:
         """Get dimensions with non-zero drift."""
         threshold = 0.01
         return [k for k, v in delta.items() if abs(v) > threshold]
 
-    def _get_critical_dimensions(self, delta: dict[str, float]) -> list[str]:
+    def _get_critical_dimensions(self, delta: Dict[str, float]) -> List[str]:
         """Get dimensions with significant drift."""
         threshold = 0.1
         return [k for k, v in delta.items() if abs(v) > threshold]
@@ -392,7 +390,7 @@ class TemporalCognitionBridge:
         self,
         invariant_name: str,
         max_commits: int,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Build history of invariant status across commits."""
         history = []
 

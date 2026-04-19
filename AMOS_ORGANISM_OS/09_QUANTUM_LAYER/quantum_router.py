@@ -1,4 +1,3 @@
-from __future__ import annotations
 """Quantum Router — Intelligent Decision Routing
 
 Routes decisions through appropriate optimization pipelines,
@@ -11,6 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class RouteType(Enum):
@@ -29,15 +29,15 @@ class RouteDecision:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     decision_type: str = ""
     route_type: RouteType = RouteType.HYBRID
-    input_data: dict[str, Any] = field(default_factory=dict)
-    scenarios: list[dict[str, Any]] = field(default_factory=list)
-    simulation_result: dict[str, Any] = None
-    optimizer_result: dict[str, Any] = None
+    input_data: Dict[str, Any] = field(default_factory=dict)
+    scenarios: List[dict[str, Any]] = field(default_factory=list)
+    simulation_result: Dict[str, Any] = None
+    optimizer_result: Dict[str, Any] = None
     recommendation: str = ""
     confidence: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "route_type": self.route_type.value,
@@ -51,9 +51,9 @@ class QuantumRouter:
     decision optimizer to provide comprehensive decision analysis.
     """
 
-    def __init__(self, data_dir: Path | None = None):
+    def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
-        self.routes: dict[str, RouteDecision] = {}
+        self.routes: Dict[str, RouteDecision] = {}
 
         # Import engines lazily to avoid circular dependencies
         self._scenario_engine = None
@@ -90,7 +90,7 @@ class QuantumRouter:
     def route_decision(
         self,
         decision_type: str,
-        options: list[dict[str, Any]],
+        options: List[dict[str, Any]],
         route_type: RouteType = RouteType.HYBRID,
         criteria: str = "balanced",
     ) -> RouteDecision:
@@ -129,7 +129,7 @@ class QuantumRouter:
     def _run_scenarios(
         self,
         route: RouteDecision,
-        options: list[dict[str, Any]],
+        options: List[dict[str, Any]],
         criteria: str,
     ):
         """Run scenario evaluation for options."""
@@ -152,7 +152,7 @@ class QuantumRouter:
     def _run_simulation(
         self,
         route: RouteDecision,
-        options: list[dict[str, Any]],
+        options: List[dict[str, Any]],
     ):
         """Run Monte Carlo simulation for options."""
         # Create simulation functions for each option
@@ -188,7 +188,7 @@ class QuantumRouter:
     def _run_optimizer(
         self,
         route: RouteDecision,
-        options: list[dict[str, Any]],
+        options: List[dict[str, Any]],
         criteria: str,
     ):
         """Run decision optimizer for options."""
@@ -257,7 +257,7 @@ class QuantumRouter:
 
         # Combine weighted recommendations
         if recommendations:
-            scores: dict[str, float] = {}
+            scores: Dict[str, float] = {}
             for name, weight in recommendations:
                 if name:
                     scores[name] = scores.get(name, 0) + weight
@@ -267,15 +267,15 @@ class QuantumRouter:
                 route.recommendation = best[0]
                 route.confidence = min(0.95, best[1] / 0.4)  # Normalize
 
-    def get_route(self, route_id: str) -> RouteDecision | None:
+    def get_route(self, route_id: str) -> Optional[RouteDecision]:
         """Get a specific routed decision."""
         return self.routes.get(route_id)
 
-    def list_routes(self) -> list[dict[str, Any]]:
+    def list_routes(self) -> List[dict[str, Any]]:
         """List all routed decisions."""
         return [r.to_dict() for r in self.routes.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get router status."""
         return {
             "total_routes": len(self.routes),
@@ -284,10 +284,10 @@ class QuantumRouter:
         }
 
 
-_ROUTER: QuantumRouter | None = None
+_ROUTER: Optional[QuantumRouter] = None
 
 
-def get_quantum_router(data_dir: Path | None = None) -> QuantumRouter:
+def get_quantum_router(data_dir: Optional[Path] = None) -> QuantumRouter:
     """Get or create global quantum router."""
     global _ROUTER
     if _ROUTER is None:

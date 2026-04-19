@@ -21,7 +21,8 @@ import json
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -58,7 +59,7 @@ class ProductionDeployer:
 
     def __init__(self, config: Optional[DeploymentConfig] = None):
         self.config = config or DeploymentConfig()
-        self.checks: list[dict[str, Any]] = []
+        self.checks: List[dict[str, Any]] = []
         self.deployment_id = f"AMOS-DEPLOY-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
 
     def preflight_check(self) -> Dict[str, Any]:
@@ -370,7 +371,6 @@ class ProductionDeployer:
         """Get production deployment status."""
         try:
             from amos_brain import get_brain
-from typing import Final, Optional
 
             brain = get_brain()
 

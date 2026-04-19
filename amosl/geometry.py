@@ -10,7 +10,7 @@ Implements the information-geometric regime:
 
 import math
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -62,11 +62,11 @@ class InformationGeometry:
 
     def __init__(self):
         self.beliefs: Dict[str, BeliefState] = {}
-        self.history: list[tuple[str, BeliefState]] = []
+        self.history: List[tuple[str, BeliefState]] = []
 
     def fisher_metric(
-        self, params: List[float], log_likelihood_derivatives: list[list[float]]
-    ) -> list[list[float]]:
+        self, params: List[float], log_likelihood_derivatives: List[list[float]]
+    ) -> List[list[float]]:
         """Compute Fisher information metric g_ij(θ).
 
         g_ij(θ) = E[∂log p/∂θ_i · ∂log p/∂θ_j]

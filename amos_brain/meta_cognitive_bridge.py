@@ -10,11 +10,9 @@ Provides API for:
 - Self-improvement playbook generation
 """
 
-from __future__ import annotations
-
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 # Import meta-cognitive reflection engine
 try:
@@ -33,10 +31,10 @@ class MetaCognitiveBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: MetaCognitiveReflectionEngine | None = None
+        self._engine: Optional[MetaCognitiveReflectionEngine] = None
 
     @property
-    def engine(self) -> MetaCognitiveReflectionEngine | None:
+    def engine(self) -> Optional[MetaCognitiveReflectionEngine]:
         """Lazy initialization of meta-cognitive engine."""
         if self._engine is None and META_COGNITIVE_AVAILABLE:
             self._engine = MetaCognitiveReflectionEngine(self.repo_path)
@@ -45,11 +43,11 @@ class MetaCognitiveBridge:
     def record_decision(
         self,
         decision_type: str,
-        context: dict[str, Any],
-        outcome: dict[str, Any],
+        context: Dict[str, Any],
+        outcome: Dict[str, Any],
         confidence: float,
         success: bool,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Record a decision for future reflection."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
@@ -65,10 +63,10 @@ class MetaCognitiveBridge:
     def record_failure(
         self,
         failure_type: str,
-        context: dict[str, Any],
+        context: Dict[str, Any],
         action_taken: str,
         consequence: str,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Record a failure for pattern detection."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
@@ -84,7 +82,7 @@ class MetaCognitiveBridge:
             }
         return {"recorded": True, "new_pattern": True}
 
-    def should_avoid(self, context: dict[str, Any], action: str) -> dict[str, Any]:
+    def should_avoid(self, context: Dict[str, Any], action: str) -> Dict[str, Any]:
         """Check if an action should be avoided based on past failures."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
@@ -95,7 +93,7 @@ class MetaCognitiveBridge:
             "reason": reason,
         }
 
-    def reflect(self) -> dict[str, Any]:
+    def reflect(self) -> Dict[str, Any]:
         """Perform comprehensive meta-cognitive reflection."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
@@ -103,7 +101,7 @@ class MetaCognitiveBridge:
         result = self.engine.reflect()
         return result.to_dict()
 
-    def adapt_parameter(self, name: str, performance_delta: float) -> dict[str, Any]:
+    def adapt_parameter(self, name: str, performance_delta: float) -> Dict[str, Any]:
         """Adapt a parameter based on performance feedback."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
@@ -113,14 +111,14 @@ class MetaCognitiveBridge:
             return param.to_dict()
         return {"error": f"Parameter '{name}' not found"}
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get comprehensive meta-cognitive status."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}
 
         return self.engine.get_status()
 
-    def get_improvement_suggestions(self) -> dict[str, Any]:
+    def get_improvement_suggestions(self) -> Dict[str, Any]:
         """Get improvement suggestions."""
         if not META_COGNITIVE_AVAILABLE or self.engine is None:
             return {"error": "meta_cognitive_engine not available"}

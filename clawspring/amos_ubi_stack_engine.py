@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class BrainRegion(Enum):
@@ -409,8 +409,6 @@ _ubi_engine: Optional[UBIStackEngine] = None
 
 def get_ubi_stack_engine() -> UBIStackEngine:
     """Get or create the UBI Stack Engine singleton."""
-from __future__ import annotations
-
     global _ubi_engine
     if _ubi_engine is None:
         _ubi_engine = UBIStackEngine()

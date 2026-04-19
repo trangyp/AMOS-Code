@@ -1,7 +1,7 @@
 """AMOS Scientific/Research Engine - Domain-specific scientific analysis."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -252,7 +252,7 @@ class AMOSScientificEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, ScientificAnalysis]:
+    ) -> Dict[str, ScientificAnalysis]:
         """Run scientific analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -347,7 +347,7 @@ def get_scientific_engine() -> AMOSScientificEngine:
 def analyze_scientific(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, ScientificAnalysis]:
+) -> Dict[str, ScientificAnalysis]:
     """Quick helper for scientific analysis."""
     return get_scientific_engine().analyze(description, domains)
 

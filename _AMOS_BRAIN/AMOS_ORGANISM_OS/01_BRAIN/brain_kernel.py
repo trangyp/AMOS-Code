@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """AMOS Brain Kernel - 01_BRAIN Subsystem
 
+import uuid
 Responsible for:
 - Reasoning, planning, decomposition
 - Memory management
@@ -13,6 +14,7 @@ import json
 import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
@@ -120,8 +122,6 @@ class BrainKernel:
 
     def create_thread(self, mode: ReasoningMode, assumptions: List[str] = None) -> ReasoningThread:
         """Create a new reasoning thread."""
-        import uuid
-from typing import Callable, List
 
         thread_id = str(uuid.uuid4())[:8]
         thread = ReasoningThread(

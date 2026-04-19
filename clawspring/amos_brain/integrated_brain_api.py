@@ -7,13 +7,11 @@ Unified interface to AMOS Brain with:
 - Kernel Runtime (state management + law enforcement)
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from .amos_kernel_runtime import AMOSKernelRuntime, get_kernel_runtime_async
@@ -58,8 +56,8 @@ class BrainResponse:
     latency_ms: float
     mode: str
     confidence: float
-    components_used: list[str]
-    metadata: dict[str, Any]
+    components_used: List[str]
+    metadata: Dict[str, Any]
 
 
 class IntegratedBrainAPI:
@@ -73,19 +71,19 @@ class IntegratedBrainAPI:
 
     def __init__(self):
         # Core kernel - initialized async via get_kernel_runtime_async
-        self.kernel: AMOSKernelRuntime | None = None
+        self.kernel: Optional[AMOSKernelRuntime] = None
         self._kernel_ready = False
 
         # Component systems
-        self.react_agent: AMOSReActAgent | None = None
-        self.proactive_engine: ProactiveInferenceEngine | None = None
-        self.reflection_system: SelfReflectionSystem | None = None
+        self.react_agent: Optional[AMOSReActAgent] = None
+        self.proactive_engine: Optional[ProactiveInferenceEngine] = None
+        self.reflection_system: Optional[SelfReflectionSystem] = None
 
         # Organism bridge for SIKS and organism components
-        self._organism_bridge: Any | None = get_organism_bridge()
+        self._organism_bridge: Optional[Any] = get_organism_bridge()
 
         # Learning memory bridge for experience-based improvements
-        self._learning_memory: Any | None = None
+        self._learning_memory: Optional[Any] = None
         if _LEARNING_MEMORY_AVAILABLE:
             try:
                 self._learning_memory = LearningMemoryBridge.get_instance()
@@ -121,7 +119,7 @@ class IntegratedBrainAPI:
         self,
         query: str,
         mode: str = "auto",
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> BrainResponse:
         """
         Process query using brain system.
@@ -140,7 +138,7 @@ class IntegratedBrainAPI:
         start_time = time.perf_counter()
         self._request_count += 1
 
-        components_used: list[str] = []
+        components_used: List[str] = []
 
         # Inject relevant memories into context for improved reasoning
         if self._learning_memory and self._learning_memory.initialized:
@@ -260,7 +258,7 @@ class IntegratedBrainAPI:
                 pass
 
         # Build metadata
-        metadata: dict[str, Any] = {
+        metadata: Dict[str, Any] = {
             "validation": validation,
             "avg_latency": self._total_latency / self._request_count,
         }
@@ -283,7 +281,7 @@ class IntegratedBrainAPI:
         complexity = min(1.0, words / 20.0)
         return complexity
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get brain system statistics."""
         stats = {
             "requests": self._request_count,
@@ -300,7 +298,7 @@ class IntegratedBrainAPI:
 
 
 # Global API instance
-_global_brain_api: IntegratedBrainAPI | None = None
+_global_brain_api: Optional[IntegratedBrainAPI] = None
 
 
 def get_brain_api() -> IntegratedBrainAPI:

@@ -1,11 +1,9 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """Production System Monitor for AMOS.
 
 Collects metrics, tracks performance, and exposes Prometheus-compatible metrics.
 """
-from __future__ import annotations
-
 
 import asyncio
 import time
@@ -35,7 +33,7 @@ class SystemMonitor:
         self.registry = CollectorRegistry()
         self._init_metrics()
         self._running = False
-        self._api_times: dict[str, list[float]] = {}
+        self._api_times: Dict[str, list[float]] = {}
 
     def _init_metrics(self) -> None:
         """Initialize Prometheus metrics."""
@@ -147,7 +145,7 @@ class SystemMonitor:
         """Get metrics in Prometheus format."""
         return generate_latest(self.registry)
 
-    async def get_health_summary(self) -> dict[str, Any]:
+    async def get_health_summary(self) -> Dict[str, Any]:
         """Get summary of system health."""
         health = {"timestamp": time.time(), "system": {}, "database": {}, "amos": {}}
 
@@ -180,7 +178,7 @@ class SystemMonitor:
 
 
 # Global monitor instance
-_monitor: SystemMonitor | None = None
+_monitor: Optional[SystemMonitor] = None
 
 
 def get_monitor() -> SystemMonitor:
@@ -200,7 +198,7 @@ async def prometheus_metrics() -> Response:
 
 
 @router.get("/health")
-async def health_summary() -> dict[str, Any]:
+async def health_summary() -> Dict[str, Any]:
     """JSON health summary endpoint."""
     monitor = get_monitor()
     return await monitor.get_health_summary()

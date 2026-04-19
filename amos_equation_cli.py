@@ -38,6 +38,8 @@ except ImportError:
     print("Error: Typer required. Install with: pip install typer")
     sys.exit(1)
 
+from typing import Dict
+
 from amos_equation_kernel import (
     EquationKernel,
     MathematicalPattern,

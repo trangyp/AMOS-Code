@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """Integrated Brain API - Production-ready cognitive endpoints.
 
 Uses AMOS brain with proper timeout handling and progress tracking
 to prevent 'taking a long time' errors.
 """
-from __future__ import annotations
-
 
 import asyncio
 from datetime import datetime, timezone
@@ -39,7 +37,7 @@ class CognitiveRequest(BaseModel):
 
     query: str = Field(..., min_length=1, max_length=10000)
     mode: str = Field(default="auto", pattern="^(auto|fast|deep|analytical)$")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
     timeout_seconds: float = Field(default=30.0, ge=1.0, le=300.0)
 
 
@@ -52,7 +50,7 @@ class CognitiveResponse(BaseModel):
     mode: str
     latency_ms: float
     timestamp: str
-    law_compliant: bool | None = None
+    law_compliant: Optional[bool] = None
 
 
 class HealthResponse(BaseModel):
@@ -195,7 +193,7 @@ async def process_long_thinking(task_id: str, query: str, context: dict) -> None
 @router.post("/think-async")
 async def brain_think_async(
     request: CognitiveRequest, background_tasks: BackgroundTasks
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Submit async thinking task - returns immediately, processes in background."""
     task_id = f"think-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 

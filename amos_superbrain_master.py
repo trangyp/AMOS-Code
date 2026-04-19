@@ -1,6 +1,6 @@
 """AMOS SuperBrain Master Interface v20.0.0"""
 
-from typing import Any
+from typing import Any, Dict
 
 try:
     from amos_superbrain_equation_bridge import AMOSSuperBrainBridge

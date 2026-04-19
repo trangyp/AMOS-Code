@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Tuple
 
 
 @dataclass(frozen=True)
@@ -9,7 +10,7 @@ class DeferredInitResult:
     mcp_prefetch: bool
     session_hooks: bool
 
-    def as_lines(self) -> tuple[str, ...]:
+    def as_lines(self) -> Tuple[str, ...]:
         return (
             f"- plugin_init={self.plugin_init}",
             f"- skill_init={self.skill_init}",

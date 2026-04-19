@@ -48,6 +48,7 @@ from amos_mcp_production_integration import (
 
 # Core AMOS imports
 from amos_production_runtime import AMOSProductionRuntime, get_production_runtime
+from typing import List, Optional
 
 
 class DeploymentPhase(Enum):

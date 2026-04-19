@@ -8,7 +8,7 @@ import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -19,7 +19,7 @@ class CodeTemplate:
     name: str = ""
     template_type: str = ""  # module, class, function, stub
     content: str = ""
-    placeholders: list[str] = field(default_factory=list)
+    placeholders: List[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
@@ -99,7 +99,7 @@ class CodeGenerator:
         name: str,
         template_type: str,
         content: str,
-        placeholders: list[str] = None,
+        placeholders: List[str] = None,
     ) -> CodeTemplate:
         """Create a new code template."""
         template = CodeTemplate(
@@ -140,8 +140,8 @@ class CodeGenerator:
         self,
         module_name: str,
         description: str,
-        imports: list[str],
-        classes: list[dict[str, Any]],
+        imports: List[str],
+        classes: List[dict[str, Any]],
         file_path: str,
     ) -> GeneratedCode:
         """Generate a complete Python module."""
@@ -167,7 +167,7 @@ class CodeGenerator:
         self,
         description: str,
         target_module: str,
-        exports: list[str],
+        exports: List[str],
         file_path: str,
     ) -> GeneratedCode:
         """Generate an alias stub module."""
@@ -258,11 +258,11 @@ if str(target_path) not in sys.path:
             print(f"[CODE_GEN] Deploy error: {e}")
             return False
 
-    def list_templates(self) -> list[dict[str, Any]]:
+    def list_templates(self) -> List[dict[str, Any]]:
         """List all available templates."""
         return [t.to_dict() for t in self.templates.values()]
 
-    def list_generated(self) -> list[dict[str, Any]]:
+    def list_generated(self) -> List[dict[str, Any]]:
         """List all generated code."""
         return [g.to_dict() for g in self.generated.values()]
 

@@ -12,7 +12,7 @@ Provides unified control interface for the complete organism.
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Core components
 from amos_organism_runner import AMOSOrganismRunner, OrganismConfig, OrganismState

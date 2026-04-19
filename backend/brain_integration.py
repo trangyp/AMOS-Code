@@ -1,5 +1,5 @@
 
-from typing import Optional, Any
+from typing import Any, Dict, Optional
 
 """Backend Brain Integration - Real AMOS brain integration for FastAPI backend.
 
@@ -13,6 +13,7 @@ Provides:
 import asyncio
 import sys
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 # Setup paths
@@ -37,8 +38,6 @@ def _ensure_brain() -> bool:
         from amos_kernel_runtime import AMOSKernelRuntime  # noqa: E402
 
         from amos_brain.dashboard import BrainDashboard
-from typing import Any
-from typing import Dict
 
         _kernel_class = AMOSKernelRuntime
         _dashboard_class = BrainDashboard

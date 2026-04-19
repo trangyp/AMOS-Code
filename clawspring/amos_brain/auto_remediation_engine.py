@@ -28,8 +28,6 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 
 import json
 import time
@@ -38,7 +36,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Import detection engine
 try:
@@ -134,8 +132,8 @@ class RemediationAction:
     timestamp: str
     issue_type: IssueType
     strategy: RemediationStrategy
-    target_metrics: dict[str, float]
-    parameters: dict[str, Any]
+    target_metrics: Dict[str, float]
+    parameters: Dict[str, Any]
 
     # Execution tracking
     status: RemediationStatus = RemediationStatus.PENDING
@@ -153,11 +151,11 @@ class RemediationPlan:
     """Complete remediation plan for a detected issue."""
 
     plan_id: str
-    detection_report: dict[str, Any]
+    detection_report: Dict[str, Any]
     created_at: str
 
     # Actions to take
-    actions: list[RemediationAction] = field(default_factory=list)
+    actions: List[RemediationAction] = field(default_factory=list)
 
     # Validation
     validation_threshold: float = 0.7
@@ -167,7 +165,7 @@ class RemediationPlan:
     overall_status: RemediationStatus = RemediationStatus.PENDING
     total_execution_time_ms: float = 0.0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "plan_id": self.plan_id,
             "created_at": self.created_at,
@@ -224,7 +222,7 @@ class AutoRemediationEngine:
     5. Record outcomes to feedback loop for learning
     """
 
-    def __init__(self, config: dict[str, Any] = None):
+    def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
 
         # Thresholds
@@ -233,15 +231,15 @@ class AutoRemediationEngine:
         self.validation_timeout = self.config.get("validation_timeout", 30)
 
         # State
-        self._history: dict[tuple[RemediationStrategy, IssueType], RemediationHistory] = {}
-        self._active_plans: dict[str, RemediationPlan] = {}
-        self._completed_plans: list[RemediationPlan] = []
+        self._history: Dict[tuple[RemediationStrategy, IssueType], RemediationHistory] = {}
+        self._active_plans: Dict[str, RemediationPlan] = {}
+        self._completed_plans: List[RemediationPlan] = []
 
         # Integrations
-        self._detection_engine: UnifiedDetectionEngine | None = None
-        self._temporal_bridge: Any | None = None
-        self._feedback_loop: CognitiveFeedbackLoop | None = None
-        self._audit_exporter: AuditExporter | None = None
+        self._detection_engine: Optional[UnifiedDetectionEngine] = None
+        self._temporal_bridge: Optional[Any] = None
+        self._feedback_loop: Optional[CognitiveFeedbackLoop] = None
+        self._audit_exporter: Optional[AuditExporter] = None
 
         if DETECTION_AVAILABLE:
             self._detection_engine = UnifiedDetectionEngine()
@@ -305,7 +303,7 @@ class AutoRemediationEngine:
         self._execute_plan(plan)
         return plan
 
-    def _analyze_and_plan(self, report: UnifiedDetectionReport) -> list[RemediationAction]:
+    def _analyze_and_plan(self, report: UnifiedDetectionReport) -> List[RemediationAction]:
         """Analyze detection report and create remediation actions."""
         actions = []
 
@@ -329,7 +327,7 @@ class AutoRemediationEngine:
     def _plan_hallucination_remediation(
         self,
         score: HallucinationScore,
-    ) -> list[RemediationAction]:
+    ) -> List[RemediationAction]:
         """Plan remediation for hallucination issues."""
         actions = []
 
@@ -379,7 +377,7 @@ class AutoRemediationEngine:
     def _plan_integrity_remediation(
         self,
         metrics: IntegrityMetrics,
-    ) -> list[RemediationAction]:
+    ) -> List[RemediationAction]:
         """Plan remediation for integrity violations."""
         actions = []
 
@@ -432,7 +430,7 @@ class AutoRemediationEngine:
     def _plan_drift_remediation(
         self,
         metrics: StructuralDriftMetrics,
-    ) -> list[RemediationAction]:
+    ) -> List[RemediationAction]:
         """Plan remediation for structural drift."""
         actions = []
 
@@ -485,8 +483,8 @@ class AutoRemediationEngine:
         self,
         issue_type: IssueType,
         strategy: RemediationStrategy,
-        parameters: dict[str, Any],
-        target_metrics: dict[str, float],
+        parameters: Dict[str, Any],
+        target_metrics: Dict[str, float],
     ) -> RemediationAction:
         """Create a remediation action."""
         action_id = f"action_{int(time.time() * 1000)}_{strategy.value}"
@@ -572,7 +570,7 @@ class AutoRemediationEngine:
 
         try:
             # Route to appropriate executor
-            executors: dict[RemediationStrategy, Callable[[RemediationAction], bool]] = {
+            executors: Dict[RemediationStrategy, Callable[[RemediationAction], bool]] = {
                 RemediationStrategy.TEMPERATURE_REDUCTION: self._execute_temperature_reduction,
                 RemediationStrategy.SAMPLING_ADJUSTMENT: self._execute_sampling_adjustment,
                 RemediationStrategy.NLI_VERIFICATION: self._execute_nli_verification,
@@ -745,7 +743,7 @@ class AutoRemediationEngine:
         # to learn which strategies work best
         pass
 
-    def get_best_strategy(self, issue_type: IssueType) -> RemediationStrategy | None:
+    def get_best_strategy(self, issue_type: IssueType) -> Optional[RemediationStrategy]:
         """Get best strategy for an issue type based on history."""
         candidates = [
             (strategy, history)
@@ -792,7 +790,7 @@ class AutoRemediationEngine:
 
         return "\n".join(lines)
 
-    def export_history(self, output_path: Path | None = None) -> Path:
+    def export_history(self, output_path: Optional[Path] = None) -> Path:
         """Export remediation history to JSON."""
         if output_path is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -840,7 +838,7 @@ class SelfHealingOrchestrator:
     - health_threshold: System health threshold for triggering remediation
     """
 
-    def __init__(self, config: dict[str, Any] = None):
+    def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
         self.detection_interval = self.config.get("detection_interval", 300)  # 5 min
         self.auto_remediate = self.config.get("auto_remediate", False)
@@ -850,8 +848,8 @@ class SelfHealingOrchestrator:
         self._remediation_engine = AutoRemediationEngine(config)
 
         self._running = False
-        self._last_detection: UnifiedDetectionReport | None = None
-        self._last_remediation: RemediationPlan | None = None
+        self._last_detection: Optional[UnifiedDetectionReport] = None
+        self._last_remediation: Optional[RemediationPlan] = None
 
     def start(self):
         """Start continuous self-healing loop."""
@@ -910,7 +908,7 @@ class SelfHealingOrchestrator:
         print(f"[SelfHealing] Remediation complete: Status={plan.overall_status.value}")
         print(f"[SelfHealing] Total execution time: {plan.total_execution_time_ms:.1f}ms")
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current orchestrator status."""
         return {
             "running": self._running,

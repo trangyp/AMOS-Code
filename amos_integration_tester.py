@@ -19,7 +19,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Protocol
 
 
 class TestStatus(Enum):
@@ -178,7 +178,7 @@ class AMOSIntegrationTester:
         self.total_failed = 0
 
         # Handlers
-        self.test_handlers: dict[str, Callable[[TestCase], Awaitable[TestStatus]]] = {}
+        self.test_handlers: Dict[str, Callable[[TestCase], Awaitable[TestStatus]]] = {}
 
     def register_test_handler(
         self, test_type: TestType, handler: Callable[[TestCase], Awaitable[TestStatus]]
@@ -318,7 +318,7 @@ class AMOSIntegrationTester:
 
         return suite
 
-    async def run_all_suites(self) -> dict[str, TestSuite]:
+    async def run_all_suites(self) -> Dict[str, TestSuite]:
         """Run all registered test suites."""
         results = {}
 
@@ -327,9 +327,9 @@ class AMOSIntegrationTester:
 
         return results
 
-    def get_component_coverage(self) -> dict[str, dict[str, int]]:
+    def get_component_coverage(self) -> Dict[str, dict[str, int]]:
         """Get test coverage by component."""
-        coverage: dict[str, dict[str, int]] = {}
+        coverage: Dict[str, dict[str, int]] = {}
 
         for test in self.test_cases.values():
             if test.component not in coverage:

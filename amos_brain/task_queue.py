@@ -4,16 +4,15 @@ Provides background task execution for brain operations with
 proper queue management and result storage.
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class TaskStatus(Enum):
@@ -31,13 +30,13 @@ class BrainTask:
 
     id: str
     type: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     status: TaskStatus = field(default=TaskStatus.PENDING)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    started_at: str | None = None
-    completed_at: str | None = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
     result: Any = None
-    error: str | None = None
+    error: Optional[str] = None
 
 
 class BrainTaskQueue:
@@ -46,8 +45,8 @@ class BrainTaskQueue:
     def __init__(self, max_workers: int = 4) -> None:
         self.max_workers = max_workers
         self._queue: asyncio.Queue[BrainTask] = asyncio.Queue()
-        self._tasks: dict[str, BrainTask] = {}
-        self._workers: list[asyncio.Task] = []
+        self._tasks: Dict[str, BrainTask] = {}
+        self._workers: List[asyncio.Task] = []
         self._running = False
         self._lock = asyncio.Lock()
 
@@ -76,7 +75,7 @@ class BrainTaskQueue:
     async def submit(
         self,
         task_type: str,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         processor: Callable[[dict[str, Any]], Any] = None,
     ) -> str:
         """Submit a task to the queue.
@@ -98,7 +97,7 @@ class BrainTaskQueue:
         await self._queue.put(task)
         return task_id
 
-    async def get_status(self, task_id: str) -> BrainTask | None:
+    async def get_status(self, task_id: str) -> Optional[BrainTask]:
         """Get task status by ID."""
         async with self._lock:
             return self._tasks.get(task_id)
@@ -152,7 +151,7 @@ class BrainTaskQueue:
 
 
 # Global queue instance
-_queue_instance: BrainTaskQueue | None = None
+_queue_instance: Optional[BrainTaskQueue] = None
 
 
 async def get_task_queue() -> BrainTaskQueue:
@@ -164,13 +163,13 @@ async def get_task_queue() -> BrainTaskQueue:
     return _queue_instance
 
 
-async def submit_task(task_type: str, payload: dict[str, Any]) -> str:
+async def submit_task(task_type: str, payload: Dict[str, Any]) -> str:
     """Submit a task to the global queue."""
     queue = await get_task_queue()
     return await queue.submit(task_type, payload)
 
 
-async def get_task_status(task_id: str) -> BrainTask | None:
+async def get_task_status(task_id: str) -> Optional[BrainTask]:
     """Get task status from global queue."""
     queue = await get_task_queue()
     return await queue.get_status(task_id)

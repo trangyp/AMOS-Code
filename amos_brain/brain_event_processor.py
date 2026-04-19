@@ -1,15 +1,14 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain Event Processor - Event streaming and processing for brain operations.
 
 Provides real-time event emission and processing for brain cognitive operations.
 """
-from __future__ import annotations
-
 
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 @dataclass
@@ -17,7 +16,7 @@ class BrainEvent:
     """Brain processing event."""
 
     event_type: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     timestamp: str
     source: str = "brain"
 
@@ -26,10 +25,10 @@ class BrainEventProcessor:
     """Process and emit brain events."""
 
     def __init__(self) -> None:
-        self._handlers: list[Callable[[BrainEvent], None]] = []
-        self._event_history: list[BrainEvent] = []
+        self._handlers: List[Callable[[BrainEvent], None]] = []
+        self._event_history: List[BrainEvent] = []
 
-    def emit(self, event_type: str, payload: dict[str, Any], source: str = "brain") -> None:
+    def emit(self, event_type: str, payload: Dict[str, Any], source: str = "brain") -> None:
         """Emit a brain event."""
         event = BrainEvent(
             event_type=event_type,
@@ -50,7 +49,7 @@ class BrainEventProcessor:
         """Register event handler."""
         self._handlers.append(handler)
 
-    def get_events(self, event_type: str | None = None) -> list[BrainEvent]:
+    def get_events(self, event_type: Optional[str] = None) -> List[BrainEvent]:
         """Get events, optionally filtered by type."""
         if event_type:
             return [e for e in self._event_history if e.event_type == event_type]
@@ -58,7 +57,7 @@ class BrainEventProcessor:
 
 
 # Global event processor
-_event_processor: BrainEventProcessor | None = None
+_event_processor: Optional[BrainEventProcessor] = None
 
 
 def get_event_processor() -> BrainEventProcessor:
@@ -69,7 +68,7 @@ def get_event_processor() -> BrainEventProcessor:
     return _event_processor
 
 
-def emit_event(event_type: str, payload: dict[str, Any], source: str = "brain") -> None:
+def emit_event(event_type: str, payload: Dict[str, Any], source: str = "brain") -> None:
     """Emit event to global processor."""
     processor = get_event_processor()
     processor.emit(event_type, payload, source)

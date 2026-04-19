@@ -1,7 +1,7 @@
 """AMOS Signal Processing Engine - Multi-domain signal analysis."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -278,7 +278,7 @@ class AMOSSignalEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, SignalAnalysis]:
+    ) -> Dict[str, SignalAnalysis]:
         """Run signal processing analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -391,7 +391,7 @@ def get_signal_engine() -> AMOSSignalEngine:
 def analyze_signals(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, SignalAnalysis]:
+) -> Dict[str, SignalAnalysis]:
     """Quick helper for signal processing analysis."""
     return get_signal_engine().analyze(description, domains)
 

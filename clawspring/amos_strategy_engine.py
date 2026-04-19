@@ -1,7 +1,7 @@
 """AMOS Strategy/Game Theory Engine - Strategic planning and game theory."""
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_runtime import get_runtime
 
@@ -228,7 +228,7 @@ class AMOSStrategyEngine:
         self,
         description: str,
         domains: Optional[List[str]] = None,
-    ) -> dict[str, StrategyAnalysis]:
+    ) -> Dict[str, StrategyAnalysis]:
         """Run strategy/game analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
         results = {}
@@ -339,7 +339,7 @@ def get_strategy_engine() -> AMOSStrategyEngine:
 def analyze_strategy(
     description: str,
     domains: Optional[List[str]] = None,
-) -> dict[str, StrategyAnalysis]:
+) -> Dict[str, StrategyAnalysis]:
     """Quick helper for strategy/game theory analysis."""
     return get_strategy_engine().analyze(description, domains)
 

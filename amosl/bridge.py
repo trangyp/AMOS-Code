@@ -15,7 +15,7 @@ Bridges:
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, Tuple
 
 
 class BridgeType(Enum):
@@ -43,7 +43,7 @@ class BridgeExecutor:
     """Executes cross-substrate bridges with legality checking."""
 
     def __init__(self):
-        self.bridges: dict[str, dict[str, Any]] = {}
+        self.bridges: Dict[str, dict[str, Any]] = {}
         self.active_bridges: Dict[str, BridgeSignal] = {}
 
     def check_legality(

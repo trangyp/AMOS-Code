@@ -12,16 +12,15 @@ ABSOLUTE LAW ENFORCEMENT:
 This is the only allowed live process owning the AMOS runtime.
 """
 
-from __future__ import annotations
-
 import hashlib
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from threading import Lock, RLock
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from .action_gate import ActionGate
 from .clawd_integration import ClawdExecutionLayer
@@ -41,10 +40,10 @@ class SuperBrainState:
 
     timestamp: str
     status: str
-    active_kernels: list[str]
-    loaded_tools: list[str]
-    available_models: list[str]
-    memory_stats: dict[str, Any]
+    active_kernels: List[str]
+    loaded_tools: List[str]
+    available_models: List[str]
+    memory_stats: Dict[str, Any]
     clawd_status: str
     core_frozen: bool
     health_score: float
@@ -69,7 +68,7 @@ class SuperBrainRuntime:
     LAW 0 COMPLIANCE: Exactly one process. No subprocesses spawned.
     """
 
-    _instance: SuperBrainRuntime | None = None
+    _instance: Optional[SuperBrainRuntime] = None
     _lock = Lock()
 
     def __new__(cls) -> SuperBrainRuntime:
@@ -90,31 +89,31 @@ class SuperBrainRuntime:
         self.status = "initializing"
 
         # Canonical subsystem ownership (LAW 2 COMPLIANCE)
-        self._kernel_router: KernelRouter | None = None
-        self._action_gate: ActionGate | None = None
-        self._model_router: ModelRouter | None = None
-        self._tool_registry: GovernedToolRegistry | None = None
-        self._source_registry: SourceRegistry | None = None
-        self._memory_governance: MemoryGovernance | None = None
-        self._clawd_layer: ClawdExecutionLayer | None = None
-        self._core_freeze: CoreFreezeEnforcer | None = None
-        self._math_engine: Any | None = None
-        self._math_audit_logger: Any | None = None
-        self._equation_bridge: Any | None = None
-        self._world_model: Any | None = None
-        self._constitutional_governance: Any | None = None
-        self._workflow_orchestrator: Any | None = None
-        self._a2a_agent: Any | None = None
-        self._knowledge_bridge: Any | None = None
-        self._jepa_world_model: Any | None = None
-        self._agentic_ai: Any | None = None
+        self._kernel_router: Optional[KernelRouter] = None
+        self._action_gate: Optional[ActionGate] = None
+        self._model_router: Optional[ModelRouter] = None
+        self._tool_registry: Optional[GovernedToolRegistry] = None
+        self._source_registry: Optional[SourceRegistry] = None
+        self._memory_governance: Optional[MemoryGovernance] = None
+        self._clawd_layer: Optional[ClawdExecutionLayer] = None
+        self._core_freeze: Optional[CoreFreezeEnforcer] = None
+        self._math_engine: Optional[Any] = None
+        self._math_audit_logger: Optional[Any] = None
+        self._equation_bridge: Optional[Any] = None
+        self._world_model: Optional[Any] = None
+        self._constitutional_governance: Optional[Any] = None
+        self._workflow_orchestrator: Optional[Any] = None
+        self._a2a_agent: Optional[Any] = None
+        self._knowledge_bridge: Optional[Any] = None
+        self._jepa_world_model: Optional[Any] = None
+        self._agentic_ai: Optional[Any] = None
 
         # State protection
         self._state_lock = RLock()
-        self._audit_log: list[dict] = []
+        self._audit_log: List[dict] = []
 
         # Health tracking
-        self._health_checks: dict[str, Callable[[], bool]] = {}
+        self._health_checks: Dict[str, Callable[[], bool]] = {}
         self._last_health_check: datetime = None
 
     def _generate_brain_id(self) -> str:
@@ -642,7 +641,7 @@ class SuperBrainRuntime:
         except Exception as e:
             print(f"⚠️  Models: registration failed ({e})")
 
-    def query_math_equations(self, domain: str = None, query: str = None) -> list[dict]:
+    def query_math_equations(self, domain: str = None, query: str = None) -> List[dict]:
         """Query mathematical equations from the framework.
 
         Args:
@@ -771,7 +770,7 @@ class SuperBrainRuntime:
             self._audit("equation_execution_failed", {"equation": equation_name, "error": str(e)})
             return {"error": str(e), "equation": equation_name}
 
-    def simulate_future(self, initial_state: dict, actions: list[dict], horizon: int = 5) -> dict:
+    def simulate_future(self, initial_state: dict, actions: List[dict], horizon: int = 5) -> dict:
         """Simulate future states using the Predictive World Model.
 
         Args:
@@ -861,7 +860,7 @@ class SuperBrainRuntime:
         except Exception as e:
             return {"error": str(e)}
 
-    def _audit(self, action: str, details: dict[str, Any]) -> None:
+    def _audit(self, action: str, details: Dict[str, Any]) -> None:
         """Record audit entry."""
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -871,7 +870,7 @@ class SuperBrainRuntime:
         }
         self._audit_log.append(entry)
 
-    def _emit_event(self, event_type: str, payload: dict[str, Any]) -> None:
+    def _emit_event(self, event_type: str, payload: Dict[str, Any]) -> None:
         """Emit event to the AMOS event bus for cross-component communication.
 
         Args:
@@ -940,7 +939,7 @@ class SuperBrainRuntime:
             return 0.0
         return sum(checks) / len(checks)
 
-    def execute_task(self, task: str, context: dict[str, Any] = None) -> dict[str, Any]:
+    def execute_task(self, task: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Execute task through the SuperBrain (single entry point).
 
         LAW 0 COMPLIANCE: All execution flows through here.
@@ -974,8 +973,8 @@ class SuperBrainRuntime:
         return kernel_result
 
     def execute_tool(
-        self, tool_name: str, inputs: dict[str, Any], agent_id: str = None
-    ) -> dict[str, Any]:
+        self, tool_name: str, inputs: Dict[str, Any], agent_id: str = None
+    ) -> Dict[str, Any]:
         """Execute tool through ActionGate (authorized path only).
 
         LAW 4 COMPLIANCE: Agents cannot bypass ActionGate.
@@ -996,8 +995,8 @@ class SuperBrainRuntime:
         return self._action_gate.execute_tool(tool_name, inputs, agent_id)
 
     def query_model(
-        self, model_id: str, prompt: str, context: dict[str, Any] = None
-    ) -> dict[str, Any]:
+        self, model_id: str, prompt: str, context: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """Query model through ModelRouter (single model path).
 
         Args:
@@ -1032,7 +1031,7 @@ class SuperBrainRuntime:
 
         return self._memory_governance.write(key, value, agent_id)
 
-    def read_memory(self, key: str) -> Any | None:
+    def read_memory(self, key: str) -> Optional[Any]:
         """Read from memory through governance layer."""
         if self.status != "active":
             return None
@@ -1053,7 +1052,7 @@ class SuperBrainRuntime:
         """
         return self._core_freeze.can_mutate(agent_id)
 
-    def health_check(self) -> dict[str, Any]:
+    def health_check(self) -> Dict[str, Any]:
         """Run full health check on all subsystems."""
         results = {
             "brain_id": self.brain_id,

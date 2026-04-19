@@ -4,10 +4,14 @@ Integrates AMOS Cognitive Runtime with the clawspring agent system.
 Provides tools for the agent to leverage AMOS brain capabilities.
 """
 
+from __future__ import annotations
+
+
+
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # Add the repo root to path for imports
 REPO_ROOT = Path(__file__).parent
@@ -88,7 +92,7 @@ class AMOSAgentBridge:
         return result
 
     def design_architecture(
-        self, requirements: str, constraints: list[str] = None
+        self, requirements: str, constraints: List[str] = None
     ) -> Dict[str, Any]:
         """Generate architecture design using AMOS design engine principles.
 
@@ -159,7 +163,7 @@ class AMOSAgentBridge:
         """Get information about a specific cognitive engine."""
         return self._runtime.get_engine_info(engine_name)
 
-    def list_engines(self) -> list[str]:
+    def list_engines(self) -> List[str]:
         """List all available cognitive engines."""
         return self._runtime.list_available_engines()
 

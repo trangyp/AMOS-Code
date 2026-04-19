@@ -45,7 +45,7 @@ import json
 import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 from datetime import datetime
 import hashlib
 
@@ -93,7 +93,7 @@ class ProofAttempt:
     strategy: ProofStrategy
     neural_confidence: float  # LLM confidence score
     formal_status: ProofStatus
-    proof_steps: list[dict[str, Any]]
+    proof_steps: List[dict[str, Any]]
     verification_time_ms: float
     timestamp: str
 
@@ -235,7 +235,7 @@ class NeuralSymbolicEngine:
             )
         ]
 
-    def _load_isomorphism_patterns(self) -> list[dict[str, Any]]:
+    def _load_isomorphism_patterns(self) -> List[dict[str, Any]]:
         """Load known cross-domain isomorphism patterns."""
         return [
             {
@@ -394,7 +394,7 @@ class NeuralSymbolicEngine:
 
     def suggest_invariants(self,
                          equation_name: str,
-                         domain: str) -> list[dict[str, Any]]:
+                         domain: str) -> List[dict[str, Any]]:
         """
         Suggest likely invariants for an equation using neural analysis.
 
@@ -476,7 +476,7 @@ class NeuralSymbolicEngine:
 
     def generate_novel_equation(self,
                                  base_equations: List[str],
-                                 composition_rule: str) -> dict[str, Any ]:
+                                 composition_rule: str) -> Dict[str, Any ]:
         """
         Generate novel equation by composing existing ones.
 
@@ -615,7 +615,7 @@ class NeuralSymbolicEngine:
     def _generate_proof_steps(self,
                             theorem: str,
                             tactics: List[NeuralTactic],
-                            strategy: ProofStrategy) -> list[dict[str, Any]]:
+                            strategy: ProofStrategy) -> List[dict[str, Any]]:
         """Generate proof steps from tactics."""
         steps = []
         for i, tactic in enumerate(tactics):
@@ -629,7 +629,7 @@ class NeuralSymbolicEngine:
 
     def _attempt_formal_proof(self,
                            theorem: str,
-                           steps: list[dict[str, Any]]) -> ProofStatus:
+                           steps: List[dict[str, Any]]) -> ProofStatus:
         """Attempt formal verification of proof steps."""
         # Simplified: in practice would verify each step
         if self.verifier:
@@ -652,7 +652,6 @@ class NeuralSymbolicEngine:
 def main():
     """CLI for neural-symbolic engine."""
     import argparse
-from typing import Callable, List
 
     parser = argparse.ArgumentParser(
         description="AMOS Neural-Symbolic Integration Engine"

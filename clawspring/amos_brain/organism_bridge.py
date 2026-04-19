@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # Add organism OS to path - use relative path from this file
 ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
@@ -70,7 +70,7 @@ class OrganismBridge:
         self._load_task_executor()
         return self._bridge_status
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get bridge connection status."""
         return {
             "organism_path": str(ORGANISM_PATH),
@@ -79,7 +79,7 @@ class OrganismBridge:
             "total_available": 3,
         }
 
-    def enhance_cognitive_analysis(self, task: str) -> dict[str, Any]:
+    def enhance_cognitive_analysis(self, task: str) -> Dict[str, Any]:
         """Use organism components to enhance cognitive task analysis."""
         enhancement = {"task": task, "organism_enhancements": {}}
 

@@ -29,7 +29,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -43,7 +43,7 @@ class TrainingModule:
     path: Path
     category: str
     description: str = ""
-    topics: list[str] = field(default_factory=list)
+    topics: List[str] = field(default_factory=list)
     completed: bool = False
     progress: float = 0.0
 
@@ -54,7 +54,7 @@ class LearningPath:
 
     name: str
     description: str
-    modules: list[str] = field(default_factory=list)
+    modules: List[str] = field(default_factory=list)
     estimated_hours: float = 0.0
     difficulty: str = "intermediate"
 
@@ -129,7 +129,7 @@ class TrainingAcademy:
         with open(self.progress_file, "w") as f:
             json.dump(self.user_progress, f, indent=2)
 
-    def scan_training_materials(self) -> list[TrainingModule]:
+    def scan_training_materials(self) -> List[TrainingModule]:
         """Scan training folder for all PDF materials."""
         modules = []
 
@@ -220,7 +220,7 @@ class TrainingAcademy:
         print()
 
         # Group by category
-        by_category: dict[str, list[TrainingModule]] = {}
+        by_category: Dict[str, list[TrainingModule]] = {}
         for m in modules:
             by_category.setdefault(m.category, []).append(m)
 

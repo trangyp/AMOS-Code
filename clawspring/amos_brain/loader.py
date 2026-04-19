@@ -1,10 +1,8 @@
 """AMOS Brain Loader - Loads and parses brain configuration files."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -16,9 +14,9 @@ class KernelConfig:
     group: str
     priority: int
     required: bool
-    domains: list[str]
-    modes: list[str]
-    dependencies: list[str]
+    domains: List[str]
+    modes: List[str]
+    dependencies: List[str]
     file_hint: str = ""
 
 
@@ -37,12 +35,12 @@ class BrainLoader:
 
     DEFAULT_BRAIN_PATH = Path(__file__).resolve().parent.parent.parent / "_AMOS_BRAIN"
 
-    def __init__(self, brain_path: Path | None = None):
+    def __init__(self, brain_path: Optional[Path] = None):
         self.brain_path = brain_path or self.DEFAULT_BRAIN_PATH
-        self.kernels: list[KernelConfig] = []
-        self.global_laws: list[GlobalLaw] = []
-        self.identity: dict[str, Any] = {}
-        self.creator: dict[str, Any] = {}
+        self.kernels: List[KernelConfig] = []
+        self.global_laws: List[GlobalLaw] = []
+        self.identity: Dict[str, Any] = {}
+        self.creator: Dict[str, Any] = {}
         self._loaded = False
 
     def load(self) -> "BrainLoader":
@@ -106,11 +104,11 @@ class BrainLoader:
             ),
         ]
 
-    def get_required_kernels(self) -> list[KernelConfig]:
+    def get_required_kernels(self) -> List[KernelConfig]:
         """Get all required kernels."""
         return [k for k in self.kernels if k.required]
 
-    def get_kernels_for_domains(self, domains: list[str]) -> list[KernelConfig]:
+    def get_kernels_for_domains(self, domains: List[str]) -> List[KernelConfig]:
         """Get all kernels that handle the given domains."""
         result = []
         for k in self.kernels:
@@ -130,7 +128,7 @@ class BrainLoader:
 
 
 # Global brain loader instance
-_brain_loader: BrainLoader | None = None
+_brain_loader: Optional[BrainLoader] = None
 
 
 def get_brain() -> BrainLoader:

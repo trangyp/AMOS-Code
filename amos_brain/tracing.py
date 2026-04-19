@@ -7,10 +7,11 @@ Provides distributed tracing support for:
 - Integration with modern observability backends (Jaeger, Zipkin, OTLP)
 """
 
+from __future__ import annotations
 
 import os
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -49,12 +50,12 @@ class TracingSpan:
     Compatible with OpenTelemetry span interface for future migration.
     """
 
-    def __init__(self, name: str, tracer: Tracer, parent: Optional[TracingSpan] = None):
+    def __init__(self, name: str, tracer: "Any", parent: "Optional[TracingSpan]" = None):
         self.name = name
         self.tracer = tracer
         self.parent = parent
         self.attributes: Dict[str, Any] = {}
-        self.events: list[dict[str, Any]] = []
+        self.events: List[dict[str, Any]] = []
         self._start_time: float  = None
         self._end_time: float  = None
 

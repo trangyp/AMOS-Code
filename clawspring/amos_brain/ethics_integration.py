@@ -8,7 +8,7 @@ Ensures all cognitive decisions pass ethical validation before execution.
 import sys
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -20,8 +20,8 @@ class EthicsValidationResult:
     """Result of ethics validation."""
 
     passed: bool
-    violations: list[str]
-    warnings: list[str]
+    violations: List[str]
+    warnings: List[str]
     score: float  # 0.0 to 1.0
     framework: str
     timestamp: datetime
@@ -37,10 +37,10 @@ class EthicsValidator:
             "virtue_ethics": self._validate_virtue_ethics,
             "principlism": self._validate_principlism,
         }
-        self.violations_log: list[dict] = []
+        self.violations_log: List[dict] = []
 
     def validate_action(
-        self, action: str, context: dict[str, Any], framework: str = "principlism"
+        self, action: str, context: Dict[str, Any], framework: str = "principlism"
     ) -> EthicsValidationResult:
         """Validate an action against an ethical framework."""
         if framework not in self.frameworks:
@@ -62,7 +62,7 @@ class EthicsValidator:
 
         return result
 
-    def _validate_principlism(self, action: str, context: dict) -> tuple[list, list, float]:
+    def _validate_principlism(self, action: str, context: dict) -> Tuple[list, list, float]:
         """Validate using biomedical ethics principles (Beauchamp & Childress)."""
         violations = []
         warnings = []
@@ -91,7 +91,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, score)
 
-    def _validate_utilitarian(self, action: str, context: dict) -> tuple[list, list, float]:
+    def _validate_utilitarian(self, action: str, context: dict) -> Tuple[list, list, float]:
         """Validate using utilitarian calculus."""
         violations = []
         warnings = []
@@ -112,7 +112,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, min(1.0, score))
 
-    def _validate_deontological(self, action: str, context: dict) -> tuple[list, list, float]:
+    def _validate_deontological(self, action: str, context: dict) -> Tuple[list, list, float]:
         """Validate using duty-based ethics (Kantian)."""
         violations = []
         warnings = []
@@ -136,7 +136,7 @@ class EthicsValidator:
 
         return violations, warnings, max(0.0, score)
 
-    def _validate_virtue_ethics(self, action: str, context: dict) -> tuple[list, list, float]:
+    def _validate_virtue_ethics(self, action: str, context: dict) -> Tuple[list, list, float]:
         """Validate using virtue ethics (Aristotelian)."""
         violations = []
         warnings = []
@@ -173,7 +173,7 @@ class EthicsValidator:
             }
         )
 
-    def get_violations_report(self) -> dict[str, Any]:
+    def get_violations_report(self) -> Dict[str, Any]:
         """Get report of all ethics violations."""
         return {
             "total_violations": len(self.violations_log),
@@ -230,7 +230,7 @@ class CognitiveEthicsBridge:
             f"Orchestration: {task_description}", context, framework="utilitarian"
         )
 
-    def get_compliance_status(self) -> dict[str, Any]:
+    def get_compliance_status(self) -> Dict[str, Any]:
         """Get ethics compliance status."""
         return {
             "enabled": self.enabled,

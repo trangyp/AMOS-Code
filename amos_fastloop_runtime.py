@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 """
 AMOS FastLoop Runtime
@@ -12,6 +12,7 @@ import asyncio
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Optional, Any
 
 from amos_delta_state import create_delta, get_delta_manager

@@ -6,12 +6,10 @@ amos_integration_test.py, amos_coherence_engine.py, amos_tools.py)
 to the new v2.8 ecosystem in clawspring/amos_brain/.
 """
 
-from __future__ import annotations
-
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -22,7 +20,7 @@ class EcosystemAdapter:
     """Adapters for integrating existing AMOS files with v2.8 ecosystem."""
 
     def __init__(self):
-        self.adapters: dict[str, Any] = {}
+        self.adapters: Dict[str, Any] = {}
         self._load_adapters()
 
     def _load_adapters(self) -> None:
@@ -34,11 +32,11 @@ class EcosystemAdapter:
             "amos_tools": ToolsAdapter(),
         }
 
-    def get_adapter(self, name: str) -> Any | None:
+    def get_adapter(self, name: str) -> Optional[Any]:
         """Get a specific adapter."""
         return self.adapters.get(name)
 
-    def get_all_status(self) -> dict[str, str]:
+    def get_all_status(self) -> Dict[str, str]:
         """Get status of all adapters."""
         return {
             name: "active" if adapter.is_available() else "unavailable"
@@ -74,7 +72,7 @@ class WorkflowAdapter:
         """Check if workflow module is available."""
         return self.workflow_module is not None
 
-    def run_workflow(self, task: str) -> dict[str, Any]:
+    def run_workflow(self, task: str) -> Dict[str, Any]:
         """Run workflow through v2.8 ecosystem."""
         if not self.workflow_module:
             return {"error": "Workflow module not available"}
@@ -122,7 +120,7 @@ class TestAdapter:
         """Check if test module is available."""
         return self.test_module is not None
 
-    def run_tests(self) -> dict[str, Any]:
+    def run_tests(self) -> Dict[str, Any]:
         """Run integration tests through v2.8 validator."""
         try:
             from system_health_validator import SystemHealthValidator
@@ -206,7 +204,7 @@ class ToolsAdapter:
         """Check if tools module is available."""
         return self.tools_module is not None
 
-    def get_tools(self) -> list[str]:
+    def get_tools(self) -> List[str]:
         """Get available tools through v2.8 system."""
         try:
             from unified_cli import UnifiedCLI

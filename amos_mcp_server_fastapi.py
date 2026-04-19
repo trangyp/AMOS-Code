@@ -10,12 +10,14 @@ Compatible with Python 3.9+ (no mcp sdk required)
 
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from typing import Any, Dict, List, Optional
 
 # Setup paths
 AMOS_ROOT = Path(__file__).parent.resolve()
@@ -23,18 +25,12 @@ sys.path.insert(0, str(AMOS_ROOT))
 sys.path.insert(0, str(AMOS_ROOT / "clawspring"))
 sys.path.insert(0, str(AMOS_ROOT / "clawspring" / "amos_brain"))
 
-
-try:
-    from typing import Self  # Python 3.9-3.10
-except ImportError:
-    pass
-
 # Import AMOS brain
 try:
     from amos_kernel_runtime import AMOSKernelRuntime, StateGraph
-
     from clawspring.amos_brain.integrated_brain_api import get_unified_brain_api
-
+    from amos_unified_equation_registry import UnifiedEquationRegistry
+    import uvicorn
     BRAIN_AVAILABLE = True
 except ImportError as e:
     BRAIN_AVAILABLE = False
@@ -73,14 +69,14 @@ class MCPTool(BaseModel):
 class MCPResource(BaseModel):
     uri: str
     name: str
-    description: str | None = None
-    mimeType: str | None = None
+    description: Optional[str] = None
+    mimeType: Optional[str] = None
 
 
 class MCPPrompt(BaseModel):
     name: str
     description: str
-    arguments: list[dict] | None = None
+    arguments: Optional[List[Dict[str, Any]]] = None
 
 
 class MCPToolCallRequest(BaseModel):
@@ -94,7 +90,7 @@ class MCPGetResourceRequest(BaseModel):
 
 class MCPGetPromptRequest(BaseModel):
     name: str
-    arguments: dict | None = None
+    arguments: Optional[dict] = None
 
 
 # ============================================================================
@@ -111,7 +107,7 @@ class AMOSMCPServer:
             description="Model Context Protocol server for AMOS Brain",
             version="1.0.0",
         )
-        self.kernel: AMOSKernelRuntime | None = None
+        self.kernel: Optional[AMOSKernelRuntime] = None
         self._setup_middleware()
         self._setup_routes()
 
@@ -136,7 +132,7 @@ class AMOSMCPServer:
             }
 
         @self.app.get("/mcp/tools")
-        async def list_tools() -> list[MCPTool]:
+        async def list_tools() -> List[MCPTool]:
             """List available MCP tools."""
             return [
                 MCPTool(
@@ -194,7 +190,7 @@ class AMOSMCPServer:
                 raise HTTPException(status_code=404, detail=f"Tool not found: {request.name}")
 
         @self.app.get("/mcp/resources")
-        async def list_resources() -> list[MCPResource]:
+        async def list_resources() -> List[MCPResource]:
             """List available resources."""
             return [
                 MCPResource(
@@ -234,7 +230,7 @@ class AMOSMCPServer:
             }
 
         @self.app.get("/mcp/prompts")
-        async def list_prompts() -> list[MCPPrompt]:
+        async def list_prompts() -> List[MCPPrompt]:
             """List available prompts."""
             return [
                 MCPPrompt(
@@ -328,7 +324,6 @@ Observe → Update → Generate → Simulate → Filter → Collapse → Execute
 
         # Try to load equation from unified registry
         try:
-            from amos_unified_equation_registry import UnifiedEquationRegistry
 
             registry = UnifiedEquationRegistry()
             await registry.initialize()
@@ -382,7 +377,7 @@ The AMOS brain can provide deeper analysis when integrated with the full cogniti
         status = f"""AMOS System Status:
 
 - **Brain Kernel**: {"Available" if BRAIN_AVAILABLE else "Not Available"}
-- **Timestamp**: {datetime.now(UTC).isoformat()}
+- **Timestamp**: {datetime.now(timezone.utc).isoformat()}
 - **Version**: 28-phase architecture
 - **MCP Server**: Active
 
@@ -398,7 +393,7 @@ Use rtk gain to view token savings.
 """
         return {"content": [MCPTextContent(text=status).dict()], "isError": False}
 
-    async def _get_resource_content(self, uri: str) -> dict | None:
+    async def _get_resource_content(self, uri: str) -> Optional[Dict[str, Any]]:
         """Get resource content by URI."""
         if uri == "amos://docs/architecture":
             return {
@@ -494,7 +489,7 @@ Key components:
 # ============================================================================
 
 # Global server instance
-_mcp_server: AMOSMCPServer | None = None
+_mcp_server: Optional[AMOSMCPServer] = None
 
 
 def get_mcp_server() -> AMOSMCPServer:
@@ -529,6 +524,5 @@ async def startup():
 
 
 if __name__ == "__main__":
-    import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8001)

@@ -21,9 +21,10 @@ import os
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from typing import Any, AsyncGenerator
+from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 import aiohttp
 import json
 from pathlib import Path
@@ -604,7 +605,7 @@ class ProviderManager:
         except Exception:
             return False
 
-    async def get_available_models(self) -> dict[str, list[str]]:
+    async def get_available_models(self) -> Dict[str, list[str]]:
         """Get all available models from all providers."""
         models = {}
         for name, provider in self.providers.items():
@@ -662,8 +663,6 @@ async def complete_with_context(
 ) -> Tuple[str, dict]:
     """Complete with full context including UI guidelines."""
     from clawspring.amos_cognitive_bridge import get_cognitive_bridge
-from typing import List
-from typing import Dict, Optional, Tuple
 
     # Get biological context
     bridge = get_cognitive_bridge()

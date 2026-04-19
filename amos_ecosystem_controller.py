@@ -21,6 +21,7 @@ import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Dict, List, Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -65,7 +66,7 @@ class AMOSEcosystemController:
 
     def __init__(self):
         self.root = Path(__file__).parent
-        self.tools: dict[ToolType, EcosystemTool] = {}
+        self.tools: Dict[ToolType, EcosystemTool] = {}
         self._register_tools()
 
     def _register_tools(self) -> None:
@@ -185,7 +186,7 @@ class AMOSEcosystemController:
         request_lower = request.lower()
 
         # Score each tool based on keyword matches
-        scores: dict[ToolType, int] = {}
+        scores: Dict[ToolType, int] = {}
 
         for tool_type, tool in self.tools.items():
             if tool_type == ToolType.CONTROLLER:

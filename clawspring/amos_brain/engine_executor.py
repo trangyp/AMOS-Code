@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+
+
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -13,13 +15,13 @@ class ExecutionResult:
     """Result of executing a task through cognitive engines."""
 
     task: str
-    engines_used: list[str]
-    reasoning_steps: list[dict[str, Any]]
+    engines_used: List[str]
+    reasoning_steps: List[dict[str, Any]]
     output: str
-    laws_checked: list[str]
-    violations_found: list[str]
+    laws_checked: List[str]
+    violations_found: List[str]
     execution_time_ms: float = 0.0
-    mathematical_analysis: dict[str, Any] = None
+    mathematical_analysis: Dict[str, Any] = None
 
 
 class EngineExecutor:
@@ -27,7 +29,7 @@ class EngineExecutor:
 
     def __init__(self, brain_loader: Any = None):
         self.brain_loader = brain_loader
-        self._engines: dict[str, Callable] = {}
+        self._engines: Dict[str, Callable] = {}
         self._math_engine: Any = None
         self._register_default_engines()
         self._initialize_math_engine()
@@ -64,7 +66,7 @@ class EngineExecutor:
         except Exception as e:
             print(f"[EngineExecutor] Validation engine init warning: {e}")
 
-    def _execute_logic_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_logic_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute deterministic logic analysis."""
         return {
             "perspectives": [
@@ -76,7 +78,7 @@ class EngineExecutor:
             "reasoning": "Applied formal logic decomposition",
         }
 
-    def _execute_engineering_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_engineering_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute engineering/mathematical analysis using framework engine."""
         is_code = any(kw in task.lower() for kw in ["code", "function", "class", "implement"])
 
@@ -111,7 +113,7 @@ class EngineExecutor:
 
         return result
 
-    def _execute_design_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_design_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute design language analysis with mathematical foundations."""
         perspectives = [
             "Structural clarity review",
@@ -145,7 +147,7 @@ class EngineExecutor:
 
         return result
 
-    def _execute_biology_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_biology_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute biological/cognitive analysis."""
         return {
             "perspectives": [
@@ -157,7 +159,7 @@ class EngineExecutor:
             "reasoning": "Biological intelligence principles applied",
         }
 
-    def _execute_strategy_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_strategy_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute strategic/game-theoretic analysis."""
         return {
             "perspectives": [
@@ -169,7 +171,7 @@ class EngineExecutor:
             "reasoning": "Strategic foresight applied",
         }
 
-    def _execute_society_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_society_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute social/cultural analysis."""
         return {
             "perspectives": [
@@ -181,7 +183,7 @@ class EngineExecutor:
             "reasoning": "Social systems analysis applied",
         }
 
-    def _execute_validation_engine(self, task: str, context: dict) -> dict[str, Any]:
+    def _execute_validation_engine(self, task: str, context: dict) -> Dict[str, Any]:
         """Execute design validation using mathematical frameworks."""
         if not self._validation_engine:
             return {
@@ -240,7 +242,7 @@ class EngineExecutor:
 
         return result
 
-    def _check_laws(self, task: str, reasoning: list[dict]) -> list[str]:
+    def _check_laws(self, task: str, reasoning: List[dict]) -> List[str]:
         """Check for global law violations in reasoning."""
         violations = []
         all_text = task.lower() + " " + json.dumps(reasoning).lower()
@@ -263,7 +265,7 @@ class EngineExecutor:
 
         return violations
 
-    def execute(self, task: str, engines: list[str], context: dict = None) -> ExecutionResult:
+    def execute(self, task: str, engines: List[str], context: dict = None) -> ExecutionResult:
         """Execute a task through the specified cognitive engines."""
         import time
 
@@ -328,7 +330,7 @@ def get_executor(brain_loader: Any = None) -> EngineExecutor:
     return _executor_instance
 
 
-def execute_cognitive_task(task: str, engines: list[str], context: dict = None) -> ExecutionResult:
+def execute_cognitive_task(task: str, engines: List[str], context: dict = None) -> ExecutionResult:
     """Convenience function to execute a task through cognitive engines."""
     executor = get_executor()
     return executor.execute(task, engines, context)

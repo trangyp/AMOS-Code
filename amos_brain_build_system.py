@@ -14,7 +14,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 # Add repo to path
 sys.path.insert(0, str(Path(__file__).parent))

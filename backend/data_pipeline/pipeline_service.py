@@ -21,40 +21,35 @@ import json
 import logging
 import time
 
-logger = logging.getLogger(__name__)
 from collections import deque
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any, Union
+from typing import Any, Dict, List, Optional, Set, Union
 
+logger = logging.getLogger(__name__)
+
+# Optional imports
 try:
     import redis
-
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
 
 try:
     import pandas as pd
-
     PANDAS_AVAILABLE = True
 except ImportError:
     PANDAS_AVAILABLE = False
 
 try:
     from amos_brain import get_super_brain
-
     SUPERBRAIN_AVAILABLE = True
 except ImportError:
     SUPERBRAIN_AVAILABLE = False
 
 try:
     from backend.data_pipeline.streaming import publish_event
-from typing import Any, Callable, List, Union, Callable, List, Union
-from typing import List, Union, Union
-from typing import Dict, Set
-
     STREAMING_AVAILABLE = True
 except ImportError:
     STREAMING_AVAILABLE = False
@@ -117,7 +112,7 @@ class ETLJob:
     records_failed: int = 0
     started_at: Optional[float] = None
     completed_at: Optional[float] = None
-    error_log: list[dict[str, Any]] = field(default_factory=list)
+    error_log: List[dict[str, Any]] = field(default_factory=list)
 
 
 # Type alias for transform functions - use Union for Python 3.9 compatibility
@@ -148,7 +143,7 @@ class StreamProcessor:
         self.max_buffer_size = max_buffer_size
 
         self._buffer: deque[dict[str, Any]] = deque(maxlen=max_buffer_size)
-        self._handlers: list[Callable[[list[dict[str, Any]]], Any]] = []
+        self._handlers: List[Callable[[list[dict[str, Any]]], Any]] = []
         self._running = False
         self._task: asyncio.Task  = None
         self._lock = asyncio.Lock()
@@ -248,7 +243,7 @@ class StreamProcessor:
             if time.time() - self._last_checkpoint > 60:
                 await self._checkpoint()
 
-    async def _dead_letter(self, records: list[dict[str, Any]], error: str) -> None:
+    async def _dead_letter(self, records: List[dict[str, Any]], error: str) -> None:
         """Send failed records to dead letter queue."""
         if REDIS_AVAILABLE:
             try:
@@ -527,7 +522,7 @@ class DataPipelineService:
             "error_count": len(job.error_log),
         }
 
-    def list_jobs(self) -> list[dict[str, Any]]:
+    def list_jobs(self) -> List[dict[str, Any]]:
         """List all ETL jobs."""
         return [
             {

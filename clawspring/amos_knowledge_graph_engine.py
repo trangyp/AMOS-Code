@@ -3,7 +3,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class EntityType(Enum):
@@ -113,7 +113,7 @@ class SemanticSearch:
     """Semantic search capabilities."""
 
     def __init__(self):
-        self.embeddings: dict[str, list[float]] = {}
+        self.embeddings: Dict[str, list[float]] = {}
 
     def compute_similarity(self, text1: str, text2: str) -> float:
         """Compute semantic similarity (simplified)."""
@@ -125,7 +125,7 @@ class SemanticSearch:
             return 0.0
         return len(intersection) / len(union)
 
-    def search(self, query: str, corpus: List[str], top_k: int = 5) -> list[tuple[str, float]]:
+    def search(self, query: str, corpus: List[str], top_k: int = 5) -> List[tuple[str, float]]:
         """Search corpus for relevant documents."""
         scores = [(doc, self.compute_similarity(query, doc)) for doc in corpus]
         scores.sort(key=lambda x: x[1], reverse=True)
@@ -155,7 +155,7 @@ class KnowledgeInference:
                     queue.append(rel.target_id)
         return results
 
-    def find_paths(self, source: str, target: str, max_depth: int = 3) -> list[list[str]]:
+    def find_paths(self, source: str, target: str, max_depth: int = 3) -> List[list[str]]:
         """Find paths between entities."""
         paths = []
         queue = [(source, [source])]
@@ -179,7 +179,7 @@ class KnowledgeGraph:
     def __init__(self):
         self.entities: Dict[str, Entity] = {}
         self.relations: List[Relation] = []
-        self.entity_index: dict[EntityType, list[str]] = defaultdict(list)
+        self.entity_index: Dict[EntityType, list[str]] = defaultdict(list)
 
     def add_entity(self, entity: Entity) -> None:
         """Add entity to graph."""
@@ -425,8 +425,6 @@ _kg_engine: Optional[KnowledgeGraphEngine] = None
 
 def get_knowledge_graph_engine() -> KnowledgeGraphEngine:
     """Get or create the Knowledge Graph Engine singleton."""
-from __future__ import annotations
-
     global _kg_engine
     if _kg_engine is None:
         _kg_engine = KnowledgeGraphEngine()

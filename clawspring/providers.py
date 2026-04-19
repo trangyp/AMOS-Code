@@ -19,12 +19,11 @@ Model string formats:
   "custom/my-model"          uses CUSTOM_BASE_URL from config
 """
 
-from __future__ import annotations
-
 
 import json
 import urllib.request
 from collections.abc import Generator
+from typing import Any, Dict, List
 
 # ── Provider registry ──────────────────────────────────────────────────────
 

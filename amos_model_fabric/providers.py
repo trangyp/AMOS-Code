@@ -12,7 +12,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 import aiohttp
 
@@ -36,7 +36,7 @@ class BaseProvider(ABC):
         self.api_key = api_key
         self.timeout = timeout
         self._session: aiohttp.ClientSession = None
-        self._available_models: list[str] = []
+        self._available_models: List[str] = []
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create HTTP session."""
@@ -47,7 +47,7 @@ class BaseProvider(ABC):
             )
         return self._session
 
-    def _default_headers(self) -> dict[str, str]:
+    def _default_headers(self) -> Dict[str, str]:
         """Default headers for requests."""
         headers = {"Content-Type": "application/json"}
         if self.api_key:
@@ -70,7 +70,7 @@ class BaseProvider(ABC):
         pass
 
     @abstractmethod
-    async def list_models(self) -> list[str]:
+    async def list_models(self) -> List[str]:
         """List available models."""
         pass
 
@@ -104,7 +104,7 @@ class OllamaProvider(BaseProvider):
             logger.debug(f"Ollama health check failed: {e}")
             return False
 
-    async def list_models(self) -> list[str]:
+    async def list_models(self) -> List[str]:
         """List available Ollama models."""
         try:
             session = await self._get_session()
@@ -124,7 +124,7 @@ class OllamaProvider(BaseProvider):
         session = await self._get_session()
         model = request.model or "qwen2.5-coder:14b"
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": request.messages,
             "stream": False,
@@ -157,7 +157,7 @@ class OllamaProvider(BaseProvider):
         session = await self._get_session()
         model = request.model or "qwen2.5-coder:14b"
 
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": model,
             "messages": request.messages,
             "stream": True,
@@ -203,7 +203,7 @@ class OpenAICompatibleProvider(BaseProvider):
             logger.debug(f"Health check failed: {e}")
             return False
 
-    async def list_models(self) -> list[str]:
+    async def list_models(self) -> List[str]:
         """List available models."""
         try:
             session = await self._get_session()
@@ -219,7 +219,7 @@ class OpenAICompatibleProvider(BaseProvider):
 
     def _convert_request(self, request: FabricRequest) -> dict:
         """Convert FabricRequest to OpenAI format."""
-        payload: dict[str, Any] = {
+        payload: Dict[str, Any] = {
             "model": request.model or "local-model",
             "messages": request.messages,
             "temperature": request.temperature,

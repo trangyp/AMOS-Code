@@ -9,14 +9,13 @@ Uses the actual AMOS Brain infrastructure:
 This is REAL code using REAL brain components.
 """
 
-from __future__ import annotations
-
 import ast
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # REAL brain imports
 from amos_brain.facade import BrainClient
@@ -41,9 +40,9 @@ class CodeAnalysis:
     file_path: str
     ast_tree: ast.AST | None
     complexity_score: float
-    security_risks: list[dict]
-    semantic_issues: list[str]
-    repair_suggestions: list[str]
+    security_risks: List[dict]
+    semantic_issues: List[str]
+    repair_suggestions: List[str]
     thinking_steps: int
     analysis_time_ms: float
 
@@ -77,7 +76,7 @@ class BrainCodeCognition:
         6. Validate repairs
     """
 
-    def __init__(self, repo_path: Path | None = None):
+    def __init__(self, repo_path: Optional[Path] = None):
         self.repo_path = repo_path or Path.cwd()
         self.brain = BrainClient(repo_path=str(self.repo_path))
         self.thinking = ThinkingEngine()
@@ -184,7 +183,7 @@ class BrainCodeCognition:
 
     async def _think_about_code(
         self, state: ThinkingState, code: str, file_path: str
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Use brain to think about code."""
         # Run thinking steps
         iterations = 0
@@ -288,7 +287,7 @@ Provide the COMPLETE fixed code. Do not explain, just output the fixed file."""
         # Simple heuristic based on workspace size
         return min(len(state.workspace) / 10.0, 1.0)
 
-    def _extract_expressions(self, tree: ast.AST) -> list[str]:
+    def _extract_expressions(self, tree: ast.AST) -> List[str]:
         """Extract formal expressions from AST."""
         expressions = []
         for node in ast.walk(tree):

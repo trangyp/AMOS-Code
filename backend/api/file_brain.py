@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS File Brain API
 
 Real REST endpoints for file ingestion with brain-powered analysis.
 Integrates streaming file ingestion with cognitive reading kernel.
 """
-from __future__ import annotations
-
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -30,21 +28,21 @@ class FileProcessRequest(BaseModel):
     """Request to process file content."""
 
     content: str
-    source: str | None = None
-    context: dict[str, Any] = {}
+    source: Optional[str] = None
+    context: Dict[str, Any] = {}
 
 
 class FileProcessResponse(BaseModel):
     """Response with brain-processed file."""
 
     file_id: str
-    source: str | None
+    source: Optional[str]
     total_segments: int
     processed_segments: int
-    stable_reads: list[dict[str, Any]]
-    cognitive_summary: dict[str, Any]
+    stable_reads: List[dict[str, Any]]
+    cognitive_summary: Dict[str, Any]
     processing_time_ms: float
-    errors: list[str]
+    errors: List[str]
 
 
 class FileQueryRequest(BaseModel):
@@ -61,14 +59,14 @@ class FileQueryResponse(BaseModel):
     file_id: str
     query: str
     path: str
-    context: str | None
+    context: Optional[str]
     latency_ms: float
-    brain_enhancement: dict[str, Any] = None
+    brain_enhancement: Dict[str, Any] = None
 
 
 @router.post("/process", response_model=FileProcessResponse)
 async def process_file_endpoint(
-    content: str = Form(...), source: str | None = Form(None), context: str = Form("{}")
+    content: str = Form(...), source: Optional[str] = Form(None), context: str = Form("{}")
 ) -> FileProcessResponse:
     """Process file content through brain pipeline.
 
@@ -173,7 +171,7 @@ async def query_file_endpoint(request: FileQueryRequest) -> FileQueryResponse:
 
 
 @router.get("/status")
-async def get_file_brain_status() -> dict[str, Any]:
+async def get_file_brain_status() -> Dict[str, Any]:
     """Get file brain service status."""
     if not FILE_BRAIN_AVAILABLE:
         return {

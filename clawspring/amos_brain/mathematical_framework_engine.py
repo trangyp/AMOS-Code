@@ -11,15 +11,13 @@ Architecture Pattern: Modular Engine with Domain-Specific Sub-Engines
 - DistributedSubEngine: Consensus and scheduling algorithms
 """
 
-from __future__ import annotations
-
 
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from functools import lru_cache
-from typing import Any, TypeVar
+from typing import Any, Dict, List, TypeVar
 
 T = TypeVar("T")
 
@@ -49,7 +47,7 @@ class Equation:
     latex: str
     python_impl: Callable[..., Any]
     description: str
-    parameters: dict[str, str] = field(default_factory=dict)
+    parameters: Dict[str, str] = field(default_factory=dict)
     invariant: str = None
     source_framework: str = ""
 
@@ -80,18 +78,18 @@ class Framework:
 
     name: str
     category: str
-    equations: list[str] = field(default_factory=list)
-    invariants: list[str] = field(default_factory=list)
-    constants: dict[str, float] = field(default_factory=dict)
+    equations: List[str] = field(default_factory=list)
+    invariants: List[str] = field(default_factory=list)
+    constants: Dict[str, float] = field(default_factory=dict)
 
 
 class UISubEngine:
     """UI/UX design system mathematical engine."""
 
     def __init__(self):
-        self.equations: dict[str, Equation] = {}
-        self.invariants: dict[str, Invariant] = {}
-        self.frameworks: dict[str, Framework] = {}
+        self.equations: Dict[str, Equation] = {}
+        self.invariants: Dict[str, Invariant] = {}
+        self.frameworks: Dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -238,7 +236,7 @@ class UISubEngine:
             name="Bootstrap", category="CSS Framework", constants={"grid_columns": 12, "gutter": 24}
         )
 
-    def validate_spacing(self, value: int) -> dict[str, Any]:
+    def validate_spacing(self, value: int) -> Dict[str, Any]:
         """Validate if spacing follows 8-point grid."""
         return {
             "value": value,
@@ -247,7 +245,7 @@ class UISubEngine:
             "rem": value / 16,
         }
 
-    def calculate_type_scale(self, base: float, ratio: float, steps: int) -> list[float]:
+    def calculate_type_scale(self, base: float, ratio: float, steps: int) -> List[float]:
         """Calculate modular type scale."""
         return [
             self.equations["modular_type_scale"].evaluate(base=base, r=ratio, n=i)
@@ -263,9 +261,9 @@ class AISubEngine:
     """AI/ML mathematical engine."""
 
     def __init__(self):
-        self.equations: dict[str, Equation] = {}
-        self.invariants: dict[str, Invariant] = {}
-        self.frameworks: dict[str, Framework] = {}
+        self.equations: Dict[str, Equation] = {}
+        self.invariants: Dict[str, Invariant] = {}
+        self.frameworks: Dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -437,7 +435,7 @@ class AISubEngine:
         """Calculate perplexity from cross-entropy."""
         return math.exp(cross_entropy)
 
-    def validate_probability_distribution(self, probs: list[float]) -> bool:
+    def validate_probability_distribution(self, probs: List[float]) -> bool:
         """Check if values form a valid probability distribution."""
         return self.invariants["softmax_probability"].check(outputs=probs)
 
@@ -446,9 +444,9 @@ class SecuritySubEngine:
     """Cryptographic and security mathematical engine."""
 
     def __init__(self):
-        self.equations: dict[str, Equation] = {}
-        self.invariants: dict[str, Invariant] = {}
-        self.frameworks: dict[str, Framework] = {}
+        self.equations: Dict[str, Equation] = {}
+        self.invariants: Dict[str, Invariant] = {}
+        self.frameworks: Dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -501,9 +499,9 @@ class DistributedSubEngine:
     """Distributed systems mathematical engine."""
 
     def __init__(self):
-        self.equations: dict[str, Equation] = {}
-        self.invariants: dict[str, Invariant] = {}
-        self.frameworks: dict[str, Framework] = {}
+        self.equations: Dict[str, Equation] = {}
+        self.invariants: Dict[str, Invariant] = {}
+        self.frameworks: Dict[str, Framework] = {}
         self._initialize()
 
     def _initialize(self):
@@ -560,9 +558,9 @@ class MathematicalFrameworkEngine:
         self.security_engine = SecuritySubEngine()
         self.distributed_engine = DistributedSubEngine()
 
-        self.all_equations: dict[str, Equation] = {}
-        self.all_invariants: dict[str, Invariant] = {}
-        self.all_frameworks: dict[str, Framework] = {}
+        self.all_equations: Dict[str, Equation] = {}
+        self.all_invariants: Dict[str, Invariant] = {}
+        self.all_frameworks: Dict[str, Framework] = {}
 
         self._aggregate_all()
 
@@ -579,11 +577,11 @@ class MathematicalFrameworkEngine:
             self.all_invariants.update(engine.invariants)
             self.all_frameworks.update(engine.frameworks)
 
-    def query_equation(self, name: str) -> Equation | None:
+    def query_equation(self, name: str) -> Optional[Equation]:
         """Query an equation by name."""
         return self.all_equations.get(name)
 
-    def query_by_domain(self, domain: str) -> list[Equation]:
+    def query_by_domain(self, domain: str) -> List[Equation]:
         """Query equations by domain."""
         result = []
         for eq in self.all_equations.values():
@@ -609,15 +607,15 @@ class MathematicalFrameworkEngine:
         return False
 
     # ... (rest of the code remains the same)
-    def get_framework(self, name: str) -> Framework | None:
+    def get_framework(self, name: str) -> Optional[Framework]:
         """Get a framework by name."""
         return self.all_frameworks.get(name)
 
-    def list_frameworks(self) -> list[str]:
+    def list_frameworks(self) -> List[str]:
         """List all available frameworks."""
         return list(self.all_frameworks.keys())
 
-    def solve_design_spacing(self, target_px: int) -> dict[str, Any]:
+    def solve_design_spacing(self, target_px: int) -> Dict[str, Any]:
         """Solve for design system spacing recommendations."""
         return {
             "target": target_px,
@@ -627,7 +625,7 @@ class MathematicalFrameworkEngine:
             "recommendations": self._spacing_recommendations(target_px),
         }
 
-    def _spacing_recommendations(self, target_px: int) -> list[str]:
+    def _spacing_recommendations(self, target_px: int) -> List[str]:
         """Generate spacing recommendations."""
         recs = []
         if target_px % 8 == 0:
@@ -644,7 +642,7 @@ class MathematicalFrameworkEngine:
         """Calculate transformer attention."""
         return self.ai_engine.equations["attention"].evaluate(Q=Q, K=K, V=V, d_k=d_k)
 
-    def analyze_architecture(self, task_description: str) -> dict[str, Any]:
+    def analyze_architecture(self, task_description: str) -> Dict[str, Any]:
         """Analyze task and recommend mathematical frameworks."""
         task_lower = task_description.lower()
         recommendations = {
@@ -690,7 +688,7 @@ class MathematicalFrameworkEngine:
 
         return recommendations
 
-    def get_stats(self) -> dict[str, int]:
+    def get_stats(self) -> Dict[str, int]:
         """Get engine statistics."""
         return {
             "total_equations": len(self.all_equations),

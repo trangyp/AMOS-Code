@@ -19,7 +19,7 @@ Version: 2.0.0
 import json
 import time
 import uuid
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from collections import defaultdict
@@ -131,7 +131,7 @@ class EventStore:
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         # In-memory storage (with persistence option)
-        self.streams: dict[str, list[EventStoreEntry]] = defaultdict(list)
+        self.streams: Dict[str, list[EventStoreEntry]] = defaultdict(list)
         self.global_sequence = 0
         self._lock = asyncio.Lock()
 
@@ -175,7 +175,7 @@ class EventStore:
         ]
 
     def get_all_events(self,
-                       event_types: list[str ] = None,
+                       event_types: List[str ] = None,
                        since: float  = None) -> List[DomainEvent]:
         """Get all events (for replay/analysis)."""
         events = []
@@ -214,7 +214,7 @@ class CQRSView:
     def __init__(self, view_name: str):
         self.view_name = view_name
         self.data: Dict[str, Any] = {}
-        self.indexes: dict[str, dict[Any, set[str]]] = defaultdict(lambda: defaultdict(set))
+        self.indexes: Dict[str, dict[Any, set[str]]] = defaultdict(lambda: defaultdict(set))
         self.last_update = 0.0
 
     def update(self, event: DomainEvent) -> None:
@@ -232,16 +232,16 @@ class CQRSView:
             if isinstance(value, (str, int, float, bool)):
                 self.indexes[key][value].add(event.aggregate_id)
 
-    def query_by_id(self, aggregate_id: str) -> dict[str, Any ]:
+    def query_by_id(self, aggregate_id: str) -> Dict[str, Any ]:
         """Query by aggregate ID."""
         return self.data.get(aggregate_id)
 
-    def query_by_field(self, field: str, value: Any) -> list[dict[str, Any]]:
+    def query_by_field(self, field: str, value: Any) -> List[dict[str, Any]]:
         """Query by indexed field."""
         ids = self.indexes[field].get(value, set())
         return [self.data[id] for id in ids if id in self.data]
 
-    def get_all(self) -> list[dict[str, Any]]:
+    def get_all(self) -> List[dict[str, Any]]:
         """Get all entries."""
         return list(self.data.values())
 
@@ -259,7 +259,7 @@ class EnhancedEventBus:
 
     def __init__(self):
         # Publish/Subscribe
-        self.subscribers: dict[str, list[Callable[[DomainEvent], Any]]] = defaultdict(list)
+        self.subscribers: Dict[str, list[Callable[[DomainEvent], Any]]] = defaultdict(list)
         self.subscriber_names: Dict[str, str] = {}  # id -> name
 
         # Event Sourcing
@@ -348,7 +348,6 @@ class EnhancedEventBus:
             # If we get here, we're in an async context - use create_task
             # This requires the caller to handle the task
             import warnings
-from typing import Callable
             warnings.warn(
                 "publish_sync called from async context. Use publish() directly.",
                 DeprecationWarning,

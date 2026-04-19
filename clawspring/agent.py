@@ -12,6 +12,7 @@ from providers import AssistantTurn, TextChunk, ThinkingChunk, stream
 from tools import execute_tool
 
 from tool_registry import get_tool_schemas
+from typing import Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -104,9 +105,7 @@ def run(
     use_amos_brain: bool = True,
 ) -> Generator:
     """Multi-turn agent loop (generator).
-    from __future__ import annotations
-
-        Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
+            Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
                 PermissionRequest | TurnDone
 
         Args:

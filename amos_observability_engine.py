@@ -22,7 +22,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class MetricType(Enum):
@@ -122,7 +122,7 @@ class Histogram:
         async with self._lock:
             self._values.append(value)
 
-    async def get_stats(self) -> dict[str, float]:
+    async def get_stats(self) -> Dict[str, float]:
         """Get histogram statistics."""
         async with self._lock:
             if not self._values:
@@ -163,7 +163,7 @@ class Span:
     end_time: float  = None
     parent_id: str  = None
     attributes: Dict[str, Any] = field(default_factory=dict)
-    events: list[dict[str, Any]] = field(default_factory=list)
+    events: List[dict[str, Any]] = field(default_factory=list)
 
     def finish(self, attributes: Dict[str, Any]  = None) -> None:
         """Finish the span."""
@@ -211,7 +211,6 @@ class Tracer:
     ) -> Span:
         """Start a new span."""
         import uuid
-from typing import Set
         span = Span(
             name=name,
             trace_id=str(uuid.uuid4()),
@@ -232,7 +231,7 @@ from typing import Set
                 del self._current_spans[span.span_id]
             self._spans.append(span)
 
-    async def get_traces(self, limit: int = 100) -> list[dict[str, Any]]:
+    async def get_traces(self, limit: int = 100) -> List[dict[str, Any]]:
         """Get recent traces."""
         async with self._lock:
             return [s.to_dict() for s in list(self._spans)[-limit:]]
@@ -337,7 +336,7 @@ class AMOSObservabilityEngine:
         self.health = HealthAggregator()
         self._running = False
         self._export_task: asyncio.Task  = None
-        self._layer_metrics: dict[str, dict[str, Any]] = {}
+        self._layer_metrics: Dict[str, dict[str, Any]] = {}
 
     async def start(self) -> None:
         """Start observability engine."""
@@ -429,7 +428,7 @@ class AMOSObservabilityEngine:
         """Get health status."""
         return await self.health.get_status()
 
-    async def get_traces(self, limit: int = 100) -> list[dict[str, Any]]:
+    async def get_traces(self, limit: int = 100) -> List[dict[str, Any]]:
         """Get recent traces."""
         return await self.tracer.get_traces(limit)
 

@@ -18,7 +18,7 @@ import hashlib
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List
 
 import numpy as np
 
@@ -35,7 +35,7 @@ class VectorDocument:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     # Optional sparse vector for hybrid search
-    sparse_vector: dict[int, float] = None
+    sparse_vector: Dict[int, float] = None
 
     # Timestamps
     created_at: float = field(default_factory=time.time)
@@ -48,7 +48,7 @@ class SearchResult:
 
     doc_id: str
     score: float
-    vector: list[float] = None
+    vector: List[float] = None
     text: str = ""
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -104,11 +104,11 @@ class AMOSVectorDatabase:
 
     def __init__(self):
         self.collections: Dict[str, Collection] = {}
-        self.vectors: dict[str, dict[str, VectorDocument]] = {}  # collection_id -> doc_id -> doc
+        self.vectors: Dict[str, dict[str, VectorDocument]] = {}  # collection_id -> doc_id -> doc
         self.indexes: Dict[str, Any] = {}  # Simple in-memory index structure
 
         # Query cache
-        self.query_cache: dict[str, list[SearchResult]] = {}
+        self.query_cache: Dict[str, list[SearchResult]] = {}
         self.cache_hits: int = 0
         self.cache_misses: int = 0
 
@@ -221,8 +221,8 @@ class AMOSVectorDatabase:
         self,
         collection_id: str,
         texts: List[str],
-        metadatas: list[dict] = None,
-        ids: list[str] = None,
+        metadatas: List[dict] = None,
+        ids: List[str] = None,
     ) -> int:
         """Upsert texts with auto-generated embeddings."""
         if collection_id not in self.collections:
@@ -248,7 +248,7 @@ class AMOSVectorDatabase:
         collection_id: str,
         query_vector: List[float],
         top_k: int = 10,
-        filter_metadata: dict[str, Any] = None,
+        filter_metadata: Dict[str, Any] = None,
         include_vectors: bool = False,
     ) -> List[SearchResult]:
         """Search for similar vectors."""
@@ -305,7 +305,7 @@ class AMOSVectorDatabase:
         collection_id: str,
         query_text: str,
         top_k: int = 10,
-        filter_metadata: dict[str, Any] = None,
+        filter_metadata: Dict[str, Any] = None,
     ) -> List[SearchResult]:
         """Search using text query (auto-embed)."""
         if collection_id not in self.collections:
@@ -320,7 +320,7 @@ class AMOSVectorDatabase:
         self,
         collection_id: str,
         query_vector: List[float],
-        query_sparse: dict[int, float],
+        query_sparse: Dict[int, float],
         top_k: int = 10,
         alpha: float = 0.7,  # Weight for dense vs sparse (0.7 = 70% dense, 30% sparse)
     ) -> List[SearchResult]:

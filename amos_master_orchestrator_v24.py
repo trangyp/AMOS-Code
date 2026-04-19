@@ -66,7 +66,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class PhaseStatus(Enum):
@@ -100,7 +100,7 @@ class AMOSMasterOrchestrator:
     """Master orchestrator coordinating all 23 AMOS phases."""
 
     # Phase registry - all 23 phases
-    PHASES: dict[int, PhaseInfo] = {
+    PHASES: Dict[int, PhaseInfo] = {
         1: PhaseInfo(1, "Core Equation System", "amos_equation_api"),
         2: PhaseInfo(2, "SuperBrain Integration", "amos_superbrain_equation_bridge"),
         3: PhaseInfo(3, "Vector Memory", "amos_vector_memory"),
@@ -127,7 +127,7 @@ class AMOSMasterOrchestrator:
     }
 
     def __init__(self) -> None:
-        self.phases: dict[int, PhaseInfo] = {}
+        self.phases: Dict[int, PhaseInfo] = {}
         self.initialized: Set[int] = set()
         self.running: Set[int] = set()
         self.logger = logging.getLogger("AMOS.Master")
@@ -186,7 +186,7 @@ class AMOSMasterOrchestrator:
         )
         return len(failed) == 0
 
-    async def start_all(self) -> dict[int, bool]:
+    async def start_all(self) -> Dict[int, bool]:
         """Start all initialized phases."""
         results = {}
 

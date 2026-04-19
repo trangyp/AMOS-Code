@@ -18,7 +18,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List
 
 
 class ValidationSeverity(Enum):
@@ -178,7 +178,7 @@ class AMOSDataValidation:
         self.reports: Dict[str, QualityReport] = {}
 
         # Dataset statistics for drift detection
-        self.baseline_stats: dict[str, dict[str, Any]] = {}
+        self.baseline_stats: Dict[str, dict[str, Any]] = {}
 
     async def initialize(self) -> None:
         """Initialize the data validation framework."""
@@ -284,7 +284,7 @@ class AMOSDataValidation:
         column: str = None,
         kwargs: dict = None,
         severity: ValidationSeverity = ValidationSeverity.ERROR,
-        tags: list[str] = None,
+        tags: List[str] = None,
     ) -> str:
         """Create a new data expectation."""
         expectation_id = f"exp_{uuid.uuid4().hex[:8]}"

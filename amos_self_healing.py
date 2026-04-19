@@ -46,8 +46,6 @@ Version: 14.0.0
 """
 
 
-from __future__ import annotations
-
 import random
 import copy
 import inspect
@@ -55,6 +53,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 try:
     from amos_secure_equation_runner import SecureEquationRunner
@@ -248,7 +247,7 @@ class FitnessEvaluator:
 
         return sum(scores)
 
-    def _generate_test_cases(self) -> dict[str, list]:
+    def _generate_test_cases(self) -> Dict[str, list]:
         """Generate test cases for common equations."""
         return {
             "sigmoid": [
@@ -559,7 +558,7 @@ class SelfHealingEngine:
     def auto_repair(
         self,
         equation_name: str,
-        error_cases: list[dict[str, Any]]
+        error_cases: List[dict[str, Any]]
     ) -> HealingReport:
         """
         Attempt to auto-repair a failing equation.

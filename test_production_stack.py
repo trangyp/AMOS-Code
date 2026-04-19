@@ -35,7 +35,7 @@ import time
 import json
 import asyncio
 import unittest
-from typing import Any, Generator
+from typing import Any, Dict, Generator
 from contextlib import asynccontextmanager
 
 # Test configuration
@@ -165,7 +165,6 @@ class TestApplicationFactory(ProductionStackTestCase):
         """Verify create_app returns a FastAPI instance."""
         try:
             from fastapi import FastAPI
-from typing import Set
             app = create_app()
             self.assertIsInstance(app, FastAPI)
         except ImportError:

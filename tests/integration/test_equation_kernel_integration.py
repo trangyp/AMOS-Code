@@ -278,7 +278,6 @@ if __name__ == "__main__":
     # Run pytest if available, otherwise run demo
     try:
         import pytest
-from typing import Final, List
         sys.exit(pytest.main([__file__, "-v"]))
     except ImportError:
         print("pytest not installed, running demo mode...")

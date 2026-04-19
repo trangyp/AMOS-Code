@@ -11,7 +11,7 @@ Version: 3.0.0
 from datetime import datetime, timezone
 
 UTC = timezone.utc
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -43,41 +43,41 @@ def _get_brain():
 
 
 class WorldModelSimulateRequest(BaseModel):
-    initial_state: dict[str, Any]
-    actions: list[dict[str, Any]]
+    initial_state: Dict[str, Any]
+    actions: List[dict[str, Any]]
     horizon: int = 5
 
 
 class WorldModelSimulateResponse(BaseModel):
     success: bool
-    trajectory: list[dict[str, Any]]
+    trajectory: List[dict[str, Any]]
     horizon: int
     final_confidence: float
 
 
 class GovernanceEvaluateRequest(BaseModel):
     action_type: str
-    action_params: dict[str, Any]
-    context: dict[str, Any] = None
+    action_params: Dict[str, Any]
+    context: Dict[str, Any] = None
 
 
 class GovernanceEvaluateResponse(BaseModel):
     decision: str  # ALLOW, MODIFY, REJECT, ESCALATE
     confidence: float
-    principles_consulted: list[str]
+    principles_consulted: List[str]
     drift_detected: bool
 
 
 class WorkflowStartRequest(BaseModel):
     workflow_type: str
-    parameters: dict[str, Any]
+    parameters: Dict[str, Any]
     require_human_approval: bool = False
 
 
 class WorkflowStartResponse(BaseModel):
     workflow_id: str
     status: str
-    steps: list[dict[str, Any]]
+    steps: List[dict[str, Any]]
 
 
 class A2ASendTaskRequest(BaseModel):
@@ -100,16 +100,16 @@ class KnowledgeBridgeQueryRequest(BaseModel):
 
 
 class KnowledgeBridgeQueryResponse(BaseModel):
-    equations: list[dict[str, Any]]
+    equations: List[dict[str, Any]]
     total: int
-    sources: list[str]
+    sources: List[str]
 
 
 class SuperBrainStatusResponse(BaseModel):
     brain_id: str
     status: str
     uptime_seconds: float
-    components: dict[str, Any]
+    components: Dict[str, Any]
 
 
 # ============================================================================

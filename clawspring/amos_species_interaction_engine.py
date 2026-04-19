@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class InteractionState(Enum):
@@ -340,8 +340,6 @@ _species_interaction_engine: Optional[SpeciesInteractionEngine] = None
 
 def get_species_interaction_engine() -> SpeciesInteractionEngine:
     """Get or create the Species Interaction Engine singleton."""
-from __future__ import annotations
-
     global _species_interaction_engine
     if _species_interaction_engine is None:
         _species_interaction_engine = SpeciesInteractionEngine()

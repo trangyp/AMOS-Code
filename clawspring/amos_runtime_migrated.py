@@ -11,8 +11,6 @@ which provides:
 - Cookbook workflows
 """
 
-from __future__ import annotations
-
 
 import sys
 from pathlib import Path
@@ -25,6 +23,7 @@ if str(_parent_dir) not in sys.path:
 # Import from standalone package
 
 from amos_brain import AMOSBrainIntegration, get_amos_integration
+from typing import List, Optional
 
 
 def get_runtime() -> AMOSBrainIntegration:
@@ -110,7 +109,7 @@ class AMOSRuntime:
 
 
 # Singleton instance
-_runtime_instance: AMOSRuntime | None = None
+_runtime_instance: Optional[AMOSRuntime] = None
 
 
 def get_runtime_legacy() -> AMOSRuntime:

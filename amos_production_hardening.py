@@ -16,7 +16,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 
 def _now_utc() -> str:
@@ -239,7 +239,7 @@ class ReliabilityVerifier:
 class PerformanceBenchmark:
     """Basic performance benchmarking."""
 
-    def benchmark_imports(self) -> dict[str, float]:
+    def benchmark_imports(self) -> Dict[str, float]:
         """Benchmark import times."""
         print("⚡ Benchmarking import performance...")
 

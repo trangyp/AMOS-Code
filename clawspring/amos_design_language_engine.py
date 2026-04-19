@@ -3,7 +3,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class DesignDomain(Enum):
@@ -457,8 +457,6 @@ _design_language_engine: Optional[DesignLanguageEngine] = None
 
 def get_design_language_engine() -> DesignLanguageEngine:
     """Get singleton design language engine instance."""
-from __future__ import annotations
-
     global _design_language_engine
     if _design_language_engine is None:
         _design_language_engine = DesignLanguageEngine()

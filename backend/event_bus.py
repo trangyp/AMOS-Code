@@ -14,7 +14,7 @@ import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict
 
 import redis.asyncio as redis
 
@@ -28,7 +28,7 @@ class AMOSEvent:
 
     event_type: str
     source: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     timestamp: str
     correlation_id: str = None
     priority: str = "normal"  # low, normal, high, critical
@@ -63,7 +63,7 @@ class EventBus:
         self.redis_url = redis_url
         self._redis: redis.Redis = None
         self._pubsub = None
-        self._handlers: dict[str, list[Callable]] = {}
+        self._handlers: Dict[str, list[Callable]] = {}
         self._running = False
         self._listener_task = None
 

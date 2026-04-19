@@ -36,9 +36,11 @@ import argparse
 import subprocess
 import sys
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 from amos_brain import decide, think, validate
+from typing import List
 
 
 def print_banner():

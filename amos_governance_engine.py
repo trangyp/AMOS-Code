@@ -62,7 +62,7 @@ class ComponentIdentity:
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     last_verified: str = None
     capabilities: List[str] = field(default_factory=list)
-    violations: list[dict[str, Any]] = field(default_factory=list)
+    violations: List[dict[str, Any]] = field(default_factory=list)
 
     def verify(self) -> bool:
         """Verify component identity."""
@@ -207,7 +207,7 @@ class AMOSGovernanceEngine:
     def __init__(self):
         self.identities: Dict[str, ComponentIdentity] = {}
         self.policy_provider: PolicyProvider = DefaultPolicyProvider()
-        self.decisions_log: list[dict[str, Any]] = []
+        self.decisions_log: List[dict[str, Any]] = []
         self.compliance_status: Dict[str, Any] = {
             "owasp_agentic": {f"AGENT-{i:02d}": "compliant" for i in range(1, 11)}
         }
@@ -233,7 +233,7 @@ class AMOSGovernanceEngine:
         print("[GovernanceEngine] Stopped")
 
     def register_component(
-        self, component_id: str, capabilities: list[str] = None, initial_trust: int = 100
+        self, component_id: str, capabilities: List[str] = None, initial_trust: int = 100
     ) -> ComponentIdentity:
         """Register a new component with identity."""
         # Generate cryptographic identity
@@ -271,7 +271,7 @@ class AMOSGovernanceEngine:
             return TrustTier.HIGH_TRUST
 
     async def evaluate_action(
-        self, component_id: str, action: str, context: dict[str, Any] = None
+        self, component_id: str, action: str, context: Dict[str, Any] = None
     ) -> PolicyDecision:
         """Evaluate if component can perform action."""
         # Get component identity

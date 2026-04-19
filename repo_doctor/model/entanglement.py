@@ -9,6 +9,7 @@ High entanglement means modules should be verified together.
 
 import math
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass

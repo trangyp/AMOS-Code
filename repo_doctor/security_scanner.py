@@ -18,6 +18,7 @@ import logging
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -41,11 +42,11 @@ class SecurityFinding:
     rule_id: str
     severity: Severity
     message: str
-    file_path: str | None = None
-    line_number: int | None = None
-    column: int | None = None
-    snippet: str | None = None
-    fix: str | None = None
+    file_path: Optional[str] = None
+    line_number: Optional[int] = None
+    column: Optional[int] = None
+    snippet: Optional[str] = None
+    fix: Optional[str] = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -56,8 +57,8 @@ class ScanResult:
     passed: bool
     findings: list[SecurityFinding] = field(default_factory=list)
     execution_time_ms: float = 0.0
-    error_message: str | None = None
-    raw_output: str | None = None
+    error_message: Optional[str] = None
+    raw_output: Optional[str] = None
 
 
 @dataclass
@@ -66,7 +67,7 @@ class VerificationReceipt:
     receipt_id: str
     timestamp: str
     repository_path: str
-    commit_hash: str | None
+    commit_hash: Optional[str]
     scan_results: list[ScanResult]
     overall_passed: bool
     critical_count: int = 0
@@ -79,7 +80,7 @@ class VerificationReceipt:
 class SemgrepScanner:
     """Semgrep CE static code analysis."""
 
-    def __init__(self, config_path: str | None = None):
+    def __init__(self, config_path: Optional[str] = None):
         self.config_path = config_path
         self.rules = [
             "p/security-audit",
@@ -89,7 +90,7 @@ class SemgrepScanner:
             "p/python",
         ]
 
-    async def scan(self, repo_path: Path, targets: list[str] | None = None) -> ScanResult:
+    async def scan(self, repo_path: Path, targets: Optional[list[str] ] = None) -> ScanResult:
         """Run Semgrep scan on repository."""
         start = datetime.now(timezone.utc)
         cmd = [
@@ -548,8 +549,8 @@ class SecurityVerificationEngine:
     async def verify(
         self,
         repo_path: Path,
-        commit_hash: str | None = None,
-        receipt_id: str | None = None,
+        commit_hash: Optional[str] = None,
+        receipt_id: Optional[str] = None,
     ) -> VerificationReceipt:
         """Run full security verification pipeline.
 
@@ -656,7 +657,7 @@ class SecurityVerificationEngine:
 
 
 # Global singleton
-_security_engine: SecurityVerificationEngine | None = None
+_security_engine: Optional[SecurityVerificationEngine] = None
 
 
 def get_security_engine() -> SecurityVerificationEngine:

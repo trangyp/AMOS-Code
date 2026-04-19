@@ -33,7 +33,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 
@@ -87,8 +87,8 @@ class ResearchQuery:
     query: str
     num_results: int = 10
     include_citations: bool = True
-    recency_days: int | None = None
-    domains: list[str] | None = None
+    recency_days: Optional[int] = None
+    domains: Optional[List[str] ] = None
 
 
 # ============================================================================
@@ -121,7 +121,7 @@ class SandboxProvider(ABC):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] | None = None,
+        context_files: Optional[Dict[str, str] ] = None,
     ) -> ExecutionResult:
         """Execute code in sandbox."""
         pass
@@ -163,7 +163,7 @@ class BrowserProvider(ABC):
     async def launch_browser(
         self,
         headless: bool = True,
-        viewport: dict[str, int] | None = None,
+        viewport: Optional[Dict[str, int] ] = None,
     ) -> str:
         """Launch browser and return session ID."""
         pass
@@ -182,7 +182,7 @@ class BrowserProvider(ABC):
         self,
         session_id: str,
         actions: List[BrowserAction],
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Execute multiple browser actions."""
         pass
 
@@ -214,7 +214,7 @@ class ResearchProvider(ABC):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Execute web search."""
         pass
 
@@ -283,8 +283,8 @@ class E2BProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] | None = None,
-        stream_callback: Callable[[str, str | None], None] | None = None,
+        context_files: Optional[Dict[str, str] ] = None,
+        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -467,8 +467,8 @@ class DaytonaProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] | None = None,
-        stream_callback: Callable[[str, str | None], None] | None = None,
+        context_files: Optional[Dict[str, str] ] = None,
+        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -577,8 +577,8 @@ class DaytonaProvider(SandboxProvider):
     async def computer_use(
         self,
         sandbox_id: str,
-        actions: list[dict[str, Any]],
-    ) -> list[dict[str, Any]]:
+        actions: List[dict[str, Any]],
+    ) -> List[dict[str, Any]]:
         """
         Daytona's unique Computer Use feature.
 
@@ -655,8 +655,8 @@ class DockerProvider(SandboxProvider):
         sandbox_id: str,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] | None = None,
-        stream_callback: Callable[[str, str | None], None] | None = None,
+        context_files: Optional[Dict[str, str] ] = None,
+        stream_callback: Optional[Callable[[str, str ]], None] | None = None,
     ) -> ExecutionResult:
         """Execute code with optional streaming callback.
 
@@ -839,7 +839,7 @@ class PlaywrightProvider(BrowserProvider):
     async def launch_browser(
         self,
         headless: bool = True,
-        viewport: dict[str, int] | None = None,
+        viewport: Optional[Dict[str, int] ] = None,
     ) -> str:
         if not self.available:
             raise RuntimeError(
@@ -919,7 +919,7 @@ class PlaywrightProvider(BrowserProvider):
         self,
         session_id: str,
         actions: List[BrowserAction],
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         results = []
         for action in actions:
             result = await self.execute_action(session_id, action)
@@ -995,7 +995,7 @@ class TavilyProvider(ResearchProvider):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         if not self.api_key:
             raise ValueError("Tavily API key required. Set TAVILY_API_KEY env var.")
 
@@ -1080,7 +1080,7 @@ class BraveProvider(ResearchProvider):
     async def search(
         self,
         query: ResearchQuery,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         if not self.api_key:
             raise ValueError("Brave API key required. Set BRAVE_API_KEY env var.")
 
@@ -1257,8 +1257,8 @@ class AMOSExecutionPlatform:
         self,
         code: str,
         language: str = "python",
-        context_files: dict[str, str] | None = None,
-        preferred_provider: str | None = None,
+        context_files: Optional[Dict[str, str] ] = None,
+        preferred_provider: Optional[str] = None,
     ) -> ExecutionResult:
         """
         Execute code in secure sandbox with automatic failover.
@@ -1317,7 +1317,7 @@ class AMOSExecutionPlatform:
     async def browse_web(
         self,
         url: str,
-        actions: list[BrowserAction] | None = None,
+        actions: Optional[List[BrowserAction] ] = None,
         capture_screenshot: bool = False,
     ) -> Dict[str, Any]:
         """
@@ -1380,7 +1380,7 @@ class AMOSExecutionPlatform:
         query: str,
         num_results: int = 10,
         include_citations: bool = True,
-        preferred_provider: str | None = None,
+        preferred_provider: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Research topic using web search.

@@ -9,8 +9,6 @@ Uses:
 This is REAL integration - not stubs or fake features.
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
@@ -18,8 +16,9 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Optional
 
 # AMOS Brain imports - REAL
 from amos_brain import BrainClient, think, decide, validate
@@ -49,10 +48,10 @@ class RepairPlan:
     issue_description: str
     root_cause: str
     repair_strategy: str
-    affected_files: list[str]
+    affected_files: List[str]
     estimated_risk: str
     confidence: float
-    reasoning_chain: list[str]
+    reasoning_chain: List[str]
     law_compliant: bool
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -68,7 +67,7 @@ class GeneratedRepair:
     changes_description: str
     model_used: str
     generation_time_ms: float
-    verification_receipt: VerificationReceipt | None = None
+    verification_receipt: Optional[VerificationReceipt] = None
     status: str = "pending"  # pending, verified, rejected, applied
 
 
@@ -76,8 +75,8 @@ class GeneratedRepair:
 class CognitiveRepairResult:
     """Complete result of cognitive repair process."""
     issue: str
-    plan: RepairPlan | None
-    repairs: list[GeneratedRepair]
+    plan: Optional[RepairPlan]
+    repairs: List[GeneratedRepair]
     thinking_steps: int
     security_passed: bool
     repairs_applied: int
@@ -103,7 +102,7 @@ class AMOSCognitiveRepair:
         )
     """
 
-    def __init__(self, repo_path: Path | None = None):
+    def __init__(self, repo_path: Optional[Path] = None):
         self.repo_path = repo_path or Path.cwd()
         self.brain = BrainClient(repo_path=str(self.repo_path))
         self.thinking = ThinkingEngine()
@@ -114,7 +113,7 @@ class AMOSCognitiveRepair:
         # Ollama provider for code generation
         self.ollama = OllamaProvider(base_url="http://localhost:11434")
 
-        self._session: WorkflowSession | None = None
+        self._session: Optional[WorkflowSession] = None
 
     async def initialize(self) -> bool:
         """Initialize all subsystems."""
@@ -150,7 +149,7 @@ class AMOSCognitiveRepair:
     async def fix_code_issue(
         self,
         issue_description: str,
-        files: list[str] | None = None,
+        files: Optional[List[str] ] = None,
         domain: str = "software",
     ) -> CognitiveRepairResult:
         """
@@ -221,9 +220,9 @@ class AMOSCognitiveRepair:
     async def _create_repair_plan(
         self,
         issue: str,
-        files: list[str] | None,
+        files: Optional[List[str] ],
         session_id: str,
-    ) -> RepairPlan | None:
+    ) -> Optional[RepairPlan]:
         """Use brain to create repair plan."""
         import uuid
 
@@ -272,8 +271,8 @@ class AMOSCognitiveRepair:
     async def _generate_repairs(
         self,
         plan: RepairPlan,
-        files: list[str],
-    ) -> list[GeneratedRepair]:
+        files: List[str],
+    ) -> List[GeneratedRepair]:
         """Generate code repairs using local LLM via Ollama."""
         import uuid
 
@@ -331,7 +330,7 @@ class AMOSCognitiveRepair:
 
         return repairs
 
-    async def _verify_repairs(self, repairs: list[GeneratedRepair]) -> list[GeneratedRepair]:
+    async def _verify_repairs(self, repairs: List[GeneratedRepair]) -> List[GeneratedRepair]:
         """Verify repairs using security scanners."""
         import tempfile
         import shutil
@@ -374,7 +373,7 @@ class AMOSCognitiveRepair:
 
     async def _apply_approved_repairs(
         self,
-        repairs: list[GeneratedRepair],
+        repairs: List[GeneratedRepair],
         session_id: str,
     ) -> int:
         """Brain decides and applies approved repairs."""
@@ -463,7 +462,7 @@ FIXED CODE:
                 return line.strip()
         return "analyze and fix"
 
-    def _extract_files(self, brain_content: str) -> list[str]:
+    def _extract_files(self, brain_content: str) -> List[str]:
         """Extract affected files from brain response."""
         # Simple extraction - look for file patterns
         import re

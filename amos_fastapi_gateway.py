@@ -49,7 +49,7 @@ import json
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # FastAPI imports
 try:

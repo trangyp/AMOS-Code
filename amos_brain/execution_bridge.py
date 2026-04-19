@@ -12,6 +12,7 @@ Version: 2.1.0
 import traceback
 from collections.abc import Callable
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 class BrainExecutionBridge:
@@ -294,8 +295,7 @@ print(json.dumps(result, indent=2))
 import traceback
 import sys
 import json
-from typing import Callable, Optional
-from typing import List
+from typing import Callable, Optional, List
 
 print("=== Debug Session Started ===")
 

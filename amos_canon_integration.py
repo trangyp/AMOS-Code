@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Canon Integration Module.
 
 Loads and exposes canonical definitions from _00_AMOS_CANON:
@@ -20,15 +22,14 @@ Usage:
     brain_os = loader.get_brain_os_spec()
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +41,8 @@ class CanonLoadStatus:
     """Status of Canon data loading."""
 
     timestamp: str
-    loaded_files: list[str] = field(default_factory=list)
-    failed_files: list[str] = field(default_factory=list)
+    loaded_files: List[str] = field(default_factory=list)
+    failed_files: List[str] = field(default_factory=list)
     total_terms: int = 0
     total_agents: int = 0
     total_engines: int = 0
@@ -60,7 +61,7 @@ class AMOSCanonLoader:
     - Body registry
     """
 
-    _instance: AMOSCanonLoader | None = None
+    _instance: Optional[AMOSCanonLoader] = None
     _lock = asyncio.Lock()
 
     def __new__(cls) -> AMOSCanonLoader:
@@ -73,13 +74,13 @@ class AMOSCanonLoader:
             return
         self._initialized = True
 
-        self._glossary: dict[str, Any] = {}
-        self._agent_registry: dict[str, Any] = {}
-        self._brain_os: list[dict[str, Any]] = []
-        self._body_registry: dict[str, Any] = {}
-        self._cognitive_stack: dict[str, Any] = {}
-        self._kernels: dict[str, Any] = {}
-        self._status: CanonLoadStatus | None = None
+        self._glossary: Dict[str, Any] = {}
+        self._agent_registry: Dict[str, Any] = {}
+        self._brain_os: List[dict[str, Any]] = []
+        self._body_registry: Dict[str, Any] = {}
+        self._cognitive_stack: Dict[str, Any] = {}
+        self._kernels: Dict[str, Any] = {}
+        self._status: Optional[CanonLoadStatus] = None
         self._loaded = False
 
     async def initialize(self) -> bool:
@@ -290,7 +291,7 @@ class AMOSCanonLoader:
         """Get agent registry."""
         return self._agent_registry
 
-    def get_brain_os_spec(self) -> list[dict[str, Any]]:
+    def get_brain_os_spec(self) -> List[dict[str, Any]]:
         """Get brain OS specification."""
         return self._brain_os
 

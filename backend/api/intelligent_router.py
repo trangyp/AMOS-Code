@@ -1,10 +1,10 @@
-from typing import Any, Dict, Optional
-
 """Intelligent Task Router API
 
 Routes user requests through reading kernel → orchestrator → execution.
 End-to-end intelligent task processing.
 """
+
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter
 from pydantic import BaseModel

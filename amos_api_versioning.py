@@ -42,12 +42,11 @@ import re
 from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # FastAPI imports
 try:
     from collections.abc import Callable
-    from typing import List, Set
 
     from fastapi import Header, HTTPException, Query, Request, Response
     from fastapi.routing import APIRouter
@@ -147,7 +146,7 @@ class VersionManager:
         """Get version information."""
         return self._versions.get(version)
 
-    def get_all_versions(self) -> list[dict[str, Any]]:
+    def get_all_versions(self) -> List[dict[str, Any]]:
         """Get all version information."""
         return [v.to_dict() for v in self._versions.values()]
 
@@ -263,7 +262,7 @@ class VersionRouter:
             self.app.include_router(self._routers[version])
         return self._routers[version]
 
-    def route(self, path: str, versions: list[str], **kwargs: Any) -> Callable:
+    def route(self, path: str, versions: List[str], **kwargs: Any) -> Callable:
         """Decorator to register route for specific versions."""
 
         def decorator(func: Callable) -> Callable:
@@ -288,7 +287,7 @@ class VersionRouter:
 
 
 def add_versioning_to_app(
-    app: Any, default_version: str = "v1", supported_versions: list[str] = None
+    app: Any, default_version: str = "v1", supported_versions: List[str] = None
 ) -> VersionManager:
     """
     Add API versioning support to FastAPI application.

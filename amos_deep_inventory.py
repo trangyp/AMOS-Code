@@ -17,7 +17,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -152,7 +152,7 @@ class AMOSDeepInventory:
             if "demo" in demo_file.name or "cycle" in demo_file.name or "test" in demo_file.name:
                 self.demos.append(demo_file.relative_to(self.root))
 
-    def count_domain_engines(self) -> dict[str, int]:
+    def count_domain_engines(self) -> Dict[str, int]:
         """Count engines by domain."""
         domains = {}
         for engine in self.engines:

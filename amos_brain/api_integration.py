@@ -1,11 +1,10 @@
-from typing import Any
-
 """AMOS Brain API Integration - FastAPI-compatible brain interface.
 
 Provides high-level API endpoints for brain cognitive operations
 with proper error handling and async support.
 """
-from __future__ import annotations
+
+from typing import Any, Dict, Optional
 
 
 import asyncio
@@ -21,8 +20,8 @@ class BrainAPI:
     """
 
     def __init__(self) -> None:
-        self._client: BrainClient | None = None
-        self._super_brain: SuperBrainRuntime | None = None
+        self._client: Optional[BrainClient] = None
+        self._super_brain: Optional[SuperBrainRuntime] = None
         self._initialized = False
 
     def initialize(self) -> None:
@@ -32,7 +31,7 @@ class BrainAPI:
             self._super_brain = get_super_brain()
             self._initialized = True
 
-    def think(self, query: str, domain: str = "general") -> dict[str, Any]:
+    def think(self, query: str, domain: str = "general") -> Dict[str, Any]:
         """Process a cognitive query.
 
         Args:
@@ -88,7 +87,7 @@ class BrainAPI:
 
 
 # Global instance
-_brain_api: BrainAPI | None = None
+_brain_api: Optional[BrainAPI] = None
 
 
 def get_brain_api() -> BrainAPI:

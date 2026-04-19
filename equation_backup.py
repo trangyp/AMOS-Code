@@ -20,6 +20,7 @@ import os
 import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 
@@ -259,7 +260,6 @@ class BackupManager:
 
             # Wait for BGSAVE to complete
             import time
-from typing import List
             while True:
                 info = r.info("persistence")
                 if info.get("rdb_bgsave_in_progress") == 0:

@@ -30,7 +30,7 @@ class SemanticIndex:
 
     def __init__(self):
         self._documents: Dict[str, IndexedDocument] = {}
-        self._token_index: dict[str, list[str]] = {}
+        self._token_index: Dict[str, list[str]] = {}
         self._source_to_id: Dict[str, str] = {}
 
     def index_document(

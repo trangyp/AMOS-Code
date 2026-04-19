@@ -11,9 +11,10 @@ formal equations and invariants before they reach the repository.
 
 import sys
 from pathlib import Path
+from typing import List, Tuple
 
 
-def verify_file(filepath: str) -> tuple[bool, list[str]]:
+def verify_file(filepath: str) -> Tuple[bool, list[str]]:
     """Verify a single file against equations."""
     violations: List[str] = []
 

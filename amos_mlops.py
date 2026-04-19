@@ -111,7 +111,7 @@ import secrets
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ModelStage(Enum):
@@ -169,7 +169,7 @@ class Experiment:
     name: str
     status: ExperimentStatus
     parameters: Dict[str, Any] = field(default_factory=dict)
-    metrics: dict[str, list[float]] = field(default_factory=dict)
+    metrics: Dict[str, list[float]] = field(default_factory=dict)
     artifacts: Dict[str, str] = field(default_factory=dict)
     created_at: float = field(default_factory=lambda: time.time())
     completed_at: float = None
@@ -182,7 +182,7 @@ class Deployment:
 
     deployment_id: str
     strategy: DeploymentStrategy
-    model_versions: list[tuple[str, str]]  # [(name, version), ...]
+    model_versions: List[tuple[str, str]]  # [(name, version), ...]
     traffic_split: Dict[str, float]  # version -> percentage
     status: str = "pending"  # pending, running, completed, rolled_back
     start_time: float = field(default_factory=lambda: time.time())
@@ -221,8 +221,8 @@ class AMOSMLOps:
         self.enable_monitoring = enable_monitoring
 
         # Model registry
-        self.registered_models: dict[str, dict[str, ModelVersion]] = {}  # name -> version -> model
-        self.model_aliases: dict[str, tuple[str, str]] = {}  # alias -> (name, version)
+        self.registered_models: Dict[str, dict[str, ModelVersion]] = {}  # name -> version -> model
+        self.model_aliases: Dict[str, tuple[str, str]] = {}  # alias -> (name, version)
 
         # Experiments
         self.experiments: Dict[str, Experiment] = {}
@@ -232,7 +232,7 @@ class AMOSMLOps:
         self.active_deployments: Dict[str, str] = {}  # model_name -> deployment_id
 
         # Performance monitoring
-        self.performance_history: dict[str, list[ModelPerformance]] = {}
+        self.performance_history: Dict[str, list[ModelPerformance]] = {}
         self.drift_threshold: float = 0.1
 
         # Statistics
@@ -371,7 +371,7 @@ class AMOSMLOps:
         return sorted(results, key=lambda m: m.created_at, reverse=True)
 
     def compare_models(
-        self, model_refs: list[tuple[str, str]], metrics: List[str] = None
+        self, model_refs: List[tuple[str, str]], metrics: List[str] = None
     ) -> Dict[str, Any]:
         """Compare multiple model versions."""
         models = []

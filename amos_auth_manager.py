@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Authentication Manager - Enterprise Security (Phase 13)
 ==================================================================
 
@@ -30,14 +32,16 @@ import secrets
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum
 from functools import wraps
+
 from typing import Any
 
 from fastapi import Depends, HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader, HTTPBearer, OAuth2PasswordBearer
 
-# JWT imports
+# Optional imports
 try:
     from jose import JWTError, jwt
     JWT_AVAILABLE = True
@@ -52,11 +56,9 @@ except ImportError:
     PASSLIB_AVAILABLE = False
     print("passlib not installed. Password hashing disabled.")
 
-# Rate limiting
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
-from typing import List, Tuple
     RATE_LIMIT_AVAILABLE = True
 except ImportError:
     RATE_LIMIT_AVAILABLE = False
@@ -194,7 +196,7 @@ class AMOSAuthManager:
         self._key_lookup: Dict[str, str] = {}   # hashed_key -> key_id
         self._audit_log: List[AuditEvent] = []
         self._token_blacklist: Set[str] = set()  # revoked token jtis
-        self._rate_limit_store: dict[str, list[float]] = {}  # key -> timestamps
+        self._rate_limit_store: Dict[str, list[float]] = {}  # key -> timestamps
 
         if PASSLIB_AVAILABLE:
             self._pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

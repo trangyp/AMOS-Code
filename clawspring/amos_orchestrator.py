@@ -8,6 +8,7 @@ from datetime import datetime
 from amos_execution import full_execute, get_execution_kernel
 
 from amos_runtime import get_runtime
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -98,7 +99,7 @@ class StepHandlers:
 class AMOSWorkflowOrchestrator:
     """Orchestrates multi-step AMOS workflows."""
 
-    HANDLERS: dict[str, Callable[[WorkflowStep], dict]] = {
+    HANDLERS: Dict[str, Callable[[WorkflowStep], dict]] = {
         "cognitive": StepHandlers.cognitive,
         "execution": StepHandlers.execution,
         "validation": StepHandlers.validation,

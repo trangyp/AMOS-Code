@@ -11,8 +11,6 @@ Production API gateway using actual AMOS brain systems:
 NO MOCK CODE - All integrations use real brain classes.
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
@@ -22,8 +20,9 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Add project root to path
 ROOT = Path(__file__).parent
@@ -65,8 +64,8 @@ class ChatRequest(BaseModel):
     """Real chat request model."""
     message: str = Field(..., min_length=1, max_length=10000)
     workspace_id: str = Field(..., min_length=1)
-    context: list[dict] = Field(default_factory=list)
-    model: str | None = None
+    context: List[dict] = Field(default_factory=list)
+    model: Optional[str] = None
     temperature: float = Field(default=0.7, ge=0, le=2)
 
 
@@ -77,8 +76,8 @@ class ChatResponse(BaseModel):
     model: str
     confidence: str
     law_compliant: bool
-    violations: list[str]
-    reasoning: list[str]
+    violations: List[str]
+    reasoning: List[str]
     domain: str
     processing_time_ms: float
     timestamp: str
@@ -87,9 +86,9 @@ class ChatResponse(BaseModel):
 class AgentRunRequest(BaseModel):
     """Real agent execution request."""
     agent_type: str = Field(..., pattern="^(code_review|repo_scan|fix_generator|security_audit|performance_check|architect|custom)$")
-    target_repo: str | None = None
+    target_repo: Optional[str] = None
     task_description: str = Field(..., min_length=1)
-    parameters: dict[str, Any] = Field(default_factory=dict)
+    parameters: Dict[str, Any] = Field(default_factory=dict)
     priority: str = Field(default="normal", pattern="^(low|normal|high|urgent)$")
     paradigm: str = Field(default="HYBRID", pattern="^(NEURAL|SYMBOLIC|HYBRID)$")
 
@@ -114,22 +113,22 @@ class AgentStatusResponse(BaseModel):
     agent_type: str
     paradigm: str
     progress: int  # 0-100
-    current_step: str | None = None
+    current_step: Optional[str] = None
     total_steps: int = 0
     completed_steps: int = 0
-    logs: list[str] = Field(default_factory=list)
-    result: dict[str, Any] | None = None
-    error: str | None = None
-    started_at: str | None = None
-    completed_at: str | None = None
-    duration_seconds: float | None = None
+    logs: List[str] = Field(default_factory=list)
+    result: Optional[Dict[str, Any] ] = None
+    error: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    duration_seconds: Optional[float] = None
 
 
 class RepoScanRequest(BaseModel):
     """Real repository scan request."""
     repo_url: str = Field(..., min_length=1)
     branch: str = "main"
-    scan_types: list[str] = Field(default_factory=lambda: ["security", "style", "architecture"])
+    scan_types: List[str] = Field(default_factory=lambda: ["security", "style", "architecture"])
     depth: str = Field(default="standard", pattern="^(quick|standard|deep)$")
 
 
@@ -140,11 +139,11 @@ class RepoScanRequest(BaseModel):
 @dataclass
 class GatewayState:
     """Gateway state with real brain instances."""
-    brain_client: BrainClient | None = None
-    orchestrator: HybridNeuralSymbolicOrchestrator | None = None
-    control_kernel: CognitiveControlKernel | None = None
-    active_agents: dict[str, AMOSAgent] = field(default_factory=dict)
-    task_store: dict[str, dict] = field(default_factory=dict)
+    brain_client: Optional[BrainClient] = None
+    orchestrator: Optional[HybridNeuralSymbolicOrchestrator] = None
+    control_kernel: Optional[CognitiveControlKernel] = None
+    active_agents: Dict[str, AMOSAgent] = field(default_factory=dict)
+    task_store: Dict[str, dict] = field(default_factory=dict)
     initialized: bool = False
 
 
@@ -154,7 +153,7 @@ class BrainIntegration:
     def __init__(self):
         self._state = GatewayState()
     
-    async def initialize(self) -> dict[str, bool]:
+    async def initialize(self) -> Dict[str, bool]:
         """Initialize all brain subsystems."""
         logger.info("Initializing AMOS brain integration...")
         
@@ -287,7 +286,7 @@ class BrainIntegration:
                 "completed_at": datetime.now(timezone.utc).isoformat(),
             })
     
-    def get_agent_status(self, task_id: str) -> AgentStatusResponse | None:
+    def get_agent_status(self, task_id: str) -> Optional[AgentStatusResponse]:
         """Get real agent status."""
         task = self._state.task_store.get(task_id)
         if not task:
@@ -319,7 +318,7 @@ class BrainIntegration:
         role: str,
         paradigm: Paradigm,
         task: str
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Spawn real hybrid agent using orchestrator."""
         if not self._state.orchestrator:
             raise RuntimeError("Orchestrator not initialized")
@@ -402,7 +401,7 @@ app.add_middleware(
 # =============================================================================
 
 @app.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check with real brain status."""
     return {
         "status": "healthy" if BRAIN_AVAILABLE else "unhealthy",
@@ -454,7 +453,7 @@ async def execute_hybrid(
     role: str,
     paradigm: str,
     task: str,
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """Execute using hybrid neural-symbolic orchestrator."""
     try:
         paradigm_enum = Paradigm[paradigm.upper()]
@@ -480,7 +479,7 @@ class WebSocketManager:
     """Real WebSocket manager for brain events."""
     
     def __init__(self):
-        self._connections: dict[str, WebSocket] = {}
+        self._connections: Dict[str, WebSocket] = {}
     
     async def connect(self, websocket: WebSocket, client_id: str):
         await websocket.accept()

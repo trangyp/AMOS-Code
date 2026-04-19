@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class RiskLevel(Enum):
@@ -46,7 +46,7 @@ class RiskAssessment:
     probability: float = 0.0  # 0-1
     impact: float = 0.0  # 0-1
     score: float = 0.0  # calculated: probability * impact * 100
-    mitigations: list[str] = field(default_factory=list)
+    mitigations: List[str] = field(default_factory=list)
     residual_risk: RiskLevel = RiskLevel.UNKNOWN
     assessed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     assessor: str = ""
@@ -74,7 +74,7 @@ class RiskGovernor:
         self.data_dir.mkdir(exist_ok=True)
 
         self.assessments: Dict[str, RiskAssessment] = {}
-        self.risk_thresholds: dict[RiskLevel, float] = {
+        self.risk_thresholds: Dict[RiskLevel, float] = {
             RiskLevel.CRITICAL: 0.9,
             RiskLevel.HIGH: 0.7,
             RiskLevel.MEDIUM: 0.5,
@@ -90,7 +90,7 @@ class RiskGovernor:
         category: RiskCategory,
         probability: float,
         impact: float,
-        mitigations: list[str] = None,
+        mitigations: List[str] = None,
         assessor: str = "system",
     ) -> RiskAssessment:
         """Assess risk for a target activity."""
@@ -190,7 +190,7 @@ class RiskGovernor:
         if not self.assessments:
             return {"status": "no_assessments"}
 
-        by_category: dict[str, list[RiskAssessment]] = {}
+        by_category: Dict[str, list[RiskAssessment]] = {}
         for a in self.assessments.values():
             cat = a.category.value
             if cat not in by_category:
@@ -244,7 +244,7 @@ class RiskGovernor:
         }
         assessments_file.write_text(json.dumps(data, indent=2))
 
-    def list_assessments(self) -> list[dict[str, Any]]:
+    def list_assessments(self) -> List[dict[str, Any]]:
         """List all risk assessments."""
         return [a.to_dict() for a in self.assessments.values()]
 

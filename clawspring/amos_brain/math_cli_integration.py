@@ -13,8 +13,9 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Import httpx for async HTTP requests
 try:
@@ -35,7 +36,7 @@ class DashboardStatus:
 
     running: bool
     url: str
-    health: dict[str, Any]
+    health: Dict[str, Any]
     timestamp: str
 
 
@@ -55,7 +56,7 @@ class MathDashboardClient:
         if self._client:
             await self._client.aclose()
 
-    async def health_check(self) -> dict[str, Any]:
+    async def health_check(self) -> Dict[str, Any]:
         """Check dashboard health."""
         if not HTTPX_AVAILABLE or not self._client:
             # Fallback: check if port is open
@@ -68,7 +69,7 @@ class MathDashboardClient:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    async def get_dashboard_summary(self) -> dict[str, Any]:
+    async def get_dashboard_summary(self) -> Dict[str, Any]:
         """Get comprehensive dashboard summary."""
         if not HTTPX_AVAILABLE or not self._client:
             # Use local engine directly
@@ -81,7 +82,7 @@ class MathDashboardClient:
         except Exception:
             return self._local_summary()
 
-    async def analyze_task(self, task: str) -> dict[str, Any]:
+    async def analyze_task(self, task: str) -> Dict[str, Any]:
         """Analyze a task using the dashboard API."""
         if not HTTPX_AVAILABLE or not self._client:
             # Use local engine directly
@@ -96,7 +97,7 @@ class MathDashboardClient:
         except Exception:
             return self._local_analyze(task)
 
-    def _local_summary(self) -> dict[str, Any]:
+    def _local_summary(self) -> Dict[str, Any]:
         """Generate summary using local engine."""
         engine = get_framework_engine()
         return {
@@ -105,7 +106,7 @@ class MathDashboardClient:
             "math_engine": engine.get_stats(),
         }
 
-    def _local_analyze(self, task: str) -> dict[str, Any]:
+    def _local_analyze(self, task: str) -> Dict[str, Any]:
         """Analyze using local engine."""
         engine = get_framework_engine()
         return {
@@ -114,7 +115,7 @@ class MathDashboardClient:
             "source": "local",
         }
 
-    async def _manual_health_check(self) -> dict[str, Any]:
+    async def _manual_health_check(self) -> Dict[str, Any]:
         """Manual health check without httpx."""
         try:
             reader, writer = await asyncio.wait_for(
@@ -206,13 +207,13 @@ class MathCLIServerManager:
 
 
 # Async CLI command wrappers
-async def async_math_analyze(task: str) -> dict[str, Any]:
+async def async_math_analyze(task: str) -> Dict[str, Any]:
     """Async version of math analyze command."""
     async with MathDashboardClient() as client:
         return await client.analyze_task(task)
 
 
-async def async_math_stats() -> dict[str, Any]:
+async def async_math_stats() -> Dict[str, Any]:
     """Async version of math stats command."""
     async with MathDashboardClient() as client:
         return await client.get_dashboard_summary()
@@ -227,12 +228,12 @@ async def async_math_dashboard_start(
 
 
 # Sync wrappers for CLI integration
-def analyze_task_sync(task: str) -> dict[str, Any]:
+def analyze_task_sync(task: str) -> Dict[str, Any]:
     """Synchronous wrapper for async analyze."""
     return asyncio.run(async_math_analyze(task))
 
 
-def get_stats_sync() -> dict[str, Any]:
+def get_stats_sync() -> Dict[str, Any]:
     """Synchronous wrapper for async stats."""
     return asyncio.run(async_math_stats())
 

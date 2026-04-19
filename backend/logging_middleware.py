@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Set
 
 """Production-grade structured logging middleware for FastAPI.
 
@@ -59,7 +59,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
         app: FastAPI,
         *,
         log_level: str = "INFO",
-        exclude_paths: set[str] | None = None,
+        exclude_paths: Optional[Set[str] ] = None,
         max_body_size: int = 10000,
     ):
         super().__init__(app)
@@ -78,7 +78,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
 
         client_host = request.client.host if request.client else "unknown"
 
-        log_data: dict[str, Any] = {
+        log_data: Dict[str, Any] = {
             "request_id": request_id,
             "method": request.method,
             "path": request.url.path,

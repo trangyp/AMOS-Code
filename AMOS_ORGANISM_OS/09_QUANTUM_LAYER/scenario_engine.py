@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class ScenarioStatus(Enum):
@@ -88,7 +88,7 @@ class ScenarioEngine:
         self,
         name: str,
         description: str = "",
-        parameters: dict[str, Any] = None,
+        parameters: Dict[str, Any] = None,
     ) -> Scenario:
         """Create a new scenario."""
         scenario = Scenario(
@@ -130,7 +130,7 @@ class ScenarioEngine:
     def evaluate_all(
         self,
         evaluator_type: str = "default",
-    ) -> dict[str, ScenarioResult]:
+    ) -> Dict[str, ScenarioResult]:
         """Evaluate all pending scenarios."""
         results = {}
         for scenario_id, scenario in self.scenarios.items():
@@ -142,9 +142,9 @@ class ScenarioEngine:
 
     def compare_scenarios(
         self,
-        scenario_ids: list[str],
+        scenario_ids: List[str],
         metric: str = "score",
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Compare multiple scenarios by a metric."""
         comparisons = []
         for sid in scenario_ids:
@@ -168,7 +168,7 @@ class ScenarioEngine:
 
     def recommend_best(
         self,
-        scenario_ids: list[str],
+        scenario_ids: List[str],
         criteria: str = "balanced",  # score, risk, cost, balanced
     ) -> str:
         """Recommend the best scenario based on criteria."""
@@ -256,7 +256,7 @@ class ScenarioEngine:
             outcome_data={"roi": roi, "benefit": benefit},
         )
 
-    def list_scenarios(self) -> list[dict[str, Any]]:
+    def list_scenarios(self) -> List[dict[str, Any]]:
         """List all scenarios."""
         return [s.to_dict() for s in self.scenarios.values()]
 

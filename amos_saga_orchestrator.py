@@ -26,7 +26,7 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 class SagaStatus(Enum):
@@ -56,9 +56,9 @@ class SagaStep:
     compensation: Callable[[Any], Any]
     status: StepStatus = StepStatus.PENDING
     result: Any = None
-    error: str | None = None
-    started_at: float | None = None
-    completed_at: float | None = None
+    error: Optional[str] = None
+    started_at: Optional[float] = None
+    completed_at: Optional[float] = None
     max_retries: int = 3
     current_retry: int = 0
     timeout_seconds: int = 30
@@ -123,10 +123,10 @@ class SagaInstance:
     status: SagaStatus = SagaStatus.PENDING
     current_step_index: int = 0
     completed_steps: List[str] = field(default_factory=list)
-    failed_step: str | None = None
-    error_message: str | None = None
+    failed_step: Optional[str] = None
+    error_message: Optional[str] = None
     started_at: float = field(default_factory=time.time)
-    completed_at: float | None = None
+    completed_at: Optional[float] = None
     execution_log: List[dict] = field(default_factory=list)
 
     def log(self, message: str, level: str = "info") -> None:
@@ -166,7 +166,7 @@ class SagaOrchestrator:
         self._running: Set[str] = set()
 
         # Persistence
-        self._persistence_file: str | None = None
+        self._persistence_file: Optional[str] = None
 
     def register_saga(self, definition: SagaDefinition) -> None:
         """Register a saga definition."""
@@ -257,7 +257,7 @@ class SagaOrchestrator:
         futures = []
         completed_steps = []
 
-        def execute_step(step: SagaStep, index: int) -> tuple[int, bool, str | None]:
+        def execute_step(step: SagaStep, index: int) -> Optional[Tuple[int, bool, str ]]:
             try:
                 step.execute(instance.context)
                 return (index, True, None)
@@ -353,7 +353,7 @@ class SagaOrchestrator:
             except Exception:
                 pass
 
-    def get_instance(self, instance_id: str) -> SagaInstance | None:
+    def get_instance(self, instance_id: str) -> Optional[SagaInstance]:
         """Get saga instance by ID."""
         with self._lock:
             return self._instances.get(instance_id)
@@ -369,7 +369,7 @@ class SagaOrchestrator:
 
 
 # Global instance
-_orchestrator: SagaOrchestrator | None = None
+_orchestrator: Optional[SagaOrchestrator] = None
 
 
 def get_orchestrator() -> SagaOrchestrator:

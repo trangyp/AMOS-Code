@@ -17,7 +17,7 @@ Version: 1.0.0
 
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 # Add paths for all systems
 REPO_ROOT = Path(__file__).parent

@@ -17,7 +17,7 @@ Version: 1.0.0
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Import AMOS components
 from amos_cascade_brain_integration import AMOSCascadeBrain, get_brain
@@ -218,7 +218,7 @@ class AMOSCascadeBrainOrchestrator:
             return []
         return self._sota.get_bci_protocols()
 
-    def get_research_recommendations(self) -> list[dict[str, Any]]:
+    def get_research_recommendations(self) -> List[dict[str, Any]]:
         """Get SOTA research recommendations for AMOS."""
         if not self._sota:
             return []

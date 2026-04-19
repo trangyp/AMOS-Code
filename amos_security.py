@@ -115,7 +115,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 import jwt
 
@@ -147,7 +147,7 @@ class Permission(Enum):
     USERS_READ = "users:read"
 
 
-ROLE_PERMISSIONS: dict[UserRole, list[Permission]] = {
+ROLE_PERMISSIONS: Dict[UserRole, list[Permission]] = {
     UserRole.SUPER_ADMIN: list(Permission),
     UserRole.ADMIN: [
         Permission.EQUATIONS_READ,
@@ -275,10 +275,10 @@ class AMOSSecurity:
         self.total_authentications: int = 0
         self.total_authorization_checks: int = 0
         self.total_rate_limit_violations: int = 0
-        self.security_incidents: list[dict[str, Any]] = []
+        self.security_incidents: List[dict[str, Any]] = []
 
     def create_user(
-        self, username: str, email: str, roles: list[UserRole] = None, user_id: str = None
+        self, username: str, email: str, roles: List[UserRole] = None, user_id: str = None
     ) -> User:
         """Create a new user with specified roles."""
         if username in self.username_to_id:
@@ -416,7 +416,7 @@ class AMOSSecurity:
 
         return api_key, key_entry
 
-    def verify_api_key(self, api_key: str) -> APIKey | None:
+    def verify_api_key(self, api_key: str) -> Optional[APIKey]:
         """Verify API key and return key entry."""
         key_hash = hashlib.sha256(api_key.encode()).hexdigest()
         key_id = self.key_hash_to_id.get(key_hash)
@@ -515,7 +515,7 @@ class AMOSSecurity:
         user_id: str = None,
         ip_address: str = None,
         user_agent: str = None,
-        details: dict[str, Any] = None,
+        details: Dict[str, Any] = None,
     ) -> None:
         """Log security audit event."""
         event = AuditEvent(

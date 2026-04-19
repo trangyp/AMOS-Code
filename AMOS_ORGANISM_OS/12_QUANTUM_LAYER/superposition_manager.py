@@ -185,12 +185,12 @@ class SuperpositionManager:
 
         return self.collapse(sp_id, chosen.id, "probabilistic")
 
-    def get_active_superpositions(self) -> list[dict[str, Any]]:
+    def get_active_superpositions(self) -> List[dict[str, Any]]:
         """Get all active (non-collapsed) superpositions."""
         active = [s for s in self.superpositions if s.status == SuperpositionStatus.ACTIVE]
         return [s.to_dict() for s in active]
 
-    def get_collapse_history(self, limit: int = 10) -> list[dict[str, Any]]:
+    def get_collapse_history(self, limit: int = 10) -> List[dict[str, Any]]:
         """Get recent collapse events."""
         collapsed = [s for s in self.superpositions if s.status == SuperpositionStatus.COLLAPSED]
         collapsed.sort(key=lambda x: x.collapsed_at or "", reverse=True)

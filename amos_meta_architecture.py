@@ -25,7 +25,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # =============================================================================
 # PROMISE SYSTEM
@@ -81,7 +81,7 @@ class Promise:
         """I_promise_strength = 1 iff bounded by enforceable authority."""
         return self.enforceable_authority and self.proof_exists and self.resource_available
 
-    def check_drift(self, current_behavior: dict) -> tuple[bool, str]:
+    def check_drift(self, current_behavior: dict) -> Tuple[bool, str]:
         """I_promise_drift = 1 iff promise, behavior, governance remain synchronized."""
         # Check if current behavior still supports the promise
         drift_detected = False
@@ -114,7 +114,7 @@ class PromiseRegistry:
     """Registry of all architecture-critical promises."""
 
     def __init__(self):
-        self.promises: dict[str, Promise] = {}
+        self.promises: Dict[str, Promise] = {}
         self.breach_log: List[dict] = []
 
     def register(self, promise: Promise) -> str:
@@ -122,7 +122,7 @@ class PromiseRegistry:
         self.promises[promise.promise_id] = promise
         return promise.promise_id
 
-    def check_all_promises(self, current_state: dict) -> tuple[bool, list[tuple[str, str]]]:
+    def check_all_promises(self, current_state: dict) -> Tuple[bool, list[tuple[str, str]]]:
         """Check all promises for drift or breach."""
         violations = []
 
@@ -217,7 +217,7 @@ class BreachRegistry:
     """Registry and arbiter of breaches."""
 
     def __init__(self):
-        self.breaches: dict[str, Breach] = {}
+        self.breaches: Dict[str, Breach] = {}
         self.normalization_alerts: List[dict] = []
 
     def register(self, breach: Breach) -> str:
@@ -289,7 +289,7 @@ class IdentityContinuity:
 
     # Identity chain
     predecessors: List[str] = field(default_factory=list)
-    successors: list[tuple[str, IdentityTransform, str]] = field(default_factory=list)
+    successors: List[tuple[str, IdentityTransform, str]] = field(default_factory=list)
     # (entity_id, transform_type, justification)
 
     # Resurrection prevention
@@ -334,7 +334,7 @@ class IdentityRegistry:
     """Registry of entity identities over time."""
 
     def __init__(self):
-        self.identities: dict[str, IdentityContinuity] = {}
+        self.identities: Dict[str, IdentityContinuity] = {}
         self.tombstones: Set[str] = set()
 
     def register(self, entity_id: str, entity_type: str) -> IdentityContinuity:
@@ -350,7 +350,7 @@ class IdentityRegistry:
             self.identities[entity_id].retired_at = datetime.now()
             self.tombstones.add(entity_id)
 
-    def check_resurrection_attempt(self, entity_id: str) -> tuple[bool, str]:
+    def check_resurrection_attempt(self, entity_id: str) -> Tuple[bool, str]:
         """Check if an entity is attempting resurrection."""
         if entity_id in self.tombstones:
             return (False, f"Entity {entity_id} was retired - resurrection prevented")
@@ -409,7 +409,7 @@ class EquivalenceRegistry:
     """Registry of equivalence claims with validation."""
 
     def __init__(self):
-        self.claims: dict[str, EquivalenceClaim] = {}
+        self.claims: Dict[str, EquivalenceClaim] = {}
         self.fraud_alerts: List[dict] = []
 
     def register(self, claim: EquivalenceClaim) -> str:
@@ -427,7 +427,7 @@ class EquivalenceRegistry:
         self.claims[claim.claim_id] = claim
         return claim.claim_id
 
-    def validate_equivalence(self, entity_a: str, entity_b: str, context: dict) -> tuple[bool, str]:
+    def validate_equivalence(self, entity_a: str, entity_b: str, context: dict) -> Tuple[bool, str]:
         """Validate equivalence in specific context."""
         for claim in self.claims.values():
             if claim.entity_a == entity_a and claim.entity_b == entity_b:
@@ -480,7 +480,7 @@ class ForgettingPermit:
     safe_to_forget: List[str] = field(default_factory=list)
     proof_of_safety: str = ""  # Reference to safety proof
 
-    def validate_forgetting(self, fact_type: str) -> tuple[bool, str]:
+    def validate_forgetting(self, fact_type: str) -> Tuple[bool, str]:
         """Validate if specific fact can be forgotten."""
         if fact_type in self.safe_to_forget:
             return (True, "Fact type in safe-to-forget list")
@@ -491,8 +491,8 @@ class MemoryGovernor:
     """Governor of required memory vs permitted forgetting."""
 
     def __init__(self):
-        self.required: dict[str, MemoryObligation] = {}
-        self.permitted: dict[str, ForgettingPermit] = {}
+        self.required: Dict[str, MemoryObligation] = {}
+        self.permitted: Dict[str, ForgettingPermit] = {}
         self.conflicts: List[dict] = []
 
     def add_required(self, obligation: MemoryObligation):
@@ -503,7 +503,7 @@ class MemoryGovernor:
         """Add a forgetting permit."""
         self.permitted[permit.permit_id] = permit
 
-    def check_conflict(self, proposed_forgetting: str) -> tuple[bool, str]:
+    def check_conflict(self, proposed_forgetting: str) -> Tuple[bool, str]:
         """I_memory_conflict = 1 iff memory obligations have precedence."""
         # Check if any required memory would be violated
         for req in self.required.values():
@@ -539,7 +539,7 @@ class Disagreement:
     disagreement_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     disagreement_class: DisagreementClass = DisagreementClass.MODEL_DIVERGENCE
     parties: List[str] = field(default_factory=list)
-    claims: dict[str, Any] = field(default_factory=dict)
+    claims: Dict[str, Any] = field(default_factory=dict)
 
     # Arbiter
     arbiter: str = None
@@ -570,7 +570,7 @@ class DisagreementRegistry:
     """Registry of disagreements with resolution tracking."""
 
     def __init__(self):
-        self.disagreements: dict[str, Disagreement] = {}
+        self.disagreements: Dict[str, Disagreement] = {}
 
     def register(self, disagreement: Disagreement) -> str:
         """Register a new disagreement."""
@@ -648,7 +648,7 @@ class LegitimacyRegistry:
     """Registry tracking legitimacy across all surfaces."""
 
     def __init__(self):
-        self.claims: dict[str, LegitimacyClaim] = {}
+        self.claims: Dict[str, LegitimacyClaim] = {}
         self.drift_alerts: List[dict] = []
 
     def register(self, claim: LegitimacyClaim) -> str:
@@ -656,7 +656,7 @@ class LegitimacyRegistry:
         self.claims[claim.claim_id] = claim
         return claim.claim_id
 
-    def audit_all(self) -> tuple[bool, list[str]]:
+    def audit_all(self) -> Tuple[bool, list[str]]:
         """Audit all legitimacy claims."""
         violations = []
 
@@ -706,7 +706,7 @@ class SelfModification:
 
     # Typing and bounds
     authority: str = ""  # Who can authorize
-    bounds: dict[str, Any] = field(default_factory=dict)
+    bounds: Dict[str, Any] = field(default_factory=dict)
     audit_trail: List[dict] = field(default_factory=list)
 
     # Fixed point semantics
@@ -742,7 +742,7 @@ class SelfModificationGovernor:
     """Governor of self-modifying workflows."""
 
     def __init__(self):
-        self.modifications: dict[str, SelfModification] = {}
+        self.modifications: Dict[str, SelfModification] = {}
         self.meta_authority: str = "architectural_council"
 
     def propose(self, modification: SelfModification) -> str:
@@ -785,7 +785,7 @@ class SemanticEntity:
     """
 
     entity_id: str = ""
-    meaning_signature: dict[str, Any] = field(default_factory=dict)
+    meaning_signature: Dict[str, Any] = field(default_factory=dict)
 
     # Survival tracking
     operation_continues: bool = True
@@ -839,7 +839,7 @@ class SemanticSurvivalRegistry:
     """Registry of semantic entities requiring survival."""
 
     def __init__(self):
-        self.entities: dict[str, SemanticEntity] = {}
+        self.entities: Dict[str, SemanticEntity] = {}
         self.death_alerts: List[dict] = []
 
     def register(self, entity: SemanticEntity) -> str:
@@ -847,7 +847,7 @@ class SemanticSurvivalRegistry:
         self.entities[entity.entity_id] = entity
         return entity.entity_id
 
-    def audit_all(self) -> tuple[bool, list[str]]:
+    def audit_all(self) -> Tuple[bool, list[str]]:
         """Audit semantic survival of all entities."""
         deaths = []
 
@@ -890,7 +890,7 @@ class MetaGovernance:
     """
 
     # Law hierarchy
-    laws: dict[str, LawRank] = field(default_factory=dict)
+    laws: Dict[str, LawRank] = field(default_factory=dict)
 
     # Emergency constitution
     emergency_active: bool = False
@@ -923,7 +923,7 @@ class MetaGovernance:
                 return True
         return False
 
-    def validate_full_system(self) -> dict[str, Any]:
+    def validate_full_system(self) -> Dict[str, Any]:
         """Validate all meta-architecture invariants."""
         results = {
             "promise_integrity": self._check_promises(),

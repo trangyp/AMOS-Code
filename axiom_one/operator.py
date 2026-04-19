@@ -60,10 +60,10 @@ class Operator:
     - Works offline (local models supported)
     """
 
-    def __init__(self, config: OperatorConfig | None = None):
+    def __init__(self, config: Optional[OperatorConfig] = None):
         self.config = config or OperatorConfig()
         self.slot_manager = ExecutionSlotManager()
-        self._current_slot: ExecutionSlot | None = None
+        self._current_slot: Optional[ExecutionSlot] = None
         self._tool_registry: dict[str, Any] = {}
         self._register_default_tools()
 
@@ -309,7 +309,7 @@ class Operator:
 
     def complete_session(
         self, success: bool, result: dict[str, Any] = None
-    ) -> ExecutionSlot | None:
+    ) -> Optional[ExecutionSlot]:
         """Complete the current session."""
         if self._current_slot is None:
             return None

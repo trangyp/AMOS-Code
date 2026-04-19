@@ -20,6 +20,7 @@ from pathlib import Path
 PATTERNS = [
     # Add timezone import
     (r"from datetime import (datetime, timedelta)", r"from datetime import \1, timezone"),
+UTC = timezone.utc
     (r"from datetime import datetime$", r"from datetime import datetime, timezone"),
     # Replace utcnow() calls
     (r"datetime\.utcnow\(\)", r"datetime.now(timezone.utc)"),

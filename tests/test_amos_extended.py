@@ -177,7 +177,6 @@ class TestHealthMonitor:
 
     def test_component_registration(self):
         """Test registering components."""
-        from datetime import datetime
 
         from amos_observability.health_monitor import ComponentHealth, HealthMonitor, HealthStatus
 
@@ -197,7 +196,6 @@ class TestHealthMonitor:
 
     def test_health_check_execution(self):
         """Test health check runs and aggregates."""
-        from datetime import datetime
 
         from amos_observability.health_monitor import ComponentHealth, HealthMonitor, HealthStatus
 
@@ -222,7 +220,6 @@ class TestHealthMonitor:
 
     def test_alert_generation(self):
         """Test alerts are generated for unhealthy components."""
-        from datetime import datetime
 
         from amos_observability.health_monitor import ComponentHealth, HealthMonitor, HealthStatus
 

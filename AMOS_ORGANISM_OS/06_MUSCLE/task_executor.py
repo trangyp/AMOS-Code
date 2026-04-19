@@ -13,6 +13,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -23,7 +24,7 @@ class ExecutionResult:
     output: str
     error: str = None
     duration_ms: float = 0.0
-    artifacts: dict[str, Any] = field(default_factory=dict)
+    artifacts: Dict[str, Any] = field(default_factory=dict)
 
 
 class TaskExecutor:
@@ -33,16 +34,16 @@ class TaskExecutor:
 
     def __init__(self, organism_root: Path) -> None:
         self.root = organism_root
-        self.execution_handlers: dict[str, Callable] = {
+        self.execution_handlers: Dict[str, Callable] = {
             "analysis": self._execute_analysis,
             "code": self._execute_code,
             "documentation": self._execute_documentation,
             "security": self._execute_security,
             "test": self._execute_test,
         }
-        self.execution_log: list[dict[str, Any]] = []
+        self.execution_log: List[dict[str, Any]] = []
 
-    def execute_task(self, task_id: str, task_type: str, params: dict[str, Any]) -> ExecutionResult:
+    def execute_task(self, task_id: str, task_type: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute a task based on its type."""
         start_time = datetime.now(UTC)
 
@@ -71,7 +72,7 @@ class TaskExecutor:
 
         return result
 
-    def _execute_analysis(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_analysis(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute code analysis task."""
         target = params.get("target", "codebase")
         analysis_type = params.get("analysis_type", "patterns")
@@ -92,7 +93,7 @@ class TaskExecutor:
             },
         )
 
-    def _execute_code(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_code(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute code generation task."""
         description = params.get("description", "Generate code")
         language = params.get("language", "python")
@@ -106,7 +107,7 @@ class TaskExecutor:
             artifacts={"code": code, "language": language, "lines": len(code.split("\n"))},
         )
 
-    def _execute_documentation(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_documentation(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute documentation generation task."""
         target = params.get("target", "subsystem")
 
@@ -136,7 +137,7 @@ result = subsystem.process(input_data)
             artifacts={"documentation": docs, "format": "markdown", "sections": 4},
         )
 
-    def _execute_security(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_security(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute security audit task."""
         scope = params.get("scope", "all_subsystems")
 
@@ -158,7 +159,7 @@ result = subsystem.process(input_data)
             },
         )
 
-    def _execute_test(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_test(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Execute test task."""
         test_type = params.get("test_type", "unit")
         target = params.get("target", "all")
@@ -175,7 +176,7 @@ result = subsystem.process(input_data)
             success=test_results["failed"] == 0, output=output, artifacts=test_results
         )
 
-    def _execute_default(self, task_id: str, params: dict[str, Any]) -> ExecutionResult:
+    def _execute_default(self, task_id: str, params: Dict[str, Any]) -> ExecutionResult:
         """Default execution for unknown task types."""
         return ExecutionResult(
             success=False,
@@ -183,7 +184,7 @@ result = subsystem.process(input_data)
             error=f"Unknown task type. Supported: {list(self.execution_handlers.keys())}",
         )
 
-    def _mock_findings(self) -> list[dict[str, Any]]:
+    def _mock_findings(self) -> List[dict[str, Any]]:
         """Generate mock analysis findings."""
         return [
             {"type": "pattern", "severity": "info", "message": "Good modularity detected"},
@@ -212,14 +213,14 @@ if __name__ == "__main__":
     print(result)
 """
 
-    def _mock_security_scan(self) -> list[dict[str, Any]]:
+    def _mock_security_scan(self) -> List[dict[str, Any]]:
         """Generate mock security vulnerabilities."""
         return [
             {"severity": "low", "subsystem": "03_IMMUNE", "issue": "Logs need rotation"},
             {"severity": "info", "subsystem": "04_BLOOD", "issue": "Consider audit trail"},
         ]
 
-    def _mock_test_run(self, test_type: str, target: str) -> dict[str, Any]:
+    def _mock_test_run(self, test_type: str, target: str) -> Dict[str, Any]:
         """Generate mock test results."""
         return {
             "test_type": test_type,
@@ -230,7 +231,7 @@ if __name__ == "__main__":
             "skipped": 0,
         }
 
-    def get_execution_stats(self) -> dict[str, Any]:
+    def get_execution_stats(self) -> Dict[str, Any]:
         """Get execution statistics."""
         if not self.execution_log:
             return {"total_executions": 0, "success_rate": 0.0}
@@ -264,7 +265,7 @@ class AgentTaskRouter:
         self.task_queue = TaskQueue(organism_root)
         self.TaskStatus = TaskStatus
 
-    def process_pending_tasks(self, max_tasks: int = 5) -> list[dict[str, Any]]:
+    def process_pending_tasks(self, max_tasks: int = 5) -> List[dict[str, Any]]:
         """Process pending tasks from queue."""
         results = []
         pending = self.task_queue.get_pending_tasks()[:max_tasks]
@@ -317,7 +318,7 @@ class AgentTaskRouter:
         }
         return agent_map.get(task_type, "worker_agent")
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get router status."""
         queue_status = self.task_queue.get_status()
         executor_stats = self.executor.get_execution_stats()

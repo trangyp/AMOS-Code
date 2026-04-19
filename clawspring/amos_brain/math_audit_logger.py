@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 """AMOS Mathematical Framework Audit Logger.
 
@@ -8,13 +8,12 @@ equation queries, architecture analysis, and validation operations.
 Integrates with unified governance coordinator for comprehensive
 governance and compliance tracking.
 """
-from __future__ import annotations
-
 
 import json
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 
@@ -26,9 +25,9 @@ class AuditEntry:
     timestamp: str
     operation: str
     subject: str
-    domains: list[str]
-    metadata: dict[str, Any]
-    result: bool | None = None
+    domains: List[str]
+    metadata: Dict[str, Any]
+    result: Optional[bool] = None
     duration_ms: float = 0.0
 
 
@@ -44,15 +43,15 @@ class MathFrameworkAuditLogger:
     Provides statistics and health metrics for governance.
     """
 
-    def __init__(self, storage_path: str | None = None):
+    def __init__(self, storage_path: Optional[str] = None):
         """Initialize the audit logger.
 
         Args:
             storage_path: Optional path for persistent audit storage
         """
-        self._entries: list[AuditEntry] = []
+        self._entries: List[AuditEntry] = []
         self._storage_path = Path(storage_path) if storage_path else None
-        self._operation_counts: dict[str, int] = {}
+        self._operation_counts: Dict[str, int] = {}
         self._initialized = True
 
         # Load existing entries if storage exists
@@ -92,9 +91,9 @@ class MathFrameworkAuditLogger:
         self,
         operation: str,
         subject: str,
-        domains: list[str],
-        metadata: dict[str, Any],
-        result: bool | None = None,
+        domains: List[str],
+        metadata: Dict[str, Any],
+        result: Optional[bool] = None,
         duration_ms: float = 0.0,
     ) -> AuditEntry:
         """Create and store a new audit entry."""
@@ -118,7 +117,7 @@ class MathFrameworkAuditLogger:
         return entry
 
     def log_equation_query(
-        self, equation_name: str, domains: list[str], metadata: dict[str, Any] = None
+        self, equation_name: str, domains: List[str], metadata: Dict[str, Any] = None
     ) -> AuditEntry:
         """Log an equation query operation.
 
@@ -138,7 +137,7 @@ class MathFrameworkAuditLogger:
         )
 
     def log_validation(
-        self, operation: str, subject: str, result: bool, metadata: dict[str, Any] = None
+        self, operation: str, subject: str, result: bool, metadata: Dict[str, Any] = None
     ) -> AuditEntry:
         """Log a validation operation.
 
@@ -158,9 +157,9 @@ class MathFrameworkAuditLogger:
     def log_architecture_analysis(
         self,
         component: str,
-        domains: list[str],
-        engines: list[str],
-        metadata: dict[str, Any] = None,
+        domains: List[str],
+        engines: List[str],
+        metadata: Dict[str, Any] = None,
     ) -> AuditEntry:
         """Log an architecture analysis operation.
 
@@ -180,7 +179,7 @@ class MathFrameworkAuditLogger:
             operation="architecture_analysis", subject=component, domains=domains, metadata=meta
         )
 
-    def get_statistics(self) -> dict[str, Any]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get audit statistics for health checks and governance.
 
         Returns:
@@ -189,7 +188,7 @@ class MathFrameworkAuditLogger:
         total_entries = len(self._entries)
 
         # Calculate domain coverage
-        all_domains: set[str] = set()
+        all_domains: Set[str] = set()
         for entry in self._entries:
             all_domains.update(entry.domains)
 
@@ -207,8 +206,8 @@ class MathFrameworkAuditLogger:
         }
 
     def query_entries(
-        self, operation: str | None = None, domain: str | None = None, limit: int = 100
-    ) -> list[AuditEntry]:
+        self, operation: Optional[str] = None, domain: Optional[str] = None, limit: int = 100
+    ) -> List[AuditEntry]:
         """Query audit entries with filters.
 
         Args:
@@ -256,10 +255,10 @@ class MathFrameworkAuditLogger:
 
 
 # Global singleton instance
-_audit_logger: MathFrameworkAuditLogger | None = None
+_audit_logger: Optional[MathFrameworkAuditLogger] = None
 
 
-def get_math_audit_logger(storage_path: str | None = None) -> MathFrameworkAuditLogger:
+def get_math_audit_logger(storage_path: Optional[str] = None) -> MathFrameworkAuditLogger:
     """Get or create the global math audit logger instance.
 
     Args:

@@ -6,7 +6,7 @@ Author: AMOS Graph Team
 Version: 2.0.0
 """
 
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
@@ -60,7 +60,7 @@ class LearningPathResponse(BaseModel):
 
     start: str
     end: str
-    nodes: list[dict[str, Any]]
+    nodes: List[dict[str, Any]]
     steps: int
     path_found: bool
 
@@ -100,7 +100,7 @@ def get_graph() -> EquationGraph:
 async def create_equation_node(
     equation: EquationNode,
     graph: EquationGraph = Depends(get_graph),
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Create equation node in graph."""
     await graph.create_equation_node(
         GraphEquation(
@@ -118,7 +118,7 @@ async def create_equation_node(
 async def create_concept_node(
     concept: ConceptNode,
     graph: EquationGraph = Depends(get_graph),
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Create concept node in graph."""
     await graph.create_concept_node(
         concept_id=concept.id,
@@ -132,7 +132,7 @@ async def create_concept_node(
 async def create_relationship(
     rel: RelationshipCreate,
     graph: EquationGraph = Depends(get_graph),
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Create relationship between nodes."""
     await graph.create_relationship(
         source_id=rel.source_id,
@@ -172,7 +172,7 @@ async def get_related_equations(
 async def get_prerequisites(
     equation_id: str,
     graph: EquationGraph = Depends(get_graph),
-) -> list[dict[str, Any]]:
+) -> List[dict[str, Any]]:
     """Get prerequisite equations/concepts."""
     return await graph.get_prerequisites(equation_id)
 
@@ -181,7 +181,7 @@ async def get_prerequisites(
 async def get_derivatives(
     equation_id: str,
     graph: EquationGraph = Depends(get_graph),
-) -> list[dict[str, Any]]:
+) -> List[dict[str, Any]]:
     """Get equations derived from this equation."""
     return await graph.get_derivatives(equation_id)
 
@@ -258,7 +258,7 @@ async def get_graph_stats(
 async def get_central_equations(
     limit: int = Query(default=10, ge=1, le=50),
     graph: EquationGraph = Depends(get_graph),
-) -> list[dict[str, Any]]:
+) -> List[dict[str, Any]]:
     """Get most central equations by connection count."""
     from graph.neo4j_client import GraphAnalytics
 
@@ -270,7 +270,7 @@ async def get_central_equations(
 async def delete_equation(
     equation_id: str,
     graph: EquationGraph = Depends(get_graph),
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Delete equation from graph."""
     await graph.delete_equation(equation_id)
     return {"status": "deleted", "id": equation_id}
@@ -287,7 +287,7 @@ async def graph_health(
 @router.post("/admin/indexes")
 async def create_indexes(
     graph: EquationGraph = Depends(get_graph),
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Create database indexes."""
     await graph.create_indexes()
     return {"status": "indexes_created"}

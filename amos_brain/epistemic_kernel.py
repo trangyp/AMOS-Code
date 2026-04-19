@@ -319,7 +319,7 @@ class EpistemicKernel:
 
 
 # Global instance for easy access
-_epistemic_kernel: EpistemicKernel | None = None
+_epistemic_kernel: Optional[EpistemicKernel] = None
 
 
 def get_epistemic_kernel() -> EpistemicKernel:

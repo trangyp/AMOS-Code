@@ -14,6 +14,7 @@ from .session_store import load_session
 from .setup import run_setup
 from .tool_pool import assemble_tool_pool
 from .tools import execute_tool, get_tool, get_tools, render_tool_index
+from typing import List
 
 
 def build_parser() -> argparse.ArgumentParser:

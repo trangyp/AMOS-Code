@@ -7,6 +7,8 @@ to process cognitive queries, spawn agents, and stream results.
 from __future__ import annotations
 
 
+
+
 import asyncio
 import json
 import sys
@@ -15,7 +17,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -37,17 +39,17 @@ except ImportError:
 router = APIRouter()
 
 # Active cognitive sessions
-_cognitive_sessions: dict[str, dict[str, Any]] = {}
+_cognitive_sessions: Dict[str, dict[str, Any]] = {}
 
 
 class CognitiveWebSocketManager:
     """Manage cognitive WebSocket connections with real brain integration."""
 
     def __init__(self):
-        self.connections: dict[str, WebSocket] = {}
-        self.brain_clients: dict[str, BrainClient] = {}
+        self.connections: Dict[str, WebSocket] = {}
+        self.brain_clients: Dict[str, BrainClient] = {}
 
-    async def connect(self, session_id: str, websocket: WebSocket) -> BrainClient | None:
+    async def connect(self, session_id: str, websocket: WebSocket) -> Optional[BrainClient]:
         """Accept connection and initialize brain client."""
         await websocket.accept()
         self.connections[session_id] = websocket

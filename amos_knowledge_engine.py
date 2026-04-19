@@ -28,7 +28,7 @@ System: AMOS vInfinity - Layer 23
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -61,7 +61,7 @@ class KnowledgeEngine:
         self.loaded_count = 0
         self.domains: set = set()
 
-    def discover_engines(self) -> dict[str, int]:
+    def discover_engines(self) -> Dict[str, int]:
         """Discover all available knowledge engines.
 
         Returns:
@@ -137,7 +137,7 @@ class KnowledgeEngine:
         discovered["total"] = len(self.engines)
         return discovered
 
-    def load_engine(self, engine_name: str) -> dict[str, Any]:
+    def load_engine(self, engine_name: str) -> Dict[str, Any]:
         """Load a specific engine by name."""
         if engine_name not in self.engines:
             return None

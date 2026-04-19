@@ -7,8 +7,6 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 from amos_brain.canon_cognitive_processor import (
     get_canon_cognitive_processor,
     canon_process,

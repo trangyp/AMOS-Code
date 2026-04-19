@@ -6,7 +6,7 @@ import uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from amos_execution import full_execute
 
@@ -292,8 +292,6 @@ def analyze_quadrants(problem: str) -> str:
 
 def analyze_dual(problem: str) -> str:
     """Quick helper for dual perspective analysis."""
-from __future__ import annotations
-
     return get_multi_agent_coordinator().run_dual_perspective(problem)
 
 

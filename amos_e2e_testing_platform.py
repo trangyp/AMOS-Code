@@ -59,7 +59,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Protocol
+from typing import Dict, List, Optional, Protocol
 
 # Test framework imports
 try:
@@ -274,7 +274,7 @@ class AMOSE2ETestPlatform:
     def __init__(self):
         self.suites: Dict[str, TestSuite] = {}
         self.tests: Dict[str, TestCase] = {}
-        self.executors: dict[TestType, TestExecutor] = {}
+        self.executors: Dict[TestType, TestExecutor] = {}
         self.history: List[TestReport] = []
 
         # Create output directory

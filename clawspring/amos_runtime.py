@@ -1,11 +1,15 @@
 """AMOS Runtime Bootstrap - Loads and executes the AMOS brain."""
 
+from __future__ import annotations
+
+
+
 import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 @dataclass

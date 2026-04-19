@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Formal Core - Mathematical Structure Implementation
 
 Implements the 21-tuple formal system 𝔞𝔪𝔬𝔰:
@@ -16,6 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
+
 from typing import Any
 
 import numpy as np
@@ -79,7 +82,7 @@ class TypeUniverse:
     base_type: str = "Any"
     substrate: Substrate = Substrate.CLASSICAL
     effect: str = "pure"
-    uncertainty: tuple[float, float] = None  # (mean, variance)
+    uncertainty: Tuple[float, float] = None  # (mean, variance)
 
 
 @dataclass
@@ -100,7 +103,7 @@ class QuantumState:
     amplitudes: np.ndarray = field(default_factory=lambda: np.array([1.0, 0.0]))
     density_matrix: np.ndarray | None = None
     num_qubits: int = 1
-    basis_states: list[str] = field(default_factory=lambda: ["|0⟩", "|1⟩"])
+    basis_states: List[str] = field(default_factory=lambda: ["|0⟩", "|1⟩"])
 
     def __post_init__(self):
         """Initialize density matrix if not provided."""
@@ -120,7 +123,7 @@ class QuantumState:
                 self.density_matrix = psi @ psi.conj().T
         return self
 
-    def measure(self, observable: np.ndarray | None = None) -> tuple[int, "QuantumState"]:
+    def measure(self, observable: np.ndarray | None = None) -> Tuple[int, "QuantumState"]:
         """Perform quantum measurement with Born rule.
 
         Args:
@@ -359,7 +362,7 @@ class BridgeMorphism:
             ]
         )
 
-    def cross(self, state: Any, uncertainty: float) -> tuple[Any, float]:
+    def cross(self, state: Any, uncertainty: float) -> Tuple[Any, float]:
         """Apply bridge morphism with uncertainty propagation."""
         if self.transformation:
             new_state = self.transformation(state)
@@ -381,7 +384,7 @@ class MeasurementOperator:
     observable: str = ""
     substrate: Substrate = Substrate.CLASSICAL
 
-    def measure(self, state: StateBundle) -> tuple[Any, float, Callable, StateBundle]:
+    def measure(self, state: StateBundle) -> Tuple[Any, float, Callable, StateBundle]:
         """M_m: x ↦ (ŷ, q, π, x').
 
         Returns:
@@ -406,7 +409,7 @@ class MeasurementOperator:
     def classical_measure(self, state: StateBundle) -> Any:
         return state.classical.get(self.observable)
 
-    def quantum_measure(self, state: StateBundle) -> tuple[Any, StateBundle]:
+    def quantum_measure(self, state: StateBundle) -> Tuple[Any, StateBundle]:
         """Real quantum measurement using QuantumState with Born rule."""
         if state.quantum is not None:
             # Use the QuantumState.measure() for proper Born rule application
@@ -422,7 +425,7 @@ class UncertaintyStructure:
 
     probability_law: Optional[Callable] = None  # p
     confidence: float = 1.0  # γ ∈ [0, 1]
-    interval: tuple[float, float] = field(default_factory=lambda: (0.0, 1.0))  # δ = [ℓ, u]
+    interval: Tuple[float, float] = field(default_factory=lambda: (0.0, 1.0))  # δ = [ℓ, u]
     context_dependence: Dict[str, float] = field(default_factory=dict)  # κ
     noise_structure: str = "gaussian"  # ν
 
@@ -441,7 +444,7 @@ class ConstraintField:
     hardness: str = "hard"  # "hard" or "soft"
     penalty_weight: float = 1.0
 
-    def evaluate(self, state: StateBundle) -> tuple[bool, float]:
+    def evaluate(self, state: StateBundle) -> Tuple[bool, float]:
         """C_i: 𝒳 → 𝔹_Q (uncertainty-valued truth)."""
         if self.predicate is None:
             return True, 0.0
@@ -510,9 +513,9 @@ class AdaptationOperator:
 class VerificationSystem:
     """𝒱 - Verification system."""
 
-    checkers: list[Callable[[StateBundle], tuple[bool, str]]] = field(default_factory=list)
+    checkers: List[Callable[[StateBundle], tuple[bool, str]]] = field(default_factory=list)
 
-    def verify(self, state: StateBundle) -> tuple[bool, list[str]]:
+    def verify(self, state: StateBundle) -> Tuple[bool, list[str]]:
         """Verify state satisfies all conditions."""
         violations = []
         for checker in self.checkers:
@@ -592,7 +595,7 @@ class HistoryHomology:
             }
         )
 
-    def explain(self, outcome: Any) -> list[LedgerEntry]:
+    def explain(self, outcome: Any) -> List[LedgerEntry]:
         """∃ Λ ⊆ ℒ : Explain(Λ) = outcome."""
         # Find ledger entries that lead to outcome
         relevant = [e for e in self.ledger if e.y_t == outcome or str(outcome) in str(e.y_t)]
@@ -604,7 +607,7 @@ class MetaSemanticClosure:
     """𝒵 - Meta-semantic closure conditions."""
 
     consistency_axioms: List[str] = field(default_factory=list)
-    completeness_checks: list[Callable[[], bool]] = field(default_factory=list)
+    completeness_checks: List[Callable[[], bool]] = field(default_factory=list)
 
     def is_closed(self) -> bool:
         """Check if system satisfies meta-semantic closure."""
@@ -631,7 +634,7 @@ class AMOSFormalSystem:
 
     # Operators and algebras
     dynamics: LawfulDynamics = field(default_factory=LawfulDynamics)
-    bridges: dict[tuple[Substrate, Substrate], BridgeMorphism] = field(default_factory=dict)
+    bridges: Dict[tuple[Substrate, Substrate], BridgeMorphism] = field(default_factory=dict)
     measurements: Dict[str, MeasurementOperator] = field(default_factory=dict)
     uncertainty: UncertaintyStructure = field(default_factory=UncertaintyStructure)
     constraints: List[ConstraintField] = field(default_factory=list)
@@ -658,7 +661,7 @@ class AMOSFormalSystem:
                 if i != j:  # Off-diagonal only
                     self.bridges[(s1, s2)] = BridgeMorphism(source=s1, target=s2)
 
-    def admissible(self, state: StateBundle) -> tuple[bool, float]:
+    def admissible(self, state: StateBundle) -> Tuple[bool, float]:
         """Check if state is in admissible manifold 𝒦_adm.
 
         Returns:

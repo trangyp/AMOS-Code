@@ -57,7 +57,7 @@ import uuid
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import wraps
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 # JWT handling
 try:
@@ -164,7 +164,7 @@ class Permission(str, Enum):
 
 
 # Role-to-permissions mapping
-ROLE_PERMISSIONS: dict[UserRole, list[Permission]] = {
+ROLE_PERMISSIONS: Dict[UserRole, list[Permission]] = {
     UserRole.SUPERUSER: list(Permission),  # All permissions
     UserRole.ADMIN: [
         Permission.EQUATIONS_READ,

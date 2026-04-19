@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Governance-Evolution Integration Bridge
 
 Connects Layer 10 Autonomous Governance to E-series Self-Evolution Infrastructure.
@@ -20,11 +18,15 @@ Owner: AMOS Brain (Canonical Runtime)
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from .evolution_execution_engine import PatchOperation
 
 # Governance imports
 try:
@@ -75,7 +77,7 @@ class BridgeDecision:
     approved: bool
     executed: bool
     mode: BridgeMode
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     notes: str = ""
 
 
@@ -291,7 +293,7 @@ class GovernanceEvolutionBridge:
         self._contract_registry.register(contract)
         return contract
 
-    def _generate_patches(self, opportunity: "DetectedOpportunity") -> List[PatchOperation]:
+    def _generate_patches(self, opportunity: "DetectedOpportunity") -> "List[PatchOperation]":
         """Generate patch operations for an opportunity.
 
         In production, this would analyze the opportunity and generate
@@ -303,8 +305,8 @@ class GovernanceEvolutionBridge:
 
     def execute_evolution_direct(
         self,
-        contract: EvolutionContract,
-        patches: List[PatchOperation],
+        contract: "EvolutionContract",
+        patches: "List[PatchOperation]",
         auto_commit: bool = False,
     ) -> Optional[ExecutionResult]:
         """Execute evolution directly through the bridge."""
@@ -317,7 +319,7 @@ class GovernanceEvolutionBridge:
         """Get bridge operation metrics."""
         return self._metrics.to_dict()
 
-    def get_decision_history(self) -> list[dict[str, Any]]:
+    def get_decision_history(self) -> List[dict[str, Any]]:
         """Get history of bridge decisions."""
         return [
             {

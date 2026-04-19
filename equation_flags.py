@@ -67,7 +67,7 @@ from datetime import datetime
 from enum import Enum
 from functools import wraps
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Redis imports
 try:
@@ -270,7 +270,7 @@ class FlagStorage:
         """Get flag by key."""
         raise NotImplementedError
 
-    async def get_all(self) -> dict[str, FeatureFlag]:
+    async def get_all(self) -> Dict[str, FeatureFlag]:
         """Get all flags."""
         raise NotImplementedError
 
@@ -355,7 +355,7 @@ class FileFlagStorage(FlagStorage):
         await self._reload_if_changed()
         return self._flags.get(key)
 
-    async def get_all(self) -> dict[str, FeatureFlag]:
+    async def get_all(self) -> Dict[str, FeatureFlag]:
         await self._reload_if_changed()
         return self._flags.copy()
 
@@ -398,7 +398,7 @@ class RedisFlagStorage(FlagStorage):
             self.logger.error(f"Failed to get flag from Redis: {e}")
             return None
 
-    async def get_all(self) -> dict[str, FeatureFlag]:
+    async def get_all(self) -> Dict[str, FeatureFlag]:
         try:
             redis = await self._get_redis()
             keys = await redis.keys("flag:*")
@@ -616,7 +616,7 @@ class FlagManager:
 
         return flag.default_variant
 
-    async def get_all_flags(self) -> dict[str, FeatureFlag]:
+    async def get_all_flags(self) -> Dict[str, FeatureFlag]:
         """Get all flags."""
         return await self.storage.get_all()
 

@@ -6,7 +6,7 @@ and dispatch with output truncation.
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -51,7 +51,7 @@ def get_all_tools() -> List[ToolDef]:
     return list(_registry.values())
 
 
-def get_tool_schemas() -> list[dict[str, Any]]:
+def get_tool_schemas() -> List[dict[str, Any]]:
     """Return the schemas of all registered tools (for API tool parameter)."""
     return [t.schema for t in _registry.values()]
 

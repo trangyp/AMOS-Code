@@ -22,7 +22,7 @@ Integration Points:
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -63,7 +63,7 @@ class UnifiedDecision:
     category: str = "UNKNOWN"  # REPOSITORY/ARCHITECTURAL/GOVERNANCE/INTEGRATED
 
     # Actions
-    recommended_actions: list[dict[str, Any]] = field(default_factory=list)
+    recommended_actions: List[dict[str, Any]] = field(default_factory=list)
     auto_executable: bool = False
     requires_human_review: bool = False
 
@@ -234,7 +234,7 @@ class AMOS57RepoDoctorIntegration:
             "coherence_requirements": {"high_availability": True},
         }
 
-    def _run_amos_governance(self, inputs: Dict[str, Any]) -> dict[str, dict[str, Any]]:
+    def _run_amos_governance(self, inputs: Dict[str, Any]) -> Dict[str, dict[str, Any]]:
         """Run AMOS 57-Component governance on transformed inputs."""
         if not self.amos_57_available:
             return {
@@ -348,7 +348,7 @@ class AMOS57RepoDoctorIntegration:
             governance_grade="AMOS_ONLY",
         )
 
-    def make_unified_decision(self, context: dict[str, Any] = None) -> UnifiedDecision:
+    def make_unified_decision(self, context: Dict[str, Any] = None) -> UnifiedDecision:
         """
         Make decision using both Repo Doctor invariants and AMOS governance.
 
@@ -424,7 +424,7 @@ class AMOS57RepoDoctorIntegration:
         repo_concerns: List[str],
         gov_concerns: List[str],
         priority: str,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Generate recommended actions based on unified state."""
         actions = []
 

@@ -14,7 +14,7 @@ Example:
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Add parent directory to path for imports
 amos_root = Path(__file__).parent.parent
@@ -96,7 +96,7 @@ class EquationKnowledgeBridge:
             return []
         return self._kernel.get_by_pattern(pattern)
 
-    def find_cross_domain_patterns(self) -> list[dict[str, Any]]:
+    def find_cross_domain_patterns(self) -> List[dict[str, Any]]:
         """Find structural similarities across domains.
 
         Returns:

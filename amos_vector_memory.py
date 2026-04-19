@@ -54,6 +54,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import List
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -126,7 +127,7 @@ class EmbeddingService:
             print(f"[Embedding] Failed to embed text: {e}")
             return None
 
-    def embed_batch(self, texts: List[str]) -> list[list[float]]:
+    def embed_batch(self, texts: List[str]) -> List[list[float]]:
         """Generate embeddings for multiple texts."""
         if not self._initialized or not self._model:
             return None

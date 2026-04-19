@@ -8,6 +8,7 @@ import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, WebSocket
@@ -749,22 +750,22 @@ async def run_repo_autopsy(repo_id: str, enable_brain: bool = True):
                     )
                     issues_count["high"] += 1
 
-            # Check for datetime.utcnow() usage
-            if "datetime.utcnow()" in content:
+            # Check for datetime.now(timezone.utc) usage
+            if "datetime.now(timezone.utc)" in content:
                 for i, line in enumerate(lines):
-                    if "datetime.utcnow()" in line:
+                    if "datetime.now(timezone.utc)" in line:
                         findings.append(
                             {
                                 "id": f"deprecated-datetime-{file_path}-{i}",
                                 "severity": "medium",
                                 "category": "maintenance",
-                                "title": "Deprecated datetime.utcnow() usage",
+                                "title": "Deprecated datetime.now(timezone.utc) usage",
                                 "description": f"Line {i+1}: Use datetime.now(timezone.utc) instead",
                                 "file_path": str(file_path.relative_to(repo_path)),
                                 "line_number": i + 1,
                                 "auto_fixable": True,
                                 "suggested_fix": line.replace(
-                                    "datetime.utcnow()", "datetime.now(timezone.utc)"
+                                    "datetime.now(timezone.utc)", "datetime.now(timezone.utc)"
                                 ),
                             }
                         )

@@ -18,7 +18,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class WorkflowStatus(Enum):
@@ -126,9 +126,9 @@ class AMOSWorkflowOrchestrator:
     def __init__(self, executor: Optional[ComponentExecutor] = None):
         self.executor = executor or MockComponentExecutor()
         self.workflows: Dict[str, WorkflowInstance] = {}
-        self.workflow_definitions: dict[str, list[WorkflowStep]] = {}
-        self.running_tasks: dict[str, asyncio.Task] = {}
-        self.event_handlers: dict[str, list[str]] = {}  # event_type -> workflow_types
+        self.workflow_definitions: Dict[str, list[WorkflowStep]] = {}
+        self.running_tasks: Dict[str, asyncio.Task] = {}
+        self.event_handlers: Dict[str, list[str]] = {}  # event_type -> workflow_types
         self._persistence_path = "_AMOS_BRAIN/workflows.json"
         self._running = False
         self._monitor_task: asyncio.Task = None
@@ -165,7 +165,7 @@ class AMOSWorkflowOrchestrator:
         print(f"[Workflow] Defined '{workflow_type}' with {len(steps)} steps")
 
     async def start_workflow(
-        self, workflow_type: str, context: dict[str, Any] = None, workflow_id: str = None
+        self, workflow_type: str, context: Dict[str, Any] = None, workflow_id: str = None
     ) -> str:
         """Start a new workflow instance."""
         if workflow_type not in self.workflow_definitions:
@@ -358,7 +358,7 @@ class AMOSWorkflowOrchestrator:
 
         return started_workflows
 
-    def get_workflow_status(self, workflow_id: str) -> dict[str, Any]:
+    def get_workflow_status(self, workflow_id: str) -> Dict[str, Any]:
         """Get current workflow status."""
         workflow = self.workflows.get(workflow_id)
         if not workflow:

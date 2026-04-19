@@ -96,7 +96,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class AgentType(Enum):
@@ -164,7 +164,7 @@ class Plan:
 
     plan_id: str
     goal: str
-    actions: list[Action]
+    actions: List[Action]
     current_step: int = 0
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
@@ -176,11 +176,11 @@ class ExecutionResult:
 
     success: bool
     goal: str
-    actions_taken: list[Action]
+    actions_taken: List[Action]
     final_output: str
     execution_time_seconds: float
     resources_used: Dict[str, Any]
-    logs: list[str]
+    logs: List[str]
 
 
 class ToolInterface(ABC):
@@ -358,11 +358,11 @@ class ToolRegistry:
         """Get tool by name."""
         return self.tools.get(name)
 
-    def list_tools(self) -> list[Tool]:
+    def list_tools(self) -> List[Tool]:
         """List all available tools."""
         return [tool.get_tool_info() for tool in self.tools.values()]
 
-    def get_tools_by_category(self, category: ActionCategory) -> list[Tool]:
+    def get_tools_by_category(self, category: ActionCategory) -> List[Tool]:
         """Get tools by category."""
         return [
             tool.get_tool_info()
@@ -377,14 +377,14 @@ class AgentPlanner:
     def __init__(self, tool_registry: ToolRegistry) -> None:
         self.tool_registry = tool_registry
 
-    async def create_plan(self, goal: str, available_tools: list[str] = None) -> Plan:
+    async def create_plan(self, goal: str, available_tools: List[str] = None) -> Plan:
         """Create execution plan for goal."""
         plan_id = f"plan_{secrets.token_hex(8)}"
 
         # Simple planning: break down into logical steps
         # In production: Use LLM for planning
 
-        actions: list[Action] = []
+        actions: List[Action] = []
 
         # Parse goal and create appropriate actions
         if "file" in goal.lower() or "read" in goal.lower():
@@ -478,8 +478,8 @@ class AMOSAgent:
         self,
         name: str,
         agent_type: AgentType = AgentType.TASK,
-        tools: list[str] = None,
-        require_approval_for: list[str] = None,
+        tools: List[str] = None,
+        require_approval_for: List[str] = None,
     ) -> None:
         self.name = name
         self.agent_type = agent_type
@@ -489,8 +489,8 @@ class AMOSAgent:
 
         self.state = AgentState.IDLE
         self.current_plan: Optional[Plan] = None
-        self.execution_history: list[ExecutionResult] = []
-        self.logs: list[str] = []
+        self.execution_history: List[ExecutionResult] = []
+        self.logs: List[str] = []
 
     async def execute(
         self,
@@ -510,7 +510,7 @@ class AMOSAgent:
         self._log(f"📋 Created plan with {len(plan.actions)} actions")
 
         # Execute plan
-        actions_taken: list[Action] = []
+        actions_taken: List[Action] = []
         success = True
 
         for step in range(min(max_steps, len(plan.actions))):
@@ -613,7 +613,7 @@ class AMOSAgent:
 async def create_agent(
     name: str,
     agent_type: AgentType = AgentType.TASK,
-    tools: list[str] = None,
+    tools: List[str] = None,
 ) -> AMOSAgent:
     """Create and initialize AMOS agent."""
     agent = AMOSAgent(name=name, agent_type=agent_type, tools=tools)

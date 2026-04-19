@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """Canon Orchestrator - Coordinate Canon-aware brain components.
 
 Integrates all Canon-integrated components for unified task execution:
@@ -10,8 +12,6 @@ Integrates all Canon-integrated components for unified task execution:
 Creator: Trang Phan
 Version: 3.0.0
 """
-
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
@@ -70,7 +70,7 @@ class CanonOrchestrator:
         self,
         task: str,
         domain: str = "general",
-        context: dict[str, Any] | None = None,
+        context: Optional[dict[str, Any] ] = None,
     ) -> OrchestrationResult:
         """Execute task with full Canon orchestration.
 
@@ -159,7 +159,7 @@ class CanonOrchestrator:
             processing_time_ms=processing_time_ms,
         )
 
-    def get_orchestrator_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get orchestrator statistics."""
         if not self._initialized:
             return {"error": "Not initialized"}
@@ -173,7 +173,7 @@ class CanonOrchestrator:
 
 
 # Global instance
-_canon_orchestrator: CanonOrchestrator | None = None
+_canon_orchestrator: Optional[CanonOrchestrator] = None
 
 
 def get_canon_orchestrator() -> CanonOrchestrator:

@@ -7,8 +7,6 @@ Provides API endpoints for brain memory operations:
 - Memory statistics and health monitoring
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import sys
@@ -17,7 +15,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -31,7 +29,6 @@ for p in [AMOS_ROOT, AMOS_ROOT / "amos_brain"]:
 
 # Import brain memory
 try:
-    from typing import Any
 
     from memory import BrainMemory
 
@@ -52,9 +49,9 @@ class MemoryEntry(BaseModel):
     namespace: str = "amos_brain"
     problem: str
     problem_preview: str
-    analysis_summary: dict[str, Any]
-    tags: list[str] = Field(default_factory=list)
-    confidence_score: float | None = None
+    analysis_summary: Dict[str, Any]
+    tags: List[str] = Field(default_factory=list)
+    confidence_score: Optional[float] = None
     structural_integrity_score: float = 0.0
     rule_of_two_applied: bool = False
     rule_of_four_applied: bool = False
@@ -64,8 +61,8 @@ class SaveReasoningRequest(BaseModel):
     """Request to save reasoning to memory."""
 
     problem: str = Field(..., min_length=1, max_length=5000)
-    analysis: dict[str, Any] = Field(..., description="Full analysis result")
-    tags: list[str] = Field(default_factory=list, description="Categorization tags")
+    analysis: Dict[str, Any] = Field(..., description="Full analysis result")
+    tags: List[str] = Field(default_factory=list, description="Categorization tags")
 
 
 class SaveReasoningResponse(BaseModel):
@@ -74,7 +71,7 @@ class SaveReasoningResponse(BaseModel):
     entry_id: str
     fingerprint: str
     timestamp: datetime
-    memory_path: str | None = None
+    memory_path: Optional[str] = None
     clawspring_saved: bool = False
 
 
@@ -82,7 +79,7 @@ class MemoryQueryRequest(BaseModel):
     """Request to query memory."""
 
     query: str = Field(..., min_length=1, description="Search query")
-    tags: list[str] = Field(default_factory=list, description="Filter by tags")
+    tags: List[str] = Field(default_factory=list, description="Filter by tags")
     limit: int = Field(default=10, ge=1, le=100)
     min_confidence: float = Field(default=0.0, ge=0.0, le=1.0)
 
@@ -92,26 +89,26 @@ class MemoryQueryResult(BaseModel):
 
     entry: MemoryEntry
     relevance_score: float = Field(ge=0.0, le=1.0)
-    matched_tags: list[str] = Field(default_factory=list)
+    matched_tags: List[str] = Field(default_factory=list)
 
 
 class MemoryStats(BaseModel):
     """Memory system statistics."""
 
     total_entries: int
-    entries_by_tag: dict[str, int]
+    entries_by_tag: Dict[str, int]
     average_confidence: float
     rule_of_two_count: int
     rule_of_four_count: int
     memory_size_bytes: int
-    last_entry_timestamp: datetime | None = None
+    last_entry_timestamp: Optional[datetime] = None
 
 
 class BrainMemoryManager:
     """Manager for brain memory operations."""
 
     def __init__(self) -> None:
-        self._memory: BrainMemory | None = None
+        self._memory: Optional[BrainMemory] = None
         self._lock = asyncio.Lock()
 
     def _get_memory(self) -> BrainMemory:
@@ -123,7 +120,7 @@ class BrainMemoryManager:
         return self._memory
 
     async def save_reasoning(
-        self, problem: str, analysis: dict[str, Any], tags: list[str]
+        self, problem: str, analysis: Dict[str, Any], tags: List[str]
     ) -> SaveReasoningResponse:
         """Save reasoning result to memory."""
         async with self._lock:
@@ -144,13 +141,13 @@ class BrainMemoryManager:
             )
 
     async def query_memory(
-        self, query: str, tags: list[str], limit: int, min_confidence: float
-    ) -> list[MemoryQueryResult]:
+        self, query: str, tags: List[str], limit: int, min_confidence: float
+    ) -> List[MemoryQueryResult]:
         """Query memory for relevant entries."""
         async with self._lock:
             memory = self._get_memory()
 
-            results: list[MemoryQueryResult] = []
+            results: List[MemoryQueryResult] = []
 
             # Get all entries and filter
             all_entries = memory._local_cache.values() if hasattr(memory, "_local_cache") else []
@@ -197,7 +194,7 @@ class BrainMemoryManager:
             return results[:limit]
 
     def _calculate_relevance(
-        self, entry: dict[str, Any], query: str, filter_tags: list[str]
+        self, entry: Dict[str, Any], query: str, filter_tags: List[str]
     ) -> float:
         """Calculate relevance score for an entry."""
         score = 0.0
@@ -220,7 +217,7 @@ class BrainMemoryManager:
 
         return min(score, 1.0)
 
-    async def recall_similar(self, problem: str, limit: int = 5) -> list[MemoryEntry]:
+    async def recall_similar(self, problem: str, limit: int = 5) -> List[MemoryEntry]:
         """Recall similar past analyses."""
         async with self._lock:
             memory = self._get_memory()
@@ -248,7 +245,7 @@ class BrainMemoryManager:
             entries = list(memory._local_cache.values()) if hasattr(memory, "_local_cache") else []
 
             # Count by tag
-            tag_counts: dict[str, int] = {}
+            tag_counts: Dict[str, int] = {}
             for entry in entries:
                 for tag in entry.get("tags", []):
                     tag_counts[tag] = tag_counts.get(tag, 0) + 1
@@ -309,7 +306,7 @@ class BrainMemoryManager:
 
 
 # Global manager instance
-_memory_manager: BrainMemoryManager | None = None
+_memory_manager: Optional[BrainMemoryManager] = None
 
 
 def get_memory_manager() -> BrainMemoryManager:
@@ -330,7 +327,7 @@ async def save_reasoning(request: SaveReasoningRequest) -> SaveReasoningResponse
 
 
 @router.post("/query", response_model=list[MemoryQueryResult])
-async def query_memory(request: MemoryQueryRequest) -> list[MemoryQueryResult]:
+async def query_memory(request: MemoryQueryRequest) -> List[MemoryQueryResult]:
     """Query brain memory for relevant entries."""
     manager = get_memory_manager()
     return await manager.query_memory(
@@ -345,7 +342,7 @@ async def query_memory(request: MemoryQueryRequest) -> list[MemoryQueryResult]:
 async def recall_similar(
     problem: str = Query(..., description="Problem to find similar analyses for"),
     limit: int = Query(default=5, ge=1, le=20),
-) -> list[MemoryEntry]:
+) -> List[MemoryEntry]:
     """Recall similar past analyses for a problem."""
     manager = get_memory_manager()
     return await manager.recall_similar(problem, limit)
@@ -372,7 +369,7 @@ async def stream_memory_entries() -> StreamingResponse:
 
 
 @router.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check for brain memory system."""
     try:
         manager = get_memory_manager()

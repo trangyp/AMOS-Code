@@ -22,7 +22,7 @@ import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 _module_logger = logging.getLogger(__name__)
 
@@ -36,8 +36,8 @@ class AMOSInteraction:
     name: str
     input_hash: str
     output_summary: str
-    engines_used: list[str] = field(default_factory=list)
-    laws_applied: list[str] = field(default_factory=list)
+    engines_used: List[str] = field(default_factory=list)
+    laws_applied: List[str] = field(default_factory=list)
     duration_ms: int = 0
     success: bool = True
 
@@ -49,7 +49,7 @@ class AMOSSession:
     session_id: str
     start_time: str
     end_time: str = None
-    interactions: list[AMOSInteraction] = field(default_factory=list)
+    interactions: List[AMOSInteraction] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def add_interaction(self, interaction: AMOSInteraction):
@@ -146,8 +146,8 @@ class AMOSSessionLogger:
         name: str,
         input_data: str,
         output_data: str,
-        engines_used: list[str] = None,
-        laws_applied: list[str] = None,
+        engines_used: List[str] = None,
+        laws_applied: List[str] = None,
         duration_ms: int = 0,
         success: bool = True,
     ) -> bool:
@@ -235,7 +235,7 @@ Performance:
 
         return filepath
 
-    def list_sessions(self) -> list[dict[str, Any]]:
+    def list_sessions(self) -> List[dict[str, Any]]:
         """List all saved sessions."""
         sessions = []
         for f in self.LOG_DIR.glob("*.json"):

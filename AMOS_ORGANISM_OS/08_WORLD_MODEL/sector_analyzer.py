@@ -78,7 +78,7 @@ class SectorAnalyzer:
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
         self.sectors: Dict[str, Sector] = {}
-        self.supply_chains: dict[str, list[SupplyChainNode]] = {}
+        self.supply_chains: Dict[str, list[SupplyChainNode]] = {}
 
         self._load_data()
 
@@ -175,7 +175,7 @@ class SectorAnalyzer:
         self.save()
         return sector
 
-    def analyze_sector(self, sector_id: str) -> dict[str, Any]:
+    def analyze_sector(self, sector_id: str) -> Dict[str, Any]:
         """Analyze a specific sector."""
         sector = self.sectors.get(sector_id)
         if not sector:
@@ -242,7 +242,7 @@ class SectorAnalyzer:
             "count": risk_count,
         }
 
-    def _find_related_opportunities(self, sector: Sector) -> list[dict[str, Any]]:
+    def _find_related_opportunities(self, sector: Sector) -> List[dict[str, Any]]:
         """Find opportunities in related sectors."""
         opportunities = []
 
@@ -284,7 +284,7 @@ class SectorAnalyzer:
             "best_performer": comparison[0] if comparison else None,
         }
 
-    def scan_opportunities(self) -> list[dict[str, Any]]:
+    def scan_opportunities(self) -> List[dict[str, Any]]:
         """Scan for opportunities across all sectors."""
         opportunities = []
 

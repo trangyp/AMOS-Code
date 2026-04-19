@@ -18,7 +18,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class RoutingStrategy(Enum):
@@ -99,7 +99,7 @@ class CachedRequest:
 
     cache_key: str
     request_hash: str
-    response: dict[str, Any]
+    response: Dict[str, Any]
     created_at: float = field(default_factory=time.time)
     access_count: int = 0
 
@@ -111,11 +111,11 @@ class CachedRequest:
 class LLMRequest:
     """LLM request payload."""
 
-    messages: list[dict[str, str]]
+    messages: List[dict[str, str]]
     model_preference: str = None
     temperature: float = 0.7
     max_tokens: int = None
-    tools: list[dict] = None
+    tools: List[dict] = None
     require_vision: bool = False
     require_tools: bool = False
 
@@ -195,13 +195,13 @@ class AMOSLLMRouter:
     """
 
     def __init__(self, default_strategy: RoutingStrategy = RoutingStrategy.COST_OPTIMIZED):
-        self.endpoints: dict[str, ModelEndpoint] = {}
+        self.endpoints: Dict[str, ModelEndpoint] = {}
         self.routing_rules: List[RoutingRule] = []
-        self.cache: dict[str, CachedRequest] = {}
+        self.cache: Dict[str, CachedRequest] = {}
         self.default_strategy = default_strategy
 
         # Provider implementations
-        self.providers: dict[ProviderType, LLMProvider] = {
+        self.providers: Dict[ProviderType, LLMProvider] = {
             ProviderType.OPENAI: MockLLMProvider(),
             ProviderType.ANTHROPIC: MockLLMProvider(),
             ProviderType.HUGGINGFACE: MockLLMProvider(),
@@ -261,11 +261,11 @@ class AMOSLLMRouter:
         self,
         name: str,
         priority: int = 0,
-        required_capabilities: list[str] = None,
+        required_capabilities: List[str] = None,
         max_cost: float = None,
         max_latency: int = None,
-        preferred_providers: list[ProviderType] = None,
-        excluded_providers: list[ProviderType] = None,
+        preferred_providers: List[ProviderType] = None,
+        excluded_providers: List[ProviderType] = None,
     ) -> RoutingRule:
         """Add a routing rule."""
         rule_id = f"rule_{name.lower().replace(' ', '_')}"
@@ -451,7 +451,7 @@ class AMOSLLMRouter:
 
         raise RuntimeError("All retries failed")
 
-    def get_router_stats(self) -> dict[str, Any]:
+    def get_router_stats(self) -> Dict[str, Any]:
         """Get router statistics."""
         avg_latency = self.total_latency / max(1, self.request_count)
         cache_hit_rate = self.cache_hits / max(1, self.request_count)

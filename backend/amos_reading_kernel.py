@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS Reading Kernel Service - Production implementation.
 
@@ -73,29 +73,29 @@ class ParsedInput:
     raw_text: str
     normalized_text: str
     speech_act: SpeechAct
-    segments: list[Segment]
-    references: list[str]
-    constraints: list[str]
-    goals: list[str]
-    risks: list[str]
+    segments: List[Segment]
+    references: List[str]
+    constraints: List[str]
+    goals: List[str]
+    risks: List[str]
 
 
 @dataclass
 class StableRead:
     input_class: InputClass
-    primary_goal: str | None
-    constraints: list[str]
-    ambiguities: list[str]
-    references: list[str]
+    primary_goal: Optional[str]
+    constraints: List[str]
+    ambiguities: List[str]
+    references: List[str]
     confidence: float
-    clarification_questions: list[str] = field(default_factory=list)
+    clarification_questions: List[str] = field(default_factory=list)
 
 
 @dataclass
 class VerifiedGoal:
     mode: ResponseMode
     objective: str
-    constraints: list[str]
+    constraints: List[str]
     executable: bool
     confidence: float
     reason: str
@@ -109,8 +109,8 @@ class ReadingResult:
     parsed: ParsedInput
     stable_read: StableRead
     verified_goal: VerifiedGoal
-    suggested_action: str | None
-    execution_plan: dict[str, Any]
+    suggested_action: Optional[str]
+    execution_plan: Dict[str, Any]
     latency_ms: float
 
 
@@ -199,10 +199,10 @@ class ReadingKernel:
 
         return SpeechAct.INFORM
 
-    def segment(self, text: str) -> list[Segment]:
+    def segment(self, text: str) -> List[Segment]:
         """Segment text into typed parts."""
         parts = re.split(r"(?<=[.!?])\s+", text)
-        segments: list[Segment] = []
+        segments: List[Segment] = []
         cursor = 0
 
         for part in parts:
@@ -230,19 +230,19 @@ class ReadingKernel:
 
         return segments
 
-    def extract_constraints(self, segments: list[Segment]) -> list[str]:
+    def extract_constraints(self, segments: List[Segment]) -> List[str]:
         """Extract constraint segments."""
         return [s.text for s in segments if s.kind == SegmentType.CONSTRAINT]
 
-    def extract_goals(self, segments: list[Segment]) -> list[str]:
+    def extract_goals(self, segments: List[Segment]) -> List[str]:
         """Extract goal segments."""
         return [s.text for s in segments if s.kind == SegmentType.GOAL]
 
-    def extract_risks(self, segments: list[Segment]) -> list[str]:
+    def extract_risks(self, segments: List[Segment]) -> List[str]:
         """Extract risk segments."""
         return [s.text for s in segments if s.kind == SegmentType.RISK]
 
-    def extract_references(self, text: str) -> list[str]:
+    def extract_references(self, text: str) -> List[str]:
         """Extract reference tokens."""
         refs = []
         for token in ["it", "this", "that", "they", "them", "here", "there"]:
@@ -266,10 +266,10 @@ class ReadingKernel:
             risks=self.extract_risks(segments),
         )
 
-    def build_stable_read(self, parsed: ParsedInput, context: dict[str, Any] = None) -> StableRead:
+    def build_stable_read(self, parsed: ParsedInput, context: Dict[str, Any] = None) -> StableRead:
         """Build stable interpretation from parsed input."""
-        ambiguities: list[str] = []
-        clarification_questions: list[str] = []
+        ambiguities: List[str] = []
+        clarification_questions: List[str] = []
 
         ctx = context or {}
         last_goal = ctx.get("last_goal")
@@ -378,7 +378,7 @@ class VerificationKernel:
 class ExecutionPlanner:
     """Plans execution for verified goals."""
 
-    def plan(self, goal: VerifiedGoal, parsed: ParsedInput) -> dict[str, Any]:
+    def plan(self, goal: VerifiedGoal, parsed: ParsedInput) -> Dict[str, Any]:
         """Create execution plan for verified goal."""
         if goal.mode != ResponseMode.ANSWER or not goal.executable:
             return None
@@ -445,7 +445,7 @@ class ExecutionPlanner:
 class AMOSReadingService:
     """Production reading service for AMOS backend."""
 
-    _instance: AMOSReadingService | None = None
+    _instance: Optional[AMOSReadingService] = None
 
     def __new__(cls) -> AMOSReadingService:
         if cls._instance is None:
@@ -459,10 +459,10 @@ class AMOSReadingService:
         self.reader = ReadingKernel()
         self.verifier = VerificationKernel()
         self.planner = ExecutionPlanner()
-        self._history: list[ReadingResult] = []
+        self._history: List[ReadingResult] = []
         self._initialized = True
 
-    def process(self, text: str, context: dict[str, Any] = None) -> ReadingResult:
+    def process(self, text: str, context: Dict[str, Any] = None) -> ReadingResult:
         """Process user request through complete reading pipeline."""
         started = time.time()
         request_id = f"read_{uuid.uuid4().hex[:12]}"
@@ -499,7 +499,7 @@ class AMOSReadingService:
         self._history.append(result)
         return result
 
-    def get_history(self, limit: int = 100) -> list[ReadingResult]:
+    def get_history(self, limit: int = 100) -> List[ReadingResult]:
         """Get processing history."""
         return self._history[-limit:]
 
@@ -509,7 +509,7 @@ class AMOSReadingService:
 
 
 # Global service instance
-_reading_service: AMOSReadingService | None = None
+_reading_service: Optional[AMOSReadingService] = None
 
 
 def get_reading_service() -> AMOSReadingService:
@@ -520,7 +520,7 @@ def get_reading_service() -> AMOSReadingService:
     return _reading_service
 
 
-def process_request(text: str, context: dict[str, Any] = None) -> ReadingResult:
+def process_request(text: str, context: Dict[str, Any] = None) -> ReadingResult:
     """Process a request through the reading kernel."""
     service = get_reading_service()
     return service.process(text, context)

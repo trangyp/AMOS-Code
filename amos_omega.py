@@ -28,7 +28,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # ============================================================================
 # 1. PRIMITIVE UNIVERSE
@@ -214,7 +214,7 @@ class AMOSOmega:
         self.ledger: List[LedgerEntry] = []
         self.energy_budget: float = 1000.0
         self.energy_consumed: float = 0.0
-        self.identity_history: list[tuple[State, State]] = []
+        self.identity_history: List[tuple[State, State]] = []
 
     # --------------------------------------------------------------------
     # AXIOM 1: Substrate Partition
@@ -293,7 +293,7 @@ class AMOSOmega:
         """
         return state.project(substrate)
 
-    def decompose_state(self, state: State) -> dict[Substrate, dict]:
+    def decompose_state(self, state: State) -> Dict[Substrate, dict]:
         """Decompose into substrate components."""
         return {
             Substrate.CLASSICAL: state.classical,
@@ -415,7 +415,7 @@ class AMOSOmega:
         """Add constraint to the system."""
         self.constraints.append(constraint)
 
-    def check_constraints(self, x: State) -> dict[str, bool]:
+    def check_constraints(self, x: State) -> Dict[str, bool]:
         """C = {c_α}_{α∈A}, c_α : X → 𝔹_Q
         Valid(x) ↔ ∀α ∈ Hard, c_α(x) = ⊤
         """

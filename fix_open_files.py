@@ -3,6 +3,7 @@
 import ast
 from pathlib import Path
 from amos_brain_working import think
+from typing import Tuple
 
 OPEN_FILES = [
     "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/axiom_one/models.py",
@@ -13,7 +14,7 @@ OPEN_FILES = [
     "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/backend/real_orchestrator_bridge.py",
 ]
 
-def check_syntax(filepath: str) -> tuple[bool, str]:
+def check_syntax(filepath: str) -> Tuple[bool, str]:
     """Check if file has valid syntax."""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:

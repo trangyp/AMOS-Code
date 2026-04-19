@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
+from typing import Dict, Tuple
 
 
 @dataclass
@@ -68,7 +69,7 @@ class TokenBucket:
         self.block()
         return False
 
-    def get_remaining(self) -> tuple[float, float]:
+    def get_remaining(self) -> Tuple[float, float]:
         """Get remaining tokens and time until reset."""
         if self.is_blocked():
             return 0.0, self.blocked_until - time.time() if self.blocked_until else 0.0
@@ -80,7 +81,7 @@ class RateLimiter:
     """In-memory rate limiter."""
 
     def __init__(self):
-        self.buckets: dict[str, TokenBucket] = {}
+        self.buckets: Dict[str, TokenBucket] = {}
         self.config = RateLimitConfig()
 
     def get_bucket(self, key: str) -> TokenBucket:
@@ -89,7 +90,7 @@ class RateLimiter:
             self.buckets[key] = TokenBucket(self.config)
         return self.buckets[key]
 
-    def is_allowed(self, key: str) -> tuple[bool, int, int]:
+    def is_allowed(self, key: str) -> Tuple[bool, int, int]:
         """
         Check if request is allowed.
         Returns (allowed, remaining, reset_seconds)

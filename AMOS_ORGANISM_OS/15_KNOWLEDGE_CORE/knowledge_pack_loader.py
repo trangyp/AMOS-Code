@@ -47,7 +47,7 @@ class KnowledgePackLoader:
         self._loaded = False
         self._stats = {"country_packs": 0, "sector_packs": 0, "scenario_packs": 0, "state_packs": 0}
 
-    def load_all_packs(self) -> dict[str, KnowledgePack]:
+    def load_all_packs(self) -> Dict[str, KnowledgePack]:
         """Discover and load all knowledge packs."""
         if not self.PACKS_DIR.exists():
             print(f"[KNOWLEDGE] Packs directory not found: {self.PACKS_DIR}")

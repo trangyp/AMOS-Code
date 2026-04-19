@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """AMOS Agent Service - Autonomous Agent Orchestration
 
@@ -22,6 +22,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from enum import Enum
 
@@ -71,7 +72,7 @@ class AgentCapability(Enum):
 class AgentMemory:
     """Agent working memory."""
 
-    short_term: list[dict[str, Any]] = field(default_factory=list)
+    short_term: List[dict[str, Any]] = field(default_factory=list)
     long_term_refs: List[str] = field(default_factory=list)
     context_window: int = 4096
     last_accessed: float = field(default_factory=time.time)
@@ -127,9 +128,9 @@ class ToolRegistry:
     """Registry of tools available to agents."""
 
     def __init__(self):
-        self._tools: dict[str, Callable[..., Any]] = {}
+        self._tools: Dict[str, Callable[..., Any]] = {}
         self._descriptions: Dict[str, str] = {}
-        self._capabilities: dict[str, list[AgentCapability]] = {}
+        self._capabilities: Dict[str, list[AgentCapability]] = {}
 
     def register(
         self,
@@ -147,7 +148,7 @@ class ToolRegistry:
         """Get tool handler by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> list[dict[str, Any]]:
+    def list_tools(self) -> List[dict[str, Any]]:
         """List all registered tools."""
         return [
             {

@@ -9,7 +9,7 @@ import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from axiom_one_repo_autopsy import IssueCategory, RepoIssue
 
@@ -22,7 +22,7 @@ class GeneratedFix:
     fix_type: str
     description: str
     files_to_modify: List[str]
-    patches: list[dict[str, Any]]
+    patches: List[dict[str, Any]]
     blast_radius: str
     estimated_success_rate: float
     requires_approval: bool

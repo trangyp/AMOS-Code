@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class CausalRelationType(Enum):
@@ -59,7 +59,7 @@ class CausalGraph:
     def __init__(self):
         self.variables: Dict[str, CausalVariable] = {}
         self.edges: List[CausalEdge] = []
-        self.adjacency: dict[str, list[str]] = {}  # source -> targets
+        self.adjacency: Dict[str, list[str]] = {}  # source -> targets
 
     def add_variable(self, var: CausalVariable) -> None:
         """Add variable to graph."""
@@ -449,8 +449,6 @@ _causal_engine: Optional[CausalInferenceEngine] = None
 
 def get_causal_inference_engine() -> CausalInferenceEngine:
     """Get or create the Causal Inference Engine singleton."""
-from __future__ import annotations
-
     global _causal_engine
     if _causal_engine is None:
         _causal_engine = CausalInferenceEngine()

@@ -4,9 +4,10 @@ Deep repository analysis and repair system."""
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from axiom_one_graph import (
     AxiomEdge,

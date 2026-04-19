@@ -52,7 +52,7 @@ Environment Variables:
 import json
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List
 
 # FastAPI documentation support
 try:
@@ -680,7 +680,7 @@ def create_api_explorer(app: FastAPI, prefix: str = "/api-explorer") -> None:
 
 def export_documentation(
     app: FastAPI, output_path: str = "./api-docs", formats: List[str] = None
-) -> dict[str, str]:
+) -> Dict[str, str]:
     """Export API documentation for offline use.
 
     Args:

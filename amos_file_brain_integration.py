@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """AMOS File-Brain Integration
 
@@ -38,7 +38,6 @@ except ImportError:
 
 # Import brain for cognitive processing
 try:
-    from typing import Any
 
     from amos_brain import get_super_brain, think
 
@@ -52,10 +51,10 @@ class FileBrainResult:
     """Result of file processing through brain pipeline."""
 
     file_id: str
-    source_path: str | None
+    source_path: Optional[str]
     total_segments: int
     processed_segments: int
-    stable_reads: list[dict[str, Any]]
+    stable_reads: List[dict[str, Any]]
     cognitive_summary: Dict[str, Any]
     processing_time_ms: float
     errors: List[str] = field(default_factory=list)
@@ -95,7 +94,7 @@ class FileBrainProcessor:
     async def process_file(
         self,
         content: bytes | str,
-        source: str | None = None,
+        source: Optional[str] = None,
         context: Dict[str, Any] = None,
     ) -> FileBrainResult:
         """Process file through full pipeline: ingest → segment → brain read."""
@@ -123,7 +122,7 @@ class FileBrainProcessor:
             )
 
         # Step 2: Process segments through brain reading kernel
-        stable_reads: list[dict[str, Any]] = []
+        stable_reads: List[dict[str, Any]] = []
         processed_count = 0
 
         for seg_id, segment in doc.segments.items():
@@ -269,7 +268,7 @@ class FileBrainProcessor:
 
 
 # Global processor instance
-_processor: FileBrainProcessor | None = None
+_processor: Optional[FileBrainProcessor] = None
 
 
 async def get_file_brain_processor() -> FileBrainProcessor:
@@ -282,7 +281,7 @@ async def get_file_brain_processor() -> FileBrainProcessor:
 
 
 async def process_file_with_brain(
-    content: bytes | str, source: str | None = None, context: Dict[str, Any] = None
+    content: bytes | str, source: Optional[str] = None, context: Dict[str, Any] = None
 ) -> FileBrainResult:
     """Convenience function for file → brain processing."""
     processor = await get_file_brain_processor()

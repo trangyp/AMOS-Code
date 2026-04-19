@@ -74,7 +74,7 @@ class MemoryArchiver:
         memory_id: str,
         content: Dict[str, Any],
         priority: ArchivePriority = ArchivePriority.NORMAL,
-        tags: list[str] = None,
+        tags: List[str] = None,
     ) -> bool:
         """Queue a memory for archival."""
         if memory_id in self.archives:

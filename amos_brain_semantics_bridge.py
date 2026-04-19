@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List
-
 """AMOS Brain-Semantics Bridge - Real integration of Formal Semantics Kernel with Brain.
 
 Connects FormalSemanticsKernel to:
@@ -13,10 +9,14 @@ Connects FormalSemanticsKernel to:
 This is REAL integration code, not documentation.
 """
 
+from __future__ import annotations
+
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
+from typing import Any
 
 # Add paths for imports
 AMOS_ROOT = Path(__file__).parent
@@ -49,9 +49,9 @@ class SemanticsTask:
     """A task for semantic processing."""
 
     task_id: str
-    formal_expressions: List[str]
+    formal_expressions: list[str]
     goal: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -60,14 +60,14 @@ class SemanticsResult:
     """Result of semantic processing."""
 
     task_id: str
-    compiled_expressions: Dict[str, Any]
-    invariants: Dict[str, Any]
-    objectives: Dict[str, Any]
-    transitions: Dict[str, Any]
+    compiled_expressions: dict[str, Any]
+    invariants: dict[str, Any]
+    objectives: dict[str, Any]
+    transitions: dict[str, Any]
     proof_obligations: list[dict[str, Any]]
     semantic_integrity: float
-    thinking_result: Dict[str, Any] = None
-    reasoning_result: Dict[str, Any] = None
+    thinking_result: dict[str, Any] = None
+    reasoning_result: dict[str, Any] = None
     processed_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -86,11 +86,11 @@ class BrainSemanticsBridge:
 
     def __init__(self):
         self.semantics_kernel = get_formal_semantics_kernel()
-        self.thinking_kernel: Optional[ThinkingKernel] = None
-        self.reasoning_kernel: Optional[ReasoningKernel] = None
-        self.superbrain: Optional[SuperBrainRuntime] = None
+        self.thinking_kernel: ThinkingKernel | None = None
+        self.reasoning_kernel: ReasoningKernel | None = None
+        self.superbrain: SuperBrainRuntime | None = None
         self._initialized = False
-        self._math_engine: Optional[Any] = None
+        self._math_engine: Any | None = None
 
     def initialize(self) -> dict[str, bool]:
         """Initialize all brain connections."""
@@ -253,7 +253,7 @@ class BrainSemanticsBridge:
 
         return result
 
-    def query_equation(self, name: str) -> Dict[str, Any]:
+    def query_equation(self, name: str) -> dict[str, Any]:
         """Query equation from math framework."""
         if not self._math_engine:
             return None
@@ -272,7 +272,7 @@ class BrainSemanticsBridge:
             return {"error": str(e)}
         return None
 
-    def validate_invariant(self, invariant_id: str, state: Dict[str, Any]) -> bool:
+    def validate_invariant(self, invariant_id: str, state: dict[str, Any]) -> bool:
         """Validate a compiled invariant against current state."""
         if invariant_id not in self.semantics_kernel.invariants:
             return False
@@ -282,13 +282,13 @@ class BrainSemanticsBridge:
             return inv.predicate_fn(state)
         return False
 
-    def get_semantic_state(self) -> Dict[str, Any]:
+    def get_semantic_state(self) -> dict[str, Any]:
         """Get current semantic compilation state."""
         return self.semantics_kernel.to_dict()
 
     def execute_through_superbrain(
-        self, task: str, context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, task: str, context: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Execute task through SuperBrain with semantic awareness."""
         if not self.superbrain:
             return {"error": "SuperBrain not available"}
@@ -300,7 +300,7 @@ class BrainSemanticsBridge:
 
 
 # Singleton instance
-_bridge: Optional[BrainSemanticsBridge] = None
+_bridge: BrainSemanticsBridge | None = None
 
 
 def get_brain_semantics_bridge() -> BrainSemanticsBridge:
@@ -312,7 +312,7 @@ def get_brain_semantics_bridge() -> BrainSemanticsBridge:
     return _bridge
 
 
-def process_amos_formalism(expressions: List[str], goal: str = "") -> SemanticsResult:
+def process_amos_formalism(expressions: list[str], goal: str = "") -> SemanticsResult:
     """
     High-level function to process AMOS formal expressions.
 

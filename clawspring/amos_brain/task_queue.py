@@ -12,12 +12,15 @@ Owner: Trang Phan
 from __future__ import annotations
 
 
+
+
 import asyncio
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from .cognitive_task_processor import TaskRequest, process_cognitive_task
@@ -42,10 +45,10 @@ class QueuedTask:
     request: TaskRequest
     status: TaskStatus = TaskStatus.PENDING
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
-    started_at: str | None = None
-    completed_at: str | None = None
-    result: dict[str, Any] = field(default_factory=dict)
-    error: str | None = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    result: Dict[str, Any] = field(default_factory=dict)
+    error: Optional[str] = None
 
 
 class TaskQueue:
@@ -53,9 +56,9 @@ class TaskQueue:
 
     def __init__(self, max_workers: int = 3):
         self._queue: asyncio.Queue[QueuedTask] = asyncio.Queue()
-        self._tasks: dict[str, QueuedTask] = {}
+        self._tasks: Dict[str, QueuedTask] = {}
         self._max_workers = max_workers
-        self._workers: list[asyncio.Task] = []
+        self._workers: List[asyncio.Task] = []
         self._running = False
 
     async def start(self) -> None:
@@ -124,17 +127,17 @@ class TaskQueue:
 
         return task_id
 
-    def get_status(self, task_id: str) -> QueuedTask | None:
+    def get_status(self, task_id: str) -> Optional[QueuedTask]:
         """Get task status."""
         return self._tasks.get(task_id)
 
-    def list_tasks(self) -> list[QueuedTask]:
+    def list_tasks(self) -> List[QueuedTask]:
         """List all tasks."""
         return list(self._tasks.values())
 
 
 # Singleton
-_queue_instance: TaskQueue | None = None
+_queue_instance: Optional[TaskQueue] = None
 
 
 async def get_task_queue() -> TaskQueue:
@@ -152,7 +155,7 @@ async def submit_task(description: str, priority: str = "MEDIUM") -> str:
     return await queue.submit(description, priority)
 
 
-async def get_task_status(task_id: str) -> QueuedTask | None:
+async def get_task_status(task_id: str) -> Optional[QueuedTask]:
     """Get task status."""
     queue = await get_task_queue()
     return queue.get_status(task_id)

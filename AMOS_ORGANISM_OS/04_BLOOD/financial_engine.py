@@ -235,7 +235,7 @@ class FinancialEngine:
 
     def estimate_task_cost(
         self, complexity: str = "medium", duration_minutes: float = 5.0
-    ) -> dict[str, float]:
+    ) -> Dict[str, float]:
         """Estimate cost for a task."""
         # Complexity multipliers
         multipliers = {"low": 0.5, "medium": 1.0, "high": 2.0, "very_high": 4.0}

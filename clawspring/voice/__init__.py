@@ -13,6 +13,7 @@ from collections.abc import Callable
 from .keyterms import get_voice_keyterms
 from .recorder import check_recording_availability, record_until_silence
 from .stt import check_stt_availability, transcribe
+from typing import Optional, Tuple
 
 
 def check_voice_deps() -> Tuple[bool, str]:

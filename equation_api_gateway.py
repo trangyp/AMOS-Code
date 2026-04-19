@@ -3,7 +3,7 @@
 
 import hashlib
 import time
-from typing import Any
+from typing import Any, Dict
 
 try:
     from equation_tracing import instrument_fastapi, setup_telemetry

@@ -7,8 +7,8 @@ Production validation with invariant checking
 
 import unittest
 import numpy as np
-from amos_superbrain_equation_bridge import (
 from typing import Set
+from amos_superbrain_equation_bridge import (
     AMOSSuperBrainBridge,
     Domain,
     MathematicalPattern,

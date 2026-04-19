@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 """AMOS Brain API - Production Cognitive API Endpoints
 

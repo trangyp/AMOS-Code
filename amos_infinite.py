@@ -35,7 +35,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 import numpy as np
 
@@ -134,8 +134,8 @@ class QuantumFiber(FiberBundle):
 
     hilbert_dim: int = 2
     density_matrix: np.ndarray = None  # ρ
-    operators: dict[str, np.ndarray] = field(default_factory=dict)  # O_q
-    unitaries: list[np.ndarray] = field(default_factory=list)  # U_q
+    operators: Dict[str, np.ndarray] = field(default_factory=dict)  # O_q
+    unitaries: List[np.ndarray] = field(default_factory=list)  # U_q
     resources: Dict[str, float] = field(default_factory=dict)  # R_q
 
     def __post_init__(self):
@@ -190,7 +190,7 @@ class IdentityFiber(FiberBundle):
 
     identity_marker: str = ""
     persistence_threshold: float = 0.8  # λ_I
-    identity_metric: dict[tuple, float] = field(default_factory=dict)
+    identity_metric: Dict[tuple, float] = field(default_factory=dict)
 
     def __post_init__(self):
         self.substrate = Substrate.META
@@ -409,7 +409,7 @@ class ConstraintSection:
     """Local constraint section c_U ∈ C(U)."""
 
     context: str  # U
-    constraints: list[Callable[[HyperState], bool]]
+    constraints: List[Callable[[HyperState], bool]]
 
     def restrict(self, subcontext: str) -> "ConstraintSection":
         """Restriction c_U|_{U∩V}."""
@@ -545,7 +545,7 @@ class BridgeTensorNetwork:
     """Total bridge tensor B = [B_{ij}]_{i,j∈{c,q,b,h,m}}."""
 
     def __init__(self):
-        self.bridges: dict[tuple[Substrate, Substrate], BridgeTensor] = {}
+        self.bridges: Dict[tuple[Substrate, Substrate], BridgeTensor] = {}
 
     def add_bridge(self, bridge: BridgeTensor):
         """Add bridge to tensor network."""
@@ -791,7 +791,7 @@ class AMOSInfinite:
         print("✓ AMOS ∞ initialized")
         print("  Deepest formal closure ready")
 
-    def check_admissibility(self, state: HyperState) -> tuple[bool, list[str]]:
+    def check_admissibility(self, state: HyperState) -> Tuple[bool, list[str]]:
         """Check if x ∈ Z* (total admissible subspace).
 
         Z* = Z_type ∩ Z_logical ∩ Z_physical ∩ ... ∩ Z_meta

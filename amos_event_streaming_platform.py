@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
@@ -74,7 +74,7 @@ class EventStore:
     def __init__(self, path: Path = EVENT_STORE_PATH):
         self.path = path
         self.path.mkdir(parents=True, exist_ok=True)
-        self._streams: dict[str, list[DomainEvent]] = {}
+        self._streams: Dict[str, list[DomainEvent]] = {}
         self._seq = 0
 
     async def append(self, event: DomainEvent) -> None:
@@ -103,7 +103,7 @@ class AMOSEventBus:
     def __init__(self):
         self._kafka_producer: Any = None
         self._redis: Any = None
-        self._handlers: dict[str, list[Callable]] = {}
+        self._handlers: Dict[str, list[Callable]] = {}
         self.event_store = EventStore()
 
     async def initialize(self) -> bool:

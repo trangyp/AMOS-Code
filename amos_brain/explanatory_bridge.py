@@ -37,10 +37,10 @@ class ExplanatoryBridge:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self._engine: ExplanatoryEngine | None = None
+        self._engine: Optional[ExplanatoryEngine] = None
 
     @property
-    def engine(self) -> ExplanatoryEngine | None:
+    def engine(self) -> Optional[ExplanatoryEngine]:
         """Lazy initialization of explanatory engine."""
         if self._engine is None and EXPLANATORY_AVAILABLE:
             self._engine = ExplanatoryEngine()

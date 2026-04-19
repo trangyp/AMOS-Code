@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """SIKS API Router - Super-Intelligence Kernel Stack endpoints."""
 
@@ -6,6 +6,10 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+import sys
+from pathlib import Path
+import importlib.util
+import time
 router = APIRouter(prefix="/siks", tags=["siks"])
 
 # ============================================================================
@@ -17,16 +21,16 @@ class SIKSPipelineRequest(BaseModel):
     """Request to run SIKS pipeline."""
 
     content: str = Field(..., description="Input content to process")
-    context_id: str | None = Field(None, description="Optional context identifier")
-    stages: list[str] | None = Field(None, description="Specific stages to run (default: all)")
+    context_id: Optional[str] = Field(None, description="Optional context identifier")
+    stages: Optional[List[str] ] = Field(None, description="Specific stages to run (default: all)")
 
 
 class SIKSPipelineResponse(BaseModel):
     """Response from SIKS pipeline execution."""
 
     status: str
-    stages_executed: list[str]
-    results: dict[str, Any]
+    stages_executed: List[str]
+    results: Dict[str, Any]
     execution_time_ms: float
     siks_enabled: bool
 
@@ -35,7 +39,7 @@ class UnderstandingRequest(BaseModel):
     """Request for understanding kernel."""
 
     content: str
-    context_id: str | None = None
+    context_id: Optional[str] = None
 
 
 class UnderstandingResponse(BaseModel):
@@ -52,14 +56,14 @@ class ProblemFindingRequest(BaseModel):
     """Request for problem finding kernel."""
 
     content: str
-    goals: list[str] | None = None
+    goals: Optional[List[str] ] = None
 
 
 class ProblemFindingResponse(BaseModel):
     """Response from problem finding kernel."""
 
     problems_discovered: int
-    problems: list[dict[str, Any]]
+    problems: List[dict[str, Any]]
     hidden_problems: int
     framing_errors: int
     false_goals: int
@@ -98,15 +102,12 @@ async def get_siks_stack():
         return _siks_stack
 
     try:
-        import sys
-        from pathlib import Path
 
         amos_root = Path(__file__).parent.parent.parent.resolve()
         if str(amos_root) not in sys.path:
             sys.path.insert(0, str(amos_root))
 
         # Import SIKS module
-        import importlib.util
 
         siks_path = amos_root / "amos_superintelligence_stack.py"
 
@@ -137,7 +138,6 @@ async def get_siks_stack():
 @router.post("/pipeline", response_model=SIKSPipelineResponse)
 async def run_siks_pipeline(request: SIKSPipelineRequest) -> SIKSPipelineResponse:
     """Execute SIKS pipeline on input content."""
-    import time
 
     start_time = time.time()
 
@@ -259,7 +259,7 @@ async def run_calibration_check(request: CalibrationCheckRequest) -> Calibration
 
 
 @router.get("/status")
-async def get_siks_status() -> dict[str, Any]:
+async def get_siks_status() -> Dict[str, Any]:
     """Get SIKS stack status."""
     stack = await get_siks_stack()
 
@@ -275,10 +275,8 @@ async def get_siks_status() -> dict[str, Any]:
 
 
 @router.get("/kernels")
-async def list_kernels() -> dict[str, Any]:
+async def list_kernels() -> Dict[str, Any]:
     """List all available SIKS kernels."""
-from __future__ import annotations
-
     stack = await get_siks_stack()
 
     if stack is None:

@@ -14,7 +14,7 @@ Implements verification for the 8 AMOSL invariants:
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Tuple
 
 
 class ProofStatus(Enum):
@@ -118,7 +118,7 @@ class TheoremProver:
             description="Adapt(X) s.t. Λ(X') = ⊤",
         )
 
-    def prove_valid(self, state: Any, tactics: list[str] = None) -> Proof:
+    def prove_valid(self, state: Any, tactics: List[str] = None) -> Proof:
         """Prove Valid(X) = ∧_i C_i(X)."""
         steps = ["Init: Valid(X) = ∧_i C_i(X)"]
         all_satisfied = True
@@ -325,7 +325,7 @@ class TheoremProver:
             return None
         return ledger[-1].get("outcome", ledger[-1])
 
-    def get_statistics(self) -> dict[str, int]:
+    def get_statistics(self) -> Dict[str, int]:
         """Get proof statistics."""
         stats = {"total": len(self.proof_history)}
         for status in ProofStatus:

@@ -10,7 +10,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Setup paths
 _AMOS_ROOT = Path(__file__).parent.resolve()
@@ -34,7 +34,7 @@ except Exception as e:
 class MCPTool:
     name: str
     description: str
-    input_schema: dict[str, Any]
+    input_schema: Dict[str, Any]
 
 
 @dataclass
@@ -47,9 +47,9 @@ class MCPResource:
 
 class AMOSMCPServer:
     def __init__(self):
-        self.bridge: Any | None = None
-        self.tools: list[MCPTool] = []
-        self.resources: list[MCPResource] = []
+        self.bridge: Optional[Any] = None
+        self.tools: List[MCPTool] = []
+        self.resources: List[MCPResource] = []
         self._setup_capabilities()
 
     def _setup_capabilities(self):
@@ -135,7 +135,7 @@ class AMOSMCPServer:
         else:
             print("AMOS Server running in mock mode", file=sys.stderr)
 
-    def handle_initialize(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_initialize(self, params: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "protocolVersion": "2024-11-05",
             "capabilities": {
@@ -146,7 +146,7 @@ class AMOSMCPServer:
             "serverInfo": {"name": "amos-python-server", "version": "1.0.0"},
         }
 
-    def handle_tools_list(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_tools_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "tools": [
                 {"name": t.name, "description": t.description, "inputSchema": t.input_schema}
@@ -154,7 +154,7 @@ class AMOSMCPServer:
             ]
         }
 
-    def handle_resources_list(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_resources_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "resources": [
                 {
@@ -167,7 +167,7 @@ class AMOSMCPServer:
             ]
         }
 
-    async def handle_tools_call(self, params: dict[str, Any]) -> dict[str, Any]:
+    async def handle_tools_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
         tool_name = params.get("name", "")
         arguments = params.get("arguments", {})
 
@@ -260,7 +260,7 @@ class MCPTool:
 
     name: str
     description: str
-    input_schema: dict[str, Any]
+    input_schema: Dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())  # noqa: E501
 
 
@@ -278,9 +278,9 @@ class AMOSMCPServer:
     """MCP Server exposing AMOS capabilities to OpenClaw"""
 
     def __init__(self):
-        self.bridge: Any | None = None
-        self.tools: list[MCPTool] = []
-        self.resources: list[MCPResource] = []
+        self.bridge: Optional[Any] = None
+        self.tools: List[MCPTool] = []
+        self.resources: List[MCPResource] = []
         self._setup_capabilities()
 
     def _setup_capabilities(self):
@@ -371,7 +371,7 @@ class AMOSMCPServer:
         else:
             print("AMOS bridge not available - running in mock mode", file=sys.stderr)
 
-    def handle_initialize(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_initialize(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle MCP initialize request"""
         return {
             "protocolVersion": "2024-11-05",
@@ -383,7 +383,7 @@ class AMOSMCPServer:
             "serverInfo": {"name": "amos-python-server", "version": "1.0.0"},
         }
 
-    def handle_tools_list(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_tools_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle tools/list request"""
         return {
             "tools": [
@@ -396,7 +396,7 @@ class AMOSMCPServer:
             ]
         }
 
-    def handle_resources_list(self, params: dict[str, Any]) -> dict[str, Any]:
+    def handle_resources_list(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle resources/list request"""
         return {
             "resources": [
@@ -410,7 +410,7 @@ class AMOSMCPServer:
             ]
         }
 
-    async def handle_tools_call(self, params: dict[str, Any]) -> dict[str, Any]:
+    async def handle_tools_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Handle tools/call request"""
         tool_name = params.get("name", "")
         arguments = params.get("arguments", {})
@@ -457,7 +457,7 @@ class AMOSMCPServer:
         except Exception as e:
             return {"content": [{"type": "text", "text": f"Error: {str(e)}"}], "isError": True}
 
-    async def _call_cognitive_process(self, arguments: dict[str, Any]) -> dict[str, Any]:
+    async def _call_cognitive_process(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Call AMOS cognitive process"""
         request = CognitiveRequest(
             tool_name=arguments.get("tool_name", ""),
@@ -467,7 +467,7 @@ class AMOSMCPServer:
         # This would integrate with actual AMOS bridge
         return {"status": "processed", "request_id": request.request_id}
 
-    async def _get_kernel_status(self) -> dict[str, Any]:
+    async def _get_kernel_status(self) -> Dict[str, Any]:
         """Get kernel status"""
         return {
             "status": "healthy",
@@ -477,7 +477,7 @@ class AMOSMCPServer:
             "version": "1.0.0",
         }
 
-    async def _get_organism_health(self, subsystem: str) -> dict[str, Any]:
+    async def _get_organism_health(self, subsystem: str) -> Dict[str, Any]:
         """Get organism health"""
         subsystems = [
             "brain",
@@ -492,7 +492,7 @@ class AMOSMCPServer:
             return {"subsystem": subsystem, "status": "healthy", "load": 0.1}
         return {"subsystems": {s: {"status": "healthy"} for s in subsystems}}
 
-    async def _call_reasoning(self, arguments: dict[str, Any]) -> dict[str, Any]:
+    async def _call_reasoning(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Call reasoning kernel"""
         return {
             "query": arguments.get("query"),
@@ -501,7 +501,7 @@ class AMOSMCPServer:
             "confidence": 0.92,
         }
 
-    async def _solve_equation(self, arguments: dict[str, Any]) -> dict[str, Any]:
+    async def _solve_equation(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Solve equation"""
         return {
             "equation_type": arguments.get("equation_type"),

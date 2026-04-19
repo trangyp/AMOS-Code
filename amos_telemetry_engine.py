@@ -18,7 +18,7 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class SpanKind(Enum):
@@ -86,7 +86,7 @@ class Span:
     start_time: float
     end_time: float = None
     attributes: Dict[str, Any] = field(default_factory=dict)
-    events: list[dict[str, Any]] = field(default_factory=list)
+    events: List[dict[str, Any]] = field(default_factory=list)
     status: SpanStatus = SpanStatus.UNSET
     status_message: str = ""
 
@@ -230,7 +230,7 @@ class AMOSTelemetryEngine:
         name: str,
         kind: SpanKind = SpanKind.INTERNAL,
         parent_context: Optional[SpanContext] = None,
-        attributes: dict[str, Any] = None,
+        attributes: Dict[str, Any] = None,
     ) -> Span:
         """Start a new span."""
         context = SpanContext.new(parent_context)
@@ -278,7 +278,7 @@ class AMOSTelemetryEngine:
         # Add to finished queue
         self._finished_spans.append(span)
 
-    def add_event(self, span: Span, name: str, attributes: dict[str, Any] = None) -> None:
+    def add_event(self, span: Span, name: str, attributes: Dict[str, Any] = None) -> None:
         """Add an event to a span."""
         span.events.append({"name": name, "timestamp": time.time(), **(attributes or {})})
 
@@ -335,7 +335,7 @@ class AMOSTelemetryEngine:
 
     def get_trace_summary(self) -> Dict[str, Any]:
         """Get summary of recent traces."""
-        traces: dict[str, list[Span]] = {}
+        traces: Dict[str, list[Span]] = {}
         for span in self._finished_spans[-100:]:
             trace_id = span.context.trace_id
             if trace_id not in traces:
@@ -371,7 +371,7 @@ def _generate_span_id() -> str:
 
 
 # Decorator for automatic span creation
-def traced(name: str = None, kind: SpanKind = SpanKind.INTERNAL, attributes: dict[str, Any] = None):
+def traced(name: str = None, kind: SpanKind = SpanKind.INTERNAL, attributes: Dict[str, Any] = None):
     """Decorator to automatically create spans for function calls."""
 
     def decorator(func: Callable) -> Callable:

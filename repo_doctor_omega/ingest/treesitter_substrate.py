@@ -276,7 +276,6 @@ class TreeSitterSubstrate:
     def _fallback_parse(self, file_path: Path) -> FileParseResult:
         """Fallback parsing using Python ast module."""
         import ast
-from typing import List
 
         try:
             source = file_path.read_text(encoding="utf-8", errors="replace")

@@ -24,7 +24,8 @@ Version: 20.0.0
 import argparse
 import json
 from datetime import datetime, timezone
-from typing import Any
+UTC = timezone.utc
+from typing import Any, Dict
 
 
 class FinalValidator:

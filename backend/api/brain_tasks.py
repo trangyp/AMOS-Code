@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """Brain Tasks API - Production task processing via AMOS brain.
 
@@ -7,8 +7,6 @@ Real implementation using:
 - Task queue for async execution
 - Proper error handling and monitoring
 """
-from __future__ import annotations
-
 
 import sys
 from datetime import datetime, timezone
@@ -45,7 +43,7 @@ class TaskSubmitRequest(BaseModel):
 
     description: str = Field(..., min_length=1, max_length=1000)
     priority: str = Field(default="MEDIUM", pattern="^(LOW|MEDIUM|HIGH|CRITICAL)$")
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TaskResponse(BaseModel):
@@ -62,26 +60,26 @@ class TaskResultResponse(BaseModel):
 
     task_id: str
     status: str
-    result: dict[str, Any] = None
-    error: str | None = None
-    completed_at: str | None = None
+    result: Dict[str, Any] = None
+    error: Optional[str] = None
+    completed_at: Optional[str] = None
 
 
 class BrainThinkRequest(BaseModel):
     """Request for immediate brain processing."""
 
     request: str = Field(..., min_length=1, max_length=2000)
-    context: dict[str, Any] = Field(default_factory=dict)
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 
 class BrainThinkResponse(BaseModel):
     """Response from immediate brain processing."""
 
     brain_used: bool
-    status: str | None = None
-    legality: float | None = None
-    sigma: float | None = None
-    mode: str | None = None
+    status: Optional[str] = None
+    legality: Optional[float] = None
+    sigma: Optional[float] = None
+    mode: Optional[str] = None
     timestamp: str
 
 
@@ -192,7 +190,7 @@ async def brain_think_fast_endpoint(request: BrainThinkRequest) -> BrainThinkRes
 
 
 @router.get("/status")
-async def brain_tasks_status() -> dict[str, Any]:
+async def brain_tasks_status() -> Dict[str, Any]:
     """Get brain tasks API status."""
 
     # Check fast thinking availability

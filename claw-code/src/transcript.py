@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import List, Tuple
 
 
 @dataclass
@@ -14,7 +15,7 @@ class TranscriptStore:
         if len(self.entries) > keep_last:
             self.entries[:] = self.entries[-keep_last:]
 
-    def replay(self) -> tuple[str, ...]:
+    def replay(self) -> Tuple[str, ...]:
         return tuple(self.entries)
 
     def flush(self) -> None:

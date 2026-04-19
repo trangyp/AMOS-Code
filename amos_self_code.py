@@ -10,7 +10,7 @@ import ast
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -20,7 +20,7 @@ class CodeTemplate:
     name: str
     description: str
     template_type: str  # class, function, module, method
-    parameters: list[dict[str, str]] = field(default_factory=list)
+    parameters: List[dict[str, str]] = field(default_factory=list)
     body_template: str = ""
     imports: List[str] = field(default_factory=list)
     docstring_template: str = ""

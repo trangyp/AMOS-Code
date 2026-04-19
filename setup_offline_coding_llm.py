@@ -20,6 +20,7 @@ import sys
 import time
 import urllib.request
 from pathlib import Path
+from typing import List
 
 
 def print_header(text: str) -> None:

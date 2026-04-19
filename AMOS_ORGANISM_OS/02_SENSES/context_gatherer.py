@@ -82,7 +82,7 @@ class ContextGatherer:
 
         return context
 
-    def _get_git_info(self) -> dict[str, str]:
+    def _get_git_info(self) -> Dict[str, str]:
         """Get git information if available."""
         try:
             import subprocess

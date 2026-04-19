@@ -5,10 +5,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .store import list_plugins
+from typing import List, Set, Tuple
 
 # ── Marketplace ───────────────────────────────────────────────────────────────
 
-BUILTIN_MARKETPLACE: list[dict] = [
+BUILTIN_MARKETPLACE: List[dict] = [
     {
         "name": "git-tools",
         "description": "Extra git helpers: log graph, blame, bisect",
@@ -66,7 +67,7 @@ class PluginRecommendation:
     description: str
     source: str
     score: float
-    reasons: list[str]
+    reasons: List[str]
     installed: bool = False
     enabled: bool = False
 
@@ -78,15 +79,15 @@ def _tokenize(text: str) -> set[str]:
 
 def _score_against_context(
     entry: dict,
-    context_tokens: set[str],
-) -> tuple[float, list[str]]:
+    context_tokens: Set[str],
+) -> Tuple[float, list[str]]:
     """Return (score, reasons) for a marketplace entry vs context tokens."""
     score = 0.0
-    reasons: list[str] = []
+    reasons: List[str] = []
 
     name_tokens = _tokenize(entry.get("name", ""))
     desc_tokens = _tokenize(entry.get("description", ""))
-    tag_tokens: set[str] = set()
+    tag_tokens: Set[str] = set()
     for tag in entry.get("tags", []):
         tag_tokens.update(_tokenize(tag))
 
@@ -125,7 +126,7 @@ def recommend_plugins(
     context: str,
     top_n: int = 5,
     include_installed: bool = False,
-) -> list[PluginRecommendation]:
+) -> List[PluginRecommendation]:
     """Given a natural-language context string (e.g. current task description or
     user message), return up to top_n plugin recommendations sorted by relevance.
 
@@ -149,7 +150,7 @@ def recommend_plugins(
             for tag in entry.manifest.tags:
                 context_tokens.update(_tokenize(tag))
 
-    results: list[PluginRecommendation] = []
+    results: List[PluginRecommendation] = []
 
     for mp_entry in BUILTIN_MARKETPLACE:
         name = mp_entry["name"]
@@ -178,11 +179,11 @@ def recommend_plugins(
 
 
 def recommend_from_files(
-    paths: list[Path],
+    paths: List[Path],
     top_n: int = 5,
-) -> list[PluginRecommendation]:
+) -> List[PluginRecommendation]:
     """Recommend plugins based on the types of files in the current project."""
-    context_parts: list[str] = []
+    context_parts: List[str] = []
     ext_map = {
         ".py": "python",
         ".ts": "typescript javascript",
@@ -206,7 +207,7 @@ def recommend_from_files(
     return recommend_plugins(" ".join(context_parts), top_n=top_n)
 
 
-def format_recommendations(recs: list[PluginRecommendation]) -> str:
+def format_recommendations(recs: List[PluginRecommendation]) -> str:
     if not recs:
         return "No plugin recommendations for the current context."
     lines = ["Plugin recommendations:"]

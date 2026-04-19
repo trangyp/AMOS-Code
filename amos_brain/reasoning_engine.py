@@ -4,13 +4,13 @@ Provides reasoning capabilities for the AMOS brain with step-by-step
 explanation generation.
 """
 
-from __future__ import annotations
-
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 
 from .facade import BrainClient
+from typing import List, Optional
 
 
 @dataclass
@@ -18,7 +18,7 @@ class ReasoningResult:
     """Result of reasoning process."""
 
     conclusion: str
-    steps: list[str]
+    steps: List[str]
     confidence: str
     domain: str
     timestamp: str
@@ -28,7 +28,7 @@ class ReasoningEngine:
     """Structured reasoning engine."""
 
     def __init__(self) -> None:
-        self._client: BrainClient | None = None
+        self._client: Optional[BrainClient] = None
 
     def initialize(self) -> None:
         """Initialize the reasoning engine."""
@@ -88,7 +88,7 @@ class ReasoningEngine:
 
 
 # Global engine instance
-_reasoning_engine: ReasoningEngine | None = None
+_reasoning_engine: Optional[ReasoningEngine] = None
 
 
 def get_reasoning_engine() -> ReasoningEngine:

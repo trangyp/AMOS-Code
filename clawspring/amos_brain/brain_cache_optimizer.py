@@ -1,12 +1,10 @@
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 """Brain-Powered Cache Optimizer
 
 Intelligent cache warming and prefetching using brain predictions.
 Based on research: Cognitive caching with predictive prefetching.
 """
-from __future__ import annotations
-
 
 import asyncio
 import time
@@ -39,19 +37,19 @@ class BrainCacheOptimizer:
     - Detect access patterns
     """
 
-    def __init__(self, cache_get: Callable | None = None, cache_set: Callable | None = None):
+    def __init__(self, cache_get: Optional[Callable] = None, cache_set: Optional[Callable] = None):
         self.brain = get_brain_api()
         self.cache_get = cache_get
         self.cache_set = cache_set
-        self._access_history: dict[str, list[float]] = {}
-        self._prediction_history: list[CachePrediction] = []
+        self._access_history: Dict[str, list[float]] = {}
+        self._prediction_history: List[CachePrediction] = []
         self._warm_queue: asyncio.Queue = asyncio.Queue()
         self._running = False
 
     async def predict_access(
         self,
         key: str,
-        context: dict[str, Any] = None,
+        context: Dict[str, Any] = None,
     ) -> CachePrediction:
         """
         Predict if a key will be accessed soon.
@@ -105,9 +103,9 @@ Will this key be accessed in the next 60 seconds?"""
 
     async def warm_cache(
         self,
-        keys: list[str],
+        keys: List[str],
         value_fetcher: Callable[[str], Any],
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Pre-warm cache with predicted keys.
 
@@ -152,7 +150,7 @@ Will this key be accessed in the next 60 seconds?"""
 
         return warmed
 
-    def record_access(self, key: str, context: dict[str, Any] = None) -> None:
+    def record_access(self, key: str, context: Dict[str, Any] = None) -> None:
         """Record a cache access for pattern learning."""
         if key not in self._access_history:
             self._access_history[key] = []
@@ -163,7 +161,7 @@ Will this key be accessed in the next 60 seconds?"""
         if len(self._access_history[key]) > 100:
             self._access_history[key] = self._access_history[key][-100:]
 
-    def detect_patterns(self) -> list[dict[str, Any]]:
+    def detect_patterns(self) -> List[dict[str, Any]]:
         """
         Detect access patterns from history.
 
@@ -216,7 +214,7 @@ Will this key be accessed in the next 60 seconds?"""
         bonus = min(access_count // 10, 3)  # +1 for every 10 accesses, max +3
         return min(base + bonus, 10)
 
-    def _calculate_ttl(self, key: str, history: list[float]) -> int:
+    def _calculate_ttl(self, key: str, history: List[float]) -> int:
         """Calculate optimal TTL based on access pattern."""
         if len(history) < 2:
             return 300  # 5 minutes default
@@ -229,7 +227,7 @@ Will this key be accessed in the next 60 seconds?"""
         ttl = int(avg_interval * 2)
         return max(60, min(ttl, 3600))  # Between 1 min and 1 hour
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get optimizer statistics."""
         patterns = self.detect_patterns()
 
@@ -245,12 +243,12 @@ Will this key be accessed in the next 60 seconds?"""
 
 
 # Global instance
-_global_optimizer: BrainCacheOptimizer | None = None
+_global_optimizer: Optional[BrainCacheOptimizer] = None
 
 
 def get_brain_cache_optimizer(
-    cache_get: Callable | None = None,
-    cache_set: Callable | None = None,
+    cache_get: Optional[Callable] = None,
+    cache_set: Optional[Callable] = None,
 ) -> BrainCacheOptimizer:
     """Get or create global brain cache optimizer."""
     global _global_optimizer

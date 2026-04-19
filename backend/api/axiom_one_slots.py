@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 UTC = timezone.utc
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -40,13 +40,13 @@ router = APIRouter(prefix="/axiom-one", tags=["AXIOM One Execution Slots"])
 
 # Global state
 _slot_manager = ExecutionSlotManager()
-_brain_cache: dict[str, Any] = {}
+_brain_cache: Dict[str, Any] = {}
 
 
 class CreateSlotRequest(BaseModel):
     objective: str
     mode: str = "local"
-    context: dict[str, Any] = None
+    context: Dict[str, Any] = None
 
 
 class SlotResponse(BaseModel):
@@ -56,7 +56,7 @@ class SlotResponse(BaseModel):
     objective: str
     created_at: str
     events: int
-    artifacts: dict[str, Any]
+    artifacts: Dict[str, Any]
 
 
 @router.post("/slots", response_model=SlotResponse)

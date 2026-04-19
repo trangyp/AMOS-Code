@@ -402,7 +402,7 @@ PROVIDER_MAP: dict[str, type[BaseLLMProvider]] = {
 }
 
 
-def create_provider(provider: str, model_id: str, api_key: str = None) -> BaseLLMProvider | None:
+def create_provider(provider: str, model_id: str, api_key: str = None) -> Optional[BaseLLMProvider]:
     """Create a provider instance."""
     provider_class = PROVIDER_MAP.get(provider)
     if provider_class:

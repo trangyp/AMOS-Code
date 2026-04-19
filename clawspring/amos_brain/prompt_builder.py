@@ -1,7 +1,5 @@
 """AMOS System Prompt Builder - Constructs system prompts with brain integration."""
 
-from __future__ import annotations
-
 from typing import Optional
 
 from .kernel_router import KernelRouter

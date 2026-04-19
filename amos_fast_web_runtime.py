@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 """AMOS Fast Web Runtime - High-precision web retrieval under tight budgets.
 
@@ -17,6 +17,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from urllib.parse import urlparse
 
@@ -134,10 +135,10 @@ class WebCache:
     """Aggressive multi-tier caching for web content."""
 
     def __init__(self, ttl_seconds: int = 3600) -> None:
-        self._domain_cache: dict[str, list[WebResult]] = {}
+        self._domain_cache: Dict[str, list[WebResult]] = {}
         self._page_cache: Dict[str, WebResult] = {}
         self._extract_cache: Dict[str, str] = {}
-        self._query_cache: dict[str, list[WebResult]] = {}
+        self._query_cache: Dict[str, list[WebResult]] = {}
         self._timestamps: Dict[str, datetime] = {}
         self._ttl = timedelta(seconds=ttl_seconds)
 
@@ -145,7 +146,7 @@ class WebCache:
         combined = "|".join(parts)
         return hashlib.sha256(combined.encode()).hexdigest()[:32]
 
-    def get_query_results(self, query: str) -> list[WebResult] | None:
+    def get_query_results(self, query: str) -> Optional[List[WebResult] ]:
         key = self._make_key("query", query.lower().strip())
         if key in self._query_cache and not self._is_expired(key):
             logger.debug(f"Cache hit for query: {query[:50]}...")
@@ -157,7 +158,7 @@ class WebCache:
         self._query_cache[key] = results
         self._timestamps[key] = datetime.now(UTC)
 
-    def get_page(self, url: str) -> WebResult | None:
+    def get_page(self, url: str) -> Optional[WebResult]:
         key = self._make_key("page", url)
         if key in self._page_cache and not self._is_expired(key):
             return self._page_cache[key]
@@ -168,7 +169,7 @@ class WebCache:
         self._page_cache[key] = result
         self._timestamps[key] = datetime.now(UTC)
 
-    def get_extract(self, url: str, strategy: ExtractionStrategy) -> str | None:
+    def get_extract(self, url: str, strategy: ExtractionStrategy) -> Optional[str]:
         key = self._make_key("extract", url, strategy.name)
         if key in self._extract_cache and not self._is_expired(key):
             return self._extract_cache[key]
@@ -197,9 +198,9 @@ class FastWebRuntime:
 
     def __init__(
         self,
-        budgets: WebBudgets | None = None,
-        sufficiency: SufficiencyGate | None = None,
-        cache: WebCache | None = None,
+        budgets: Optional[WebBudgets] = None,
+        sufficiency: Optional[SufficiencyGate] = None,
+        cache: Optional[WebCache] = None,
     ) -> None:
         self.budgets = budgets or WebBudgets()
         self.sufficiency = sufficiency or SufficiencyGate()
@@ -362,7 +363,7 @@ class FastWebRuntime:
         self,
         url: str,
         strategy: ExtractionStrategy = ExtractionStrategy.MAIN_CONTENT,
-    ) -> WebResult | None:
+    ) -> Optional[WebResult]:
         """Fetch and extract content from a page."""
         # Check cache
         cached = self.cache.get_page(url)
@@ -653,7 +654,7 @@ class FastWebRuntime:
 
     def _cross_validate(
         self,
-        content: list[tuple[WebResult, WebResult]],
+        content: List[tuple[WebResult, WebResult]],
         query: str,
     ) -> float:
         """Cross-validate content from multiple sources."""
@@ -707,7 +708,7 @@ class FastWebRuntime:
 
 
 # Global instance for convenience
-_default_runtime: FastWebRuntime | None = None
+_default_runtime: Optional[FastWebRuntime] = None
 
 
 def get_fast_web_runtime() -> FastWebRuntime:
@@ -721,7 +722,7 @@ def get_fast_web_runtime() -> FastWebRuntime:
 async def web_query(
     query: str,
     path: str = "auto",
-    budgets: WebBudgets | None = None,
+    budgets: Optional[WebBudgets] = None,
 ) -> Dict[str, Any]:
     """One-shot web query with automatic cleanup."""
     runtime = FastWebRuntime(budgets=budgets) if budgets else get_fast_web_runtime()

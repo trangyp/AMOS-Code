@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 """AMOS Brain Logging Configuration - Structured logging for production observability.
 
@@ -17,7 +17,7 @@ import sys
 DEFAULT_LOG_LEVEL = os.getenv("AMOS_LOG_LEVEL", "INFO").upper()
 
 # Component name for contextual logging
-COMPONENT_CONTEXT: dict[str, str] = {}
+COMPONENT_CONTEXT: Dict[str, str] = {}
 
 
 def get_logger(component: str) -> logging.Logger:
@@ -47,7 +47,7 @@ def get_logger(component: str) -> logging.Logger:
     return logger
 
 
-def log_component_action(component: str, action: str, details: dict[str, Any] = None) -> None:
+def log_component_action(component: str, action: str, details: Dict[str, Any] = None) -> None:
     """Log a component action with structured data.
 
     Args:
@@ -62,7 +62,7 @@ def log_component_action(component: str, action: str, details: dict[str, Any] = 
     logger.info(msg)
 
 
-def log_component_error(component: str, error: Exception, context: dict[str, Any] = None) -> None:
+def log_component_error(component: str, error: Exception, context: Dict[str, Any] = None) -> None:
     """Log a component error with context.
 
     Args:
@@ -77,7 +77,7 @@ def log_component_error(component: str, error: Exception, context: dict[str, Any
     logger.error(msg, exc_info=True)
 
 
-def log_component_warning(component: str, message: str, details: dict[str, Any] = None) -> None:
+def log_component_warning(component: str, message: str, details: Dict[str, Any] = None) -> None:
     """Log a warning with component context.
 
     Args:
@@ -92,7 +92,7 @@ def log_component_warning(component: str, message: str, details: dict[str, Any] 
     logger.warning(msg)
 
 
-def log_component_debug(component: str, message: str, data: dict[str, Any] = None) -> None:
+def log_component_debug(component: str, message: str, data: Dict[str, Any] = None) -> None:
     """Log debug information with component context.
 
     Args:
@@ -131,7 +131,7 @@ def log_task_completion(component: str, task_id: str, duration_ms: float, succes
     )
 
 
-def log_health_check(component: str, status: str, details: dict[str, Any] = None) -> None:
+def log_health_check(component: str, status: str, details: Dict[str, Any] = None) -> None:
     """Log health check result."""
     log_component_action(component, f"Health check: {status}", details)
 

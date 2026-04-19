@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class NegotiationStatus(Enum):
@@ -55,7 +55,7 @@ class NegotiationResult:
     status: NegotiationStatus = NegotiationStatus.PENDING
     accepted_proposal: Optional[Proposal] = None
     final_terms: Dict[str, Any] = field(default_factory=dict)
-    parties: list[str] = field(default_factory=list)
+    parties: List[str] = field(default_factory=list)
     rounds: int = 0
     started_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     completed_at: str = None
@@ -85,11 +85,11 @@ class NegotiationEngine:
 
         self.active_negotiations: Dict[str, NegotiationResult] = {}
         self.completed_negotiations: Dict[str, NegotiationResult] = {}
-        self.proposal_history: list[Proposal] = []
+        self.proposal_history: List[Proposal] = []
 
     def start_negotiation(
         self,
-        parties: list[str],
+        parties: List[str],
         topic: str,
         strategy: NegotiationStrategy = NegotiationStrategy.COOPERATIVE,
     ) -> NegotiationResult:
@@ -220,7 +220,7 @@ class NegotiationEngine:
         self._save_negotiations()
         return True
 
-    def get_negotiation_status(self, negotiation_id: str) -> dict[str, Any]:
+    def get_negotiation_status(self, negotiation_id: str) -> Dict[str, Any]:
         """Get status of a negotiation."""
         negotiation = self.active_negotiations.get(negotiation_id)
         if not negotiation:
@@ -241,7 +241,7 @@ class NegotiationEngine:
         }
         negotiations_file.write_text(json.dumps(data, indent=2))
 
-    def list_negotiations(self, active_only: bool = False) -> list[dict[str, Any]]:
+    def list_negotiations(self, active_only: bool = False) -> List[dict[str, Any]]:
         """List all negotiations."""
         negotiations = list(self.active_negotiations.values())
         if not active_only:

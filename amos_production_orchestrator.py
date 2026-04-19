@@ -19,7 +19,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, status
@@ -87,7 +87,7 @@ class AMOSModuleDiscovery:
         self.discovered: Dict[str, SystemModule] = {}
         self.total_modules = 0
 
-    def discover_all(self) -> dict[str, SystemModule]:
+    def discover_all(self) -> Dict[str, SystemModule]:
         """Discover all AMOS modules in the codebase."""
         logger.info("Starting AMOS module discovery...")
 
@@ -155,10 +155,10 @@ class AMOSDependencyGraph:
 
     def __init__(self, modules: Dict[str, SystemModule]) -> None:
         self.modules = modules
-        self.graph: dict[str, set[str]] = defaultdict(set)
-        self.reverse_graph: dict[str, set[str]] = defaultdict(set)
+        self.graph: Dict[str, set[str]] = defaultdict(set)
+        self.reverse_graph: Dict[str, set[str]] = defaultdict(set)
 
-    def build_graph(self) -> dict[str, set[str]]:
+    def build_graph(self) -> Dict[str, set[str]]:
         """Build dependency graph from imports and naming."""
         logger.info("Building dependency graph...")
 
@@ -243,7 +243,7 @@ class AMOSActivationEngine:
         self.activated_count = 0
         self.failed_count = 0
 
-    async def activate_all(self) -> dict[str, SystemModule]:
+    async def activate_all(self) -> Dict[str, SystemModule]:
         """Activate all systems in topological order."""
         logger.info("Activating %d systems...", len(self.activation_order))
 
@@ -357,9 +357,9 @@ class AMOSGuardrails:
 
     def __init__(self, modules: Dict[str, SystemModule]) -> None:
         self.modules = modules
-        self.rules: list[dict[str, Any]] = []
+        self.rules: List[dict[str, Any]] = []
 
-    def install_guardrails(self) -> list[dict[str, Any]]:
+    def install_guardrails(self) -> List[dict[str, Any]]:
         """Install safety guardrails across all systems."""
         logger.info("Installing guardrails...")
 
@@ -380,7 +380,7 @@ class AMOSProductionOrchestrator:
         self.root_path = root_path or Path(__file__).parent
         self.modules: Dict[str, SystemModule] = {}
         self.bridges: List[MemoryBridge] = []
-        self.guardrails: list[dict[str, Any]] = []
+        self.guardrails: List[dict[str, Any]] = []
         self.initialized = False
         self.app = FastAPI(
             title="AMOS Production Orchestrator",
@@ -394,7 +394,7 @@ class AMOSProductionOrchestrator:
         """Setup REST API routes."""
 
         @self.app.get("/")
-        async def root() -> dict[str, str]:
+        async def root() -> Dict[str, str]:
             return {"message": "AMOS Production Orchestrator v14.0.0"}
 
         @self.app.get("/status")
@@ -414,7 +414,7 @@ class AMOSProductionOrchestrator:
         @self.app.get("/modules")
         async def list_modules(
             tier: str = None,
-        ) -> list[dict[str, Any]]:
+        ) -> List[dict[str, Any]]:
             result = []
             for name, module in self.modules.items():
                 if tier is None or module.tier.name.lower() == tier.lower():
@@ -442,7 +442,7 @@ class AMOSProductionOrchestrator:
                 )
 
         @self.app.get("/bridges")
-        async def list_bridges() -> list[dict[str, Any]]:
+        async def list_bridges() -> List[dict[str, Any]]:
             return [
                 {
                     "source": b.source,
@@ -454,7 +454,7 @@ class AMOSProductionOrchestrator:
             ]
 
         @self.app.get("/guardrails")
-        async def list_guardrails() -> list[dict[str, Any]]:
+        async def list_guardrails() -> List[dict[str, Any]]:
             return self.guardrails
 
         @self.app.get("/metrics")

@@ -11,15 +11,13 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 
 import asyncio
 import importlib.util
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from event_bus import AMOSEvent, event_bus
 from evolution_bridge import evolution_bridge
@@ -32,7 +30,7 @@ class AMOSIntegrationLayer:
     """
 
     def __init__(self):
-        self._components: dict[str, Any] = {}
+        self._components: Dict[str, Any] = {}
         self._loaded = False
         self._unified_orchestrator = None
         self._cognitive_facade = None
@@ -132,7 +130,7 @@ class AMOSIntegrationLayer:
             print(f"[AMOSIntegration] Could not load architecture orchestrator: {e}")
             self._components["architecture_orchestrator"] = False
 
-    async def get_system_status(self) -> dict[str, Any]:
+    async def get_system_status(self) -> Dict[str, Any]:
         """Get comprehensive system status from all components."""
         status = {
             "integration_loaded": self._loaded,
@@ -163,8 +161,8 @@ class AMOSIntegrationLayer:
         return status
 
     async def execute_cognitive_command(
-        self, command: str, parameters: dict | None = None
-    ) -> dict[str, Any]:
+        self, command: str, parameters: Optional[dict] = None
+    ) -> Dict[str, Any]:
         """
         Execute a cognitive command through the facade.
 
@@ -189,7 +187,7 @@ class AMOSIntegrationLayer:
         except Exception as e:
             return {"error": str(e)}
 
-    async def get_architecture_analysis(self) -> dict[str, Any]:
+    async def get_architecture_analysis(self) -> Dict[str, Any]:
         """Get architecture analysis from the orchestrator."""
         if not self._architecture_orchestrator:
             return {"error": "Architecture orchestrator not available"}
@@ -205,7 +203,7 @@ class AMOSIntegrationLayer:
         except Exception as e:
             return {"error": str(e)}
 
-    async def run_orchestrator_cycle(self) -> dict[str, Any]:
+    async def run_orchestrator_cycle(self) -> Dict[str, Any]:
         """Run a unified orchestrator cycle."""
         if not self._unified_orchestrator:
             return {"error": "Unified orchestrator not available"}
@@ -239,7 +237,7 @@ class AMOSIntegrationLayer:
         """Check if a specific component is available."""
         return self._components.get(component_name, False)
 
-    def get_available_components(self) -> list[str]:
+    def get_available_components(self) -> List[str]:
         """Get list of available component names."""
         return [name for name, available in self._components.items() if available]
 

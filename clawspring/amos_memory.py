@@ -6,6 +6,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -16,7 +17,7 @@ class MemoryEntry:
     content: dict
     memory_type: str  # 'reasoning', 'decision', 'code', 'design', 'ubi', 'workflow'
     timestamp: float = field(default_factory=time.time)
-    tags: list[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
     source: str = ""  # Which component created this
     law_compliance: dict = field(default_factory=dict)
     gap_acknowledged: bool = True
@@ -28,10 +29,10 @@ class BrainState:
 
     timestamp: float
     runtime_config: dict
-    workflow_history: list[str]
-    cognitive_artifacts: list[dict]
-    law_violations: list[dict]
-    gap_statements: list[str]
+    workflow_history: List[str]
+    cognitive_artifacts: List[dict]
+    law_violations: List[dict]
+    gap_statements: List[str]
     version: str = "vInfinity"
     creator: str = "Trang Phan"
 
@@ -39,10 +40,10 @@ class BrainState:
 class AMOSMemoryStore:
     """Persistent memory store for AMOS brain."""
 
-    def __init__(self, storage_path: Path | None = None):
+    def __init__(self, storage_path: Optional[Path] = None):
         self.storage_path = storage_path or Path("./amos_memory")
         self.storage_path.mkdir(exist_ok=True)
-        self._cache: dict[str, MemoryEntry] = {}
+        self._cache: Dict[str, MemoryEntry] = {}
 
     def store(self, entry: MemoryEntry) -> str:
         """Store a memory entry."""
@@ -56,7 +57,7 @@ class AMOSMemoryStore:
 
         return entry.id
 
-    def retrieve(self, entry_id: str) -> MemoryEntry | None:
+    def retrieve(self, entry_id: str) -> Optional[MemoryEntry]:
         """Retrieve a memory entry by ID."""
         # Check cache first
         if entry_id in self._cache:
@@ -72,7 +73,7 @@ class AMOSMemoryStore:
 
         return None
 
-    def query_by_type(self, memory_type: str) -> list[MemoryEntry]:
+    def query_by_type(self, memory_type: str) -> List[MemoryEntry]:
         """Query all memories of a specific type."""
         entries = []
         for file_path in self.storage_path.glob(f"{memory_type}_*.json"):
@@ -81,7 +82,7 @@ class AMOSMemoryStore:
                 entries.append(MemoryEntry(**data))
         return sorted(entries, key=lambda x: x.timestamp, reverse=True)
 
-    def query_by_tag(self, tag: str) -> list[MemoryEntry]:
+    def query_by_tag(self, tag: str) -> List[MemoryEntry]:
         """Query all memories with a specific tag."""
         entries = []
         for file_path in self.storage_path.glob("*.json"):
@@ -101,7 +102,7 @@ class AMOSMemoryStore:
 
         return state_id
 
-    def load_latest_brain_state(self) -> BrainState | None:
+    def load_latest_brain_state(self) -> Optional[BrainState]:
         """Load the most recent brain state."""
         state_files = sorted(
             self.storage_path.glob("brain_state_*.json"),
@@ -136,7 +137,7 @@ class AMOSMemoryStore:
 class AMOSMemoryBridge:
     """Bridge between AMOS components and memory store."""
 
-    def __init__(self, store: AMOSMemoryStore | None = None):
+    def __init__(self, store: Optional[AMOSMemoryStore] = None):
         self.store = store or AMOSMemoryStore()
 
     def remember_reasoning(
@@ -246,7 +247,7 @@ class AMOSMemoryBridge:
         )
         return self.store.save_brain_state(state)
 
-    def recall_recent(self, memory_type: str  = None, limit: int = 10) -> list[MemoryEntry]:
+    def recall_recent(self, memory_type: str  = None, limit: int = 10) -> List[MemoryEntry]:
         """Recall recent memories."""
         if memory_type:
             entries = self.store.query_by_type(memory_type)
@@ -260,7 +261,7 @@ class AMOSMemoryBridge:
 
 
 # Singleton
-_memory_bridge: AMOSMemoryBridge | None = None
+_memory_bridge: Optional[AMOSMemoryBridge] = None
 
 
 def get_memory_bridge() -> AMOSMemoryBridge:
@@ -305,10 +306,8 @@ def remember(task_type: str, data: dict) -> str:
     return ""
 
 
-def recall(memory_type: str  = None, limit: int = 10) -> list[MemoryEntry]:
+def recall(memory_type: str  = None, limit: int = 10) -> List[MemoryEntry]:
     """Quick recall helper."""
-from __future__ import annotations
-
     return get_memory_bridge().recall_recent(memory_type, limit)
 
 

@@ -14,11 +14,10 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # SuperBrain integration
 try:
-    from typing import Final
 
     from amos_brain import get_super_brain
 
@@ -46,7 +45,7 @@ class KnowledgeLoader:
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
         self.knowledge_cache: Dict[str, LoadedKnowledge] = {}
-        self.category_index: dict[str, list[str]] = {}
+        self.category_index: Dict[str, list[str]] = {}
         self.total_loaded = 0
         self.total_size_mb = 0.0
         self._brain = None

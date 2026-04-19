@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class QuantumDomain(Enum):
@@ -416,8 +416,6 @@ _tech_quantum_engine: Optional[TechQuantumEngine] = None
 
 def get_tech_quantum_engine() -> TechQuantumEngine:
     """Get or create the Tech Quantum Engine singleton."""
-from __future__ import annotations
-
     global _tech_quantum_engine
     if _tech_quantum_engine is None:
         _tech_quantum_engine = TechQuantumEngine()

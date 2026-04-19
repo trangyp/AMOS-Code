@@ -19,7 +19,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class ExecutionRing(Enum):
@@ -170,7 +170,7 @@ class CMVKVerification:
 
     query: str
     models_consulted: List[str]
-    responses: list[dict[str, Any]]
+    responses: List[dict[str, Any]]
     consensus_score: float  # 0-1, majority agreement
     verified_answer: Any
     dissenting_models: List[str] = field(default_factory=list)
@@ -267,7 +267,7 @@ class AgentOSPolicyEngine:
     """Stateless policy engine with sub-millisecond latency."""
 
     def __init__(self, policy_language: PolicyLanguage = PolicyLanguage.YAML):
-        self.policies: list[dict[str, Any]] = []
+        self.policies: List[dict[str, Any]] = []
         self.language = policy_language
         self.evaluation_count = 0
         self.latency_ns = deque(maxlen=1000)
@@ -363,8 +363,8 @@ class InterAgentTrustProtocol:
     """IATP: Secure agent-to-agent communication layer."""
 
     def __init__(self):
-        self.active_sessions: dict[str, dict[str, Any]] = {}
-        self.trust_matrix: dict[tuple[str, str], float] = {}  # (sender, recipient) -> trust
+        self.active_sessions: Dict[str, dict[str, Any]] = {}
+        self.trust_matrix: Dict[tuple[str, str], float] = {}  # (sender, recipient) -> trust
 
     async def authenticate(self, did: str, challenge: str = None) -> Dict[str, Any]:
         """Authenticate agent via DID challenge-response."""
@@ -409,7 +409,7 @@ class AgentSREController:
 
     def __init__(self):
         self.sli_registry: Dict[str, SLI] = {}
-        self.circuit_breakers: dict[str, dict[str, Any]] = {}
+        self.circuit_breakers: Dict[str, dict[str, Any]] = {}
         self.error_budgets: Dict[str, float] = {}  # service -> remaining budget (0-1)
 
     def register_slo(

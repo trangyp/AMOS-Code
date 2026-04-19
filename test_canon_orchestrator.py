@@ -6,8 +6,6 @@ Creator: Trang Phan
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 from amos_brain.canon_orchestrator import canon_orchestrate
 
 

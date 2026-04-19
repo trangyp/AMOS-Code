@@ -12,6 +12,7 @@ import hashlib
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 from typing import Any, Dict, Final, List, Optional, Tuple
 
@@ -204,8 +205,8 @@ class ErrorState:
 
     prediction_errors: List[PredictionError] = field(default_factory=list)
     conflicts: List[Conflict] = field(default_factory=list)
-    ambiguities: list[dict[str, Any]] = field(default_factory=list)
-    resolution_failures: list[dict[str, Any]] = field(default_factory=list)
+    ambiguities: List[dict[str, Any]] = field(default_factory=list)
+    resolution_failures: List[dict[str, Any]] = field(default_factory=list)
     global_conflict_score: float = 0.0
 
 @dataclass
@@ -278,9 +279,9 @@ class StableRead:
     reference_structure: List[str] = field(default_factory=list)
     reader_estimate: Dict[str, Any] = field(default_factory=dict)
     speaker_estimate: Dict[str, Any] = field(default_factory=dict)
-    diagnostic_noise: list[dict[str, Any]] = field(default_factory=list)
+    diagnostic_noise: List[dict[str, Any]] = field(default_factory=list)
     conflicts: List[Conflict] = field(default_factory=list)
-    ambiguities: list[dict[str, Any]] = field(default_factory=list)
+    ambiguities: List[dict[str, Any]] = field(default_factory=list)
     coherence_score: float = 0.0
     stable: bool = False
     compiled_goal: CompiledGoal = field(default_factory=CompiledGoal)
@@ -298,7 +299,7 @@ class PredictiveModel:
     """
 
     def __init__(self):
-        self.prediction_history: list[dict[str, Any]] = []
+        self.prediction_history: List[dict[str, Any]] = []
         self.learning_rate = 0.1
 
     def predict(
@@ -307,7 +308,7 @@ class PredictiveModel:
         priors: PriorSet,
         goals: List[str],
         memory_context: Dict[str, Any],
-    ) -> dict[str, str]:
+    ) -> Dict[str, str]:
         """
         Predict likely meaning structure from chunks.
 
@@ -727,6 +728,7 @@ class BindingEngine:
                                 candidates=[e.entity_id for e in entities],
                                 severity=0.8 if ref in ["it", "this", "that"] else 0.5,
                             )
+                        )
 
         return open_bindings
 
@@ -805,6 +807,7 @@ class SalienceEngine:
                     novelty_weight=novelty_weight,
                     recurrence_weight=recurrence_weight,
                 )
+            )
 
         return salience_units
 
@@ -852,6 +855,7 @@ class ConflictDetector:
                                 resolvable=False,
                                 description=f"Contradictory goals: '{g1.content[:30]}...' vs '{g2.content[:30]}...'",
                             )
+                        )
 
         # Check for constraint conflicts
         constraint_chunks = [c for c in chunks if c.chunk_type == ChunkType.CONSTRAINT]
@@ -868,6 +872,7 @@ class ConflictDetector:
                                 resolvable=True,
                                 description="Conflicting constraints",
                             )
+                        )
 
         # Check for instruction conflicts (commands vs constraints)
         command_chunks = [c for c in chunks if c.chunk_type == ChunkType.COMMAND]
@@ -883,6 +888,7 @@ class ConflictDetector:
                             resolvable=True,
                             description="Command may violate constraint",
                         )
+                    )
 
         # Compute global conflict score
         if error_state.conflicts:
@@ -991,7 +997,7 @@ class CoherenceVerifier:
             - 0.10 * conflict_penalty
             - 0.05 * ambiguity_penalty
         )
-coherence = max(0.0, min(1.0, coherence))
+        coherence = max(0.0, min(1.0, coherence))
 
         is_stable = (
             coherence >= self.COHERENCE_THRESHOLD and error_state.global_conflict_score < 0.5
@@ -1130,6 +1136,7 @@ class MultiPassReader:
                         position=chunks.index(chunk),
                         focus_strength=salience_units[primary_set.index(chunk.id)].salience_score,
                     )
+                )
 
         # Detect conflicts
         error_state = self.conflict.detect_conflicts(chunks, bindings)
@@ -1338,7 +1345,7 @@ class BrainReadingKernel:
             },
         }
 
-    def validate_invariants(self, stable_read: StableRead) -> list[dict[str, Any]]:
+    def validate_invariants(self, stable_read: StableRead) -> List[dict[str, Any]]:
         """
         Validate brain reading invariants.
 

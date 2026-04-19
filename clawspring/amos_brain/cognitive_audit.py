@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Optional
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -10,7 +11,7 @@ class AuditEntry:
     """Single audit entry."""
 
     decision: str
-    context: dict[str, Any]
+    context: Dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -18,13 +19,13 @@ class AuditEntry:
 class CognitiveAuditTrail:
     """Trail of cognitive decisions."""
 
-    entries: list[AuditEntry] = field(default_factory=list)
+    entries: List[AuditEntry] = field(default_factory=list)
 
     def add(self, entry: AuditEntry) -> None:
         """Add entry to trail."""
         self.entries.append(entry)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "entries": [
@@ -35,7 +36,7 @@ class CognitiveAuditTrail:
 
 
 def record_cognitive_decision(
-    decision: str, context: dict[str, Any], trail: Optional[CognitiveAuditTrail] = None
+    decision: str, context: Dict[str, Any], trail: Optional[CognitiveAuditTrail] = None
 ) -> AuditEntry:
     """Record a cognitive decision."""
     entry = AuditEntry(decision=decision, context=context)
@@ -56,7 +57,7 @@ def get_audit_trail() -> CognitiveAuditTrail:
     return _global_audit_trail
 
 
-def get_statistics() -> dict[str, Any]:
+def get_statistics() -> Dict[str, Any]:
     """Get audit statistics."""
     trail = get_audit_trail()
     return {

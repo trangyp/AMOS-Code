@@ -4,14 +4,12 @@ Real integration with Aider for repo-wide editing via terminal.
 https://aider.chat/docs/llms/ollama.html
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ class AiderIntegration:
             logger.error(f"Failed to install Aider: {e}")
             return False
 
-    def generate_config(self) -> dict[str, Any]:
+    def generate_config(self) -> Dict[str, Any]:
         """Generate Aider configuration for LiteLLM proxy."""
         config = {
             # Use LiteLLM proxy as OpenAI-compatible endpoint
@@ -71,7 +69,7 @@ class AiderIntegration:
         }
         return config
 
-    def write_config(self, config: dict[str, Any] | None = None) -> Path:
+    def write_config(self, config: Optional[Dict[str, Any] ] = None) -> Path:
         """Write Aider configuration."""
         import yaml
 
@@ -82,8 +80,8 @@ class AiderIntegration:
 
     def start_aider(
         self,
-        files: list[str] | None = None,
-        message: str | None = None,
+        files: Optional[List[str] ] = None,
+        message: Optional[str] = None,
         model: str = "ollama/qwen2.5-coder:14b",
     ) -> subprocess.Popen:
         """Start Aider in the current directory."""
@@ -109,7 +107,7 @@ class AiderIntegration:
     def run_once(
         self,
         message: str,
-        files: list[str] | None = None,
+        files: Optional[List[str] ] = None,
         model: str = "ollama/qwen2.5-coder:14b",
     ) -> str:
         """Run Aider once with a message and return output."""
@@ -134,7 +132,7 @@ class AiderIntegration:
 
         return result.stdout + result.stderr
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get Aider integration status."""
         status = {
             "installed": self.is_installed(),

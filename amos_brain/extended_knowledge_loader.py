@@ -289,7 +289,7 @@ class ComprehensiveKnowledgeSystem:
             "extended": extended_stats,
         }
 
-    def query_all(self, query: str, limit: int = 10) -> dict[str, list]:
+    def query_all(self, query: str, limit: int = 10) -> Dict[str, list]:
         """Query all knowledge sources."""
         results = {"core": [], "countries": [], "sectors": []}
 
@@ -351,7 +351,7 @@ def load_extended_knowledge() -> Dict[str, Any]:
     return system.initialize()
 
 
-def query_comprehensive(query: str, limit: int = 10) -> dict[str, list]:
+def query_comprehensive(query: str, limit: int = 10) -> Dict[str, list]:
     """Query comprehensive knowledge (core + extended)."""
     system = get_comprehensive_knowledge()
     if not system.initialized:

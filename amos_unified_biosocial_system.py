@@ -20,7 +20,7 @@ State-of-the-art human-centric autonomous AI architecture.
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -458,6 +458,5 @@ def main():
 
 if __name__ == "__main__":
     import sys
-from typing import Dict, Final, Tuple
 
     main()

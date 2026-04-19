@@ -46,7 +46,7 @@ from collections.abc import AsyncIterator
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from fastapi import BackgroundTasks, FastAPI, HTTPException, Request

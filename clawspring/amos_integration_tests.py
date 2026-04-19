@@ -3,6 +3,7 @@
 import time
 import traceback
 from dataclasses import dataclass
+from typing import Dict, List
 
 
 @dataclass
@@ -24,7 +25,7 @@ class TestSuiteResult:
     total_tests: int
     passed_tests: int
     failed_tests: int
-    layer_results: dict[str, list[TestResult]]
+    layer_results: Dict[str, list[TestResult]]
     total_time: float
     gap_acknowledgment: str
 
@@ -73,7 +74,7 @@ class AMOSIntegrationTests:
         self._test_layer_11_tools()
 
         # Organize by layer
-        layer_results: dict[str, list[TestResult]] = {}
+        layer_results: Dict[str, list[TestResult]] = {}
         for r in self.results:
             if r.layer not in layer_results:
                 layer_results[r.layer] = []

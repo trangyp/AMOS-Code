@@ -5,8 +5,6 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 
 import json
 import os
@@ -17,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
+from typing import Dict, List, Optional
 
 
 class GovernanceMode(Enum):
@@ -73,12 +72,12 @@ class GovernanceConfigManager:
 
     DEFAULT_CONFIG_PATH = Path("amos_governance_config.json")
 
-    def __init__(self, config_path: Path | None = None, environment: str = "development"):
+    def __init__(self, config_path: Optional[Path] = None, environment: str = "development"):
         self.config_path = config_path or self.DEFAULT_CONFIG_PATH
         self.environment = environment
-        self._policies: dict[str, GovernancePolicy] = {}
+        self._policies: Dict[str, GovernancePolicy] = {}
         self._current_policy_name: str = None
-        self._change_callbacks: list[Callable[[], None]] = []
+        self._change_callbacks: List[Callable[[], None]] = []
         self._lock = threading.RLock()
         self._reload_enabled = False
         self._load_config()
@@ -151,7 +150,7 @@ class GovernanceConfigManager:
             updated_at=data.get("updated_at", datetime.now().isoformat()),
         )
 
-    def save(self, path: Path | None = None) -> bool:
+    def save(self, path: Optional[Path] = None) -> bool:
         """Save configuration to file."""
         save_path = path or self.config_path
         try:
@@ -245,7 +244,7 @@ class GovernanceConfigManager:
             self._notify_change()
             return True
 
-    def list_policies(self) -> list[str]:
+    def list_policies(self) -> List[str]:
         """List all available policy names."""
         with self._lock:
             return list(self._policies.keys())
@@ -338,7 +337,7 @@ class GovernanceConfigManager:
 
 
 def create_governance_config(
-    config_path: Path | None = None,
+    config_path: Optional[Path] = None,
     environment: str = "development",
 ) -> GovernanceConfigManager:
     """Factory function to create governance config manager."""

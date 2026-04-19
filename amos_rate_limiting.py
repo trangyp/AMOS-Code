@@ -31,7 +31,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
-from typing import Any
+from typing import Any, Dict, Optional, Tuple
 
 
 class RateLimitAlgorithm(Enum):
@@ -68,7 +68,7 @@ class RateLimitConfig:
 
 
 # Standard tier configurations
-TIER_CONFIGS: dict[RateLimitTier, RateLimitConfig] = {
+TIER_CONFIGS: Dict[RateLimitTier, RateLimitConfig] = {
     RateLimitTier.FREE: RateLimitConfig(
         requests_per_window=100,
         window_seconds=60,
@@ -139,7 +139,7 @@ class TokenBucket:
             retry_after = tokens_needed / self.refill_rate
             return False, 0, retry_after
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current bucket state."""
         with self._lock:
             return {
@@ -189,7 +189,7 @@ class SlidingWindow:
             retry_after = oldest_request + self.window_seconds - now
             return False, 0, max(0.0, retry_after)
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current window state."""
         with self._lock:
             now = time.time()
@@ -299,22 +299,22 @@ class RateLimiter:
 
     def __init__(self):
         # Token buckets by key
-        self._token_buckets: dict[str, TokenBucket] = {}
+        self._token_buckets: Dict[str, TokenBucket] = {}
         # Sliding windows by key
-        self._sliding_windows: dict[str, SlidingWindow] = {}
+        self._sliding_windows: Dict[str, SlidingWindow] = {}
         # Fixed windows by key
-        self._fixed_windows: dict[str, FixedWindow] = {}
+        self._fixed_windows: Dict[str, FixedWindow] = {}
         # Leaky buckets by key
-        self._leaky_buckets: dict[str, LeakyBucket] = {}
+        self._leaky_buckets: Dict[str, LeakyBucket] = {}
 
         # Key tier assignments
-        self._key_tiers: dict[str, RateLimitTier] = {}
+        self._key_tiers: Dict[str, RateLimitTier] = {}
 
         # Custom configs (override tier defaults)
-        self._custom_configs: dict[str, RateLimitConfig] = {}
+        self._custom_configs: Dict[str, RateLimitConfig] = {}
 
         # Statistics
-        self._stats: dict[str, dict[str, Any]] = defaultdict(
+        self._stats: Dict[str, dict[str, Any]] = defaultdict(
             lambda: {
                 "allowed": 0,
                 "denied": 0,
@@ -475,7 +475,7 @@ class RateLimiter:
             tier=tier,
         )
 
-    def get_stats(self, key: str = None) -> dict[str, Any]:
+    def get_stats(self, key: str = None) -> Dict[str, Any]:
         """Get rate limiting statistics."""
         with self._lock:
             if key:
@@ -496,7 +496,7 @@ class RateLimiter:
 
 
 # Global rate limiter instance
-_global_rate_limiter: RateLimiter | None = None
+_global_rate_limiter: Optional[RateLimiter] = None
 
 
 def get_rate_limiter() -> RateLimiter:
@@ -510,7 +510,7 @@ def get_rate_limiter() -> RateLimiter:
 def rate_limit(
     key_func: Callable[..., str] = None,
     tier: RateLimitTier = RateLimitTier.FREE,
-    custom_config: RateLimitConfig | None = None,
+    custom_config: Optional[RateLimitConfig] = None,
 ):
     """
     Decorator for rate limiting functions.

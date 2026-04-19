@@ -16,7 +16,7 @@ Version: 1.0.0
 
 import ast
 import builtins
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 
 class SafeExecutionError(Exception):
@@ -239,7 +239,7 @@ class SafeExecutionFramework:
             raise SafeExecutionError(f"Safe evaluation failed: {e}")
 
     def safe_exec(
-        self, code: str, local_vars: Optional[Dict] = None, allowed_functions: list[str] = None
+        self, code: str, local_vars: Optional[Dict] = None, allowed_functions: List[str] = None
     ) -> Dict[str, Any]:
         """
         Execute code in a restricted sandbox environment.
@@ -416,7 +416,7 @@ def safe_eval(expression: str, fallback: Any = None) -> Any:
 
 
 def safe_exec(
-    code: str, local_vars: Optional[Dict] = None, allowed_functions: list[str] = None
+    code: str, local_vars: Optional[Dict] = None, allowed_functions: List[str] = None
 ) -> Dict[str, Any]:
     """
     Convenience function for safe execution.

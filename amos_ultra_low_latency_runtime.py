@@ -1,4 +1,4 @@
-from typing import Any, Optional, Task
+from typing import Any, Dict, List, Optional, Set, Task, Tuple
 
 """
 AMOS Ultra-Low-Latency Runtime
@@ -125,11 +125,11 @@ class ClassificationResult:
 class StateDelta:
     """Delta update - only what changed, never full rebuild."""
 
-    active_goal_changes: list[dict[str, Any]] = field(default_factory=list)
-    constraint_changes: list[dict[str, Any]] = field(default_factory=list)
-    binding_changes: list[dict[str, Any]] = field(default_factory=list)
-    human_state_changes: list[dict[str, Any]] = field(default_factory=list)
-    open_loops_changes: list[dict[str, Any]] = field(default_factory=list)
+    active_goal_changes: List[dict[str, Any]] = field(default_factory=list)
+    constraint_changes: List[dict[str, Any]] = field(default_factory=list)
+    binding_changes: List[dict[str, Any]] = field(default_factory=list)
+    human_state_changes: List[dict[str, Any]] = field(default_factory=list)
+    open_loops_changes: List[dict[str, Any]] = field(default_factory=list)
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
@@ -140,8 +140,8 @@ class FastPathResult:
     output: str
     commit_mode: CommitMode
     latency_ms: float
-    template_used: str | None
-    slots_filled: dict[str, Any]
+    template_used: Optional[str]
+    slots_filled: Dict[str, Any]
     confidence: float
     needs_deep_repair: bool
     cache_hits: int
@@ -169,7 +169,7 @@ class PatternCache:
     """Maps input signatures to templates."""
 
     def __init__(self, maxsize: int = 10000):
-        self._cache: dict[str, tuple[str, float]] = {}
+        self._cache: Dict[str, tuple[str, float]] = {}
         self._maxsize = maxsize
         self._hits = 0
         self._misses = 0
@@ -208,10 +208,10 @@ class BindingCache:
     """Maps recurring references to canonical entities."""
 
     def __init__(self):
-        self._bindings: dict[str, Any] = {}
-        self._access_times: dict[str, float] = {}
+        self._bindings: Dict[str, Any] = {}
+        self._access_times: Dict[str, float] = {}
 
-    def get(self, reference: str) -> Any | None:
+    def get(self, reference: str) -> Optional[Any]:
         self._access_times[reference] = time.time()
         return self._bindings.get(reference)
 
@@ -235,7 +235,7 @@ class ConstraintCache:
         self._constraints: deque[dict[str, Any]] = deque(maxlen=max_constraints)
         self._constraint_set: Set[str] = set()
 
-    def add(self, constraint: dict[str, Any]) -> None:
+    def add(self, constraint: Dict[str, Any]) -> None:
         """Add constraint if not already present."""
         key = json.dumps(constraint, sort_keys=True)
         if key not in self._constraint_set:
@@ -246,10 +246,10 @@ class ConstraintCache:
             self._constraints.append(constraint)
             self._constraint_set.add(key)
 
-    def get_active(self) -> list[dict[str, Any]]:
+    def get_active(self) -> List[dict[str, Any]]:
         return list(self._constraints)
 
-    def check(self, constraint: dict[str, Any]) -> bool:
+    def check(self, constraint: Dict[str, Any]) -> bool:
         """Fast check if constraint is already active."""
         key = json.dumps(constraint, sort_keys=True)
         return key in self._constraint_set
@@ -259,7 +259,7 @@ class ConstraintCache:
 # SECTION 4: Precompiled Control Tables
 # ============================================================================
 
-CLASS_TO_PATH_TABLE: dict[InterruptClass, RuntimeMode] = {
+CLASS_TO_PATH_TABLE: Dict[InterruptClass, RuntimeMode] = {
     InterruptClass.SIMPLE_REQUEST: RuntimeMode.FAST_COMMIT,
     InterruptClass.CORRECTION: RuntimeMode.INCREMENTAL_UPDATE,
     InterruptClass.MISSING_REFERENCE: RuntimeMode.INTERRUPT,  # Will trigger clarification
@@ -342,7 +342,7 @@ class TemplateEngine:
     ]
 
     def __init__(self):
-        self._pattern_scores: dict[str, float] = {}
+        self._pattern_scores: Dict[str, float] = {}
 
     def match(
         self, raw_text: str, interrupt_class: InterruptClass
@@ -365,7 +365,7 @@ class TemplateEngine:
 
         return None, {}, 0.0
 
-    def _extract_slots(self, raw_text: str, slot_names: List[str]) -> dict[str, Any]:
+    def _extract_slots(self, raw_text: str, slot_names: List[str]) -> Dict[str, Any]:
         """Extract slot values from text. Production would use entity recognition."""
         slots = {}
         # Simplified: use whole text as first slot for now
@@ -373,7 +373,7 @@ class TemplateEngine:
             slots[slot_names[0]] = raw_text[:200]  # Truncate for safety
         return slots
 
-    def fill(self, template: Template, slots: dict[str, Any]) -> str:
+    def fill(self, template: Template, slots: Dict[str, Any]) -> str:
         """Fill template slots."""
         result = template.template_text
         for slot, value in slots.items():
@@ -394,7 +394,7 @@ class InterruptClassifier:
     """
 
     # Fast keyword-based classification
-    CLASS_PATTERNS: dict[InterruptClass, list[str]] = {
+    CLASS_PATTERNS: Dict[InterruptClass, list[str]] = {
         InterruptClass.SIMPLE_REQUEST: [
             "what is",
             "how to",
@@ -489,7 +489,7 @@ class InterruptClassifier:
 
     def __init__(self, pattern_cache: PatternCache):
         self._pattern_cache = pattern_cache
-        self._metrics: dict[str, Any] = {
+        self._metrics: Dict[str, Any] = {
             "total_classifications": 0,
             "avg_time_ms": 0.0,
         }
@@ -609,18 +609,18 @@ class ActiveContextManager:
     Latency ∝ ActiveContextSize, so ReduceContext ⇒ ReduceLatency
     """
 
-    def __init__(self, policy: ActiveContextPolicy | None = None):
+    def __init__(self, policy: Optional[ActiveContextPolicy] = None):
         self._policy = policy or ActiveContextPolicy()
         self._turns: deque[dict[str, Any]] = deque(maxlen=self._policy.max_active_turns)
         self._constraints: deque[dict[str, Any]] = deque(maxlen=self._policy.max_active_constraints)
-        self._bindings: dict[str, Any] = {}
+        self._bindings: Dict[str, Any] = {}
         self._goals: deque[dict[str, Any]] = deque(maxlen=self._policy.max_active_goals)
 
-    def add_turn(self, turn: dict[str, Any]) -> None:
+    def add_turn(self, turn: Dict[str, Any]) -> None:
         """Add turn to context. Oldest auto-evicted if over limit."""
         self._turns.append(turn)
 
-    def add_constraint(self, constraint: dict[str, Any]) -> None:
+    def add_constraint(self, constraint: Dict[str, Any]) -> None:
         """Add constraint."""
         self._constraints.append(constraint)
 
@@ -632,11 +632,11 @@ class ActiveContextManager:
             del self._bindings[oldest]
         self._bindings[key] = value
 
-    def add_goal(self, goal: dict[str, Any]) -> None:
+    def add_goal(self, goal: Dict[str, Any]) -> None:
         """Add goal."""
         self._goals.append(goal)
 
-    def get_context_for_processing(self) -> dict[str, Any]:
+    def get_context_for_processing(self) -> Dict[str, Any]:
         """
         Return minimal context needed for processing.
         Target load time: <20ms
@@ -676,7 +676,7 @@ class DeltaStateRuntime:
     """
 
     def __init__(self):
-        self._state: dict[str, Any] = {
+        self._state: Dict[str, Any] = {
             "active_goal": None,
             "current_constraints": [],
             "recent_bindings": {},
@@ -686,7 +686,7 @@ class DeltaStateRuntime:
         self._deltas: List[StateDelta] = []
 
     def compute_delta(
-        self, input_data: dict[str, Any], classification: ClassificationResult
+        self, input_data: Dict[str, Any], classification: ClassificationResult
     ) -> StateDelta:
         """Compute minimal delta from input."""
         delta = StateDelta()
@@ -720,7 +720,7 @@ class DeltaStateRuntime:
 
         self._deltas.append(delta)
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current state (fast, no rebuild)."""
         return self._state.copy()
 
@@ -737,8 +737,8 @@ class ConstraintChecker:
         self._cache = constraint_cache
 
     def check_output(
-        self, output: str, template: Template, active_constraints: list[dict[str, Any]]
-    ) -> tuple[bool, list[str]]:
+        self, output: str, template: Template, active_constraints: List[dict[str, Any]]
+    ) -> Tuple[bool, list[str]]:
         """
         Check if output satisfies constraints.
         Returns (passed, violations).
@@ -757,7 +757,7 @@ class ConstraintChecker:
                 violations.append(f"constraint_violation: {cid}")
         return (len(violations) == 0), violations
 
-    def _check_constraint(self, output: str, constraint: dict[str, Any]) -> bool:
+    def _check_constraint(self, output: str, constraint: Dict[str, Any]) -> bool:
         """Check single constraint."""
         ctype = constraint.get("type")
 
@@ -785,8 +785,8 @@ class AMOSUltraLowLatencyRuntime:
 
     def __init__(
         self,
-        latency_budget: LatencyBudget | None = None,
-        context_policy: ActiveContextPolicy | None = None,
+        latency_budget: Optional[LatencyBudget] = None,
+        context_policy: Optional[ActiveContextPolicy] = None,
     ):
         self._latency_budget = latency_budget or LatencyBudget()
         self._context_policy = context_policy or ActiveContextPolicy()
@@ -992,7 +992,7 @@ class AMOSUltraLowLatencyRuntime:
             except Exception as e:
                 logger.error(f"Background worker error: {e}")
 
-    async def _perform_deep_repair(self, task: dict[str, Any]) -> None:
+    async def _perform_deep_repair(self, task: Dict[str, Any]) -> None:
         """
         Perform bounded deep repair.
 
@@ -1033,7 +1033,7 @@ class AMOSUltraLowLatencyRuntime:
         """Get current latency metrics."""
         return self._metrics
 
-    def get_latency_report(self) -> dict[str, Any]:
+    def get_latency_report(self) -> Dict[str, Any]:
         """Generate comprehensive latency report."""
         m = self._metrics
         return {
@@ -1057,7 +1057,7 @@ class AMOSUltraLowLatencyRuntime:
 # ============================================================================
 
 # Global runtime instance
-_global_runtime: AMOSUltraLowLatencyRuntime | None = None
+_global_runtime: Optional[AMOSUltraLowLatencyRuntime] = None
 
 
 async def get_latency_runtime() -> AMOSUltraLowLatencyRuntime:
@@ -1075,7 +1075,7 @@ async def fast_process(raw_text: str, recent_context: str = "") -> FastPathResul
     return await runtime.process(raw_text, recent_context)
 
 
-async def get_latency_report() -> dict[str, Any]:
+async def get_latency_report() -> Dict[str, Any]:
     """Get latency report."""
     runtime = await get_latency_runtime()
     return runtime.get_latency_report()

@@ -4,6 +4,7 @@ import time
 import tracemalloc
 from dataclasses import dataclass
 from statistics import mean
+from typing import List
 
 
 @dataclass

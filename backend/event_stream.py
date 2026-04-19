@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional
 
 """AMOS Event Stream - Real-time event streaming for WebSocket.
 
@@ -8,8 +8,6 @@ Production-grade event streaming with:
 - Event persistence
 - Backpressure handling
 """
-from __future__ import annotations
-
 
 import asyncio
 import json
@@ -26,7 +24,7 @@ class Event:
 
     id: str
     type: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     timestamp: str
     source: str
 
@@ -35,7 +33,7 @@ class EventStreamManager:
     """Manage WebSocket event streaming."""
 
     def __init__(self):
-        self._connections: dict[str, WebSocket] = {}
+        self._connections: Dict[str, WebSocket] = {}
         self._event_queue: asyncio.Queue[Event] = asyncio.Queue(maxsize=1000)
         self._running = False
         self._task: asyncio.Task = None
@@ -65,7 +63,7 @@ class EventStreamManager:
         if client_id in self._connections:
             del self._connections[client_id]
 
-    def emit(self, event_type: str, payload: dict[str, Any], source: str = "system") -> None:
+    def emit(self, event_type: str, payload: Dict[str, Any], source: str = "system") -> None:
         """Emit an event to all connected clients."""
         event = Event(
             id=str(uuid.uuid4()),
@@ -142,7 +140,7 @@ class EventStreamManager:
 
 
 # Global event stream manager instance
-_event_stream_manager: EventStreamManager | None = None
+_event_stream_manager: Optional[EventStreamManager] = None
 
 
 def get_event_stream_manager() -> EventStreamManager:
@@ -153,7 +151,7 @@ def get_event_stream_manager() -> EventStreamManager:
     return _event_stream_manager
 
 
-def emit_event(event_type: str, payload: dict[str, Any], source: str = "system") -> None:
+def emit_event(event_type: str, payload: Dict[str, Any], source: str = "system") -> None:
     """Emit an event to all connected clients."""
     manager = get_event_stream_manager()
     manager.emit(event_type, payload, source)
@@ -165,7 +163,7 @@ def emit_task_created(task_id: str, name: str, agent_type: str) -> None:
     emit_event("task.created", {"task_id": task_id, "name": name, "agent_type": agent_type})
 
 
-def emit_task_completed(task_id: str, result: dict[str, Any]) -> None:
+def emit_task_completed(task_id: str, result: Dict[str, Any]) -> None:
     """Emit task completion event."""
     emit_event("task.completed", {"task_id": task_id, "result": result})
 

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 
 class PhysicalDomain(Enum):
@@ -105,7 +105,7 @@ class FundamentalConstantsKernel:
         """Get constants by physical domain."""
         return [c for c in self.CONSTANTS.values() if c.domain == domain]
 
-    def calculate_plank_scale(self) -> dict[str, float]:
+    def calculate_plank_scale(self) -> Dict[str, float]:
         """Calculate Planck scale quantities."""
         G = self.CONSTANTS["G"].value
         c = self.CONSTANTS["c"].value
@@ -156,7 +156,7 @@ class CosmologicalModelKernel:
         age_gyr = 2 / (3 * H0 * Omega_m**0.5 * (1 + z)**1.5)
         return age_gyr  # in Gyr
 
-    def get_composition(self) -> dict[str, float]:
+    def get_composition(self) -> Dict[str, float]:
         """Get universe composition percentages."""
         return {
             "dark_energy": self.parameters["Omega_lambda"] * 100,
@@ -392,8 +392,6 @@ _universe_core: Optional[UniverseCoreEngine] = None
 
 def get_universe_core_engine() -> UniverseCoreEngine:
     """Get or create the Universe Core Engine singleton."""
-from __future__ import annotations
-
     global _universe_core
     if _universe_core is None:
         _universe_core = UniverseCoreEngine()

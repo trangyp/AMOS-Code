@@ -19,7 +19,7 @@ Endpoints:
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 # Add AMOS paths
 sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
@@ -161,7 +161,7 @@ if FASTAPI_AVAILABLE:
     async def query_equations(
         domain: str = None,
         language: str = None,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Query equations by domain or language."""
         eq_api = get_equation_api()
         if not eq_api:

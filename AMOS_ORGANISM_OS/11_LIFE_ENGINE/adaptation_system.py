@@ -7,7 +7,9 @@ Implements evolutionary strategies and feedback processing.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+
+UTC = timezone.utc
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -72,7 +74,7 @@ class AdaptationSystem:
         self.feedback_queue: List[EnvironmentFeedback] = []
         self.processed_feedback: List[EnvironmentFeedback] = []
         self.adaptations: Dict[str, Adaptation] = {}
-        self.adaptation_patterns: dict[str, list[str]] = {}
+        self.adaptation_patterns: Dict[str, list[str]] = {}
 
         self._init_default_patterns()
 

@@ -1,6 +1,7 @@
 """Base models for AMOS API contracts."""
 
 from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field

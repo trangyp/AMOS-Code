@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 """AMOS Active Brain - Real-time Cognitive Processing System
 
@@ -172,7 +170,7 @@ Detect:
 
 
 # Global active brain instance
-_active_brain: AMOSActiveBrain | None = None
+_active_brain: Optional[AMOSActiveBrain] = None
 
 
 def get_active_brain() -> AMOSActiveBrain:

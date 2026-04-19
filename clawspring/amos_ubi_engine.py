@@ -11,7 +11,7 @@ Version: 2.0.0
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 try:
     from .superbrain import get_super_brain
@@ -240,7 +240,7 @@ class AMOSUBIEngine:
         description: str,
         domains: Optional[List[str]] = None,
         context: dict = None,
-    ) -> dict[str, UBIResult]:
+    ) -> Dict[str, UBIResult]:
         """Run UBI analysis across specified domains with SuperBrain governance."""
         # CANONICAL: Validate UBI analysis via SuperBrain
         if SUPERBRAIN_AVAILABLE and self._brain:
@@ -408,7 +408,7 @@ def get_ubi_engine() -> AMOSUBIEngine:
 
 def analyze_human_factors(
     description: str, domains: Optional[List[str]] = None
-) -> dict[str, UBIResult]:
+) -> Dict[str, UBIResult]:
     """Quick human factors analysis with UBI alignment."""
     return get_ubi_engine().analyze(description, domains)
 

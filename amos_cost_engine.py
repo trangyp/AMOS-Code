@@ -19,7 +19,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 
 class ModelTier(Enum):
@@ -139,12 +139,12 @@ class AMOSCostEngine:
     """
 
     def __init__(self):
-        self.usage_history: dict[str, list[TokenUsage]] = {}
+        self.usage_history: Dict[str, list[TokenUsage]] = {}
         self.budgets: Dict[str, CostBudget] = {}
         self.cache: Dict[str, CacheEntry] = {}
         self.cache_hits: Dict[str, int] = {}
         self.cache_misses: Dict[str, int] = {}
-        self.alerts: list[dict[str, Any]] = []
+        self.alerts: List[dict[str, Any]] = []
         self._running = False
         self._monitor_task: asyncio.Task = None
         self._max_history_per_component = 1000
@@ -179,7 +179,7 @@ class AMOSCostEngine:
         input_tokens: int,
         output_tokens: int,
         model_tier: ModelTier = ModelTier.BALANCED,
-        metadata: dict[str, Any] = None,
+        metadata: Dict[str, Any] = None,
     ) -> TokenUsage:
         """Record token usage for a component."""
         usage = TokenUsage(

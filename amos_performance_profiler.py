@@ -40,7 +40,7 @@ import tracemalloc
 from collections import defaultdict
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, TypeVar
+from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
 
 # Prometheus integration
 try:
@@ -52,7 +52,6 @@ except ImportError:
 # Cache manager integration
 try:
     from backend.cache.cache_manager import get_cache_manager
-from typing import Callable, TypeVar
     CACHE_AVAILABLE = True
 except ImportError:
     CACHE_AVAILABLE = False
@@ -98,7 +97,7 @@ class PerformanceProfiler:
             return
 
         self._initialized = True
-        self._profiles: dict[str, list[ProfileResult]] = defaultdict(list)
+        self._profiles: Dict[str, list[ProfileResult]] = defaultdict(list)
         self._active_profiles: Dict[str, float] = {}
         self._tracemalloc_enabled = False
         self._metrics = get_metrics_exporter() if METRICS_AVAILABLE else None
@@ -175,7 +174,7 @@ class PerformanceProfiler:
 
         return {name: self.get_stats(name) for name in self._profiles.keys()}
 
-    def get_bottlenecks(self, threshold_ms: float = 100.0) -> list[dict[str, Any]]:
+    def get_bottlenecks(self, threshold_ms: float = 100.0) -> List[dict[str, Any]]:
         """Identify performance bottlenecks above threshold."""
         bottlenecks = []
         for name in self._profiles:

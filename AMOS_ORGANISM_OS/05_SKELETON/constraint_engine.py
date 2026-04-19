@@ -221,7 +221,7 @@ class ConstraintEngine:
             return not bool(re.match(expected, str(actual), re.MULTILINE))
         return False
 
-    def validate_batch(self, filepaths: List[str]) -> dict[str, list[ConstraintResult]]:
+    def validate_batch(self, filepaths: List[str]) -> Dict[str, list[ConstraintResult]]:
         """Validate multiple files."""
         return {fp: self.validate_file(fp) for fp in filepaths}
 

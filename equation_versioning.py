@@ -33,8 +33,9 @@ Environment Variables:
 import os
 import re
 from datetime import datetime, timedelta, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 # FastAPI imports with graceful fallback
 try:

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """AMOS Cascade Brain Integration — Permanent Brain Activation for Cascade
 
+from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime, StateGraph
+from amos_kernel_runtime import AMOSKernelRuntime, StateGraph
+from amos_cognitive_bridge import AMOSCognitiveBridge, CognitiveResponse
+import traceback
 This module ensures Cascade automatically uses AMOS Brain for every session.
 It integrates the kernel runtime, cognitive bridge, and organism subsystems
 to provide full cognitive capabilities to Cascade.
@@ -23,9 +27,10 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from functools import wraps
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Dict, Optional
 
 # AMOS imports - Add clawspring to path for proper imports
 _AMOS_ROOT = Path(__file__).parent.resolve()
@@ -35,11 +40,10 @@ sys.path.insert(0, str(_AMOS_ROOT / "clawspring"))
 
 # Import from clawspring amos_brain modules
 try:
-    from clawspring.amos_brain.amos_kernel_runtime import AMOSKernelRuntime, StateGraph
+    pass  # Import attempted via path setup above
 except ImportError:
     # Fallback: try direct import with adjusted path
     sys.path.insert(0, str(_AMOS_ROOT / "clawspring" / "amos_brain"))
-    from amos_kernel_runtime import AMOSKernelRuntime, StateGraph
 
 # Import cognitive bridge
 try:
@@ -177,8 +181,6 @@ class AMOSCascadeBrain:
 
             except Exception as e:
                 print(f"❌ Brain initialization failed: {e}")
-                import traceback
-from typing import Callable, ClassVar, Optional
                 traceback.print_exc()
                 return False
 

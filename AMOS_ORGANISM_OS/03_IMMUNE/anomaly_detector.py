@@ -83,7 +83,7 @@ class AnomalyDetector:
         # Storage
         self.baselines: Dict[str, MetricBaseline] = {}
         self.anomalies: List[Anomaly] = []
-        self.recent_metrics: dict[str, list[float]] = {}
+        self.recent_metrics: Dict[str, list[float]] = {}
 
         # Detection thresholds
         self.thresholds = {

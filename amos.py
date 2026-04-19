@@ -49,7 +49,6 @@ except ImportError:
     CLAWSPRING_AVAILABLE = False
     # Fallback: try importing directly
     try:
-        from typing import Set
 
         from clawspring import main as clawspring_main
         from multi_agent.subagent import get_agent_definition

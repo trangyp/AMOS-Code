@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
+from typing import List, Tuple
 
 
 @dataclass(frozen=True)
 class ToolPermissionContext:
     deny_names: frozenset[str] = field(default_factory=frozenset)
-    deny_prefixes: tuple[str, ...] = ()
+    deny_prefixes: Tuple[str, ...] = ()
 
     @classmethod
     def from_iterables(

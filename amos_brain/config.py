@@ -199,7 +199,7 @@ class CognitiveConfig:
             "custom_kernels": len(self._custom_kernels),
         }
 
-    def save_to_file(self, filepath: Path | None = None) -> Path:
+    def save_to_file(self, filepath: Optional[Path] = None) -> Path:
         """Save configuration to JSON file."""
         if filepath is None:
             filepath = self._storage_path / "brain_config.json"
@@ -282,7 +282,7 @@ class CognitiveConfig:
 
 
 # Global config instance (using lru_cache for singleton pattern)
-_config_instance: CognitiveConfig | None = None
+_config_instance: Optional[CognitiveConfig] = None
 
 
 @lru_cache(maxsize=1)

@@ -3,7 +3,7 @@
 Provides execution context management.
 """
 
-from typing import Any
+from typing import Any, Dict, Optional
 
 
 class Context:

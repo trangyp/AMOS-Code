@@ -10,8 +10,9 @@ Unable to disconnect itself from the brain.
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+UTC = timezone.utc
 from threading import Lock
-from typing import Any
+from typing import Any, Dict, List
 
 
 @dataclass
@@ -20,7 +21,7 @@ class ClawdTask:
 
     task_id: str
     description: str
-    tool_calls: list[dict[str, Any]]
+    tool_calls: List[dict[str, Any]]
     timestamp: str
     agent_id: str
 
@@ -49,7 +50,7 @@ class ClawdExecutionLayer:
         self._execution_count = 0
         self._status = "absorbed"
 
-    def interpret_and_execute(self, task_description: str, agent_id: str = None) -> dict[str, Any]:
+    def interpret_and_execute(self, task_description: str, agent_id: str = None) -> Dict[str, Any]:
         """Interpret a task and execute through canonical path.
 
         This method demonstrates Clawd's absorbed state:
@@ -109,7 +110,7 @@ class ClawdExecutionLayer:
             "results": results,
         }
 
-    def _interpret_task(self, task_description: str) -> list[dict[str, Any]]:
+    def _interpret_task(self, task_description: str) -> List[dict[str, Any]]:
         """Interpret task into tool calls (Clawd's core capability).
 
         This is where Clawd's intelligence lives - interpreting

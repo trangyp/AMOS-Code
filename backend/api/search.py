@@ -1,5 +1,4 @@
-from typing import Dict, List
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """AMOS Search & Discovery API - Hybrid BM25 + Vector + RRF Search
 

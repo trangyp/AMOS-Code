@@ -294,7 +294,7 @@ class MacroeconomicScanner:
         name: str,
         region: str,
         days: int = 30,
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Get historical data for an indicator."""
         cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
@@ -318,7 +318,7 @@ class MacroeconomicScanner:
             "key_metrics": self._get_key_metrics(),
         }
 
-    def _get_key_metrics(self) -> dict[str, float]:
+    def _get_key_metrics(self) -> Dict[str, float]:
         """Get key economic metrics."""
         metrics = {}
 

@@ -27,7 +27,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -64,7 +64,7 @@ class KnowledgeSynthesisEngine:
         self.agent = None
         self.activation = None
         self.synthesis_cache: Dict[str, SynthesisResult] = {}
-        self.external_data_store: dict[str, list[ExternalData]] = defaultdict(list)
+        self.external_data_store: Dict[str, list[ExternalData]] = defaultdict(list)
         self._init_components()
 
     def _init_components(self):

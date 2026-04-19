@@ -44,8 +44,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import logging
@@ -54,7 +52,8 @@ import uuid
 from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Any, TypeVar
+UTC = timezone.utc
+from typing import Any, Dict, List, Optional, TypeVar
 
 # FastAPI
 from fastapi import (
@@ -81,6 +80,26 @@ except ImportError:
     AMOS_BRAIN_AVAILABLE = False
     logging.warning("amos-brain not available. Running in mock mode.")
 
+# Import auth manager
+try:
+    from amos_auth_manager import AMOSAuthManager, UserRole
+    AUTH_AVAILABLE = True
+    auth_manager = AMOSAuthManager()
+except ImportError:
+    AUTH_AVAILABLE = False
+    auth_manager = None
+    logging.warning("amos_auth_manager not available. Auth features disabled.")
+
+# Import LLM Router
+try:
+    from amos_platform.core.llm_router import LLMRouter, LLMBackend
+    LLM_ROUTER_AVAILABLE = True
+    llm_router = LLMRouter()
+except ImportError:
+    LLM_ROUTER_AVAILABLE = False
+    llm_router = None
+    logging.warning("amos_platform.llm_router not available. LLM features disabled.")
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -97,29 +116,29 @@ T = TypeVar('T')
 class Message(BaseModel):
     role: str = Field(..., pattern="^(system|user|assistant)$")
     content: str
-    timestamp: str | None = None
+    timestamp: Optional[str] = None
 
 class ChatRequest(BaseModel):
     message: str
-    context: list[Message] = Field(default_factory=list)
-    model: str | None = None
+    context: List[Message] = Field(default_factory=list)
+    model: Optional[str] = None
     temperature: float = Field(default=0.7, ge=0, le=2)
-    max_tokens: int | None = Field(default=None, ge=1, le=8192)
+    max_tokens: Optional[int] = Field(default=None, ge=1, le=8192)
     workspace_id: str
 
 class ChatResponse(BaseModel):
     id: str
     message: str
     model: str
-    usage: dict[str, int]
+    usage: Dict[str, int]
     timestamp: str
 
 class AgentRunRequest(BaseModel):
     agent_type: str = Field(..., pattern="^(code_review|repo_scan|fix_generator|security_audit|performance_check|custom)$")
-    target_repo: str | None = None
-    parameters: dict[str, Any] = Field(default_factory=dict)
+    target_repo: Optional[str] = None
+    parameters: Dict[str, Any] = Field(default_factory=dict)
     priority: str = Field(default="normal", pattern="^(low|normal|high|urgent)$")
-    callback_url: str | None = None
+    callback_url: Optional[str] = None
 
 class AgentRunAccepted(BaseModel):
     task_id: str
@@ -131,35 +150,35 @@ class AgentRunResult(BaseModel):
     task_id: str
     status: str
     agent_type: str
-    result: dict[str, Any] | None = None
-    error: str | None = None
-    started_at: str | None = None
-    completed_at: str | None = None
-    duration_ms: int | None = None
+    result: Optional[Dict[str, Any] ] = None
+    error: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    duration_ms: Optional[int] = None
 
 class RepoScanRequest(BaseModel):
     repo_url: str
     branch: str = "main"
-    scan_types: list[str] = Field(default_factory=lambda: ["security", "style"])
+    scan_types: List[str] = Field(default_factory=lambda: ["security", "style"])
     depth: str = Field(default="standard", pattern="^(quick|standard|deep)$")
 
 class RepoScanResult(BaseModel):
     scan_id: str
     repo_url: str
     status: str
-    findings: list[dict[str, Any]]
-    summary: dict[str, int]
+    findings: List[dict[str, Any]]
+    summary: Dict[str, int]
     report_url: str
 
 class RepoFixRequest(BaseModel):
     repo_url: str
     scan_id: str
-    fix_types: list[str] = Field(default_factory=list)
+    fix_types: List[str] = Field(default_factory=list)
     create_pr: bool = True
 
 class WorkflowRunRequest(BaseModel):
     workflow_id: str
-    parameters: dict[str, Any] = Field(default_factory=dict)
+    parameters: Dict[str, Any] = Field(default_factory=dict)
     trigger: str = Field(default="manual", pattern="^(manual|scheduled|webhook|event)$")
 
 class ModelInfo(BaseModel):
@@ -167,20 +186,20 @@ class ModelInfo(BaseModel):
     name: str
     provider: str
     status: str
-    capabilities: list[str]
+    capabilities: List[str]
     context_window: int
-    loaded_at: str | None = None
+    loaded_at: Optional[str] = None
 
 class TaskStatus(BaseModel):
     id: str
     type: str
     status: str
-    progress: float | None = Field(default=None, ge=0, le=100)
-    message: str | None = None
+    progress: Optional[float] = Field(default=None, ge=0, le=100)
+    message: Optional[str] = None
     created_at: str
     updated_at: str
-    completed_at: str | None = None
-    error: str | None = None
+    completed_at: Optional[str] = None
+    error: Optional[str] = None
 
 # =============================================================================
 # Mock Data Stores (replace with real implementations)
@@ -190,9 +209,9 @@ class TaskStore:
     """In-memory task store. Replace with Redis/DB in production."""
     
     def __init__(self):
-        self._tasks: dict[str, dict[str, Any]] = {}
+        self._tasks: Dict[str, dict[str, Any]] = {}
     
-    def create(self, task_type: str, params: dict[str, Any]) -> str:
+    def create(self, task_type: str, params: Dict[str, Any]) -> str:
         task_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
         self._tasks[task_id] = {
@@ -208,7 +227,7 @@ class TaskStore:
         }
         return task_id
     
-    def get(self, task_id: str) -> dict[str, Any] | None:
+    def get(self, task_id: str) -> Optional[Dict[str, Any] ]:
         return self._tasks.get(task_id)
     
     def update(self, task_id: str, **kwargs) -> None:
@@ -216,7 +235,7 @@ class TaskStore:
             self._tasks[task_id].update(kwargs)
             self._tasks[task_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    def list(self, status: str | None = None, limit: int = 20, offset: int = 0) -> list[dict[str, Any]]:
+    def list(self, status: Optional[str] = None, limit: int = 20, offset: int = 0) -> List[dict[str, Any]]:
         tasks = list(self._tasks.values())
         if status:
             tasks = [t for t in tasks if t["status"] == status]
@@ -225,13 +244,16 @@ class TaskStore:
 
 task_store = TaskStore()
 
+# Server start time for uptime tracking
+_start_time = time.time()
+
 # =============================================================================
 # Authentication
 # =============================================================================
 
 security = HTTPBearer(auto_error=False)
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials | None = Depends(security)) -> dict[str, Any]:
+async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Dict[str, Any]:
     """Validate JWT token and return user info."""
     if not credentials:
         raise HTTPException(
@@ -240,18 +262,35 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials | None = De
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # TODO: Implement real JWT validation
-    # For now, mock authentication
+    # Real JWT validation using AMOSAuthManager
+    if AUTH_AVAILABLE and auth_manager:
+        try:
+            token_data = auth_manager.verify_token(credentials.credentials)
+            return {
+                "id": token_data.sub,
+                "email": token_data.username,
+                "role": token_data.role,
+                "permissions": token_data.permissions,
+            }
+        except HTTPException:
+            raise
+        except Exception as e:
+            logging.error(f"Token validation error: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication token",
+            )
+    
+    # Fallback: mock authentication for development
     if credentials.credentials == "test-token":
         return {"id": "user-1", "email": "test@amos.io", "role": "admin"}
     
-    # In production, validate against auth service
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid authentication token",
     )
 
-async def require_workspace(request: Request, user: dict[str, Any] = Depends(get_current_user)) -> str:
+async def require_workspace(request: Request, user: Dict[str, Any] = Depends(get_current_user)) -> str:
     """Extract workspace ID from header or user context."""
     workspace_id = request.headers.get("X-Workspace-ID")
     if not workspace_id:
@@ -267,8 +306,8 @@ class EventBus:
     """Async event bus for cross-repo communication."""
     
     def __init__(self):
-        self._subscribers: dict[str, list[Callable]] = {}
-        self._redis: Any | None = None
+        self._subscribers: Dict[str, list[Callable]] = {}
+        self._redis: Optional[Any] = None
     
     async def connect(self, redis_url: str = "redis://localhost:6379") -> None:
         """Connect to Redis for event streaming."""
@@ -279,7 +318,7 @@ class EventBus:
         except ImportError:
             logger.warning("redis not installed. Event bus running in local mode.")
     
-    async def publish(self, topic: str, payload: dict[str, Any]) -> None:
+    async def publish(self, topic: str, payload: Dict[str, Any]) -> None:
         """Publish event to topic."""
         event = {
             "event_id": str(uuid.uuid4()),
@@ -320,8 +359,8 @@ class WebSocketManager:
     """Manage WebSocket connections for real-time updates."""
     
     def __init__(self):
-        self._connections: dict[str, WebSocket] = {}
-        self._subscriptions: dict[str, set[str]] = {}
+        self._connections: Dict[str, WebSocket] = {}
+        self._subscriptions: Dict[str, set[str]] = {}
     
     async def connect(self, websocket: WebSocket, client_id: str) -> None:
         await websocket.accept()
@@ -346,7 +385,7 @@ class WebSocketManager:
         if channel in self._subscriptions:
             self._subscriptions[channel].discard(client_id)
     
-    async def broadcast(self, channel: str, message: dict[str, Any]) -> None:
+    async def broadcast(self, channel: str, message: Dict[str, Any]) -> None:
         """Broadcast message to all subscribers of a channel."""
         if channel not in self._subscriptions:
             return
@@ -365,7 +404,7 @@ class WebSocketManager:
         for client_id in disconnected:
             self.disconnect(client_id)
     
-    async def send_to_client(self, client_id: str, message: dict[str, Any]) -> None:
+    async def send_to_client(self, client_id: str, message: Dict[str, Any]) -> None:
         """Send message to specific client."""
         if client_id in self._connections:
             await self._connections[client_id].send_json(message)
@@ -384,7 +423,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await event_bus.connect()
     
     # Subscribe to events for WebSocket broadcasting
-    async def broadcast_to_ws(event: dict[str, Any]) -> None:
+    async def broadcast_to_ws(event: Dict[str, Any]) -> None:
         await ws_manager.broadcast("events", event)
     
     event_bus.subscribe("#", broadcast_to_ws)  # Subscribe to all topics
@@ -416,7 +455,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # =============================================================================
 
 @app.get("/health")
-async def health_check() -> dict[str, Any]:
+async def health_check() -> Dict[str, Any]:
     """Health check endpoint - no auth required."""
     return {
         "status": "healthy",
@@ -429,11 +468,12 @@ async def health_check() -> dict[str, Any]:
     }
 
 @app.get("/status")
-async def system_status(user: dict[str, Any] = Depends(get_current_user)) -> dict[str, Any]:
+async def system_status(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
     """Detailed system status."""
+    uptime = int(time.time() - _start_time)
     return {
         "version": "1.0.0",
-        "uptime_seconds": int(time.time()),  # TODO: Track actual uptime
+        "uptime_seconds": uptime,
         "user": user["email"],
         "components": {
             "api": {"status": "healthy", "latency_ms": 1.0, "last_check": datetime.now(timezone.utc).isoformat()},
@@ -447,18 +487,38 @@ async def system_status(user: dict[str, Any] = Depends(get_current_user)) -> dic
 @app.post("/chat", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    user: dict[str, Any] = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(get_current_user),
 ) -> ChatResponse:
     """Send chat message and get AI response."""
     request_id = str(uuid.uuid4())
     
-    # TODO: Integrate with actual AMOS brain
-    # For now, return mock response
+    # Real LLM integration via LLMRouter
+    response_text = ""
+    model_used = request.model or "ollama/llama3.2"
+    
+    if LLM_ROUTER_AVAILABLE and llm_router:
+        try:
+            # Use LLM router for real inference
+            messages = [{"role": "user", "content": request.message}]
+            llm_response = await llm_router.chat(model_used, messages)
+            response_text = llm_response.get("content", "")
+            model_used = llm_response.get("model", model_used)
+        except Exception as e:
+            logger.error(f"LLM inference failed: {e}")
+            response_text = f"Error: LLM inference failed - {str(e)}"
+    else:
+        # Fallback: mock response when LLM not available
+        response_text = f"Echo: {request.message}"
+    
     response = ChatResponse(
         id=request_id,
-        message=f"Echo: {request.message}",
-        model=request.model or "default",
-        usage={"prompt_tokens": len(request.message), "completion_tokens": 10, "total_tokens": 10 + len(request.message)},
+        message=response_text,
+        model=model_used,
+        usage={
+            "prompt_tokens": len(request.message),
+            "completion_tokens": len(response_text.split()),
+            "total_tokens": len(request.message) + len(response_text.split()),
+        },
         timestamp=datetime.now(timezone.utc).isoformat(),
     )
     
@@ -475,7 +535,7 @@ async def chat(
 @app.post("/agent/run", response_model=AgentRunAccepted, status_code=202)
 async def run_agent(
     request: AgentRunRequest,
-    user: dict[str, Any] = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(get_current_user),
 ) -> AgentRunAccepted:
     """Execute an agent task asynchronously."""
     task_id = task_store.create("agent", request.model_dump())
@@ -502,7 +562,7 @@ async def run_agent(
 @app.get("/agent/status/{task_id}", response_model=AgentRunResult)
 async def get_agent_status(
     task_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(get_current_user),
 ) -> AgentRunResult:
     """Get agent task status."""
     task = task_store.get(task_id)
@@ -522,8 +582,8 @@ async def get_agent_status(
 @app.post("/agent/cancel/{task_id}")
 async def cancel_agent(
     task_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Cancel a running agent task."""
     task = task_store.get(task_id)
     if not task:
@@ -542,8 +602,8 @@ async def cancel_agent(
 @app.post("/repo/scan", status_code=202)
 async def scan_repo(
     request: RepoScanRequest,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Initiate repository scan."""
     scan_id = task_store.create("repo_scan", request.model_dump())
     task_store.update(scan_id, status="running")
@@ -559,8 +619,8 @@ async def scan_repo(
 @app.post("/repo/fix", status_code=202)
 async def fix_repo(
     request: RepoFixRequest,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Apply fixes to repository."""
     fix_id = task_store.create("repo_fix", request.model_dump())
     task_store.update(fix_id, status="running")
@@ -577,8 +637,8 @@ async def fix_repo(
 @app.get("/repo/status/{scan_id}")
 async def get_repo_status(
     scan_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get repository scan status."""
     task = task_store.get(scan_id)
     if not task:
@@ -597,8 +657,8 @@ async def get_repo_status(
 @app.post("/workflow/run", status_code=202)
 async def run_workflow(
     request: WorkflowRunRequest,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Execute a workflow."""
     execution_id = task_store.create("workflow", request.model_dump())
     task_store.update(execution_id, status="running")
@@ -618,8 +678,8 @@ async def run_workflow(
 @app.get("/workflow/status/{workflow_id}")
 async def get_workflow_status(
     workflow_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get workflow status."""
     task = task_store.get(workflow_id)
     if not task:
@@ -636,8 +696,8 @@ async def get_workflow_status(
 # Model Routes
 @app.get("/models")
 async def list_models(
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """List available AI models."""
     # Mock models - in production, query Ollama/LM Studio/etc.
     models = [
@@ -664,11 +724,11 @@ async def list_models(
 # Task Routes
 @app.get("/tasks")
 async def list_tasks(
-    status: str | None = None,
+    status: Optional[str] = None,
     limit: int = 20,
     offset: int = 0,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """List user tasks."""
     tasks = task_store.list(status=status, limit=limit, offset=offset)
     return {
@@ -679,8 +739,8 @@ async def list_tasks(
 @app.get("/tasks/{task_id}")
 async def get_task(
     task_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
-) -> dict[str, Any]:
+    user: Dict[str, Any] = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get task details."""
     task = task_store.get(task_id)
     if not task:
@@ -691,7 +751,7 @@ async def get_task(
 @app.delete("/tasks/{task_id}", status_code=204)
 async def delete_task(
     task_id: str,
-    user: dict[str, Any] = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(get_current_user),
 ) -> None:
     """Delete a task."""
     if task_id in task_store._tasks:
@@ -740,7 +800,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
 # Event Handlers (for async processing)
 # =============================================================================
 
-async def handle_repo_scan_completed(event: dict[str, Any]) -> None:
+async def handle_repo_scan_completed(event: Dict[str, Any]) -> None:
     """Handle repo scan completion."""
     payload = event.get("payload", {})
     scan_id = payload.get("scan_id")

@@ -4,7 +4,7 @@ import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 
 class CacheStrategy(Enum):
@@ -42,7 +42,7 @@ class LRUCache:
     def __init__(self, capacity: int, max_size_bytes: int = 100 * 1024 * 1024):
         self.capacity = capacity
         self.max_size_bytes = max_size_bytes
-        self.cache: Ordereddict[str, CacheEntry] = OrderedDict()
+        self.cache: OrderedDict[str, CacheEntry] = OrderedDict()
         self.current_size = 0
         self.hits = 0
         self.misses = 0
@@ -149,8 +149,8 @@ class WorkingSetManager:
 
     def __init__(self, max_working_set: int = 1000):
         self.max_working_set = max_working_set
-        self.working_set: set[str] = set()
-        self.access_history: list[tuple[str, float]] = []
+        self.working_set: Set[str] = set()
+        self.access_history: List[tuple[str, float]] = []
 
     def access_page(self, page_id: str) -> bool:
         """Record page access."""
@@ -247,8 +247,8 @@ class PrefetchEngine:
     """Predicts and prefetches likely-needed data."""
 
     def __init__(self):
-        self.access_patterns: dict[str, list[str]] = {}
-        self.prediction_cache: dict[str, list[str]] = {}
+        self.access_patterns: Dict[str, list[str]] = {}
+        self.prediction_cache: Dict[str, list[str]] = {}
 
     def record_access(self, key: str) -> None:
         """Record data access for pattern analysis."""
@@ -519,8 +519,6 @@ _memory_engine: Optional[MemoryOptimizationEngine] = None
 
 def get_memory_optimization_engine() -> MemoryOptimizationEngine:
     """Get or create the Memory Optimization Engine singleton."""
-from __future__ import annotations
-
     global _memory_engine
     if _memory_engine is None:
         _memory_engine = MemoryOptimizationEngine()

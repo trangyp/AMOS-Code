@@ -11,7 +11,7 @@ Version: 1.0.0
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "06_MUSCLE"))
@@ -32,7 +32,7 @@ class CostAwareWorker(AmosWorkerEngine):
         self.blood = FinancialEngine(organism_root)
 
     def execute_with_budget(
-        self, plan: dict[str, Any], context: Optional[dict] = None, budget_category: str = "compute"
+        self, plan: Dict[str, Any], context: Optional[dict] = None, budget_category: str = "compute"
     ) -> WorkerResult:
         """Execute plan with cost tracking."""
         # Check budget before execution
@@ -93,7 +93,7 @@ class CostAwareWorker(AmosWorkerEngine):
 
         return result
 
-    def get_financial_status(self) -> dict[str, Any]:
+    def get_financial_status(self) -> Dict[str, Any]:
         """Get financial status from BLOOD."""
         return self.blood.get_status()
 

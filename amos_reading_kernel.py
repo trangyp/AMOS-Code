@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 """
 AMOS Reading Kernel (RK_AMOS)
@@ -1016,7 +1016,7 @@ class BindingEngine:
 
     def _attempt_bind(
         self, snu: SignalNoiseUnit, dialogue_ctx: dict, memory_ctx: dict, world_ctx: dict
-    ) -> Binding | None:
+    ) -> Optional[Binding]:
         """Attempt to bind a single unit."""
         binding = Binding()
         binding.slot = snu.segment_id
@@ -1059,7 +1059,7 @@ class SalienceEngine:
         self,
         signal_noise_units: List[SignalNoiseUnit],
         binding_state: BindingState,
-        active_goals: list[dict[str, Any]],
+        active_goals: List[dict[str, Any]],
     ) -> List[SalienceUnit]:
         """Rank segments by salience."""
         units = []
@@ -1220,7 +1220,7 @@ class ResolutionEngine:
     E_resolve: Collapse to best verified read.
     """
 
-    def resolve(self, lattice: ReadingLattice) -> SemanticHypothesis | None:
+    def resolve(self, lattice: ReadingLattice) -> Optional[SemanticHypothesis]:
         """Select best hypothesis from lattice."""
         if not lattice.hypotheses:
             return None
@@ -1258,7 +1258,7 @@ class VerificationEngine:
 
     def verify(
         self,
-        resolved_read: SemanticHypothesis | None,
+        resolved_read: Optional[SemanticHypothesis],
         governance_state: Dict[str, Any],
         epistemic_state: Dict[str, Any],
     ) -> Dict[str, Any]:
@@ -1315,9 +1315,9 @@ class StabilizationEngine:
     def stabilize(
         self,
         verified_result: Dict[str, Any],
-        resolved_read: SemanticHypothesis | None,
+        resolved_read: Optional[SemanticHypothesis],
         lattice: ReadingLattice,
-    ) -> StableRead | None:
+    ) -> Optional[StableRead]:
         """Stabilize read for downstream consumption."""
 
         stable = StableRead()
@@ -1355,7 +1355,7 @@ class StabilizationEngine:
 
         return stable
 
-    def _compile_goal(self, resolved_read: SemanticHypothesis | None) -> CompiledGoal:
+    def _compile_goal(self, resolved_read: Optional[SemanticHypothesis]) -> CompiledGoal:
         """Compile resolved read into executable goal."""
         if resolved_read is None:
             return CompiledGoal(goal_type=GoalType.BLOCK, objective="no_read")
@@ -1461,7 +1461,7 @@ class ReadingStateMachine:
 
     def __init__(self):
         self.state = ReadingState.RAW
-        self.history: list[tuple[ReadingState, str]] = []
+        self.history: List[tuple[ReadingState, str]] = []
 
         # Define valid transitions
         self.transitions = {
@@ -1565,7 +1565,7 @@ class AMOSReadingKernel:
         dialogue_context: Dict[str, Any] = None,
         memory_context: Dict[str, Any] = None,
         world_context: Dict[str, Any] = None,
-    ) -> StableRead | None:
+    ) -> Optional[StableRead]:
         """
         Execute full reading pipeline on raw text.
 
@@ -1687,7 +1687,7 @@ class AMOSReadingKernel:
         return stable
 
     def _build_clarification_read(
-        self, lattice: ReadingLattice, resolved: SemanticHypothesis | None
+        self, lattice: ReadingLattice, resolved: Optional[SemanticHypothesis]
     ) -> StableRead:
         """Build a clarification request read."""
         stable = StableRead()
@@ -1804,7 +1804,7 @@ def safe_execution_gate(
 # =============================================================================
 
 # Global kernel instance
-_reading_kernel: AMOSReadingKernel | None = None
+_reading_kernel: Optional[AMOSReadingKernel] = None
 
 
 def get_reading_kernel() -> AMOSReadingKernel:
@@ -1827,7 +1827,7 @@ async def read_text(
     dialogue_context: Dict[str, Any] = None,
     memory_context: Dict[str, Any] = None,
     world_context: Dict[str, Any] = None,
-) -> StableRead | None:
+) -> Optional[StableRead]:
     """
     Read text through AMOS Reading Kernel.
 

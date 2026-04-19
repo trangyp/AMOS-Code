@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 import numpy as np
+from typing import List, Tuple
 
 # ============================================================================
 # CROSS-DOMAIN MATHEMATICAL PATTERNS
@@ -57,7 +58,7 @@ def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
 
 def scaled_dot_product_attention(
     Q: np.ndarray, K: np.ndarray, V: np.ndarray, mask: np.ndarray = None
-) -> tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Transformer Attention: Attention(Q,K,V) = softmax(QK^T/√d_k)V
     Pattern: Information Flow
@@ -76,8 +77,8 @@ def scaled_dot_product_attention(
 
 
 def backpropagation_gradient(
-    loss_gradient: np.ndarray, activations: list[np.ndarray], weights: list[np.ndarray]
-) -> list[np.ndarray]:
+    loss_gradient: np.ndarray, activations: List[np.ndarray], weights: List[np.ndarray]
+) -> List[np.ndarray]:
     """
     Backpropagation Chain Rule: ∂E/∂w = ∂E/∂o · ∂o/∂net · ∂net/∂w
     Pattern: Convex Optimization
@@ -114,7 +115,7 @@ def littles_law(arrival_rate: float, avg_service_time: float) -> float:
 
 
 def utilization_bound_rm_scheduling(
-    tasks: list[tuple[float, float]],  # (execution_time, period)
+    tasks: List[tuple[float, float]],  # (execution_time, period)
 ) -> bool:
     """
     Rate Monotonic Schedulability: Σ(C_i/P_i) ≤ n(2^(1/n) - 1)
@@ -286,7 +287,7 @@ class EquationRegistry:
     def get_by_pattern(self, pattern: MathematicalPattern) -> List[Equation]:
         return self.pattern_index[pattern]
 
-    def find_isomorphisms(self) -> list[tuple[str, str, str]]:
+    def find_isomorphisms(self) -> List[tuple[str, str, str]]:
         """
         Find equations that share the same mathematical structure
         Returns: [(eq1_name, eq2_name, pattern_description)]

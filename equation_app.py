@@ -46,7 +46,7 @@ import os
 import time
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, Dict
 
 # Configure logging
 logging.basicConfig(

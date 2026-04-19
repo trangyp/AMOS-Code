@@ -24,9 +24,10 @@ import os
 import sys
 import json
 import importlib.util
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from abc import ABC, abstractmethod
 import asyncio
@@ -113,7 +114,7 @@ class ToolPlugin(BasePlugin):
     """Plugin that provides new tools for agents."""
 
     @abstractmethod
-    async def get_tools(self) -> dict[str, Callable]:
+    async def get_tools(self) -> Dict[str, Callable]:
         """Return dictionary of tool name -> function."""
         pass
 
@@ -150,7 +151,7 @@ class PolicyPlugin(BasePlugin):
     """Plugin that provides governance policies."""
 
     @abstractmethod
-    async def get_policies(self) -> list[dict[str, Any]]:
+    async def get_policies(self) -> List[dict[str, Any]]:
         """Return list of policy definitions."""
         pass
 
@@ -172,7 +173,7 @@ class PluginRegistry:
         self.tools: Dict[str, Callable] = {}
         self.interceptors: List[InterceptorPlugin] = []
         self.policies: List[PolicyPlugin] = []
-        self.hooks: dict[str, list[Callable]] = {}
+        self.hooks: Dict[str, list[Callable]] = {}
         self._lock = asyncio.Lock()
 
     async def discover_plugins(self) -> List[str]:
@@ -228,8 +229,6 @@ class PluginRegistry:
 
                 # Generate plugin ID
                 import hashlib
-from typing import Callable, List, Optional
-from typing import Dict
                 plugin_id = hashlib.md5(plugin_path.encode()).hexdigest()[:8]
 
                 if plugin_id in self.plugins:
@@ -428,7 +427,7 @@ from typing import Dict
 
         return plugins
 
-    def get_available_tools(self) -> dict[str, Callable]:
+    def get_available_tools(self) -> Dict[str, Callable]:
         """Get all available tools from plugins."""
         return self.tools.copy()
 
@@ -436,7 +435,7 @@ from typing import Dict
         self,
         action: str,
         context: Dict[str, Any]
-    ) -> list[dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """Evaluate all policy plugins."""
         results = []
 
@@ -522,7 +521,7 @@ async def discover_and_load_all():
     return loaded
 
 
-def get_plugin_tools() -> dict[str, Callable]:
+def get_plugin_tools() -> Dict[str, Callable]:
     """Get all plugin-provided tools."""
     return plugin_registry.get_available_tools()
 

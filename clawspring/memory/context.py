@@ -15,6 +15,7 @@ from .store import (
     search_memory,
 )
 from .types import MEMORY_SYSTEM_PROMPT
+from typing import List
 
 # ── Index truncation ───────────────────────────────────────────────────────
 

@@ -169,7 +169,7 @@ class WorldModelEngine:
             "recommendation": geo_assessment.get("recommendation", "no specific recommendation"),
         }
 
-    def get_sector_recommendations(self) -> list[dict[str, Any]]:
+    def get_sector_recommendations(self) -> List[dict[str, Any]]:
         """Get investment recommendations by sector."""
         opportunities = self.sectors.scan_opportunities()
         recommendations = []

@@ -34,8 +34,9 @@ Phase: 17
 import uuid
 from contextvars import ContextVar
 from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
-from typing import Any
+from typing import Any, List, Optional
 
 # SQLAlchemy imports
 try:
@@ -510,7 +511,7 @@ class WorkspaceManager:
         )
         return result.scalar_one_or_none()
 
-    async def get_user_workspaces(self, user_id: int) -> list["Workspace"]:
+    async def get_user_workspaces(self, user_id: int) -> List["Workspace"]:
         """Get all workspaces for a user."""
         if not MULTITENANCY_AVAILABLE:
             return []

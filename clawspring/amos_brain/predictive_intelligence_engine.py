@@ -24,8 +24,6 @@ Owner: Trang Phan
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 
 import json
 import math
@@ -35,7 +33,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
 # Import detection for data source
 try:
@@ -99,7 +97,7 @@ class MetricSnapshot:
     timestamp: float
     metric_name: str
     value: float
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -110,7 +108,7 @@ class TrendAnalysis:
     direction: TrendDirection
     slope: float  # Rate of change per hour
     volatility: float  # Standard deviation
-    recent_values: list[float] = field(default_factory=list)
+    recent_values: List[float] = field(default_factory=list)
 
     @property
     def is_accelerating(self) -> bool:
@@ -152,7 +150,7 @@ class Prediction:
     actual_value: float = None
     prediction_error: float = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "prediction_id": self.prediction_id,
             "timestamp": datetime.fromtimestamp(self.timestamp).isoformat(),
@@ -176,7 +174,7 @@ class PredictiveAlert:
 
     alert_id: str
     timestamp: float
-    predictions: list[Prediction]
+    predictions: List[Prediction]
 
     # Aggregated assessment
     overall_risk: float
@@ -205,7 +203,7 @@ class TimeSeriesForecaster:
 
     def __init__(self, max_history: int = 100):
         self.max_history = max_history
-        self.history: dict[str, deque[MetricSnapshot]] = {}
+        self.history: Dict[str, deque[MetricSnapshot]] = {}
 
     def add_measurement(self, snapshot: MetricSnapshot) -> None:
         """Add a metric measurement to history."""
@@ -219,7 +217,7 @@ class TimeSeriesForecaster:
         metric_name: str,
         horizon_minutes: float,
         method: str = "auto",
-    ) -> Prediction | None:
+    ) -> Optional[Prediction]:
         """
         Forecast future value of a metric.
 
@@ -303,7 +301,7 @@ class TimeSeriesForecaster:
             time_until_issue=time_until,
         )
 
-    def _select_method(self, values: list[float]) -> str:
+    def _select_method(self, values: List[float]) -> str:
         """Auto-select best forecasting method based on data."""
         if len(values) < 5:
             return "linear"
@@ -325,10 +323,10 @@ class TimeSeriesForecaster:
 
     def _linear_forecast(
         self,
-        values: list[float],
-        timestamps: list[float],
+        values: List[float],
+        timestamps: List[float],
         target_time: float,
-    ) -> tuple[float, float]:
+    ) -> Tuple[float, float]:
         """Linear trend extrapolation."""
         n = len(values)
 
@@ -375,9 +373,9 @@ class TimeSeriesForecaster:
 
     def _exponential_forecast(
         self,
-        values: list[float],
+        values: List[float],
         horizon_minutes: float,
-    ) -> tuple[float, float]:
+    ) -> Tuple[float, float]:
         """Simple exponential smoothing."""
         alpha = 0.3  # Smoothing factor
 
@@ -396,10 +394,10 @@ class TimeSeriesForecaster:
 
     def _seasonal_forecast(
         self,
-        values: list[float],
-        timestamps: list[float],
+        values: List[float],
+        timestamps: List[float],
         horizon_minutes: float,
-    ) -> tuple[float, float]:
+    ) -> Tuple[float, float]:
         """Simple seasonal pattern detection."""
         # Detect period (simplified)
         if len(values) < 10:
@@ -499,7 +497,7 @@ class TimeSeriesForecaster:
         else:
             return "continue_normal_monitoring"
 
-    def analyze_trends(self) -> list[TrendAnalysis]:
+    def analyze_trends(self) -> List[TrendAnalysis]:
         """Analyze trends for all tracked metrics."""
         trends = []
 
@@ -569,22 +567,22 @@ class PredictiveIntelligenceEngine:
     DEFAULT_HORIZONS = [5, 15, 60, 360]  # minutes
     ALERT_THRESHOLD = 0.7  # Risk score to trigger alert
 
-    def __init__(self, config: dict[str, Any] = None):
+    def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
         self.forecaster = TimeSeriesForecaster(max_history=self.config.get("max_history", 100))
 
         # State
-        self._predictions: list[Prediction] = []
-        self._alerts: list[PredictiveAlert] = []
-        self._last_detection: UnifiedDetectionReport | None = None
+        self._predictions: List[Prediction] = []
+        self._alerts: List[PredictiveAlert] = []
+        self._last_detection: Optional[UnifiedDetectionReport] = None
 
         # Integration
-        self._remediation_engine: AutoRemediationEngine | None = None
+        self._remediation_engine: Optional[AutoRemediationEngine] = None
         if REMEDIATION_AVAILABLE:
             self._remediation_engine = AutoRemediationEngine()
 
         # Callbacks
-        self._alert_handlers: list[Callable[[PredictiveAlert], None]] = []
+        self._alert_handlers: List[Callable[[PredictiveAlert], None]] = []
 
     def record_detection(self, report: UnifiedDetectionReport) -> None:
         """
@@ -620,8 +618,8 @@ class PredictiveIntelligenceEngine:
 
     def generate_predictions(
         self,
-        horizons: list[float] = None,
-    ) -> list[Prediction]:
+        horizons: List[float] = None,
+    ) -> List[Prediction]:
         """
         Generate predictions for all tracked metrics.
 
@@ -645,7 +643,7 @@ class PredictiveIntelligenceEngine:
 
         return predictions
 
-    def check_for_alerts(self) -> list[PredictiveAlert]:
+    def check_for_alerts(self) -> List[PredictiveAlert]:
         """
         Check predictions and generate alerts for high-risk forecasts.
 
@@ -661,7 +659,7 @@ class PredictiveIntelligenceEngine:
             return alerts
 
         # Group by time window
-        time_windows: dict[str, list[Prediction]] = {}
+        time_windows: Dict[str, list[Prediction]] = {}
         for pred in high_risk:
             window_key = pred.horizon.value
             if window_key not in time_windows:
@@ -700,7 +698,7 @@ class PredictiveIntelligenceEngine:
     def trigger_preventive_remediation(
         self,
         alert: PredictiveAlert,
-    ) -> RemediationPlan | None:
+    ) -> Optional[RemediationPlan]:
         """
         Trigger preventive remediation for predicted issue.
 
@@ -758,7 +756,7 @@ class PredictiveIntelligenceEngine:
         # The remediation engine will see the predicted issue severity
         return base
 
-    def get_trend_report(self) -> dict[str, Any]:
+    def get_trend_report(self) -> Dict[str, Any]:
         """Generate comprehensive trend analysis report."""
         trends = self.forecaster.analyze_trends()
 
@@ -792,7 +790,7 @@ class PredictiveIntelligenceEngine:
             "recommendations": self._generate_recommendations(trends),
         }
 
-    def _generate_recommendations(self, trends: list[TrendAnalysis]) -> list[str]:
+    def _generate_recommendations(self, trends: List[TrendAnalysis]) -> List[str]:
         """Generate recommendations based on trends."""
         recs = []
 
@@ -822,7 +820,7 @@ class PredictiveIntelligenceEngine:
 
         return recs
 
-    def get_prediction_accuracy(self) -> dict[str, float]:
+    def get_prediction_accuracy(self) -> Dict[str, float]:
         """
         Calculate prediction accuracy for validated predictions.
 
@@ -848,7 +846,7 @@ class PredictiveIntelligenceEngine:
             "count": len(validated),
         }
 
-    def export_predictions(self, output_path: Path | None = None) -> Path:
+    def export_predictions(self, output_path: Optional[Path] = None) -> Path:
         """Export all predictions to JSON."""
         if output_path is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

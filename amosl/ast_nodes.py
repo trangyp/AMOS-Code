@@ -6,6 +6,7 @@ Implements the 9-tuple language structure:
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from typing import Any, List, Optional
 
 
 class Substrate(Enum):

@@ -4,6 +4,7 @@ Provides tool registration and lookup functionality.
 """
 
 from collections.abc import Callable
+from typing import Dict, List, Optional
 
 
 class Tool:
@@ -29,7 +30,7 @@ class ToolRegistry:
         """Get a tool by name."""
         return self._tools.get(name)
 
-    def list_tools(self) -> list[str]:
+    def list_tools(self) -> List[str]:
         """List all registered tool names."""
         return list(self._tools.keys())
 
