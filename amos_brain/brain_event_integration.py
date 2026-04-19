@@ -1,16 +1,18 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Brain Event Integration - Real-time brain event processing.
 
 Provides brain event streaming and processing for real-time updates.
 """
-from __future__ import annotations
 
 
 import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 
 

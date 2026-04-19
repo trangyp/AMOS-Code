@@ -567,21 +567,48 @@ async def run_agent(
     request: AgentRunRequest,
     user: Dict[str, Any] = Depends(get_current_user),
 ) -> AgentRunAccepted:
-    """Execute an agent task asynchronously."""
+    """Execute an agent task asynchronously with brain-powered processing."""
     task_id = task_store.create("agent", request.model_dump())
-    
+
     # Update to running
     task_store.update(task_id, status="running")
-    
-    # Publish event
+
+    # Brain-powered cognitive analysis for the agent task
+    if AMOS_BRAIN_AVAILABLE and brain_client:
+        try:
+            # Use brain to analyze and enhance the agent task
+            decision = await brain_client.decide(
+                f"Execute {request.agent_type} agent on {request.target_repo}: {request.command}",
+                options=["execute", "defer", "reject"]
+            )
+            logger.info(f"Brain decision for agent task {task_id}: {decision.approved}")
+
+            if not decision.approved:
+                task_store.update(
+                    task_id,
+                    status="rejected",
+                    error=f"Brain rejected: {decision.reasoning}",
+                    completed_at=datetime.now(timezone.utc).isoformat()
+                )
+                return AgentRunAccepted(
+                    task_id=task_id,
+                    status="rejected",
+                    estimated_duration_seconds=0,
+                    queue_position=0,
+                )
+        except Exception as e:
+            logger.error(f"Brain decision failed for agent task: {e}")
+
+    # Publish event for async processing
     await event_bus.publish("claws.agent.requested", {
         "task_id": task_id,
         "agent_type": request.agent_type,
         "target_repo": request.target_repo,
         "priority": request.priority,
         "user_id": user["id"],
+        "brain_enhanced": AMOS_BRAIN_AVAILABLE,
     })
-    
+
     return AgentRunAccepted(
         task_id=task_id,
         status="running",

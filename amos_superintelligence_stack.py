@@ -1891,6 +1891,7 @@ class ProblemFindingKernel(CognitiveKernel):
                     potential_impact=0.9,
                     suggested_action="Step back and fully characterize the problem first",
                 )
+            )
 
         return problems
 

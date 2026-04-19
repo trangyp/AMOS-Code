@@ -47,8 +47,8 @@ class Equation:
     latex: str
     python_impl: Callable[..., Any]
     description: str
-    parameters: Dict[str, str] = field(default_factory=dict)
-    invariant: str = None
+    parameters: dict[str, str] = field(default_factory=dict)
+    invariant: str | None = None
     source_framework: str = ""
 
     def evaluate(self, **kwargs) -> Any:
@@ -78,9 +78,9 @@ class Framework:
 
     name: str
     category: str
-    equations: List[str] = field(default_factory=list)
-    invariants: List[str] = field(default_factory=list)
-    constants: Dict[str, float] = field(default_factory=dict)
+    equations: list[str] = field(default_factory=list)
+    invariants: list[str] = field(default_factory=list)
+    constants: dict[str, float] = field(default_factory=dict)
 
 
 class UISubEngine:

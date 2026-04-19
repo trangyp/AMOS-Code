@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """AMOS Thinking Kernel - Core State Transformation Engine
 
 This module implements the formal thinking model defined in AMOS_THINKING_KERNEL_SPEC.md.
@@ -22,9 +24,11 @@ Architecture:
 import math
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-UTC = timezone.utc
 from enum import Enum
 from functools import lru_cache
+from typing import Any, Dict, List, Optional, Tuple
+
+UTC = timezone.utc
 
 # ============================================================================
 # Section 1: Enums and Type Definitions

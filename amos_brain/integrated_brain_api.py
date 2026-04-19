@@ -1,14 +1,16 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Optional
 
 """Integrated Brain API - High-level brain interface for external systems.
 
 Provides a unified API for accessing brain cognitive capabilities.
 """
-from __future__ import annotations
 
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 UTC = timezone.utc
 
 from .facade import BrainClient

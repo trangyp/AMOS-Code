@@ -60,8 +60,8 @@ def fix_file(filepath):
     
     # Fix 2: Fix datetime.UTC to datetime.timezone.utc (in imports)
     content = re.sub(r'from datetime import datetime, UTC', r'from datetime import datetime, timezone', content)
-UTC = timezone.utc
-    
+    content = re.sub(r'UTC = timezone.utc', r'UTC = timezone.utc', content)
+
     # Fix 3: Fix datetime.UTC usage
     content = re.sub(r'datetime\.UTC', r'timezone.utc', content)
     
