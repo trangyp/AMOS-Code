@@ -113,11 +113,11 @@ class BrainPoweredArchitectureAnalyzer:
         # 1. Build architecture graph
         report.graph = self.builder.build_from_repo()
 
-        # 2. Check invariants
-        report.violations = report.graph.check_invariants()
+        # 2. Check boundary violations
+        report.violations = report.graph.find_boundary_violations()
 
         # 3. Find hidden interfaces
-        report.hidden_interfaces = report.graph.hidden_interfaces
+        report.hidden_interfaces = report.graph.find_hidden_interfaces()
 
         # 4. Find authority conflicts
         report.authority_conflicts = self._find_authority_conflicts(report.graph)

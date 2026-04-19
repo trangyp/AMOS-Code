@@ -7,7 +7,7 @@ budget variance analysis.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
@@ -36,7 +36,7 @@ class Budget:
     allocated: float = 0.0
     spent: float = 0.0
     currency: str = "USD"
-    start_date: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    start_date: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     end_date: Optional[str] = None
     alerts_enabled: bool = True
     alert_threshold: float = 0.8  # Alert at 80% usage

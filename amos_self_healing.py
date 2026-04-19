@@ -724,7 +724,6 @@ class SelfHealingEngine:
 def main():
     """CLI for self-healing engine."""
     import argparse
-from typing import List
 
     parser = argparse.ArgumentParser(
         description="AMOS Self-Healing & Evolutionary Optimization"

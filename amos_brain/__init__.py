@@ -230,6 +230,14 @@ def _lazy_import(module_name: str):
                 from .canon_memory_system import canon_search as csearch
 
                 _lazy_modules[module_name] = csearch
+            elif module_name == "get_canon_orchestrator":
+                from .canon_orchestrator import get_canon_orchestrator as gco
+
+                _lazy_modules[module_name] = gco
+            elif module_name == "canon_orchestrate":
+                from .canon_orchestrator import canon_orchestrate as co
+
+                _lazy_modules[module_name] = co
         except Exception as _load_err:
             # Capture values by using default arguments to avoid closure bug
             def _make_error_loader(name: str, err: str):

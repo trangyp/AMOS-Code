@@ -35,8 +35,6 @@ from amos_brain.cookbook import ArchitectureDecision, ProblemDiagnosis
 # Import organism subsystems (with fallback stubs)
 try:
     from organism import AmosOrganism
-from typing import Optional
-
     _organism_available = True
 except ImportError:
     _organism_available = False
