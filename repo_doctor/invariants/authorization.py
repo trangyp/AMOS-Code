@@ -19,8 +19,6 @@ Invariant checks:
 Based on 2024 RBAC/ABAC authorization best practices.
 """
 
-from __future__ import annotations
-
 import ast
 import re
 from dataclasses import dataclass
@@ -38,7 +36,7 @@ class AuthorizationGap:
     severity: str
     location: str
     message: str
-    suggestion: str | None = None
+    suggestion: str = None
 
 
 class AuthorizationInvariant(Invariant):
@@ -87,12 +85,12 @@ class AuthorizationInvariant(Invariant):
             "is_authenticated",
         ]
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check authorization boundary integrity."""
         context = context or {}
         repo = Path(repo_path)
 
-        gaps: list[AuthorizationGap] = []
+        gaps: List[AuthorizationGap] = []
 
         py_files = list(repo.rglob("*.py"))
 
@@ -143,9 +141,9 @@ class AuthorizationInvariant(Invariant):
             },
         )
 
-    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> list[AuthorizationGap]:
+    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> List[AuthorizationGap]:
         """Analyze a single file for authorization gaps."""
-        gaps: list[AuthorizationGap] = []
+        gaps: List[AuthorizationGap] = []
         relative_path = str(file_path.relative_to(file_path.parent.parent))
 
         gaps.extend(self._find_unprotected_privileged_functions(tree, relative_path, content))
@@ -156,9 +154,9 @@ class AuthorizationInvariant(Invariant):
 
     def _find_unprotected_privileged_functions(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[AuthorizationGap]:
+    ) -> List[AuthorizationGap]:
         """Find privileged functions without auth checks."""
-        gaps: list[AuthorizationGap] = []
+        gaps: List[AuthorizationGap] = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -194,9 +192,9 @@ class AuthorizationInvariant(Invariant):
 
         return gaps
 
-    def _find_hardcoded_roles(self, tree: ast.AST, file_path: str) -> list[AuthorizationGap]:
+    def _find_hardcoded_roles(self, tree: ast.AST, file_path: str) -> List[AuthorizationGap]:
         """Find hard-coded role strings that may drift."""
-        gaps: list[AuthorizationGap] = []
+        gaps: List[AuthorizationGap] = []
         role_strings = ["'admin'", '"admin"', "'user'", '"user"', "'staff'", '"staff"']
 
         for node in ast.walk(tree):
@@ -216,9 +214,9 @@ class AuthorizationInvariant(Invariant):
 
     def _find_permission_bypass_patterns(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[AuthorizationGap]:
+    ) -> List[AuthorizationGap]:
         """Find patterns that may bypass permission checks."""
-        gaps: list[AuthorizationGap] = []
+        gaps: List[AuthorizationGap] = []
 
         # Check for DEBUG mode bypasses
         if "if DEBUG:" in content or "if settings.DEBUG:" in content:

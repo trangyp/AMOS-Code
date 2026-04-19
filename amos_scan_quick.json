@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-04-16T19:16:52.181895",
+  "scan_type": "quick",
+  "system_info": {
+    "platform": "Darwin",
+    "platform_version": "Darwin Kernel Version 25.4.0: Thu Mar 19 19:31:17 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6020",
+    "processor": "arm",
+    "architecture": "64bit",
+    "machine": "arm64",
+    "node": "Mac.lan",
+    "python_version": "3.9.6",
+    "python_executable": "/Applications/Xcode.app/Contents/Developer/usr/bin/python3",
+    "cpu_count": 12
+  },
+  "drives": [
+    {
+      "mount_point": "458116",
+      "device": "/dev/disk3s1s1",
+      "fstype": "",
+      "total": 494384795648,
+      "used": 12553465856,
+      "free": 125420449792,
+      "percent_used": 2.539209532029787
+    },
+    {
+      "mount_point": "727",
+      "device": "devfs",
+      "fstype": "",
+      "total": 215040,
+      "used": 215040,
+      "free": 0,
+      "percent_used": 100.0
+    },
+    {
+      "mount_point": "7",
+      "device": "/dev/disk3s6",
+      "fstype": "",
+      "total": 494384795648,
+      "used": 7516213248,
+      "free": 125420449792,
+      "percent_used": 1.5203164244054774
+    },
+    {
+      "mount_point": "1383",
+      "device": "/dev/disk3s2",
+      "fstype": "",
+      "total": 494384795648,
+      "used": 9016283136,
+      "free": 125420449792,
+      "percent_used": 1.8237379497446273
+    },
+    {
+      "mount_point": "61",
+      "device": "/dev/disk3s4",
+      "fstype": "",
+      "total": 494384795648,
+      "used": 3801088,
+      "free": 125420449792,
+      "percent_used": 0.0007688521235807501
+    },
+    {
+      "mount_point": "1",
+      "device": "/dev/disk1s2",
+      "fstype": "",
+      "total": 524288000,
+      "used": 6311936,
+      "free": 506560512,
+      "percent_used": 1.20390625
+    },
+    {
+      "mount_point": "32",
+      "device": "/dev/disk1s1",
+      "fstype": "",
+      "total": 524288000,
+      "used": 5849088,
+      "free": 506560512,
+      "percent_used": 1.1156249999999999
+    },
+    {
+      "mount_point": "62",
+      "device": "/dev/disk1s3",
+      "fstype": "",
+      "total": 524288000,
+      "used": 589824,
+      "free": 506560512,
+      "percent_used": 0.11249999999999999
+    },
+    {
+      "mount_point": "5524305",
+      "device": "/dev/disk3s5",
+      "fstype": "",
+      "total": 494384795648,
+      "used": 338437332992,
+      "free": 125420449792,
+      "percent_used": 68.45625835810817
+    }
+  ],
+  "total_files": 10049,
+  "total_dirs": 808,
+  "total_size": 1071990697,
+  "total_size_formatted": "1022.3 MB",
+  "file_types": {
+    ".json": 8132,
+    ".py": 1260,
+    ".md": 288,
+    ".pdf": 74,
+    ".txt": 62,
+    ".yaml": 38,
+    ".sh": 19,
+    ".ts": 19,
+    ".yml": 16,
+    ".html": 16
+  },
+  "security_findings_count": 0,
+  "security_findings": [],
+  "environment_context": {},
+  "git_repos": [
+    "."
+  ],
+  "large_files": [],
+  "recent_changes_count": 0,
+  "errors_count": 0,
+  "errors": [],
+  "scan_duration_seconds": 0.450838
+}

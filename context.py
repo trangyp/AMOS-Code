@@ -26,7 +26,7 @@ class ContextManager:
     """Manages execution contexts."""
 
     def __init__(self):
-        self._contexts: dict[str, Context] = {}
+        self._contexts: Dict[str, Context] = {}
 
     def create_context(self, session_id: str, **kwargs: Any) -> Context:
         """Create new context."""
@@ -34,7 +34,7 @@ class ContextManager:
         self._contexts[session_id] = ctx
         return ctx
 
-    def get_context(self, session_id: str) -> Context | None:
+    def get_context(self, session_id: str) -> Optional[Context]:
         """Get context by session ID."""
         return self._contexts.get(session_id)
 

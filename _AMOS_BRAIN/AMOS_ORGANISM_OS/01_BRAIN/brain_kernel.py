@@ -8,15 +8,14 @@ Responsible for:
 - Cognitive engine orchestration
 """
 
-from __future__ import annotations
 
 import json
 import logging
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,9 +37,9 @@ class CognitiveEvent:
     timestamp: str
     event_type: str
     source: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     trace_id: str = ""
-    parent_id: Optional[str] = None
+    parent_id: str  = None
 
 
 @dataclass
@@ -49,10 +48,10 @@ class ReasoningThread:
 
     thread_id: str
     mode: ReasoningMode
-    assumptions: list[str] = field(default_factory=list)
-    evidence_refs: list[str] = field(default_factory=list)
+    assumptions: List[str] = field(default_factory=list)
+    evidence_refs: List[str] = field(default_factory=list)
     status: str = "open"  # open, closed, suspended
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 @dataclass
@@ -61,9 +60,9 @@ class EngineResponse:
 
     engine_name: str
     status: str
-    output: dict[str, Any]
+    output: Dict[str, Any]
     confidence: float = 0.0
-    risk_flags: list[str] = field(default_factory=list)
+    risk_flags: List[str] = field(default_factory=list)
 
 
 class BrainKernel:
@@ -80,20 +79,20 @@ class BrainKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Working memory (short-term buffer)
-        self.working_memory: list[CognitiveEvent] = []
+        self.working_memory: List[CognitiveEvent] = []
         self.working_memory_capacity = 16
 
         # Canonical memory (stable laws and frameworks)
-        self.canonical_memory: dict[str, Any] = {}
+        self.canonical_memory: Dict[str, Any] = {}
 
         # Case memory (patterns and resolved examples)
         self.case_memory: list[dict[str, Any]] = []
 
         # Active reasoning threads
-        self.active_threads: dict[str, ReasoningThread] = {}
+        self.active_threads: Dict[str, ReasoningThread] = {}
 
         # Registered engines
-        self.engines: dict[str, Callable] = {}
+        self.engines: Dict[str, Callable] = {}
 
         # Load canonical memory
         self._load_canonical_memory()
@@ -119,9 +118,10 @@ class BrainKernel:
         self.engines[name] = engine_fn
         logger.info(f"Registered engine: {name}")
 
-    def create_thread(self, mode: ReasoningMode, assumptions: list[str] = None) -> ReasoningThread:
+    def create_thread(self, mode: ReasoningMode, assumptions: List[str] = None) -> ReasoningThread:
         """Create a new reasoning thread."""
         import uuid
+from typing import Callable, List
 
         thread_id = str(uuid.uuid4())[:8]
         thread = ReasoningThread(
@@ -148,16 +148,16 @@ class BrainKernel:
         self.working_memory.append(event)
 
         # Persist to logs
-        log_file = self.logs_path / f"{datetime.utcnow().strftime('%Y%m%d')}.log"
+        log_file = self.logs_path / f"{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
         with open(log_file, "a") as f:
             f.write(json.dumps(asdict(event), ensure_ascii=False) + "\n")
 
     def process(
         self,
-        input_data: dict[str, Any],
+        input_data: Dict[str, Any],
         mode: ReasoningMode = ReasoningMode.EXPLORATORY,
-        engines: list[str] = None,
-    ) -> dict[str, Any]:
+        engines: List[str] = None,
+    ) -> Dict[str, Any]:
         """Main processing pipeline.
 
         Args:
@@ -173,7 +173,7 @@ class BrainKernel:
 
         # Log input event
         event = CognitiveEvent(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             event_type="input_received",
             source="brain_kernel",
             payload={"input": input_data, "mode": mode.value, "thread_id": thread.thread_id},
@@ -208,7 +208,7 @@ class BrainKernel:
 
         # Log completion
         complete_event = CognitiveEvent(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             event_type="processing_complete",
             source="brain_kernel",
             payload={
@@ -224,22 +224,22 @@ class BrainKernel:
             "thread_id": thread.thread_id,
             "mode": mode.value,
             "results": {k: asdict(v) for k, v in results.items()},
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current brain state."""
         return {
             "working_memory_size": len(self.working_memory),
             "active_threads": len(self.active_threads),
             "canonical_memory_keys": list(self.canonical_memory.keys()),
             "registered_engines": list(self.engines.keys()),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
 # Default engines
-def meta_logic_engine(input_data: dict[str, Any], thread: ReasoningThread) -> dict[str, Any]:
+def meta_logic_engine(input_data: Dict[str, Any], thread: ReasoningThread) -> Dict[str, Any]:
     """Apply meta-logic rules to input."""
     return {
         "rule_of_2_applied": True,
@@ -251,8 +251,8 @@ def meta_logic_engine(input_data: dict[str, Any], thread: ReasoningThread) -> di
 
 
 def structural_reasoning_engine(
-    input_data: dict[str, Any], thread: ReasoningThread
-) -> dict[str, Any]:
+    input_data: Dict[str, Any], thread: ReasoningThread
+) -> Dict[str, Any]:
     """Apply structural reasoning."""
     return {
         "problem_decomposition": "mece_complete",
@@ -262,7 +262,7 @@ def structural_reasoning_engine(
     }
 
 
-def scenario_engine(input_data: dict[str, Any], thread: ReasoningThread) -> dict[str, Any]:
+def scenario_engine(input_data: Dict[str, Any], thread: ReasoningThread) -> Dict[str, Any]:
     """Generate and evaluate scenarios."""
     goal = input_data.get("goal", "unknown")
     return {

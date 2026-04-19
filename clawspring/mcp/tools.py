@@ -12,10 +12,7 @@ MCP tool qualified names follow the pattern:
 This matches the Claude Code convention (mcp__serverName__toolName).
 """
 
-from __future__ import annotations
-
 import threading
-from typing import Optional
 
 from tool_registry import ToolDef, register_tool
 
@@ -27,7 +24,7 @@ from .types import MCPTool
 
 _initialized = False
 _init_lock = threading.Lock()
-_connect_errors: dict[str, Optional[str]] = {}  # server → error or None
+_connect_errors: dict[str, str] = {}  # server → error or None
 
 
 # ── Tool wrapper ──────────────────────────────────────────────────────────────
@@ -60,7 +57,7 @@ def _register_tool(tool: MCPTool) -> None:
 # ── Initialization ────────────────────────────────────────────────────────────
 
 
-def initialize_mcp(verbose: bool = False) -> dict[str, Optional[str]]:
+def initialize_mcp(verbose: bool = False) -> dict[str, str]:
     """Load configs, connect servers, register tools. Idempotent.
 
     Returns a dict of {server_name: error_message_or_None}.
@@ -95,7 +92,7 @@ def initialize_mcp(verbose: bool = False) -> dict[str, Optional[str]]:
         return errors
 
 
-def reload_mcp() -> dict[str, Optional[str]]:
+def reload_mcp() -> dict[str, str]:
     """Force a full reload: re-read configs, reconnect, re-register all tools."""
     global _initialized
     with _init_lock:
@@ -103,7 +100,7 @@ def reload_mcp() -> dict[str, Optional[str]]:
     return initialize_mcp()
 
 
-def refresh_server(server_name: str) -> Optional[str]:
+def refresh_server(server_name: str) -> str:
     """Reconnect a single server and re-register its tools. Returns error or None."""
     mgr = get_mcp_manager()
     client = next((c for c in mgr.list_servers() if c.config.name == server_name), None)
@@ -118,7 +115,7 @@ def refresh_server(server_name: str) -> Optional[str]:
         return str(e)
 
 
-def get_connect_errors() -> dict[str, Optional[str]]:
+def get_connect_errors() -> dict[str, str]:
     return dict(_connect_errors)
 
 

@@ -1,0 +1,34 @@
+digraph system_graph {
+  rankdir=LR;
+  "module:amos_activate_self_driving" [label="amos_activate_self_driving", shape=box];
+  "module:amos_knowledge_loader" [label="amos_knowledge_loader", shape=box];
+  "module:amos_organism_runner" [label="amos_organism_runner", shape=box];
+  "module:test_amos" [label="test_amos", shape=box];
+  "module:amos_auth_system" [label="amos_auth_system", shape=box];
+  "module:amos_self_evolution" [label="amos_self_evolution", shape=box];
+  "module:pipeline_engine" [label="pipeline_engine", shape=box];
+  "module:amos_event_driven" [label="amos_event_driven", shape=box];
+  "module:amos_service_orchestrator" [label="amos_service_orchestrator", shape=box];
+  "module:test_local_llms" [label="test_local_llms", shape=box];
+  "module:amos_execution_tester" [label="amos_execution_tester", shape=box];
+  "module:amos_unified_launcher" [label="amos_unified_launcher", shape=box];
+  "module:test_amos_complete_57" [label="test_amos_complete_57", shape=box];
+  "module:amos_sdk" [label="amos_sdk", shape=box];
+  "module:amos_unified_system" [label="amos_unified_system", shape=box];
+  "module:amos_reasoning_kernel" [label="amos_reasoning_kernel", shape=box];
+  "module:amos_openclaw_connector" [label="amos_openclaw_connector", shape=box];
+  "module:amos_brain_enhanced" [label="amos_brain_enhanced", shape=box];
+  "module:amos_services" [label="amos_services", shape=box];
+  "module:test_knowledge_sync" [label="test_knowledge_sync", shape=box];
+  "module:amos_speculative_thinking" [label="amos_speculative_thinking", shape=box];
+  "module:amos_metrics_collector" [label="amos_metrics_collector", shape=box];
+  "module:amos_knowledge_agent" [label="amos_knowledge_agent", shape=box];
+  "module:test_phase14" [label="test_phase14", shape=box];
+  "module:amos_time" [label="amos_time", shape=box];
+  "module:amos_async_safety" [label="amos_async_safety", shape=box];
+  "module:amos_reading_kernel" [label="amos_reading_kernel", shape=box];
+  "module:amos_translation_layer" [label="amos_translation_layer", shape=box];
+  "module:fix_union_types" [label="fix_union_types", shape=box];
+  "module:amos_analytics" [label="amos_analytics", shape=box];
+  "module:amos_organism_runner" -> "module:amos_time";
+}

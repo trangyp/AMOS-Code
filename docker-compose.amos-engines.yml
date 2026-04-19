@@ -1,0 +1,82 @@
+# AMOS Engines Docker Compose
+# Local development and testing environment
+
+version: '3.8'
+
+services:
+  # AMOS Engines API
+  amos-engines:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos-engines
+      target: production
+    container_name: amos-engines
+    ports:
+      - "8000:8000"  # API
+      - "8080:8080"  # Health
+      - "9090:9090"  # Metrics
+    environment:
+      - LOG_LEVEL=INFO
+      - TEMPORAL_ENABLED=true
+      - FIELD_ENABLED=true
+      - SAFETY_ENABLED=true
+      - INTEGRATION_ENABLED=true
+      - OBSERVABILITY_ENABLED=true
+    healthcheck:
+      test: ["CMD", "python", "-c", "from amos_engine_integration import get_engine_integration; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - amos-network
+
+  # Redis for caching and pub/sub
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    ports:
+      - "6379:6379"
+    volumes:
+   # AMOS Engines Docker Compose
+# Local developpped
+    networks:
+      - amos-
+version: '3.8'
+
+services:
+  # AMOS Engrometh
+services:
+  e:   # AMOSme  amos-engines:
+   ntainer_name: amos      conus      dockerfil        target: production
+    container_nom    container_name: amoeu    ports:
+      - "8000:8mmand:
+      - "--      - "8080:8080"  # Heus      - "9090:9090"  # Metristorage.tsdb.path=/prometheus'
+        - LOG_LEVss      - TEMPORAL_ENAB:
+      - FIELD_ENABLED=true
+ af      - Sashboards
+  grafan      - INTEGRATION_ENABLEan      - OBSERVABILITY_ENABLED=tos    healthcheck:
+      test: ["CM:3000"
+    environm      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+  u      timeout: 10snetworks:
+      - amo      start_perNg    restart:proxy
+  ngin    networks:
+      - amos
+       - amos_name: amos-nginx
+    po  redis:
+    image: redis:7-alpi3:443"
+        container_name: amos.c    ports:
+      - "6379:6379      pends_o    volumes:
+   # gi   # AMOS Eta# Local ds-stopped
+    networks:
+    networks:
+    rk      - amos rversion: '3. grafana-data:
+
+ne  # AMOS  services:
+ k:
+    d  e:   #ridge

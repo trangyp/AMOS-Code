@@ -11,8 +11,6 @@ Backend priority (tried in order):
 All backends capture raw PCM: 16 kHz, 16-bit signed little-endian, mono.
 """
 
-from __future__ import annotations
-
 import shutil
 import subprocess
 import threading
@@ -35,7 +33,7 @@ def _has_cmd(cmd: str) -> bool:
 # ── Availability ──────────────────────────────────────────────────────────
 
 
-def check_recording_availability() -> tuple[bool, str | None]:
+def check_recording_availability() -> Tuple[bool, str]:
     """Return (available, reason_if_not)."""
     # sounddevice (ImportError = not installed; OSError = PortAudio library missing)
     try:
@@ -67,7 +65,7 @@ def check_recording_availability() -> tuple[bool, str | None]:
 
 def _record_sounddevice(
     max_seconds: int = 30,
-    on_energy: callable | None = None,
+    on_energy: callable = None,
 ) -> bytes:
     import numpy as np
     import sounddevice as sd
@@ -76,7 +74,7 @@ def _record_sounddevice(
     silence_chunks_needed = int(SILENCE_DURATION_SECS / CHUNK_SECS)
     max_chunks = int(max_seconds / CHUNK_SECS)
 
-    chunks: list[bytes] = []
+    chunks: List[bytes] = []
     silence_count = 0
     done_evt = threading.Event()
 
@@ -121,7 +119,7 @@ def _record_sounddevice(
 
 def _record_arecord(
     max_seconds: int = 30,
-    on_energy: callable | None = None,
+    on_energy: callable = None,
 ) -> bytes:
     """Record via arecord.  Silence detection done in Python on the piped PCM."""
     import numpy as np
@@ -146,7 +144,7 @@ def _record_arecord(
     chunk_bytes = int(SAMPLE_RATE * CHUNK_SECS) * BYTES_PER_SAMPLE
     silence_chunks_needed = int(SILENCE_DURATION_SECS / CHUNK_SECS)
 
-    chunks: list[bytes] = []
+    chunks: List[bytes] = []
     silence_count = 0
 
     try:
@@ -184,7 +182,7 @@ def _record_arecord(
 
 def _record_sox(
     max_seconds: int = 30,
-    on_energy: callable | None = None,
+    on_energy: callable = None,
 ) -> bytes:
     """Record via SoX `rec` with built-in silence detection."""
     silence_threshold = "3%"
@@ -233,7 +231,7 @@ def _record_sox(
 
 def record_until_silence(
     max_seconds: int = 30,
-    on_energy: callable | None = None,
+    on_energy: callable = None,
 ) -> bytes:
     """Record from microphone until silence or max_seconds.
 

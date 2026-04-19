@@ -6,7 +6,6 @@ importable, runnable targets.
 I_entry = 1 iff launcher target exists and behaves as documented.
 """
 
-from __future__ import annotations
 
 import ast
 import sys
@@ -20,6 +19,7 @@ if sys.version_info >= (3, 11):
 else:
     try:
         import tomli as tomllib
+from typing import List
     except ImportError:
         tomllib = None
 
@@ -75,7 +75,7 @@ class EntrypointSubstrate:
         self.repo_path = Path(repo_path).resolve()
         self._cache: dict[str, list[EntrypointDeclaration]] = {}
 
-    def load_entrypoints(self) -> list[EntrypointDeclaration]:
+    def load_entrypoints(self) -> List[EntrypointDeclaration]:
         """Load entrypoint declarations from pyproject.toml.
 
         Returns:
@@ -173,7 +173,7 @@ class EntrypointSubstrate:
             is_callable=is_callable,
         )
 
-    def _resolve_module(self, module_name: str) -> Path | None:
+    def _resolve_module(self, module_name: str) -> Optional[Path]:
         """Resolve module name to file path."""
         # Convert module name to path
         parts = module_name.split(".")
@@ -200,7 +200,7 @@ class EntrypointSubstrate:
 
         return None
 
-    def _find_function(self, module_path: Path, function_name: str) -> dict[str, Any] | None:
+    def _find_function(self, module_path: Path, function_name: str) -> Dict[str, Any] :
         """Find function in module file."""
         try:
             source = module_path.read_text(encoding="utf-8", errors="replace")
@@ -237,7 +237,7 @@ class EntrypointSubstrate:
         except Exception:
             return None
 
-    def analyze_repository(self) -> list[EntrypointValidation]:
+    def analyze_repository(self) -> List[EntrypointValidation]:
         """Analyze all entrypoints in repository.
 
         Returns:
@@ -246,11 +246,11 @@ class EntrypointSubstrate:
         declarations = self.load_entrypoints()
         return [self.validate_entrypoint(d) for d in declarations]
 
-    def get_broken_entrypoints(self) -> list[EntrypointValidation]:
+    def get_broken_entrypoints(self) -> List[EntrypointValidation]:
         """Get all broken entrypoints."""
         return [v for v in self.analyze_repository() if not v.valid]
 
-    def get_summary(self, validations: list[EntrypointValidation]) -> dict[str, Any]:
+    def get_summary(self, validations: List[EntrypointValidation]) -> Dict[str, Any]:
         """Generate summary statistics."""
         total = len(validations)
         broken = sum(1 for v in validations if not v.valid)

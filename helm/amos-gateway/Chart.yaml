@@ -1,0 +1,43 @@
+apiVersion: v2
+name: amos-gateway
+description: A Helm chart for AMOS FastAPI Gateway - Phase 15
+
+# Chart type: application
+type: application
+
+# Chart version
+version: 1.0.0
+
+# Application version
+appVersion: "1.0.0"
+
+# Keywords for chart discovery
+keywords:
+  - amos
+  - fastapi
+  - gateway
+  - cognitive-os
+  - phase-15
+
+# Maintainer info
+maintainers:
+  - name: Trang
+    email: trang@amos.io
+
+# Sources
+sources:
+  - https://github.com/amos/amos-gateway
+
+# Dependencies
+dependencies:
+  - name: redis
+    version: 18.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+    tags:
+      - database
+      - cache
+
+annotations:
+  category: Infrastructure
+  phase: "15"

@@ -1,0 +1,280 @@
+# AMOS Gateway Kubernetes Deployment (Phase 15)
+# ================================================
+# Production-ready deployment for AMOS FastAPI Gateway
+# Includes: Deployment, Service, HPA, PodDisruptionBudget
+#
+# Usage:
+#   kubectl apply -f k8s/amos-gateway-deployment.yaml
+#   kubectl apply -f k8s/amos-gateway-service.yaml
+#   kubectl apply -f k8s/amos-gateway-hpa.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+  labels:
+    app: amos-gateway
+    version: v1
+    component: api-gateway
+    phase: "15"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: amos-gateway
+  template:
+    metadata:
+      labels:
+        app: amos-gateway
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: amos-gateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      containers:
+        - name: gateway
+          image: ghcr.io/amos/amos-fastapi-gateway:latest
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: metrics
+              containerPort: 8000
+              protocol: TCP
+
+          env:
+            - name: APP_NAME
+              value: "AMOS FastAPI Gateway"
+            - name: APP_VERSION
+              value: "1.0.0"
+            - name: ENVIRONMENT
+              value: "production"
+            - name: DEBUG
+              value: "false"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: RUNTIME_ENABLED
+              value: "true"
+            - name: BOOTSTRAP_ON_START
+              value: "true"
+            - name: SELF_HEALING_ENABLED
+              value: "true"
+            - name: HEALTH_CHECK_INTERVAL
+              value: "30"
+            - name: WORKERS
+              value: "4"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: amos-secrets
+                  key: secret-key
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: amos-config
+                  key: redis.url
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: logs
+              mountPath: /app/logs
+
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - amos-gateway
+                topologyKey: kubernetes.io/hostname
+
+      terminationGracePeriodSeconds: 60
+
+---
+# Service for AMOS Gateway
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+  labels:
+    app: amos-gateway
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: metrics
+  selector:
+    app: amos-gateway
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-gateway
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: amos-gateway
+
+---
+# Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+  labels:
+    app: amos-gateway
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: amos-gateway
+  namespace: amos-production
+spec:
+  podSelector:
+    matchLabels:
+      app: amos-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: amos-production
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53

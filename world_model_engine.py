@@ -10,7 +10,7 @@ class WorldModel:
         self.entities: list[dict[str, Any]] = []
         self.relations: list[dict[str, Any]] = []
 
-    def add_entity(self, entity: dict[str, Any]) -> None:
+    def add_entity(self, entity: Dict[str, Any]) -> None:
         """Add entity to model."""
         self.entities.append(entity)
 
@@ -23,7 +23,7 @@ class WorldModelEngine:
     """Engine for world model operations."""
 
     def __init__(self):
-        self.models: dict[str, WorldModel] = {}
+        self.models: Dict[str, WorldModel] = {}
 
     def create_model(self, name: str) -> WorldModel:
         """Create new world model."""
@@ -31,7 +31,7 @@ class WorldModelEngine:
         self.models[name] = model
         return model
 
-    def get_model(self, name: str) -> WorldModel | None:
+    def get_model(self, name: str) -> Optional[WorldModel]:
         """Get world model by name."""
         return self.models.get(name)
 

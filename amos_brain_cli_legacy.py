@@ -16,7 +16,6 @@ Usage:
   python amos_brain_cli.py
 """
 
-from __future__ import annotations
 
 import os
 import sys
@@ -148,6 +147,7 @@ def cmd_analyze(amos, topic: str):
 
     # Route query
     from amos_brain.cognitive_stack import CognitiveStack
+from typing import Final
 
     stack = CognitiveStack()
     engines = stack.route_query(topic)
@@ -213,7 +213,7 @@ def cmd_laws():
         print()
 
 
-def cmd_history(memory, args: list[str]):
+def cmd_history(memory, args: List[str]):
     """Execute /history command."""
     limit = int(args[0]) if args else 5
     history = memory.get_reasoning_history(limit=limit)

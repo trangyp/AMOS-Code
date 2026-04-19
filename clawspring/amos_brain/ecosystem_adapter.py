@@ -6,9 +6,12 @@ amos_integration_test.py, amos_coherence_engine.py, amos_tools.py)
 to the new v2.8 ecosystem in clawspring/amos_brain/.
 """
 
+from __future__ import annotations
+
+
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -31,7 +34,7 @@ class EcosystemAdapter:
             "amos_tools": ToolsAdapter(),
         }
 
-    def get_adapter(self, name: str) -> Optional[Any]:
+    def get_adapter(self, name: str) -> Any | None:
         """Get a specific adapter."""
         return self.adapters.get(name)
 

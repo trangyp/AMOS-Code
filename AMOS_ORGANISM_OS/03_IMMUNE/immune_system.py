@@ -4,15 +4,12 @@ The immune system acts as a gatekeeper for all organism actions.
 It validates, audits, and can block potentially harmful operations.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
 
 
 class RiskLevel(Enum):
@@ -39,12 +36,12 @@ class SafetyPolicy:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     description: str = ""
-    action_types: list[ActionType] = field(default_factory=list)
+    action_types: List[ActionType] = field(default_factory=list)
     allowed: bool = True
     requires_approval: bool = False
     risk_level: RiskLevel = RiskLevel.SAFE
-    conditions: dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    conditions: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -52,7 +49,7 @@ class AuditLog:
     """An audit log entry."""
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     action: str = ""
     action_type: ActionType = ActionType.READ
     target: str = ""
@@ -60,9 +57,9 @@ class AuditLog:
     risk_level: RiskLevel = RiskLevel.SAFE
     decision: str = ""  # approved, blocked, pending
     reason: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "action_type": self.action_type.value,
@@ -109,9 +106,9 @@ class ImmuneSystem:
     ]
 
     def __init__(self):
-        self._policies: list[SafetyPolicy] = []
-        self._audit_logs: list[AuditLog] = []
-        self._threat_history: list[dict] = []
+        self._policies: List[SafetyPolicy] = []
+        self._audit_logs: List[AuditLog] = []
+        self._threat_history: List[dict] = []
         self._validators: dict[ActionType, Callable] = {}
         self.AUDIT_DIR.mkdir(parents=True, exist_ok=True)
         self._setup_default_policies()
@@ -343,7 +340,7 @@ class ImmuneSystem:
         action_type: ActionType = None,
         risk_level: RiskLevel = None,
         limit: int = 100,
-    ) -> list[AuditLog]:
+    ) -> List[AuditLog]:
         """Get audit logs with filtering."""
         logs = self._audit_logs
         if action_type:
@@ -364,7 +361,7 @@ class ImmuneSystem:
                 return True
         return False
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get immune system status."""
         risk_counts = dict.fromkeys(RiskLevel, 0)
         for log in self._audit_logs:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass
 from functools import lru_cache
@@ -41,11 +39,11 @@ def build_tool_backlog() -> PortingBacklog:
     return PortingBacklog(title="Tool surface", modules=list(PORTED_TOOLS))
 
 
-def tool_names() -> list[str]:
+def tool_names() -> List[str]:
     return [module.name for module in PORTED_TOOLS]
 
 
-def get_tool(name: str) -> PortingModule | None:
+def get_tool(name: str) -> Optional[PortingModule]:
     needle = name.lower()
     for module in PORTED_TOOLS:
         if module.name.lower() == needle:
@@ -54,7 +52,7 @@ def get_tool(name: str) -> PortingModule | None:
 
 
 def filter_tools_by_permission_context(
-    tools: tuple[PortingModule, ...], permission_context: ToolPermissionContext | None = None
+    tools: tuple[PortingModule, ...], permission_context: Optional[ToolPermissionContext] = None
 ) -> tuple[PortingModule, ...]:
     if permission_context is None:
         return tools
@@ -64,7 +62,7 @@ def filter_tools_by_permission_context(
 def get_tools(
     simple_mode: bool = False,
     include_mcp: bool = True,
-    permission_context: ToolPermissionContext | None = None,
+    permission_context: Optional[ToolPermissionContext] = None,
 ) -> tuple[PortingModule, ...]:
     tools = list(PORTED_TOOLS)
     if simple_mode:
@@ -82,7 +80,7 @@ def get_tools(
     return filter_tools_by_permission_context(tuple(tools), permission_context)
 
 
-def find_tools(query: str, limit: int = 20) -> list[PortingModule]:
+def find_tools(query: str, limit: int = 20) -> List[PortingModule]:
     needle = query.lower()
     matches = [
         module
@@ -114,7 +112,7 @@ def execute_tool(name: str, payload: str = "") -> ToolExecution:
     )
 
 
-def render_tool_index(limit: int = 20, query: str | None = None) -> str:
+def render_tool_index(limit: int = 20, query: str = None) -> str:
     modules = find_tools(query, limit) if query else list(PORTED_TOOLS[:limit])
     lines = [f"Tool entries: {len(PORTED_TOOLS)}", ""]
     if query:

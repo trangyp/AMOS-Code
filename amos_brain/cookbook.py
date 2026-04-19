@@ -1,7 +1,5 @@
 """AMOS Brain Cookbook - Pre-built cognitive workflows (Layer 12)."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -58,7 +56,7 @@ class ArchitectureDecision:
     RECIPE_NAME = "Architecture Decision Record (ADR)"
 
     @classmethod
-    def analyze(cls, question: str, context: dict[str, Any] | None = None) -> CookbookResult:
+    def analyze(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
         """Analyze an architectural decision."""
         client = BrainClient()
         sm = get_state_manager()
@@ -107,7 +105,7 @@ Provide:
         )
 
     @classmethod
-    def run(cls, question: str, context: dict[str, Any] | None = None) -> CookbookResult:
+    def run(cls, question: str, context: dict[str, Any] = None) -> CookbookResult:
         """Alias for analyze() - test compatibility."""
         return cls.analyze(question, context)
 
@@ -122,7 +120,7 @@ class CodeReview:
 
     @classmethod
     def analyze(
-        cls, code: str, language: str = "python", focus_areas: list[str] | None = None
+        cls, code: str, language: str = "python", focus_areas: list[str] = None
     ) -> CookbookResult:
         """Analyze code with cognitive rules."""
         client = BrainClient()
@@ -178,7 +176,7 @@ Identify:
         cls,
         code: str,
         language: str = "python",
-        focus_areas: list[str] | None = None,
+        focus_areas: list[str] = None,
     ) -> CookbookResult:
         return cls.analyze(code, language=language, focus_areas=focus_areas)
 
@@ -260,7 +258,7 @@ class DesignPattern:
     RECIPE_NAME = "Design Pattern Selection"
 
     @classmethod
-    def select(cls, problem: str, available_patterns: list[str] | None = None) -> CookbookResult:
+    def select(cls, problem: str, available_patterns: list[str] = None) -> CookbookResult:
         """Select appropriate design pattern."""
         client = BrainClient()
 
@@ -407,9 +405,7 @@ class ProjectPlanner:
     RECIPE_NAME = "Project Planning & Estimation"
 
     @classmethod
-    def plan(
-        cls, project_description: str, constraints: dict[str, Any] | None = None
-    ) -> CookbookResult:
+    def plan(cls, project_description: str, constraints: dict[str, Any] = None) -> CookbookResult:
         """Create project plan with cognitive analysis."""
         client = BrainClient()
 
@@ -461,8 +457,8 @@ Provide:
     def run(
         cls,
         project_description: str,
-        timeline: str | None = None,
-        constraints: dict[str, Any] | None = None,
+        timeline: str = None,
+        constraints: dict[str, Any] = None,
         **extra: Any,
     ) -> CookbookResult:
         """Alias for plan() - test compatibility."""
@@ -510,7 +506,7 @@ class TechnologySelection:
         cls,
         category: str,
         options: list[str],
-        criteria: list[str] | None = None,
+        criteria: list[str] = None,
         **extra: Any,
     ) -> CookbookResult:
         merged_criteria = list(criteria or [])
@@ -555,7 +551,7 @@ class RiskAssessment:
     def run(
         cls,
         change: str,
-        impacts: list[str] | None = None,
+        impacts: list[str] = None,
         **extra: Any,
     ) -> CookbookResult:
         merged_impacts = list(impacts or [])

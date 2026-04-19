@@ -1,9 +1,11 @@
 """AMOS Task Execution Integration - Bridge cognitive tasks to organism execution."""
 
+from __future__ import annotations
+
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 # Add organism OS to path - use relative path from this file
 ORGANISM_PATH = Path(__file__).parent.parent.parent / "AMOS_ORGANISM_OS"
@@ -17,7 +19,7 @@ class ExecutionOutcome:
 
     success: bool
     output: str
-    error: Optional[str]
+    error: str
     duration_ms: float
     execution_type: str
     artifacts: dict[str, Any]
@@ -156,7 +158,7 @@ class TaskExecutionIntegration:
 _task_execution_integration: Optional[TaskExecutionIntegration] = None
 
 
-def get_task_execution_integration() -> TaskExecutionIntegration:
+def get_task_execution_integration() -> Union[TaskExecutionIntegration, None]:
     """Get or create singleton task execution integration."""
     global _task_execution_integration
     if _task_execution_integration is None:

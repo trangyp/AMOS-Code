@@ -14,11 +14,11 @@ Version: 1.0.0
 Evolution ID: E001 (Self-referential: this file is its own first contract)
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
+
+UTC = timezone.utc
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any, Optional
@@ -28,10 +28,13 @@ class EvolutionStatus(Enum):
     """Status of an evolution contract."""
 
     DRAFT = auto()
+    PENDING = auto()
     APPROVED = auto()
     IN_PROGRESS = auto()
     VERIFYING = auto()
     COMPLETED = auto()
+    COMPLETE = auto()
+    FAILED = auto()
     ROLLED_BACK = auto()
     REJECTED = auto()
 
@@ -47,7 +50,7 @@ class EvolutionContract:
     # Identity
     evolution_id: str
     owner: str
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Target
     target_files: list[str] = field(default_factory=list)
@@ -74,7 +77,7 @@ class EvolutionContract:
     # State
     status: EvolutionStatus = EvolutionStatus.DRAFT
     actual_changes: list[dict[str, Any]] = field(default_factory=list)
-    measured_improvement: Optional[dict[str, Any]] = None
+    measured_improvement: dict[str, Any] = None
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize contract to dictionary."""

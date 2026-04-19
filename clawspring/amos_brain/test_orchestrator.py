@@ -6,6 +6,9 @@ demo system) into single orchestrated execution with
 consolidated reporting.
 """
 
+from __future__ import annotations
+
+
 import sys
 import time
 from dataclasses import dataclass
@@ -204,7 +207,6 @@ class TestOrchestrator:
 
         total_passed = sum(r.passed for r in self.results)
         total_failed = sum(r.failed for r in self.results)
-        total_tests = total_passed + total_failed
 
         all_pass = all(r.status == "PASS" for r in self.results)
         any_fail = any(r.status == "FAIL" for r in self.results)

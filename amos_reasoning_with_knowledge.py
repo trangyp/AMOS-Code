@@ -20,8 +20,6 @@ Commands:
     demo                Demonstrate knowledge-enhanced reasoning
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
@@ -78,7 +76,7 @@ class KnowledgeIntegratedReasoning:
             print(f"Warning: Could not initialize knowledge activation: {e}")
             self.activation = None
 
-    def _get_active_knowledge(self) -> dict[str, Any]:
+    def _get_active_knowledge(self) -> Dict[str, Any]:
         """Get currently active knowledge."""
         if not self.activation:
             return {}
@@ -107,7 +105,7 @@ class KnowledgeIntegratedReasoning:
 
         return min(score, 1.0)
 
-    def find_relevant_knowledge(self, problem: str, top_n: int = 5) -> list[KnowledgeMatch]:
+    def find_relevant_knowledge(self, problem: str, top_n: int = 5) -> List[KnowledgeMatch]:
         """Find most relevant knowledge for a problem."""
         active = self._get_active_knowledge()
         if not active:
@@ -152,7 +150,7 @@ class KnowledgeIntegratedReasoning:
 
     def reason_with_knowledge(
         self, problem: str, use_rule_of_2: bool = True, use_rule_of_4: bool = True
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Perform knowledge-integrated reasoning."""
         print("=" * 70)
         print("AMOS KNOWLEDGE-INTEGRATED REASONING")
@@ -204,7 +202,7 @@ class KnowledgeIntegratedReasoning:
 
     def _base_reasoning(
         self, problem: str, use_rule_of_2: bool, use_rule_of_4: bool
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Perform base AMOS reasoning."""
         analysis = {
             "problem_type": self._classify_problem(problem),
@@ -273,8 +271,8 @@ class KnowledgeIntegratedReasoning:
         return analyses.get(quadrant, "Analysis not available")
 
     def _augment_with_knowledge(
-        self, base_analysis: dict, relevant: list[KnowledgeMatch]
-    ) -> dict[str, Any]:
+        self, base_analysis: dict, relevant: List[KnowledgeMatch]
+    ) -> Dict[str, Any]:
         """Augment analysis with knowledge."""
         augmentation = {"knowledge_contributions": [], "enhanced_insights": []}
 
@@ -302,7 +300,7 @@ class KnowledgeIntegratedReasoning:
 
     def _generate_conclusion(
         self, problem: str, base: dict, augmented: dict, relevant: list
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Generate final integrated conclusion."""
         conclusion = {
             "summary": f"Integrated analysis of: {problem[:60]}...",

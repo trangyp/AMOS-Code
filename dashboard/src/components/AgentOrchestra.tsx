@@ -1,25 +1,25 @@
 /**
  * AMOS Agent Orchestra - Multi-Agent Orchestration Visualization
- * 
+ *
  * Based on Addy Osmani's "The Code Agent Orchestra" (2026)
- * 
+ *
  * Three-Tier Agent Architecture:
  * - Tier 1: Interactive Agents (real-time pair programming)
  * - Tier 2: Parallel Sprint Agents (concurrent feature work)
  * - Tier 3: Backlog Drain Agents (overnight batch processing)
- * 
+ *
  * Visual Concept:
  * Agents are represented as musicians in an orchestra, with AMOS as the Conductor.
  * Each agent plays its "instrument" (task), and the Conductor coordinates
 their timing, dependencies, and harmony.
- * 
+ *
  * Features:
  * - Real-time agent visualization with status indicators
  * - Dependency graph showing agent relationships
  * - Workload distribution visualization
  * - Conductor AI directing the "performance"
  * - Swarm intelligence patterns
- * 
+ *
  * Differentiator: While Devin is a solo performer, AMOS is a full orchestra.
  */
 
@@ -179,7 +179,7 @@ export const AgentOrchestra: React.FC = () => {
         }
         // Check if dependencies are complete
         if (agent.status === 'waiting' && agent.dependencies.length > 0) {
-          const depsComplete = agent.dependencies.every(depId => 
+          const depsComplete = agent.dependencies.every(depId =>
             prev.find(a => a.id === depId)?.status === 'complete'
           );
           if (depsComplete) {
@@ -279,25 +279,25 @@ export const AgentOrchestra: React.FC = () => {
           </p>
         </div>
         <div style={controlsStyle}>
-          <button 
-            onClick={() => setViewMode('stage')} 
+          <button
+            onClick={() => setViewMode('stage')}
             style={{ ...viewButtonStyle, backgroundColor: viewMode === 'stage' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255,255,255,0.05)' }}
           >
             🎭 Stage
           </button>
-          <button 
-            onClick={() => setViewMode('graph')} 
+          <button
+            onClick={() => setViewMode('graph')}
             style={{ ...viewButtonStyle, backgroundColor: viewMode === 'graph' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255,255,255,0.05)' }}
           >
             🕸️ Graph
           </button>
-          <button 
-            onClick={() => setViewMode('score')} 
+          <button
+            onClick={() => setViewMode('score')}
             style={{ ...viewButtonStyle, backgroundColor: viewMode === 'score' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(255,255,255,0.05)' }}
           >
             🎼 Score
           </button>
-          <button 
+          <button
             onClick={() => setIsPaused(!isPaused)}
             style={pauseButtonStyle}
           >
@@ -343,7 +343,7 @@ export const AgentOrchestra: React.FC = () => {
               </div>
               <div style={agentsRowStyle}>
                 {agents.filter(a => a.tier === 1).map(agent => (
-                  <div 
+                  <div
                     key={agent.id}
                     style={{
                       ...agentCardStyle,
@@ -360,7 +360,7 @@ export const AgentOrchestra: React.FC = () => {
                     <div style={agentTaskStyle}>{agent.task}</div>
                     <div style={progressContainerStyle}>
                       <div style={progressBarStyle}>
-                        <div 
+                        <div
                           style={{
                             ...progressFillStyle,
                             width: `${agent.progress}%`,
@@ -391,7 +391,7 @@ export const AgentOrchestra: React.FC = () => {
               </div>
               <div style={agentsRowStyle}>
                 {agents.filter(a => a.tier === 2).map(agent => (
-                  <div 
+                  <div
                     key={agent.id}
                     style={{
                       ...agentCardStyle,
@@ -421,7 +421,7 @@ export const AgentOrchestra: React.FC = () => {
                     )}
                     <div style={progressContainerStyle}>
                       <div style={progressBarStyle}>
-                        <div 
+                        <div
                           style={{
                             ...progressFillStyle,
                             width: `${agent.progress}%`,
@@ -445,7 +445,7 @@ export const AgentOrchestra: React.FC = () => {
               </div>
               <div style={agentsRowStyle}>
                 {agents.filter(a => a.tier === 3).map(agent => (
-                  <div 
+                  <div
                     key={agent.id}
                     style={{
                       ...agentCardStyle,
@@ -465,7 +465,7 @@ export const AgentOrchestra: React.FC = () => {
                     </div>
                     <div style={progressContainerStyle}>
                       <div style={progressBarStyle}>
-                        <div 
+                        <div
                           style={{
                             ...progressFillStyle,
                             width: `${agent.progress}%`,
@@ -511,7 +511,7 @@ export const AgentOrchestra: React.FC = () => {
                     );
                   });
                 })}
-                
+
                 {/* Draw nodes */}
                 {agents.map((agent, index) => (
                   <g key={agent.id} transform={`translate(${100 + index * 150}, ${100 + index * 50})`}>
@@ -605,7 +605,7 @@ export const AgentOrchestra: React.FC = () => {
               <div style={modalTaskStyle}>{selectedAgent.task}</div>
               <div style={modalProgressStyle}>
                 <div style={modalProgressBarStyle}>
-                  <div 
+                  <div
                     style={{
                       ...modalProgressFillStyle,
                       width: `${selectedAgent.progress}%`,

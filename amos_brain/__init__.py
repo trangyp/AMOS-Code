@@ -1,10 +1,14 @@
 """AMOS Brain - Minimal public API surface with lazy loading."""
 
+import logging
+
 # Core types (lightweight, no side effects)
 from .config import FeatureFlags
 
 # NOTE: BrainResponse and Decision are lazy-loaded via __getattr__ below
 # to avoid 56ms facade import at startup
+
+logger = logging.getLogger(__name__)
 
 # Lazy module cache
 _lazy_modules = {}
@@ -26,6 +30,22 @@ def _lazy_import(module_name: str):
                 from .loader import BrainLoader as bl
 
                 _lazy_modules[module_name] = bl
+            elif module_name == "get_super_brain":
+                from .super_brain import get_super_brain as gsb
+
+                _lazy_modules[module_name] = gsb
+            elif module_name == "SuperBrainRuntime":
+                from .super_brain import SuperBrainRuntime as sbr
+
+                _lazy_modules[module_name] = sbr
+            elif module_name == "initialize_super_brain":
+                from .super_brain import initialize_super_brain as isb
+
+                _lazy_modules[module_name] = isb
+            elif module_name == "SuperBrainOrchestrationAdapter":
+                from .orchestration_adapter import SuperBrainOrchestrationAdapter as sboa
+
+                _lazy_modules[module_name] = sboa
             elif module_name == "get_amos_integration":
                 from .integration import get_amos_integration as gai
 
@@ -150,10 +170,75 @@ def _lazy_import(module_name: str):
                 from .real_learning_engine import get_learning_engine as gle
 
                 _lazy_modules[module_name] = gle
-        except Exception:
-            _lazy_modules[module_name] = lambda *args, **kwargs: (_ for _ in ()).throw(
-                ImportError(f"Could not load {module_name}: {e}")
-            )
+            elif module_name == "query_math_framework":
+                from .super_brain import query_math_framework as qmf
+
+                _lazy_modules[module_name] = qmf
+            elif module_name == "validate_equation":
+                from .super_brain import validate_equation as ve
+
+                _lazy_modules[module_name] = ve
+            elif module_name == "get_math_framework_stats":
+                from .super_brain import get_math_framework_stats as gmfs
+
+                _lazy_modules[module_name] = gmfs
+            elif module_name == "get_canon_knowledge_engine":
+                from .canon_knowledge_engine import get_canon_knowledge_engine as gck
+
+                _lazy_modules[module_name] = gck
+            elif module_name == "get_canon_cognitive_processor":
+                from .canon_cognitive_processor import get_canon_cognitive_processor as gcc
+
+                _lazy_modules[module_name] = gcc
+            elif module_name == "canon_process":
+                from .canon_cognitive_processor import canon_process as cp
+
+                _lazy_modules[module_name] = cp
+            elif module_name == "get_canon_reasoning_engine":
+                from .canon_reasoning_engine import get_canon_reasoning_engine as gcr
+
+                _lazy_modules[module_name] = gcr
+            elif module_name == "canon_reason":
+                from .canon_reasoning_engine import canon_reason as cr
+
+                _lazy_modules[module_name] = cr
+            elif module_name == "get_canon_query_engine":
+                from .canon_query_engine import get_canon_query_engine as gcq
+
+                _lazy_modules[module_name] = gcq
+            elif module_name == "canon_query":
+                from .canon_query_engine import canon_query as cq
+
+                _lazy_modules[module_name] = cq
+            elif module_name == "get_canon_learning_engine":
+                from .canon_learning_engine import get_canon_learning_engine as gcl
+
+                _lazy_modules[module_name] = gcl
+            elif module_name == "canon_learn":
+                from .canon_learning_engine import canon_learn as cl
+
+                _lazy_modules[module_name] = cl
+            elif module_name == "get_canon_memory_system":
+                from .canon_memory_system import get_canon_memory_system as gcm
+
+                _lazy_modules[module_name] = gcm
+            elif module_name == "canon_store":
+                from .canon_memory_system import canon_store as cs
+
+                _lazy_modules[module_name] = cs
+            elif module_name == "canon_search":
+                from .canon_memory_system import canon_search as csearch
+
+                _lazy_modules[module_name] = csearch
+        except Exception as _load_err:
+            # Capture values by using default arguments to avoid closure bug
+            def _make_error_loader(name: str, err: str):
+                def _error_loader(*args, **kwargs):
+                    raise ImportError(f"Could not load {name}: {err}")
+
+                return _error_loader
+
+            _lazy_modules[module_name] = _make_error_loader(module_name, str(_load_err))
     return _lazy_modules[module_name]
 
 
@@ -239,6 +324,11 @@ def get_monitor():
     return _lazy_import("get_monitor")()
 
 
+def get_super_brain():
+    """Get SuperBrain runtime (lazy import)."""
+    return _lazy_import("get_super_brain")()
+
+
 def CognitiveConfig():
     """Get cognitive config (lazy import)."""
     return _lazy_import("CognitiveConfig")()
@@ -247,6 +337,97 @@ def CognitiveConfig():
 def get_config():
     """Get config instance (lazy import)."""
     return _lazy_import("get_config")()
+
+
+# SuperBrain exports (ONE BRAIN - Canonical Runtime)
+def get_super_brain():
+    """Get SuperBrain singleton (lazy import)."""
+    return _lazy_import("get_super_brain")()
+
+
+def initialize_super_brain():
+    """Initialize SuperBrain (lazy import)."""
+    return _lazy_import("initialize_super_brain")()
+
+
+def SuperBrainRuntime():
+    """Get SuperBrainRuntime class (lazy import)."""
+    return _lazy_import("SuperBrainRuntime")
+
+
+def SuperBrainState():
+    """Get SuperBrainState class (lazy import)."""
+    return _lazy_import("SuperBrainState")
+
+
+def ActionGate():
+    """Get ActionGate class (lazy import)."""
+    return _lazy_import("ActionGate")
+
+
+def ModelRouter():
+    """Get ModelRouter class (lazy import)."""
+    return _lazy_import("ModelRouter")
+
+
+def SourceRegistry():
+    """Get SourceRegistry class (lazy import)."""
+    return _lazy_import("SourceRegistry")
+
+
+def MemoryGovernance():
+    """Get MemoryGovernance class (lazy import)."""
+    return _lazy_import("MemoryGovernance")
+
+
+def CoreFreezeEnforcer():
+    """Get CoreFreezeEnforcer class (lazy import)."""
+    return _lazy_import("CoreFreezeEnforcer")
+
+
+def ClawdExecutionLayer():
+    """Get ClawdExecutionLayer class (lazy import)."""
+    return _lazy_import("ClawdExecutionLayer")
+
+
+def SuperBrainOrchestrationAdapter():
+    """Get SuperBrainOrchestrationAdapter class (lazy import)."""
+    return _lazy_import("SuperBrainOrchestrationAdapter")
+
+
+def get_canon_knowledge_engine():
+    """Get Canon knowledge engine (lazy import)."""
+    return _lazy_import("get_canon_knowledge_engine")()
+
+
+def get_canon_cognitive_processor():
+    """Get Canon cognitive processor (lazy import)."""
+    return _lazy_import("get_canon_cognitive_processor")()
+
+
+def canon_process(*args, **kwargs):
+    """Process with Canon enrichment (lazy import)."""
+    return _lazy_import("canon_process")(*args, **kwargs)
+
+
+def get_canon_reasoning_engine():
+    """Get Canon reasoning engine (lazy import)."""
+    return _lazy_import("get_canon_reasoning_engine")()
+
+
+def canon_reason(*args, **kwargs):
+    """Reason with Canon knowledge (lazy import)."""
+    return _lazy_import("canon_reason")(*args, **kwargs)
+
+
+def get_canon_query_engine():
+    """Get Canon query engine (lazy import)."""
+    return _lazy_import("get_canon_query_engine")()
+
+
+def canon_query(*args, **kwargs):
+    """Query with Canon context (lazy import)."""
+    return _lazy_import("canon_query")(*args, **kwargs)
 
 
 # Optional features - deferred to avoid import-time failures
@@ -264,8 +445,8 @@ def _load_optional_features():
         from .prompt_builder import SystemPromptBuilder as spb
 
         SystemPromptBuilder = spb
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f"Optional feature 'prompt_builder' not available: {e}")
 
     try:
         from .cookbook import (
@@ -305,8 +486,8 @@ def _load_optional_features():
         TechnologySelection = ts
         RiskAssessment = ra
         CookbookResult = cbr
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f"Optional feature 'cookbook' not available: {e}")
 
 
 # Trigger optional loading on first property access
@@ -339,6 +520,7 @@ def __getattr__(name: str):
     facade_types = {"BrainResponse", "Decision"}
     if name in facade_types:
         from .facade import BrainResponse, Decision
+
         if name == "BrainResponse":
             return BrainResponse
         return Decision
@@ -381,6 +563,38 @@ def __getattr__(name: str):
     if name in ("get_performance_engine", "cached_think", "cached_decide", "batch_think"):
         return locals()[name]
 
+    # Equation bridge - lazy load
+    equation_names = {
+        "get_equation_bridge",
+        "compute_equation",
+        "EquationBridgeIntegration",
+        "EquationComputeRequest",
+        "EquationComputeResponse",
+    }
+    if name in equation_names:
+        from .equation_bridge_integration import (
+            EquationBridgeIntegration as ebi,
+        )
+        from .equation_bridge_integration import (
+            EquationComputeRequest as ecr,
+        )
+        from .equation_bridge_integration import (
+            EquationComputeResponse as ecresp,
+        )
+        from .equation_bridge_integration import (
+            compute_equation as ce,
+        )
+        from .equation_bridge_integration import (
+            get_equation_bridge as geb,
+        )
+
+        globals()["EquationBridgeIntegration"] = ebi
+        globals()["EquationComputeRequest"] = ecr
+        globals()["EquationComputeResponse"] = ecresp
+        globals()["get_equation_bridge"] = geb
+        globals()["compute_equation"] = ce
+        return globals()[name]
+
     # Debugging utilities - lazy load
     debug_names = {"ic", "pretty_print", "print_table", "trace", "debug_breakpoint", "DebugContext"}
     if name in debug_names:
@@ -409,6 +623,18 @@ __all__ = [
     "RuleOfFour",
     "CognitiveStack",
     "KernelRouter",
+    # SuperBrain (Canonical Runtime - ONE BRAIN)
+    "SuperBrainRuntime",
+    "get_super_brain",
+    "initialize_super_brain",
+    "SuperBrainState",
+    # Governance Components
+    "ActionGate",
+    "ModelRouter",
+    "SourceRegistry",
+    "MemoryGovernance",
+    "CoreFreezeEnforcer",
+    "ClawdExecutionLayer",
     # Types
     "BrainResponse",
     "Decision",
@@ -461,4 +687,10 @@ __all__ = [
     "learn_from_task",
     "attempt_procedure_reuse",
     "get_learning_engine",
+    # Equation Bridge
+    "get_equation_bridge",
+    "compute_equation",
+    "EquationBridgeIntegration",
+    "EquationComputeRequest",
+    "EquationComputeResponse",
 ]

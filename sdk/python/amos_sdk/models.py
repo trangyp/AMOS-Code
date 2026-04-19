@@ -3,8 +3,6 @@
 Type definitions for API responses.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,7 +12,7 @@ class ThinkResult:
     """Result from a think operation."""
 
     content: str
-    reasoning: list[str]
+    reasoning: List[str]
     confidence: float
     law_compliant: bool
     domain: str
@@ -36,8 +34,8 @@ class AmoslResult:
 
     success: bool
     invariants_valid: bool
-    violations: list[str]
-    ir_stats: dict[str, Any]
+    violations: List[str]
+    ir_stats: Dict[str, Any]
 
 
 @dataclass

@@ -1,6 +1,5 @@
 """AMOS Design Engine - UI/UX production with biological constraints."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 
@@ -284,6 +283,8 @@ def design_amos_component(
     user_segments: list[str] | None = None,
 ) -> DesignResult:
     """Quick design generation with AMOS compliance."""
+from __future__ import annotations
+
     return get_design_engine().design_component(component_type, purpose, user_segments)
 
 

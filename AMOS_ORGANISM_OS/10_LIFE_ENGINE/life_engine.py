@@ -9,13 +9,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -30,7 +27,7 @@ class Routine:
     priority: int = 5  # 1-10
     completed: bool = False
     streak: int = 0
-    last_completed: Optional[str] = None
+    last_completed: str = None
 
 
 @dataclass
@@ -43,8 +40,8 @@ class Habit:
     current_streak: int = 0
     longest_streak: int = 0
     total_completions: int = 0
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    last_completed: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    last_completed: str = None
 
 
 @dataclass
@@ -54,8 +51,8 @@ class LifeGoal:
     id: str
     title: str
     category: str  # career, health, learning, relationships
-    deadline: Optional[str] = None
-    milestones: List[Dict[str, Any]] = field(default_factory=list)
+    deadline: str = None
+    milestones: list[dict[str, Any]] = field(default_factory=list)
     progress: float = 0.0
     status: str = "active"  # active, completed, paused
 
@@ -175,7 +172,7 @@ class LifeEngine:
         state_file = self.data_dir / "life_state.json"
 
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "routines": [
                 {
                     "id": r.id,
@@ -238,12 +235,12 @@ class LifeEngine:
         for routine in self.routines:
             if routine.id == routine_id:
                 routine.completed = True
-                routine.last_completed = datetime.utcnow().isoformat()
+                routine.last_completed = datetime.now(UTC).isoformat()
 
                 # Update streak
                 if routine.last_completed:
                     last = datetime.fromisoformat(routine.last_completed.replace("Z", "+00:00"))
-                    today = datetime.utcnow()
+                    today = datetime.now(UTC)
                     if (today - last).days <= 1:
                         routine.streak += 1
                     else:
@@ -260,12 +257,12 @@ class LifeEngine:
         for habit in self.habits:
             if habit.id == habit_id:
                 habit.total_completions += 1
-                habit.last_completed = datetime.utcnow().isoformat()
+                habit.last_completed = datetime.now(UTC).isoformat()
 
                 # Update streak
                 if habit.last_completed:
                     last = datetime.fromisoformat(habit.last_completed.replace("Z", "+00:00"))
-                    today = datetime.utcnow()
+                    today = datetime.now(UTC)
                     if (today - last).days <= 1:
                         habit.current_streak += 1
                     else:
@@ -279,9 +276,9 @@ class LifeEngine:
                 return True
         return False
 
-    def get_today_schedule(self) -> List[Dict[str, Any]]:
+    def get_today_schedule(self) -> list[dict[str, Any]]:
         """Get today's schedule with routines."""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(UTC).strftime("%Y-%m-%d")
 
         schedule = []
         for routine in self.routines:
@@ -316,7 +313,7 @@ class LifeEngine:
             "total_completions_all": sum(h.total_completions for h in self.habits),
         }
 
-    def calculate_life_balance(self) -> Dict[str, float]:
+    def calculate_life_balance(self) -> dict[str, float]:
         """Calculate life balance across categories."""
         categories = ["health", "work", "learning", "rest", "relationships"]
         balance = dict.fromkeys(categories, 5.0)  # Default middle score
@@ -331,7 +328,7 @@ class LifeEngine:
 
         return balance
 
-    def add_goal(self, title: str, category: str, deadline: Optional[str] = None) -> LifeGoal:
+    def add_goal(self, title: str, category: str, deadline: str = None) -> LifeGoal:
         """Add a new life goal."""
         goal = LifeGoal(
             id=f"goal_{len(self.goals) + 1:03d}", title=title, category=category, deadline=deadline
@@ -343,7 +340,7 @@ class LifeEngine:
 
     def get_status(self) -> Dict[str, Any]:
         """Get life engine status."""
-        today_str = datetime.utcnow().strftime("%Y-%m-%d")
+        today_str = datetime.now(UTC).strftime("%Y-%m-%d")
         # Count completed routines today
         routines_done = sum(1 for r in self.routines if r.completed)
 

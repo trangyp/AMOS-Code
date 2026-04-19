@@ -16,8 +16,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 import traceback
@@ -26,6 +24,13 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+
+try:
+    from amos_secure_equation_runner import SecureEquationRunner
+
+    SECURE_EXECUTION_AVAILABLE = True
+except ImportError:
+    SECURE_EXECUTION_AVAILABLE = False
 
 
 class ExecutionType(Enum):
@@ -46,10 +51,10 @@ class ExecutionResult:
     command: str
     success: bool
     output: str
-    error: str | None
+    error: str
     duration_ms: int
     timestamp: str
-    resources_used: dict[str, Any] = field(default_factory=dict)
+    resources_used: Dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSMuscleExecutor:
@@ -63,7 +68,7 @@ class AMOSMuscleExecutor:
         self.execution_count = 0
         self.success_count = 0
         self.error_count = 0
-        self.history: list[ExecutionResult] = []
+        self.history: List[ExecutionResult] = []
 
     def execute(
         self, task: str, task_type: ExecutionType = ExecutionType.PYTHON, timeout: int = 30
@@ -80,7 +85,7 @@ class AMOSMuscleExecutor:
         """
         self.execution_count += 1
         task_id = f"MUSCLE-{self.execution_count:04d}"
-        start_time = datetime.utcnow()
+        start_time = datetime.now(UTC)
 
         print(f"\n[MUSCLE] Executing {task_type.value} task...")
         print(f"  Task ID: {task_id}")
@@ -107,7 +112,7 @@ class AMOSMuscleExecutor:
                 output="",
                 error=f"{type(e).__name__}: {str(e)}",
                 duration_ms=0,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(UTC).isoformat(),
             )
             self.error_count += 1
 
@@ -125,58 +130,66 @@ class AMOSMuscleExecutor:
         return result
 
     def _exec_python(self, code: str, timeout: int) -> ExecutionResult:
-        """Execute Python code safely."""
-        start = datetime.utcnow()
+        """Execute Python code safely using secure sandbox."""
+        start = datetime.now(UTC)
 
-        # Create restricted globals
-        safe_globals = {
-            "__builtins__": {
-                "len": len,
-                "range": range,
-                "enumerate": enumerate,
-                "zip": zip,
-                "map": map,
-                "filter": filter,
-                "sum": sum,
-                "min": min,
-                "max": max,
-                "abs": abs,
-                "round": round,
-                "str": str,
-                "int": int,
-                "float": float,
-                "list": list,
-                "dict": dict,
-                "set": set,
-                "tuple": tuple,
-                "print": print,
-                "type": type,
-                "isinstance": isinstance,
-                "hasattr": hasattr,
-                "getattr": getattr,
-                "setattr": setattr,
+        # Use secure execution framework if available
+        if SECURE_EXECUTION_AVAILABLE:
+            runner = SecureEquationRunner()
+            result = runner.execute_equation(code, timeout=float(timeout))
+
+            if result["success"]:
+                output = "Code executed successfully in secure sandbox"
+                success = True
+                error = None
+            else:
+                output = ""
+                success = False
+                error = result.get("error", "Secure execution failed")
+        else:
+            # Fallback: legacy restricted execution (less secure)
+            safe_globals = {
+                "__builtins__": {
+                    "len": len,
+                    "range": range,
+                    "enumerate": enumerate,
+                    "zip": zip,
+                    "map": map,
+                    "filter": filter,
+                    "sum": sum,
+                    "min": min,
+                    "max": max,
+                    "abs": abs,
+                    "round": round,
+                    "str": str,
+                    "int": int,
+                    "float": float,
+                    "list": list,
+                    "dict": dict,
+                    "set": set,
+                    "tuple": tuple,
+                    "print": lambda *args: None,  # Disable print
+                }
             }
-        }
 
-        # Capture output
-        import io
+            import io
 
-        old_stdout = sys.stdout
-        sys.stdout = io.StringIO()
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
 
-        try:
-            exec(code, safe_globals)
-            output = sys.stdout.getvalue()
-            success = True
-            error = None
-        except Exception:
-            output = sys.stdout.getvalue()
-            success = False
-            error = traceback.format_exc()
-        finally:
-            sys.stdout = old_stdout
+            try:
+                exec(code, safe_globals)  # nosec: B102 - Fallback only
+                output = sys.stdout.getvalue()
+                success = True
+                error = None
+            except Exception:
+                output = sys.stdout.getvalue()
+                success = False
+                error = traceback.format_exc()
+            finally:
+                sys.stdout = old_stdout
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return ExecutionResult(
             task_id=f"PY-{self.execution_count}",
@@ -186,12 +199,12 @@ class AMOSMuscleExecutor:
             output=output,
             error=error,
             duration_ms=duration,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
         )
 
     def _exec_shell(self, command: str, timeout: int) -> ExecutionResult:
         """Execute shell command safely."""
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
 
         # Safety: block dangerous commands
         dangerous = ["rm -rf /", "mkfs", "> /dev/sda", "dd if=/dev/zero"]
@@ -205,7 +218,7 @@ class AMOSMuscleExecutor:
                     output="",
                     error=f"Blocked dangerous command: {d}",
                     duration_ms=0,
-                    timestamp=datetime.utcnow().isoformat(),
+                    timestamp=datetime.now(UTC).isoformat(),
                 )
 
         try:
@@ -229,7 +242,7 @@ class AMOSMuscleExecutor:
             output = ""
             error = str(e)
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return ExecutionResult(
             task_id=f"SH-{self.execution_count}",
@@ -239,12 +252,12 @@ class AMOSMuscleExecutor:
             output=output,
             error=error,
             duration_ms=duration,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
         )
 
     def _exec_workflow(self, workflow_name: str) -> ExecutionResult:
         """Execute existing workflow engine."""
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
 
         # Try to import and use existing workflow engine
         try:
@@ -268,7 +281,7 @@ class AMOSMuscleExecutor:
             output = ""
             error = str(e)
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return ExecutionResult(
             task_id=f"WF-{self.execution_count}",
@@ -278,24 +291,74 @@ class AMOSMuscleExecutor:
             output=output,
             error=error,
             duration_ms=duration,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
         )
 
     def _exec_function(self, func_spec: str) -> ExecutionResult:
-        """Execute a function by name."""
-        start = datetime.utcnow()
+        """Execute a function by name using safe dispatch."""
+        start = datetime.now(UTC)
 
-        # Parse module.function(args)
+        # Safe function dispatch table - whitelist of allowed functions
+        allowed_functions = {
+            # Math functions
+            "abs": abs,
+            "round": round,
+            "max": max,
+            "min": min,
+            "sum": sum,
+            "pow": pow,
+            "divmod": divmod,
+            # Type functions
+            "len": len,
+            "str": str,
+            "int": int,
+            "float": float,
+            "list": list,
+            "dict": dict,
+            "set": set,
+            "tuple": tuple,
+            # Other safe builtins
+            "range": range,
+            "enumerate": enumerate,
+            "zip": zip,
+            "map": map,
+            "filter": filter,
+            "sorted": sorted,
+        }
+
         try:
+            # Parse function call
             if "(" in func_spec:
-                func_name = func_spec.split("(")[0]
+                func_name = func_spec.split("(")[0].strip()
                 args_str = func_spec[func_spec.find("(") + 1 : func_spec.rfind(")")]
             else:
-                func_name = func_spec
+                func_name = func_spec.strip()
                 args_str = ""
 
-            # Simple execution: just eval the spec
-            result = eval(func_spec)
+            # Check if function is allowed
+            if func_name not in allowed_functions:
+                raise ValueError(f"Function '{func_name}' not in allowed list")
+
+            func = allowed_functions[func_name]
+
+            # Parse arguments safely (only simple literals)
+            if args_str.strip():
+                # Use ast.literal_eval for safe argument parsing
+                import ast
+
+                try:
+                    # Wrap in tuple to handle multiple args
+                    args = ast.literal_eval(f"({args_str},)")
+                    if not isinstance(args, tuple):
+                        args = (args,)
+                except (ValueError, SyntaxError):
+                    # Single argument that's not a tuple
+                    args = (ast.literal_eval(args_str),)
+            else:
+                args = ()
+
+            # Execute function with parsed arguments
+            result = func(*args)
             success = True
             output = str(result)
             error = None
@@ -305,7 +368,7 @@ class AMOSMuscleExecutor:
             output = ""
             error = f"Function execution failed: {e}"
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return ExecutionResult(
             task_id=f"FN-{self.execution_count}",
@@ -315,10 +378,10 @@ class AMOSMuscleExecutor:
             output=output,
             error=error,
             duration_ms=duration,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
         )
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get execution statistics."""
         total = self.execution_count
         success_rate = (self.success_count / total * 100) if total > 0 else 0

@@ -4,10 +4,9 @@ Tracks latency, errors, token usage, and backend health for
 operational visibility.
 """
 
-from __future__ import annotations
-
 import time
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import Any
 
 
@@ -192,13 +191,7 @@ class MetricsCollector:
         self._backend_stats.clear()
 
 
-# Global metrics collector instance
-_metrics: MetricsCollector | None = None
-
-
+@lru_cache(maxsize=1)
 def get_metrics() -> MetricsCollector:
-    """Get or create global metrics collector."""
-    global _metrics
-    if _metrics is None:
-        _metrics = MetricsCollector()
-    return _metrics
+    """Get or create global metrics collector (singleton)."""
+    return MetricsCollector()

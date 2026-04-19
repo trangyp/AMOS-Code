@@ -15,8 +15,6 @@ Mathematical Foundation:
 - Idempotency: f(x) = f(f(x)) for idempotent operations
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -77,10 +75,10 @@ class CacheConfig:
     name: str
     strategy: CacheStrategy
     invalidation_policy: InvalidationPolicy
-    ttl_seconds: int | None = None
-    max_size: int | None = None
-    source_of_truth: str | None = None  # Where canonical data lives
-    staleness_bound_ms: int | None = None  # Max acceptable staleness
+    ttl_seconds: int = None
+    max_size: int = None
+    source_of_truth: str = None  # Where canonical data lives
+    staleness_bound_ms: int = None  # Max acceptable staleness
 
 
 @dataclass
@@ -91,7 +89,7 @@ class FallbackConfig:
     name: str
     current_level: FallbackLevel
     levels: dict[FallbackLevel, list[str]]  # Level -> available features
-    triggers: dict[str, FallbackLevel]  # Condition -> level transition
+    triggers: Dict[str, FallbackLevel]  # Condition -> level transition
 
 
 @dataclass
@@ -105,7 +103,7 @@ class QueueConfig:
     max_retry: int = 3
     dlq_enabled: bool = False  # Dead letter queue
     deduplication: bool = False  # Deduplication enabled
-    dedup_window_ms: int | None = None  # Deduplication time window
+    dedup_window_ms: int = None  # Deduplication time window
 
 
 @dataclass
@@ -115,8 +113,8 @@ class IdempotencyConfig:
     operation_id: str
     name: str
     idempotent: bool
-    key_extractor: str | None = None  # How to extract idempotency key
-    storage_backend: str | None = None  # Where to store processed keys
+    key_extractor: str = None  # How to extract idempotency key
+    storage_backend: str = None  # Where to store processed keys
     ttl_hours: int = 24  # How long to remember processed keys
 
 
@@ -130,7 +128,7 @@ class OperationalViolation:
     description: str
     invariant_broken: str
     component: str
-    evidence: list[str] = field(default_factory=list)
+    evidence: List[str] = field(default_factory=list)
     remediation: str = ""
 
 
@@ -142,13 +140,13 @@ class OperationalAssessment:
     timestamp: str
 
     # Configurations
-    cache_configs: list[CacheConfig]
-    fallback_configs: list[FallbackConfig]
-    queue_configs: list[QueueConfig]
-    idempotency_configs: list[IdempotencyConfig]
+    cache_configs: List[CacheConfig]
+    fallback_configs: List[FallbackConfig]
+    queue_configs: List[QueueConfig]
+    idempotency_configs: List[IdempotencyConfig]
 
     # Violations
-    violations: list[OperationalViolation]
+    violations: List[OperationalViolation]
 
     # Invariant status
     cache_valid: bool
@@ -156,7 +154,7 @@ class OperationalAssessment:
     queue_valid: bool
     idempotency_valid: bool
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "assessment_id": self.assessment_id,
@@ -190,11 +188,11 @@ class OperationalArchitectureEngine:
     """
 
     def __init__(self):
-        self.cache_configs: list[CacheConfig] = []
-        self.fallback_configs: list[FallbackConfig] = []
-        self.queue_configs: list[QueueConfig] = []
-        self.idempotency_configs: list[IdempotencyConfig] = []
-        self.assessments: list[OperationalAssessment] = []
+        self.cache_configs: List[CacheConfig] = []
+        self.fallback_configs: List[FallbackConfig] = []
+        self.queue_configs: List[QueueConfig] = []
+        self.idempotency_configs: List[IdempotencyConfig] = []
+        self.assessments: List[OperationalAssessment] = []
 
     def add_cache_config(self, config: CacheConfig) -> None:
         """Add cache configuration."""
@@ -219,7 +217,7 @@ class OperationalArchitectureEngine:
         Returns:
             Assessment with all violations found
         """
-        violations: list[OperationalViolation] = []
+        violations: List[OperationalViolation] = []
 
         # 1. Check cache coherence (I_cache)
         for config in self.cache_configs:
@@ -441,7 +439,7 @@ class OperationalArchitectureEngine:
         cache_id: str,
         cold_start: bool,
         warm_hit_rate: float,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Check cache safety under cold/warm transitions.
 
@@ -476,8 +474,8 @@ class OperationalArchitectureEngine:
         service_id: str,
         from_level: str,
         to_level: str,
-        feature_set: list[str],
-    ) -> dict[str, Any]:
+        feature_set: List[str],
+    ) -> Dict[str, Any]:
         """Validate fallback transition preserves monotonicity."""
         try:
             from_enum = FallbackLevel(from_level)
@@ -504,9 +502,7 @@ class OperationalArchitectureEngine:
         # Degradation (to_idx > from_idx) must preserve feature subset
         if to_idx > from_idx:
             # Find config for this service
-            config = next(
-                (c for c in self.fallback_configs if c.service_id == service_id), None
-            )
+            config = next((c for c in self.fallback_configs if c.service_id == service_id), None)
             if config and from_enum in config.levels:
                 allowed_features = set(config.levels[from_enum])
                 actual_features = set(feature_set)
@@ -536,8 +532,8 @@ class OperationalArchitectureEngine:
         self,
         queue_id: str,
         expected_order: str,
-        observed_sequence: list[str],
-    ) -> dict[str, Any]:
+        observed_sequence: List[str],
+    ) -> Dict[str, Any]:
         """Check if observed sequence matches expected ordering."""
         try:
             order_enum = QueueOrder(expected_order)
@@ -570,12 +566,10 @@ class OperationalArchitectureEngine:
         key: str,
         first_result: Any,
         second_result: Any,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Verify operation is idempotent by comparing repeated results."""
         # Find config
-        config = next(
-            (c for c in self.idempotency_configs if c.operation_id == operation_id), None
-        )
+        config = next((c for c in self.idempotency_configs if c.operation_id == operation_id), None)
 
         if not config:
             return {"error": f"Unknown operation: {operation_id}"}

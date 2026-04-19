@@ -1,0 +1,168 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "AMOS Orchestrator v14.0.0",
+    "tags": ["amos", "orchestrator", "v14"],
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "amos_system_health",
+            "legendFormat": "Health Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.5},
+                {"color": "green", "value": 0.8}
+              ]
+            },
+            "max": 1,
+            "min": 0
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Activation Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "amos_activation_rate * 100",
+            "legendFormat": "Activated %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 80}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Total Modules",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(amos_modules_total)",
+            "legendFormat": "Total"
+          },
+          {
+            "expr": "sum(amos_modules_activated_total)",
+            "legendFormat": "Activated"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Memory Bridges",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(amos_memory_bridges_total)",
+            "legendFormat": "Total"
+          },
+          {
+            "expr": "sum(amos_memory_bridges_active)",
+            "legendFormat": "Active"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "Modules by Tier",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "amos_modules_total",
+            "legendFormat": "{{tier}} - Total"
+          },
+          {
+            "expr": "amos_modules_activated_total",
+            "legendFormat": "{{tier}} - Activated"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+      },
+      {
+        "id": 6,
+        "title": "Memory Bridges by Type",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "amos_memory_bridges_total",
+            "legendFormat": "{{memory_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+      },
+      {
+        "id": 7,
+        "title": "Module Activation Duration",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "sum(rate(amos_module_activation_duration_seconds_bucket[5m])) by (le)",
+            "format": "heatmap"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+      },
+      {
+        "id": 8,
+        "title": "API Request Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(amos_api_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}} - {{status}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+      },
+      {
+        "id": 9,
+        "title": "Activation Failures",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "amos_module_activation_failures_total",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 20}
+      }
+    ]
+  }
+}

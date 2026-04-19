@@ -20,8 +20,6 @@ This performs:
     5. State persistence
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from datetime import datetime
@@ -41,7 +39,7 @@ def run_full_pipeline() -> int:
     print("\n" + "=" * 70)
     print("AMOS 7-SYSTEM ORGANISM - ONE CLICK ORCHESTRATOR")
     print("=" * 70)
-    print(f"Timestamp: {datetime.utcnow().isoformat()}Z")
+    print(f"Timestamp: {datetime.now(UTC).isoformat()}Z")
     print(f"Organism Root: {ORGANISM_ROOT}")
     print("=" * 70)
 
@@ -88,7 +86,7 @@ def run_full_pipeline() -> int:
 
     # Save comprehensive state
     state_record = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(UTC).isoformat() + "Z",
         "pipeline": "one_click_orchestrator",
         "version": "1.0.0",
         "status": final_status,

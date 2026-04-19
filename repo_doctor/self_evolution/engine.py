@@ -12,18 +12,16 @@ Executes the complete self-evolution loop:
 This is the canonical entry point for AMOS self-evolution.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .audit import AuditAction, EvolutionAuditor, GovernanceController
 from .contract import EvolutionContract, EvolutionRegistry, EvolutionStatus
 from .detector import EvolutionOpportunityDetector, StructuralHotspot
 from .guard import RegressionGuard, RollbackGuard
-from .planner import SelfPatchPlanner
 from .memory import EvolutionMemoryStore, LearningEngine
-from .audit import EvolutionAuditor, GovernanceController, AuditAction
+from .planner import SelfPatchPlanner
 
 
 @dataclass
@@ -38,7 +36,7 @@ class EvolutionReport:
     success_rate: float
     details: list[dict[str, Any]]
     learned_patterns: int
-    memory_stats: dict[str, Any]
+    memory_stats: Dict[str, Any]
 
 
 class SelfEvolutionEngine:
@@ -52,8 +50,7 @@ class SelfEvolutionEngine:
         report = engine.evolve()
     """
 
-    def __init__(self, amos_root: str, memory_path: str | None = None,
-                 audit_path: str | None = None) -> None:
+    def __init__(self, amos_root: str, memory_path: str = None, audit_path: str = None) -> None:
         """Initialize self-evolution engine with memory, learning and audit."""
         self.amos_root = Path(amos_root)
         self.detector = EvolutionOpportunityDetector(amos_root)
@@ -113,7 +110,7 @@ class SelfEvolutionEngine:
 
         # Get memory statistics
         memory_stats = self.memory.get_statistics()
-        
+
         return EvolutionReport(
             hotspots_detected=len(hotspots),
             contracts_created=len(contracts),
@@ -126,7 +123,7 @@ class SelfEvolutionEngine:
             memory_stats=memory_stats,
         )
 
-    def _create_contracts(self, hotspots: list[StructuralHotspot]) -> list[EvolutionContract]:
+    def _create_contracts(self, hotspots: List[StructuralHotspot]) -> List[EvolutionContract]:
         """Convert hotspots to evolution contracts."""
         contracts = []
 
@@ -152,7 +149,7 @@ class SelfEvolutionEngine:
 
         return contracts
 
-    def _execute_evolution(self, contract: EvolutionContract) -> dict[str, Any]:
+    def _execute_evolution(self, contract: EvolutionContract) -> Dict[str, Any]:
         """Execute single evolution: plan -> backup -> verify -> apply."""
         detail = {
             "evolution_id": contract.evolution_id,
@@ -208,8 +205,9 @@ class SelfEvolutionEngine:
             detail["status"] = "rolled_back"
             detail["reason"] = verification.message
             # Record to memory and audit
-            self.memory.record(contract, patches_applied=0,
-                               lessons="Verification failed - rollback executed")
+            self.memory.record(
+                contract, patches_applied=0, lessons="Verification failed - rollback executed"
+            )
             self.auditor.record(
                 AuditAction.ROLLED_BACK,
                 contract.evolution_id,
@@ -217,13 +215,13 @@ class SelfEvolutionEngine:
                 "Evolution rolled back due to verification failure",
             )
         else:
-            self.registry.complete(contract.evolution_id,
-                                   f"Applied {len(patches)} patches")
+            self.registry.complete(contract.evolution_id, f"Applied {len(patches)} patches")
             detail["status"] = "completed"
             detail["actual_improvement"] = f"Planned {len(patches)} improvements"
             # Record to memory and audit
-            self.memory.record(contract, patches_applied=len(patches),
-                               lessons="Successfully applied patches")
+            self.memory.record(
+                contract, patches_applied=len(patches), lessons="Successfully applied patches"
+            )
             self.auditor.record(
                 AuditAction.COMPLETED,
                 contract.evolution_id,
@@ -233,7 +231,7 @@ class SelfEvolutionEngine:
 
         return detail
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current evolution status including memory and audit."""
         memory_stats = self.memory.get_statistics()
         audit_stats = self.auditor.get_statistics()

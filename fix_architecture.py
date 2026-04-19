@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Apply architectural fixes based on brain analysis."""
 
-import os
-import re
 from pathlib import Path
 
 
@@ -36,8 +34,12 @@ def fix_hidden_interfaces():
 def fix_folklore_deps():
     """Find folklore (undocumented) dependencies."""
     folklore = []
-    readme = Path("README.md").read_text(encoding="utf-8", errors="ignore") if Path("README.md").exists() else ""
-    
+    readme = (
+        Path("README.md").read_text(encoding="utf-8", errors="ignore")
+        if Path("README.md").exists()
+        else ""
+    )
+
     for py_file in Path(".").rglob("*.py"):
         if ".venv" in str(py_file):
             continue
@@ -53,22 +55,22 @@ def generate_fix_plan():
     print("=" * 60)
     print("ARCHITECTURE FIX PLAN")
     print("=" * 60)
-    
+
     print("\n1️⃣  AUTHORITY INVERSION FIXES:")
     authority_fixes = fix_authority_inversion()
     for fix in authority_fixes[:5]:
         print(f"   • {fix}")
-    
+
     print("\n2️⃣  HIDDEN INTERFACES (sample of 138):")
     hidden = fix_hidden_interfaces()
     for h in hidden:
         print(f"   • {h}")
-    
+
     print("\n3️⃣  FOLKLORE DEPENDENCIES:")
     folklore = fix_folklore_deps()
     for f in folklore:
         print(f"   • {f}")
-    
+
     print("\n" + "=" * 60)
     print("RECOMMENDED ACTIONS:")
     print("=" * 60)

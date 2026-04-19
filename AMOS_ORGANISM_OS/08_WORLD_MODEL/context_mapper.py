@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -14,7 +14,7 @@ class ContextMap:
     context_type: str  # e.g., "project", "module", "task"
     properties: Dict[str, Any] = field(default_factory=dict)
     semantic_tags: List[str] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class ContextMapper:
@@ -29,7 +29,7 @@ class ContextMapper:
 
     def __init__(self):
         self._maps: Dict[str, ContextMap] = {}
-        self._tag_index: Dict[str, List[str]] = {}
+        self._tag_index: dict[str, list[str]] = {}
 
     def map_context(
         self, source: str, context_type: str = None, properties: Dict[str, Any] = None
@@ -139,7 +139,7 @@ class ContextMapper:
             "by_type": self._count_by_type(),
         }
 
-    def _count_by_type(self) -> Dict[str, int]:
+    def _count_by_type(self) -> dict[str, int]:
         """Count maps by type."""
         counts: Dict[str, int] = {}
         for map_obj in self._maps.values():

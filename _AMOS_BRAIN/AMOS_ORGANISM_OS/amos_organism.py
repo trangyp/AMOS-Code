@@ -10,8 +10,6 @@ Usage:
     python amos_organism.py [--mode {interactive,daemon,single}]
 """
 
-from __future__ import annotations
-
 import argparse
 import importlib
 import json
@@ -19,7 +17,7 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
@@ -33,9 +31,9 @@ class AMOSOrganism:
 
     def __init__(self, organism_root: Optional[Path] = None):
         self.root = organism_root or Path(__file__).parent
-        self.state: dict[str, Any] = {
+        self.state: Dict[str, Any] = {
             "status": "initializing",
-            "boot_time": datetime.utcnow().isoformat(),
+            "boot_time": datetime.now(UTC).isoformat(),
             "active_subsystems": [],
             "cycle_count": 0,
         }
@@ -56,7 +54,7 @@ class AMOSOrganism:
         self._memory = None
         self._interfaces = None
         self._engine_activation = None
-        self._subsystems: dict[str, Any] = {}
+        self._subsystems: Dict[str, Any] = {}
 
         logger.info(f"AMOS Organism initializing at {self.root}")
         self._bootstrap()
@@ -499,7 +497,7 @@ class AMOSOrganism:
         except Exception as e:
             logger.error(f"Failed to initialize ENGINE_ACTIVATION: {e}")
 
-    def perceive(self) -> dict[str, Any]:
+    def perceive(self) -> Dict[str, Any]:
         """Run the SENSES subsystem to gather environmental data."""
         if self._senses is None:
             return {"error": "SENSES not initialized"}
@@ -508,7 +506,7 @@ class AMOSOrganism:
         logger.info(f"Perception complete: {perception.get('buffered_inputs', 0)} buffered inputs")
         return perception
 
-    def think(self, input_data: dict[str, Any], mode: str = "exploratory") -> dict[str, Any]:
+    def think(self, input_data: Dict[str, Any], mode: str = "exploratory") -> Dict[str, Any]:
         """Run the BRAIN subsystem to process input."""
         if self._brain is None:
             return {"error": "BRAIN not initialized"}
@@ -538,26 +536,26 @@ class AMOSOrganism:
         logger.info(f"Thinking complete: thread {result.get('thread_id', 'unknown')}")
         return result
 
-    def act(self, decision: dict[str, Any]) -> dict[str, Any]:
+    def act(self, decision: Dict[str, Any]) -> Dict[str, Any]:
         """Execute actions (MUSCLE subsystem placeholder)."""
         # TODO: Implement full MUSCLE subsystem
         action_result = {
             "status": "logged_only",
             "action": decision.get("action", "none"),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "note": "Full MUSCLE subsystem not yet implemented",
         }
         logger.info(f"Action logged: {action_result['action']}")
         return action_result
 
-    def run_cycle(self, goal: Optional[str] = None) -> dict[str, Any]:
+    def run_cycle(self, goal: str = None) -> Dict[str, Any]:
         """Run one full organism cycle through the primary loop.
 
         BRAIN -> SENSES -> SKELETON -> WORLD_MODEL -> QUANTUM_LAYER -> MUSCLE -> METABOLISM -> BRAIN
         """
         logger.info(f"=== Starting Organism Cycle {self.state['cycle_count'] + 1} ===")
 
-        cycle_start = datetime.utcnow().isoformat()
+        cycle_start = datetime.now(UTC).isoformat()
 
         # 1. PERCEIVE (SENSES)
         perception = self.perceive()
@@ -587,7 +585,7 @@ class AMOSOrganism:
         self.state["cycle_count"] += 1
         self.state["last_cycle"] = {
             "start": cycle_start,
-            "end": datetime.utcnow().isoformat(),
+            "end": datetime.now(UTC).isoformat(),
             "perception_keys": list(perception.keys()),
             "thought_thread": thought.get("thread_id"),
             "action": action["action"],
@@ -602,7 +600,7 @@ class AMOSOrganism:
             "state_summary": self.get_state_summary(),
         }
 
-    def get_state_summary(self) -> dict[str, Any]:
+    def get_state_summary(self) -> Dict[str, Any]:
         """Get a summary of current organism state."""
         return {
             "status": self.state["status"],

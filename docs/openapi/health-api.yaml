@@ -1,0 +1,278 @@
+openapi: 3.0.0
+info:
+  title: AMOS SuperBrain Health API
+  description: |
+    Health check endpoints for the AMOS SuperBrain governance system.
+    Provides liveness, readiness, and governance status across 12 integrated systems.
+  version: 2.0.0
+  contact:
+    name: Trang Phan
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:8000
+    description: Local development
+  - url: https://api.amos.example.com
+    description: Production
+
+tags:
+  - name: Health
+    description: System health and governance status
+
+paths:
+  /health/live:
+    get:
+      summary: Kubernetes liveness probe
+      description: Returns 200 if the application is running
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Application is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LivenessResponse'
+              example:
+                status: alive
+                timestamp: "2026-04-16T18:30:00Z"
+
+  /health/ready:
+    get:
+      summary: Kubernetes readiness probe
+      description: Returns 200 if the application is ready to serve traffic
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Application is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+              example:
+                status: ready
+                checks:
+                  database: true
+                  redis: true
+                  superbrain: true
+        '503':
+          description: Application is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+              example:
+                status: not_ready
+                checks:
+                  database: false
+                  redis: true
+                  superbrain: true
+
+  /health/superbrain:
+    get:
+      summary: SuperBrain governance status
+      description: |
+        Returns detailed governance status for all 12 integrated systems.
+        Includes version, system count, and governance coverage.
+      tags:
+        - Health
+      responses:
+        '200':
+          description: SuperBrain governance status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuperBrainHealthResponse'
+              example:
+                version: "2.0.0"
+                status: healthy
+                systems_governed: 12
+                features_governed: 4644
+                integrated_systems:
+                  - "Production API 2.3.0"
+                  - "GraphQL API 2.3.0"
+                  - "Agent Messaging 3.1.0"
+                  - "Agent Observability 3.1.0"
+                  - "LLM Providers 2.0.0"
+                  - "UBI Engine 2.0.0"
+                  - "Audit Exporter 2.0.0"
+                  - "AMOS Tools 2.0.0"
+                  - "Knowledge Loader 2.0.0"
+                  - "Master Orchestrator 2.0.0"
+                  - "Cognitive Router 2.0.0"
+                  - "Resilience Engine 2.0.0"
+                timestamp: "2026-04-16T18:30:00Z"
+        '503':
+          description: SuperBrain governance degraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuperBrainHealthResponse'
+
+  /health:
+    get:
+      summary: Full system health check
+      description: |
+        Comprehensive health check including all subsystems,
+        SuperBrain governance, and infrastructure components.
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Full health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullHealthResponse'
+              example:
+                status: healthy
+                version: "2.0.0"
+                superbrain:
+                  version: "2.0.0"
+                  systems_governed: 12
+                  features_governed: 4644
+                  status: healthy
+                checks:
+                  database:
+                    status: healthy
+                    latency_ms: 5
+                  redis:
+                    status: healthy
+                    latency_ms: 2
+                  llm_providers:
+                    status: healthy
+                    available: 4
+                  superbrain_governance:
+                    status: healthy
+                    systems_verified: 12
+                timestamp: "2026-04-16T18:30:00Z"
+        '503':
+          description: One or more critical checks failing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullHealthResponse'
+
+components:
+  schemas:
+    LivenessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [alive]
+          example: alive
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-04-16T18:30:00Z"
+
+    ReadinessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ready, not_ready]
+          example: ready
+        checks:
+          type: object
+          properties:
+            database:
+              type: boolean
+              example: true
+            redis:
+              type: boolean
+              example: true
+            superbrain:
+              type: boolean
+              example: true
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-04-16T18:30:00Z"
+
+    SuperBrainHealthResponse:
+      type: object
+      properties:
+        version:
+          type: string
+          example: "2.0.0"
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: healthy
+        systems_governed:
+          type: integer
+          example: 12
+        features_governed:
+          type: integer
+          example: 4644
+        integrated_systems:
+          type: array
+          items:
+            type: string
+          example:
+            - "Production API 2.3.0"
+            - "GraphQL API 2.3.0"
+            - "Agent Messaging 3.1.0"
+            - "Agent Observability 3.1.0"
+            - "LLM Providers 2.0.0"
+            - "UBI Engine 2.0.0"
+            - "Audit Exporter 2.0.0"
+            - "AMOS Tools 2.0.0"
+            - "Knowledge Loader 2.0.0"
+            - "Master Orchestrator 2.0.0"
+            - "Cognitive Router 2.0.0"
+            - "Resilience Engine 2.0.0"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-04-16T18:30:00Z"
+
+    HealthCheckDetail:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: healthy
+        latency_ms:
+          type: integer
+          example: 5
+        available:
+          type: integer
+          example: 4
+        systems_verified:
+          type: integer
+          example: 12
+
+    FullHealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: healthy
+        version:
+          type: string
+          example: "2.0.0"
+        superbrain:
+          $ref: '#/components/schemas/SuperBrainHealthResponse'
+        checks:
+          type: object
+          properties:
+            database:
+              $ref: '#/components/schemas/HealthCheckDetail'
+            redis:
+              $ref: '#/components/schemas/HealthCheckDetail'
+            llm_providers:
+              $ref: '#/components/schemas/HealthCheckDetail'
+            superbrain_governance:
+              $ref: '#/components/schemas/HealthCheckDetail'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-04-16T18:30:00Z"

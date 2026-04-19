@@ -1,6 +1,5 @@
 """AMOS Performance Monitoring & Telemetry - System observability layer."""
 
-from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
@@ -16,7 +15,7 @@ class TelemetryEvent:
     event_type: str
     timestamp: float
     component: str
-    duration_ms: float | None = None
+    duration_ms: float  = None
     status: str = "success"
     metadata: dict = field(default_factory=dict)
 
@@ -47,9 +46,9 @@ class TelemetryCollector:
         self,
         event_type: str,
         component: str,
-        duration_ms: float | None = None,
+        duration_ms: float  = None,
         status: str = "success",
-        metadata: dict | None = None,
+        metadata: dict  = None,
     ) -> TelemetryEvent:
         """Record a telemetry event."""
         event = TelemetryEvent(
@@ -90,7 +89,7 @@ class TelemetryCollector:
         else:
             metric.error_count += 1
 
-    def get_component_metrics(self, component: str | None = None) -> dict:
+    def get_component_metrics(self, component: str  = None) -> dict:
         """Get metrics for component(s)."""
         if component:
             metric = self.metrics.get(component)
@@ -208,7 +207,7 @@ class AMOSMonitoring:
         tool_name: str,
         duration_ms: float,
         success: bool = True,
-        metadata: dict | None = None,
+        metadata: dict  = None,
     ) -> TelemetryEvent:
         """Record tool execution event."""
         return self.telemetry.record_event(
@@ -340,6 +339,8 @@ def record_execution(tool_name: str, duration_ms: float, success: bool = True) -
 
 def get_system_status() -> dict:
     """Quick helper to get system status."""
+from __future__ import annotations
+
     return get_monitoring().get_system_status()
 
 

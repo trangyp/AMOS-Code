@@ -13,11 +13,14 @@ Connects:
 Owner: Trang
 """
 
+from __future__ import annotations
+
+
 import json
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -45,7 +48,7 @@ class BrainMasterKnowledgeLoader:
         self.loaded = False
         self.stats = {"total_entries": 0, "domains": 0, "memory_mb": 0}
 
-    def load_brain_master(self, path: Optional[Path] = None) -> dict[str, Any]:
+    def load_brain_master(self, path: Path | None = None) -> dict[str, Any]:
         """Load Brain_Master_Os_v0.json knowledge base.
 
         Args:
@@ -132,9 +135,7 @@ class BrainMasterKnowledgeLoader:
                         self.domains[domain] = []
                     self.domains[domain].append(entry.key)
 
-    def query(
-        self, query: str, domain: Optional[str] = None, limit: int = 5
-    ) -> list[KnowledgeEntry]:
+    def query(self, query: str, domain: str = None, limit: int = 5) -> list[KnowledgeEntry]:
         """Query knowledge base.
 
         Args:
@@ -181,7 +182,7 @@ class BrainMasterKnowledgeLoader:
         keys = self.domains[domain]
         return [e for e in self.entries if e.key in keys]
 
-    def get_entry(self, key: str) -> Optional[KnowledgeEntry]:
+    def get_entry(self, key: str) -> KnowledgeEntry | None:
         """Get specific entry by key."""
         for entry in self.entries:
             if entry.key == key:
@@ -214,7 +215,7 @@ class KnowledgeEnhancedBrain:
         self.knowledge_loader = BrainMasterKnowledgeLoader()
         self.initialized = False
 
-    def initialize(self, knowledge_path: Optional[Path] = None) -> dict[str, Any]:
+    def initialize(self, knowledge_path: Path | None = None) -> dict[str, Any]:
         """Initialize brain with knowledge base."""
         print("🧠 Initializing Knowledge-Enhanced Brain...")
 
@@ -273,7 +274,7 @@ class KnowledgeEnhancedBrain:
 
 
 # Global instance
-_brain_knowledge: Optional[KnowledgeEnhancedBrain] = None
+_brain_knowledge: KnowledgeEnhancedBrain | None = None
 
 
 def get_knowledge_brain() -> KnowledgeEnhancedBrain:
@@ -284,13 +285,13 @@ def get_knowledge_brain() -> KnowledgeEnhancedBrain:
     return _brain_knowledge
 
 
-def load_brain_knowledge(path: Optional[Path] = None) -> dict[str, Any]:
+def load_brain_knowledge(path: Path | None = None) -> dict[str, Any]:
     """Convenience function to load brain knowledge."""
     brain = get_knowledge_brain()
     return brain.initialize(path)
 
 
-def query_knowledge(query: str, domain: Optional[str] = None, limit: int = 5) -> list[dict]:
+def query_knowledge(query: str, domain: str = None, limit: int = 5) -> list[dict]:
     """Convenience function to query knowledge."""
     brain = get_knowledge_brain()
     if not brain.initialized:

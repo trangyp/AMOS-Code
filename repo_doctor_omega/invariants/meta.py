@@ -16,28 +16,25 @@ Implements the 200+ invariant catalog covering:
 
 Usage:
     from repo_doctor_omega.invariants.meta import MetaArchitectureInvariant
-    
+
     inv = LawHierarchyInvariant()
     result = inv.check("/path/to/repo")
-    
+
     if not result.passed:
         for v in result.violations:
             print(f"{v.invariant}: {v.message}")
 """
-from __future__ import annotations
 
-from dataclasses import dataclass, field
-from enum import Enum, auto
 from pathlib import Path
 from typing import Any
 
 from ..state.basis import BasisVector
 from .hard import HardInvariant, InvariantKind, InvariantResult, InvariantViolation
 
-
 # =============================================================================
 # Law Hierarchy Invariants
 # =============================================================================
+
 
 class LawHierarchyInvariant(HardInvariant):
     """I_law_hierarchy = 1 iff every protected invariant has explicit precedence.
@@ -50,7 +47,7 @@ class LawHierarchyInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LAW_HIERARCHY)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check law hierarchy declarations."""
         violations = []
 
@@ -73,9 +70,15 @@ class LawHierarchyInvariant(HardInvariant):
 
                 # Check for precedence keywords
                 precedence_keywords = [
-                    "precedence", "priority", "conflict resolution",
-                    "wins over", "overrides", "hierarchy",
-                    "emergency >", "safety >", "liveness >",
+                    "precedence",
+                    "priority",
+                    "conflict resolution",
+                    "wins over",
+                    "overrides",
+                    "hierarchy",
+                    "emergency >",
+                    "safety >",
+                    "liveness >",
                 ]
 
                 if any(kw in content.lower() for kw in precedence_keywords):
@@ -128,14 +131,19 @@ class LawScopeInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LAW_SCOPE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check law scope declarations."""
         violations = []
 
         # Check for scope annotations in code
         scope_indicators = [
-            "@scope", "# scope:", "# applies to:", "# invariant:",
-            "SCOPE:", "APPLIES:", "REGIME:",
+            "@scope",
+            "# scope:",
+            "# applies to:",
+            "# invariant:",
+            "SCOPE:",
+            "APPLIES:",
+            "REGIME:",
         ]
 
         py_files = list(Path(repo_path).rglob("*.py"))
@@ -184,6 +192,7 @@ class LawScopeInvariant(HardInvariant):
 # Emergency Constitution Invariants
 # =============================================================================
 
+
 class EmergencyConstitutionInvariant(HardInvariant):
     """I_emergency_constitution = 1 iff emergency modes have explicit law changes.
 
@@ -197,7 +206,7 @@ class EmergencyConstitutionInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.EMERGENCY_CONSTITUTION)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check emergency constitution declarations."""
         violations = []
 
@@ -278,6 +287,7 @@ class EmergencyConstitutionInvariant(HardInvariant):
 # Silence Semantics Invariants
 # =============================================================================
 
+
 class SilenceSemanticsInvariant(HardInvariant):
     """I_silence = 1 iff silence states are explicitly distinguished.
 
@@ -293,15 +303,25 @@ class SilenceSemanticsInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.SILENCE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check silence semantics in logging/observability code."""
         violations = []
 
         # Look for silence-handling patterns
         silence_patterns = [
-            "null", "none", "missing", "absent", "withheld",
-            "suppressed", "dropped", "filtered", "delayed",
-            "unknown", "unavailable", "timeout", "dead",
+            "null",
+            "none",
+            "missing",
+            "absent",
+            "withheld",
+            "suppressed",
+            "dropped",
+            "filtered",
+            "delayed",
+            "unknown",
+            "unavailable",
+            "timeout",
+            "dead",
         ]
 
         # Check if codebase has explicit None/null handling
@@ -316,7 +336,7 @@ class SilenceSemanticsInvariant(HardInvariant):
                     has_explicit_silence = True
                     break
                 # Check for Maybe/Optional types
-                if "Optional[" in content or "Maybe" in content:
+                if "" in content or "Maybe" in content:
                     has_explicit_silence = True
                     break
             except Exception:
@@ -340,7 +360,7 @@ class SilenceSemanticsInvariant(HardInvariant):
             violations=violations,
             metadata={
                 "has_explicit_silence": has_explicit_silence,
-                "silence_patterns": silence_patterns[:5],
+                "silence_patterns": silence_patterns[:5] if silence_patterns else [],
             },
         )
 
@@ -348,6 +368,7 @@ class SilenceSemanticsInvariant(HardInvariant):
 # =============================================================================
 # Constraint Provenance Invariants
 # =============================================================================
+
 
 class ConstraintProvenanceInvariant(HardInvariant):
     """I_constraint_provenance = 1 iff every constraint has attributable origin.
@@ -362,14 +383,21 @@ class ConstraintProvenanceInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.CONSTRAINT_PROVENANCE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for constraint provenance documentation."""
         violations = []
 
         # Look for rationale/justification in comments
         provenance_indicators = [
-            "rationale:", "reason:", "because", "due to", "needed for",
-            "workaround for", "temporary", "TODO:", "FIXME:",
+            "rationale:",
+            "reason:",
+            "because",
+            "due to",
+            "needed for",
+            "workaround for",
+            "temporary",
+            "TODO:",
+            "FIXME:",
         ]
 
         py_files = list(Path(repo_path).rglob("*.py"))
@@ -423,6 +451,7 @@ class ConstraintProvenanceInvariant(HardInvariant):
 # Observer Plurality Invariants
 # =============================================================================
 
+
 class ObserverPluralityInvariant(HardInvariant):
     """I_observer_plurality = 1 iff all observers have reconciliation semantics.
 
@@ -433,14 +462,19 @@ class ObserverPluralityInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.OBSERVER_PLURALITY)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for observer reconciliation mechanisms."""
         violations = []
 
         # Look for observer/reconciliation patterns
         observer_files = [
-            "reconcile.py", "sync.py", "merge.py", "arbitrate.py",
-            "consensus.py", "observer.py", "multi_model.py",
+            "reconcile.py",
+            "sync.py",
+            "merge.py",
+            "arbitrate.py",
+            "consensus.py",
+            "observer.py",
+            "multi_model.py",
         ]
 
         found_observer_code = False
@@ -494,6 +528,7 @@ class ObserverPluralityInvariant(HardInvariant):
 # Evidence Survival Invariants
 # =============================================================================
 
+
 class EvidenceSurvivalInvariant(HardInvariant):
     """I_evidence_survival = 1 iff evidence survives required decision horizon.
 
@@ -504,14 +539,17 @@ class EvidenceSurvivalInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.EVIDENCE_SURVIVAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check evidence retention policies."""
         violations = []
 
         # Look for retention configuration
         retention_files = [
-            "retention.yaml", "retention.yml", "retention.json",
-            "logs/retention", "config/retention",
+            "retention.yaml",
+            "retention.yml",
+            "retention.json",
+            "logs/retention",
+            "config/retention",
         ]
 
         found_retention_config = False
@@ -558,6 +596,7 @@ class EvidenceSurvivalInvariant(HardInvariant):
 # Path Dependence Invariants
 # =============================================================================
 
+
 class PathDependenceInvariant(HardInvariant):
     """I_path_dependence = 1 iff historical paths affecting admissibility remain queryable.
 
@@ -569,14 +608,17 @@ class PathDependenceInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.PATH_DEPENDENCE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for path history tracking."""
         violations = []
 
         # Check for migration history
         migration_files = [
-            "migrations/", "alembic/", "db/migrate",
-            "MIGRATIONS.md", "MIGRATION_HISTORY.md",
+            "migrations/",
+            "alembic/",
+            "db/migrate",
+            "MIGRATIONS.md",
+            "MIGRATION_HISTORY.md",
         ]
 
         has_migration_tracking = False
@@ -625,6 +667,7 @@ class PathDependenceInvariant(HardInvariant):
 # Topology Rewrite Invariants
 # =============================================================================
 
+
 class TopologyRewriteInvariant(HardInvariant):
     """I_topology_rewrite = 1 iff split/merge/extraction preserves canonical truth.
 
@@ -636,14 +679,17 @@ class TopologyRewriteInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.TOPOLOGY_REWRITE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for topology change documentation."""
         violations = []
 
         # Look for split/merge/extraction documentation
         topology_files = [
-            "SPLIT.md", "MERGE.md", "EXTRACTION.md",
-            "docs/topology", "TOPOLOGY.md",
+            "SPLIT.md",
+            "MERGE.md",
+            "EXTRACTION.md",
+            "docs/topology",
+            "TOPOLOGY.md",
         ]
 
         found_topology_doc = False
@@ -688,6 +734,7 @@ class TopologyRewriteInvariant(HardInvariant):
 # Anti-Objective Invariants
 # =============================================================================
 
+
 class AntiObjectiveInvariant(HardInvariant):
     """I_anti_objective = 1 iff every workflow declares forbidden optimization directions.
 
@@ -700,15 +747,21 @@ class AntiObjectiveInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.ANTI_OBJECTIVE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for anti-objective declarations."""
         violations = []
 
         # Look for anti-objective / guardrail documentation
         anti_objective_keywords = [
-            "never", "must not", "forbidden", "prohibited",
-            "anti-objective", "guardrail", "constraint",
-            "not allowed", "cannot optimize",
+            "never",
+            "must not",
+            "forbidden",
+            "prohibited",
+            "anti-objective",
+            "guardrail",
+            "constraint",
+            "not allowed",
+            "cannot optimize",
         ]
 
         # Check README and architecture docs
@@ -750,6 +803,7 @@ class AntiObjectiveInvariant(HardInvariant):
 # Legibility Invariant
 # =============================================================================
 
+
 class LegibilityInvariant(HardInvariant):
     """I_legibility = 1 iff architecture remains reconstructable without tribal knowledge.
 
@@ -760,24 +814,33 @@ class LegibilityInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.LEGIBILITY)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for legibility indicators."""
         violations = []
 
         # Check for onboarding documentation
         onboarding_files = [
-            "ONBOARDING.md", "CONTRIBUTING.md", "NEWBIE.md",
-            "docs/onboarding", "docs/getting-started",
+            "ONBOARDING.md",
+            "CONTRIBUTING.md",
+            "NEWBIE.md",
+            "docs/onboarding",
+            "docs/getting-started",
         ]
 
-        found_onboarding = any(
-            (Path(repo_path) / of).exists()
-            for of in onboarding_files
-        )
+        found_onboarding = any((Path(repo_path) / of).exists() for of in onboarding_files)
 
         # Check for architecture diagrams
         diagram_files = list(Path(repo_path).rglob("*.png")) + list(Path(repo_path).rglob("*.svg"))
-        has_diagrams = len([d for d in diagram_files if "diagram" in str(d).lower() or "arch" in str(d).lower()]) > 0
+        has_diagrams = (
+            len(
+                [
+                    d
+                    for d in diagram_files
+                    if "diagram" in str(d).lower() or "arch" in str(d).lower()
+                ]
+            )
+            > 0
+        )
 
         # Check for decision records
         adr_files = list(Path(repo_path).glob("*ADR*")) + list(Path(repo_path).glob("*decision*"))
@@ -822,6 +885,7 @@ class LegibilityInvariant(HardInvariant):
 # Model Transport Invariant
 # =============================================================================
 
+
 class ModelTransportInvariant(HardInvariant):
     """I_model_transport = 1 iff models are revalidated before cross-surface use.
 
@@ -832,14 +896,17 @@ class ModelTransportInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.MODEL_TRANSPORT)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for model validation on transport."""
         violations = []
 
         # Look for model validation patterns
         validation_patterns = [
-            "validate_model", "model.validate", "check_model",
-            "schema.validate", "contract.validate",
+            "validate_model",
+            "model.validate",
+            "check_model",
+            "schema.validate",
+            "contract.validate",
         ]
 
         py_files = list(Path(repo_path).rglob("*.py"))
@@ -885,6 +952,7 @@ class ModelTransportInvariant(HardInvariant):
 # World Drift Invariant
 # =============================================================================
 
+
 class WorldDriftInvariant(HardInvariant):
     """I_world_drift = 1 iff world-facing assumptions are monitored within bounded lag.
 
@@ -895,14 +963,18 @@ class WorldDriftInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.WORLD_DRIFT)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check for world-drift monitoring."""
         violations = []
 
         # Look for dependency monitoring
         dep_files = [
-            "requirements.txt", "pyproject.toml", "Pipfile",
-            "package.json", "Cargo.toml", "go.mod",
+            "requirements.txt",
+            "pyproject.toml",
+            "Pipfile",
+            "package.json",
+            "Cargo.toml",
+            "go.mod",
         ]
 
         has_dependency_files = False
@@ -924,10 +996,7 @@ class WorldDriftInvariant(HardInvariant):
             ".github/renovate.json",
             ".dependabot/config.yml",
         ]
-        has_update_automation = any(
-            (Path(repo_path) / uc).exists()
-            for uc in update_configs
-        )
+        has_update_automation = any((Path(repo_path) / uc).exists() for uc in update_configs)
 
         if has_dependency_files and not has_version_pins and not has_update_automation:
             violations.append(
@@ -950,4 +1019,568 @@ class WorldDriftInvariant(HardInvariant):
                 "has_version_pins": has_version_pins,
                 "has_update_automation": has_update_automation,
             },
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Modality System
+# =============================================================================
+
+
+class ModalityInvariant(HardInvariant):
+    """I_modality = 1 iff required/allowed/forbidden/optional are distinguished."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.MODAL_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check modality distinctions."""
+        violations = []
+
+        # Check for modality documentation
+        modality_files = ["MODALITY.md", "MODES.md", "STATES.md"]
+        found_modality = any((Path(repo_path) / mf).exists() for mf in modality_files)
+
+        if not found_modality:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No modality documentation - required/allowed/forbidden not distinguished",
+                    location="modality",
+                    severity=0.6,
+                    remediation="Document modality states: required, allowed, forbidden, optional",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_modality_doc": found_modality},
+        )
+
+
+class ModalCollapseInvariant(HardInvariant):
+    """I_modal_collapse = 1 iff modality confusion is prevented."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.MODAL_COLLAPSE)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check for modality collapse prevention."""
+        violations = []
+
+        collapse_files = ["MODAL_COLLAPSE.md", "MODE_SAFETY.md"]
+        found_collapse_doc = any((Path(repo_path) / cf).exists() for cf in collapse_files)
+
+        if not found_collapse_doc:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No modality collapse prevention documented",
+                    location="modal_safety",
+                    severity=0.5,
+                    remediation="Document how modality confusion is prevented",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_collapse_doc": found_collapse_doc},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Obligation System
+# =============================================================================
+
+
+class ObligationLifecycleInvariant(HardInvariant):
+    """I_obligation = 1 iff duties have explicit creation/maturity/discharge."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.OBLIGATION_LIFECYCLE)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check obligation lifecycle documentation."""
+        violations = []
+
+        obligation_files = ["OBLIGATION.md", "DUTIES.md", "COMMITMENTS.md"]
+        found_obligation = any((Path(repo_path) / of).exists() for of in obligation_files)
+
+        if not found_obligation:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No obligation lifecycle documentation",
+                    location="obligations",
+                    severity=0.6,
+                    remediation="Document duty creation, maturity, and discharge semantics",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_obligation_doc": found_obligation},
+        )
+
+
+class ObligationTransferInvariant(HardInvariant):
+    """I_obligation_transfer = 1 iff duty transfer integrity is maintained."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.OBLIGATION_TRANSFER)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check obligation transfer integrity."""
+        violations = []
+
+        transfer_files = ["TRANSFER.md", "HANDOFF.md", "DELEGATION.md"]
+        found_transfer = any((Path(repo_path) / tf).exists() for tf in transfer_files)
+
+        if not found_transfer:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No obligation transfer documentation",
+                    location="transfer",
+                    severity=0.5,
+                    remediation="Document how duty transfers preserve integrity",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_transfer_doc": found_transfer},
+        )
+
+
+class PromiseIntegrityInvariant(HardInvariant):
+    """I_promise = 1 iff promises have explicit creation and fulfillment tracking."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.PROMISE_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check promise integrity."""
+        violations = []
+
+        promise_files = ["PROMISE.md", "COMMITMENTS.md", "CONTRACTS.md"]
+        found_promise = any((Path(repo_path) / pf).exists() for pf in promise_files)
+
+        if not found_promise:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No promise integrity documentation",
+                    location="promises",
+                    severity=0.6,
+                    remediation="Document promise creation and fulfillment semantics",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_promise_doc": found_promise},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Memory and Forgetting
+# =============================================================================
+
+
+class MemoryDisciplineInvariant(HardInvariant):
+    """I_memory = 1 iff what must be remembered is explicitly declared."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.MEMORY_DISCIPLINE)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check memory discipline."""
+        violations = []
+
+        memory_files = ["MEMORY.md", "RETENTION.md", "ARCHIVE.md"]
+        found_memory = any((Path(repo_path) / mf).exists() for mf in memory_files)
+
+        if not found_memory:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No memory discipline documentation",
+                    location="memory",
+                    severity=0.5,
+                    remediation="Document what must be remembered and for how long",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_memory_doc": found_memory},
+        )
+
+
+class ForgettingSafetyInvariant(HardInvariant):
+    """I_forgetting = 1 iff safe forgetting with tombstones is implemented."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.FORGETTING_SAFETY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check forgetting safety."""
+        violations = []
+
+        forgetting_files = ["FORGETTING.md", "DELETION.md", "TOMBSTONE.md"]
+        found_forgetting = any((Path(repo_path) / ff).exists() for ff in forgetting_files)
+
+        if not found_forgetting:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No forgetting safety documentation",
+                    location="forgetting",
+                    severity=0.5,
+                    remediation="Document safe forgetting with tombstones",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_forgetting_doc": found_forgetting},
+        )
+
+
+class TombstoneIntegrityInvariant(HardInvariant):
+    """I_tombstone = 1 iff deletion evidence is preserved."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.TOMBSTONE_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check tombstone integrity."""
+        violations = []
+
+        tombstone_files = ["TOMBSTONE.md", "AUDIT.md", "EVIDENCE.md"]
+        found_tombstone = any((Path(repo_path) / tf).exists() for tf in tombstone_files)
+
+        if not found_tombstone:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No tombstone integrity documentation",
+                    location="tombstones",
+                    severity=0.6,
+                    remediation="Document deletion evidence preservation",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_tombstone_doc": found_tombstone},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Counterparty and Externality
+# =============================================================================
+
+
+class CounterpartyIntegrityInvariant(HardInvariant):
+    """I_counterparty = 1 iff external obligations are represented."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.COUNTERPARTY_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check counterparty integrity."""
+        violations = []
+
+        counterparty_files = ["COUNTERPARTY.md", "EXTERNAL.md", "VENDORS.md"]
+        found_counterparty = any((Path(repo_path) / cf).exists() for cf in counterparty_files)
+
+        if not found_counterparty:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No counterparty integrity documentation",
+                    location="counterparty",
+                    severity=0.6,
+                    remediation="Document external obligation representation",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_counterparty_doc": found_counterparty},
+        )
+
+
+class ExternalityBoundednessInvariant(HardInvariant):
+    """I_externality = 1 iff irretractable emissions are bounded."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.EXTERNALITY_BOUNDEDNESS)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check externality boundedness."""
+        violations = []
+
+        externality_files = ["EXTERNALITY.md", "EMISSIONS.md", "BOUNDS.md"]
+        found_externality = any((Path(repo_path) / ef).exists() for ef in externality_files)
+
+        if not found_externality:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No externality boundedness documentation",
+                    location="externality",
+                    severity=0.7,
+                    remediation="Document irretractable emission controls",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_externality_doc": found_externality},
+        )
+
+
+class ReciprocityIntegrityInvariant(HardInvariant):
+    """I_reciprocity = 1 iff bilateral obligations are preserved."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.RECIPROCITY_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check reciprocity integrity."""
+        violations = []
+
+        reciprocity_files = ["RECIPROCITY.md", "BILATERAL.md", "MUTUAL.md"]
+        found_reciprocity = any((Path(repo_path) / rf).exists() for rf in reciprocity_files)
+
+        if not found_reciprocity:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No reciprocity integrity documentation",
+                    location="reciprocity",
+                    severity=0.5,
+                    remediation="Document bilateral obligation preservation",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_reciprocity_doc": found_reciprocity},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Narrative and Explanation
+# =============================================================================
+
+
+class NarrativeCoherenceInvariant(HardInvariant):
+    """I_narrative = 1 iff story consistency is maintained across surfaces."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.NARRATIVE_COHERENCE)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check narrative coherence."""
+        violations = []
+
+        narrative_files = ["NARRATIVE.md", "STORY.md", "HISTORY.md"]
+        found_narrative = any((Path(repo_path) / nf).exists() for nf in narrative_files)
+
+        if not found_narrative:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No narrative coherence documentation",
+                    location="narrative",
+                    severity=0.5,
+                    remediation="Document story consistency across surfaces",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_narrative_doc": found_narrative},
+        )
+
+
+class ExplainabilityInvariant(HardInvariant):
+    """I_explainability = 1 iff decisions are attributable and explainable."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.EXPLAINABILITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check explainability."""
+        violations = []
+
+        explain_files = ["EXPLAINABILITY.md", "TRANSPARENCY.md", "DECISIONS.md"]
+        found_explain = any((Path(repo_path) / ef).exists() for ef in explain_files)
+
+        if not found_explain:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No explainability documentation",
+                    location="explainability",
+                    severity=0.6,
+                    remediation="Document decision attribution and explanation",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_explain_doc": found_explain},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Undecidability and Incompleteness
+# =============================================================================
+
+
+class UndecidabilityAwarenessInvariant(HardInvariant):
+    """I_undecidability = 1 iff unprovable claims are explicitly handled."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.UNDECIDABILITY_AWARENESS)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check undecidability awareness."""
+        violations = []
+
+        undecidability_files = ["UNDECIDABILITY.md", "UNCERTAINTY.md", "LIMITS.md"]
+        found_undecidability = any((Path(repo_path) / uf).exists() for uf in undecidability_files)
+
+        if not found_undecidability:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No undecidability awareness documentation",
+                    location="undecidability",
+                    severity=0.5,
+                    remediation="Document explicit handling of unprovable claims",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_undecidability_doc": found_undecidability},
+        )
+
+
+class SpecificationCompletenessInvariant(HardInvariant):
+    """I_completeness = 1 iff incompleteness is explicitly marked."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.SPECIFICATION_COMPLETENESS)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check specification completeness marking."""
+        violations = []
+
+        completeness_files = ["COMPLETENESS.md", "INCOMPLETENESS.md", "TODO.md"]
+        found_completeness = any((Path(repo_path) / cf).exists() for cf in completeness_files)
+
+        if not found_completeness:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No specification completeness documentation",
+                    location="completeness",
+                    severity=0.5,
+                    remediation="Document explicit incompleteness marking",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_completeness_doc": found_completeness},
+        )
+
+
+# =============================================================================
+# Ultimate Meta-Architecture: Substitution
+# =============================================================================
+
+
+class SubstitutionIntegrityInvariant(HardInvariant):
+    """I_substitution = 1 iff semantic preservation under substitution is verified."""
+
+    def __init__(self):
+        super().__init__(InvariantKind.META, BasisVector.SUBSTITUTION_INTEGRITY)
+
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
+        """Check substitution integrity."""
+        violations = []
+
+        substitution_files = ["SUBSTITUTION.md", "REPLACEMENT.md", "SEMANTICS.md"]
+        found_substitution = any((Path(repo_path) / sf).exists() for sf in substitution_files)
+
+        if not found_substitution:
+            violations.append(
+                InvariantViolation(
+                    invariant=self.name,
+                    message="No substitution integrity documentation",
+                    location="substitution",
+                    severity=0.5,
+                    remediation="Document semantic preservation under substitution",
+                )
+            )
+
+        return InvariantResult(
+            invariant=self.name,
+            passed=len(violations) == 0,
+            basis=self.basis,
+            violations=violations,
+            metadata={"found_substitution_doc": found_substitution},
         )

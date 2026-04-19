@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Optional
 
-if TYPE_CHECKING:
-    from .kernel_router import KernelRouter
-    from .loader import BrainLoader
+from .kernel_router import KernelRouter
+from .loader import BrainLoader
 
 
 class SystemPromptBuilder:
     """Builds system prompts incorporating AMOS brain architecture."""
 
-    def __init__(self, brain_loader: BrainLoader, kernel_router: KernelRouter | None = None):
+    def __init__(self, brain_loader: BrainLoader, kernel_router: Optional[KernelRouter] = None):
         self.brain = brain_loader
         self.router = kernel_router
 

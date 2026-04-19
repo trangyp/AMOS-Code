@@ -8,11 +8,10 @@ Phase 5 invariants addressing distributed systems physics:
 - Adaptive stability bounds
 - Architectural entropy
 """
-from __future__ import annotations
 
 from typing import Any
 
-from ..layer18_physics_engine import DistributedPhysicsEngine, InvariantResult as PhysicsResult
+from ..layer18_physics_engine import DistributedPhysicsEngine
 from ..state.basis import StateDimension
 from .base import Invariant, InvariantResult, InvariantSeverity
 
@@ -21,14 +20,11 @@ class TruthArbitrationInvariant(Invariant):
     """Invariant: Distributed truth domains must have arbitration mechanisms."""
 
     def __init__(self):
-        super().__init__(
-            name="truth_arbitration",
-            severity=InvariantSeverity.CRITICAL
-        )
+        super().__init__(name="truth_arbitration", severity=InvariantSeverity.CRITICAL)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.TRUTH_ARBITRATION
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check truth arbitration across domains."""
         ctx = context or {}
         domains = ctx.get("domains", [])
@@ -48,8 +44,12 @@ class TruthArbitrationInvariant(Invariant):
         return InvariantResult(
             name=self.name,
             passed=result.satisfied,
-            severity=InvariantSeverity.CRITICAL if not result.satisfied else InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Truth arbitration validated",
+            severity=InvariantSeverity.CRITICAL
+            if not result.satisfied
+            else InvariantSeverity.WARNING,
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Truth arbitration validated",
             details={
                 "domains_checked": len(domains),
                 "failures": [e for e in result.evidence if "No mechanism" in e],
@@ -63,14 +63,11 @@ class IrreversibilityInvariant(Invariant):
     """Invariant: State transitions must be classified by reversibility."""
 
     def __init__(self):
-        super().__init__(
-            name="irreversibility_management",
-            severity=InvariantSeverity.CRITICAL
-        )
+        super().__init__(name="irreversibility_management", severity=InvariantSeverity.CRITICAL)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.IRREVERSIBILITY_MANAGEMENT
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check irreversibility classification."""
         ctx = context or {}
         transitions = ctx.get("transitions", [])
@@ -89,8 +86,12 @@ class IrreversibilityInvariant(Invariant):
         return InvariantResult(
             name=self.name,
             passed=result.satisfied,
-            severity=InvariantSeverity.CRITICAL if not result.satisfied else InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Irreversibility classification valid",
+            severity=InvariantSeverity.CRITICAL
+            if not result.satisfied
+            else InvariantSeverity.WARNING,
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Irreversibility classification valid",
             details={
                 "transitions_checked": len(transitions),
                 "failures": [e for e in result.evidence if "Not classified" in e],
@@ -104,14 +105,11 @@ class CompensationInvariant(Invariant):
     """Invariant: Irreversible transitions must have compensation actions."""
 
     def __init__(self):
-        super().__init__(
-            name="compensation_semantics",
-            severity=InvariantSeverity.CRITICAL
-        )
+        super().__init__(name="compensation_semantics", severity=InvariantSeverity.CRITICAL)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.IRREVERSIBILITY_MANAGEMENT
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check compensation for irreversible actions."""
         ctx = context or {}
         transitions = ctx.get("transitions", [])
@@ -130,8 +128,12 @@ class CompensationInvariant(Invariant):
         return InvariantResult(
             name=self.name,
             passed=result.satisfied,
-            severity=InvariantSeverity.CRITICAL if not result.satisfied else InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Compensation semantics valid",
+            severity=InvariantSeverity.CRITICAL
+            if not result.satisfied
+            else InvariantSeverity.WARNING,
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Compensation semantics valid",
             details={
                 "transitions_checked": len(transitions),
                 "failures": [e for e in result.evidence if "No compensation" in e],
@@ -145,14 +147,11 @@ class QuiescenceInvariant(Invariant):
     """Invariant: Subsystems must define quiescent states."""
 
     def __init__(self):
-        super().__init__(
-            name="quiescence_integrity",
-            severity=InvariantSeverity.ERROR
-        )
+        super().__init__(name="quiescence_integrity", severity=InvariantSeverity.ERROR)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.QUIESCENCE_INTEGRITY
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check quiescent state definitions."""
         ctx = context or {}
         subsystems = ctx.get("subsystems", [])
@@ -186,14 +185,11 @@ class PolicyPrecedenceInvariant(Invariant):
     """Invariant: Policy layers must have defined precedence."""
 
     def __init__(self):
-        super().__init__(
-            name="policy_precedence",
-            severity=InvariantSeverity.CRITICAL
-        )
+        super().__init__(name="policy_precedence", severity=InvariantSeverity.CRITICAL)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.POLICY_PRECEDENCE
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check policy layer precedence."""
         ctx = context or {}
         layers = ctx.get("policy_layers", [])
@@ -212,8 +208,12 @@ class PolicyPrecedenceInvariant(Invariant):
         return InvariantResult(
             name=self.name,
             passed=result.satisfied,
-            severity=InvariantSeverity.CRITICAL if not result.satisfied else InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Policy precedence established",
+            severity=InvariantSeverity.CRITICAL
+            if not result.satisfied
+            else InvariantSeverity.WARNING,
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Policy precedence established",
             details={
                 "layers_checked": len(layers),
                 "failures": [e for e in result.evidence if "No precedence" in e],
@@ -227,14 +227,11 @@ class AdaptiveStabilityInvariant(Invariant):
     """Invariant: Adaptive control loops must have bounded drift."""
 
     def __init__(self):
-        super().__init__(
-            name="adaptive_stability",
-            severity=InvariantSeverity.ERROR
-        )
+        super().__init__(name="adaptive_stability", severity=InvariantSeverity.ERROR)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.ADAPTIVE_STABILITY
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check adaptive loop bounds."""
         ctx = context or {}
         loops = ctx.get("adaptive_loops", [])
@@ -254,7 +251,9 @@ class AdaptiveStabilityInvariant(Invariant):
             name=self.name,
             passed=result.satisfied,
             severity=InvariantSeverity.ERROR if not result.satisfied else InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Adaptive stability bounds valid",
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Adaptive stability bounds valid",
             details={
                 "loops_checked": len(loops),
                 "failures": [e for e in result.evidence if "No drift bound" in e],
@@ -268,14 +267,11 @@ class EntropyInvariant(Invariant):
     """Invariant: Architectural entropy must remain bounded."""
 
     def __init__(self):
-        super().__init__(
-            name="architectural_entropy",
-            severity=InvariantSeverity.WARNING
-        )
+        super().__init__(name="architectural_entropy", severity=InvariantSeverity.WARNING)
         self.engine = DistributedPhysicsEngine()
         self.dimension = StateDimension.ARCHITECTURAL_ENTROPY
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check architectural entropy bounds."""
         ctx = context or {}
         measurements = ctx.get("entropy", [])
@@ -297,7 +293,9 @@ class EntropyInvariant(Invariant):
             name=self.name,
             passed=result.satisfied,
             severity=InvariantSeverity.WARNING,
-            message="; ".join(result.evidence) if result.evidence else "Architectural entropy bounded",
+            message="; ".join(result.evidence)
+            if result.evidence
+            else "Architectural entropy bounded",
             details={
                 "measurements_checked": len(measurements),
                 "high_entropy_count": len(high_entropy),

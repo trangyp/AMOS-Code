@@ -4,15 +4,13 @@ Monitors health metrics, stress levels, and overall
 wellness indicators for the organism.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class HealthStatus(Enum):
@@ -44,11 +42,11 @@ class HealthMetric:
     metric_type: MetricType = MetricType.STRESS
     value: float = 0.0  # Normalized 0-1 or 0-100 depending on metric
     unit: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     source: str = ""
     notes: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "metric_type": self.metric_type.value,
@@ -63,11 +61,11 @@ class HealthAlert:
     alert_type: str = ""  # stress_high, recovery_low, etc.
     severity: int = 1  # 1-5
     message: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     acknowledged: bool = False
     resolved: bool = False
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -84,8 +82,8 @@ class HealthMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.metrics: list[HealthMetric] = []
-        self.alerts: list[HealthAlert] = []
+        self.metrics: List[HealthMetric] = []
+        self.alerts: List[HealthAlert] = []
 
         self._load_data()
 
@@ -117,7 +115,7 @@ class HealthMonitor:
         """Save health data to disk."""
         data_file = self.data_dir / "health_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "metrics": [m.to_dict() for m in self.metrics],
             "alerts": [a.to_dict() for a in self.alerts],
         }
@@ -180,7 +178,7 @@ class HealthMonitor:
         hours: int = 24,
     ) -> list[dict[str, Any]]:
         """Get recent metrics."""
-        cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
 
         metrics = [m for m in self.metrics if m.timestamp > cutoff]
         if metric_type:
@@ -188,7 +186,7 @@ class HealthMonitor:
 
         return [m.to_dict() for m in metrics]
 
-    def get_health_summary(self, hours: int = 24) -> dict[str, Any]:
+    def get_health_summary(self, hours: int = 24) -> Dict[str, Any]:
         """Get health summary for a period."""
         recent = self.get_recent_metrics(hours=hours)
 
@@ -258,7 +256,7 @@ class HealthMonitor:
                 return True
         return False
 
-    def get_recommendations(self) -> list[str]:
+    def get_recommendations(self) -> List[str]:
         """Get health recommendations based on current state."""
         recs = []
         summary = self.get_health_summary()

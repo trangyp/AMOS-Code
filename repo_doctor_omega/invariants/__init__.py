@@ -1,7 +1,5 @@
 """Invariants module for repository validation."""
 
-from __future__ import annotations
-
 from .hard import (
     APIInvariant,
     EntrypointInvariant,

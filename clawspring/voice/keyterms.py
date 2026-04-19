@@ -10,6 +10,7 @@ setting and adapted to pull context from the Python runtime environment.
 
 from __future__ import annotations
 
+
 import re
 import subprocess
 from pathlib import Path
@@ -85,7 +86,7 @@ def split_identifier(name: str) -> list[str]:
     return [p.strip() for p in parts if 3 <= len(p.strip()) <= 20]
 
 
-def _git_branch() -> str | None:
+def _git_branch() -> str:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
@@ -141,7 +142,7 @@ def _recent_py_files(root: Path, limit: int = 20) -> list[Path]:
 # ── Public API ────────────────────────────────────────────────────────────
 
 
-def get_voice_keyterms(recent_files: list[str] | None = None) -> list[str]:
+def get_voice_keyterms(recent_files: list[str] = None) -> list[str]:
     """Build a list of keyterms for the STT engine.
 
     Combines:

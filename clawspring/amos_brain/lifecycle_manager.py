@@ -6,15 +6,19 @@ production deployments. Ensures clean resource cleanup and
 state persistence during termination.
 """
 
+from __future__ import annotations
+
+
 import atexit
 import json
 import signal
 import sys
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -23,8 +27,8 @@ class LifecycleState:
 
     status: str  # "starting", "running", "stopping", "stopped"
     start_time: datetime
-    stop_time: Optional[datetime] = None
-    shutdown_reason: Optional[str] = None
+    stop_time: datetime = None
+    shutdown_reason: str = None
     cleanup_tasks_completed: int = 0
     cleanup_tasks_total: int = 0
 
@@ -163,7 +167,7 @@ class LifecycleManager:
         self._shutdown_event.set()
         print(f"[Lifecycle] {self.app_name} stopped")
 
-    def wait_for_shutdown(self, timeout: Optional[float] = None) -> bool:
+    def wait_for_shutdown(self, timeout: float = None) -> bool:
         """Wait for shutdown signal."""
         return self._shutdown_event.wait(timeout)
 
@@ -240,7 +244,7 @@ class ResourceManager:
 
 
 # Global instance
-_lifecycle_manager: Optional[LifecycleManager] = None
+_lifecycle_manager: LifecycleManager | None = None
 
 
 def get_lifecycle_manager() -> LifecycleManager:

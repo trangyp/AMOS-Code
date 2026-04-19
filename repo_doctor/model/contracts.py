@@ -15,8 +15,6 @@ Catches:
 - Status claiming capabilities not actually present
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -26,8 +24,8 @@ class PublicContract:
     """Contract claimed by public-facing surfaces."""
 
     name: str
-    signature: dict[str, Any] = field(default_factory=dict)
-    sources: list[str] = field(default_factory=list)  # docs, demos, tests, etc.
+    signature: Dict[str, Any] = field(default_factory=dict)
+    sources: List[str] = field(default_factory=list)  # docs, demos, tests, etc.
 
 
 @dataclass
@@ -35,7 +33,7 @@ class RuntimeContract:
     """Contract actually available at runtime."""
 
     name: str
-    signature: dict[str, Any] = field(default_factory=dict)
+    signature: Dict[str, Any] = field(default_factory=dict)
     source: str = ""  # file where defined
     line: int = 0
 
@@ -46,9 +44,9 @@ class ContractDrift:
 
     name: str
     drift_type: str  # missing, signature_mismatch, extra_arg, wrong_return
-    public_signature: dict[str, Any] = field(default_factory=dict)
-    runtime_signature: dict[str, Any] = field(default_factory=dict)
-    public_sources: list[str] = field(default_factory=list)
+    public_signature: Dict[str, Any] = field(default_factory=dict)
+    runtime_signature: Dict[str, Any] = field(default_factory=dict)
+    public_sources: List[str] = field(default_factory=list)
     runtime_source: str = ""
 
 
@@ -60,22 +58,22 @@ class ContractCommutator:
     """
 
     def __init__(self):
-        self.public_contracts: dict[str, PublicContract] = {}
-        self.runtime_contracts: dict[str, RuntimeContract] = {}
+        self.public_contracts: Dict[str, PublicContract] = {}
+        self.runtime_contracts: Dict[str, RuntimeContract] = {}
 
-    def extract_from_docs(self, doc_files: list[str]) -> None:
+    def extract_from_docs(self, doc_files: List[str]) -> None:
         """Extract claimed contracts from documentation."""
         for doc in doc_files:
             # Parse doc for command examples, API references
             pass  # Implementation would parse markdown/rst
 
-    def extract_from_demos(self, demo_files: list[str]) -> None:
+    def extract_from_demos(self, demo_files: List[str]) -> None:
         """Extract claimed contracts from demo files."""
         for demo in demo_files:
             # Parse demo for function calls, API usage
             pass  # Implementation would parse Python files
 
-    def extract_from_tests(self, test_files: list[str]) -> None:
+    def extract_from_tests(self, test_files: List[str]) -> None:
         """Extract claimed contracts from test files."""
         for test in test_files:
             # Parse test imports and function calls
@@ -86,7 +84,7 @@ class ContractCommutator:
         # Parse argparse/Click/Typer commands
         pass  # Implementation would inspect CLI module
 
-    def extract_from_mcp(self, mcp_schema: dict[str, Any]) -> None:
+    def extract_from_mcp(self, mcp_schema: Dict[str, Any]) -> None:
         """Extract claimed contracts from MCP tool schema."""
         for tool_name, tool_def in mcp_schema.get("tools", {}).items():
             self.public_contracts[tool_name] = PublicContract(
@@ -106,7 +104,7 @@ class ContractCommutator:
                 line=export.get("line", 0),
             )
 
-    def compute_commutator(self) -> list[ContractDrift]:
+    def compute_commutator(self) -> List[ContractDrift]:
         """
         Compute [A_public, A_runtime].
 
@@ -148,7 +146,7 @@ class ContractCommutator:
 
         return drifts
 
-    def _signatures_compatible(self, public: dict[str, Any], runtime: dict[str, Any]) -> bool:
+    def _signatures_compatible(self, public: Dict[str, Any], runtime: Dict[str, Any]) -> bool:
         """Check if two signatures are compatible."""
         # Simple compatibility check
         pub_params = set(public.get("parameters", {}).keys())
@@ -173,7 +171,7 @@ class PublicRuntimeDrift:
         self.repo_path = repo_path
         self.commutator = ContractCommutator()
 
-    def analyze(self) -> dict[str, Any]:
+    def analyze(self) -> Dict[str, Any]:
         """Full drift analysis."""
         # This would integrate with sensor backends
         drifts = self.commutator.compute_commutator()

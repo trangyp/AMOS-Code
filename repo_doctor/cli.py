@@ -8,8 +8,7 @@ Commands:
 - repo-doctor fix-plan  : Generate repair plan
 """
 
-from __future__ import annotations
-
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -205,7 +204,7 @@ def cmd_fix_plan(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: List[str] = None) -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
         prog="repo-doctor", description="Deterministic repository diagnostic system"

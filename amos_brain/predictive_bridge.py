@@ -11,6 +11,7 @@ Provides:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -124,6 +125,6 @@ class PredictiveIntelligenceBridge:
         return self.engine._calculate_risk_score(predictions, warnings)
 
 
-def get_predictive_bridge(repo_path: str | Path | None = None) -> PredictiveIntelligenceBridge:
+def get_predictive_bridge(repo_path: str | Path = None) -> PredictiveIntelligenceBridge:
     """Factory function to get predictive bridge instance."""
     return PredictiveIntelligenceBridge(repo_path or ".")

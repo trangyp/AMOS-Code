@@ -26,7 +26,7 @@ class AMOSCompleteSystemMap:
     def __init__(self):
         self.components = {}
 
-    def get_cognitive_engines(self) -> dict[str, Any]:
+    def get_cognitive_engines(self) -> Dict[str, Any]:
         """The 12 Domain Engines from _AMOS_BRAIN/Cognitive/"""
         return {
             "AMOS_Design_Engine_v0": {
@@ -109,7 +109,7 @@ class AMOSCompleteSystemMap:
             },
         }
 
-    def get_organism_subsystems(self) -> dict[str, Any]:
+    def get_organism_subsystems(self) -> Dict[str, Any]:
         """16 Biological Metaphor Subsystems"""
         return {
             "00_ROOT": {"name": "Root System", "role": "Foundation", "files": 8},
@@ -205,7 +205,7 @@ class AMOSCompleteSystemMap:
             },
         }
 
-    def get_clawspring_tools(self) -> list[str]:
+    def get_clawspring_tools(self) -> List[str]:
         """17 Real-time Tools from clawspring/amos_tools.py"""
         return [
             "AMOSReasoning",  # Rule of 2/4 analysis
@@ -227,7 +227,7 @@ class AMOSCompleteSystemMap:
             "AMOSAudit",  # Audit trails
         ]
 
-    def get_clawspring_engines(self) -> list[str]:
+    def get_clawspring_engines(self) -> List[str]:
         """8 ClawSpring Analysis Engines"""
         return [
             "AMOSEconEngine",  # Economic analysis
@@ -240,7 +240,7 @@ class AMOSCompleteSystemMap:
             "AMOSExecution",  # Task execution
         ]
 
-    def get_memory_systems(self) -> dict[str, Any]:
+    def get_memory_systems(self) -> Dict[str, Any]:
         """7 Knowledge/Memory Systems"""
         return {
             "Working_Memory": {"layer": "L1", "type": "ephemeral", "purpose": "Active context"},
@@ -268,7 +268,7 @@ class AMOSCompleteSystemMap:
             "L6": "Emergence Accommodation",
         }
 
-    def get_integrations(self) -> dict[str, Any]:
+    def get_integrations(self) -> Dict[str, Any]:
         """All Integration Points"""
         return {
             "ClawSpring_Agent_Bridge": {
@@ -301,7 +301,7 @@ class AMOSCompleteSystemMap:
             },
         }
 
-    def generate_complete_map(self) -> dict[str, Any]:
+    def generate_complete_map(self) -> Dict[str, Any]:
         """Generate the complete system map."""
         return {
             "system": "AMOS Brain Ecosystem",

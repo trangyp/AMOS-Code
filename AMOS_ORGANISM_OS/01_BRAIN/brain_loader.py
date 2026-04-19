@@ -9,8 +9,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import mmap
@@ -18,7 +16,6 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
 
 
 @dataclass
@@ -30,7 +27,7 @@ class BrainEngine:
     file_path: Path
     size_bytes: int
     data: dict[str, Any]
-    loaded_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    loaded_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     access_count: int = 0
 
 
@@ -39,7 +36,7 @@ class BrainQuery:
     """A query against the brain."""
 
     term: str
-    engine_filter: Optional[list[str]] = None
+    engine_filter: list[str] = None
     max_results: int = 10
 
 
@@ -177,7 +174,7 @@ class BrainQueryEngine:
 
         return results
 
-    def get_engine_info(self, engine_name: str) -> Optional[dict[str, Any]]:
+    def get_engine_info(self, engine_name: str) -> dict[str, Any]:
         """Get information about a registered engine."""
         engine = self.engines.get(engine_name)
         if not engine:
@@ -249,16 +246,16 @@ class AmosBrainLoader:
         Returns:
             Dictionary of loaded engines (may be partial if timeout)
         """
-        loop = asyncio.get_event_loop()
         try:
             return await asyncio.wait_for(
-                loop.run_in_executor(None, self.load_all_engines), timeout=timeout_seconds
+                asyncio.get_running_loop().run_in_executor(None, self.load_all_engines),
+                timeout=timeout_seconds,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Return partial results on timeout
             return self.query_engine.engines
 
-    def _load_engine(self, path: Path) -> Optional[BrainEngine]:
+    def _load_engine(self, path: Path) -> BrainEngine | None:
         """Load a single engine file."""
         try:
             data = self.loader.load(path)
@@ -294,7 +291,7 @@ class AmosBrainLoader:
         query = BrainQuery(term=term, max_results=max_results)
         return self.query_engine.query(query)
 
-    def get_engine(self, engine_name: str) -> Optional[BrainEngine]:
+    def get_engine(self, engine_name: str) -> BrainEngine | None:
         """Get a specific engine by name."""
         return self.query_engine.engines.get(engine_name)
 
@@ -313,10 +310,10 @@ class AmosBrainLoader:
 
 
 # Global instance
-_brain_loader: Optional[AmosBrainLoader] = None
+_brain_loader: AmosBrainLoader | None = None
 
 
-def get_brain_loader(brain_root: Optional[Path] = None) -> AmosBrainLoader:
+def get_brain_loader(brain_root: Path | None = None) -> AmosBrainLoader:
     """Get or create global brain loader.
 
     Args:
@@ -338,7 +335,7 @@ def get_brain_loader(brain_root: Optional[Path] = None) -> AmosBrainLoader:
 
 
 async def get_brain_loader_async(
-    brain_root: Optional[Path] = None, timeout_seconds: float = 10.0
+    brain_root: Path | None = None, timeout_seconds: float = 10.0
 ) -> AmosBrainLoader:
     """Get or create global brain loader asynchronously with timeout.
 

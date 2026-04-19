@@ -6,8 +6,6 @@ C_fail(|Ψ_repo⟩) = argmin_S { S | I_S = 0 and repair_cost(S) minimal }
 Finds the minimal failing cut - the smallest broken subspace.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,8 +17,8 @@ class FailingCut:
     """A minimal failing subspace."""
 
     root_cause: str
-    chain: list[str]
-    affected_invariants: list[str]
+    chain: List[str]
+    affected_invariants: List[str]
     repair_cost_estimate: float
 
 
@@ -30,11 +28,11 @@ class CollapseOperator:
     """
 
     def __init__(self):
-        self.cuts: list[FailingCut] = []
+        self.cuts: List[FailingCut] = []
 
     def find_minimal_cut(
         self,
-        failed_invariants: list[str],
+        failed_invariants: List[str],
         graph_edges: dict[str, list[str]],
         invariant_chains: dict[str, list[str]],
     ) -> FailingCut:
@@ -67,9 +65,9 @@ class CollapseOperator:
     def collapse(
         self,
         state_amplitudes: dict[StateDimension, float],
-        failed_invariants: list[str],
+        failed_invariants: List[str],
         threshold: float = 0.5,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Collapse state to find minimal broken subspace.
         """
@@ -86,7 +84,7 @@ class CollapseOperator:
             "repair_priority": collapsed[:3] if collapsed else [],
         }
 
-    def _find_articulation_points(self, collapsed: list[str]) -> list[str]:
+    def _find_articulation_points(self, collapsed: List[str]) -> List[str]:
         """Find high-centrality modules that amplify failure."""
         # Simplified: first collapsed dimension is articulation
         return collapsed[:2] if collapsed else []

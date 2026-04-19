@@ -9,8 +9,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import time
 from dataclasses import dataclass, field
@@ -106,7 +104,7 @@ class AmosSpeedEngine:
         """Generate complete speed profile."""
         if not self.benchmarks:
             return SpeedProfile(
-                timestamp=datetime.utcnow().isoformat() + "Z",
+                timestamp=datetime.now(UTC).isoformat() + "Z",
                 overall_score=0.0,
                 benchmarks=[],
                 recommendations=["No benchmarks run yet"],
@@ -131,7 +129,7 @@ class AmosSpeedEngine:
             recommendations.append("Consider caching frequently accessed data")
 
         return SpeedProfile(
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat() + "Z",
             overall_score=round(score, 2),
             benchmarks=self.benchmarks,
             recommendations=recommendations,

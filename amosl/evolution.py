@@ -12,10 +12,9 @@ Block matrix T:
     [0     0     0     0     0     T_tt]
 """
 
-from __future__ import annotations
-
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -81,10 +80,10 @@ class EvolutionOperator:
 
     def evolve(
         self,
-        state_vector: list[Any],
-        control: Optional[dict[str, Any]] = None,
+        state_vector: List[Any],
+        control: Dict[str, Any] = None,
         noise_scale: float = 0.01,
-    ) -> list[Any]:
+    ) -> List[Any]:
         """Apply evolution: 𝐒_{t+1} = 𝐓(𝐒_t, 𝐮_t, 𝐧_t).
 
         Args:
@@ -222,7 +221,7 @@ class EvolutionOperator:
         return state
 
     def run_steps(
-        self, initial_state: list[Any], steps: int, controls: Optional[list[dict]] = None
+        self, initial_state: List[Any], steps: int, controls: List[dict] = None
     ) -> list[list[Any]]:
         """Run evolution for multiple steps.
 

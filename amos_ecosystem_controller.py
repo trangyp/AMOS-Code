@@ -16,14 +16,11 @@ Usage:
     python amos_ecosystem_controller.py --run-all
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -53,7 +50,7 @@ class EcosystemTool:
     description: str
     command: str
     lines: int
-    keywords: list[str]
+    keywords: List[str]
 
 
 class AMOSEcosystemController:

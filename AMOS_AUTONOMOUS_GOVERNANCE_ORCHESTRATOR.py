@@ -27,15 +27,12 @@ Architecture:
 └─────────────────────────────────────────────────────────────────┘
 """
 
-from __future__ import annotations
-
 import json
-import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 @dataclass
@@ -44,7 +41,7 @@ class GovernanceCycle:
 
     cycle_id: str
     timestamp: float
-    repo_doctor_results: dict[str, Any] = field(default_factory=dict)
+    repo_doctor_results: Dict[str, Any] = field(default_factory=dict)
     brain_decisions: list[dict[str, Any]] = field(default_factory=list)
     evolution_contracts: list[dict[str, Any]] = field(default_factory=list)
     learning_patterns: list[dict[str, Any]] = field(default_factory=list)
@@ -64,9 +61,9 @@ class AutonomousGovernanceOrchestrator:
     def __init__(self, repo_path: str = ".") -> None:
         """Initialize the autonomous governance orchestrator."""
         self.repo_path = Path(repo_path)
-        self.cycles: list[GovernanceCycle] = []
+        self.cycles: List[GovernanceCycle] = []
         self.is_running = False
-        self.governance_log: list[dict] = []
+        self.governance_log: List[dict] = []
 
         # Initialize subsystems (lazy loading)
         self._repo_doctor: Any = None
@@ -79,6 +76,7 @@ class AutonomousGovernanceOrchestrator:
         if self._repo_doctor is None:
             try:
                 from repo_doctor_omega.engine import RepoDoctorEngine
+
                 self._repo_doctor = RepoDoctorEngine(str(self.repo_path))
             except ImportError as e:
                 print(f"⚠ Repo Doctor not available: {e}")
@@ -90,6 +88,7 @@ class AutonomousGovernanceOrchestrator:
         if self._brain is None:
             try:
                 from amos_brain.facade import AMOSBrainFacade
+
                 self._brain = AMOSBrainFacade()
             except ImportError as e:
                 print(f"⚠ AMOS Brain not available: {e}")
@@ -101,6 +100,7 @@ class AutonomousGovernanceOrchestrator:
         if self._evolution is None:
             try:
                 from repo_doctor.self_evolution.engine import SelfEvolutionEngine
+
                 self._evolution = SelfEvolutionEngine(str(self.repo_path))
             except ImportError as e:
                 print(f"⚠ Self-Evolution Engine not available: {e}")
@@ -112,13 +112,14 @@ class AutonomousGovernanceOrchestrator:
         if self._learning is None:
             try:
                 from repo_doctor.self_evolution.memory import LearningEngine
+
                 self._learning = LearningEngine()
             except ImportError as e:
                 print(f"⚠ Learning Engine not available: {e}")
                 return None
         return self._learning
 
-    def diagnose(self) -> dict[str, Any]:
+    def diagnose(self) -> Dict[str, Any]:
         """
         Phase 1: Diagnose repository state using Repo Doctor Ω∞∞∞.
 
@@ -166,7 +167,7 @@ class AutonomousGovernanceOrchestrator:
 
         return results
 
-    def synthesize_repairs(self, diagnosis: dict[str, Any]) -> list[dict[str, Any]]:
+    def synthesize_repairs(self, diagnosis: Dict[str, Any]) -> list[dict[str, Any]]:
         """
         Phase 2: Synthesize repairs using AMOS Brain.
 
@@ -206,7 +207,7 @@ class AutonomousGovernanceOrchestrator:
         print(f"  ✓ Total repairs synthesized: {len(repairs)}")
         return repairs
 
-    def evolve(self, repairs: list[dict[str, Any]]) -> dict[str, Any]:
+    def evolve(self, repairs: list[dict[str, Any]]) -> Dict[str, Any]:
         """
         Phase 3: Implement repairs using Self-Evolution Engine.
 
@@ -252,7 +253,7 @@ class AutonomousGovernanceOrchestrator:
 
         return results
 
-    def learn(self, cycle: GovernanceCycle) -> dict[str, Any]:
+    def learn(self, cycle: GovernanceCycle) -> Dict[str, Any]:
         """
         Phase 4: Learn from cycle outcome.
 
@@ -274,20 +275,24 @@ class AutonomousGovernanceOrchestrator:
             failed_invs.add(v.get("invariant"))
 
         if len(failed_invs) > 1:
-            patterns.append({
-                "type": "correlation",
-                "invariants": list(failed_invs),
-                "energy": cycle.energy_before,
-            })
+            patterns.append(
+                {
+                    "type": "correlation",
+                    "invariants": list(failed_invs),
+                    "energy": cycle.energy_before,
+                }
+            )
 
         # Pattern 2: Which repairs succeed?
         for decision in cycle.brain_decisions:
-            patterns.append({
-                "type": "repair_effectiveness",
-                "strategy": decision.get("strategy"),
-                "success": cycle.success,
-                "confidence": decision.get("confidence"),
-            })
+            patterns.append(
+                {
+                    "type": "repair_effectiveness",
+                    "strategy": decision.get("strategy"),
+                    "success": cycle.success,
+                    "confidence": decision.get("confidence"),
+                }
+            )
 
         # Store patterns
         for pattern in patterns:
@@ -355,7 +360,7 @@ class AutonomousGovernanceOrchestrator:
 
         return cycle
 
-    def run_continuous(self, interval: int = 3600, max_cycles: int | None = None) -> None:
+    def run_continuous(self, interval: int = 3600, max_cycles: int = None) -> None:
         """
         Run continuous autonomous governance.
 
@@ -369,7 +374,7 @@ class AutonomousGovernanceOrchestrator:
         print(f"Interval: {interval}s")
         print(f"Max cycles: {max_cycles or 'unlimited'}")
         print(f"Repository: {self.repo_path}")
-        print(f"\nPress Ctrl+C to stop\n")
+        print("\nPress Ctrl+C to stop\n")
 
         self.is_running = True
         cycle_count = 0
@@ -419,9 +424,9 @@ class AutonomousGovernanceOrchestrator:
     def generate_report(self) -> str:
         """Generate comprehensive governance report."""
         lines = []
-        lines.append("="*60)
+        lines.append("=" * 60)
         lines.append("AUTONOMOUS GOVERNANCE REPORT")
-        lines.append("="*60)
+        lines.append("=" * 60)
         lines.append(f"Generated: {datetime.now().isoformat()}")
         lines.append(f"Repository: {self.repo_path}")
         lines.append(f"Total cycles: {len(self.cycles)}")
@@ -438,7 +443,7 @@ class AutonomousGovernanceOrchestrator:
             lines.append(f"Net improvement: {avg_energy_before - avg_energy_after:.6f}")
 
         lines.append("")
-        lines.append("="*60)
+        lines.append("=" * 60)
 
         return "\n".join(lines)
 
@@ -447,9 +452,7 @@ def main():
     """CLI entry point."""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="AMOS Autonomous Governance Orchestrator Ω∞∞∞"
-    )
+    parser = argparse.ArgumentParser(description="AMOS Autonomous Governance Orchestrator Ω∞∞∞")
     parser.add_argument(
         "--repo",
         default=".",

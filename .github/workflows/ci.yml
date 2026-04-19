@@ -1,0 +1,275 @@
+# AMOS CI Pipeline
+# Runs tests on multiple Python versions
+# Author: Trang Phan
+
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches: [main, master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-xdist
+          # Install core dependencies if requirements.txt exists
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Install optional dependencies for tests
+          pip install chromadb sentence-transformers || true
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short \
+            --cov=amos_unified_system \
+            --cov=amos_hybrid_orchestrator \
+            --cov=amos_mcp_tools \
+            --cov=amos_auth_integration \
+            --cov=amos_vector_memory \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            -n auto
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-results-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: |
+            pytest.xml
+            coverage.xml
+          retention-days: 7
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v --tb=short -m integration || true
+
+  smoke-test:
+    name: Smoke Test System Initialization
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Test system initialization
+        run: |
+          python -c "
+          from amos_unified_system import AMOSUnifiedSystem
+          amos = AMOSUnifiedSystem()
+          success = amos.initialize()
+          status = amos.get_status()
+          print(f'System initialized: {status[\"initialized\"]}')
+          print(f'Components ready: {len(status[\"components\"])}')
+          assert status['initialized'], 'System failed to initialize'
+          print('✓ Smoke test passed')
+          "
+
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy bandit safety
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Ruff linter
+        run: |
+          ruff check . --output-format=github || true
+
+      - name: Run MyPy type checker
+        run: |
+          mypy amos_equation*.py amos_symbolic*.py --ignore-missing-imports --pretty || true
+
+      - name: Run Bandit security scan
+        run: |
+          bandit -r . -f json -o bandit-report.json || true
+          bandit -r . -f screen || true
+
+      - name: Check for known vulnerabilities
+        run: |
+          safety check --json --output safety-report.json || true
+          safety check || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+          retention-days: 30
+
+  docker-build-test:
+    name: Docker Build Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.equation
+          push: false
+          load: true
+          tags: amos-equation:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image
+        run: |
+          docker run --rm -d -p 8000:8000 --name amos-test amos-equation:test
+          sleep 10
+          curl -f http://localhost:8000/health || (docker logs amos-test && exit 1)
+          docker stop amos-test
+
+  helm-lint:
+    name: Helm Chart Lint
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'helm/') || github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.12.0'
+
+      - name: Lint Helm chart
+        run: |
+          helm lint ./helm/amos-equation
+
+      - name: Template Helm chart
+        run: |
+          helm template amos-equation ./helm/amos-equation \
+            --namespace amos \
+            --create-namespace > helm-template.yaml
+
+      - name: Upload Helm template
+        uses: actions/upload-artifact@v4
+        with:
+          name: helm-template
+          path: helm-template.yaml
+          retention-days: 7
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test, integration-test, smoke-test, lint, docker-build-test, helm-lint]
+    if: always()
+
+    steps:
+      - name: Summarize Results
+        run: |
+          echo "CI Pipeline Summary"
+          echo "=================="
+          echo "Unit Tests: ${{ needs.test.result }}"
+          echo "Integration Tests: ${{ needs.integration-test.result }}"
+          echo "Smoke Test: ${{ needs.smoke-test.result }}"
+          echo "Lint & Security: ${{ needs.lint.result }}"
+          echo "Docker Build: ${{ needs.docker-build-test.result }}"
+          echo "Helm Lint: ${{ needs.helm-lint.result }}"
+
+          # Check for failures
+          if [[ "${{ needs.test.result }}" == "failure" ]] || \
+             [[ "${{ needs.lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.docker-build-test.result }}" == "failure" ]]; then
+            echo "❌ Critical checks failed"
+            exit 1
+          fi
+          echo "✅ All critical checks passed"

@@ -1,7 +1,5 @@
 """Context Gatherer — Environment context for AMOS."""
 
-from __future__ import annotations
-
 import os
 import platform
 from dataclasses import dataclass
@@ -17,7 +15,7 @@ class ContextSnapshot:
     cwd: str
     python_version: str
     platform: str
-    env_vars: dict[str, str]
+    env_vars: Dict[str, str]
     shell: str
     user: str
     hostname: str
@@ -27,7 +25,7 @@ class ContextGatherer:
     """Gathers environment context for decision making."""
 
     def __init__(self):
-        self._history: list[ContextSnapshot] = []
+        self._history: List[ContextSnapshot] = []
         self._sensitive_keys = ["KEY", "SECRET", "TOKEN", "PASSWORD", "API"]
 
     def gather(self) -> ContextSnapshot:
@@ -41,7 +39,7 @@ class ContextGatherer:
                 safe_env[key] = value
 
         snapshot = ContextSnapshot(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             cwd=os.getcwd(),
             python_version=platform.python_version(),
             platform=platform.platform(),
@@ -58,7 +56,7 @@ class ContextGatherer:
 
         return snapshot
 
-    def get_relevant_context(self, task: str) -> dict[str, Any]:
+    def get_relevant_context(self, task: str) -> Dict[str, Any]:
         """Get context relevant to a specific task."""
         ctx = self.gather()
 
@@ -107,7 +105,7 @@ class ContextGatherer:
         except Exception:
             return {"commit": "unknown", "remote": "unknown"}
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get gatherer status."""
         return {
             "snapshots_stored": len(self._history),

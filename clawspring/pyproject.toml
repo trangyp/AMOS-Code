@@ -24,7 +24,6 @@ vision = ["Pillow"]
 api = ["fastapi>=0.100.0", "uvicorn>=0.23.0", "pydantic>=2.0.0"]
 
 [project.scripts]
-amos = "amos:main"
 clawspring = "amos:main"
 amos = "amos_brain.__main__:main"
 amos-validate = "amos_brain.system_validator:validate_system"

@@ -19,8 +19,6 @@ Where:
     Τ: edge types
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from enum import Enum
@@ -69,8 +67,8 @@ class RepoNode:
     id: str
     type: NodeType
     name: str
-    properties: dict[str, Any] = field(default_factory=dict)
-    source_location: tuple[Path, int, int] | None = None  # (file, line, col)
+    properties: Dict[str, Any] = field(default_factory=dict)
+    source_location: Tuple[Path, int, int] = None  # (file, line, col)
 
     def __hash__(self) -> int:
         return hash(self.id)
@@ -88,7 +86,7 @@ class RepoEdge:
     source: str
     target: str
     type: EdgeType
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
     weight: float = 1.0
 
 
@@ -109,8 +107,8 @@ class RepositoryGraph:
 
     def __init__(self, repo_path: Path):
         self.repo_path = Path(repo_path)
-        self.nodes: dict[str, RepoNode] = {}
-        self.edges: list[RepoEdge] = []
+        self.nodes: Dict[str, RepoNode] = {}
+        self.edges: List[RepoEdge] = []
         self.edges_by_type: dict[EdgeType, list[RepoEdge]] = {et: [] for et in EdgeType}
         self.adjacency: dict[str, list[str]] = {}  # node_id -> [neighbor_ids]
 
@@ -119,8 +117,8 @@ class RepositoryGraph:
         node_id: str,
         node_type: NodeType,
         name: str,
-        properties: dict[str, Any] | None = None,
-        source_file: Path | None = None,
+        properties: Dict[str, Any] = None,
+        source_file: Optional[Path] = None,
         line: int = 0,
         col: int = 0,
     ) -> RepoNode:
@@ -148,7 +146,7 @@ class RepositoryGraph:
         source: str,
         target: str,
         edge_type: EdgeType,
-        properties: dict[str, Any] | None = None,
+        properties: Dict[str, Any] = None,
         weight: float = 1.0,
     ) -> RepoEdge:
         """Add an edge to the graph."""
@@ -168,11 +166,11 @@ class RepositoryGraph:
 
         return edge
 
-    def get_node(self, node_id: str) -> RepoNode | None:
+    def get_node(self, node_id: str) -> Optional[RepoNode]:
         """Get a node by ID."""
         return self.nodes.get(node_id)
 
-    def get_neighbors(self, node_id: str, edge_type: EdgeType | None = None) -> list[RepoNode]:
+    def get_neighbors(self, node_id: str, edge_type: Optional[EdgeType] = None) -> List[RepoNode]:
         """Get neighbors of a node, optionally filtered by edge type."""
         if edge_type:
             neighbor_ids = [e.target for e in self.edges_by_type[edge_type] if e.source == node_id]
@@ -181,32 +179,32 @@ class RepositoryGraph:
 
         return [self.nodes[nid] for nid in neighbor_ids if nid in self.nodes]
 
-    def get_callers(self, function_id: str) -> list[RepoNode]:
+    def get_callers(self, function_id: str) -> List[RepoNode]:
         """Get all functions that call the given function."""
         caller_ids = [
             e.source for e in self.edges_by_type[EdgeType.CALLS] if e.target == function_id
         ]
         return [self.nodes[cid] for cid in caller_ids if cid in self.nodes]
 
-    def get_callees(self, function_id: str) -> list[RepoNode]:
+    def get_callees(self, function_id: str) -> List[RepoNode]:
         """Get all functions called by the given function."""
         callee_ids = [
             e.target for e in self.edges_by_type[EdgeType.CALLS] if e.source == function_id
         ]
         return [self.nodes[cid] for cid in callee_ids if cid in self.nodes]
 
-    def get_imports(self, file_id: str) -> list[RepoNode]:
+    def get_imports(self, file_id: str) -> List[RepoNode]:
         """Get all imports in a file."""
         return self.get_neighbors(file_id, EdgeType.IMPORTS)
 
-    def get_imported_by(self, module_id: str) -> list[RepoNode]:
+    def get_imported_by(self, module_id: str) -> List[RepoNode]:
         """Get all files that import a module."""
         importer_ids = [
             e.source for e in self.edges_by_type[EdgeType.IMPORTS] if e.target == module_id
         ]
         return [self.nodes[iid] for iid in importer_ids if iid in self.nodes]
 
-    def find_path(self, source: str, target: str, max_depth: int = 10) -> list[RepoEdge] | None:
+    def find_path(self, source: str, target: str, max_depth: int = 10) -> List[RepoEdge]:
         """Find a path between two nodes using BFS."""
         from collections import deque
 

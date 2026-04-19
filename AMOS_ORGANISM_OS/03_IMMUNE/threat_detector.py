@@ -1,7 +1,5 @@
 """Threat Detector — Anomaly detection for AMOS."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -16,22 +14,22 @@ class Threat:
     severity: str  # low, medium, high, critical
     category: str  # execution, access, pattern, anomaly
     description: str
-    evidence: dict[str, Any]
+    evidence: Dict[str, Any]
 
 
 class ThreatDetector:
     """Detects threats and anomalies in organism behavior."""
 
     def __init__(self):
-        self._threats: list[Threat] = []
-        self._pattern_history: list[dict] = []
+        self._threats: List[Threat] = []
+        self._pattern_history: List[dict] = []
         self._anomaly_threshold = 3  # Consecutive anomalies to trigger alert
 
     def detect_anomaly(
         self,
         action: str,
-        context: dict[str, Any],
-    ) -> list[Threat]:
+        context: Dict[str, Any],
+    ) -> List[Threat]:
         """Detect anomalies in an action."""
         threats = []
 
@@ -39,13 +37,13 @@ class ThreatDetector:
         recent = [
             p
             for p in self._pattern_history
-            if (datetime.utcnow() - datetime.fromisoformat(p["time"])).seconds < 60
+            if (datetime.now(UTC) - datetime.fromisoformat(p["time"])).seconds < 60
         ]
         if len(recent) > 10:
             threats.append(
                 Threat(
                     id=f"threat_{len(self._threats)}",
-                    timestamp=datetime.utcnow().isoformat(),
+                    timestamp=datetime.now(UTC).isoformat(),
                     severity="high",
                     category="anomaly",
                     description="Rapid action execution detected",
@@ -58,7 +56,7 @@ class ThreatDetector:
             threats.append(
                 Threat(
                     id=f"threat_{len(self._threats)}",
-                    timestamp=datetime.utcnow().isoformat(),
+                    timestamp=datetime.now(UTC).isoformat(),
                     severity="low",
                     category="pattern",
                     description="Unusual action pattern",
@@ -70,7 +68,7 @@ class ThreatDetector:
         self._pattern_history.append(
             {
                 "action": action,
-                "time": datetime.utcnow().isoformat(),
+                "time": datetime.now(UTC).isoformat(),
                 "context": context,
             }
         )
@@ -82,14 +80,14 @@ class ThreatDetector:
         self._threats.extend(threats)
         return threats
 
-    def get_threats(self, severity: str = None, limit: int = 50) -> list[Threat]:
+    def get_threats(self, severity: str = None, limit: int = 50) -> List[Threat]:
         """Get detected threats."""
         threats = self._threats
         if severity:
             threats = [t for t in threats if t.severity == severity]
         return threats[-limit:]
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get detector status."""
         return {
             "total_threats": len(self._threats),

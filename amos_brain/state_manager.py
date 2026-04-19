@@ -1,13 +1,15 @@
 """AMOS Brain Cognitive State Manager - Persistent reasoning memory."""
 
-from __future__ import annotations
 
 import json
+import logging
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
-from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -70,16 +72,18 @@ class CognitiveStateManager:
     - Enables reasoning replay and audit trails
     - Supports recursive self-analysis
     """
+from __future__ import annotations
 
-    def __init__(self, storage_path: Optional[Path] = None):
+
+    def __init__(self, storage_path: Path | None = None):
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "sessions"
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         self._active_sessions: dict[str, WorkflowSession] = {}
-        self._current_session: Optional[WorkflowSession] = None
+        self._current_session: WorkflowSession | None = None
 
     def start_session(
-        self, goal: str, domain: str = "general", metadata: Optional[dict] = None
+        self, goal: str, domain: str = "general", metadata: dict  = None
     ) -> str:
         """Start a new reasoning workflow session.
 
@@ -117,7 +121,7 @@ class CognitiveStateManager:
         input_context: dict,
         output_result: str,
         confidence: str,
-        session_id: Optional[str] = None,
+        session_id: str  = None,
     ) -> str:
         """Record a reasoning step in the current or specified session.
 
@@ -160,7 +164,7 @@ class CognitiveStateManager:
 
         return step_id
 
-    def get_session_context(self, session_id: Optional[str] = None) -> dict:
+    def get_session_context(self, session_id: str  = None) -> dict:
         """Get the accumulated context from a session.
 
         Returns:
@@ -197,7 +201,7 @@ class CognitiveStateManager:
             ),
         }
 
-    def replay_reasoning(self, session_id: Optional[str] = None, format_type: str = "text") -> str:
+    def replay_reasoning(self, session_id: str  = None, format_type: str = "text") -> str:
         """Replay the reasoning chain for analysis or audit.
 
         Args:
@@ -246,7 +250,7 @@ class CognitiveStateManager:
 
         return "\n".join(lines)
 
-    def analyze_compliance_trend(self, session_id: Optional[str] = None) -> dict:
+    def analyze_compliance_trend(self, session_id: str  = None) -> dict:
         """Analyze law compliance trend across the reasoning chain.
 
         Returns:
@@ -281,7 +285,7 @@ class CognitiveStateManager:
 
         return trends
 
-    def save_session(self, session_id: Optional[str] = None) -> Path:
+    def save_session(self, session_id: str  = None) -> Path:
         """Persist a session to storage.
 
         Returns:
@@ -298,7 +302,7 @@ class CognitiveStateManager:
 
         return filepath
 
-    def load_session(self, session_id: str) -> Optional[WorkflowSession]:
+    def load_session(self, session_id: str) -> WorkflowSession | None:
         """Load a session from storage."""
         filepath = self.storage_path / f"{session_id}.json"
 
@@ -336,12 +340,12 @@ class CognitiveStateManager:
                         "created": data["created_at"],
                     }
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Failed to load session file: {e}")
 
         return sorted(sessions, key=lambda x: x["created"], reverse=True)
 
-    def close_session(self, session_id: Optional[str] = None) -> Path:
+    def close_session(self, session_id: str  = None) -> Path:
         """Close and save a session."""
         session = self._get_session(session_id)
         if not session:
@@ -358,7 +362,7 @@ class CognitiveStateManager:
 
         return filepath
 
-    def _get_session(self, session_id: Optional[str]) -> Optional[WorkflowSession]:
+    def _get_session(self, session_id: str ) -> WorkflowSession | None:
         """Get a session by ID or current session."""
         if session_id:
             session = self._active_sessions.get(session_id)
@@ -377,13 +381,7 @@ class CognitiveStateManager:
             return 0.0
 
 
-# Global state manager instance
-_state_manager: Optional[CognitiveStateManager] = None
-
-
+@lru_cache(maxsize=1)
 def get_state_manager() -> CognitiveStateManager:
-    """Get or create global state manager instance."""
-    global _state_manager
-    if _state_manager is None:
-        _state_manager = CognitiveStateManager()
-    return _state_manager
+    """Get or create global state manager instance (singleton)."""
+    return CognitiveStateManager()

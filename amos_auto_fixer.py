@@ -15,14 +15,13 @@ Usage:
     python amos_auto_fixer.py --lines-only       # Fix line length only
 """
 
-from __future__ import annotations
-
 import ast
+import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -52,7 +51,7 @@ class AMOSAutoFixer:
         self.results: list[FixResult] = []
         self.preview_mode = False
 
-    def analyze(self, preview: bool = False) -> dict[str, Any]:
+    def analyze(self, preview: bool = False) -> Dict[str, Any]:
         """Analyze all files and optionally fix."""
         self.preview_mode = preview
 
@@ -66,8 +65,30 @@ class AMOSAutoFixer:
             print("📋 PREVIEW MODE - No changes will be made")
             print()
 
-        # Find all Python files
-        python_files = list(self.root.glob("amos_*.py"))
+        # Find all Python files using os.walk for better performance
+        python_files = []
+        max_file_size = 2 * 1024 * 1024  # 2MB limit for AST parsing
+
+        for root, dirs, files in os.walk(self.root):
+            # Skip hidden directories and common non-source directories
+            dirs[:] = [
+                d
+                for d in dirs
+                if not d.startswith(".")
+                and d not in {"__pycache__", "node_modules", "venv", ".venv"}
+            ]
+
+            for file in files:
+                if file.startswith("amos_") and file.endswith(".py"):
+                    file_path = Path(root) / file
+                    # Check file size before adding to list
+                    try:
+                        stat = file_path.stat()
+                        if stat.st_size <= max_file_size:
+                            python_files.append(file_path)
+                    except OSError:
+                        pass  # Skip files we can't stat
+
         print(f"📁 Found {len(python_files)} files to analyze")
         print()
 
@@ -262,14 +283,14 @@ class AMOSAutoFixer:
 
         return new_lines
 
-    def _generate_report(self) -> dict[str, Any]:
+    def _generate_report(self) -> Dict[str, Any]:
         """Generate fix report."""
         print("\n" + "=" * 70)
         print("  📊 AUTO FIX REPORT")
         print("=" * 70)
 
-        issues_by_type: dict[str, int] = {}
-        issues_by_file: dict[str, int] = {}
+        issues_by_type: Dict[str, int] = {}
+        issues_by_file: Dict[str, int] = {}
 
         for result in self.results:
             issues_by_type[result.issue_type] = issues_by_type.get(result.issue_type, 0) + 1

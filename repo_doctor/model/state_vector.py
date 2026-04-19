@@ -9,8 +9,6 @@ Quantum-formal repository state with 11 dimensions:
 Each amplitude αk ∈ [0,1] represents subsystem integrity.
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -117,7 +115,7 @@ class RepoStateVector:
         """Get amplitude for specific dimension."""
         return self.amplitudes.get(dimension, 0.0)
 
-    def set(self, dimension: StateDimension, value: float, failures: list[str] | None = None):
+    def set(self, dimension: StateDimension, value: float, failures: List[str] = None):
         """Set amplitude for specific dimension."""
         self.amplitudes[dimension] = max(0.0, min(1.0, value))
         if failures:
@@ -200,7 +198,7 @@ class RepoStateVector:
         sorted_dims = sorted(self.amplitudes.items(), key=lambda x: x[1])
         return sorted_dims[:n]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "timestamp": self.timestamp,
@@ -216,7 +214,7 @@ class RepoStateVector:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> RepoStateVector:
+    def from_dict(cls, data: Dict[str, Any]) -> RepoStateVector:
         """Deserialize from dictionary."""
         amplitudes = {StateDimension(k): v for k, v in data.get("amplitudes", {}).items()}
         failures = {StateDimension(k): v for k, v in data.get("failures", {}).items()}
@@ -242,7 +240,7 @@ class StateVectorBuilder:
         self.amplitudes: dict[StateDimension, float] = {}
         self.failures: dict[StateDimension, list[str]] = {}
 
-    def from_observables(self, observables: dict[str, float]) -> StateVectorBuilder:
+    def from_observables(self, observables: Dict[str, float]) -> StateVectorBuilder:
         """
         Build amplitudes from observables using exponential decay:
         αk = exp(-Σj wk,j · oj)

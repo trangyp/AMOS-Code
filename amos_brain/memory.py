@@ -1,17 +1,20 @@
 """AMOS Brain Memory Integration - Persists reasoning to clawspring memory."""
 
-from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
+from typing import List, Optional, Dict
 
 # Import clawspring memory if available
 try:
     from clawspring.memory.store import MemoryEntry, save_memory
-
     CLAWSPRING_MEMORY = True
 except ImportError:
     CLAWSPRING_MEMORY = False
@@ -27,18 +30,20 @@ class BrainMemory:
     - Build reasoning history/audit trail
     - Recall relevant past analyses
     """
+from __future__ import annotations
+
 
     MEMORY_NAMESPACE = "amos_brain"
     REASONING_PREFIX = "[AMOS Reasoning]"
 
-    def __init__(self, memory_dir: Path | None = None):
+    def __init__(self, memory_dir: Optional[Path] = None):
         self.memory_dir = memory_dir or Path.home() / ".amos_brain" / "memory"
         self.memory_dir.mkdir(parents=True, exist_ok=True)
-        self._local_cache: dict[str, Any] = {}
+        self._local_cache: Dict[str, Any] = {}
         self._load_local_entries()
 
     def save_reasoning(
-        self, problem: str, analysis: dict[str, Any], tags: list[str] | None = None
+        self, problem: str, analysis: Dict[str, Any], tags: List[str]  = None
     ) -> str:
         """Save a reasoning result to memory.
 
@@ -52,13 +57,13 @@ class BrainMemory:
         """
         # Generate stable fingerprint plus unique entry id
         fingerprint = self._hash_problem(problem)
-        entry_id = f"{fingerprint}-{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}"
+        entry_id = f"{fingerprint}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
 
         # Build memory entry
         entry = {
             "id": entry_id,
             "problem_fingerprint": fingerprint,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "namespace": self.MEMORY_NAMESPACE,
             "problem": problem,
             "problem_preview": problem[:100] + "..." if len(problem) > 100 else problem,
@@ -99,7 +104,7 @@ class BrainMemory:
 
         return entry_id
 
-    def _persist_local_entry(self, entry: dict[str, Any]) -> None:
+    def _persist_local_entry(self, entry: Dict[str, Any]) -> None:
         filepath = self.memory_dir / f"{entry['id']}.json"
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(entry, f, indent=2, default=str)
@@ -117,8 +122,8 @@ class BrainMemory:
                     and "timestamp" in entry
                 ):
                     self._local_cache[entry_id] = entry
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Failed to load memory entry: {e}")
 
     def find_similar_reasoning(self, problem: str, threshold: float = 0.6) -> list[dict[str, Any]]:
         """Find past reasoning similar to current problem.
@@ -191,7 +196,7 @@ class BrainMemory:
         return similar[:5]  # Top 5
 
     def get_reasoning_history(
-        self, limit: int = 10, tag_filter: str | None = None
+        self, limit: int = 10, tag_filter: str  = None
     ) -> list[dict[str, Any]]:
         """Get recent reasoning history.
 
@@ -213,7 +218,7 @@ class BrainMemory:
 
         return entries[:limit]
 
-    def get_audit_trail(self, problem_contains: str | None = None) -> dict[str, Any]:
+    def get_audit_trail(self, problem_contains: str  = None) -> Dict[str, Any]:
         """Get audit trail of brain reasoning.
 
         Args:
@@ -247,7 +252,7 @@ class BrainMemory:
             },
         }
 
-    def recall_for_problem(self, problem: str) -> dict[str, Any]:
+    def recall_for_problem(self, problem: str) -> Dict[str, Any]:
         """Recall relevant past reasoning and similar analyses for a problem.
 
         This is the main interface for using memory during reasoning.
@@ -291,7 +296,7 @@ class BrainMemory:
         """Generate hash ID for problem."""
         return hashlib.sha256(problem.encode()).hexdigest()[:16]
 
-    def _summarize_analysis(self, analysis: dict[str, Any]) -> dict[str, Any]:
+    def _summarize_analysis(self, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """Create summary of analysis for memory storage."""
         summary = {
             "recommendations_count": len(analysis.get("recommendations", [])),
@@ -318,7 +323,7 @@ class BrainMemory:
 
         return summary
 
-    def _format_for_memory(self, entry: dict[str, Any]) -> str:
+    def _format_for_memory(self, entry: Dict[str, Any]) -> str:
         """Format entry as readable text for memory storage."""
         lines = [
             f"## AMOS Brain Reasoning - {entry['timestamp']}",
@@ -345,7 +350,7 @@ class BrainMemory:
 
 
 # Global singleton
-_brain_memory: BrainMemory | None = None
+_brain_memory: Optional[BrainMemory] = None
 
 
 def get_brain_memory() -> BrainMemory:
@@ -357,14 +362,14 @@ def get_brain_memory() -> BrainMemory:
 
 
 def save_reasoning_result(
-    problem: str, analysis: dict[str, Any], tags: list[str] | None = None
+    problem: str, analysis: Dict[str, Any], tags: List[str]  = None
 ) -> str:
     """Convenience function to save reasoning result."""
     memory = get_brain_memory()
     return memory.save_reasoning(problem, analysis, tags)
 
 
-def recall_reasoning_context(problem: str) -> dict[str, Any]:
+def recall_reasoning_context(problem: str) -> Dict[str, Any]:
     """Convenience function to recall context for a problem."""
     memory = get_brain_memory()
     return memory.recall_for_problem(problem)

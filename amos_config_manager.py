@@ -5,7 +5,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -15,7 +15,7 @@ class ComponentConfig:
     enabled: bool = True
     priority: int = 50
     timeout_ms: int = 5000
-    custom: dict[str, Any] = field(default_factory=dict)
+    custom: Dict[str, Any] = field(default_factory=dict)
 
 
 class AMOSConfigManager:
@@ -54,11 +54,11 @@ class AMOSConfigManager:
         "knowledge": {"total_files": 659, "auto_load": True, "cache_size_mb": 100},
     }
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str = None):
         """Initialize configuration manager."""
         self.config_path = Path(config_path) if config_path else None
-        self.config: dict[str, Any] = {}
-        self.component_configs: dict[str, ComponentConfig] = {}
+        self.config: Dict[str, Any] = {}
+        self.component_configs: Dict[str, ComponentConfig] = {}
         self._load_config()
 
     def _load_config(self):
@@ -117,7 +117,7 @@ class AMOSConfigManager:
                     self.config[section] = {}
                 self.config[section][key] = value
 
-    def get(self, section: str, key: Optional[str] = None, default: Any = None) -> Any:
+    def get(self, section: str, key: str = None, default: Any = None) -> Any:
         """Get configuration value."""
         if key is None:
             return self.config.get(section, default)
@@ -136,14 +136,14 @@ class AMOSConfigManager:
             self.component_configs[component] = ComponentConfig()
         return self.component_configs[component]
 
-    def save(self, path: Optional[str] = None):
+    def save(self, path: str = None):
         """Save configuration to file."""
         save_path = Path(path) if path else self.config_path
         if save_path:
             with open(save_path, "w") as f:
                 json.dump(self.config, f, indent=2)
 
-    def get_all(self) -> dict[str, Any]:
+    def get_all(self) -> Dict[str, Any]:
         """Get complete configuration."""
         return self.config.copy()
 

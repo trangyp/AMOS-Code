@@ -10,8 +10,6 @@ Responsible for:
 - Bias detection and mitigation
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from collections import defaultdict
@@ -19,7 +17,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.ethics")
@@ -66,12 +64,12 @@ class EthicalConstraint:
     description: str
     condition: str
     severity: int = 5  # 1-10
-    exceptions: list[str] = field(default_factory=list)
+    exceptions: List[str] = field(default_factory=list)
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -81,8 +79,8 @@ class HarmAssessment:
     category: HarmCategory
     severity: float  # 0.0 - 1.0
     probability: float  # 0.0 - 1.0
-    affected_parties: list[str] = field(default_factory=list)
-    mitigations: list[str] = field(default_factory=list)
+    affected_parties: List[str] = field(default_factory=list)
+    mitigations: List[str] = field(default_factory=list)
     description: str = ""
 
 
@@ -95,14 +93,14 @@ class EthicalEvaluation:
     result: ValidationResult
     overall_score: float  # -1.0 to 1.0
     principle_scores: dict[EthicalPrinciple, float] = field(default_factory=dict)
-    harm_assessments: list[HarmAssessment] = field(default_factory=list)
-    concerns: list[str] = field(default_factory=list)
-    recommendations: list[str] = field(default_factory=list)
+    harm_assessments: List[HarmAssessment] = field(default_factory=list)
+    concerns: List[str] = field(default_factory=list)
+    recommendations: List[str] = field(default_factory=list)
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 class EthicsValidationKernel:
@@ -133,10 +131,10 @@ class EthicsValidationKernel:
         ]
 
         # Ethical constraints
-        self.constraints: dict[str, EthicalConstraint] = {}
+        self.constraints: Dict[str, EthicalConstraint] = {}
 
         # Evaluation history
-        self.evaluations: list[EthicalEvaluation] = []
+        self.evaluations: List[EthicalEvaluation] = []
 
         # Harm prevention rules
         self.harm_rules: dict[HarmCategory, list[dict[str, Any]]] = defaultdict(list)
@@ -214,7 +212,7 @@ class EthicsValidationKernel:
         description: str,
         condition: str,
         severity: int = 5,
-        exceptions: Optional[list[str]] = None,
+        exceptions: list[str] = None,
     ) -> EthicalConstraint:
         """Add a new ethical constraint."""
         constraint = EthicalConstraint(
@@ -233,14 +231,14 @@ class EthicsValidationKernel:
     def evaluate_action(
         self,
         action_type: str,
-        action_details: dict[str, Any],
-        context: Optional[dict[str, Any]] = None,
+        action_details: Dict[str, Any],
+        context: dict[str, Any] = None,
     ) -> EthicalEvaluation:
         """Perform comprehensive ethical evaluation of an action."""
         context = context or {}
 
         # Initialize evaluation
-        eval_id = f"eval_{len(self.evaluations)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        eval_id = f"eval_{len(self.evaluations)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
         principle_scores = dict.fromkeys(EthicalPrinciple, 0.0)
         harm_assessments = []
         concerns = []
@@ -301,7 +299,7 @@ class EthicsValidationKernel:
         return evaluation
 
     def _check_constraint(
-        self, constraint: EthicalConstraint, action_details: dict[str, Any], context: dict[str, Any]
+        self, constraint: EthicalConstraint, action_details: Dict[str, Any], context: Dict[str, Any]
     ) -> float:
         """Check if a constraint applies to an action. Returns match score 0.0-1.0."""
         score = 0.0
@@ -326,8 +324,8 @@ class EthicsValidationKernel:
         return min(1.0, score)
 
     def _assess_harm(
-        self, action_type: str, action_details: dict[str, Any], context: dict[str, Any]
-    ) -> list[HarmAssessment]:
+        self, action_type: str, action_details: Dict[str, Any], context: Dict[str, Any]
+    ) -> List[HarmAssessment]:
         """Assess potential harm from an action."""
         assessments = []
 
@@ -365,7 +363,7 @@ class EthicsValidationKernel:
 
         return assessments
 
-    def check_value_alignment(self, proposed_values: list[str]) -> dict[str, Any]:
+    def check_value_alignment(self, proposed_values: List[str]) -> Dict[str, Any]:
         """Check alignment of proposed values with core values."""
         aligned = []
         misaligned = []
@@ -386,7 +384,7 @@ class EthicsValidationKernel:
             "core_values": self.core_values,
         }
 
-    def detect_bias(self, data: dict[str, Any]) -> dict[str, Any]:
+    def detect_bias(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Detect potential biases in data or decisions."""
         bias_indicators = []
 
@@ -413,7 +411,7 @@ class EthicsValidationKernel:
         }
 
     def validate_with_consent(
-        self, action: dict[str, Any], consent_data: dict[str, Any]
+        self, action: Dict[str, Any], consent_data: Dict[str, Any]
     ) -> ValidationResult:
         """Validate an action requires consent."""
         if not consent_data.get("consent_obtained", False):
@@ -424,13 +422,13 @@ class EthicsValidationKernel:
             logger.warning("Consent has been revoked")
             return ValidationResult.REJECTED
 
-        if datetime.utcnow().isoformat() > consent_data.get("expires_at", "9999-12-31"):
+        if datetime.now(UTC).isoformat() > consent_data.get("expires_at", "9999-12-31"):
             logger.warning("Consent has expired")
             return ValidationResult.REJECTED
 
         return ValidationResult.APPROVED
 
-    def get_ethical_report(self) -> dict[str, Any]:
+    def get_ethical_report(self) -> Dict[str, Any]:
         """Generate comprehensive ethical report."""
         recent_evals = self.evaluations[-100:] if len(self.evaluations) > 100 else self.evaluations
 
@@ -457,10 +455,10 @@ class EthicsValidationKernel:
             "core_values": self.core_values,
             "top_concerns": top_concerns,
             "average_score": sum(e.overall_score for e in recent_evals) / max(1, len(recent_evals)),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current ethics validation state."""
         return {
             "evaluations_performed": self.stats["evaluations_performed"],
@@ -471,7 +469,7 @@ class EthicsValidationKernel:
             "active_constraints": len(self.constraints),
             "core_values": self.core_values,
             "recent_evaluation": self.evaluations[-1].result.name if self.evaluations else None,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

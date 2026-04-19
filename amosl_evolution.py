@@ -20,13 +20,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 from amosl_bridge import BridgeExecutor, BridgeResult, SubstrateType
 from amosl_ledger import EntryType, StateLedger
@@ -51,11 +50,11 @@ class EvolutionStep:
 
     step_number: int
     timestamp: str
-    source_state: dict[str, Any]
-    target_state: dict[str, Any]
+    source_state: Dict[str, Any]
+    target_state: Dict[str, Any]
     operator_applied: str
-    verification_result: Optional[VerificationResult] = None
-    bridge_result: Optional[BridgeResult] = None
+    verification_result: VerificationResult | None = None
+    bridge_result: BridgeResult | None = None
     duration_ms: int = 0
     status: str = "pending"
 
@@ -66,10 +65,10 @@ class EvolutionChain:
 
     chain_id: str
     start_time: str
-    steps: list[EvolutionStep] = field(default_factory=list)
-    current_state: dict[str, Any] = field(default_factory=dict)
+    steps: List[EvolutionStep] = field(default_factory=list)
+    current_state: Dict[str, Any] = field(default_factory=dict)
     status: str = "active"
-    substrate_path: list[SubstrateType] = field(default_factory=list)
+    substrate_path: List[SubstrateType] = field(default_factory=list)
 
 
 class EvolutionOperator:
@@ -86,17 +85,17 @@ class EvolutionOperator:
 
     def __init__(
         self,
-        ledger: Optional[StateLedger] = None,
-        verifier: Optional[VerificationEngine] = None,
-        bridge: Optional[BridgeExecutor] = None,
+        ledger: StateLedger | None = None,
+        verifier: VerificationEngine | None = None,
+        bridge: BridgeExecutor | None = None,
     ):
         self.ledger = ledger or StateLedger()
         self.verifier = verifier or VerificationEngine(self.ledger)
         self.bridge = bridge or BridgeExecutor(self.ledger, self.verifier)
-        self.chains: dict[str, EvolutionChain] = {}
+        self.chains: Dict[str, EvolutionChain] = {}
         self.current_phase = EvolutionPhase.IDLE
         self.evolution_count = 0
-        self._operators: dict[str, Callable] = {}
+        self._operators: Dict[str, Callable] = {}
         self._initialize_operators()
 
     def _initialize_operators(self):
@@ -109,11 +108,11 @@ class EvolutionOperator:
             "compose": self._op_compose,
         }
 
-    def _op_identity(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _op_identity(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Identity operator: Σ → Σ."""
         return state.copy()
 
-    def _op_transform(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _op_transform(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Transform operator: applies state transformation."""
         new_state = state.copy()
         # Increment version counter if present
@@ -122,10 +121,10 @@ class EvolutionOperator:
         else:
             new_state["version"] = 1
         new_state["transformed"] = True
-        new_state["timestamp"] = datetime.utcnow().isoformat()
+        new_state["timestamp"] = datetime.now(timezone.utc).isoformat()
         return new_state
 
-    def _op_bridge(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _op_bridge(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Bridge operator: executes cross-substrate operation."""
         # Extract substrate info from state
         source = SubstrateType(state.get("substrate", "classical"))
@@ -143,7 +142,7 @@ class EvolutionOperator:
         else:
             raise ValueError(f"Bridge failed: {result.error}")
 
-    def _op_verify(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _op_verify(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Verify operator: checks state validity."""
         result = self.verifier.verify_state(state)
 
@@ -157,7 +156,7 @@ class EvolutionOperator:
         else:
             raise ValueError(f"Verification failed: {result.failed_constraints}")
 
-    def _op_compose(self, state: dict[str, Any]) -> dict[str, Any]:
+    def _op_compose(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Compose operator: applies multiple operations."""
         # Apply transform
         state = self._op_transform(state)
@@ -166,7 +165,7 @@ class EvolutionOperator:
         return state
 
     def create_evolution_chain(
-        self, initial_state: dict[str, Any], substrate_path: Optional[list[SubstrateType]] = None
+        self, initial_state: Dict[str, Any], substrate_path: list[SubstrateType] = None
     ) -> EvolutionChain:
         """Create new evolution chain.
 
@@ -177,11 +176,11 @@ class EvolutionOperator:
         Returns:
             New evolution chain
         """
-        chain_id = f"EVO-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        chain_id = f"EVO-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         chain = EvolutionChain(
             chain_id=chain_id,
-            start_time=datetime.utcnow().isoformat(),
+            start_time=datetime.now(timezone.utc).isoformat(),
             current_state=initial_state.copy(),
             substrate_path=substrate_path or [SubstrateType.CLASSICAL],
         )
@@ -201,7 +200,7 @@ class EvolutionOperator:
         self,
         chain_id: str,
         operator: str = "compose",
-        target_substrate: Optional[SubstrateType] = None,
+        target_substrate: SubstrateType | None = None,
     ) -> EvolutionStep:
         """Execute one evolution step: Σ_t → Σ_{t+1}.
 
@@ -276,7 +275,7 @@ class EvolutionOperator:
 
             step = EvolutionStep(
                 step_number=step_number,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 source_state=source_state,
                 target_state=target_state,
                 operator_applied=operator,
@@ -325,11 +324,11 @@ class EvolutionOperator:
 
             raise
 
-    def get_chain(self, chain_id: str) -> Optional[EvolutionChain]:
+    def get_chain(self, chain_id: str) -> EvolutionChain | None:
         """Get evolution chain by ID."""
         return self.chains.get(chain_id)
 
-    def get_statistics(self) -> dict[str, Any]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get evolution operator statistics."""
         return {
             "total_chains": len(self.chains),

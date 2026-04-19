@@ -4,12 +4,10 @@ Integrates macroeconomic, geopolitical, and sector analysis
 to provide unified world context for AMOS decisions.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from geopolitical_monitor import get_geopolitical_monitor
 from macroeconomic_scanner import get_macro_scanner
@@ -23,10 +21,10 @@ class WorldContext:
     timestamp: str
     economic_stability: str
     geopolitical_risk: str
-    top_sectors: list[str]
-    active_risks: list[str]
-    opportunities: list[str]
-    recommended_actions: list[str]
+    top_sectors: List[str]
+    active_risks: List[str]
+    opportunities: List[str]
+    recommended_actions: List[str]
 
 
 class WorldModelEngine:
@@ -76,7 +74,7 @@ class WorldModelEngine:
         recommendations = self._generate_recommendations(econ, geo_risk, sector_ov)
 
         return WorldContext(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             economic_stability=econ.get("overall_stability", "unknown"),
             geopolitical_risk=geo_risk.get("risk_level", "unknown"),
             top_sectors=top_sectors,
@@ -87,10 +85,10 @@ class WorldModelEngine:
 
     def _generate_recommendations(
         self,
-        econ: dict[str, Any],
-        geo_risk: dict[str, Any],
-        sectors: dict[str, Any],
-    ) -> list[str]:
+        econ: Dict[str, Any],
+        geo_risk: Dict[str, Any],
+        sectors: Dict[str, Any],
+    ) -> List[str]:
         """Generate recommendations based on world state."""
         recs = []
 
@@ -114,7 +112,7 @@ class WorldModelEngine:
 
         return recs
 
-    def scan_all(self) -> dict[str, Any]:
+    def scan_all(self) -> Dict[str, Any]:
         """Run comprehensive world scan."""
         macro_result = self.macro.scan()
         geo_summary = self.geo.get_global_summary()
@@ -122,7 +120,7 @@ class WorldModelEngine:
         context = self.get_world_context()
 
         return {
-            "scan_time": datetime.utcnow().isoformat(),
+            "scan_time": datetime.now(UTC).isoformat(),
             "macroeconomic": {
                 "indicators": macro_result.get("indicators_tracked", 0),
                 "signals": macro_result.get("signals_generated", 0),
@@ -146,7 +144,7 @@ class WorldModelEngine:
             },
         }
 
-    def assess_operational_risk(self, regions: list[str]) -> dict[str, Any]:
+    def assess_operational_risk(self, regions: List[str]) -> Dict[str, Any]:
         """Assess operational risk for given regions."""
         # Economic risk
         econ_stability = self.macro._calculate_stability()

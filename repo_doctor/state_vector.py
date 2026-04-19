@@ -139,9 +139,9 @@ class RepoStateVector:
     values: dict[StateDimension, float] = field(default_factory=dict)
 
     # Metadata
-    timestamp: str | None = None
-    commit_hash: str | None = None
-    branch: str | None = None
+    timestamp: str = None
+    commit_hash: str = None
+    branch: str = None
 
     # Per-dimension failure details
     failures: dict[StateDimension, list[str]] = field(default_factory=dict)
@@ -161,7 +161,7 @@ class RepoStateVector:
         """Get value for a specific dimension."""
         return self.values.get(dimension, 0.0)
 
-    def set(self, dimension: StateDimension, value: float, failures: list[str] | None = None):
+    def set(self, dimension: StateDimension, value: float, failures: list[str] = None):
         """Set value for a specific dimension."""
         self.values[dimension] = max(0.0, min(1.0, value))
         if failures:
@@ -270,7 +270,7 @@ class RepoStateVector:
         return f"RepoStateVector({vals}, energy={self.energy():.3f}, score={self.score()})"
 
 
-def collapse_failure(state: RepoStateVector) -> str | None:
+def collapse_failure(state: RepoStateVector) -> str:
     """
     Failure localization operator.
 

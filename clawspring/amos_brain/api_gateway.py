@@ -7,7 +7,7 @@ FastAPI-based with automatic documentation.
 
 import sys
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -34,7 +34,7 @@ class RouteRequest(BaseModel):
     """Cognitive routing request."""
 
     task: str
-    context: Optional[dict[str, Any]] = None
+    context: dict[str, Any] = None
 
 
 class RouteResponse(BaseModel):
@@ -151,6 +151,88 @@ class APIGateway:
         @self.app.get("/telemetry/metrics")
         async def get_metrics():
             """Get telemetry metrics."""
+            try:
+                from telemetry import get_telemetry
+
+                telemetry = get_telemetry()
+                return telemetry.get_dashboard_data()
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.post("/math/analyze")
+        async def math_analyze(request: RouteRequest):
+            """Analyze task using mathematical framework engine."""
+            try:
+                from .mathematical_framework_engine import get_framework_engine
+
+                engine = get_framework_engine()
+                result = engine.analyze_architecture(request.task)
+                return {
+                    "detected_domains": result.get("detected_domains", []),
+                    "recommended_frameworks": result.get("recommended_frameworks", []),
+                    "equation_count": len(engine.query_by_domain("")),
+                }
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.get("/math/equations")
+        async def get_equations(domain: str = "", framework: str = ""):
+            """Query mathematical equations."""
+            try:
+                from .mathematical_framework_engine import get_framework_engine
+
+                engine = get_framework_engine()
+                if domain:
+                    equations = engine.query_by_domain(domain)
+                elif framework:
+                    equations = engine.query_by_framework(framework)
+                else:
+                    equations = engine.query_by_domain("")
+                return {
+                    "count": len(equations),
+                    "equations": [
+                        {"name": eq.name, "domain": eq.domain, "formula": eq.formula}
+                        for eq in equations[:20]  # Limit to 20
+                    ],
+                }
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.post("/math/validate/spacing")
+        async def validate_spacing(spacing_value: int):
+            """Validate spacing against 8-point grid."""
+            try:
+                from .mathematical_framework_engine import get_framework_engine
+
+                engine = get_framework_engine()
+                result = engine.solve_design_spacing(spacing_value)
+                return result
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.get("/math/stats")
+        async def math_stats():
+            """Get mathematical framework engine statistics."""
+            try:
+                from .mathematical_framework_engine import get_framework_engine
+
+                engine = get_framework_engine()
+                return engine.get_stats()
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.get("/status")
+        async def get_status():
+            """Get system status."""
+            return {
+                "status": "operational",
+                "version": "2.6.0",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+        @self.app.get("/dashboard/metrics")
+        async def get_dashboard_metrics():
+            """Get comprehensive dashboard metrics including math framework data."""
             try:
                 from telemetry import get_telemetry
 

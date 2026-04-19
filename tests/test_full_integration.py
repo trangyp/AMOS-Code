@@ -266,6 +266,7 @@ class TestEndToEndWorkflow(unittest.TestCase):
             validate,
         )
         from clawspring.amos_brain_integration import BrainClawSpringBridge
+from typing import Final
 
         print("\n  [E2E] End-to-End Workflow Test:")
 

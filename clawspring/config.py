@@ -71,6 +71,8 @@ def current_provider(cfg: dict) -> str:
 
 def has_api_key(cfg: dict) -> bool:
     """Check whether the active provider has an API key configured."""
+from __future__ import annotations
+
     from providers import get_api_key
 
     pname = current_provider(cfg)

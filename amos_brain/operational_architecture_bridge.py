@@ -12,6 +12,7 @@ Provides API for:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,7 @@ try:
         QueueConfig,
         QueueOrder,
     )
+
     OPERATIONAL_AVAILABLE = True
 except ImportError:
     OPERATIONAL_AVAILABLE = False
@@ -61,9 +63,9 @@ class OperationalArchitectureBridge:
         cache_id: str,
         strategy: str,
         invalidation: str,
-        source_of_truth: str | None = None,
-        ttl_seconds: int | None = None,
-        staleness_bound_ms: int | None = None,
+        source_of_truth: str = None,
+        ttl_seconds: int = None,
+        staleness_bound_ms: int = None,
     ) -> dict[str, Any]:
         """Validate cache configuration (I_cache)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
@@ -110,7 +112,7 @@ class OperationalArchitectureBridge:
         self,
         service_id: str,
         levels: dict[str, list[str]],
-        triggers: dict[str, str] | None = None,
+        triggers: dict[str, str] = None,
     ) -> dict[str, Any]:
         """Validate fallback topology (I_fallback)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
@@ -188,7 +190,7 @@ class OperationalArchitectureBridge:
         max_retry: int = 3,
         dlq_enabled: bool = False,
         deduplication: bool = False,
-        dedup_window_ms: int | None = None,
+        dedup_window_ms: int = None,
     ) -> dict[str, Any]:
         """Validate queue configuration (I_queue)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:
@@ -236,8 +238,8 @@ class OperationalArchitectureBridge:
         self,
         operation_id: str,
         idempotent: bool,
-        key_extractor: str | None = None,
-        storage_backend: str | None = None,
+        key_extractor: str = None,
+        storage_backend: str = None,
     ) -> dict[str, Any]:
         """Validate idempotency configuration (I_idempotency)."""
         if not OPERATIONAL_AVAILABLE or self.engine is None:

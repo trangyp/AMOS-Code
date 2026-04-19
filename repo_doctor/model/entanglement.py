@@ -7,8 +7,6 @@ M_ij = α·Import(i,j) + β·Call(i,j) + γ·SharedTests(i,j) +
 High entanglement means modules should be verified together.
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass
 
@@ -42,7 +40,7 @@ class EntanglementMatrix:
     Entanglement matrix M_ij for module coupling.
     """
 
-    def __init__(self, modules: list[str]):
+    def __init__(self, modules: List[str]):
         self.modules = modules
         self.edges: dict[tuple[str, str], EntanglementEdge] = {}
 
@@ -109,7 +107,7 @@ class EntanglementAnalyzer:
 
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
-        self.matrix: EntanglementMatrix | None = None
+        self.matrix: Optional[EntanglementMatrix] = None
 
     def build_from_imports(self, import_graph: dict[str, list[str]]) -> None:
         """Build entanglement from import relationships."""
@@ -181,7 +179,7 @@ class EntanglementAnalyzer:
 
         return clusters
 
-    def _dfs_cluster(self, start: str, visited: set, threshold: float) -> list[str]:
+    def _dfs_cluster(self, start: str, visited: set, threshold: float) -> List[str]:
         """DFS to find connected cluster."""
         cluster = []
         stack = [start]
@@ -199,7 +197,7 @@ class EntanglementAnalyzer:
 
         return cluster
 
-    def analyze_patch_scope(self, changed_modules: list[str]) -> list[str]:
+    def analyze_patch_scope(self, changed_modules: List[str]) -> List[str]:
         """
         Determine which modules need revalidation given changed modules.
         High entanglement means broader revalidation needed.

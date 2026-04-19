@@ -1,0 +1,404 @@
+# AMOS Kubernetes Deployment
+#
+# Production-ready Kubernetes manifests for AMOS Brain v3.0.0
+# Includes: Frontend, Backend, Redis, Persistent Storage, Ingress
+#
+# Usage:
+#   kubectl apply -f k8s/amos-deployment.yaml
+#
+# Creator: Trang Phan
+# Version: 3.0.0
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amos
+  labels:
+    name: amos
+    version: v3.0.0
+
+---
+# ConfigMap for Backend Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amos-backend-config
+  namespace: amos
+data:
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  CORS_ORIGINS: '["http://localhost:3000", "https://amos.example.com"]'
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  REDIS_URL: "redis://amos-redis:6379/0"
+
+---
+# Secret for Sensitive Configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: amos-backend-secrets
+  namespace: amos
+type: Opaque
+stringData:
+  SECRET_KEY: "change-this-in-production-to-random-string"
+  JWT_SECRET: "change-this-in-production-to-random-string"
+
+---
+# Redis Deployment for Caching & Rate Limiting
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-redis
+  namespace: amos
+  labels:
+    app: amos-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amos-redis
+  template:
+    metadata:
+      labels:
+        app: amos-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-redis
+  namespace: amos
+  labels:
+    app: amos-redis
+spec:
+  selector:
+    app: amos-redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-backend
+  namespace: amos
+  labels:
+    app: amos-backend
+    version: v3.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: amos-backend
+  template:
+    metadata:
+      labels:
+        app: amos-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/trangphan/amos/amos-backend:v3.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: amos-backend-config
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: amos-backend-secrets
+                  key: SECRET_KEY
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: amos-backend-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: amos-data
+              mountPath: /app/data
+      volumes:
+        - name: amos-data
+          persistentVolumeClaim:
+            claimName: amos-data-pvc
+
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-backend
+  namespace: amos
+  labels:
+    app: amos-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: amos-backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-frontend
+  namespace: amos
+  labels:
+    app: amos-frontend
+    version: v3.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: amos-frontend
+  template:
+    metadata:
+      labels:
+        app: amos-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/trangphan/amos/amos-dashboard:v3.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: VITE_API_URL
+              value: "http://amos-backend:8000"
+            - name: VITE_WS_URL
+              value: "ws://amos-backend:8000/ws"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-frontend
+  namespace: amos
+  labels:
+    app: amos-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: amos-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+
+---
+# Persistent Volume Claim for AMOS Data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: amos-data-pvc
+  namespace: amos
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard
+
+---
+# Horizontal Pod Autoscaler for Backend
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: amos-backend-hpa
+  namespace: amos
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-backend
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+
+---
+# Horizontal Pod Autoscaler for Frontend
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: amos-frontend-hpa
+  namespace: amos
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-frontend
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+---
+# Network Policy for Security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: amos-network-policy
+  namespace: amos
+spec:
+  podSelector:
+    matchLabels:
+      app: amos-backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: amos-frontend
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: amos-redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# Pod Disruption Budget for High Availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: amos-backend-pdb
+  namespace: amos
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: amos-backend
+
+---
+# Pod Disruption Budget for Frontend
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: amos-frontend-pdb
+  namespace: amos
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: amos-frontend

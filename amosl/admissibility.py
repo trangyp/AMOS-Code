@@ -9,8 +9,6 @@ Verifies the 17-component admissibility model 𝔐_P:
     - ∃𝔏 : Explain(𝔏) = Outcome
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any
@@ -47,7 +45,7 @@ class AdmissibilityResult:
     component: AdmissibilityComponent
     present: bool
     verified: bool
-    evidence: dict[str, Any] = field(default_factory=dict)
+    evidence: Dict[str, Any] = field(default_factory=dict)
 
 
 class GrandAdmissibilityVerifier:
@@ -55,10 +53,10 @@ class GrandAdmissibilityVerifier:
 
     def __init__(self):
         self.checker = AxiomChecker()
-        self.results: list[AdmissibilityResult] = []
+        self.results: List[AdmissibilityResult] = []
 
     def verify_model(
-        self, model: dict[str, Any]
+        self, model: Dict[str, Any]
     ) -> dict[AdmissibilityComponent, AdmissibilityResult]:
         """Verify all 17 components of 𝔐_P exist and satisfy axioms."""
         results = {}
@@ -306,7 +304,7 @@ class GrandAdmissibilityVerifier:
             evidence={"has_ledger": present, "has_explainer": has_explainer},
         )
 
-    def verify_grand_theorem(self, model: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+    def verify_grand_theorem(self, model: Dict[str, Any]) -> tuple[bool, dict[str, Any]]:
         """Verify the grand admissibility theorem:
 
         A program P is AMOS-admissible iff ∃𝔐_P such that:
@@ -354,7 +352,7 @@ class GrandAdmissibilityVerifier:
         return grand_satisfied, summary
 
 
-def verify_program_admissibility(program_state: dict[str, Any]) -> tuple[bool, str]:
+def verify_program_admissibility(program_state: Dict[str, Any]) -> Tuple[bool, str]:
     """High-level interface: verify if a program state satisfies grand admissibility.
 
     Returns: (is_admissible, report_string)

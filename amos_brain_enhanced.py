@@ -24,8 +24,6 @@ Modes:
     demo                Demonstrate all capabilities
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from dataclasses import dataclass, field
@@ -56,8 +54,8 @@ class BrainState:
 
     initialized: bool = False
     knowledge_activated: bool = False
-    components_ready: dict[str, bool] = field(default_factory=dict)
-    active_engines: list[str] = field(default_factory=list)
+    components_ready: Dict[str, bool] = field(default_factory=dict)
+    active_engines: List[str] = field(default_factory=list)
     last_action: str = ""
     session_start: str = ""
 
@@ -96,7 +94,7 @@ class AMOSBrainEnhanced:
 
     def __init__(self):
         self.state = BrainState()
-        self.components: dict[str, Any] = {}
+        self.components: Dict[str, Any] = {}
         self._initialize_all()
 
     def _initialize_all(self):
@@ -250,7 +248,7 @@ class AMOSBrainEnhanced:
         print("  • execute - Autonomous task execution")
         print("  • query - Query synthesized knowledge")
 
-    def think(self, problem: str) -> dict[str, Any]:
+    def think(self, problem: str) -> Dict[str, Any]:
         """Unified thinking with full knowledge integration."""
         print("=" * 70)
         print("AMOS BRAIN ENHANCED: THINK")
@@ -264,7 +262,7 @@ class AMOSBrainEnhanced:
         else:
             return {"error": "Knowledge reasoning not available"}
 
-    def analyze(self, topic: str) -> dict[str, Any]:
+    def analyze(self, topic: str) -> Dict[str, Any]:
         """Deep analysis with synthesis."""
         print("=" * 70)
         print("AMOS BRAIN ENHANCED: ANALYZE")
@@ -284,7 +282,7 @@ class AMOSBrainEnhanced:
         else:
             return {"error": "Knowledge synthesis not available"}
 
-    def learn(self, subject: str) -> dict[str, Any]:
+    def learn(self, subject: str) -> Dict[str, Any]:
         """Guided learning from training materials."""
         print("=" * 70)
         print("AMOS BRAIN ENHANCED: LEARN")
@@ -317,7 +315,7 @@ class AMOSBrainEnhanced:
             "next_step": f"python amos_training_academy.py learn {subject}",
         }
 
-    def execute(self, goal: str) -> dict[str, Any]:
+    def execute(self, goal: str) -> Dict[str, Any]:
         """Autonomous task execution."""
         print("=" * 70)
         print("AMOS BRAIN ENHANCED: EXECUTE")
@@ -336,7 +334,7 @@ class AMOSBrainEnhanced:
         else:
             return {"error": "Knowledge agent not available"}
 
-    def query(self, question: str) -> dict[str, Any]:
+    def query(self, question: str) -> Dict[str, Any]:
         """Query synthesized knowledge."""
         print("=" * 70)
         print("AMOS BRAIN ENHANCED: QUERY")
@@ -349,7 +347,7 @@ class AMOSBrainEnhanced:
         else:
             return {"error": "Knowledge synthesis not available"}
 
-    def get_full_status(self) -> dict[str, Any]:
+    def get_full_status(self) -> Dict[str, Any]:
         """Get full ecosystem status."""
         return {
             "brain_enhanced": {

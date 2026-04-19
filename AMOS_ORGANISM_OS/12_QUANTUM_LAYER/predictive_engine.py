@@ -9,14 +9,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import statistics
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -42,7 +39,7 @@ class TaskPrediction:
     predicted_duration_ms: float
     confidence: float
     std_dev: float = 0.0
-    assigned_agent: Optional[str] = None
+    assigned_agent: str = None
     recommended_start: str = ""
     estimated_completion: str = ""
 
@@ -58,8 +55,8 @@ class PredictiveEngine:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Historical data storage
-        self.execution_history: List[Dict[str, Any]] = []
-        self.subsystem_metrics: Dict[str, List[Dict]] = {}
+        self.execution_history: list[dict[str, Any]] = []
+        self.subsystem_metrics: dict[str, list[Dict]] = {}
 
         # Load historical data
         self._load_history()
@@ -97,7 +94,7 @@ class PredictiveEngine:
         """Save historical data."""
         history_file = self.analytics_dir / "execution_history.json"
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "total_executions": len(self.execution_history),
             "executions": self.execution_history[-1000:],  # Keep last 1000
             "subsystem_metrics": self.subsystem_metrics,
@@ -111,7 +108,7 @@ class PredictiveEngine:
         """Record execution for future predictions."""
         self.execution_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "task_type": task_type,
                 "priority": priority,
                 "duration_ms": duration_ms,
@@ -122,7 +119,7 @@ class PredictiveEngine:
         self._save_history()
 
     def predict_task_duration(
-        self, task_type: str, priority: str, agent_id: Optional[str] = None
+        self, task_type: str, priority: str, agent_id: str = None
     ) -> TaskPrediction:
         """Predict duration for a task."""
         # Get baseline for task type
@@ -158,7 +155,7 @@ class PredictiveEngine:
             confidence = 0.6
 
         # Calculate time estimates
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         recommended_start = now.isoformat()
         estimated_completion = (now + timedelta(milliseconds=predicted_duration)).isoformat()
 
@@ -183,7 +180,7 @@ class PredictiveEngine:
                 confidence=1.0,
                 lower_bound=0,
                 upper_bound=0,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(UTC).isoformat(),
                 horizon="immediate",
             )
 
@@ -203,7 +200,7 @@ class PredictiveEngine:
             confidence=0.75,
             lower_bound=max(0, clearance_seconds - variance),
             upper_bound=clearance_seconds + variance,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             horizon=f"{int(clearance_seconds)}s",
         )
 
@@ -235,7 +232,7 @@ class PredictiveEngine:
             confidence=confidence,
             lower_bound=max(0, predicted_load - std_dev),
             upper_bound=min(100, predicted_load + std_dev),
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             horizon=f"{horizon_minutes}m",
         )
 
@@ -263,7 +260,7 @@ class PredictiveEngine:
             confidence=0.7,
             lower_bound=max(0, predicted - variance),
             upper_bound=min(100, predicted + variance),
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             horizon=f"{horizon_hours}h",
         )
 
@@ -283,7 +280,7 @@ class PredictiveEngine:
             pending_count = 0
 
         predictions = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "queue": {
                 "pending_tasks": pending_count,
                 "clearance_prediction": self.predict_queue_clearance(pending_count).__dict__,

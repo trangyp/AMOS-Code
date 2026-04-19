@@ -15,8 +15,6 @@ Example constraints:
     Healthy = true -> ∧ hard invariants hold
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -42,8 +40,8 @@ class Z3Model:
     """
 
     repo_path: Path
-    constraints: list[StatusConstraint] = field(default_factory=list)
-    status_vars: dict[str, Any] = field(default_factory=dict)
+    constraints: List[StatusConstraint] = field(default_factory=list)
+    status_vars: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         self.repo_path = Path(self.repo_path).resolve()
@@ -94,8 +92,8 @@ class Z3Model:
             return False
 
     def verify_status_truth(
-        self, claimed_status: dict[str, bool], actual_state: dict[str, Any]
-    ) -> dict[str, Any]:
+        self, claimed_status: Dict[str, bool], actual_state: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Verify if claimed status is logically implied by actual state.
 
@@ -160,7 +158,7 @@ class Z3Model:
         except Exception as e:
             return {"available": True, "error": str(e), "violations": [], "is_valid": False}
 
-    def _eval_condition(self, condition: str, state: dict[str, Any]) -> bool:
+    def _eval_condition(self, condition: str, state: Dict[str, Any]) -> bool:
         """
         Evaluate a condition against actual state.
 
@@ -198,8 +196,8 @@ class Z3Model:
         return state.get(condition, False)
 
     def find_unsat_core(
-        self, claimed_status: dict[str, bool], actual_state: dict[str, Any]
-    ) -> list[str]:
+        self, claimed_status: Dict[str, bool], actual_state: Dict[str, Any]
+    ) -> List[str]:
         """
         Find minimal unsatisfiable core of contradictory status claims.
 
@@ -247,9 +245,9 @@ class Z3Model:
 
     def optimize_repair_order(
         self,
-        failed_invariants: list[str],
-        repair_costs: dict[str, float],
-        energy_impacts: dict[str, float],
+        failed_invariants: List[str],
+        repair_costs: Dict[str, float],
+        energy_impacts: Dict[str, float],
     ) -> list[tuple[str, float]]:
         """
         Optimize repair order using Z3 optimization.

@@ -15,8 +15,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -36,21 +34,21 @@ class WorkflowResult:
     steps_total: int
     output: str
     execution_time_ms: int
-    resources_used: dict[str, Any]
+    resources_used: Dict[str, Any]
 
 
 class AMOSWorkflows:
     """Real-world workflow examples using complete AMOS ecosystem."""
 
     def __init__(self):
-        self.results: list[WorkflowResult] = []
+        self.results: List[WorkflowResult] = []
 
-    def run_all_workflows(self) -> list[WorkflowResult]:
+    def run_all_workflows(self) -> List[WorkflowResult]:
         """Execute all workflow examples."""
         print("\n" + "=" * 70)
         print("AMOS REAL-WORLD WORKFLOWS")
         print("=" * 70)
-        print(f"Timestamp: {datetime.utcnow().isoformat()}Z")
+        print(f"Timestamp: {datetime.now(UTC).isoformat()}Z")
         print("=" * 70)
 
         workflows = [
@@ -105,7 +103,7 @@ class AMOSWorkflows:
         from amos_muscle_executor import AMOSMuscleExecutor, ExecutionType
         from amos_unified_orchestrator import AMOSUnifiedOrchestrator
 
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         steps = 0
 
         # Step 1: Brain analysis
@@ -163,7 +161,7 @@ if py_files:
         output = "\\n".join(output_lines)
         steps += 1
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return WorkflowResult(
             workflow_name="Code Analysis Pipeline",
@@ -187,7 +185,7 @@ if py_files:
         from amos_muscle_executor import AMOSMuscleExecutor
         from amos_unified_orchestrator import AMOSUnifiedOrchestrator
 
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         steps = 0
 
         print("  [Step 1] Checking brain health...")
@@ -219,7 +217,7 @@ if py_files:
         steps += 1
         print(f"    ✓ Overall health: {'HEALTHY' if all_healthy else 'DEGRADED'}")
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return WorkflowResult(
             workflow_name="System Health Check",
@@ -238,7 +236,7 @@ if py_files:
         """
         from amos_brain import get_amos_integration
 
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         steps = 0
 
         print("  [Step 1] Analyzing documentation coverage...")
@@ -267,7 +265,7 @@ if py_files:
         steps += 1
         print("    ✓ Examples created")
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return WorkflowResult(
             workflow_name="Automated Documentation",
@@ -286,7 +284,7 @@ if py_files:
         """
         from amos_brain.laws import GlobalLaws
 
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         steps = 0
 
         print("  [Step 1] Loading global laws...")
@@ -317,7 +315,7 @@ if py_files:
         all_passed = all(checks.values())
         print(f"    ✓ Audit: {'PASSED' if all_passed else 'FAILED'}")
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         return WorkflowResult(
             workflow_name="Security Audit",
@@ -339,7 +337,7 @@ if py_files:
         from amos_brain import get_amos_integration
         from amos_muscle_executor import AMOSMuscleExecutor, ExecutionType
 
-        start = datetime.utcnow()
+        start = datetime.now(UTC)
         steps = 0
 
         print("  [Step 1] Brain performance test...")
@@ -365,7 +363,7 @@ if py_files:
         print("  [Step 4] Compiling performance report...")
         steps += 1
 
-        duration = int((datetime.utcnow() - start).total_seconds() * 1000)
+        duration = int((datetime.now(UTC) - start).total_seconds() * 1000)
 
         performance_ok = brain_time < 1000 and muscle_time < 500
 

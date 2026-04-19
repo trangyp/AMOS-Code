@@ -40,7 +40,7 @@ class Constraint:
     message: str = ""
     severity: str = "error"  # error, warning, info
     enabled: bool = True
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -53,7 +53,7 @@ class ConstraintResult:
     actual_value: Any
     expected_value: Any
     message: str
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class ConstraintEngine:
@@ -67,8 +67,8 @@ class ConstraintEngine:
     """
 
     def __init__(self):
-        self._constraints: dict[str, Constraint] = {}
-        self._history: list[ConstraintResult] = []
+        self._constraints: Dict[str, Constraint] = {}
+        self._history: List[ConstraintResult] = []
         self._setup_default_constraints()
 
     def _setup_default_constraints(self):
@@ -120,7 +120,7 @@ class ConstraintEngine:
             return True
         return False
 
-    def validate_file(self, filepath: str, content: str = None) -> list[ConstraintResult]:
+    def validate_file(self, filepath: str, content: str = None) -> List[ConstraintResult]:
         """Validate a file against all applicable constraints."""
         results = []
 
@@ -221,11 +221,11 @@ class ConstraintEngine:
             return not bool(re.match(expected, str(actual), re.MULTILINE))
         return False
 
-    def validate_batch(self, filepaths: list[str]) -> dict[str, list[ConstraintResult]]:
+    def validate_batch(self, filepaths: List[str]) -> dict[str, list[ConstraintResult]]:
         """Validate multiple files."""
         return {fp: self.validate_file(fp) for fp in filepaths}
 
-    def get_violations(self, severity: str = None, limit: int = 100) -> list[ConstraintResult]:
+    def get_violations(self, severity: str = None, limit: int = 100) -> List[ConstraintResult]:
         """Get constraint violations from history."""
         violations = [r for r in self._history if not r.passed]
         if severity:
@@ -238,7 +238,7 @@ class ConstraintEngine:
             violations = filtered
         return violations[-limit:]
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get engine status."""
         violations = [r for r in self._history if not r.passed]
         return {

@@ -4,8 +4,6 @@ InvariantEngine - runs all invariants and produces state vectors.
 A simplified version for the Ω∞ module.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 
@@ -81,7 +79,7 @@ class InvariantEngine:
         self.repo_path = Path(repo_path).resolve()
         self.invariants = [cls() for cls in self.INVARIANT_CLASSES]
 
-    def run_all(self, context: dict[str, Any] | None = None) -> list[InvariantResult]:
+    def run_all(self, context: Dict[str, Any] = None) -> List[InvariantResult]:
         """Run all invariants and return results."""
         results = []
         for invariant in self.invariants:
@@ -90,7 +88,7 @@ class InvariantEngine:
         return results
 
     def check_specific(
-        self, invariant_name: str, context: dict[str, Any] | None = None
+        self, invariant_name: str, context: Dict[str, Any] = None
     ) -> InvariantResult:
         """Run a specific invariant by name."""
         for invariant in self.invariants:
@@ -98,6 +96,6 @@ class InvariantEngine:
                 return invariant.check(str(self.repo_path), context)
         raise ValueError(f"Unknown invariant: {invariant_name}")
 
-    def get_failing(self, results: list[InvariantResult]) -> list[str]:
+    def get_failing(self, results: List[InvariantResult]) -> List[str]:
         """Get list of failing invariant names."""
         return [r.name for r in results if not r.passed]

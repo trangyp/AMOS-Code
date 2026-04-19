@@ -1,8 +1,9 @@
 """Alert Manager stub for compatibility."""
 
-from typing import Any, Callable
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 
 @dataclass
@@ -14,15 +15,15 @@ class Alert:
     message: str
     source: str
     timestamp: datetime
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class AlertManager:
     """Manager for system alerts."""
 
     def __init__(self):
-        self.alerts: list[Alert] = []
-        self.handlers: list[Callable] = []
+        self.alerts: List[Alert] = []
+        self.handlers: List[Callable] = []
 
     def add_handler(self, handler: Callable) -> None:
         """Add alert handler."""
@@ -33,7 +34,7 @@ class AlertManager:
         level: str,
         message: str,
         source: str = "system",
-        metadata: dict[str, Any] | None = None,
+        metadata: Dict[str, Any] = None,
     ) -> Alert:
         """Create new alert."""
         alert = Alert(
@@ -47,7 +48,7 @@ class AlertManager:
         self.alerts.append(alert)
         return alert
 
-    def get_alerts(self, level: str | None = None) -> list[Alert]:
+    def get_alerts(self, level: str = None) -> List[Alert]:
         """Get alerts, optionally filtered by level."""
         if level:
             return [a for a in self.alerts if a.level == level]

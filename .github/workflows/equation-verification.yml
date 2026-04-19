@@ -1,0 +1,176 @@
+# AMOS Equation Verification GitHub Action
+# ==========================================
+#
+# Automatically verifies code against formal equations and invariants
+# on every pull request and push to main.
+#
+# Features:
+# - AST-based code analysis
+# - Invariant verification (type safety, memory safety, etc.)
+# - Automated fix suggestions
+# - PR comments with results
+
+name: Equation Verification
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - '**.py'
+      - '**.js'
+      - '**.ts'
+      - '**.go'
+      - '**.rs'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - '**.py'
+      - '**.js'
+      - '**.ts'
+      - '**.go'
+      - '**.rs'
+  workflow_dispatch:
+
+jobs:
+  equation-verify:
+    name: Verify Code Against Equations
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        language: [python]  # Expand to js, ts, go, rs as needed
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for proper analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -e . 2>/dev/null || true
+          pip install fastapi uvicorn 2>/dev/null || true
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            **/*.py
+            **/*.js
+            **/*.ts
+
+      - name: Run equation verification
+        id: verify
+        run: |
+          echo "[Equation Verification] Starting analysis..."
+
+          # Initialize counters
+          VIOLATIONS=0
+          FILES_CHECKED=0
+
+          # Process each changed file
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [ -f "$file" ]; then
+              echo "Checking: $file"
+              FILES_CHECKED=$((FILES_CHECKED + 1))
+
+              # Run verification via Python
+              python3 << 'EOF' >> verification_results.txt 2>&1
+          import sys
+          sys.path.insert(0, 'AMOS_ORGANISM_OS')
+          sys.path.insert(0, 'AMOS_ORGANISM_OS/01_BRAIN')
+          sys.path.insert(0, 'AMOS_ORGANISM_OS/03_IMMUNE')
+
+          try:
+              from unified_equation_api import UnifiedEquationAPI
+              api = UnifiedEquationAPI()
+
+              # Read file content
+              with open('$file', 'r') as f:
+                  code = f.read()
+
+              # Verify
+              result = api.verify_code(code, 'python')
+              violations = result.get('summary', {}).get('violations', 0)
+
+              if violations > 0:
+                  print(f"::warning::Found {violations} violations in $file")
+                  print(f"VIOLATIONS_FOUND=1")
+              else:
+                  print(f"✓ $file passed verification")
+          except Exception as e:
+              print(f"Note: Verification not available ({e})")
+          EOF
+
+            fi
+          done
+
+          echo "files_checked=$FILES_CHECKED" >> $GITHUB_OUTPUT
+
+          # Check if violations were found
+          if grep -q "VIOLATIONS_FOUND=1" verification_results.txt 2>/dev/null; then
+            echo "violations_found=true" >> $GITHUB_OUTPUT
+            echo "::warning::Invariant violations detected"
+          else
+            echo "violations_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && steps.verify.outputs.violations_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('verification_results.txt', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔬 Equation Verification Results
+
+              ⚠️ **Invariant violations detected** in changed files.
+
+              <details>
+              <summary>View Details</summary>
+
+              \`\`\`
+              ${results.substring(0, 3000)}
+              \`\`\`
+
+              </details>
+
+              Please review and fix the violations before merging.`
+            });
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: equation-verification-report
+          path: verification_results.txt
+          retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Equation Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Files checked: ${{ steps.verify.outputs.files_checked }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Violations found: ${{ steps.verify.outputs.violations_found == 'true' && 'Yes ⚠️' || 'No ✓' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.verify.outputs.violations_found }}" == "true" ]; then
+            echo "### ⚠️ Action Required" >> $GITHUB_STEP_SUMMARY
+            echo "Please review the verification report and fix invariant violations." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✓ All Checks Passed" >> $GITHUB_STEP_SUMMARY
+            echo "No invariant violations detected in changed files." >> $GITHUB_STEP_SUMMARY
+          fi

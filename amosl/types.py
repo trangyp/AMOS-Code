@@ -3,8 +3,6 @@
 τ ::= τ_c | τ_q | τ_b | τ_h
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -38,7 +36,7 @@ class ClassicalType:
     TEXT = Type("Text", Substrate.CLASSICAL)
 
     @staticmethod
-    def Record(fields: dict[str, Type]) -> Type:
+    def Record(fields: Dict[str, Type]) -> Type:
         return Type(f"Record({len(fields)})", Substrate.CLASSICAL)
 
     @staticmethod

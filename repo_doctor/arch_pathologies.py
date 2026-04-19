@@ -22,8 +22,6 @@ Invariants:
 - I_repair_safe: repairs preserve validity under rollout constraints
 """
 
-from __future__ import annotations
-
 import ast
 import re
 from dataclasses import dataclass, field
@@ -78,7 +76,7 @@ class ArchitecturalPathology:
     severity: str  # "critical", "high", "medium", "low"
     message: str
     location: str  # File or component
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
     remediation: str = ""
 
 
@@ -121,9 +119,9 @@ class AuthorityInversionDetector:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self.authority_sources: list[AuthoritySource] = []
+        self.authority_sources: List[AuthoritySource] = []
 
-    def detect(self) -> list[ArchitecturalPathology]:
+    def detect(self) -> List[ArchitecturalPathology]:
         """Find all authority inversions in the repo."""
         pathologies = []
 
@@ -266,7 +264,7 @@ class AuthorityInversionDetector:
                         )
                     )
 
-    def _check_api_authority_inversion(self) -> list[ArchitecturalPathology]:
+    def _check_api_authority_inversion(self) -> List[ArchitecturalPathology]:
         """Check if demos/tests are more accurate than runtime."""
         pathologies = []
 
@@ -297,7 +295,7 @@ class AuthorityInversionDetector:
 
         return pathologies
 
-    def _check_command_authority_inversion(self) -> list[ArchitecturalPathology]:
+    def _check_command_authority_inversion(self) -> List[ArchitecturalPathology]:
         """Check if launcher/shell has more commands than registry."""
         pathologies = []
 
@@ -327,7 +325,7 @@ class AuthorityInversionDetector:
 
         return pathologies
 
-    def _check_test_authority_inversion(self) -> list[ArchitecturalPathology]:
+    def _check_test_authority_inversion(self) -> List[ArchitecturalPathology]:
         """Check if tests are more authoritative than implementation."""
         pathologies = []
 
@@ -358,7 +356,7 @@ class AuthorityInversionDetector:
 
         return pathologies
 
-    def _check_docs_authority_inversion(self) -> list[ArchitecturalPathology]:
+    def _check_docs_authority_inversion(self) -> List[ArchitecturalPathology]:
         """Check if docs are maintained separately from code."""
         pathologies = []
 
@@ -407,7 +405,7 @@ class LayerLeakageDetector:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> list[ArchitecturalPathology]:
+    def detect(self) -> List[ArchitecturalPathology]:
         """Find all layer leakages."""
         pathologies = []
 
@@ -419,7 +417,7 @@ class LayerLeakageDetector:
 
         return pathologies
 
-    def _check_docs_rollout_influence(self) -> list[ArchitecturalPathology]:
+    def _check_docs_rollout_influence(self) -> List[ArchitecturalPathology]:
         """Check if docs encode rollout rules."""
         pathologies = []
 
@@ -454,7 +452,7 @@ class LayerLeakageDetector:
 
         return pathologies
 
-    def _check_packaging_runtime_coupling(self) -> list[ArchitecturalPathology]:
+    def _check_packaging_runtime_coupling(self) -> List[ArchitecturalPathology]:
         """Check if packaging layout affects runtime."""
         pathologies = []
 
@@ -487,7 +485,7 @@ class LayerLeakageDetector:
 
         return pathologies
 
-    def _check_codegen_test_coupling(self) -> list[ArchitecturalPathology]:
+    def _check_codegen_test_coupling(self) -> List[ArchitecturalPathology]:
         """Check if test oracles depend on generated code."""
         pathologies = []
 
@@ -513,7 +511,7 @@ class LayerLeakageDetector:
 
         return pathologies
 
-    def _check_shell_alias_substitution(self) -> list[ArchitecturalPathology]:
+    def _check_shell_alias_substitution(self) -> List[ArchitecturalPathology]:
         """Check if shell aliases substitute for API compatibility."""
         pathologies = []
 
@@ -544,7 +542,7 @@ class LayerLeakageDetector:
 
         return pathologies
 
-    def _check_migration_naming_logic(self) -> list[ArchitecturalPathology]:
+    def _check_migration_naming_logic(self) -> List[ArchitecturalPathology]:
         """Check if migration file names determine business logic."""
         pathologies = []
 
@@ -592,7 +590,7 @@ class BootstrapPathValidator:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def validate(self) -> list[ArchitecturalPathology]:
+    def validate(self) -> List[ArchitecturalPathology]:
         """Find all bootstrap path failures."""
         pathologies = []
 
@@ -604,7 +602,7 @@ class BootstrapPathValidator:
 
         return pathologies
 
-    def _check_manual_build_requirements(self) -> list[ArchitecturalPathology]:
+    def _check_manual_build_requirements(self) -> List[ArchitecturalPathology]:
         """Check for undocumented manual build steps."""
         pathologies = []
 
@@ -639,7 +637,7 @@ class BootstrapPathValidator:
 
         return pathologies
 
-    def _check_generated_file_prerequisites(self) -> list[ArchitecturalPathology]:
+    def _check_generated_file_prerequisites(self) -> List[ArchitecturalPathology]:
         """Check if tests require generated files but don't generate them."""
         pathologies = []
 
@@ -666,7 +664,7 @@ class BootstrapPathValidator:
 
         return pathologies
 
-    def _check_migration_prerequisites(self) -> list[ArchitecturalPathology]:
+    def _check_migration_prerequisites(self) -> List[ArchitecturalPathology]:
         """Check if CLI requires migrations but doesn't declare it."""
         pathologies = []
 
@@ -693,7 +691,7 @@ class BootstrapPathValidator:
 
         return pathologies
 
-    def _check_editable_install_coupling(self) -> list[ArchitecturalPathology]:
+    def _check_editable_install_coupling(self) -> List[ArchitecturalPathology]:
         """Check if package requires editable install of another package."""
         pathologies = []
 
@@ -723,7 +721,7 @@ class BootstrapPathValidator:
 
         return pathologies
 
-    def _check_path_dependencies(self) -> list[ArchitecturalPathology]:
+    def _check_path_dependencies(self) -> List[ArchitecturalPathology]:
         """Check for hidden PATH dependencies."""
         pathologies = []
 
@@ -787,7 +785,7 @@ class ShadowDependencyDetector:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def detect(self) -> list[ArchitecturalPathology]:
+    def detect(self) -> List[ArchitecturalPathology]:
         """Find all shadow dependencies."""
         pathologies = []
 
@@ -799,7 +797,7 @@ class ShadowDependencyDetector:
 
         return pathologies
 
-    def _check_system_package_dependencies(self) -> list[ArchitecturalPathology]:
+    def _check_system_package_dependencies(self) -> List[ArchitecturalPathology]:
         """Check for dependencies on system packages not in requirements."""
         pathologies = []
 
@@ -828,7 +826,7 @@ class ShadowDependencyDetector:
 
         return pathologies
 
-    def _check_network_endpoints(self) -> list[ArchitecturalPathology]:
+    def _check_network_endpoints(self) -> List[ArchitecturalPathology]:
         """Check for hardcoded network endpoints."""
         pathologies = []
 
@@ -863,7 +861,7 @@ class ShadowDependencyDetector:
 
         return pathologies
 
-    def _check_filesystem_layout_assumptions(self) -> list[ArchitecturalPathology]:
+    def _check_filesystem_layout_assumptions(self) -> List[ArchitecturalPathology]:
         """Check for filesystem layout assumptions."""
         pathologies = []
 
@@ -898,7 +896,7 @@ class ShadowDependencyDetector:
 
         return pathologies
 
-    def _check_dynamic_plugin_loading(self) -> list[ArchitecturalPathology]:
+    def _check_dynamic_plugin_loading(self) -> List[ArchitecturalPathology]:
         """Check for dynamic plugin discovery at runtime."""
         pathologies = []
 
@@ -933,7 +931,7 @@ class ShadowDependencyDetector:
 
         return pathologies
 
-    def _check_env_var_dependencies(self) -> list[ArchitecturalPathology]:
+    def _check_env_var_dependencies(self) -> List[ArchitecturalPathology]:
         """Check for undocumented environment variable dependencies."""
         pathologies = []
 
@@ -988,7 +986,7 @@ class ArtifactChainValidator:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def validate(self) -> list[ArchitecturalPathology]:
+    def validate(self) -> List[ArchitecturalPathology]:
         """Find all artifact chain discontinuities."""
         pathologies = []
 
@@ -999,7 +997,7 @@ class ArtifactChainValidator:
 
         return pathologies
 
-    def _check_source_install_divergence(self) -> list[ArchitecturalPathology]:
+    def _check_source_install_divergence(self) -> List[ArchitecturalPathology]:
         """Check if source and installed package differ."""
         pathologies = []
 
@@ -1035,7 +1033,7 @@ class ArtifactChainValidator:
 
         return pathologies
 
-    def _check_wheel_completeness(self) -> list[ArchitecturalPathology]:
+    def _check_wheel_completeness(self) -> List[ArchitecturalPathology]:
         """Check if wheel includes all necessary files."""
         pathologies = []
 
@@ -1063,7 +1061,7 @@ class ArtifactChainValidator:
 
         return pathologies
 
-    def _check_console_script_resolution(self) -> list[ArchitecturalPathology]:
+    def _check_console_script_resolution(self) -> List[ArchitecturalPathology]:
         """Check if console scripts resolve correctly."""
         pathologies = []
 
@@ -1093,7 +1091,7 @@ class ArtifactChainValidator:
 
         return pathologies
 
-    def _check_mode_surface_divergence(self) -> list[ArchitecturalPathology]:
+    def _check_mode_surface_divergence(self) -> List[ArchitecturalPathology]:
         """Check if source and runtime expose different modes."""
         pathologies = []
 
@@ -1144,7 +1142,7 @@ class MigrationGeometryValidator:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def validate(self) -> list[ArchitecturalPathology]:
+    def validate(self) -> List[ArchitecturalPathology]:
         """Find all migration geometry failures."""
         pathologies = []
 
@@ -1155,7 +1153,7 @@ class MigrationGeometryValidator:
 
         return pathologies
 
-    def _check_upgrade_only_migrations(self) -> list[ArchitecturalPathology]:
+    def _check_upgrade_only_migrations(self) -> List[ArchitecturalPathology]:
         """Check for migrations without rollback."""
         pathologies = []
 
@@ -1190,7 +1188,7 @@ class MigrationGeometryValidator:
 
         return pathologies
 
-    def _check_rollback_safety(self) -> list[ArchitecturalPathology]:
+    def _check_rollback_safety(self) -> List[ArchitecturalPathology]:
         """Check if rollbacks preserve data integrity."""
         pathologies = []
 
@@ -1231,7 +1229,7 @@ class MigrationGeometryValidator:
 
         return pathologies
 
-    def _check_migration_order_validity(self) -> list[ArchitecturalPathology]:
+    def _check_migration_order_validity(self) -> List[ArchitecturalPathology]:
         """Check if migration order is valid (no skipped migrations)."""
         pathologies = []
 
@@ -1271,7 +1269,7 @@ class MigrationGeometryValidator:
 
         return pathologies
 
-    def _check_schema_client_mismatch(self) -> list[ArchitecturalPathology]:
+    def _check_schema_client_mismatch(self) -> List[ArchitecturalPathology]:
         """Check if schema and client code versions match."""
         pathologies = []
 
@@ -1311,7 +1309,7 @@ class ModeLatticeValidator:
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
 
-    def validate(self) -> list[ArchitecturalPathology]:
+    def validate(self) -> List[ArchitecturalPathology]:
         """Find all mode-lattice drift."""
         pathologies = []
 
@@ -1322,7 +1320,7 @@ class ModeLatticeValidator:
 
         return pathologies
 
-    def _check_local_only_features(self) -> list[ArchitecturalPathology]:
+    def _check_local_only_features(self) -> List[ArchitecturalPathology]:
         """Check for features that only work in local mode."""
         pathologies = []
 
@@ -1364,7 +1362,7 @@ class ModeLatticeValidator:
 
         return pathologies
 
-    def _check_ci_prod_divergence(self) -> list[ArchitecturalPathology]:
+    def _check_ci_prod_divergence(self) -> List[ArchitecturalPathology]:
         """Check for CI/prod configuration divergence."""
         pathologies = []
 
@@ -1388,7 +1386,7 @@ class ModeLatticeValidator:
 
         return pathologies
 
-    def _check_debug_mode_leakage(self) -> list[ArchitecturalPathology]:
+    def _check_debug_mode_leakage(self) -> List[ArchitecturalPathology]:
         """Check if debug code leaks into production."""
         pathologies = []
 
@@ -1426,7 +1424,7 @@ class ModeLatticeValidator:
 
         return pathologies
 
-    def _check_safe_mode_incompleteness(self) -> list[ArchitecturalPathology]:
+    def _check_safe_mode_incompleteness(self) -> List[ArchitecturalPathology]:
         """Check if safe mode is properly implemented."""
         pathologies = []
 
@@ -1504,7 +1502,7 @@ class ArchitecturalPathologyEngine:
 
         return results
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get summary of all pathologies."""
         results = self.detect_all()
 
@@ -1527,6 +1525,6 @@ class ArchitecturalPathologyEngine:
         }
 
 
-def get_pathology_engine(repo_path: str | Path | None = None) -> ArchitecturalPathologyEngine:
+def get_pathology_engine(repo_path: str | Path = None) -> ArchitecturalPathologyEngine:
     """Factory function to get pathology engine instance."""
     return ArchitecturalPathologyEngine(repo_path or Path.cwd())

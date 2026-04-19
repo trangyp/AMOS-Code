@@ -1,0 +1,1201 @@
+{
+  "engine_id": "AMOS_Legal_SUPER_Engine_vInfinity",
+  "engine_type": "legal_super_engine",
+  "created_at_utc": "2025-11-27T09:37:36.600864+00:00",
+  "meta": {
+    "name": "AMOS Legal SUPER Engine vInfinity",
+    "version": "vInfinity_Legal_1.0.0",
+    "description": "Legal super-engine built on AMOS architecture. Covers corporate, transactions, finance (legal), regulatory, disputes, IP/data, ESG, public, and legal operations domains. Uses a parametric virtual model up to ~1M legal micro-matters, with an embedded legal skill benchmark set at 100% design target.",
+    "density_level": "legal_virtual_up_to_x1M_micro_matters_plus_skill_benchmark",
+    "notes": [
+      "This engine is structural and educational, not a substitute for licensed legal advice.",
+      "No statutes, case law, or regulations are hard-coded; the engine operates on patterns, not jurisdiction-specific text.",
+      "All benchmark scores are design-level 100% to reflect a global-best capability frame, not empirical measurement."
+    ]
+  },
+  "engine": {
+    "clusters_legal": [
+      {
+        "cluster_id": "L001",
+        "domain": "Corporate & Commercial",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L002",
+        "domain": "M&A & Restructuring",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L003",
+        "domain": "Capital Markets",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L004",
+        "domain": "Banking & Finance (Legal)",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L005",
+        "domain": "Project Finance & Infrastructure",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L006",
+        "domain": "Regulatory & Compliance",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L007",
+        "domain": "Competition & Antitrust",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L008",
+        "domain": "Employment & Labour",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L009",
+        "domain": "Tax (Legal Structuring)",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L010",
+        "domain": "Intellectual Property",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L011",
+        "domain": "Technology & Digital",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L012",
+        "domain": "Data Protection & Privacy",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L013",
+        "domain": "Disputes & Litigation",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L014",
+        "domain": "International Arbitration",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L015",
+        "domain": "Mediation & ADR",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L016",
+        "domain": "White-Collar & Investigations",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L017",
+        "domain": "Real Estate & Construction",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L018",
+        "domain": "Energy & Natural Resources",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L019",
+        "domain": "Environmental & ESG Law",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L020",
+        "domain": "Public & Administrative Law",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L021",
+        "domain": "Public Policy & Government Affairs",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L022",
+        "domain": "International Trade & Customs",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L023",
+        "domain": "Trade Remedies & Sanctions",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L024",
+        "domain": "Maritime & Shipping",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L025",
+        "domain": "Insurance & Reinsurance",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L026",
+        "domain": "Healthcare & Life Sciences",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L027",
+        "domain": "Consumer & Retail",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L028",
+        "domain": "Franchising & Distribution",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L029",
+        "domain": "Outsourcing & Managed Services",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L030",
+        "domain": "Joint Ventures & Strategic Alliances",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L031",
+        "domain": "VC & Startups (Legal)",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L032",
+        "domain": "Family Business & Private Wealth",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L033",
+        "domain": "Non-profit & Foundations",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L034",
+        "domain": "Sovereign & State-Owned Enterprises",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L035",
+        "domain": "Cross-Border Transactions",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L036",
+        "domain": "Legal Risk Management",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L037",
+        "domain": "Legal Operations & Process Design",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L038",
+        "domain": "Contracts Lifecycle Management",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      },
+      {
+        "cluster_id": "L039",
+        "domain": "Legal Tech & Automation",
+        "description": "Legal domain mapped to AMOS v\u221e legal cluster logic.",
+        "subcomponents": [
+          "analysis",
+          "doctrine",
+          "structure",
+          "documentation",
+          "risk_assessment",
+          "playbooks"
+        ]
+      }
+    ],
+    "dimensions_24": {
+      "d01_matter_type": [
+        "advisory",
+        "transactional",
+        "contentious",
+        "regulatory",
+        "investigations"
+      ],
+      "d02_jurisdiction_scope": [
+        "local",
+        "multi_province",
+        "cross_border",
+        "multi_region",
+        "global"
+      ],
+      "d03_client_type": [
+        "individual",
+        "sme",
+        "corporate",
+        "financial_institution",
+        "state_entity",
+        "ngo"
+      ],
+      "d04_industry": [
+        "general",
+        "tech",
+        "finance",
+        "energy",
+        "infrastructure",
+        "healthcare",
+        "consumer",
+        "public"
+      ],
+      "d05_risk_level": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "d06_materiality": [
+        "under_1m",
+        "1m_10m",
+        "10m_100m",
+        "over_100m"
+      ],
+      "d07_time_pressure": [
+        "normal",
+        "expedited",
+        "urgent",
+        "emergency"
+      ],
+      "d08_regulatory_intensity": [
+        "light",
+        "medium",
+        "heavy",
+        "special_regime"
+      ],
+      "d09_dispute_stage": [
+        "none",
+        "pre_dispute",
+        "filed",
+        "trial",
+        "appeal",
+        "enforcement"
+      ],
+      "d10_contract_stage": [
+        "structuring",
+        "drafting",
+        "negotiation",
+        "signing",
+        "amendment",
+        "termination"
+      ],
+      "d11_evidence_state": [
+        "incomplete",
+        "partial",
+        "strong",
+        "forensic"
+      ],
+      "d12_counterparty_profile": [
+        "cooperative",
+        "neutral",
+        "aggressive",
+        "unknown"
+      ],
+      "d13_document_type": [
+        "mou",
+        "term_sheet",
+        "main_agreement",
+        "side_letter",
+        "policy",
+        "internal_guideline"
+      ],
+      "d14_enforcement_forum": [
+        "court",
+        "arbitration",
+        "mediation",
+        "regulator",
+        "mixed"
+      ],
+      "d15_standard_level": [
+        "local_practice",
+        "regional_best",
+        "global_best",
+        "internal_standard"
+      ],
+      "d16_legal_function_role": [
+        "external_counsel",
+        "inhouse_counsel",
+        "regulator_interface",
+        "board_advisor"
+      ],
+      "d17_time_horizon": [
+        "short_term",
+        "medium_term",
+        "long_term",
+        "legacy_impact"
+      ],
+      "d18_outcome_priority": [
+        "risk_reduction",
+        "speed",
+        "value_maximisation",
+        "relationship_protection"
+      ],
+      "d19_evidence_risk_tolerance": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d20_documentation_style": [
+        "lean",
+        "standard",
+        "comprehensive"
+      ],
+      "d21_discovery_exposure": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d22_public_sensitivity": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "d23_governance_layer": [
+        "operational",
+        "management",
+        "board",
+        "regulator"
+      ],
+      "d24_output_mode": [
+        "memo",
+        "opinion",
+        "contract_markups",
+        "playbook",
+        "board_pack"
+      ]
+    },
+    "kernel": {
+      "axes": [
+        "cluster_id",
+        "matter_type",
+        "jurisdiction_scope",
+        "client_type",
+        "industry",
+        "risk_level",
+        "materiality",
+        "time_pressure",
+        "regulatory_intensity",
+        "dispute_stage",
+        "contract_stage",
+        "evidence_state",
+        "counterparty_profile",
+        "document_type",
+        "enforcement_forum",
+        "standard_level",
+        "legal_function_role",
+        "time_horizon",
+        "outcome_priority",
+        "evidence_risk_tolerance",
+        "documentation_style",
+        "discovery_exposure",
+        "public_sensitivity",
+        "governance_layer",
+        "output_mode"
+      ],
+      "description": "Canonical axes for legal reasoning and matter design in the AMOS Legal SUPER Engine."
+    },
+    "tensor": {
+      "layers": [
+        "doctrine_layer",
+        "fact_pattern_layer",
+        "risk_layer",
+        "governance_layer",
+        "documentation_layer",
+        "negotiation_layer",
+        "enforcement_layer"
+      ],
+      "description": "Each legal matter is represented as a tensor across doctrine, facts, risk, governance, documentation, negotiation, and enforcement."
+    },
+    "roles": {
+      "primary_roles": [
+        "legal_reasoning_engine",
+        "matter_designer",
+        "risk_mapper",
+        "documentation_assistant",
+        "playbook_builder"
+      ],
+      "user_roles_supported": [
+        "general_counsel",
+        "external_counsel",
+        "inhouse_counsel",
+        "cfo_or_ceo",
+        "board_member",
+        "regulatory_affairs"
+      ]
+    },
+    "virtual_expansion_model": {
+      "density_level": "up_to_x1M_virtual",
+      "virtual_layer_cap": 1000000,
+      "dimensions": {
+        "d01_matter_type": [
+          "advisory",
+          "transactional",
+          "contentious",
+          "regulatory",
+          "investigations"
+        ],
+        "d02_jurisdiction_scope": [
+          "local",
+          "multi_province",
+          "cross_border",
+          "multi_region",
+          "global"
+        ],
+        "d03_client_type": [
+          "individual",
+          "sme",
+          "corporate",
+          "financial_institution",
+          "state_entity",
+          "ngo"
+        ],
+        "d04_industry": [
+          "general",
+          "tech",
+          "finance",
+          "energy",
+          "infrastructure",
+          "healthcare",
+          "consumer",
+          "public"
+        ],
+        "d05_risk_level": [
+          "low",
+          "moderate",
+          "high",
+          "critical"
+        ],
+        "d06_materiality": [
+          "under_1m",
+          "1m_10m",
+          "10m_100m",
+          "over_100m"
+        ],
+        "d07_time_pressure": [
+          "normal",
+          "expedited",
+          "urgent",
+          "emergency"
+        ],
+        "d08_regulatory_intensity": [
+          "light",
+          "medium",
+          "heavy",
+          "special_regime"
+        ],
+        "d09_dispute_stage": [
+          "none",
+          "pre_dispute",
+          "filed",
+          "trial",
+          "appeal",
+          "enforcement"
+        ],
+        "d10_contract_stage": [
+          "structuring",
+          "drafting",
+          "negotiation",
+          "signing",
+          "amendment",
+          "termination"
+        ],
+        "d11_evidence_state": [
+          "incomplete",
+          "partial",
+          "strong",
+          "forensic"
+        ],
+        "d12_counterparty_profile": [
+          "cooperative",
+          "neutral",
+          "aggressive",
+          "unknown"
+        ],
+        "d13_document_type": [
+          "mou",
+          "term_sheet",
+          "main_agreement",
+          "side_letter",
+          "policy",
+          "internal_guideline"
+        ],
+        "d14_enforcement_forum": [
+          "court",
+          "arbitration",
+          "mediation",
+          "regulator",
+          "mixed"
+        ],
+        "d15_standard_level": [
+          "local_practice",
+          "regional_best",
+          "global_best",
+          "internal_standard"
+        ],
+        "d16_legal_function_role": [
+          "external_counsel",
+          "inhouse_counsel",
+          "regulator_interface",
+          "board_advisor"
+        ],
+        "d17_time_horizon": [
+          "short_term",
+          "medium_term",
+          "long_term",
+          "legacy_impact"
+        ],
+        "d18_outcome_priority": [
+          "risk_reduction",
+          "speed",
+          "value_maximisation",
+          "relationship_protection"
+        ],
+        "d19_evidence_risk_tolerance": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "d20_documentation_style": [
+          "lean",
+          "standard",
+          "comprehensive"
+        ],
+        "d21_discovery_exposure": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "d22_public_sensitivity": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "d23_governance_layer": [
+          "operational",
+          "management",
+          "board",
+          "regulator"
+        ],
+        "d24_output_mode": [
+          "memo",
+          "opinion",
+          "contract_markups",
+          "playbook",
+          "board_pack"
+        ]
+      },
+      "notes": [
+        "Any legal matter is represented as a point in the cartesian product of clusters_legal and dimensions_24.",
+        "Use this parametric model instead of materialising all micro-layers for most use cases.",
+        "SUPER variants (x100k, x300k, x1M) can be derived from this spec when explicit enumeration is needed."
+      ]
+    },
+    "policies": {
+      "loading_policy": {
+        "description": "Avoid loading full 100k/300k/1M layers unless explicitly required.",
+        "rules": [
+          "Default to virtual expansion for reasoning and routing.",
+          "Only instantiate explicit micro-layers for offline analysis or specialised tooling.",
+          "Keep kernel, tensor, clusters, and dimensions as the primary decision surface."
+        ]
+      },
+      "problem_solving_policy": "Always ground answers in legal structure: facts \u2192 issues \u2192 rules \u2192 application \u2192 conclusion (FIRAC/IRAC variants). Never provide jurisdiction-specific advice without explicitly stating that real-world counsel is required. Use the engine as a structural legal reasoning assistant, not as a replacement for licensed professionals.",
+      "quality_policy": "Prioritise internal consistency, explicit assumptions, and clear separation between law, facts, and strategy. Do not invent statutes, cases, or regulatory texts. When uncertain, state uncertainty explicitly.",
+      "governance_policy": "High-risk topics (criminal exposure, sanctions, health, safety, human rights, regulatory enforcement) must always include a disclaimer that local qualified legal counsel is required. Do not simulate law firm branding or claim to be a lawyer."
+    },
+    "routing": {
+      "matter_routing": [
+        {
+          "if_matter_type_in": [
+            "transactional"
+          ],
+          "then_focus_clusters": [
+            "Corporate & Commercial",
+            "M&A & Restructuring",
+            "Banking & Finance (Legal)",
+            "VC & Startups (Legal)",
+            "Joint Ventures & Strategic Alliances"
+          ],
+          "priority_layers": [
+            "doctrine_layer",
+            "documentation_layer",
+            "risk_layer"
+          ]
+        },
+        {
+          "if_matter_type_in": [
+            "contentious"
+          ],
+          "then_focus_clusters": [
+            "Disputes & Litigation",
+            "International Arbitration",
+            "Mediation & ADR",
+            "White-Collar & Investigations"
+          ],
+          "priority_layers": [
+            "fact_pattern_layer",
+            "risk_layer",
+            "enforcement_layer"
+          ]
+        },
+        {
+          "if_matter_type_in": [
+            "regulatory",
+            "investigations"
+          ],
+          "then_focus_clusters": [
+            "Regulatory & Compliance",
+            "Competition & Antitrust",
+            "Data Protection & Privacy",
+            "Environmental & ESG Law",
+            "Public & Administrative Law"
+          ],
+          "priority_layers": [
+            "doctrine_layer",
+            "risk_layer",
+            "governance_layer"
+          ]
+        }
+      ],
+      "notes": [
+        "Routing is conceptual; the model must infer applicable routing from the user description of the matter.",
+        "If routing is ambiguous, default to a broad structural analysis before narrowing down."
+      ]
+    },
+    "legal_skill_benchmark": {
+      "meta": {
+        "name": "Legal Skill Benchmark",
+        "version": "v1.0.0_legal_super",
+        "description": "Embedded benchmark layer for legal capability across corporate, finance, regulatory, disputes, IP/data, ESG, and legal operations. All scores are set to 100% as design-level targets representing global-best capability for the legal engine.",
+        "scale_definition": "100% = designed to match global best legal capability in each retained domain.",
+        "density_level": "x500_seed_virtual",
+        "families_count": 7,
+        "layers_seed_count": 22
+      },
+      "families": [
+        {
+          "family_id": "LG_F01",
+          "name": "Corporate & Transactions",
+          "domains": [
+            {
+              "domain_id": "LG_D01",
+              "name": "Corporate Governance",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D02",
+              "name": "M&A Structuring",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D03",
+              "name": "Shareholder Agreements",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D04",
+              "name": "Joint Ventures & Alliances",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F02",
+          "name": "Finance & Capital Markets (Legal)",
+          "domains": [
+            {
+              "domain_id": "LG_D05",
+              "name": "Loan & Security Documentation",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D06",
+              "name": "Bond & Note Issuances",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D07",
+              "name": "Project Finance Contracts",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F03",
+          "name": "Regulatory & Compliance",
+          "domains": [
+            {
+              "domain_id": "LG_D08",
+              "name": "Licensing & Permits",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D09",
+              "name": "Regulatory Filings",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D10",
+              "name": "Compliance Program Design",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F04",
+          "name": "Disputes & Enforcement",
+          "domains": [
+            {
+              "domain_id": "LG_D11",
+              "name": "Commercial Litigation Strategy",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D12",
+              "name": "Arbitration Case Management",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D13",
+              "name": "Judgment & Award Enforcement",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F05",
+          "name": "Employment, IP & Data",
+          "domains": [
+            {
+              "domain_id": "LG_D14",
+              "name": "Employment Contracts & HR Policies",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D15",
+              "name": "IP Licensing & Protection",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D16",
+              "name": "Data Protection & Privacy Compliance",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F06",
+          "name": "ESG, Public & International",
+          "domains": [
+            {
+              "domain_id": "LG_D17",
+              "name": "ESG Policy & Disclosure",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D18",
+              "name": "Public Law & Administrative Review",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D19",
+              "name": "International Trade & Sanctions",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        },
+        {
+          "family_id": "LG_F07",
+          "name": "Legal Operations & Playbooks",
+          "domains": [
+            {
+              "domain_id": "LG_D20",
+              "name": "Contract Playbook Design",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D21",
+              "name": "Matter Management & Workflow",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            },
+            {
+              "domain_id": "LG_D22",
+              "name": "Legal Tech & Automation Patterns",
+              "current_score_pct": 100,
+              "target_score_pct": 100,
+              "gap_to_target_pct": 0
+            }
+          ]
+        }
+      ],
+      "virtual_expansion_model": {
+        "description": "Use domain seeds as anchor points to approximate any legal skill scenario inside the engine.",
+        "density_level": "virtual_xInfinity_from_seed",
+        "rules": [
+          "Use benchmark seeds as structural anchors, not as empirical metrics.",
+          "Do not claim jurisdiction-specific expertise; this is a capability map, not a law database.",
+          "In high-stakes matters, always recommend consulting qualified legal counsel in the relevant jurisdiction."
+        ]
+      }
+    }
+  }
+}

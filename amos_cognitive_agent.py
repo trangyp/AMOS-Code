@@ -7,6 +7,7 @@ import sys
 
 sys.path.insert(0, "clawspring")
 
+
 from amos_brain import get_agent_bridge, get_amos_integration, get_meta_controller
 
 
@@ -134,11 +135,30 @@ class AmosCognitiveAgent:
         }
 
     def _execute(self, decision: dict) -> dict:
-        """Execute the decided action."""
+        """Execute with REAL AMOS brain cognition."""
         action = decision["action"]
 
-        if action == "orchestrate_goal":
-            # Use meta-controller for planning
+        # Import real brain think
+        try:
+            from amos_brain_working import think as brain_think
+        except ImportError:
+            brain_think = None
+
+        if brain_think:
+            # REAL BRAIN EXECUTION
+            brain_input = f"Execute {action}: {decision.get('params', {})}"
+            brain_result = brain_think(
+                brain_input, context={"action": action, "params": decision.get("params", {})}
+            )
+            result = {
+                "success": brain_result.get("status") == "SUCCESS",
+                "brain_status": brain_result.get("status"),
+                "brain_sigma": brain_result.get("sigma"),
+                "brain_legality": brain_result.get("legality"),
+                "output": str(brain_result.get("result", brain_result))[:500],
+                "provider": "amos_brain",
+            }
+        elif action == "orchestrate_goal":
             plan = self.controller.orchestrate_goal("Complete user request")
             result = {
                 "success": True,
@@ -147,23 +167,28 @@ class AmosCognitiveAgent:
                 "output": f"Created plan with {len(plan.steps)} steps",
             }
         elif action == "execute_shell":
-            # Would execute via agent (mock for demo)
-            result = {
-                "success": True,
-                "command": 'echo "Simulated execution"',
-                "output": "Simulated execution",
-                "exit_code": 0,
-            }
+            import subprocess
+
+            try:
+                cmd = decision.get("params", {}).get("command", "echo 'no command'")
+                proc = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
+                result = {
+                    "success": proc.returncode == 0,
+                    "command": cmd,
+                    "output": proc.stdout[:500],
+                    "exit_code": proc.returncode,
+                }
+            except Exception as e:
+                result = {"success": False, "error": str(e)}
         else:
-            # Cognitive processing
             enhanced = self.amos.enhance_system_prompt("Processing user request")
             result = {
                 "success": True,
                 "cognitive_layers": ["perceptual", "conceptual"],
-                "enhancement": enhanced[:100] + "...",
+                "enhancement": enhanced[:100] + "..." if enhanced else None,
             }
 
-        print(f"  ⚡ Executed: {action}")
+        print(f"  ⚡ Executed: {action} | Brain: {result.get('provider', 'fallback')}")
         return result
 
     def _reflect(self, result: dict) -> dict:

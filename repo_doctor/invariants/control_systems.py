@@ -9,8 +9,6 @@ These invariants capture the deeper architectural truth that
 a repo is a closed-loop control system, not just an implementation.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -27,7 +25,7 @@ class InvariantResult:
     passed: bool
     severity: float  # 0-1, higher is worse
     message: str
-    observables: list[Observable]
+    observables: List[Observable]
 
 
 class ClockInvariant:
@@ -39,7 +37,7 @@ class ClockInvariant:
     DIMENSION = "clock_semantics"  # Will be StateDimension.CLOCK_SEMANTICS
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check clock semantics invariant."""
         from ..state.basis import StateDimension
 
@@ -71,7 +69,7 @@ class CacheInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check cache coherence invariant."""
         from ..state.basis import StateDimension
 
@@ -103,7 +101,7 @@ class ConsistencyInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check consistency model invariant."""
         from ..state.basis import StateDimension
 
@@ -138,7 +136,7 @@ class IdentityLifecycleInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check identity lifecycle invariant."""
         from ..state.basis import StateDimension
 
@@ -170,7 +168,7 @@ class CapabilityInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check capability discipline invariant."""
         from ..state.basis import StateDimension
 
@@ -202,7 +200,7 @@ class QueueInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check queue/backpressure invariant."""
         from ..state.basis import StateDimension
 
@@ -234,7 +232,7 @@ class FallbackInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check fallback topology invariant."""
         from ..state.basis import StateDimension
 
@@ -267,7 +265,7 @@ class IdempotencyInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check idempotency boundary invariant."""
         from ..state.basis import StateDimension
 
@@ -299,7 +297,7 @@ class ControlLoopInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check control loop stability invariant."""
         from ..state.basis import StateDimension
 
@@ -333,7 +331,7 @@ class FailureDomainsInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check failure domain isolation invariant."""
         from ..state.basis import StateDimension
 
@@ -365,7 +363,7 @@ class NegativeCapabilityInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check negative capability invariant."""
         from ..state.basis import StateDimension
 
@@ -397,7 +395,7 @@ class ArchitecturalDebtInvariant:
     """
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         """Check architectural debt invariant."""
         from ..state.basis import StateDimension
 

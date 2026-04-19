@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from .commands import built_in_command_names, get_commands
 from .setup import run_setup
 from .tools import get_tools

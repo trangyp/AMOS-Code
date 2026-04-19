@@ -1,7 +1,5 @@
 """I_runtime = 1 iff shells, wrappers, servers, and bridges commute."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class RuntimeInvariant(Invariant):
     def __init__(self):
         super().__init__("I_runtime", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check runtime integrity."""
         context = context or {}
         shell = context.get("shell_promise_violations", 0)

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  amos-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: amos-prod-orchestrator
+    ports:
+      - "8000:8000"
+    environment:
+      - AMOS_ENV=production
+      - AMOS_LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - amos_data:/app/data
+      - amos_logs:/app/logs
+    networks:
+      - amos_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/status')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - amos_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  amos_data:
+  amos_logs:
+  redis_data:
+
+networks:
+  amos_network:
+    driver: bridge

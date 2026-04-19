@@ -10,8 +10,6 @@ Owner: Trang
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import threading
@@ -109,7 +107,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
 
         status = self.brain.status()
         self._send_json(
-            {"status": "active", "brain": status, "timestamp": datetime.utcnow().isoformat()}
+            {"status": "active", "brain": status, "timestamp": datetime.now(UTC).isoformat()}
         )
 
     def _serve_thoughts(self) -> None:
@@ -243,7 +241,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "query": query,
                     "result": result.to_dict() if hasattr(result, "to_dict") else str(result),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
         except Exception as e:
@@ -270,7 +268,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "scenario": scenario,
                     "decision": result.to_dict() if hasattr(result, "to_dict") else str(result),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
         except Exception as e:
@@ -290,7 +288,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                     "success": True,
                     "proposition": proposition,
                     "validation": result.to_dict() if hasattr(result, "to_dict") else str(result),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
         except Exception as e:
@@ -358,7 +356,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                         "success": True,
                         "query": query,
                         "result": result,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
             else:
@@ -369,7 +367,7 @@ class BrainUIHandler(BaseHTTPRequestHandler):
                         "success": True,
                         "query": query,
                         "result": result.to_dict() if hasattr(result, "to_dict") else str(result),
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
         except Exception as e:

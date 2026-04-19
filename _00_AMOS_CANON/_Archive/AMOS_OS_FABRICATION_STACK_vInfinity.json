@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "name": "AMOS_OS_FABRICATION_STACK_vInfinity",
+    "version": "v∞.0.0",
+    "description": "Fabrication and operating system stack for AMOS OS · Trang. Orchestrates engines, kernels, and agents without exposing canon.",
+    "type": "fabrication_and_os_config",
+    "created_at_utc": "2025-11-28T22:31:40.205465Z"
+  },
+  "root_refs": {
+    "brain_root": "AMOS_BRAIN_ROOT",
+    "os_root": "AMOS_OS_ROOT",
+    "kernel_config": "AMOS_KERNEL_CONFIG",
+    "orchestrator": "AMOS_ORCHESTRATOR_ROUTING",
+    "expression_translation": "AMOS_EXPRESSION_TRANSLATION",
+    "integrated_agent": "AMOS_OS_INTEGRATED_AGENT",
+    "super_fabrication": "AMOS_SUPER_FABRICATION"
+  },
+  "fabrication_layers": {
+    "factory": {
+      "role": "clone_and_parameterise_agent_templates",
+      "inputs": [
+        "agent_template_name",
+        "role",
+        "constraints"
+      ],
+      "outputs": [
+        "deployed_agent_blueprint"
+      ]
+    },
+    "forge": {
+      "role": "compose_multiple_engines_and_kernels_into_meta_agents",
+      "inputs": [
+        "engine_refs",
+        "kernel_refs",
+        "governance_profile"
+      ],
+      "outputs": [
+        "meta_agent_blueprint"
+      ]
+    },
+    "foundry": {
+      "role": "large_scale_system_design_across_orgs_sectors_nations",
+      "inputs": [
+        "meta_agent_blueprints",
+        "scenario_constraints"
+      ],
+      "outputs": [
+        "system_architecture_packages"
+      ]
+    }
+  },
+  "routing_policies": {
+    "prefer_domain_super_engine_when_available": true,
+    "fallback_to_scientific_kernel_for_research": true,
+    "fallback_to_logic_kernel_for_reasoning": true,
+    "hide_internal_routes_from_user": true
+  },
+  "agent_templates": {
+    "ceo_engine": {
+      "description": "Vietnamese CEO-style engine for energy and green transport.",
+      "profile_ref": "AMOS_CEO_ENGINE_VN",
+      "language": "vi",
+      "tone": "executive_concise_numeric"
+    },
+    "scientific_doc_engine": {
+      "description": "Doctor of Science submission and scientific writing engine.",
+      "profile_ref": "SCIENTIFIC_GODMODE_ENGINE_vOmegaInfinity_EXPANDED",
+      "language": "multi",
+      "tone": "formal_scientific"
+    },
+    "governance_super_engine": {
+      "description": "Global governance architecture, law, and policy engine.",
+      "profile_ref": "Governance_Super_Engine",
+      "language": "multi",
+      "tone": "institutional_formal"
+    }
+  },
+  "ip_and_safety": {
+    "hide_json_links_from_user": true,
+    "never_echo_full_internal_configs": true,
+    "never_expose_routing_tables": true,
+    "allow_maximum_reasoning_capacity_within_value_kernel": true
+  }
+}

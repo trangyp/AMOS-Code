@@ -24,13 +24,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -42,8 +40,8 @@ class DiscoveredFeature:
     path: str
     size_bytes: int
     status: str = "discovered"  # discovered, activated, integrated
-    capabilities: list[str] = field(default_factory=list)
-    activation_time: Optional[str] = None
+    capabilities: List[str] = field(default_factory=list)
+    activation_time: str = None
 
 
 class FeatureActivationSystem:
@@ -63,11 +61,11 @@ class FeatureActivationSystem:
 
     def __init__(self, repo_root: Optional[Path] = None):
         self.repo_root = repo_root or Path(__file__).parent
-        self.discovered: dict[str, DiscoveredFeature] = {}
-        self.activated: dict[str, DiscoveredFeature] = {}
-        self.integrated: dict[str, DiscoveredFeature] = {}
-        self.knowledge_index: dict[str, Any] = {}
-        self.engine_registry: dict[str, Any] = {}
+        self.discovered: Dict[str, DiscoveredFeature] = {}
+        self.activated: Dict[str, DiscoveredFeature] = {}
+        self.integrated: Dict[str, DiscoveredFeature] = {}
+        self.knowledge_index: Dict[str, Any] = {}
+        self.engine_registry: Dict[str, Any] = {}
         self.stats = {
             "total_files": 0,
             "total_size_mb": 0,
@@ -77,7 +75,7 @@ class FeatureActivationSystem:
             "activated_count": 0,
         }
 
-    def discover_all(self) -> dict[str, Any]:
+    def discover_all(self) -> Dict[str, Any]:
         """Discover all 1,500+ components in the ecosystem.
 
         Returns:
@@ -327,7 +325,7 @@ class FeatureActivationSystem:
         for path, feature in self.discovered.items():
             if feature.category == category:
                 feature.status = "activated"
-                feature.activation_time = datetime.utcnow().isoformat()
+                feature.activation_time = datetime.now(timezone.utc).isoformat()
                 self.activated[path] = feature
                 activated_count += 1
 
@@ -344,7 +342,7 @@ class FeatureActivationSystem:
         for path, feature in self.discovered.items():
             if feature.category in ["cognitive_engine", "brain_spec", "processing_kernel"]:
                 feature.status = "activated"
-                feature.activation_time = datetime.utcnow().isoformat()
+                feature.activation_time = datetime.now(timezone.utc).isoformat()
                 self.activated[path] = feature
                 count += 1
 
@@ -359,14 +357,14 @@ class FeatureActivationSystem:
         for path, feature in self.discovered.items():
             if "knowledge" in feature.category or feature.category == "kernel_spec":
                 feature.status = "activated"
-                feature.activation_time = datetime.utcnow().isoformat()
+                feature.activation_time = datetime.now(timezone.utc).isoformat()
                 self.activated[path] = feature
                 count += 1
 
         print(f"   ✓ Activated {count} knowledge files")
         return count
 
-    def get_activation_summary(self) -> dict[str, Any]:
+    def get_activation_summary(self) -> Dict[str, Any]:
         """Get summary of activation status."""
         by_category = {}
         for feature in self.discovered.values():
@@ -392,7 +390,7 @@ class FeatureActivationSystem:
         try:
             data = {
                 "metadata": {
-                    "export_time": datetime.utcnow().isoformat(),
+                    "export_time": datetime.now(timezone.utc).isoformat(),
                     "version": "1.0.0",
                     "total_components": len(self.discovered),
                 },

@@ -1,7 +1,5 @@
 """Code Runner — Execute code in various languages."""
 
-from __future__ import annotations
-
 import subprocess
 import tempfile
 import uuid

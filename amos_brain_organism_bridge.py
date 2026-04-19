@@ -19,7 +19,6 @@ Usage:
     result = bridge.execute_decision("Refactor the auth module")
 """
 
-from __future__ import annotations
 
 import sys
 from dataclasses import dataclass, field
@@ -36,6 +35,7 @@ from amos_brain.cookbook import ArchitectureDecision, ProblemDiagnosis
 # Import organism subsystems (with fallback stubs)
 try:
     from organism import AmosOrganism
+from typing import Optional
 
     _organism_available = True
 except ImportError:
@@ -73,7 +73,7 @@ class BrainOrganismBridge:
             except Exception as e:
                 print(f"[Bridge] Organism init failed: {e}")
 
-    def analyze_and_execute(self, task: str, context: dict | None = None) -> ExecutionResult:
+    def analyze_and_execute(self, task: str, context: dict  = None) -> ExecutionResult:
         """Full pipeline: Brain analysis → Organism execution.
 
         Args:
@@ -125,7 +125,7 @@ class BrainOrganismBridge:
         return "generic"
 
     def _execute_code_task(
-        self, task: str, analysis: dict, context: dict | None
+        self, task: str, analysis: dict, context: dict
     ) -> ExecutionResult:
         """Execute code-related task through MUSCLE subsystem."""
         print("[Bridge] Routing to MUSCLE (code execution)...")
@@ -147,7 +147,7 @@ class BrainOrganismBridge:
         )
 
     def _execute_architecture_task(
-        self, task: str, analysis: dict, context: dict | None
+        self, task: str, analysis: dict, context: dict
     ) -> ExecutionResult:
         """Execute architecture decision through full cognitive workflow."""
         print("[Bridge] Running ArchitectureDecision workflow...")
@@ -171,7 +171,7 @@ class BrainOrganismBridge:
         )
 
     def _execute_diagnosis_task(
-        self, task: str, analysis: dict, context: dict | None
+        self, task: str, analysis: dict, context: dict
     ) -> ExecutionResult:
         """Execute diagnosis through SENSES + BRAIN."""
         print("[Bridge] Running ProblemDiagnosis workflow...")
@@ -194,7 +194,7 @@ class BrainOrganismBridge:
         )
 
     def _execute_generic_task(
-        self, task: str, analysis: dict, context: dict | None
+        self, task: str, analysis: dict, context: dict
     ) -> ExecutionResult:
         """Execute generic task through default pipeline."""
         print("[Bridge] Executing generic task...")

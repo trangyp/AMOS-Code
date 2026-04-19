@@ -1,12 +1,10 @@
 """AMOS Coding Engine - Domain-specific code production with law compliance."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 from amos_execution import get_execution_kernel
-from amos_orchestrator import get_orchestrator
 
+from amos_orchestrator import get_orchestrator
 from amos_runtime import get_runtime
 
 
@@ -17,9 +15,9 @@ class CodeSpec:
     layer: str
     function_name: str
     description: str
-    inputs_required: list[str] = field(default_factory=list)
-    outputs: list[str] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
+    inputs_required: List[str] = field(default_factory=list)
+    outputs: List[str] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -30,9 +28,9 @@ class CodeResult:
     function_name: str
     code: str
     explanation: str
-    assumptions: list[str] = field(default_factory=list)
+    assumptions: List[str] = field(default_factory=list)
     gap_acknowledgment: str = ""
-    law_compliance: dict[str, bool] = field(default_factory=dict)
+    law_compliance: Dict[str, bool] = field(default_factory=dict)
     quality_score: float = 0.0
 
 
@@ -47,7 +45,7 @@ class CodingLayer:
         """Generate code for this layer. Override in subclasses."""
         raise NotImplementedError
 
-    def _apply_laws(self, code: str, explanation: str) -> tuple[bool, dict]:
+    def _apply_laws(self, code: str, explanation: str) -> Tuple[bool, dict]:
         """Check code against AMOS global laws."""
         laws = self.runtime.get_law_summary()
         compliance = {law["id"]: True for law in laws[:6]}
@@ -85,7 +83,7 @@ class SystemComponent:
     """Core system component with structural integrity."""
     name: str
     purpose: str
-    dependencies: list[str]
+    dependencies: List[str]
 
     def validate_structure(self) -> bool:
         """L4: Validate structural integrity."""
@@ -124,7 +122,7 @@ class BackendLayer(CodingLayer):
 Backend layer with law-compliant error handling.
 """
 
-from typing import Any, Optional
+from typing import Any
 import logging
 
 logger = logging.getLogger(__name__)
@@ -183,14 +181,13 @@ Database layer with schema integrity.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 @dataclass
 class {spec.function_name.title()}Record:
     """Database record with explicit constraints."""
     id: str
     created_at: datetime
-    updated_at: Optional[datetime] = None
+    updated_at: datetime  = None
 
     # L4: All fields explicit, no hidden state
     metadata: dict = None
@@ -238,7 +235,7 @@ class AILayer(CodingLayer):
 AI layer with explicit uncertainty handling.
 """
 
-from typing import Any, Optional
+from typing import Any
 import json
 
 class AIModule:
@@ -317,7 +314,7 @@ class AMOSCodingEngine:
         self.runtime = get_runtime()
         self.execution = get_execution_kernel()
         self.orchestrator = get_orchestrator()
-        self._layer_instances: dict[str, CodingLayer] = {}
+        self._layer_instances: Dict[str, CodingLayer] = {}
 
     def _get_layer(self, layer_name: str) -> CodingLayer:
         """Get or create layer instance."""
@@ -331,8 +328,8 @@ class AMOSCodingEngine:
         layer: str,
         function_name: str,
         description: str,
-        inputs: list[str] | None = None,
-        outputs: list[str] | None = None,
+        inputs: Optional[List[str]] = None,
+        outputs: Optional[List[str]] = None,
     ) -> CodeResult:
         """Generate code for specified layer."""
         spec = CodeSpec(
@@ -350,8 +347,8 @@ class AMOSCodingEngine:
         self,
         feature_name: str,
         description: str,
-        layers: list[str] | None = None,
-    ) -> list[CodeResult]:
+        layers: Optional[List[str]] = None,
+    ) -> List[CodeResult]:
         """Run full feature implementation workflow across multiple layers."""
         target_layers = layers or ["architecture", "backend", "database"]
         results = []
@@ -377,7 +374,7 @@ class AMOSCodingEngine:
 
 
 # Singleton
-_coding_engine: AMOSCodingEngine | None = None
+_coding_engine: Optional[AMOSCodingEngine] = None
 
 
 def get_coding_engine() -> AMOSCodingEngine:
@@ -392,8 +389,8 @@ def generate_amos_code(
     layer: str,
     function_name: str,
     description: str,
-    inputs: list[str] | None = None,
-    outputs: list[str] | None = None,
+    inputs: Optional[List[str]] = None,
+    outputs: Optional[List[str]] = None,
 ) -> CodeResult:
     """Quick code generation with AMOS compliance."""
     return get_coding_engine().generate_code(layer, function_name, description, inputs, outputs)

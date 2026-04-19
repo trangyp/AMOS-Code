@@ -22,7 +22,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from amos_energy import BranchEnergyBudget
 from amos_memory import MemoryEntry
@@ -50,7 +50,7 @@ class AxiomCheck:
     level: ValidationLevel
     passed: bool
     message: str
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -59,8 +59,8 @@ class ValidationReport:
 
     timestamp: datetime
     target: str
-    checks: list[AxiomCheck]
-    summary: dict[str, int] = field(default_factory=dict)
+    checks: List[AxiomCheck]
+    summary: Dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.summary:
@@ -116,7 +116,7 @@ class AxiomValidator:
 
     def __init__(self, strict: bool = False):
         self.strict = strict
-        self.violations: list[AxiomCheck] = []
+        self.violations: List[AxiomCheck] = []
 
     # ========================================================================
     # AXIOM 1: Substrate Partition
@@ -332,7 +332,7 @@ class AxiomValidator:
     # AXIOM 9: Constraint
     # ========================================================================
 
-    def check_axiom_9_constraints(self, state: State, constraints: list[Any]) -> AxiomCheck:
+    def check_axiom_9_constraints(self, state: State, constraints: List[Any]) -> AxiomCheck:
         """Axiom 9: Valid(x) ↔ ∀α ∈ Hard, c_α(x) = ⊤
 
         State satisfies all hard constraints.
@@ -382,7 +382,7 @@ class AxiomValidator:
     # AXIOM 10 & 21: Commit and Multi-Regime Admissibility (Z*)
     # ========================================================================
 
-    def check_axiom_10_commit(self, state: State, checks: dict[str, bool]) -> AxiomCheck:
+    def check_axiom_10_commit(self, state: State, checks: Dict[str, bool]) -> AxiomCheck:
         """Axiom 10: Commits(x*) ↔ Valid(x*) ∧ Verified(x*) ∧ Feasible(x*)
 
         Axiom 21: Z* = Z_type ∩ Z_logic ∩ Z_physical ∩ ...
@@ -514,7 +514,7 @@ class AxiomValidator:
     # FULL VALIDATION
     # ========================================================================
 
-    def validate_state(self, state: State, context: Optional[dict] = None) -> ValidationReport:
+    def validate_state(self, state: State, context: dict = None) -> ValidationReport:
         """Validate a single state against all applicable axioms."""
         context = context or {}
         checks = []
@@ -543,12 +543,12 @@ class AxiomValidator:
         checks.append(self.check_axiom_10_commit(state, z_checks))
 
         return ValidationReport(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             target=f"State({state.identity or 'anonymous'})",
             checks=checks,
         )
 
-    def validate_action(self, action: Action, context: Optional[dict] = None) -> ValidationReport:
+    def validate_action(self, action: Action, context: dict = None) -> ValidationReport:
         """Validate an action against axioms."""
         checks = []
 
@@ -563,7 +563,7 @@ class AxiomValidator:
             checks.append(self.check_axiom_14_energy(energy_budget, energy_cost))
 
         return ValidationReport(
-            timestamp=datetime.utcnow(), target=f"Action({action.name})", checks=checks
+            timestamp=datetime.now(UTC), target=f"Action({action.name})", checks=checks
         )
 
     def validate_system(self, amos_instance: Any) -> ValidationReport:
@@ -591,7 +591,7 @@ class AxiomValidator:
             checks.extend(state_report.checks)
 
         return ValidationReport(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             target=f"AMOS({type(amos_instance).__name__})",
             checks=checks,
         )

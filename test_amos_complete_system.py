@@ -40,7 +40,7 @@ class AMOSCompleteSystemTest:
     """Comprehensive system integration test."""
 
     def __init__(self):
-        self.results: list[TestResult] = []
+        self.results: List[TestResult] = []
         self.start_time = None
 
     def run_all_tests(self) -> bool:

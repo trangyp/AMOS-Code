@@ -22,8 +22,6 @@ Commands:
     clean             Clean old cache files
 """
 
-from __future__ import annotations
-
 import argparse
 import gzip
 import json
@@ -170,7 +168,7 @@ class KnowledgePersistence:
             print(f"✗ Restore failed: {e}")
             return False
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get persistence status."""
         status = {
             "cache_exists": self.CACHE_FILE.exists(),

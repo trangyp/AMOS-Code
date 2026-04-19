@@ -8,13 +8,11 @@ With auditability theorem:
     Replay(ℓ_0,...,ℓ_n) = X_n
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -24,14 +22,14 @@ class LedgerEntry:
     timestamp: float
     step: int
     state_hash: str
-    action: Optional[dict[str, Any]]
-    observation: Optional[dict[str, Any]]
-    uncertainty: dict[str, float]
+    action: Dict[str, Any]
+    observation: Dict[str, Any]
+    uncertainty: Dict[str, float]
     invariants_satisfied: bool
     outcome: Any
     prev_hash: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "timestamp": self.timestamp,
             "step": self.step,
@@ -57,9 +55,9 @@ class TraceTensor:
     inputs: list[dict[str, Any]] = field(default_factory=list)
     observations: list[dict[str, Any]] = field(default_factory=list)
     actions: list[dict[str, Any]] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
-    verification: list[bool] = field(default_factory=list)
-    outputs: list[Any] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
+    verification: List[bool] = field(default_factory=list)
+    outputs: List[Any] = field(default_factory=list)
 
     def append_step(self, input_data, obs, action, constraint, verified, output):
         self.inputs.append(input_data)
@@ -74,7 +72,7 @@ class Ledger:
     """Immutable ledger with chain of entries."""
 
     def __init__(self):
-        self.entries: list[LedgerEntry] = []
+        self.entries: List[LedgerEntry] = []
         self.trace = TraceTensor()
         self._current_hash = "0" * 16
 
@@ -82,9 +80,9 @@ class Ledger:
         self,
         step: int,
         state: Any,
-        action: Optional[dict] = None,
-        observation: Optional[dict] = None,
-        uncertainty: Optional[dict[str, float]] = None,
+        action: dict = None,
+        observation: dict = None,
+        uncertainty: Dict[str, float] = None,
         invariants_satisfied: bool = True,
         outcome: Any = None,
     ) -> LedgerEntry:
@@ -122,7 +120,7 @@ class Ledger:
         except Exception:
             return "hash_error_" + str(len(self.entries))
 
-    def explain(self, outcome: Any) -> Optional[dict]:
+    def explain(self, outcome: Any) -> dict:
         """Explain outcome: Explain(L) = Outcome.
 
         Returns the trace that leads to the outcome, or None if
@@ -140,7 +138,7 @@ class Ledger:
 
         return None
 
-    def _reconstruct_trace(self, up_to_step: int) -> list[dict]:
+    def _reconstruct_trace(self, up_to_step: int) -> List[dict]:
         """Reconstruct trace up to given step."""
         trace = []
         for entry in self.entries:
@@ -190,7 +188,7 @@ class Ledger:
 
         return len(errors) == 0, errors
 
-    def get_statistics(self) -> dict[str, Any]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get ledger statistics."""
         total = len(self.entries)
         verified = sum(1 for e in self.entries if e.invariants_satisfied)
@@ -203,13 +201,11 @@ class Ledger:
             "last_step": self.entries[-1].step if self.entries else None,
         }
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize ledger."""
         return {"entries": [e.to_dict() for e in self.entries], "statistics": self.get_statistics()}
 
-    def query(
-        self, step: Optional[int] = None, outcome_type: Optional[str] = None
-    ) -> list[LedgerEntry]:
+    def query(self, step: int = None, outcome_type: str = None) -> List[LedgerEntry]:
         """Query ledger entries."""
         results = []
 

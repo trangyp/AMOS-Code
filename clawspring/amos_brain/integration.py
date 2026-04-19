@@ -1,7 +1,5 @@
 """AMOS Brain Integration - Connects new runtime to ClawSpring agent."""
 
-from __future__ import annotations
-
 
 class AMOSBrainIntegration:
     """Bridge between AMOS runtime and ClawSpring agent."""

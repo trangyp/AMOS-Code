@@ -10,7 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class ArchivePriority(Enum):
@@ -47,14 +47,14 @@ class ArchivedMemory:
     """An archived memory record."""
 
     memory_id: str
-    content: dict[str, Any]
+    content: Dict[str, Any]
     archived_at: datetime
     priority: ArchivePriority
     status: ArchiveStatus
     size_bytes: int
     compressed: bool
-    tags: list[str] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    tags: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class MemoryArchiver:
@@ -66,15 +66,15 @@ class MemoryArchiver:
 
     def __init__(self, config: Optional[ArchiveConfig] = None):
         self.config = config or ArchiveConfig()
-        self.archives: dict[str, ArchivedMemory] = {}
-        self.pending_queue: list[str] = []
+        self.archives: Dict[str, ArchivedMemory] = {}
+        self.pending_queue: List[str] = []
 
     def queue_for_archive(
         self,
         memory_id: str,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         priority: ArchivePriority = ArchivePriority.NORMAL,
-        tags: Optional[list[str]] = None,
+        tags: list[str] = None,
     ) -> bool:
         """Queue a memory for archival."""
         if memory_id in self.archives:
@@ -83,7 +83,7 @@ class MemoryArchiver:
         archived = ArchivedMemory(
             memory_id=memory_id,
             content=content,
-            archived_at=datetime.utcnow(),
+            archived_at=datetime.now(UTC),
             priority=priority,
             status=ArchiveStatus.PENDING,
             size_bytes=self._estimate_size(content),
@@ -95,7 +95,7 @@ class MemoryArchiver:
         self.pending_queue.append(memory_id)
         return True
 
-    def _estimate_size(self, content: dict[str, Any]) -> int:
+    def _estimate_size(self, content: Dict[str, Any]) -> int:
         """Estimate memory size in bytes."""
         import json
 
@@ -118,7 +118,7 @@ class MemoryArchiver:
             archived.size_bytes = int(archived.size_bytes * 0.3)  # 70% compression
 
         archived.status = ArchiveStatus.ARCHIVED
-        archived.archived_at = datetime.utcnow()
+        archived.archived_at = datetime.now(UTC)
 
         if memory_id in self.pending_queue:
             self.pending_queue.remove(memory_id)
@@ -159,11 +159,11 @@ class MemoryArchiver:
             self.pending_queue.remove(memory_id)
         return True
 
-    def get_archives_by_tag(self, tag: str) -> list[ArchivedMemory]:
+    def get_archives_by_tag(self, tag: str) -> List[ArchivedMemory]:
         """Get all archives with a specific tag."""
         return [a for a in self.archives.values() if tag in a.tags]
 
-    def get_storage_stats(self) -> dict[str, Any]:
+    def get_storage_stats(self) -> Dict[str, Any]:
         """Get archival storage statistics."""
         total_size = sum(a.size_bytes for a in self.archives.values())
         compressed_size = sum(a.size_bytes for a in self.archives.values() if a.compressed)
@@ -178,13 +178,27 @@ class MemoryArchiver:
 
     def cleanup_expired(self) -> int:
         """Remove expired archives based on retention policy."""
-        cutoff = datetime.utcnow() - timedelta(days=self.config.retention_days)
+        cutoff = datetime.now(UTC) - timedelta(days=self.config.retention_days)
         expired = [mid for mid, a in self.archives.items() if a.archived_at < cutoff]
 
         for memory_id in expired:
             self.delete_archive(memory_id)
 
         return len(expired)
+
+    def queue_for_archival(self, result: Dict[str, Any]) -> bool:
+        """Queue a result for archival (alias for queue_for_archive)."""
+        memory_id = result.get("id", f"result_{datetime.now(UTC).timestamp()}")
+        return self.queue_for_archive(
+            memory_id=memory_id,
+            content=result,
+            priority=ArchivePriority.NORMAL,
+            tags=["cycle_result"],
+        )
+
+    def process_queue(self) -> int:
+        """Process all pending archival items (alias for archive_all_pending)."""
+        return self.archive_all_pending()
 
 
 if __name__ == "__main__":

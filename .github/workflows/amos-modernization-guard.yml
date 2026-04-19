@@ -1,0 +1,249 @@
+name: AMOS Modernization Guard
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - '**.py'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - '**.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Modernization mode'
+        required: true
+        default: 'check'
+        type: choice
+        options:
+          - check
+          - fix
+          - report
+
+jobs:
+  modernization-check:
+    name: Modernization Pattern Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+
+      - name: Get changed Python files
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "files=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.py$' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          else
+            echo "files=$(git diff --name-only HEAD~1 HEAD | grep '\.py$' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for deprecated datetime patterns
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "Checking for deprecated datetime patterns..."
+          found_issues=0
+          for file in ${{ steps.changed-files.outputs.files }}; do
+            if [ -f "$file" ]; then
+              count=$(grep -c "datetime\.utcnow()" "$file" || true)
+              if [ "$count" -gt 0 ]; then
+                echo "❌ $file: Found $count deprecated datetime.utcnow() calls"
+                grep -n "datetime\.utcnow()" "$file" || true
+                found_issues=$((found_issues + count))
+              fi
+            fi
+          done
+
+          if [ "$found_issues" -gt 0 ]; then
+            echo ""
+            echo "⚠️  Found $found_issues deprecated datetime.utcnow() patterns"
+            echo "   Fix: Replace with datetime.now(timezone.utc)"
+            echo ""
+          fi
+          echo "datetime_issues=$found_issues" >> $GITHUB_ENV
+
+      - name: Check for deprecated typing imports
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "Checking for deprecated typing patterns..."
+          found_issues=0
+          for file in ${{ steps.changed-files.outputs.files }}; do
+            if [ -f "$file" ]; then
+              # Check for deprecated imports
+              if grep -q "from typing import.*\(Optional\|List\|Dict\|Set\|Tuple\|Union\)" "$file"; then
+                echo "❌ $file: Found deprecated typing imports"
+                grep -n "from typing import.*\(Optional\|List\|Dict\|Set\|Tuple\|Union\)" "$file" || true
+                found_issues=$((found_issues + 1))
+              fi
+              # Check for deprecated type annotations
+              for pattern in "Optional\[" "List\[" "Dict\[" "Set\[" "Tuple\[" "Union\["; do
+                count=$(grep -c "$pattern" "$file" || true)
+                if [ "$count" -gt 0 ]; then
+                  echo "❌ $file: Found $count $pattern patterns"
+                  found_issues=$((found_issues + count))
+                fi
+              done
+            fi
+          done
+
+          echo "typing_issues=$found_issues" >> $GITHUB_ENV
+
+      - name: Check for bare except clauses
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "Checking for bare except clauses..."
+          found_issues=0
+          for file in ${{ steps.changed-files.outputs.files }}; do
+            if [ -f "$file" ]; then
+              count=$(grep -c "except:" "$file" || true)
+              if [ "$count" -gt 0 ]; then
+                echo "❌ $file: Found $count bare except clauses"
+                grep -n "except:" "$file" || true
+                found_issues=$((found_issues + count))
+              fi
+            fi
+          done
+
+          echo "except_issues=$found_issues" >> $GITHUB_ENV
+
+      - name: Run Ruff linting
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          echo "Running Ruff..."
+          ruff check ${{ steps.changed-files.outputs.files }} --output-format=github || true
+
+      - name: Generate modernization report
+        if: always()
+        run: |
+          cat > modernization_report.md << 'EOF'
+          # AMOS Modernization Report
+
+          ## Summary
+          - **Commit**: ${{ github.sha }}
+          - **Branch**: ${{ github.ref_name }}
+          - **Author**: ${{ github.actor }}
+
+          ## Deprecated Patterns Found
+          EOF
+
+          datetime_issues=${{ env.datetime_issues || 0 }}
+          typing_issues=${{ env.typing_issues || 0 }}
+          except_issues=${{ env.except_issues || 0 }}
+
+          total_issues=$((datetime_issues + typing_issues + except_issues))
+
+          echo "- datetime.utcnow(): $datetime_issues" >> modernization_report.md
+          echo "- Deprecated typing: $typing_issues" >> modernization_report.md
+          echo "- Bare except: $except_issues" >> modernization_report.md
+          echo "" >> modernization_report.md
+          echo "**Total Issues: $total_issues**" >> modernization_report.md
+
+          cat modernization_report.md
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modernization-report
+          path: modernization_report.md
+          retention-days: 30
+
+      - name: Fail if issues found
+        if: env.datetime_issues != '0' || env.typing_issues != '0' || env.except_issues != '0'
+        run: |
+          echo "❌ Deprecated patterns found. Please fix before merging."
+          echo ""
+          echo "Run the modernizer to auto-fix:"
+          echo "  python amos_intelligent_modernizer.py --live"
+          exit 1
+
+  auto-modernize:
+    name: Auto-Modernize (Scheduled)
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Intelligent Modernizer (Dry Run)
+        run: |
+          python amos_intelligent_modernizer.py --report modernization_scan.json
+
+      - name: Check if changes needed
+        id: check-changes
+        run: |
+          if grep -q '"total_issues": 0' modernization_scan.json; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Apply modernizations
+        if: steps.check-changes.outputs.no_changes == 'false'
+        run: |
+          python amos_intelligent_modernizer.py --live --report modernization_applied.json
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.no_changes == 'false'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: automated modernization of deprecated patterns'
+          title: '🤖 Automated Modernization: Python 3.12+ Compliance'
+          body: |
+            This PR was automatically generated by the AMOS Modernization Guard.
+
+            ## Changes
+            - Modernized deprecated datetime patterns
+            - Updated typing imports to Python 3.10+ syntax
+            - Fixed bare except clauses
+
+            ## Verification
+            - [ ] All tests pass
+            - [ ] No syntax errors introduced
+            - [ ] Manual review of critical files
+          branch: automated-modernization
+          delete-branch: true
+
+  modernization-stats:
+    name: Repository Modernization Stats
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'report'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate full repository report
+        run: |
+          python amos_intelligent_modernizer.py --report full_modernization_report.json
+
+      - name: Upload full report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-modernization-report
+          path: full_modernization_report.json
+          retention-days: 90

@@ -4,13 +4,11 @@ Generates Python code from templates and specifications.
 Handles module creation, class generation, and code assembly.
 """
 
-from __future__ import annotations
-
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -22,9 +20,9 @@ class CodeTemplate:
     template_type: str = ""  # module, class, function, stub
     content: str = ""
     placeholders: list[str] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -38,9 +36,9 @@ class GeneratedCode:
     content: str = ""
     language: str = "python"
     status: str = "draft"  # draft, validated, deployed
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -57,8 +55,8 @@ class CodeGenerator:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.templates: dict[str, CodeTemplate] = {}
-        self.generated: dict[str, GeneratedCode] = {}
+        self.templates: Dict[str, CodeTemplate] = {}
+        self.generated: Dict[str, GeneratedCode] = {}
 
         self._register_default_templates()
 
@@ -101,7 +99,7 @@ class CodeGenerator:
         name: str,
         template_type: str,
         content: str,
-        placeholders: Optional[list[str]] = None,
+        placeholders: list[str] = None,
     ) -> CodeTemplate:
         """Create a new code template."""
         template = CodeTemplate(
@@ -117,7 +115,7 @@ class CodeGenerator:
         self,
         template_id: str,
         file_path: str,
-        values: dict[str, str],
+        values: Dict[str, str],
     ) -> Optional[GeneratedCode]:
         """Generate code from a template with value substitution."""
         template = self.templates.get(template_id)
@@ -189,7 +187,7 @@ if str(target_path) not in sys.path:
 
         return self.generate_from_template("stub", file_path, values)
 
-    def _generate_class_code(self, class_spec: dict[str, Any]) -> str:
+    def _generate_class_code(self, class_spec: Dict[str, Any]) -> str:
         """Generate class code from specification."""
         class_name = class_spec.get("name", "MyClass")
         docstring = class_spec.get("docstring", f"The {class_name} class.")
@@ -268,7 +266,7 @@ if str(target_path) not in sys.path:
         """List all generated code."""
         return [g.to_dict() for g in self.generated.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get generator status."""
         return {
             "total_templates": len(self.templates),

@@ -1,0 +1,197 @@
+# AMOS Traefik Dynamic Middleware Configuration
+# Middleware chain for request processing
+
+http:
+  middlewares:
+    # Security Headers
+    security-headers:
+      headers:
+        customRequestHeaders:
+          X-Request-ID: "{uuid}"
+        customResponseHeaders:
+          X-Content-Type-Options: "nosniff"
+          X-Frame-Options: "DENY"
+          X-XSS-Protection: "1; mode=block"
+          Referrer-Policy: "strict-origin-when-cross-origin"
+          Permissions-Policy: "geolocation=(), microphone=(), camera=()"
+          Content-Security-Policy: "default-src 'self'"
+          Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
+        sslProxyHeaders:
+          X-Forwarded-Proto: "https"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        frameDeny: true
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        contentSecurityPolicy: "default-src 'self'"
+
+    # CORS Headers
+    cors:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - PATCH
+        accessControlAllowHeaders:
+          - Origin
+          - Content-Type
+          - Accept
+          - Authorization
+          - X-Request-ID
+          - X-Requested-With
+        accessControlAllowOriginList:
+          - "https://amos.localhost"
+          - "https://app.amos.localhost"
+        accessControlMaxAge: 86400
+        addVaryHeader: true
+
+    # Rate Limiting
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 200
+        period: 1m
+        sourceCriterion:
+          ipStrategy:
+            depth: 1
+            excludedIPs:
+              - 127.0.0.1/32
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+
+    # Strict Rate Limit (for expensive endpoints)
+    strict-rate-limit:
+      rateLimit:
+        average: 10
+        burst: 20
+        period: 1m
+
+    # Authentication (Basic Auth for dashboard)
+    auth:
+      basicAuth:
+        users:
+          # admin:admin (change in production)
+          - "admin:$apr1$H6uskkkW$hZxI1s7KJ8z3f8/0x6Z5P1"
+        realm: "AMOS API Gateway"
+        removeHeader: true
+
+    # JWT Authentication (for API)
+    jwt-auth:
+      plugin:
+        jwt:
+          secret: "${JWT_SECRET}"
+          headerName: "Authorization"
+          prefix: "Bearer"
+
+    # Request Compression
+    compress:
+      compress:
+        excludedContentTypes:
+          - application/grpc
+
+    # Request Size Limit
+    limit-request:
+      bufferReq:
+        maxRequestBodyBytes: 10485760  # 10MB
+        maxResponseBodyBytes: 10485760
+        memRequestBodyBytes: 2097152   # 2MB
+        memResponseBodyBytes: 2097152
+
+    # Circuit Breaker
+    circuit-breaker:
+      circuitBreaker:
+        expression: "LatencyAtQuantileMS(50.0) > 1000"
+        checkPeriod: 10s
+        fallbackDuration: 10s
+        recoveryDuration: 10s
+        responseCode: 503
+
+    # Retry Policy
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: 100ms
+
+    # Error Pages
+    error-pages:
+      errors:
+        status:
+          - "400-599"
+        service: error-handler
+        query: "/{status}.html"
+
+    # Strip API Prefix (if needed)
+    strip-api-prefix:
+      stripPrefix:
+        prefixes:
+          - /api/v1
+        forceSlash: true
+
+    # Add API Version Header
+    api-version:
+      headers:
+        customResponseHeaders:
+          X-API-Version: "v2.5.0"
+          X-Service: "AMOS"
+
+    # IP Allowlist (for internal endpoints)
+    internal-only:
+      ipAllowList:
+        sourceRange:
+          - 127.0.0.1/32
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+
+    # Chain: Standard API
+    standard-chain:
+      chain:
+        middlewares:
+          - security-headers
+          - cors
+          - rate-limit
+          - compress
+          - api-version
+
+    # Chain: Internal API
+    internal-chain:
+      chain:
+        middlewares:
+          - security-headers
+          - internal-only
+          - compress
+
+    # Chain: Public API (no auth)
+    public-chain:
+      chain:
+        middlewares:
+          - security-headers
+          - cors
+          - strict-rate-limit
+          - compress
+
+    # Chain: Protected API
+    protected-chain:
+      chain:
+        middlewares:
+          - security-headers
+          - cors
+          - jwt-auth
+          - rate-limit
+          - compress
+
+tcp:
+  middlewares:
+    # TLS options for TCP services
+    tls-termination:
+      tls:
+        certResolver: letsencrypt
+        options: default

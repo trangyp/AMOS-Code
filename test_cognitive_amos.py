@@ -84,7 +84,7 @@ def main():
     print("=" * 60)
     print("AMOS COGNITIVE ECOSYSTEM TEST SUITE")
     print("=" * 60)
-    print(f"Started: {datetime.utcnow().isoformat()}")
+    print(f"Started: {datetime.now(timezone.utc).isoformat()}")
     print()
 
     start = time.time()

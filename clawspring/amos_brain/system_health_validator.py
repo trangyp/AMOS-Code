@@ -234,9 +234,8 @@ class SystemHealthValidator:
         return True
 
     def _check_resilience(self) -> bool:
-        from resilience import CircuitBreaker, get_resilience
+        from resilience import CircuitBreaker
 
-        resilience = get_resilience()
         cb = CircuitBreaker()
         return cb.state == "closed"
 

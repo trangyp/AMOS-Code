@@ -4,15 +4,14 @@ Defines and executes multi-stage pipelines for data transformation,
 processing, and routing through the organism.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 class StageStatus(Enum):
@@ -32,17 +31,17 @@ class PipelineStage:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     stage_type: str = ""  # transform, filter, route, validate
-    config: dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, Any] = field(default_factory=dict)
     status: StageStatus = StageStatus.PENDING
     input_data: Any = None
     output_data: Any = None
     error: str = ""
-    start_time: Optional[str] = None
-    end_time: Optional[str] = None
+    start_time: str = None
+    end_time: str = None
     depends_on: list[str] = field(default_factory=list)
     next_stages: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -57,9 +56,9 @@ class Pipeline:
     name: str = ""
     description: str = ""
     stages: list[PipelineStage] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "draft"  # draft, running, completed, failed
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def add_stage(self, stage: PipelineStage) -> PipelineStage:
         """Add a stage to the pipeline."""
@@ -73,7 +72,7 @@ class Pipeline:
                 return stage
         return None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "stages": [s.to_dict() for s in self.stages],
@@ -93,8 +92,8 @@ class PipelineEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.pipelines: dict[str, Pipeline] = {}
-        self.stage_handlers: dict[str, Callable] = {}
+        self.pipelines: Dict[str, Pipeline] = {}
+        self.stage_handlers: Dict[str, Callable] = {}
 
         self._load_pipelines()
         self._register_default_handlers()
@@ -133,7 +132,7 @@ class PipelineEngine:
         """Save pipelines to disk."""
         pipelines_file = self.data_dir / "pipelines.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "pipelines": [p.to_dict() for p in self.pipelines.values()],
         }
         pipelines_file.write_text(json.dumps(data, indent=2))
@@ -161,8 +160,8 @@ class PipelineEngine:
         self,
         pipeline_id: str,
         initial_data: Any = None,
-        context: Optional[dict] = None,
-    ) -> dict[str, Any]:
+        context: dict = None,
+    ) -> Dict[str, Any]:
         """Execute a pipeline with data."""
         pipeline = self.pipelines.get(pipeline_id)
         if not pipeline:
@@ -187,7 +186,7 @@ class PipelineEngine:
 
             # Execute stage
             stage.input_data = initial_data if stage == pipeline.stages[0] else None
-            stage.start_time = datetime.utcnow().isoformat()
+            stage.start_time = datetime.now(UTC).isoformat()
             stage.status = StageStatus.RUNNING
 
             handler = self.stage_handlers.get(stage.stage_type)
@@ -215,7 +214,7 @@ class PipelineEngine:
                     "error": stage.error,
                 }
 
-            stage.end_time = datetime.utcnow().isoformat()
+            stage.end_time = datetime.now(UTC).isoformat()
 
         # Determine overall success
         failed = any(r.get("status") == StageStatus.FAILED.value for r in results.values())
@@ -267,7 +266,7 @@ class PipelineEngine:
         print(f"[PIPELINE] {stage.name}: {message}")
         return stage.input_data
 
-    def get_pipeline_status(self, pipeline_id: str) -> Optional[dict]:
+    def get_pipeline_status(self, pipeline_id: str) -> dict:
         """Get status of a pipeline."""
         pipeline = self.pipelines.get(pipeline_id)
         if not pipeline:

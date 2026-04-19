@@ -3,8 +3,6 @@
 Importing this module registers the three tools into the central registry.
 """
 
-from __future__ import annotations
-
 from datetime import datetime
 
 from tool_registry import ToolDef, register_tool

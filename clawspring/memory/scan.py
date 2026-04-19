@@ -7,8 +7,6 @@ Mirrors the key ideas from Claude Code's memoryScan.ts and memoryAge.ts:
   - Emit a staleness caveat for memories older than 1 day
 """
 
-from __future__ import annotations
-
 import math
 import time
 from dataclasses import dataclass
@@ -46,7 +44,7 @@ class MemoryHeader:
 # ── Scanning ───────────────────────────────────────────────────────────────
 
 
-def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
+def scan_memory_dir(mem_dir: Path, scope: str) -> List[MemoryHeader]:
     """Scan a single memory directory and return headers sorted newest-first.
 
     Reads only the frontmatter (first ~30 lines) for efficiency.
@@ -55,7 +53,7 @@ def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
     if not mem_dir.is_dir():
         return []
 
-    headers: list[MemoryHeader] = []
+    headers: List[MemoryHeader] = []
     for fp in mem_dir.glob("*.md"):
         if fp.name == INDEX_FILENAME:
             continue
@@ -82,7 +80,7 @@ def scan_memory_dir(mem_dir: Path, scope: str) -> list[MemoryHeader]:
     return headers[:MAX_MEMORY_FILES]
 
 
-def scan_all_memories() -> list[MemoryHeader]:
+def scan_all_memories() -> List[MemoryHeader]:
     """Scan both user and project memory directories, merged newest-first."""
     user_dir = get_memory_dir("user")
     proj_dir = get_memory_dir("project")
@@ -133,7 +131,7 @@ def memory_freshness_text(mtime_s: float) -> str:
 # ── Manifest formatting ────────────────────────────────────────────────────
 
 
-def format_memory_manifest(headers: list[MemoryHeader]) -> str:
+def format_memory_manifest(headers: List[MemoryHeader]) -> str:
     """Format a list of MemoryHeader as a text manifest.
 
     Format per line:  [type/scope] filename (age): description

@@ -23,14 +23,12 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 26
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -43,14 +41,14 @@ class LayerMetrics:
     errors: int = 0
     avg_response_time: float = 0.0
     status: str = "active"
-    last_active: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    last_active: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
 class SystemMetrics:
     """System-wide metrics."""
 
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     uptime_seconds: float = 0.0
     total_requests: int = 0
     total_errors: int = 0
@@ -83,7 +81,7 @@ class AnalyticsDashboard:
         self.start_time = time.time()
         self.layer_metrics: dict[int, LayerMetrics] = {}
         self.system_metrics = SystemMetrics()
-        self.historical_data: list[SystemMetrics] = []
+        self.historical_data: List[SystemMetrics] = []
         self._initialize_layer_tracking()
 
     def _initialize_layer_tracking(self) -> None:
@@ -130,7 +128,7 @@ class AnalyticsDashboard:
             metric.avg_response_time = (
                 metric.avg_response_time * (metric.requests - 1) + response_time
             ) / metric.requests
-            metric.last_active = datetime.utcnow().isoformat()
+            metric.last_active = datetime.now(UTC).isoformat()
 
         self.system_metrics.total_requests += 1
         if error:
@@ -152,7 +150,7 @@ class AnalyticsDashboard:
         """Update loaded engine count."""
         self.system_metrics.engines_loaded = count
 
-    def get_system_health(self) -> dict[str, Any]:
+    def get_system_health(self) -> Dict[str, Any]:
         """Get overall system health status."""
         uptime = time.time() - self.start_time
         error_rate = (
@@ -204,7 +202,7 @@ class AnalyticsDashboard:
             for m in self.layer_metrics.values()
         ]
 
-    def get_cognitive_analytics(self) -> dict[str, Any]:
+    def get_cognitive_analytics(self) -> Dict[str, Any]:
         """Get cognitive operation analytics."""
         # Aggregate cognitive layer metrics (L10)
         cognitive = self.layer_metrics.get(10)
@@ -241,11 +239,11 @@ class AnalyticsDashboard:
             for m in sorted_layers[:n]
         ]
 
-    def generate_report(self) -> dict[str, Any]:
+    def generate_report(self) -> Dict[str, Any]:
         """Generate comprehensive analytics report."""
         return {
-            "report_id": f"RPT-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}",
-            "timestamp": datetime.utcnow().isoformat(),
+            "report_id": f"RPT-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}",
+            "timestamp": datetime.now(UTC).isoformat(),
             "system": self.get_system_health(),
             "cognitive": self.get_cognitive_analytics(),
             "layers": self.get_layer_performance(),
@@ -268,7 +266,7 @@ class AnalyticsDashboard:
     def snapshot(self) -> None:
         """Take a metrics snapshot for historical tracking."""
         snapshot = SystemMetrics(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             uptime_seconds=time.time() - self.start_time,
             total_requests=self.system_metrics.total_requests,
             total_errors=self.system_metrics.total_errors,
@@ -296,7 +294,7 @@ class AnalyticsDashboard:
             "active_layers": [s.active_layers for s in self.historical_data],
         }
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get dashboard status."""
         return {
             "dashboard": "AnalyticsDashboard",
@@ -325,7 +323,7 @@ def record_metric(layer: int, response_time: float, error: bool = False) -> None
     get_dashboard().record_request(layer, response_time, error)
 
 
-def get_health_report() -> dict[str, Any]:
+def get_health_report() -> Dict[str, Any]:
     """Quick health report."""
     return get_dashboard().get_system_health()
 

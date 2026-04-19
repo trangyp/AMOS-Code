@@ -16,7 +16,6 @@ Usage:
     python amos_meta_cognitive_reflector.py --deep-analysis
 """
 
-from __future__ import annotations
 
 import re
 import sys
@@ -52,7 +51,7 @@ class MetaInsight:
 
     category: str
     insight: str
-    evidence: list[str]
+    evidence: List[str]
     recommendation: str
 
 
@@ -64,8 +63,8 @@ class AnalysisResult:
     total_lines: int
     avg_confidence: float
     patterns: dict[str, list[str]]
-    insights: list[MetaInsight]
-    recommendations: list[str]
+    insights: List[MetaInsight]
+    recommendations: List[str]
 
 
 class AMOSMetaCognitiveReflector:
@@ -81,8 +80,8 @@ class AMOSMetaCognitiveReflector:
     def __init__(self):
         self.brain = None
         self.root = Path(__file__).parent
-        self.decision_docs: list[Path] = []
-        self.rounds: list[DecisionRound] = []
+        self.decision_docs: List[Path] = []
+        self.rounds: List[DecisionRound] = []
 
     def initialize(self) -> AMOSMetaCognitiveReflector:
         """Initialize the meta-cognitive system."""
@@ -243,7 +242,7 @@ class AMOSMetaCognitiveReflector:
 
         return dict(patterns)
 
-    def _measure_effectiveness(self) -> dict[str, Any]:
+    def _measure_effectiveness(self) -> Dict[str, Any]:
         """Measure decision effectiveness."""
         print("\n📈 Effectiveness Measurement")
         print("─" * 70)
@@ -267,7 +266,7 @@ class AMOSMetaCognitiveReflector:
 
         return metrics
 
-    def _generate_insights(self, patterns: dict, metrics: dict) -> list[MetaInsight]:
+    def _generate_insights(self, patterns: dict, metrics: dict) -> List[MetaInsight]:
         """Generate meta-cognitive insights."""
         print("\n💡 Meta-Cognitive Insights")
         print("─" * 70)
@@ -350,7 +349,7 @@ class AMOSMetaCognitiveReflector:
 
         return insights
 
-    def _create_recommendations(self, insights: list[MetaInsight]) -> list[str]:
+    def _create_recommendations(self, insights: List[MetaInsight]) -> List[str]:
         """Create recommendations for improved decision-making."""
         print("\n🎯 Improved Decision-Making Playbook")
         print("─" * 70)
@@ -578,6 +577,7 @@ The AMOS brain has demonstrated that consistent methodology + documentation enab
 def main():
     """CLI entry point."""
     import argparse
+from typing import Final
 
     parser = argparse.ArgumentParser(
         description="AMOS Meta-Cognitive Reflector - Self-Improving Thinking"

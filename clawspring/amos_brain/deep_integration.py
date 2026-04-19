@@ -7,11 +7,14 @@ Integrates: ethics_validation_kernel, coherence_engine, coherent_organism,
 master_orchestrator, and organism CLI.
 """
 
+from __future__ import annotations
+
+
 import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -95,7 +98,7 @@ class CoherenceEngineBridge:
         if self.engine and hasattr(self.engine, "check_coherence"):
             try:
                 return self.engine.check_coherence(state)
-            except Exception:
+            except (AttributeError, TypeError, ValueError):
                 pass
         return 1.0  # Default: fully coherent
 
@@ -130,7 +133,7 @@ class CoherentOrganismBridge:
         if self.organism and hasattr(self.organism, "get_state"):
             try:
                 return self.organism.get_state()
-            except Exception:
+            except (AttributeError, TypeError):
                 pass
         return {"status": "unavailable"}
 
@@ -140,7 +143,7 @@ class CoherentOrganismBridge:
             try:
                 self.organism.synchronize(cognitive_state)
                 return True
-            except Exception:
+            except (AttributeError, TypeError):
                 pass
         return False
 
@@ -328,7 +331,7 @@ class DeepIntegrationSystem:
 
 
 # Global instance
-_deep_integration: Optional[DeepIntegrationSystem] = None
+_deep_integration: DeepIntegrationSystem | None = None
 
 
 def get_deep_integration() -> DeepIntegrationSystem:

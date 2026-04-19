@@ -1,6 +1,5 @@
 """AMOS Engineering & Mathematics Engine - Math and engineering systems."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -40,7 +39,7 @@ class EngineeringSystem:
 
     name: str
     domain: EngineeringDomain
-    components: list[str] = field(default_factory=list)
+    components: List[str] = field(default_factory=list)
     parameters: dict = field(default_factory=dict)
 
 
@@ -48,8 +47,8 @@ class PureMathematicsKernel:
     """Kernel for pure mathematical reasoning."""
 
     def __init__(self):
-        self.objects: dict[str, MathematicalObject] = {}
-        self.theorems: list[dict] = []
+        self.objects: Dict[str, MathematicalObject] = {}
+        self.theorems: List[dict] = []
 
     def define_object(
         self,
@@ -71,7 +70,7 @@ class PureMathematicsKernel:
         self,
         name: str,
         statement: str,
-        proof_sketch: str | None = None,
+        proof_sketch: str  = None,
     ) -> dict:
         """Add a mathematical theorem."""
         theorem = {
@@ -105,7 +104,7 @@ class PureMathematicsKernel:
             "methods_considered": ["Algebraic manipulation", "Numerical approximation"],
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Algebra and linear algebra foundations",
@@ -120,15 +119,15 @@ class AppliedMathematicsKernel:
     """Kernel for applied mathematical methods."""
 
     def __init__(self):
-        self.models: dict[str, dict] = {}
-        self.optimization_problems: list[dict] = []
+        self.models: Dict[str, dict] = {}
+        self.optimization_problems: List[dict] = []
 
     def define_model(
         self,
         name: str,
         model_type: str,
-        variables: list[str],
-        constraints: list[str] | None = None,
+        variables: List[str],
+        constraints: Optional[List[str]] = None,
     ) -> dict:
         """Define a mathematical model."""
         model = {
@@ -143,9 +142,9 @@ class AppliedMathematicsKernel:
     def formulate_optimization(
         self,
         objective: str,
-        variables: list[str],
-        constraints: list[str],
-        method_hint: str | None = None,
+        variables: List[str],
+        constraints: List[str],
+        method_hint: str  = None,
     ) -> dict:
         """Formulate an optimization problem."""
         problem = {
@@ -170,7 +169,7 @@ class AppliedMathematicsKernel:
             "properties": ["PDF", "CDF", "moments"],
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Optimization and variational methods",
@@ -185,7 +184,7 @@ class NumericalMethodsKernel:
     """Kernel for numerical computation."""
 
     def __init__(self):
-        self.methods: dict[str, dict] = {}
+        self.methods: Dict[str, dict] = {}
 
     def define_numerical_method(
         self,
@@ -224,7 +223,7 @@ class NumericalMethodsKernel:
             "error_type": "truncation_error",
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Numerical stability analysis",
@@ -238,12 +237,12 @@ class MechanicalSystemsKernel:
     """Kernel for mechanical and structural engineering."""
 
     def __init__(self):
-        self.systems: dict[str, EngineeringSystem] = {}
+        self.systems: Dict[str, EngineeringSystem] = {}
 
     def define_mechanical_system(
         self,
         name: str,
-        components: list[str],
+        components: List[str],
         **parameters,
     ) -> EngineeringSystem:
         """Define a mechanical system."""
@@ -273,7 +272,7 @@ class MechanicalSystemsKernel:
             "analysis_type": "1D conceptual only",
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Newtonian mechanics and statics",
@@ -287,12 +286,12 @@ class ElectricalSystemsKernel:
     """Kernel for electrical and power engineering."""
 
     def __init__(self):
-        self.circuits: dict[str, dict] = {}
+        self.circuits: Dict[str, dict] = {}
 
     def define_circuit(
         self,
         name: str,
-        elements: list[dict],
+        elements: List[dict],
         topology: str,
     ) -> dict:
         """Define an electrical circuit."""
@@ -330,7 +329,7 @@ class ElectricalSystemsKernel:
             "analysis_type": "DC steady-state conceptual",
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Ohm's and Kirchhoff's laws",
@@ -344,15 +343,15 @@ class ControlSystemsKernel:
     """Kernel for control systems and automation."""
 
     def __init__(self):
-        self.systems: dict[str, dict] = {}
+        self.systems: Dict[str, dict] = {}
 
     def define_control_system(
         self,
         name: str,
         system_type: str,
-        inputs: list[str],
-        outputs: list[str],
-        controller: str | None = None,
+        inputs: List[str],
+        outputs: List[str],
+        controller: str  = None,
     ) -> dict:
         """Define a control system."""
         system = {
@@ -378,7 +377,7 @@ class ControlSystemsKernel:
             "safety_note": "No real-time control - analysis only",
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Feedback and feedforward control",
@@ -405,8 +404,8 @@ class EngineeringMathematicsEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
-    ) -> dict[str, Any]:
+        domains: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
         """Run engineering/math analysis across specified domains."""
         domains = domains or [
             "pure_math",
@@ -416,7 +415,7 @@ class EngineeringMathematicsEngine:
             "electrical",
             "control",
         ]
-        results: dict[str, Any] = {}
+        results: Dict[str, Any] = {}
 
         if "pure_math" in domains:
             results["pure_math"] = self._analyze_pure_math(description)
@@ -566,11 +565,13 @@ class EngineeringMathematicsEngine:
 
 
 # Singleton
-_eng_math_engine: EngineeringMathematicsEngine | None = None
+_eng_math_engine: Optional[EngineeringMathematicsEngine] = None
 
 
 def get_engineering_math_engine() -> EngineeringMathematicsEngine:
     """Get singleton engineering/math engine instance."""
+from __future__ import annotations
+
     global _eng_math_engine
     if _eng_math_engine is None:
         _eng_math_engine = EngineeringMathematicsEngine()

@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "name": "Engineering_Math_Kernel_vInfinity_SUPER",
+    "version": "v2.0.0+lens_integration",
+    "created_at_utc": "2025-11-28T00:10:18.516087Z",
+    "description": "Engineering Math kernel for control, signal processing, optimisation, and simulation. Now enriched with cross-canon integration, lens_space, and template_library.",
+    "domain": "engineering_mathematics",
+    "density_profile": "kernel_x100k_virtual",
+    "cluster_count": 20,
+    "dimension_count": 20
+  },
+  "kernel": {
+    "cluster_space": {
+      "total_clusters": 20,
+      "clusters": [
+        {
+          "id": 1,
+          "name": "linear_algebra_for_systems"
+        },
+        {
+          "id": 2,
+          "name": "calculus_anddifferential_equations"
+        },
+        {
+          "id": 3,
+          "name": "numerical_methods"
+        },
+        {
+          "id": 4,
+          "name": "optimisation_convex"
+        },
+        {
+          "id": 5,
+          "name": "optimisation_nonconvex"
+        },
+        {
+          "id": 6,
+          "name": "control_theory_state_space"
+        },
+        {
+          "id": 7,
+          "name": "feedback_andstability_analysis"
+        },
+        {
+          "id": 8,
+          "name": "signal_processing_time_domain"
+        },
+        {
+          "id": 9,
+          "name": "signal_processing_frequency_domain"
+        },
+        {
+          "id": 10,
+          "name": "filter_design"
+        },
+        {
+          "id": 11,
+          "name": "sampling_andaliasing"
+        },
+        {
+          "id": 12,
+          "name": "stochastic_processes"
+        },
+        {
+          "id": 13,
+          "name": "estimation_andkalman_filters"
+        },
+        {
+          "id": 14,
+          "name": "pde_and_discretisation"
+        },
+        {
+          "id": 15,
+          "name": "finite_element_andfinite_difference"
+        },
+        {
+          "id": 16,
+          "name": "simulation_andMonte_Carlo"
+        },
+        {
+          "id": 17,
+          "name": "queueing_theory"
+        },
+        {
+          "id": 18,
+          "name": "reliability_engineering"
+        },
+        {
+          "id": 19,
+          "name": "robust_control"
+        },
+        {
+          "id": 20,
+          "name": "nonlinear_dynamics"
+        }
+      ]
+    },
+    "dimension_space": {
+      "total_dimensions": 20,
+      "dimensions": {
+        "01": "model_fidelity",
+        "02": "computational_cost",
+        "03": "stability",
+        "04": "convergence_rate",
+        "05": "sensitivity_to_parameters",
+        "06": "robustness",
+        "07": "scalability",
+        "08": "analytic_tractability",
+        "09": "implementation_complexity",
+        "10": "numerical_accuracy",
+        "11": "interpretability",
+        "12": "data_requirements",
+        "13": "error_propagation",
+        "14": "control_margin",
+        "15": "safety_margin",
+        "16": "real_time_feasibility",
+        "17": "hardware_requirements",
+        "18": "uncertainty_handling",
+        "19": "validation_rigor",
+        "20": "simulation_coverage"
+      }
+    },
+    "virtual_expansion_model": {
+      "density_level": "x100k_virtual",
+      "virtual_layer_count": 100000,
+      "axes": {
+        "system_type": [
+          "mechanical",
+          "electrical",
+          "thermal",
+          "chemical",
+          "multi_physics",
+          "information_system"
+        ],
+        "domain": [
+          "time_domain",
+          "frequency_domain",
+          "state_space"
+        ],
+        "scale": [
+          "micro",
+          "macro"
+        ],
+        "real_time_requirement": [
+          "offline",
+          "near_real_time",
+          "hard_real_time"
+        ]
+      },
+      "notes": [
+        "Each virtual stateframe is a point in this kernel's tensor space.",
+        "Use this to derive scenarios, evaluations, or plans without storing all explicit layers."
+      ]
+    },
+    "mapping_functions": {
+      "F_cluster_selection": {
+        "input": [
+          "engineering_problem",
+          "system_description"
+        ],
+        "output": "cluster_vector_eng",
+        "logic": "Identify which engineering math tools are relevant."
+      }
+    },
+    "reasoning_modes": {
+      "mode_method_selection": {
+        "description": "Select appropriate mathematical tools and approaches.",
+        "pipeline": [
+          "F_cluster_selection"
+        ]
+      }
+    },
+    "policies": {
+      "boundaries": [
+        "Do not present approximate results as exact.",
+        "Encourage peer review and expert validation for safety critical designs."
+      ]
+    },
+    "routing": {
+      "by_task_type": {
+        "method_selection": "mode_method_selection"
+      }
+    },
+    "integration_links": {
+      "depends_on": [
+        "AMOS_Scientific_SUPER_Engine",
+        "AMOS_C03_physics_cosmos_MAX",
+        "AMOS_C02_Math_Compute_SUPER"
+      ],
+      "notes": [
+        "These references point to full AMOS SUPER engines and C-Canon blocks.",
+        "Kernel power is derived from combining this kernel with referenced engines at runtime."
+      ]
+    },
+    "lens_space": {
+      "exec": {
+        "id": "executive_view",
+        "description": "Top-layer view for CEOs, boards, ministers, and investors.",
+        "focus": [
+          "risk",
+          "impact",
+          "time_horizon",
+          "portfolio",
+          "tradeoffs"
+        ]
+      },
+      "operator": {
+        "id": "operator_view",
+        "description": "Execution view for managers and implementers.",
+        "focus": [
+          "process",
+          "sequence",
+          "dependencies",
+          "owners"
+        ]
+      },
+      "expert": {
+        "id": "expert_view",
+        "description": "Deep domain view for specialists.",
+        "focus": [
+          "method",
+          "assumptions",
+          "edge_cases"
+        ]
+      },
+      "audit": {
+        "id": "audit_view",
+        "description": "Assurance and governance view.",
+        "focus": [
+          "controls",
+          "evidence",
+          "compliance"
+        ]
+      }
+    },
+    "template_library": {
+      "doc_templates": [
+        "exec_one_pager",
+        "full_strategy_pack",
+        "operating_playbook",
+        "risk_and_decision_memo"
+      ],
+      "deck_templates": [
+        "board_update",
+        "investment_case",
+        "initiative_kickoff",
+        "postmortem_review"
+      ],
+      "table_templates": [
+        "option_comparison_matrix",
+        "risk_register",
+        "kpi_scorecard"
+      ]
+    }
+  }
+}

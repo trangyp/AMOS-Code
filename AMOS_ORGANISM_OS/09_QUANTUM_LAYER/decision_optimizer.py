@@ -4,14 +4,12 @@ Optimizes decisions using multiple criteria and weighted analysis.
 Integrates with scenario engine and Monte Carlo simulator.
 """
 
-from __future__ import annotations
-
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class DecisionCriteria(Enum):
@@ -36,7 +34,7 @@ class DecisionOutcome:
     scenarios_analyzed: int = 0
     simulations_run: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -49,13 +47,13 @@ class Decision:
     description: str = ""
     options: list[dict[str, Any]] = field(default_factory=list)
     criteria: DecisionCriteria = DecisionCriteria.BALANCED
-    weights: dict[str, float] = field(default_factory=dict)
-    selected_option: Optional[str] = None
+    weights: Dict[str, float] = field(default_factory=dict)
+    selected_option: str = None
     outcome: Optional[DecisionOutcome] = None
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    decided_at: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    decided_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "criteria": self.criteria.value,
@@ -72,7 +70,7 @@ class DecisionOptimizer:
 
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir
-        self.decisions: dict[str, Decision] = {}
+        self.decisions: Dict[str, Decision] = {}
         self.default_weights = {
             "value": 0.35,
             "risk": 0.25,
@@ -85,7 +83,7 @@ class DecisionOptimizer:
         name: str,
         description: str = "",
         criteria: DecisionCriteria = DecisionCriteria.BALANCED,
-        weights: Optional[dict[str, float]] = None,
+        weights: dict[str, float] = None,
     ) -> Decision:
         """Create a new decision context."""
         decision = Decision(
@@ -106,7 +104,7 @@ class DecisionOptimizer:
         risk: float = 0.5,
         cost: float = 0.0,
         time: float = 0.0,
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] = None,
     ) -> bool:
         """Add an option to a decision."""
         decision = self.decisions.get(decision_id)
@@ -148,7 +146,7 @@ class DecisionOptimizer:
         # Select best option
         best_option = scored_options[0][0]
         decision.selected_option = best_option["id"]
-        decision.decided_at = datetime.utcnow().isoformat()
+        decision.decided_at = datetime.now(UTC).isoformat()
 
         # Calculate outcome prediction
         decision.outcome = DecisionOutcome(
@@ -164,8 +162,8 @@ class DecisionOptimizer:
 
     def _calculate_score(
         self,
-        option: dict[str, Any],
-        weights: dict[str, float],
+        option: Dict[str, Any],
+        weights: Dict[str, float],
         criteria: DecisionCriteria,
     ) -> float:
         """Calculate weighted score for an option."""
@@ -209,7 +207,7 @@ class DecisionOptimizer:
             return min(0.95, 0.5 + separation)
         return 0.5
 
-    def get_decision_report(self, decision_id: str) -> Optional[dict[str, Any]]:
+    def get_decision_report(self, decision_id: str) -> dict[str, Any]:
         """Get detailed report for a decision."""
         decision = self.decisions.get(decision_id)
         if not decision:
@@ -230,7 +228,7 @@ class DecisionOptimizer:
         """List all decisions."""
         return [d.to_dict() for d in self.decisions.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get optimizer status."""
         pending = sum(1 for d in self.decisions.values() if not d.selected_option)
         decided = sum(1 for d in self.decisions.values() if d.selected_option)

@@ -1,14 +1,11 @@
 """Probability Engine for AMOS"""
 
-from __future__ import annotations
-
 import json
 import math
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -16,14 +13,14 @@ class ProbabilityDistribution:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     outcomes: dict[str, float] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self):
         return {**asdict(self), "total_prob": sum(self.outcomes.values())}
 
 
 class ProbabilityEngine:
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path | None = None):
         self.data_dir = data_dir or Path(__file__).parent / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.distributions: list[ProbabilityDistribution] = []
@@ -51,7 +48,7 @@ class ProbabilityEngine:
         f.write_text(
             json.dumps(
                 {
-                    "saved_at": datetime.utcnow().isoformat(),
+                    "saved_at": datetime.now(UTC).isoformat(),
                     "distributions": [d.to_dict() for d in self.distributions],
                 },
                 indent=2,
@@ -92,7 +89,7 @@ class ProbabilityEngine:
         return {}
 
 
-_ENGINE: Optional[ProbabilityEngine] = None
+_ENGINE: ProbabilityEngine | None = None
 
 
 def get_probability_engine(data_dir=None):

@@ -21,7 +21,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Union
 
 
 class AutonomyLevel(Enum):
@@ -91,12 +91,12 @@ class GovernanceDecision:
     action_params: dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
     executed: bool = False
-    execution_time: float | None = None
+    execution_time: float = None
     outcome: str = "pending"  # "success", "failure", "pending", "rejected"
 
     # Audit
-    approved_by: str | None = None
-    approval_time: float | None = None
+    approved_by: str = None
+    approval_time: float = None
     notes: str = ""
 
 
@@ -118,7 +118,7 @@ class AutoRemediation:
 
     # Auto-execution details
     auto_executed: bool
-    human_approved: bool | None = None
+    human_approved: bool = None
     execution_result: dict[str, Any] = field(default_factory=dict)
 
 
@@ -140,7 +140,7 @@ class ConfidenceThresholdOptimizer:
         # Keep only recent history
         self.threshold_history[metric] = self.threshold_history[metric][-100:]
 
-    def optimize_threshold(self, metric: str) -> float | None:
+    def optimize_threshold(self, metric: str) -> float:
         """Calculate optimal threshold for a metric based on historical accuracy."""
         if metric not in self.threshold_history:
             return None
@@ -219,7 +219,7 @@ class AutonomousGovernanceEngine:
         require_human_for_security=True,
     )
 
-    def __init__(self, repo_path: str | Path, policy: GovernancePolicy | None = None):
+    def __init__(self, repo_path: Union[str, Path], policy: Optional[GovernancePolicy] = None):
         self.repo_path = Path(repo_path)
         self.policy = policy or self.DEFAULT_POLICY
         self.threshold_optimizer = ConfidenceThresholdOptimizer()
@@ -488,7 +488,7 @@ class AutonomousGovernanceEngine:
 
 
 def get_governance_engine(
-    repo_path: str | Path | None = None, policy: GovernancePolicy | None = None
+    repo_path: Union[str, Path] = None, policy: Optional[GovernancePolicy] = None
 ) -> AutonomousGovernanceEngine:
     """Factory function to get governance engine instance."""
     return AutonomousGovernanceEngine(repo_path or ".", policy)

@@ -11,8 +11,6 @@ This enables integration with:
 SARIF 2.1.0 specification compliant.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -30,7 +28,7 @@ class SarifLocation:
     line: int = 1
     column: int = 1
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "physicalLocation": {
                 "artifactLocation": {"uri": self.file_path},
@@ -49,10 +47,10 @@ class SarifResult:
     rule_id: str
     message: str
     level: str  # error, warning, note
-    locations: list[SarifLocation] = field(default_factory=list)
-    properties: dict[str, Any] = field(default_factory=dict)
+    locations: List[SarifLocation] = field(default_factory=list)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "ruleId": self.rule_id,
             "message": {"text": self.message},
@@ -119,7 +117,7 @@ class SarifExporter:
 
     def __init__(self, tool_name: str = "RepoDoctorOmega"):
         self.tool_name = tool_name
-        self.results: list[SarifResult] = []
+        self.results: List[SarifResult] = []
 
     def add_finding(
         self,
@@ -128,7 +126,7 @@ class SarifExporter:
         file_path: str = "",
         line: int = 1,
         level: str = "error",
-        properties: dict[str, Any] | None = None,
+        properties: Dict[str, Any] = None,
     ) -> None:
         """Add a SARIF finding."""
         rule_id = self.RULE_MAP.get(dimension, "REPO000")
@@ -146,7 +144,7 @@ class SarifExporter:
         )
         self.results.append(result)
 
-    def export(self, output_path: Path | None = None) -> dict[str, Any]:
+    def export(self, output_path: Optional[Path] = None) -> Dict[str, Any]:
         """
         Generate SARIF report.
         """
@@ -193,7 +191,7 @@ class SarifExporter:
 
         return sarif_doc
 
-    def from_diagnosis(self, diagnosis: dict[str, Any]) -> dict[str, Any]:
+    def from_diagnosis(self, diagnosis: Dict[str, Any]) -> Dict[str, Any]:
         """
         Convert Repo Doctor diagnosis to SARIF.
         """

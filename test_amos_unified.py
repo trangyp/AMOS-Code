@@ -28,7 +28,7 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class TestLevel(Enum):
@@ -58,8 +58,8 @@ class TestCase:
     result: TestResult
     duration_ms: float
     message: str = ""
-    details: dict[str, Any] = field(default_factory=dict)
-    traceback: Optional[str] = None
+    details: Dict[str, Any] = field(default_factory=dict)
+    traceback: str = None
 
 
 @dataclass
@@ -67,7 +67,7 @@ class TestSuite:
     """Collection of test cases."""
 
     name: str
-    cases: list[TestCase] = field(default_factory=list)
+    cases: List[TestCase] = field(default_factory=list)
 
     @property
     def passed(self) -> int:
@@ -103,9 +103,9 @@ class AMOSUnifiedTest:
     def __init__(self, verbose: bool = False, quick: bool = False):
         self.verbose = verbose
         self.quick = quick
-        self.suites: list[TestSuite] = []
-        self.start_time: Optional[datetime] = None
-        self.end_time: Optional[datetime] = None
+        self.suites: List[TestSuite] = []
+        self.start_time: datetime = None
+        self.end_time: datetime = None
 
     # ========================================================================
     # LAYER 1: AXIOM TESTS (Ω)
@@ -510,6 +510,7 @@ class AMOSUnifiedTest:
 
         try:
             # Full workflow: Axioms → Omega → Coherence
+
             from amos_axiom_validator import AxiomValidator
             from amos_coherence_omega import CoherenceOmega
             from amos_omega import Action, AMOSOmega, Substrate
@@ -619,9 +620,9 @@ class AMOSUnifiedTest:
     # RUN ALL TESTS
     # ========================================================================
 
-    def run_all(self) -> list[TestSuite]:
+    def run_all(self) -> List[TestSuite]:
         """Execute complete test suite."""
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
 
         print("=" * 70)
         print("AMOS Unified Integration Test")
@@ -659,7 +660,7 @@ class AMOSUnifiedTest:
                 if self.verbose:
                     traceback.print_exc()
 
-        self.end_time = datetime.utcnow()
+        self.end_time = datetime.now(timezone.utc)
 
         return self.suites
 

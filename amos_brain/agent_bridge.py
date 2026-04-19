@@ -1,12 +1,13 @@
 """AMOS Brain Agent Execution Bridge - Bidirectional brain-agent integration."""
 
-from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, Callable
+from typing import Any
 
+from .canon_bridge import get_canon_bridge
 from .laws import GlobalLaws, UBILaws
 from .loader import get_brain
 from .reasoning import RuleOfFour, RuleOfTwo
@@ -46,6 +47,8 @@ class AMOSAgentBridge:
     - Decision logging with reasoning chain
     - Law violation alerts with alternatives
     """
+from __future__ import annotations
+
 
     # Risk categories for tools
     RISK_CATEGORIES = {
@@ -78,6 +81,13 @@ class AMOSAgentBridge:
             "post_tool": [],
             "law_violation": [],
         }
+        self._canon_bridge = None
+
+    async def _get_canon_bridge(self):
+        """Lazy initialization of canon bridge."""
+        if self._canon_bridge is None:
+            self._canon_bridge = await get_canon_bridge()
+        return self._canon_bridge
 
     def validate_tool_call(
         self,
@@ -202,6 +212,38 @@ class AMOSAgentBridge:
 
         return audit
 
+    async def analyze_task(self, task: str, domain: str = "general") -> dict:
+        """Analyze a task using brain cognitive architecture with Canon context.
+
+        Returns structured analysis with reasoning.
+        """
+        # Get Canon context for domain
+        canon_context = {}
+        try:
+            canon = await self._get_canon_bridge()
+            ctx = canon.get_context_for_domain(domain)
+            canon_context = {
+                "domain": ctx.domain,
+                "terms_available": len(ctx.glossary_terms),
+                "applicable_agents": ctx.applicable_agents[:3],
+            }
+            # Enrich task with Canon context
+            task = canon.enrich_query(task, domain)
+        except Exception:
+            pass
+
+        full_question = f"Analyze this {domain} task: {task}"
+        result = self.processor.process(full_question)
+
+        return {
+            "analysis": result.output,
+            "reasoning": result.reasoning_steps,
+            "confidence": result.confidence,
+            "kernels_used": result.kernels_used,
+            "law_compliant": len(result.law_violations) == 0,
+            "canon_context": canon_context,
+        }
+
     def enhance_prompt_for_task(self, task: str, base_prompt: str) -> str:
         """Enhance system prompt with brain context for specific task."""
         # Process task to get reasoning context
@@ -285,19 +327,7 @@ Execute with AMOS cognitive discipline.
                 logging.getLogger(__name__).warning(f"Hook failed for event '{event}': {e}")
 
 
-# Global bridge instance with caching
-_bridge_instance: AMOSAgentBridge | None = None
-
-
 @lru_cache(maxsize=1)
-def _get_agent_bridge_cached() -> AMOSAgentBridge:
-    """Cached agent bridge instance."""
-    return AMOSAgentBridge()
-
-
 def get_agent_bridge() -> AMOSAgentBridge:
     """Get or create global agent bridge instance (singleton)."""
-    global _bridge_instance
-    if _bridge_instance is None:
-        _bridge_instance = _get_agent_bridge_cached()
-    return _bridge_instance
+    return AMOSAgentBridge()

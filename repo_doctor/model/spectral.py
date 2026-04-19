@@ -8,8 +8,6 @@ Use spectrum to find:
 - Articulation modules (high-impact failure points)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -70,7 +68,7 @@ class GraphLaplacian:
             return mean_deg / (1 + variance)
         return 0.0
 
-    def articulation_points(self) -> list[str]:
+    def articulation_points(self) -> List[str]:
         """
         Find articulation points - modules whose failure disconnects
         or destabilizes large parts of the repo.
@@ -132,7 +130,7 @@ class SpectralAnalyzer:
 
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
-        self.laplacian: GraphLaplacian | None = None
+        self.laplacian: Optional[GraphLaplacian] = None
 
     def build_from_imports(self, import_graph: dict[str, list[str]]) -> None:
         """Build Laplacian from import graph."""
@@ -148,7 +146,7 @@ class SpectralAnalyzer:
 
         self.laplacian = GraphLaplacian(adjacency)
 
-    def analyze(self) -> dict[str, Any]:
+    def analyze(self) -> Dict[str, Any]:
         """Full spectral analysis."""
         if not self.laplacian:
             return {"error": "No graph built"}

@@ -9,24 +9,23 @@ Exit codes (per git bisect run spec):
 - 126-127: Abort
 """
 
-from __future__ import annotations
-
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 
 @dataclass
 class BisectResult:
     """Result of git bisect operation."""
 
-    first_bad_commit: str | None
-    log: list[str]
+    first_bad_commit: str
+    log: List[str]
     successful: bool
     message: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "first_bad_commit": self.first_bad_commit,
@@ -83,7 +82,7 @@ class BisectRunner:
         Returns:
             BisectResult with first bad commit
         """
-        log: list[str] = []
+        log: List[str] = []
 
         try:
             # Reset any existing bisect
@@ -186,7 +185,7 @@ class BisectRunner:
         Returns:
             BisectResult
         """
-        log: list[str] = []
+        log: List[str] = []
 
         try:
             # Get commit range
@@ -232,10 +231,10 @@ class BisectRunner:
 
     def _binary_search(
         self,
-        commits: list[str],
+        commits: List[str],
         checker: Callable[[str], bool],
-        log: list[str],
-    ) -> str | None:
+        log: List[str],
+    ) -> str:
         """Binary search for first bad commit."""
         if not commits:
             return None
@@ -271,7 +270,7 @@ class BisectRunner:
 
     def _run_git(
         self,
-        args: list[str],
+        args: List[str],
         check: bool = True,
     ) -> subprocess.CompletedProcess:
         """Run git command."""
@@ -284,7 +283,7 @@ class BisectRunner:
             check=check,
         )
 
-    def _parse_first_bad(self, log: list[str]) -> str | None:
+    def _parse_first_bad(self, log: List[str]) -> str:
         """Parse first bad commit from bisect log."""
         for line in reversed(log):
             if "bad" in line.lower() and ":" in line:
@@ -296,7 +295,7 @@ class BisectRunner:
                         return commit
         return None
 
-    def get_commit_info(self, commit_hash: str) -> dict[str, Any]:
+    def get_commit_info(self, commit_hash: str) -> Dict[str, Any]:
         """Get information about a commit."""
         result = self._run_git(["show", "--format=%H|%an|%ae|%ai|%s", "-s", commit_hash])
 

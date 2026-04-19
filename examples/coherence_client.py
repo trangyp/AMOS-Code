@@ -19,6 +19,7 @@ def coherence_analysis(message: str) -> dict:
         f"{API_BASE}/coherence",
         json={"message": message},
         headers={"Content-Type": "application/json"},
+        timeout=30,
     )
     return response.json()
 

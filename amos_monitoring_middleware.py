@@ -12,9 +12,9 @@ Usage:
     middleware = MonitoringMiddleware(app)
 """
 
+import asyncio
 import logging
 import time
-from typing import Optional
 
 from flask import Flask, g, jsonify, request
 
@@ -110,10 +110,9 @@ class MonitoringMiddleware:
         @app.route("/api/health", methods=["GET"])
         def api_health():
             """Detailed health check."""
-            import asyncio
 
             try:
-                health = asyncio.get_event_loop().run_until_complete(self.health.check_health())
+                health = asyncio.run(self.health.check_health())
                 return jsonify(self.health.to_dict(health))
             except Exception:
                 # Fallback to cached health

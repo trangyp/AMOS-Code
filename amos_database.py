@@ -15,9 +15,10 @@ import logging
 import os
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+UTC = timezone.utc
 from pathlib import Path
-from typing import Optional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 class QueryRecord:
     """Record of an API query."""
 
-    id: Optional[int] = None
+    id: int = None
     timestamp: str = ""
     api_key_hash: str = ""
     endpoint: str = ""
@@ -45,7 +46,7 @@ class QueryRecord:
 class MetricRecord:
     """Record of system metrics."""
 
-    id: Optional[int] = None
+    id: int = None
     timestamp: str = ""
     metric_type: str = ""  # request_count, error_rate, latency, etc.
     value: float = 0.0
@@ -56,7 +57,7 @@ class MetricRecord:
 class AMOSDatabase:
     """Production database for AMOS Brain."""
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str = None):
         if db_path is None:
             db_path = os.environ.get("AMOS_DB_PATH", "amos.db")
         self.db_path = db_path
@@ -148,8 +149,9 @@ class AMOSDatabase:
     async def log_query(self, record: QueryRecord) -> int:
         """Log an API query."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._log_query_sync, record)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._log_query_sync, record
+            )
 
     def _log_query_sync(self, record: QueryRecord) -> int:
         with sqlite3.connect(self.db_path) as conn:
@@ -162,7 +164,7 @@ class AMOSDatabase:
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
-                    record.timestamp or datetime.utcnow().isoformat(),
+                    record.timestamp or datetime.now(UTC).isoformat(),
                     record.api_key_hash,
                     record.endpoint,
                     record.query,
@@ -181,8 +183,9 @@ class AMOSDatabase:
     async def store_metric(self, record: MetricRecord) -> int:
         """Store a metric."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._store_metric_sync, record)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._store_metric_sync, record
+            )
 
     def _store_metric_sync(self, record: MetricRecord) -> int:
         with sqlite3.connect(self.db_path) as conn:
@@ -192,7 +195,7 @@ class AMOSDatabase:
                 VALUES (?, ?, ?, ?, ?)
             """,
                 (
-                    record.timestamp or datetime.utcnow().isoformat(),
+                    record.timestamp or datetime.now(UTC).isoformat(),
                     record.metric_type,
                     record.value,
                     record.labels,
@@ -202,22 +205,21 @@ class AMOSDatabase:
             conn.commit()
             return cursor.lastrowid
 
-    async def store_health(self, overall_status: str, checks: list[dict], uptime_seconds: float):
+    async def store_health(self, overall_status: str, checks: List[dict], uptime_seconds: float):
         """Store health check result."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(
+            return await asyncio.get_running_loop().run_in_executor(
                 None, self._store_health_sync, overall_status, checks, uptime_seconds
             )
 
-    def _store_health_sync(self, overall_status: str, checks: list[dict], uptime_seconds: float):
+    def _store_health_sync(self, overall_status: str, checks: List[dict], uptime_seconds: float):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 """
                 INSERT INTO health_history (timestamp, overall_status, checks_json, uptime_seconds)
                 VALUES (?, ?, ?, ?)
             """,
-                (datetime.utcnow().isoformat(), overall_status, json.dumps(checks), uptime_seconds),
+                (datetime.now(UTC).isoformat(), overall_status, json.dumps(checks), uptime_seconds),
             )
             conn.commit()
 
@@ -233,8 +235,7 @@ class AMOSDatabase:
     ):
         """Store an alert."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(
+            return await asyncio.get_running_loop().run_in_executor(
                 None,
                 self._store_alert_sync,
                 alert_id,
@@ -271,23 +272,24 @@ class AMOSDatabase:
                     message,
                     value,
                     threshold,
-                    datetime.utcnow().isoformat(),
+                    datetime.now(UTC).isoformat(),
                 ),
             )
             conn.commit()
 
-    async def get_query_history(self, limit: int = 100, hours: Optional[int] = None) -> list[dict]:
+    async def get_query_history(self, limit: int = 100, hours: int = None) -> List[dict]:
         """Get query history."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._get_query_history_sync, limit, hours)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._get_query_history_sync, limit, hours
+            )
 
-    def _get_query_history_sync(self, limit: int, hours: Optional[int]) -> list[dict]:
+    def _get_query_history_sync(self, limit: int, hours: int) -> List[dict]:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
 
             if hours:
-                cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+                cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
                 cursor = conn.execute(
                     """
                     SELECT * FROM queries
@@ -312,11 +314,12 @@ class AMOSDatabase:
     async def get_metrics_summary(self, hours: int = 24) -> dict:
         """Get metrics summary."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._get_metrics_summary_sync, hours)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._get_metrics_summary_sync, hours
+            )
 
     def _get_metrics_summary_sync(self, hours: int) -> dict:
-        cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
             # Get avg by metric type
@@ -341,11 +344,12 @@ class AMOSDatabase:
     async def get_usage_stats(self, days: int = 7) -> dict:
         """Get API usage statistics."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._get_usage_stats_sync, days)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._get_usage_stats_sync, days
+            )
 
     def _get_usage_stats_sync(self, days: int) -> dict:
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
             # Total queries
@@ -403,11 +407,12 @@ class AMOSDatabase:
     async def cleanup_old_data(self, retention_days: int = 30):
         """Clean up data older than retention period."""
         async with self._lock:
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(None, self._cleanup_old_data_sync, retention_days)
+            return await asyncio.get_running_loop().run_in_executor(
+                None, self._cleanup_old_data_sync, retention_days
+            )
 
     def _cleanup_old_data_sync(self, retention_days: int):
-        cutoff = (datetime.utcnow() - timedelta(days=retention_days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=retention_days)).isoformat()
 
         with sqlite3.connect(self.db_path) as conn:
             # Delete old queries

@@ -89,8 +89,8 @@ class ArchNode:
     node_type: ArchNodeType
     name: str
     plane: PlaneType | None = None
-    owner: str | None = None
-    source_file: str | None = None
+    owner: str = None
+    source_file: str = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __hash__(self) -> int:
@@ -205,9 +205,9 @@ class ArchitectureGraph:
         node_type: ArchNodeType,
         name: str,
         plane: PlaneType | None = None,
-        owner: str | None = None,
-        source_file: str | None = None,
-        metadata: dict[str, Any] | None = None,
+        owner: str = None,
+        source_file: str = None,
+        metadata: dict[str, Any] = None,
     ) -> ArchNode:
         """Add a node to the architecture graph."""
         node = ArchNode(
@@ -228,7 +228,7 @@ class ArchitectureGraph:
         target: str,
         edge_type: ArchEdgeType,
         weight: float = 1.0,
-        metadata: dict[str, Any] | None = None,
+        metadata: dict[str, Any] = None,
     ) -> ArchEdge:
         """Add an edge to the architecture graph."""
         edge = ArchEdge(
@@ -278,7 +278,7 @@ class ArchitectureGraph:
         """Get all nodes in a specific plane."""
         return [n for n in self.nodes.values() if n.plane == plane]
 
-    def get_authority_owner(self, fact_name: str) -> str | None:
+    def get_authority_owner(self, fact_name: str) -> str:
         """Get the node that owns authority for a fact."""
         claim = self.authority_claims.get(fact_name)
         if claim and claim.is_canonical:

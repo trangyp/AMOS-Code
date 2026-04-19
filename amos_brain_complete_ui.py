@@ -9,8 +9,6 @@ Owner: Trang
 Version: 5.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import webbrowser
@@ -97,7 +95,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             {
                 "status": "active",
                 "brain": self.brain.status(),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -159,7 +157,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             result = think(query)
             if self.brain:
                 self.brain.perceive(query, "user_ui")
-            response = {"success": True, "query": query, "timestamp": datetime.utcnow().isoformat()}
+            response = {"success": True, "query": query, "timestamp": datetime.now(UTC).isoformat()}
             if hasattr(result, "content"):
                 response["result"] = {
                     "content": result.content,
@@ -189,7 +187,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
             response = {
                 "success": True,
                 "scenario": scenario,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             if hasattr(result, "approved"):
                 response["decision"] = {
@@ -214,7 +212,7 @@ class CompleteBrainUIHandler(BaseHTTPRequestHandler):
                 {
                     "success": True,
                     "proposition": proposition,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "validation": {"result": str(result)},
                 }
             )

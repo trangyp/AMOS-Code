@@ -14,6 +14,7 @@ Extends autonomous governance from single-repo to fleet-wide coordination.
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -39,7 +40,7 @@ class FleetIntelligenceBridge:
     - Make federated governance decisions
     """
 
-    def __init__(self, root_path: str | Path | None = None):
+    def __init__(self, root_path: str | Path = None):
         self.root_path = Path(root_path) if root_path else Path(".")
         self._fleet_manager: FleetManager | None = None
         self._shared_contract_analyzer: SharedContractAnalyzer | None = None
@@ -251,7 +252,7 @@ class FleetIntelligenceBridge:
 
 
 def get_fleet_bridge(
-    root_path: str | Path | None = None,
+    root_path: str | Path = None,
 ) -> FleetIntelligenceBridge:
     """Factory function to get fleet bridge instance."""
     return FleetIntelligenceBridge(root_path or ".")

@@ -1,0 +1,127 @@
+# AMOS FastAPI Gateway - Production Dockerfile (Phase 11)
+# ========================================================
+# Multi-stage build optimized for production
+# Based on Python 3.12+ for modern async support
+#
+# Build: docker build -f Dockerfile.fastapi -t amos-gateway .
+# Run:   docker run -p 8000:8000 amos-gateway
+
+# =============================================================================
+# Stage 1: Dependencies
+# =============================================================================
+FROM python:3.12-slim AS dependencies
+
+WORKDIR /deps
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --user \
+    fastapi==0.109.0 \
+    uvicorn[standard]==0.27.0 \
+    pydantic==2.5.0 \
+    python-multipart==0.0.6
+
+# =============================================================================
+# Stage 2: Production
+# =============================================================================
+FROM python:3.12-slim AS production
+
+LABEL maintainer="AMOS Team <amos@example.com>" \
+      version="1.0.0" \
+      description="AMOS FastAPI Gateway - Production API Server" \
+      phase="11" \
+      release="2024"
+
+# Security: Create non-root user
+RUN groupadd -r amos && useradd -r -g amos amos
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PATH=/root/.local/bin:$PATH
+
+# Copy Python packages from dependencies stage
+COPY --from=dependencies /root/.local /root/.local
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY amos_fastapi_gateway.py .
+COPY amos_production_runtime.py .
+COPY amos_self_healing_controller.py .
+COPY amos_bootstrap_orchestrator.py .
+COPY amos_brain_health_monitor.py .
+COPY amos_unified_equation_registry.py .
+COPY amos_async_safety.py .
+COPY amos_architectural_decision_engine.py .
+
+# Copy brain modules
+COPY amos_brain/ ./amos_brain/
+
+# Create necessary directories
+RUN mkdir -p /app/logs /app/data && \
+    chown -R amos:amos /app
+
+# Switch to non-root user
+USER amos
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Run with uvicorn (production server)
+# Using multiple workers for production
+CMD ["python", "-m", "uvicorn", \
+     "amos_fastapi_gateway:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--workers", "4", \
+     "--loop", "uvloop", \
+     "--http", "httptools", \
+     "--access-log", \
+     "--no-use-colors", \
+     "--proxy-headers"]
+
+# =============================================================================
+# Stage 3: Development (for local testing)
+# =============================================================================
+FROM production AS development
+
+USER root
+
+# Install development dependencies
+RUN pip install --no-cache-dir \
+    pytest \
+    pytest-asyncio \
+    httpx \
+    watchfiles
+
+USER amos
+
+# Development mode with auto-reload
+CMD ["python", "-m", "uvicorn", \
+     "amos_fastapi_gateway:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8000", \
+     "--reload", \
+     "--log-level", "debug"]

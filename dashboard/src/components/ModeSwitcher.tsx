@@ -2,7 +2,7 @@
  * AMOS Mode Switcher Component
  * Adaptive UI with Seed/Growth/Full modes based on 2025 UI/UX research
  * Glassmorphism 2.0 design with cognitive load management
- * 
+ *
  * Research basis:
  * - Cognitive Load Theory (Sweller): 4±1 chunks → 3-action Seed Mode
  * - Miller's Law: 7±2 items → 6-action Growth Mode

@@ -1,26 +1,26 @@
 /**
  * AMOS Persistent Memory Component
- * 
+ *
  * #2 on RedMonk 2025 "10 Things Developers Want"
- * 
+ *
  * Developers are frustrated by agents that forget everything between sessions.
  * They want agents that:
  * - Remember past decisions
  * - Recognize patterns from previous work
  * - Maintain awareness of project history
  * - Become a "living system of record"
- * 
+ *
  * AMOS implements 5 memory systems:
  * 1. Episodic Memory - Conversations and sessions
  * 2. Semantic Memory - Knowledge and facts about the codebase
  * 3. Procedural Memory - Skills and workflows
  * 4. Working Memory - Current active context
  * 5. Long-term Memory - Persistent storage across projects
- * 
+ *
  * Based on research from Claude Code, Windsurf Cascade, and Redis AI memory patterns.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 // Memory Types
 interface Memory {
@@ -186,7 +186,7 @@ export const PersistentMemory: React.FC = () => {
   // Filter memories
   const filteredMemories = memories.filter(m => {
     const matchesType = selectedType === 'all' || m.type === selectedType;
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -207,11 +207,11 @@ export const PersistentMemory: React.FC = () => {
     }
 
     setIsSearching(true);
-    
+
     // Simulate search delay
     setTimeout(() => {
       const results: MemorySearchResult[] = memories
-        .filter(m => 
+        .filter(m =>
           m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
           m.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
           m.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -231,7 +231,7 @@ export const PersistentMemory: React.FC = () => {
   // Consolidate memories (extract long-term insights)
   const consolidateMemories = () => {
     setShowConsolidateDialog(true);
-    
+
     // Simulate consolidation
     setTimeout(() => {
       setStats(prev => ({
@@ -252,7 +252,7 @@ export const PersistentMemory: React.FC = () => {
 
   // Update memory importance
   const updateImportance = (memoryId: string, newImportance: number) => {
-    setMemories(prev => prev.map(m => 
+    setMemories(prev => prev.map(m =>
       m.id === memoryId ? { ...m, importance: newImportance } : m
     ));
   };
@@ -390,8 +390,8 @@ export const PersistentMemory: React.FC = () => {
         <div style={searchResultsStyle}>
           <h4 style={searchResultsTitleStyle}>Search Results ({searchResults.length})</h4>
           {searchResults.slice(0, 3).map(result => (
-            <div 
-              key={result.memory.id} 
+            <div
+              key={result.memory.id}
               style={searchResultItemStyle}
               onClick={() => setSelectedMemory(result.memory)}
             >
@@ -514,8 +514,8 @@ export const PersistentMemory: React.FC = () => {
                     {selectedMemory.relatedMemories.map(relId => {
                       const rel = memories.find(m => m.id === relId);
                       return rel ? (
-                        <div 
-                          key={relId} 
+                        <div
+                          key={relId}
                           style={relatedItemStyle}
                           onClick={() => setSelectedMemory(rel)}
                         >
@@ -539,7 +539,7 @@ export const PersistentMemory: React.FC = () => {
                     style={importanceSliderStyle}
                   />
                 </div>
-                <button 
+                <button
                   onClick={() => deleteMemory(selectedMemory.id)}
                   style={deleteButtonStyle}
                 >

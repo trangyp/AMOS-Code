@@ -18,8 +18,6 @@ Access:
     http://localhost:8080/api/status - JSON status
 """
 
-from __future__ import annotations
-
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -372,7 +370,7 @@ def api_status():
                 "domains_covered": status["domains_covered"],
             },
             "laws_summary": amos.get_laws_summary(),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
     )
 
@@ -403,7 +401,7 @@ def api_reasoning():
                 "completeness": result["rule_of_four"]["completeness_score"],
             },
             "recommendations": result.get("recommendations", []),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
     )
 

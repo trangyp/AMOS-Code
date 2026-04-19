@@ -9,12 +9,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "01_BRAIN"))
@@ -34,9 +32,7 @@ class BrainBackedWorker(AmosWorkerEngine):
         self.brain_bridge = BrainWorkerBridge(organism_root)
         self._brain_enabled = True
 
-    def execute_with_brain(
-        self, plan: dict[str, Any], context: Optional[dict] = None
-    ) -> WorkerResult:
+    def execute_with_brain(self, plan: Dict[str, Any], context: dict = None) -> WorkerResult:
         """Execute a plan with brain knowledge enrichment."""
         print("\n[BRAIN-BACKED] Enriching plan with brain knowledge...")
 
@@ -61,7 +57,7 @@ class BrainBackedWorker(AmosWorkerEngine):
 
         return result
 
-    def generate_with_brain(self, prompt: str, target_file: Optional[str] = None) -> WorkerResult:
+    def generate_with_brain(self, prompt: str, target_file: str = None) -> WorkerResult:
         """Generate code with brain knowledge."""
         print(f"\n[BRAIN-BACKED] Querying brain for: '{prompt[:50]}...'")
 

@@ -10,11 +10,9 @@ Key capabilities:
 - Recommendation engine for detected hotspots
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -29,13 +27,13 @@ class EvolutionMemory:
     memory_id: str
     evolution_id: str
     pattern_type: str
-    target_files: list[str]
+    target_files: List[str]
     problem_pattern: str
     expected_improvement: str
-    actual_improvement: str | None
+    actual_improvement: str
     status: str
     created_at: str
-    completed_at: str | None = None
+    completed_at: str = None
     patches_applied: int = 0
     patches_rolled_back: int = 0
     lessons_learned: str = ""
@@ -47,7 +45,7 @@ class PatternSignature:
 
     pattern_hash: str
     pattern_type: str
-    signature_features: dict[str, Any]
+    signature_features: Dict[str, Any]
     first_seen: str
     occurrence_count: int
     success_count: int
@@ -57,7 +55,7 @@ class PatternSignature:
 class EvolutionMemoryStore:
     """Persistent store for evolution memory and learning."""
 
-    def __init__(self, storage_path: str | None = None) -> None:
+    def __init__(self, storage_path: str = None) -> None:
         """Initialize memory store."""
         if storage_path:
             self.storage_path = Path(storage_path)
@@ -65,15 +63,15 @@ class EvolutionMemoryStore:
             self.storage_path = Path(".amos_evolution_memory")
 
         self.storage_path.mkdir(exist_ok=True)
-        self.memories: list[EvolutionMemory] = []
-        self.patterns: dict[str, PatternSignature] = {}
+        self.memories: List[EvolutionMemory] = []
+        self.patterns: Dict[str, PatternSignature] = {}
         self._load()
 
     def _load(self) -> None:
         """Load memories from disk."""
         memory_file = self.storage_path / "evolution_memories.jsonl"
         if memory_file.exists():
-            with open(memory_file, 'r') as f:
+            with open(memory_file) as f:
                 for line in f:
                     if line.strip():
                         data = json.loads(line)
@@ -81,7 +79,7 @@ class EvolutionMemoryStore:
 
         patterns_file = self.storage_path / "learned_patterns.json"
         if patterns_file.exists():
-            with open(patterns_file, 'r') as f:
+            with open(patterns_file) as f:
                 patterns_data = json.load(f)
                 for k, v in patterns_data.items():
                     self.patterns[k] = PatternSignature(**v)
@@ -89,19 +87,23 @@ class EvolutionMemoryStore:
     def save(self) -> None:
         """Save memories to disk."""
         memory_file = self.storage_path / "evolution_memories.jsonl"
-        with open(memory_file, 'w') as f:
+        with open(memory_file, "w") as f:
             for memory in self.memories:
-                f.write(json.dumps(asdict(memory)) + '\n')
+                f.write(json.dumps(asdict(memory)) + "\n")
 
         patterns_file = self.storage_path / "learned_patterns.json"
-        with open(patterns_file, 'w') as f:
+        with open(patterns_file, "w") as f:
             patterns_dict = {k: asdict(v) for k, v in self.patterns.items()}
             json.dump(patterns_dict, f, indent=2)
 
-    def record(self, contract: EvolutionContract, patches_applied: int = 0, lessons: str = "") -> None:
+    def record(
+        self, contract: EvolutionContract, patches_applied: int = 0, lessons: str = ""
+    ) -> None:
         """Record an evolution outcome."""
         memory = EvolutionMemory(
-            memory_id=hashlib.md5(f"{contract.evolution_id}{datetime.now().isoformat()}".encode()).hexdigest()[:12],
+            memory_id=hashlib.md5(
+                f"{contract.evolution_id}{datetime.now().isoformat()}".encode()
+            ).hexdigest()[:12],
             evolution_id=contract.evolution_id,
             pattern_type=contract.owner,
             target_files=contract.target_files,
@@ -110,7 +112,9 @@ class EvolutionMemoryStore:
             actual_improvement=contract.actual_improvement,
             status=contract.status.value,
             created_at=contract.created_at.isoformat(),
-            completed_at=datetime.now().isoformat() if contract.status in [EvolutionStatus.COMPLETED, EvolutionStatus.ROLLED_BACK] else None,
+            completed_at=datetime.now().isoformat()
+            if contract.status in [EvolutionStatus.COMPLETED, EvolutionStatus.ROLLED_BACK]
+            else None,
             patches_applied=patches_applied,
             lessons_learned=lessons,
         )
@@ -149,17 +153,23 @@ class EvolutionMemoryStore:
 
     def get_success_rate(self, pattern_type: str) -> float:
         """Get success rate for a pattern type."""
-        relevant = [m for m in self.memories if m.pattern_type == pattern_type and m.status in ["completed", "rolled_back"]]
+        relevant = [
+            m
+            for m in self.memories
+            if m.pattern_type == pattern_type and m.status in ["completed", "rolled_back"]
+        ]
         if not relevant:
             return 0.5  # Unknown - neutral
 
         completed = sum(1 for m in relevant if m.status == "completed")
         return completed / len(relevant)
 
-    def get_recommendation(self, pattern_type: str, problem_description: str) -> dict[str, Any] | None:
+    def get_recommendation(self, pattern_type: str, problem_description: str) -> Dict[str, Any]:
         """Get recommendation based on learned patterns."""
         # Find similar past evolutions
-        similar = [m for m in self.memories if m.pattern_type == pattern_type and m.status == "completed"]
+        similar = [
+            m for m in self.memories if m.pattern_type == pattern_type and m.status == "completed"
+        ]
 
         if not similar:
             return None
@@ -169,12 +179,13 @@ class EvolutionMemoryStore:
 
         return {
             "recommended_action": best.actual_improvement,
-            "confidence": len(similar) / max(len([m for m in self.memories if m.pattern_type == pattern_type]), 1),
+            "confidence": len(similar)
+            / max(len([m for m in self.memories if m.pattern_type == pattern_type]), 1),
             "based_on": f"{len(similar)} similar successful evolutions",
             "lessons": best.lessons_learned,
         }
 
-    def get_statistics(self) -> dict[str, Any]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get evolution statistics."""
         total = len(self.memories)
         completed = sum(1 for m in self.memories if m.status == "completed")
@@ -183,7 +194,11 @@ class EvolutionMemoryStore:
         pattern_stats = {}
         for pattern_hash, pattern in self.patterns.items():
             if pattern.occurrence_count > 0:
-                success_rate = pattern.success_count / (pattern.success_count + pattern.failure_count) if (pattern.success_count + pattern.failure_count) > 0 else 0
+                success_rate = (
+                    pattern.success_count / (pattern.success_count + pattern.failure_count)
+                    if (pattern.success_count + pattern.failure_count) > 0
+                    else 0
+                )
                 pattern_stats[pattern.pattern_type] = {
                     "occurrences": pattern.occurrence_count,
                     "success_rate": success_rate,
@@ -220,7 +235,7 @@ class LearningEngine:
 
         return min(base_rate, 1.0)
 
-    def suggest_optimization(self, contract: EvolutionContract) -> list[str]:
+    def suggest_optimization(self, contract: EvolutionContract) -> List[str]:
         """Suggest optimizations for an evolution contract."""
         suggestions = []
 
@@ -233,7 +248,9 @@ class LearningEngine:
         if existing:
             failed = [m for m in existing if m.status == "rolled_back"]
             if failed:
-                suggestions.append(f"Warning: {len(failed)} previous attempts failed - review approach")
+                suggestions.append(
+                    f"Warning: {len(failed)} previous attempts failed - review approach"
+                )
 
         # Get pattern-specific recommendations
         rec = self.memory.get_recommendation(contract.owner, contract.problem_pattern)

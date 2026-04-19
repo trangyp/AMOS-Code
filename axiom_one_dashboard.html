@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axiom One - Unified Software Operating Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #2a2a3a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            margin-top: 64px;
+            height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .workspace-info {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .workspace-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .workspace-slug {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 2px solid var(--accent-primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Code Studio */
+        .code-studio {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-explorer {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .explorer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .explorer-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .explorer-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .file-tree {
+            font-size: 0.875rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .file-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .file-item.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .file-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .folder-icon {
+            color: var(--accent-warning);
+        }
+
+        /* Editor */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .editor-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .editor-tab {
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border-right: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            min-width: 120px;
+            max-width: 200px;
+        }
+
+        .editor-tab.active {
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--accent-primary);
+        }
+
+        .tab-close {
+            margin-left: auto;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .tab-close:hover {
+            opacity: 1;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+        }
+
+        .code-editor {
+            flex: 1;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background: var(--bg-primary);
+            border: none;
+            color: var(--text-primary);
+            resize: none;
+            outline: none;
+        }
+
+        /* Terminal */
+        .terminal-panel {
+            height: 200px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .terminal-tab {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .terminal-tab.active {
+            background: var(--bg-secondary);
+        }
+
+        .terminal-content {
+            flex: 1;
+            padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.25rem;
+        }
+
+        .terminal-prompt {
+            color: var(--accent-success);
+        }
+
+        .terminal-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .panel-tab.active {
+            border-bottom-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        /* Repo Graph */
+        .graph-view {
+            height: 300px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .impact-list {
+            font-size: 0.875rem;
+        }
+
+        .impact-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Health Analysis */
+        .health-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .health-card {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .health-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .health-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .finding-list {
+            font-size: 0.875rem;
+        }
+
+        .finding-item {
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--accent-warning);
+        }
+
+        .finding-item.critical {
+            border-left-color: var(--accent-danger);
+        }
+
+        .finding-item.high {
+            border-left-color: var(--accent-warning);
+        }
+
+        .finding-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .finding-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Git Panel */
+        .git-branches {
+            margin-bottom: 1rem;
+        }
+
+        .branch-item {
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .branch-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .branch-item.active {
+            color: var(--accent-success);
+        }
+
+        .commit-list {
+            font-size: 0.75rem;
+        }
+
+        .commit-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .commit-msg {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .commit-meta {
+            color: var(--text-secondary);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 24px;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            font-size: 0.75rem;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.625rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5558e0;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .right-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">A1</div>
+            <span class="logo-text">Axiom One</span>
+        </div>
+        <nav class="header-nav">
+            <button class="nav-btn active">Code Studio</button>
+            <button class="nav-btn">Build Forge</button>
+            <button class="nav-btn">Runtime Orbit</button>
+            <button class="nav-btn">Pulse</button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="workspace-info">
+                <div class="workspace-name">My Workspace</div>
+                <div class="workspace-slug">@my-team</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Platform</div>
+                <div class="nav-item active">
+                    <span>📝</span> Code Studio
+                </div>
+                <div class="nav-item">
+                    <span>📊</span> Repo Graph
+                </div>
+                <div class="nav-item">
+                    <span>🔨</span> Build Forge
+                </div>
+                <div class="nav-item">
+                    <span>🚀</span> Runtime Orbit
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Observability</div>
+                <div class="nav-item">
+                    <span>🛡️</span> Sentinel
+                </div>
+                <div class="nav-item">
+                    <span>📈</span> Pulse
+                </div>
+                <div class="nav-item">
+                    <span>💰</span> Ledger
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">AI Agents</div>
+                <div class="nav-item">
+                    <span>🤖</span> Code Assistant
+                </div>
+                <div class="nav-item">
+                    <span>🔍</span> Repo Health Agent
+                </div>
+                <div class="nav-item">
+                    <span>🐛</span> Debug Agent
+                </div>
+                <div class="nav-item">
+                    <span>🏗️</span> Architecture Agent
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- File Explorer -->
+            <div class="file-explorer">
+                <div class="explorer-header">
+                    <span class="explorer-title">Explorer</span>
+                    <div class="explorer-actions">
+                        <button class="action-btn">+</button>
+                        <button class="action-btn">📁</button>
+                        <button class="action-btn">↻</button>
+                    </div>
+                </div>
+                <div class="file-tree" id="fileTree">
+                    <div class="file-item">
+                        <span class="file-icon folder-icon">📁</span>
+                        <span>src</span>
+                    </div>
+                    <div class="file-item" style="padding-left: 1.5rem;">
+                        <span class="file-icon">📄</span>
+                        <span>main.py</span>
+                    </div>
+                    <div class="file-item" style="padding-left: 1.5rem;">
+                        <span class="file-icon">📄</span>
+                        <span>models.py</span>
+                    </div>
+                    <div class="file-item">
+                        <span class="file-icon folder-icon">📁</span>
+                        <span>tests</span>
+                    </div>
+                    <div class="file-item">
+                        <span class="file-icon">📄</span>
+                        <span>README.md</span>
+                    </div>
+                    <div class="file-item">
+                        <span class="file-icon">⚙️</span>
+                        <span>requirements.txt</span>
+                    </div>
+                    <div class="file-item">
+                        <span class="file-icon">🐍</span>
+                        <span>pyproject.toml</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Studio -->
+            <div class="code-studio">
+                <div class="editor-container">
+                    <div class="editor-tabs">
+                        <div class="editor-tab active">
+                            <span>📄</span>
+                            <span>main.py</span>
+                            <span class="tab-close">×</span>
+                        </div>
+                        <div class="editor-tab">
+                            <span>📄</span>
+                            <span>models.py</span>
+                            <span class="tab-close">×</span>
+                        </div>
+                    </div>
+
+                    <div class="editor-area">
+                        <textarea class="code-editor" id="codeEditor" spellcheck="false">"""Axiom One Platform - Main Module
+
+This is the unified software operating platform combining:
+- Code Studio (editor, terminal, git)
+- Repo Graph (live dependency analysis)
+- Build Forge (CI/CD pipelines)
+- AI coding agents
+"""
+
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+app = FastAPI(title="Axiom One")
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+</textarea>
+                    </div>
+                </div>
+
+                <!-- Terminal Panel -->
+                <div class="terminal-panel">
+                    <div class="terminal-tabs">
+                        <div class="terminal-tab active">Terminal</div>
+                        <div class="terminal-tab">Output</div>
+                        <div class="terminal-tab">Debug Console</div>
+                        <div class="terminal-tab">AI Chat</div>
+                    </div>
+                    <div class="terminal-content" id="terminalContent">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">➜</span> ~/workspace/project git:(main)
+                        </div>
+                        <div class="terminal-line">$ python -m pytest tests/</div>
+                        <div class="terminal-line" style="color: var(--accent-success);">============================= test session starts ==============================</div>
+                        <div class="terminal-line">platform darwin -- Python 3.12.0</div>
+                        <div class="terminal-line">collected 42 items</div>
+                        <div class="terminal-line" style="color: var(--accent-success);">tests/test_main.py .............................. [100%]</div>
+                        <div class="terminal-line" style="color: var(--accent-success);">============================== 42 passed in 0.85s ==============================</div>
+                        <div class="terminal-input">
+                            <span class="terminal-prompt">➜</span>
+                            <input type="text" placeholder="Type a command..." id="terminalInput">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <div class="panel-tabs">
+                    <div class="panel-tab active">Repo Graph</div>
+                    <div class="panel-tab">Git</div>
+                    <div class="panel-tab">Health</div>
+                </div>
+
+                <div class="panel-content">
+                    <!-- Repo Graph Tab -->
+                    <div class="tab-content" id="repoGraphTab">
+                        <div class="graph-view">
+                            <div>📊 Repo Graph Visualization</div>
+                        </div>
+                        <div class="impact-list">
+                            <h4 style="margin-bottom: 0.75rem;">Impact Analysis</h4>
+                            <div class="impact-item">
+                                <span>🔄</span> 14 files import this
+                            </div>
+                            <div class="impact-item">
+                                <span>🧪</span> 8 tests affected
+                            </div>
+                            <div class="impact-item">
+                                <span>📦</span> 3 packages depend on this
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Git Tab -->
+                    <div class="tab-content" id="gitTab" style="display: none;">
+                        <div class="git-branches">
+                            <h4 style="margin-bottom: 0.75rem;">Branches</h4>
+                            <div class="branch-item active">
+                                <span>🌿</span> main
+                            </div>
+                            <div class="branch-item">
+                                <span>🌿</span> feature/auth
+                            </div>
+                            <div class="branch-item">
+                                <span>🌿</span> fix/api-gateway
+                            </div>
+                        </div>
+                        <div class="commit-list">
+                            <h4 style="margin-bottom: 0.75rem;">Recent Commits</h4>
+                            <div class="commit-item">
+                                <div class="commit-msg">Add user authentication</div>
+                                <div class="commit-meta">2 hours ago • you</div>
+                            </div>
+                            <div class="commit-item">
+                                <div class="commit-msg">Fix API gateway routing</div>
+                                <div class="commit-meta">5 hours ago • you</div>
+                            </div>
+                            <div class="commit-item">
+                                <div class="commit-msg">Update dependencies</div>
+                                <div class="commit-meta">1 day ago • you</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Tab -->
+                    <div class="tab-content" id="healthTab" style="display: none;">
+                        <div class="health-summary">
+                            <div class="health-card">
+                                <div class="health-value" style="color: var(--accent-success);">94%</div>
+                                <div class="health-label">Health Score</div>
+                            </div>
+                            <div class="health-card">
+                                <div class="health-value" style="color: var(--accent-warning);">3</div>
+                                <div class="health-label">Issues</div>
+                            </div>
+                        </div>
+                        <div class="finding-list">
+                            <div class="finding-item high">
+                                <div class="finding-title">⚠️ Missing type hints</div>
+                                <div class="finding-desc">3 functions lack return type annotations</div>
+                            </div>
+                            <div class="finding-item">
+                                <div class="finding-title">📦 Stale dependency</div>
+                                <div class="finding-desc">requests==2.28.1 has known CVE</div>
+                            </div>
+                            <div class="finding-item">
+                                <div class="finding-title">📝 Missing docstring</div>
+                                <div class="finding-desc">utils.py:45 lacks module docstring</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                            🔍 Run Full Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <div class="status-item">
+                <span>🌿</span> main
+            </div>
+            <div class="status-item">
+                <span>✓</span> 0 errors
+            </div>
+            <div class="status-item">
+                <span>⚠</span> 3 warnings
+            </div>
+        </div>
+        <div class="status-right">
+            <div class="status-item">Ln 12, Col 45</div>
+            <div class="status-item">UTF-8</div>
+            <div class="status-item">Python</div>
+            <div class="status-item">🤖 AI Ready</div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.panel-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Show corresponding content
+                const tabs = ['repoGraphTab', 'gitTab', 'healthTab'];
+                const index = Array.from(tab.parentElement.children).indexOf(tab);
+                tabs.forEach((id, i) => {
+                    document.getElementById(id).style.display = i === index ? 'block' : 'none';
+                });
+            });
+        });
+
+        // File tree interaction
+        document.querySelectorAll('.file-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Terminal input
+        const terminalInput = document.getElementById('terminalInput');
+        const terminalContent = document.getElementById('terminalContent');
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value;
+                if (cmd.trim()) {
+                    const line = document.createElement('div');
+                    line.className = 'terminal-line';
+                    line.innerHTML = `<span class="terminal-prompt">➜</span> ${cmd}`;
+                    terminalContent.insertBefore(line, terminalContent.lastElementChild);
+                    terminalInput.value = '';
+
+                    // Simulate command response
+                    setTimeout(() => {
+                        const response = document.createElement('div');
+                        response.className = 'terminal-line';
+                        response.style.color = 'var(--text-secondary)';
+                        response.textContent = `Command "${cmd}" executed successfully`;
+                        terminalContent.insertBefore(response, terminalContent.lastElementChild);
+                        terminalContent.scrollTop = terminalContent.scrollHeight;
+                    }, 300);
+                }
+            }
+        });
+
+        // Load file tree from API
+        async function loadFileTree(repoId = 'AMOS-code') {
+            try {
+                const response = await fetch(`/api/v1/repositories/${repoId}/files`);
+                const files = await response.json();
+                // Update file tree with real data
+                console.log('Files loaded:', files);
+            } catch (e) {
+                console.log('Using demo file tree');
+            }
+        }
+
+        // Initialize
+        loadFileTree();
+
+        // WebSocket connection for live collaboration
+        const ws = new WebSocket(`ws://${window.location.host}/ws/terminal/demo`);
+        ws.onopen = () => console.log('WebSocket connected');
+        ws.onmessage = (event) => {
+            console.log('WS message:', event.data);
+        };
+    </script>
+</body>
+</html>

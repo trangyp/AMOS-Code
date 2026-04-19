@@ -9,8 +9,6 @@ Responsible for:
 - Quantum probability engine for decision making
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import math
@@ -20,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.quantum")
@@ -42,15 +40,15 @@ class Qubit:
     """
 
     qubit_id: str
-    amplitudes: dict[str, complex] = field(default_factory=dict)
+    amplitudes: Dict[str, complex] = field(default_factory=dict)
     state: QuantumState = QuantumState.SUPERPOSITION
-    entangled_with: list[str] = field(default_factory=list)
+    entangled_with: List[str] = field(default_factory=list)
     created_at: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
 
         # Normalize amplitudes
         if self.amplitudes:
@@ -96,13 +94,13 @@ class Superposition:
 
     superposition_id: str
     possibilities: dict[str, dict[str, Any]] = field(default_factory=dict)
-    weights: dict[str, float] = field(default_factory=dict)
+    weights: Dict[str, float] = field(default_factory=dict)
     coherence_time: float = 60.0  # Seconds before decoherence
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         self._normalize_weights()
 
     def _normalize_weights(self):
@@ -112,7 +110,7 @@ class Superposition:
             for key in self.weights:
                 self.weights[key] /= total
 
-    def add_possibility(self, id: str, data: dict[str, Any], weight: float = 1.0):
+    def add_possibility(self, id: str, data: Dict[str, Any], weight: float = 1.0):
         """Add a possibility to the superposition."""
         self.possibilities[id] = data
         self.weights[id] = weight
@@ -141,7 +139,7 @@ class Superposition:
 
         return items[-1]
 
-    def get_most_probable(self) -> Optional[tuple[str, dict[str, Any]]]:
+    def get_most_probable(self) -> tuple[str, dict[str, Any]]:
         """Get the highest probability possibility."""
         if not self.weights:
             return None
@@ -156,11 +154,11 @@ class Uncertainty:
 
     mean: float
     variance: float
-    confidence_interval: tuple[float, float]
+    confidence_interval: Tuple[float, float]
     sample_size: int = 0
     distribution_type: str = "normal"  # normal, uniform, beta, etc.
 
-    def get_confidence(self, level: float = 0.95) -> tuple[float, float]:
+    def get_confidence(self, level: float = 0.95) -> Tuple[float, float]:
         """Get confidence interval at specified level."""
         # Simplified - assumes normal distribution
         z_score = 1.96 if level == 0.95 else 1.64 if level == 0.90 else 2.58
@@ -190,13 +188,13 @@ class QuantumLayerKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Qubit registry
-        self.qubits: dict[str, Qubit] = {}
+        self.qubits: Dict[str, Qubit] = {}
 
         # Active superpositions
-        self.superpositions: dict[str, Superposition] = {}
+        self.superpositions: Dict[str, Superposition] = {}
 
         # Uncertainty tracking
-        self.uncertainties: dict[str, Uncertainty] = {}
+        self.uncertainties: Dict[str, Uncertainty] = {}
 
         # Entanglement graph
         self.entanglements: dict[str, set[str]] = defaultdict(set)
@@ -213,13 +211,13 @@ class QuantumLayerKernel:
 
     def create_qubit(
         self,
-        qubit_id: Optional[str] = None,
-        initial_state: Optional[dict[str, complex]] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        qubit_id: str = None,
+        initial_state: dict[str, complex] = None,
+        metadata: dict[str, Any] = None,
     ) -> Qubit:
         """Create a new qubit in superposition."""
         if qubit_id is None:
-            qubit_id = f"qubit_{len(self.qubits)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+            qubit_id = f"qubit_{len(self.qubits)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         amplitudes = initial_state or {"0": 1.0, "1": 1.0}
 
@@ -271,12 +269,12 @@ class QuantumLayerKernel:
         return result
 
     def create_superposition(
-        self, superposition_id: Optional[str] = None, coherence_time: float = 60.0
+        self, superposition_id: str = None, coherence_time: float = 60.0
     ) -> Superposition:
         """Create a new superposition container."""
         if superposition_id is None:
             superposition_id = (
-                f"super_{len(self.superpositions)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+                f"super_{len(self.superpositions)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
             )
 
         superposition = Superposition(
@@ -287,7 +285,7 @@ class QuantumLayerKernel:
         return superposition
 
     def add_to_superposition(
-        self, superposition_id: str, possibility_id: str, data: dict[str, Any], weight: float = 1.0
+        self, superposition_id: str, possibility_id: str, data: Dict[str, Any], weight: float = 1.0
     ) -> bool:
         """Add a possibility to a superposition."""
         if superposition_id not in self.superpositions:
@@ -308,7 +306,7 @@ class QuantumLayerKernel:
         return result
 
     def quantify_uncertainty(
-        self, variable_id: str, samples: list[float], distribution_type: str = "normal"
+        self, variable_id: str, samples: List[float], distribution_type: str = "normal"
     ) -> Uncertainty:
         """Quantify uncertainty from sample data."""
         if not samples:
@@ -343,7 +341,7 @@ class QuantumLayerKernel:
         return self.uncertainties.get(variable_id)
 
     def explore_paths(
-        self, initial_state: dict[str, Any], decision_points: list[dict[str, Any]], depth: int = 3
+        self, initial_state: Dict[str, Any], decision_points: list[dict[str, Any]], depth: int = 3
     ) -> list[dict[str, Any]]:
         """Multi-path exploration - explore multiple decision branches simultaneously.
         Returns list of possible paths with probabilities.
@@ -385,8 +383,8 @@ class QuantumLayerKernel:
         return paths
 
     def quantum_decision(
-        self, options: list[dict[str, Any]], context: Optional[dict[str, Any]] = None
-    ) -> dict[str, Any]:
+        self, options: list[dict[str, Any]], context: dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """Make a decision using quantum probability.
         Creates superposition of options, then collapses based on context.
         """
@@ -394,7 +392,7 @@ class QuantumLayerKernel:
             return {"error": "No options provided"}
 
         # Create superposition of options
-        superposition_id = f"decision_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        superposition_id = f"decision_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
         superposition = self.create_superposition(superposition_id)
 
         # Add each option as a possibility
@@ -415,7 +413,7 @@ class QuantumLayerKernel:
             "probability": superposition.weights.get(selected_id, 0),
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current quantum layer state."""
         superposition_states = {}
         for sid, sup in self.superpositions.items():
@@ -440,7 +438,7 @@ class QuantumLayerKernel:
             "qubits_created": self.stats["qubits_created"],
             "measurements": self.stats["measurements_performed"],
             "superpositions_resolved": self.stats["superpositions_resolved"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

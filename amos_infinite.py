@@ -31,10 +31,11 @@ Usage:
     new_state = amos_inf.evolve(state, action, world_context)
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Callable, Optional
+from typing import Any
 
 import numpy as np
 
@@ -80,8 +81,8 @@ class ScaleParams:
 class EpistemicState:
     """Epistemic state / belief μ."""
 
-    belief: dict[str, float] = field(default_factory=dict)
-    uncertainty: dict[str, float] = field(default_factory=dict)
+    belief: Dict[str, float] = field(default_factory=dict)
+    uncertainty: Dict[str, float] = field(default_factory=dict)
     confidence: float = 0.5
     gamma: float = 0.1  # learning rate
 
@@ -106,7 +107,7 @@ class FiberBundle:
     """Base class for state fibers."""
 
     substrate: Substrate
-    data: dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, Any] = field(default_factory=dict)
 
     def project(self) -> dict:
         """Projection to base."""
@@ -132,10 +133,10 @@ class QuantumFiber(FiberBundle):
     """Quantum fiber X_q = (H_q, ρ, O_q, U_q, R_q)."""
 
     hilbert_dim: int = 2
-    density_matrix: Optional[np.ndarray] = None  # ρ
+    density_matrix: np.ndarray = None  # ρ
     operators: dict[str, np.ndarray] = field(default_factory=dict)  # O_q
     unitaries: list[np.ndarray] = field(default_factory=list)  # U_q
-    resources: dict[str, float] = field(default_factory=dict)  # R_q
+    resources: Dict[str, float] = field(default_factory=dict)  # R_q
 
     def __post_init__(self):
         self.substrate = Substrate.QUANTUM
@@ -155,9 +156,9 @@ class BiologicalFiber(FiberBundle):
     """Biological fiber X_b = (G, R, P, C, N, N_b, V_b)."""
 
     genome: str = ""  # G - DNA sequence
-    rna_pool: list[str] = field(default_factory=list)  # R
-    proteome: dict[str, float] = field(default_factory=dict)  # P
-    concentrations: dict[str, float] = field(default_factory=dict)  # C
+    rna_pool: List[str] = field(default_factory=list)  # R
+    proteome: Dict[str, float] = field(default_factory=dict)  # P
+    concentrations: Dict[str, float] = field(default_factory=dict)  # C
     network_state: dict = field(default_factory=dict)  # N
     viability: float = 1.0  # V_b
 
@@ -257,7 +258,7 @@ class HyperState:
     scale_params: ScaleParams = field(default_factory=ScaleParams)  # Θ
 
     # Ledger fiber X_ℓ
-    ledger_history: list[dict] = field(default_factory=list)
+    ledger_history: List[dict] = field(default_factory=list)
 
     # Epistemic fiber X_u
     epistemic: EpistemicState = field(default_factory=EpistemicState)
@@ -319,7 +320,7 @@ class OntologyAlgebra:
     """∞-graded ontology algebra O = ⊕_{n≥0} O^{(n)}."""
 
     def __init__(self):
-        self.elements: dict[str, OntologyElement] = {}
+        self.elements: Dict[str, OntologyElement] = {}
         self.substrate_decomp = {
             Substrate.CLASSICAL: [],
             Substrate.QUANTUM: [],
@@ -333,7 +334,7 @@ class OntologyAlgebra:
         self.elements[element.name] = element
         self.substrate_decomp[element.substrate].append(element)
 
-    def get_grade(self, n: int) -> list[OntologyElement]:
+    def get_grade(self, n: int) -> List[OntologyElement]:
         """Get all elements of grade n."""
         return [e for e in self.elements.values() if e.grade.value == n]
 
@@ -363,7 +364,7 @@ class EffectQuantale:
     UNRESTRICTED = "⊤"
 
     def __init__(self):
-        self.effects: set[str] = {self.IMPOSSIBLE, self.UNRESTRICTED}
+        self.effects: Set[str] = {self.IMPOSSIBLE, self.UNRESTRICTED}
         self.sub_effects = {
             Substrate.CLASSICAL: {"read", "write", "compute"},
             Substrate.QUANTUM: {"measure", "cohere", "entangle", "collapse"},
@@ -422,7 +423,7 @@ class ConstraintSheaf:
     """
 
     def __init__(self):
-        self.sections: dict[str, ConstraintSection] = {}
+        self.sections: Dict[str, ConstraintSection] = {}
         self.partition = {
             "hard": [],
             "soft": [],
@@ -472,7 +473,7 @@ class UncertaintyGeometry:
         self.belief_params = np.random.randn(dim) * 0.1
         self.fisher_metric = np.eye(dim)  # g_{ij}
 
-    def compute_fisher_metric(self, beliefs: dict[str, float]) -> np.ndarray:
+    def compute_fisher_metric(self, beliefs: Dict[str, float]) -> np.ndarray:
         """g_{ij}(θ) = E_θ[∂_i log μ_θ(x) · ∂_j log μ_θ(x)]."""
         # Simplified: return identity scaled by uncertainty
         uncertainty = np.mean(list(beliefs.values()))
@@ -519,7 +520,7 @@ class BridgeTensor:
 
     def transport(
         self, x_i: dict, q_i: float, theta_i: ScaleParams, iota_i: str
-    ) -> tuple[dict, float, ScaleParams, str]:
+    ) -> Tuple[dict, float, ScaleParams, str]:
         """Bridge action: B_{ij}: (x_i, q_i, θ_i, ι_i) ↦ (x_j, q_j, θ_j, ι_j)."""
         # Apply representational map
         x_j = {self.representational_map.get(k, k): v for k, v in x_i.items()}
@@ -623,7 +624,7 @@ class LedgerEntry:
     c_t: bool  # Constraint satisfaction
     v_t: bool  # Verification
     x_t1: HyperState
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class LedgerChainComplex:
@@ -634,8 +635,8 @@ class LedgerChainComplex:
     """
 
     def __init__(self):
-        self.entries: list[LedgerEntry] = []
-        self.boundaries: list[HyperState] = []
+        self.entries: List[LedgerEntry] = []
+        self.boundaries: List[HyperState] = []
 
     def append(self, entry: LedgerEntry):
         """Add entry to chain."""
@@ -740,7 +741,7 @@ class VariationalMasterFunctional:
             total += L_func(state) * dt
         return total
 
-    def find_stationary(self, initial: HyperState, actions: list[dict], world: dict) -> HyperState:
+    def find_stationary(self, initial: HyperState, actions: List[dict], world: dict) -> HyperState:
         """Find stationary admissible trajectory: δS = 0 subject to Φ(t) ∈ Z*.
         Simplified: return best action outcome.
         """
@@ -884,7 +885,7 @@ class AMOSInfinite:
 
     def M(
         self, state: HyperState, observer: str = "default"
-    ) -> tuple[Any, float, float, HyperState]:
+    ) -> Tuple[Any, float, float, HyperState]:
         """Observation M: X → Y × Q × Π × X (Section 2, 12).
 
         M_{o,m}(x) = (y, q, π, x')

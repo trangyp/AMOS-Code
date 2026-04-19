@@ -26,26 +26,27 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 20
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
 class EcosystemState:
     """Complete state of the AMOS ecosystem."""
 
-    activated_at: Optional[str] = None
+    activated_at: str = None
     brain_layers: int = 19
     organism_subsystems: int = 14
     amosl_loaded: bool = False
     clawspring_connected: bool = False
     sdk_available: bool = False
-    session_id: Optional[str] = None
+    session_id: str = None
     active_engines: list[str] = field(default_factory=list)
     law_compliance: dict[str, bool] = field(default_factory=dict)
+    canon_loaded: bool = False
+    canon_terms: int = 0
+    canon_agents: int = 0
 
 
 class Ecosystem:
@@ -71,6 +72,15 @@ class Ecosystem:
         self._organism = None
         self._amosl = None
         self._initialized = False
+        self._canon_bridge = None
+
+    async def _get_canon_bridge(self):
+        """Lazy initialization of canon bridge."""
+        if self._canon_bridge is None:
+            from amos_brain.canon_bridge import get_canon_bridge
+
+            self._canon_bridge = await get_canon_bridge()
+        return self._canon_bridge
 
     def activate(self) -> dict[str, Any]:
         """Activate the complete AMOS ecosystem.
@@ -88,7 +98,7 @@ class Ecosystem:
         results = {
             "status": "activating",
             "components": {},
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         # 1. Activate Brain (L1-L19)
@@ -159,6 +169,30 @@ class Ecosystem:
         except Exception as e:
             results["components"]["clawspring"] = {"status": "optional", "error": str(e)}
 
+        # 6. Initialize Canon
+        try:
+            import asyncio
+
+            from amos_canon_integration import get_canon_loader, initialize_canon
+
+            canon_ready = asyncio.run(initialize_canon())
+            if canon_ready:
+                loader = get_canon_loader()
+                status = loader.get_status()
+                self.state.canon_loaded = True
+                self.state.canon_terms = status.total_terms
+                self.state.canon_agents = status.total_agents
+                results["components"]["canon"] = {
+                    "status": "loaded",
+                    "terms": status.total_terms,
+                    "agents": status.total_agents,
+                    "engines": status.total_engines,
+                }
+            else:
+                results["components"]["canon"] = {"status": "error", "note": "Failed to load"}
+        except Exception as e:
+            results["components"]["canon"] = {"status": "optional", "error": str(e)}
+
         # Final status
         self.state.activated_at = results["timestamp"]
         active_count = sum(
@@ -177,14 +211,29 @@ class Ecosystem:
 
     # ===== BRAIN INTERFACE (L10) =====
 
-    def think(self, query: str, domain: str = "general") -> dict[str, Any]:
-        """Cognitive analysis via Brain L10."""
+    async def think(self, query: str, domain: str = "general") -> dict[str, Any]:
+        """Cognitive analysis via Brain L10 with Canon context."""
         if not self._initialized:
             self.activate()
 
-        from amos_brain import think
+        # Enrich with Canon context
+        canon_context = {}
+        try:
+            canon = await self._get_canon_bridge()
+            ctx = canon.get_context_for_domain(domain)
+            query = canon.enrich_query(query, domain)
+            canon_context = {
+                "domain": ctx.domain,
+                "terms_available": len(ctx.glossary_terms),
+                "applicable_agents": ctx.applicable_agents[:3],
+            }
+        except Exception:
+            pass
 
-        response = think(query)
+        from amos_brain.facade import BrainClient
+
+        client = BrainClient()
+        response = await client.think(query, domain=domain)
 
         return {
             "success": response.success,
@@ -193,9 +242,10 @@ class Ecosystem:
             "law_compliant": response.law_compliant,
             "layer": "L10",
             "source": "brain",
+            "canon_context": canon_context,
         }
 
-    def decide(self, problem: str, options: Optional[list[str]] = None) -> dict[str, Any]:
+    def decide(self, problem: str, options: list[str] = None) -> dict[str, Any]:
         """Decision making via Brain L10."""
         if not self._initialized:
             self.activate()
@@ -366,7 +416,7 @@ class Ecosystem:
 
 
 # Global instance
-_ecosystem_instance: Optional[Ecosystem] = None
+_ecosystem_instance: Ecosystem | None = None
 
 
 def get_ecosystem() -> Ecosystem:
@@ -384,7 +434,7 @@ def think(query: str) -> dict[str, Any]:
     return get_ecosystem().think(query)
 
 
-def decide(problem: str, options: Optional[list[str]] = None) -> dict[str, Any]:
+def decide(problem: str, options: list[str] = None) -> dict[str, Any]:
     """Quick decide via ecosystem."""
     return get_ecosystem().decide(problem, options)
 

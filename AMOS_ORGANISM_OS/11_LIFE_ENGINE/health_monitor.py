@@ -4,15 +4,13 @@ Monitors organism health metrics and triggers self-healing actions.
 Tracks vital signs and detects health issues.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class HealthStatus(Enum):
@@ -46,7 +44,7 @@ class HealthMetric:
     threshold_warning: float = 0.7
     threshold_critical: float = 0.9
     subsystem: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def get_status(self) -> HealthStatus:
         """Get status based on value."""
@@ -56,7 +54,7 @@ class HealthMetric:
             return HealthStatus.WARNING
         return HealthStatus.HEALTHY
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "metric_type": self.metric_type.value,
@@ -72,13 +70,13 @@ class HealingAction:
     trigger_metric: str = ""
     action_type: str = ""  # restart, scale, reconfigure, isolate
     target_subsystem: str = ""
-    parameters: dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, Any] = field(default_factory=dict)
     executed: bool = False
-    successful: Optional[bool] = None
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    executed_at: Optional[str] = None
+    successful: bool = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    executed_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -96,7 +94,7 @@ class HealthMonitor:
         self.data_dir.mkdir(exist_ok=True)
 
         self.metrics: dict[str, list[HealthMetric]] = {}
-        self.healing_actions: dict[str, HealingAction] = {}
+        self.healing_actions: Dict[str, HealingAction] = {}
         self.healing_log: list[dict[str, Any]] = []
         self.health_history: list[dict[str, Any]] = []
 
@@ -185,7 +183,7 @@ class HealthMonitor:
             return False
 
         action.executed = True
-        action.executed_at = datetime.utcnow().isoformat()
+        action.executed_at = datetime.now(UTC).isoformat()
 
         # Simulate healing execution
         # In real implementation, this would actually perform the action
@@ -224,7 +222,7 @@ class HealthMonitor:
             return HealthStatus.WARNING
         return HealthStatus.HEALTHY
 
-    def get_subsystem_health(self, subsystem: str) -> dict[str, Any]:
+    def get_subsystem_health(self, subsystem: str) -> Dict[str, Any]:
         """Get health metrics for a specific subsystem."""
         subsystem_metrics = {}
         for metric_type, metric_list in self.metrics.items():
@@ -264,11 +262,11 @@ class HealthMonitor:
             "healing_actions": [a.to_dict() for a in self.healing_actions.values()],
             "healing_log": self.healing_log,
             "overall_health": self.get_overall_health().value,
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         health_file.write_text(json.dumps(data, indent=2))
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get health monitor status."""
         total_actions = len(self.healing_actions)
         executed = sum(1 for a in self.healing_actions.values() if a.executed)

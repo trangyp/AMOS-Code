@@ -17,11 +17,9 @@ Mathematical Foundation:
 - Learning: Experience → Insights → Improved Decisions
 """
 
-from __future__ import annotations
-
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -54,11 +52,11 @@ class DecisionRecord:
     decision_id: str
     timestamp: str
     decision_type: str
-    context: dict[str, Any]
-    outcome: dict[str, Any]
+    context: Dict[str, Any]
+    outcome: Dict[str, Any]
     confidence: float
     success: bool
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -83,12 +81,12 @@ class MetaInsight:
     reflection_type: ReflectionType
     severity: InsightSeverity
     insight: str
-    evidence: list[str]
+    evidence: List[str]
     recommendation: str
     confidence: float
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "insight_id": self.insight_id,
@@ -113,7 +111,7 @@ class AdaptedParameter:
     last_update: str
     update_history: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "name": self.name,
@@ -134,13 +132,13 @@ class ReflectionResult:
 
     reflection_id: str
     timestamp: str
-    insights: list[MetaInsight]
-    adapted_parameters: list[AdaptedParameter]
+    insights: List[MetaInsight]
+    adapted_parameters: List[AdaptedParameter]
     failure_patterns_detected: int
     learning_applied: bool
     playbook_generated: bool
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "reflection_id": self.reflection_id,
@@ -166,11 +164,11 @@ class MetaCognitiveReflectionEngine:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path)
-        self.decision_history: list[DecisionRecord] = []
-        self.failure_patterns: dict[str, FailurePattern] = {}
-        self.parameters: dict[str, AdaptedParameter] = {}
-        self.insights: list[MetaInsight] = []
-        self.reflections: list[ReflectionResult] = []
+        self.decision_history: List[DecisionRecord] = []
+        self.failure_patterns: Dict[str, FailurePattern] = {}
+        self.parameters: Dict[str, AdaptedParameter] = {}
+        self.insights: List[MetaInsight] = []
+        self.reflections: List[ReflectionResult] = []
 
         # Default parameters for adaptation
         self._initialize_parameters()
@@ -192,14 +190,14 @@ class MetaCognitiveReflectionEngine:
                 initial_value=value,
                 current_value=value,
                 update_count=0,
-                last_update=datetime.utcnow().isoformat(),
+                last_update=datetime.now(timezone.utc).isoformat(),
             )
 
     def record_decision(
         self,
         decision_type: str,
-        context: dict[str, Any],
-        outcome: dict[str, Any],
+        context: Dict[str, Any],
+        outcome: Dict[str, Any],
         confidence: float,
         success: bool,
     ) -> DecisionRecord:
@@ -219,7 +217,7 @@ class MetaCognitiveReflectionEngine:
         """
         record = DecisionRecord(
             decision_id=f"dec_{len(self.decision_history)}",
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             decision_type=decision_type,
             context=context,
             outcome=outcome,
@@ -238,10 +236,10 @@ class MetaCognitiveReflectionEngine:
     def record_failure(
         self,
         failure_type: str,
-        context: dict[str, Any],
+        context: Dict[str, Any],
         action_taken: str,
         consequence: str,
-    ) -> FailurePattern | None:
+    ) -> Optional[FailurePattern]:
         """
         Record a failure for pattern detection.
 
@@ -258,7 +256,7 @@ class MetaCognitiveReflectionEngine:
         # Generate signature
         signature = self._extract_signature(failure_type, context)
 
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
 
         if signature in self.failure_patterns:
             pattern = self.failure_patterns[signature]
@@ -285,13 +283,13 @@ class MetaCognitiveReflectionEngine:
 
         return self.failure_patterns.get(signature)
 
-    def _extract_signature(self, failure_type: str, context: dict[str, Any]) -> str:
+    def _extract_signature(self, failure_type: str, context: Dict[str, Any]) -> str:
         """Extract failure signature from context."""
         keys = sorted(context.keys())[:3]
         values = [str(context[k])[:20] for k in keys if k in context]
         return f"{failure_type}:{':'.join(values)}"
 
-    def should_avoid(self, context: dict[str, Any], action: str) -> tuple[bool, str]:
+    def should_avoid(self, context: Dict[str, Any], action: str) -> Tuple[bool, str]:
         """
         Check if an action should be avoided based on past failures.
 
@@ -321,7 +319,7 @@ class MetaCognitiveReflectionEngine:
         overlap = len(parts1 & parts2)
         return overlap >= 2
 
-    def adapt_parameter(self, name: str, performance_delta: float) -> AdaptedParameter | None:
+    def adapt_parameter(self, name: str, performance_delta: float) -> Optional[AdaptedParameter]:
         """
         Adapt a parameter based on performance feedback.
 
@@ -352,7 +350,7 @@ class MetaCognitiveReflectionEngine:
         param.current_value = max(0.0, min(1.0, param.current_value))
 
         param.update_count += 1
-        param.last_update = datetime.utcnow().isoformat()
+        param.last_update = datetime.now(timezone.utc).isoformat()
         param.update_history.append(
             {
                 "timestamp": param.last_update,
@@ -376,10 +374,10 @@ class MetaCognitiveReflectionEngine:
 
         """
         reflection_id = f"refl_{len(self.reflections)}"
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
-        insights: list[MetaInsight] = []
-        adapted_params: list[AdaptedParameter] = []
+        insights: List[MetaInsight] = []
+        adapted_params: List[AdaptedParameter] = []
 
         # 1. Analyze decision patterns
         decision_insights = self._analyze_decision_patterns()
@@ -448,7 +446,7 @@ class MetaCognitiveReflectionEngine:
         self.reflections.append(result)
         return result
 
-    def _analyze_decision_patterns(self) -> list[MetaInsight]:
+    def _analyze_decision_patterns(self) -> List[MetaInsight]:
         """Analyze patterns in decision history."""
         insights = []
 
@@ -456,7 +454,7 @@ class MetaCognitiveReflectionEngine:
             return insights
 
         # Analyze decision type distribution
-        type_counts: dict[str, int] = defaultdict(int)
+        type_counts: Dict[str, int] = defaultdict(int)
         for decision in self.decision_history:
             type_counts[decision.decision_type] += 1
 
@@ -501,7 +499,7 @@ class MetaCognitiveReflectionEngine:
 
         return insights
 
-    def _analyze_performance(self) -> list[MetaInsight]:
+    def _analyze_performance(self) -> List[MetaInsight]:
         """Analyze performance trends."""
         insights = []
 
@@ -551,7 +549,7 @@ class MetaCognitiveReflectionEngine:
 
         return insights
 
-    def _generate_playbook(self, insights: list[MetaInsight]) -> bool:
+    def _generate_playbook(self, insights: List[MetaInsight]) -> bool:
         """Generate self-improvement playbook."""
         if not insights:
             return False
@@ -560,7 +558,7 @@ class MetaCognitiveReflectionEngine:
 
         content = f"""# Meta-Cognitive Self-Improvement Playbook
 
-Generated: {datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")}
+Generated: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")}
 Based on: {len(self.decision_history)} decisions, {len(self.failure_patterns)} failure patterns
 
 ## Current Status
@@ -648,7 +646,7 @@ Based on: {len(self.decision_history)} decisions, {len(self.failure_patterns)} f
         except Exception:
             return False
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get comprehensive meta-cognitive status."""
         if not self.decision_history:
             return {
@@ -674,7 +672,7 @@ Based on: {len(self.decision_history)} decisions, {len(self.failure_patterns)} f
             },
         }
 
-    def get_improvement_suggestions(self) -> list[str]:
+    def get_improvement_suggestions(self) -> List[str]:
         """Get improvement suggestions."""
         suggestions = []
 

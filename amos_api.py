@@ -20,15 +20,13 @@ Interactive docs:
   http://localhost:8000/redoc (ReDoc)
 """
 
-from __future__ import annotations
-
 import os
 import sys
 
 # Add project to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
@@ -51,17 +49,17 @@ from amos_brain.memory import get_brain_memory
 
 class DecideRequest(BaseModel):
     problem: str = Field(..., description="The decision or problem to analyze")
-    context: dict[str, Any] = Field(default={}, description="Optional context")
-    options: list[str] = Field(default=[], description="Optional options to consider")
+    context: Dict[str, Any] = Field(default={}, description="Optional context")
+    options: List[str] = Field(default=[], description="Optional options to consider")
 
 
 class DecideResponse(BaseModel):
     problem: str
-    rule_of_two: dict[str, Any]
-    rule_of_four: dict[str, Any]
-    recommendations: list[str]
-    assumptions: list[str]
-    uncertainties: list[str]
+    rule_of_two: Dict[str, Any]
+    rule_of_four: Dict[str, Any]
+    recommendations: List[str]
+    assumptions: List[str]
+    uncertainties: List[str]
     processed_at: str
 
 
@@ -142,7 +140,7 @@ async def health():
             "status": "healthy" if status["initialized"] else "unhealthy",
             "brain_loaded": status["brain_loaded"],
             "engines": status["engines_count"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
@@ -185,7 +183,7 @@ async def decide(request: DecideRequest):
         recommendations=result.get("recommendations", []),
         assumptions=result.get("assumptions", []),
         uncertainties=result.get("uncertainty_flags", []),
-        processed_at=datetime.utcnow().isoformat(),
+        processed_at=datetime.now(timezone.utc).isoformat(),
     )
 
 

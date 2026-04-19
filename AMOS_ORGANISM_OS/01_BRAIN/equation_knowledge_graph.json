@@ -1,0 +1,400 @@
+{
+  "build_time": "2026-04-16T17:05:06.149798+00:00",
+  "equations": {
+    "f9e32e885f6f": {
+      "id": "f9e32e885f6f",
+      "name": "Type Preservation",
+      "category": "type_theory",
+      "latex_formula": "\\Gamma \\vdash e : T \\land e \\to e' \\Rightarrow \\Gamma \\vdash e' : T",
+      "description": "Well-typed programs never get stuck",
+      "language": null,
+      "invariants": [
+        "type_safety",
+        "progress",
+        "preservation"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "1.1",
+      "complexity_class": null,
+      "tags": [
+        "fundamental",
+        "universal"
+      ]
+    },
+    "d95f4a69eec3": {
+      "id": "d95f4a69eec3",
+      "name": "Church-Rosser Theorem",
+      "category": "lambda_calculus",
+      "latex_formula": "M \\to N_1 \\land M \\to N_2 \\Rightarrow \\exists P: N_1 \\to^* P \\land N_2 \\to^* P",
+      "description": "Normal forms are unique when they exist",
+      "language": null,
+      "invariants": [
+        "confluence"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "1.3",
+      "complexity_class": null,
+      "tags": [
+        "fundamental",
+        "lambda_calculus"
+      ]
+    },
+    "17afa006ad74": {
+      "id": "17afa006ad74",
+      "name": "Beta Reduction",
+      "category": "lambda_calculus",
+      "latex_formula": "(\\lambda x.M) N \\to_\\beta M[x := N]",
+      "description": "Fundamental computation rule of lambda calculus",
+      "language": null,
+      "invariants": [
+        "confluence"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "2.2",
+      "complexity_class": null,
+      "tags": [
+        "fundamental",
+        "lambda_calculus"
+      ]
+    },
+    "97dee0105b72": {
+      "id": "97dee0105b72",
+      "name": "Hoare Triple",
+      "category": "hoare_logic",
+      "latex_formula": "\\{P\\} S \\{Q\\}",
+      "description": "If P holds before S, and S terminates, then Q holds after",
+      "language": null,
+      "invariants": [
+        "correctness"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "4.1",
+      "complexity_class": null,
+      "tags": [
+        "verification",
+        "hoare_logic"
+      ]
+    },
+    "0b31ec3b6ec9": {
+      "id": "0b31ec3b6ec9",
+      "name": "Monad Left Identity",
+      "category": "type_theory",
+      "latex_formula": "\\text{return } a \\bind f \\equiv f \\, a",
+      "description": "Monad law: return is left identity for bind",
+      "language": "haskell",
+      "invariants": [
+        "associativity"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "3.3",
+      "complexity_class": null,
+      "tags": [
+        "monad",
+        "category_theory"
+      ]
+    },
+    "1231629f86cf": {
+      "id": "1231629f86cf",
+      "name": "Rust Ownership XOR",
+      "category": "memory_safety",
+      "latex_formula": "(\\&mut T) \\oplus (\\&T, \\&T, ...)",
+      "description": "At any point: either one mutable reference OR any number of immutable references",
+      "language": "rust",
+      "invariants": [
+        "memory_safety",
+        "data_race_freedom"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "5.1",
+      "complexity_class": null,
+      "tags": [
+        "ownership",
+        "borrowing",
+        "affine_types"
+      ]
+    },
+    "3520e21597f4": {
+      "id": "3520e21597f4",
+      "name": "Haskell Purity",
+      "category": "language_specific",
+      "latex_formula": "\\forall x: f(x) = f(x) \\quad \\frac{\\partial (global\\_state)}{\\partial f} = 0",
+      "description": "Referential transparency: same input always gives same output, no side effects",
+      "language": "haskell",
+      "invariants": [
+        "referential_transparency"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "5.2",
+      "complexity_class": null,
+      "tags": [
+        "purity",
+        "functional"
+      ]
+    },
+    "c11d0e7b9c7b": {
+      "id": "c11d0e7b9c7b",
+      "name": "Java Happens-Before",
+      "category": "concurrency",
+      "latex_formula": "hb(a, b) \\Rightarrow effects(a) \\text{ visible to } b",
+      "description": "Happens-before relation ensures visibility across threads",
+      "language": "java",
+      "invariants": [
+        "memory_visibility",
+        "happens_before"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "5.4",
+      "complexity_class": null,
+      "tags": [
+        "jmm",
+        "concurrency",
+        "memory_model"
+      ]
+    },
+    "399b1602cec8": {
+      "id": "399b1602cec8",
+      "name": "Linearizability",
+      "category": "concurrency",
+      "latex_formula": "\\exists \\pi: sequential \\land \\forall op_1, op_2: finishes(op_1) < starts(op_2) \\Rightarrow \\pi(op_1) < \\pi(op_2)",
+      "description": "Concurrent execution equivalent to some sequential execution preserving real-time order",
+      "language": null,
+      "invariants": [
+        "consistency",
+        "correctness"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "7.4",
+      "complexity_class": null,
+      "tags": [
+        "concurrency",
+        "verification",
+        "correctness"
+      ]
+    },
+    "810b95e74f96": {
+      "id": "810b95e74f96",
+      "name": "Bayes Theorem",
+      "category": "probabilistic",
+      "latex_formula": "P(\\theta|D) = \\frac{P(D|\\theta) \\cdot P(\\theta)}{P(D)}",
+      "description": "Posterior equals likelihood times prior divided by evidence",
+      "language": null,
+      "invariants": [
+        "probability_conservation"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "14.2",
+      "complexity_class": null,
+      "tags": [
+        "bayesian",
+        "inference",
+        "probabilistic"
+      ]
+    },
+    "9456cd9c0c16": {
+      "id": "9456cd9c0c16",
+      "name": "Quantum State Normalization",
+      "category": "quantum",
+      "latex_formula": "|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\quad |\\alpha|^2 + |\\beta|^2 = 1",
+      "description": "Qubit state is normalized superposition of basis states",
+      "language": "qsharp",
+      "invariants": [
+        "unitarity",
+        "normalization"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "14.3",
+      "complexity_class": null,
+      "tags": [
+        "quantum",
+        "qubit",
+        "superposition"
+      ]
+    },
+    "456650de0fb1": {
+      "id": "456650de0fb1",
+      "name": "SSA Single Assignment",
+      "category": "compiler_theory",
+      "latex_formula": "\\forall v: assigned(v) = 1",
+      "description": "Each variable assigned exactly once in static code",
+      "language": null,
+      "invariants": [
+        "single_assignment",
+        "dominance_frontier"
+      ],
+      "preconditions": [],
+      "postconditions": [],
+      "referenced_by": [],
+      "source_section": "15.1",
+      "complexity_class": null,
+      "tags": [
+        "compiler",
+        "ssa",
+        "optimization"
+      ]
+    }
+  },
+  "languages": {
+    "rust": {
+      "name": "rust",
+      "paradigms": [
+        "systems",
+        "functional",
+        "concurrent"
+      ],
+      "type_system": "affine_types_with_lifetimes",
+      "memory_model": "ownership_borrowing",
+      "concurrency_model": "shared_nothing",
+      "equations": [],
+      "key_invariants": []
+    },
+    "haskell": {
+      "name": "haskell",
+      "paradigms": [
+        "pure_functional",
+        "lazy"
+      ],
+      "type_system": "hindley_milner_with_typeclasses",
+      "memory_model": "garbage_collected",
+      "concurrency_model": "software_transactional_memory",
+      "equations": [],
+      "key_invariants": []
+    },
+    "ocaml": {
+      "name": "ocaml",
+      "paradigms": [
+        "functional",
+        "object_oriented",
+        "modular"
+      ],
+      "type_system": "hindley_milner_with_modules",
+      "memory_model": "garbage_collected",
+      "concurrency_model": "shared_memory",
+      "equations": [],
+      "key_invariants": []
+    },
+    "java": {
+      "name": "java",
+      "paradigms": [
+        "object_oriented",
+        "concurrent"
+      ],
+      "type_system": "nominal_subtyping",
+      "memory_model": "jmm_happens_before",
+      "concurrency_model": "shared_memory_threads",
+      "equations": [],
+      "key_invariants": []
+    },
+    "swift": {
+      "name": "swift",
+      "paradigms": [
+        "protocol_oriented",
+        "functional"
+      ],
+      "type_system": "nominal_with_associated_types",
+      "memory_model": "arc",
+      "concurrency_model": "structured_concurrency",
+      "equations": [],
+      "key_invariants": []
+    },
+    "kotlin": {
+      "name": "kotlin",
+      "paradigms": [
+        "object_oriented",
+        "functional"
+      ],
+      "type_system": "nominal_null_safe",
+      "memory_model": "jvm_gc",
+      "concurrency_model": "coroutines",
+      "equations": [],
+      "key_invariants": []
+    },
+    "go": {
+      "name": "go",
+      "paradigms": [
+        "imperative",
+        "concurrent"
+      ],
+      "type_system": "structural_interfaces",
+      "memory_model": "garbage_collected",
+      "concurrency_model": "csp_channels",
+      "equations": [],
+      "key_invariants": []
+    },
+    "typescript": {
+      "name": "typescript",
+      "paradigms": [
+        "object_oriented",
+        "functional"
+      ],
+      "type_system": "gradual_structural",
+      "memory_model": "javascript_runtime",
+      "concurrency_model": "async_await",
+      "equations": [],
+      "key_invariants": []
+    },
+    "python": {
+      "name": "python",
+      "paradigms": [
+        "imperative",
+        "object_oriented",
+        "functional"
+      ],
+      "type_system": "gradual_typing",
+      "memory_model": "reference_counting_gc",
+      "concurrency_model": "gil_threads_async",
+      "equations": [],
+      "key_invariants": []
+    }
+  },
+  "statistics": {
+    "total_equations": 12,
+    "total_languages": 9,
+    "by_category": {
+      "lambda_calculus": 2,
+      "type_theory": 2,
+      "hoare_logic": 1,
+      "language_specific": 1,
+      "memory_safety": 1,
+      "concurrency": 2,
+      "error_handling": 0,
+      "formal_semantics": 0,
+      "advanced_types": 0,
+      "compiler_theory": 1,
+      "quantum": 1,
+      "probabilistic": 1,
+      "algebraic_effects": 0
+    },
+    "by_invariant": {
+      "type_safety": 1,
+      "memory_safety": 1,
+      "concurrency_safety": 0,
+      "progress": 1,
+      "preservation": 1,
+      "confluence": 2,
+      "termination": 0,
+      "correctness": 2
+    }
+  }
+}

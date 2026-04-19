@@ -4,14 +4,12 @@ Manages build tasks for creating subsystems, modules, and components.
 Tracks build progress, handles dependencies, and reports results.
 """
 
-from __future__ import annotations
-
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class BuildStatus(Enum):
@@ -33,9 +31,9 @@ class BuildResult:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     duration_seconds: float = 0.0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -49,14 +47,14 @@ class BuildTask:
     component_type: str = ""  # subsystem, module, alias, test
     target_path: str = ""
     dependencies: list[str] = field(default_factory=list)
-    parameters: dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, Any] = field(default_factory=dict)
     status: BuildStatus = BuildStatus.PENDING
     result: Optional[BuildResult] = None
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    started_at: str = None
+    completed_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -76,7 +74,7 @@ class BuilderEngine:
             organism_root = Path(__file__).parent.parent
         self.organism_root = organism_root
 
-        self.tasks: dict[str, BuildTask] = {}
+        self.tasks: Dict[str, BuildTask] = {}
         self.build_queue: list[str] = []
         self.completed_builds: list[str] = []
 
@@ -86,8 +84,8 @@ class BuilderEngine:
         component_type: str,
         target_path: str,
         description: str = "",
-        dependencies: Optional[list[str]] = None,
-        parameters: Optional[dict[str, Any]] = None,
+        dependencies: list[str] = None,
+        parameters: dict[str, Any] = None,
     ) -> BuildTask:
         """Create a new build task."""
         task = BuildTask(
@@ -112,7 +110,7 @@ class BuilderEngine:
             return task.result
 
         task.status = BuildStatus.IN_PROGRESS
-        task.started_at = datetime.utcnow().isoformat()
+        task.started_at = datetime.now(UTC).isoformat()
 
         # Check dependencies
         for dep_id in task.dependencies:
@@ -123,7 +121,7 @@ class BuilderEngine:
                     success=False,
                     errors=[f"Dependency {dep_id} not completed"],
                 )
-                task.completed_at = datetime.utcnow().isoformat()
+                task.completed_at = datetime.now(UTC).isoformat()
                 return task.result
 
         # Execute based on component type
@@ -144,7 +142,7 @@ class BuilderEngine:
 
             task.result = result
             task.status = BuildStatus.COMPLETED if result.success else BuildStatus.FAILED
-            task.completed_at = datetime.utcnow().isoformat()
+            task.completed_at = datetime.now(UTC).isoformat()
 
             if result.success:
                 self.completed_builds.append(task_id)
@@ -159,7 +157,7 @@ class BuilderEngine:
                 success=False,
                 errors=[str(e)],
             )
-            task.completed_at = datetime.utcnow().isoformat()
+            task.completed_at = datetime.now(UTC).isoformat()
             return task.result
 
     def _build_subsystem(self, task: BuildTask) -> BuildResult:
@@ -221,7 +219,7 @@ class BuilderEngine:
 
         return results
 
-    def get_task_status(self, task_id: str) -> Optional[dict[str, Any]]:
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """Get status of a build task."""
         task = self.tasks.get(task_id)
         if not task:
@@ -232,7 +230,7 @@ class BuilderEngine:
         """List all build tasks."""
         return [t.to_dict() for t in self.tasks.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get builder engine status."""
         pending = sum(1 for t in self.tasks.values() if t.status == BuildStatus.PENDING)
         in_progress = sum(1 for t in self.tasks.values() if t.status == BuildStatus.IN_PROGRESS)

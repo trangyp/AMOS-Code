@@ -6,6 +6,7 @@ Grammar based on 9-tuple: (O, S, D, C, E, M, U, V, A, R)
 
 from __future__ import annotations
 
+
 from .ast_nodes import (
     ActionDecl,
     AdaptDecl,

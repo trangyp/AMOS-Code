@@ -10,7 +10,6 @@ Key formulas:
 - dS/dt = drift rate indicating system instability
 """
 
-from __future__ import annotations
 
 import math
 from dataclasses import dataclass
@@ -44,7 +43,7 @@ class EntanglementMatrix:
         dim_i: StateDimension,
         dim_j: StateDimension,
         coupling: float,
-        metadata: dict | None = None,
+        metadata: dict  = None,
     ) -> None:
         """Set coupling between two dimensions."""
         key = (dim_i.value, dim_j.value)
@@ -101,7 +100,7 @@ class EntanglementMatrix:
 
 
 def compute_entanglement_from_graph(
-    graph: GraphSubstrate, dimension_map: dict[str, StateDimension]
+    graph: GraphSubstrate, dimension_map: Dict[str, StateDimension]
 ) -> EntanglementMatrix:
     """
     Compute entanglement matrix from graph substrate.
@@ -113,6 +112,7 @@ def compute_entanglement_from_graph(
 
     # Count edges between dimensions
     from collections import defaultdict
+from typing import Set
 
     cross_edges = defaultdict(lambda: defaultdict(int))
 

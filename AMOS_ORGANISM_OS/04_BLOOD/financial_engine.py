@@ -9,13 +9,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -51,7 +49,7 @@ class ResourceAllocation:
     memory_mb: float
     cost_estimate: float
     priority: int
-    allocated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    allocated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class FinancialEngine:
@@ -95,7 +93,7 @@ class FinancialEngine:
         state_file = self.data_dir / "financial_state.json"
 
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "budgets": {
                 cat: {
                     "category": b.category,
@@ -138,7 +136,7 @@ class FinancialEngine:
 
         entry = CashflowEntry(
             id=str(uuid.uuid4())[:8],
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat() + "Z",
             direction=direction,
             amount=amount,
             category=category,
@@ -173,7 +171,7 @@ class FinancialEngine:
         self.allocations[task_id] = allocation
         return allocation
 
-    def release_resources(self, task_id: str) -> Optional[float]:
+    def release_resources(self, task_id: str) -> float:
         """Release resources and return actual cost."""
         if task_id not in self.allocations:
             return None
@@ -193,7 +191,7 @@ class FinancialEngine:
 
         return actual_cost
 
-    def get_budget_status(self, category: str) -> Optional[Dict[str, Any]]:
+    def get_budget_status(self, category: str) -> Dict[str, Any]:
         """Get budget status for a category."""
         if category not in self.budgets:
             return None
@@ -218,7 +216,7 @@ class FinancialEngine:
 
     def get_cashflow_summary(self, days: int = 30) -> Dict[str, Any]:
         """Get cashflow summary for period."""
-        cutoff = datetime.utcnow() - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
         cutoff_str = cutoff.isoformat()
 
         recent = [c for c in self.cashflow if c.timestamp > cutoff_str]
@@ -237,7 +235,7 @@ class FinancialEngine:
 
     def estimate_task_cost(
         self, complexity: str = "medium", duration_minutes: float = 5.0
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Estimate cost for a task."""
         # Complexity multipliers
         multipliers = {"low": 0.5, "medium": 1.0, "high": 2.0, "very_high": 4.0}

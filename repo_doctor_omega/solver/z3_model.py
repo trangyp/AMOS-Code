@@ -6,7 +6,6 @@ Encodes repository invariants as SMT constraints and provides:
 - Unsat core extraction for diagnosis
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -14,6 +13,7 @@ from typing import Any
 # Optional Z3 import - gracefully handle if not installed
 try:
     import z3
+from typing import List, Optional
 
     Z3_AVAILABLE = True
 except ImportError:
@@ -27,7 +27,7 @@ class InvariantConstraint:
 
     name: str
     constraint_str: str  # e.g., "Initialized = true -> LoadedSpecsCount > 0"
-    variables: list[str] = field(default_factory=list)
+    variables: List[str] = field(default_factory=list)
     is_hard: bool = True  # Hard constraints must hold
     weight: float = 1.0  # For soft constraints
 
@@ -40,7 +40,7 @@ class RepairCandidate:
     target: str  # file or symbol to modify
     cost: float  # Edit cost
     blast_radius: float  # Estimated impact
-    invariant_impact: list[str] = field(default_factory=list)
+    invariant_impact: List[str] = field(default_factory=list)
 
 
 class Z3Model:
@@ -73,8 +73,8 @@ class Z3Model:
     """
 
     def __init__(self):
-        self.constraints: dict[str, InvariantConstraint] = {}
-        self.variables: dict[str, Any] = {}  # Z3 variables
+        self.constraints: Dict[str, InvariantConstraint] = {}
+        self.variables: Dict[str, Any] = {}  # Z3 variables
         self._solver: Any = None
         self._optimizer: Any = None
 
@@ -233,7 +233,7 @@ class Z3Model:
         result = self._solver.check()
         return result == z3.sat
 
-    def get_unsat_core(self) -> list[str]:
+    def get_unsat_core(self) -> List[str]:
         """Get unsat core - minimum contradictory facts.
 
         Returns:
@@ -252,7 +252,7 @@ class Z3Model:
         except Exception:
             return []
 
-    def optimize_repairs(self, candidates: list[RepairCandidate]) -> list[RepairCandidate]:
+    def optimize_repairs(self, candidates: List[RepairCandidate]) -> List[RepairCandidate]:
         """Optimize repair order using Z3 optimizer.
 
         Minimizes:
@@ -308,7 +308,7 @@ class Z3Model:
         # Fallback: return all sorted by cost
         return sorted(candidates, key=lambda r: r.cost)
 
-    def get_model_values(self) -> dict[str, Any]:
+    def get_model_values(self) -> Dict[str, Any]:
         """Get variable assignments from current model.
 
         Returns:

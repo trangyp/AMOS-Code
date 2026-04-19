@@ -26,8 +26,6 @@ Examples:
     python amos_launcher.py status
 """
 
-from __future__ import annotations
-
 import argparse
 import subprocess
 import sys
@@ -53,7 +51,7 @@ def print_component(name: str, status: str, details: str = ""):
     print(f"  {icon} {name:20s} {status:10s} {details}")
 
 
-def check_ecosystem() -> dict[str, Any]:
+def check_ecosystem() -> Dict[str, Any]:
     """Check status of all 15 ecosystem components."""
     print_header("AMOS ECOSYSTEM STATUS CHECK")
 

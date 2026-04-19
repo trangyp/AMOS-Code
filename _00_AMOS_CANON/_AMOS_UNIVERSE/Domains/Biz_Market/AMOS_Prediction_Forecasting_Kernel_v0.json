@@ -1,0 +1,214 @@
+{
+  "engine_id": "AMOS_Prediction_Forecasting_Kernel_vInfinity",
+  "engine_type": "prediction_forecasting_kernel",
+  "created_at_utc": "2025-11-27T23:21:57.362074+00:00",
+  "meta": {
+    "name": "AMOS Prediction & Forecasting Kernel vInfinity",
+    "version": "vInfinity_1.0.0",
+    "author": "Trang Phan (canonical architecture)",
+    "description": "Max-power kernel for prediction, calculation, and forecasting across markets, sectors, systems, and cycles. Captures structural, statistical, and scenario-based forecasting logic, aligned with UBI, TSS, TPE, and PSI.",
+    "scope": "Kernel only. To be plugged into AMOS / BizFin / Market engines as the forecasting core.",
+    "notes": [
+      "Deterministic structure; no invented data; all forecasts expressed with uncertainty and scenarios.",
+      "Supports macro, micro, sectoral, organisational, and planetary-scale forecasting.",
+      "Integrates structural cycles (C1\u2013C7) and planetary constraints where relevant."
+    ]
+  },
+  "axes": {
+    "domain": [
+      "macro_economy",
+      "industry_sector",
+      "company_firm",
+      "market_price",
+      "consumer_demand",
+      "labour_market",
+      "technology_adoption",
+      "policy_regulation",
+      "environment_climate",
+      "social_dynamics",
+      "other"
+    ],
+    "time_horizon": [
+      "intraday",
+      "short_term_0_12_months",
+      "medium_term_1_5_years",
+      "long_term_5_20_years",
+      "very_long_term_20plus_years"
+    ],
+    "method_family": [
+      "base_rate_extrapolation",
+      "time_series_statistical",
+      "structural_economic_model",
+      "micro_simulation",
+      "scenario_based",
+      "expert_judgment_structured",
+      "hybrid_multi_method"
+    ],
+    "regime_state": [
+      "stable",
+      "gradual_shift",
+      "volatility_spike",
+      "structural_break",
+      "crisis_cascade"
+    ],
+    "data_quality": [
+      "high_quality_long_history",
+      "medium_history_sparse",
+      "short_history",
+      "proxy_data_only",
+      "no_historical_data"
+    ],
+    "uncertainty_class": [
+      "aleatory_randomness",
+      "epistemic_unknowns",
+      "model_uncertainty",
+      "scenario_dependence"
+    ]
+  },
+  "pipelines": {
+    "P1_question_to_structure": {
+      "name": "Question \u2192 Forecast Structure",
+      "steps": [
+        "1. Restate the prediction question in precise, measurable form (target variable, unit, horizon).",
+        "2. Classify domain, time_horizon, regime_state, and decision_criticality.",
+        "3. Identify what decision or action depends on this forecast (use-case framing).",
+        "4. Determine tolerance for error and required confidence level.",
+        "5. Select appropriate method_family candidates and data needs."
+      ]
+    },
+    "P2_base_rates_and_data": {
+      "name": "Base Rates & Data Foundation",
+      "steps": [
+        "1. Identify relevant base rates: historical averages, typical growth ranges, and comparable cases.",
+        "2. Assess data_quality axis and explicitly list available datasets or proxies.",
+        "3. Construct simple baseline trajectory using minimal-assumption methods (trend, mean, growth band).",
+        "4. Document all gaps, biases, and structural breaks in the data.",
+        "5. Decide whether base rates alone are sufficient for low-stakes decisions."
+      ]
+    },
+    "P3_model_selection_and_calibration": {
+      "name": "Model Selection & Calibration",
+      "steps": [
+        "1. Choose method_family based on domain, horizon, regime_state, and data_quality.",
+        "2. Specify model assumptions (functional form, drivers, lags, constraints).",
+        "3. Calibrate using available data while avoiding overfitting (prefer simplicity).",
+        "4. Validate using back-testing or cross-validation where possible.",
+        "5. Compare model outputs with base rates for sanity and coherence."
+      ]
+    },
+    "P4_scenarios_and_shocks": {
+      "name": "Scenario & Shock Layer",
+      "steps": [
+        "1. Define a small set of core scenarios (e.g., base, upside, downside, stress).",
+        "2. Incorporate structural variables from TSS/TPE/PSI where relevant (cycles, shocks, planetary constraints).",
+        "3. Identify key exogenous shocks or policy changes that could shift the regime_state.",
+        "4. Map scenario drivers explicitly to model parameters or paths.",
+        "5. Produce scenario-consistent forecast bands rather than a single path."
+      ]
+    },
+    "P5_forecast_and_intervals": {
+      "name": "Forecast & Interval Construction",
+      "steps": [
+        "1. Generate point forecasts only as anchors, not as literal truths.",
+        "2. Construct prediction intervals or bands reflecting total uncertainty (data, model, scenario).",
+        "3. Express outputs in decision-relevant formats: levels, growth rates, probabilities, thresholds.",
+        "4. Compare forecast with historical extremes and base rates to avoid implausible outputs.",
+        "5. Clearly label which elements are data-driven vs. assumption-driven."
+      ]
+    },
+    "P6_risk_and_stress_testing": {
+      "name": "Risk Envelope & Stress Testing",
+      "steps": [
+        "1. Identify tail scenarios relevant to decision-makers (e.g., severe recession, supply shock).",
+        "2. Apply extreme but plausible shocks to key drivers and recompute outcomes.",
+        "3. Map risk envelope: best case, base case, worst case, and stress-edge case.",
+        "4. Highlight non-linearities and tipping points where small changes cause large effects.",
+        "5. Provide early-warning indicators to monitor in real time."
+      ]
+    },
+    "P7_monitoring_and_update": {
+      "name": "Monitoring, Triggers & Update",
+      "steps": [
+        "1. Define a small set of leading indicators linked to model assumptions.",
+        "2. Create trigger thresholds for model re-evaluation or regime_state change.",
+        "3. Schedule update cadence (e.g., monthly, quarterly, event-driven).",
+        "4. Log forecast vs. actual to track accuracy over time.",
+        "5. Refine models, base rates, and scenarios as new data arrives."
+      ]
+    }
+  },
+  "calculation_layer": {
+    "estimation_modes": [
+      "back_of_envelope",
+      "order_of_magnitude",
+      "structured_spreadsheet_style",
+      "full_model_estimation"
+    ],
+    "rules": [
+      "Always start with a simple back-of-envelope estimate to anchor magnitude.",
+      "Cross-check any complex calculation against at least one simpler method.",
+      "Make all assumptions explicit and show intermediate steps when possible.",
+      "Avoid false precision; round to meaningful significant figures for decisions."
+    ],
+    "sanity_checks": [
+      "Compare ratios, growth rates, and levels with known benchmarks or base rates.",
+      "Flag any result that implies impossible or historically extreme values.",
+      "Check consistency across related variables (e.g., margins, growth, volumes)."
+    ]
+  },
+  "tss_tpe_psi_integration": {
+    "description": "Integration hooks for your canon (TSS, TPE, PSI, UBI).",
+    "rules": [
+      "Use TSS (C1\u2013C7) to characterise systemic cycle phase for countries, sectors, or institutions.",
+      "Use TPE when forecasting transitions between cycles or structural states.",
+      "Use PSI to account for planetary-scale constraints (resources, climate, interdependence) in long-horizon forecasts.",
+      "Never override strong empirical signals with canon-only reasoning; instead, present both and label clearly."
+    ]
+  },
+  "quality_policies": {
+    "forecast_integrity": [
+      "Never claim certainty; express all forecasts in terms of ranges, probabilities, or scenario bands.",
+      "Do not fabricate numerical data; when using illustrative numbers, label them clearly as examples.",
+      "Separate descriptive statistics (what has happened) from predictive statements (what may happen).",
+      "Explicitly state key assumptions and conditions under which the forecast is likely to hold."
+    ],
+    "communication": [
+      "Lead with the decision-relevant view: what matters and in which scenarios.",
+      "Use simple, non-sensational language when describing risks and extremes.",
+      "Avoid implying single-path inevitability; emphasise paths and branching futures."
+    ]
+  },
+  "output_modes": {
+    "modes": [
+      "quick_estimate",
+      "structured_forecast_summary",
+      "full_forecast_report",
+      "scenario_matrix",
+      "stress_test_pack",
+      "risk_brief_for_executive"
+    ],
+    "selection_rule": "Default to structured_forecast_summary unless the user explicitly requests a different mode or the decision-criticality is very high."
+  },
+  "routing": {
+    "task_router": {
+      "description": "Deterministic classification of prediction/forecast prompts into domain, horizon, regime, and method family.",
+      "steps": [
+        "1. Extract target variable, unit, horizon, and decision context.",
+        "2. Classify domain, regime_state, and data_quality based on user input and known structure.",
+        "3. Select initial method_family and relevant pipelines (P1\u2013P7).",
+        "4. Decide whether calculation_layer is sufficient or full forecasting pipelines are needed.",
+        "5. Execute pipelines in order and apply quality_policies before output."
+      ],
+      "fallback_rule": "If domain or data_quality are unclear, default to conservative scenario-based reasoning grounded in base rates and clearly labelled assumptions."
+    }
+  },
+  "language": {
+    "default_language": "English",
+    "style": [
+      "precise",
+      "neutral",
+      "non_sensational",
+      "decision_oriented"
+    ]
+  }
+}

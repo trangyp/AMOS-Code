@@ -16,10 +16,14 @@ This allows the brain to answer:
 
 from __future__ import annotations
 
+
+import logging
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Import temporal analyzer
 try:
@@ -45,7 +49,7 @@ class TemporalContext:
 
     current_commit: str
     current_timestamp: str
-    parent_commit: str | None
+    parent_commit: str
 
     # Drift measurements
     drift_norm: float = 0.0  # ||ΔΨ||
@@ -75,8 +79,8 @@ class FirstBadCommitResult:
 
     invariant_name: str
     first_bad_commit: str
-    first_bad_timestamp: str | None
-    previous_commit: str | None
+    first_bad_timestamp: str
+    previous_commit: str
     previous_was_valid: bool
     causality_probability: float
     search_space_size: int
@@ -128,7 +132,7 @@ class TemporalCognitionBridge:
             return "unknown"
 
     @property
-    def parent_commit(self) -> str | None:
+    def parent_commit(self) -> str:
         """Get parent commit hash."""
         try:
             result = subprocess.run(
@@ -144,8 +148,8 @@ class TemporalCognitionBridge:
 
     def get_temporal_context(
         self,
-        prev_state: dict[str, float] | None = None,
-        curr_state: dict[str, float] | None = None,
+        prev_state: dict[str, float] = None,
+        curr_state: dict[str, float] = None,
     ) -> TemporalContext:
         """Get complete temporal context comparing current to previous state."""
         if not TEMPORAL_AVAILABLE or not STATE_AVAILABLE:
@@ -244,8 +248,8 @@ class TemporalCognitionBridge:
 
     def check_drift_alerts(
         self,
-        prev_state: dict[str, float] | None = None,
-        curr_state: dict[str, float] | None = None,
+        prev_state: dict[str, float] = None,
+        curr_state: dict[str, float] = None,
     ) -> list[DriftAlert]:
         """Check for significant drift and return alerts."""
         alerts = []
@@ -336,7 +340,7 @@ class TemporalCognitionBridge:
 
         return state
 
-    def _get_state_at_commit(self, commit: str) -> dict[str, float] | None:
+    def _get_state_at_commit(self, commit: str) -> dict[str, float]:
         """Get state vector at a specific commit."""
         # This would require checking out or reading cached state
         # For now, return None to indicate unavailable
@@ -420,8 +424,8 @@ class TemporalCognitionBridge:
                     }
                 )
 
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Failed to load temporal history: {e}")
 
         return history
 
@@ -432,6 +436,6 @@ class TemporalCognitionBridge:
         return math.exp(-action)
 
 
-def get_temporal_bridge(repo_path: str | Path | None = None) -> TemporalCognitionBridge:
+def get_temporal_bridge(repo_path: str | Path = None) -> TemporalCognitionBridge:
     """Factory function to get temporal bridge instance."""
     return TemporalCognitionBridge(repo_path or ".")

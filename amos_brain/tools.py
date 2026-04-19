@@ -1,13 +1,12 @@
 """AMOS Brain Tools - Register brain capabilities as clawspring tools."""
 
-from __future__ import annotations
-
 import json
 import os
 import sys
 
 # Setup paths
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 from amos_brain.integration import get_amos_integration
 

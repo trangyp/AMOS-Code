@@ -16,15 +16,13 @@ Usage:
     python amos_performance_benchmark.py --report     # Generate report
 """
 
-from __future__ import annotations
-
 import sys
 import time
 import tracemalloc
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -38,7 +36,7 @@ class BenchmarkResult:
     duration_ms: float
     memory_kb: float
     success: bool
-    error: Optional[str] = None
+    error: str = None
 
 
 class AMOSPerformanceBenchmark:
@@ -52,10 +50,10 @@ class AMOSPerformanceBenchmark:
     """
 
     def __init__(self):
-        self.results: list[BenchmarkResult] = []
-        self.report_data: dict[str, Any] = {}
+        self.results: List[BenchmarkResult] = []
+        self.report_data: Dict[str, Any] = {}
 
-    def run_all(self) -> dict[str, Any]:
+    def run_all(self) -> Dict[str, Any]:
         """Run complete benchmark suite."""
         print("=" * 70)
         print("  ⏱️ AMOS PERFORMANCE BENCHMARK - Round 17")
@@ -484,7 +482,7 @@ class AMOSPerformanceBenchmark:
                 )
             )
 
-    def _generate_report(self) -> dict[str, Any]:
+    def _generate_report(self) -> Dict[str, Any]:
         """Generate comprehensive benchmark report."""
         print("\n" + "=" * 70)
         print("  📊 PERFORMANCE BENCHMARK REPORT")

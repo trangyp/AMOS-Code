@@ -3,8 +3,6 @@
 Tests all components of the maximum-strength repository mechanics engine.
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import tempfile

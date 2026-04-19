@@ -1,0 +1,14 @@
+# AMOS Equation API Requirements
+# Core dependencies
+numpy>=1.24.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+
+# Optional acceleration (install for best performance)
+# jax[cpu]>=0.4.20  # Uncomment for CPU-only JAX
+# jax[cuda12_pip]>=0.4.20  # Uncomment for CUDA 12 support
+
+# Optional additional features
+# numba>=0.58.0  # Optional JIT compilation
+# requests>=2.31.0  # For health checks

@@ -14,8 +14,6 @@ E_fleet = Σr ωr E_repo_r
 Where ωr is repository criticality weight.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -30,8 +28,8 @@ class RepoFleetMember:
     name: str
     path: Path
     criticality: float  # Weight ωr (0.0 to 1.0)
-    state_vector: StateVector | None = None
-    tags: list[str] = field(default_factory=list)
+    state_vector: Optional[StateVector] = None
+    tags: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
@@ -53,9 +51,9 @@ class InvariantCluster:
     """
 
     invariant: BasisState
-    affected_repos: list[str]
+    affected_repos: List[str]
     severity: float
-    shared_root_cause: str | None = None
+    shared_root_cause: str = None
 
     def to_dict(self) -> dict:
         return {
@@ -73,8 +71,8 @@ class SharedContract:
 
     name: str
     contract_type: str  # "api_schema", "shared_lib", "protocol", etc.
-    repos: list[str]
-    violations: list[dict] = field(default_factory=list)
+    repos: List[str]
+    violations: List[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
@@ -94,11 +92,11 @@ class FleetState:
 
     def __init__(self, name: str = "default_fleet"):
         self.name = name
-        self.repos: dict[str, RepoFleetMember] = {}
+        self.repos: Dict[str, RepoFleetMember] = {}
         self.H = Hamiltonian()
 
     def add_repo(
-        self, name: str, path: Path | str, criticality: float = 1.0, tags: list[str] | None = None
+        self, name: str, path: Path | str, criticality: float = 1.0, tags: List[str] = None
     ):
         """Add a repository to the fleet."""
         self.repos[name] = RepoFleetMember(
@@ -149,7 +147,7 @@ class FleetState:
 
         return total_energy / total_weight
 
-    def find_invariant_clusters(self) -> list[InvariantCluster]:
+    def find_invariant_clusters(self) -> List[InvariantCluster]:
         """
         Find clusters of repos failing the same invariant.
 
@@ -186,7 +184,7 @@ class FleetState:
         clusters.sort(key=lambda c: c.severity, reverse=True)
         return clusters
 
-    def _infer_shared_cause(self, invariant: BasisState, repos: list[str]) -> str | None:
+    def _infer_shared_cause(self, invariant: BasisState, repos: List[str]) -> str:
         """Infer possible shared root cause for invariant failures."""
         # Simple heuristics based on invariant type
         cause_map = {
@@ -198,7 +196,7 @@ class FleetState:
         }
         return cause_map.get(invariant)
 
-    def find_shared_contracts(self) -> list[SharedContract]:
+    def find_shared_contracts(self) -> List[SharedContract]:
         """
         Find contracts shared across multiple repos.
 
@@ -225,7 +223,7 @@ class FleetState:
 
         return contracts
 
-    def get_critical_repos(self, threshold: float = 0.7) -> list[RepoFleetMember]:
+    def get_critical_repos(self, threshold: float = 0.7) -> List[RepoFleetMember]:
         """Get repos with criticality above threshold."""
         return [r for r in self.repos.values() if r.criticality >= threshold]
 
@@ -242,7 +240,7 @@ class FleetState:
         unhealthy.sort(key=lambda x: x[1], reverse=True)
         return unhealthy
 
-    def generate_batch_plan(self) -> dict[str, Any]:
+    def generate_batch_plan(self) -> Dict[str, Any]:
         """
         Generate batch remediation plan for fleet.
 
@@ -354,7 +352,7 @@ class FleetManager:
     """
 
     def __init__(self):
-        self.fleets: dict[str, FleetState] = {}
+        self.fleets: Dict[str, FleetState] = {}
 
     def create_fleet(self, name: str) -> FleetState:
         """Create a new fleet."""

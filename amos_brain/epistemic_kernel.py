@@ -22,9 +22,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
+from __future__ import annotations
+
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class EpistemicStatus(Enum):
@@ -316,7 +319,7 @@ class EpistemicKernel:
 
 
 # Global instance for easy access
-_epistemic_kernel: Optional[EpistemicKernel] = None
+_epistemic_kernel: EpistemicKernel | None = None
 
 
 def get_epistemic_kernel() -> EpistemicKernel:

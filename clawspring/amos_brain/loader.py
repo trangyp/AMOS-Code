@@ -45,7 +45,7 @@ class BrainLoader:
         self.creator: dict[str, Any] = {}
         self._loaded = False
 
-    def load(self) -> BrainLoader:
+    def load(self) -> "BrainLoader":
         """Load all brain configurations."""
         if self._loaded:
             return self

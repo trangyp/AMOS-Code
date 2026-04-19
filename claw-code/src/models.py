@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 
@@ -40,9 +38,9 @@ class UsageSummary:
 @dataclass
 class PortingBacklog:
     title: str
-    modules: list[PortingModule] = field(default_factory=list)
+    modules: List[PortingModule] = field(default_factory=list)
 
-    def summary_lines(self) -> list[str]:
+    def summary_lines(self) -> List[str]:
         return [
             f"- {module.name} [{module.status}] — {module.responsibility} (from {module.source_hint})"
             for module in self.modules

@@ -22,8 +22,6 @@ Subsystem amplitudes:
 αk = exp(- Σj wk,j · oj)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -43,11 +41,11 @@ class Observable:
     dimension: StateDimension
     severity: float  # 0-1, higher is worse
     weight: float = 1.0  # Weight for subsystem amplitude calculation
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
     source_file: str = ""
     line_number: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "dimension": self.dimension.value,
@@ -1922,13 +1920,13 @@ class ObservableSet:
     }
 
     def __init__(self):
-        self.observables: list[Observable] = []
+        self.observables: List[Observable] = []
 
     def add(self, obs: Observable) -> None:
         """Add an observable measurement."""
         self.observables.append(obs)
 
-    def get_for_dimension(self, dim: StateDimension) -> list[Observable]:
+    def get_for_dimension(self, dim: StateDimension) -> List[Observable]:
         """Get all observables for a dimension."""
         return [o for o in self.observables if o.dimension == dim]
 
@@ -1957,11 +1955,11 @@ class ObservableSet:
         """Calculate all dimension amplitudes."""
         return {dim: self.calculate_amplitude(dim) for dim in StateDimension}
 
-    def critical_observables(self, threshold: float = 0.5) -> list[Observable]:
+    def critical_observables(self, threshold: float = 0.5) -> List[Observable]:
         """Get observables above severity threshold."""
         return [o for o in self.observables if o.severity >= threshold]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize observable set."""
         return {
             "count": len(self.observables),

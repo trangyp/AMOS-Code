@@ -8,11 +8,9 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from amos_worker_engine import (
     CodeWorker,
@@ -28,8 +26,8 @@ class CognitiveTask:
     id: str
     description: str
     cognitive_mode: str  # exploratory_mapping, diagnostic_analysis, etc.
-    execution_plan: dict[str, Any]
-    context: dict[str, Any]
+    execution_plan: Dict[str, Any]
+    context: Dict[str, Any]
     immune_validated: bool = False
 
 
@@ -41,9 +39,9 @@ class CognitiveExecutionResult:
     success: bool
     cognitive_analysis: str
     execution_output: str
-    artifacts: list[Path]
-    law_compliance: dict[str, Any]
-    metadata: dict[str, Any]
+    artifacts: List[Path]
+    law_compliance: Dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class BrainMuscleBridge:
@@ -72,7 +70,7 @@ class BrainMuscleBridge:
         self,
         task_description: str,
         mode: str = "diagnostic_analysis",
-        context: Optional[dict] = None,
+        context: dict = None,
     ) -> CognitiveExecutionResult:
         """Execute a task with full cognitive processing.
 
@@ -110,8 +108,8 @@ class BrainMuscleBridge:
         )
 
     def _convert_analysis_to_plan(
-        self, analysis: dict[str, Any], original_task: str
-    ) -> dict[str, Any]:
+        self, analysis: Dict[str, Any], original_task: str
+    ) -> Dict[str, Any]:
         """Convert cognitive analysis to executable plan."""
         synthesis = analysis.get("synthesis", {})
 
@@ -143,9 +141,7 @@ class BrainMuscleBridge:
             "domain": domain,
         }
 
-    def _fallback_execution(
-        self, task_description: str, context: Optional[dict]
-    ) -> CognitiveExecutionResult:
+    def _fallback_execution(self, task_description: str, context: dict) -> CognitiveExecutionResult:
         """Execute without cognitive runtime (fallback)."""
         # Direct execution via file worker
         result = self.file_worker.write(
@@ -164,7 +160,7 @@ class BrainMuscleBridge:
         )
 
     def generate_architecture(
-        self, requirements: str, target_file: Optional[str] = None
+        self, requirements: str, target_file: str = None
     ) -> CognitiveExecutionResult:
         """Generate system architecture using cognitive design mode.
 
@@ -208,7 +204,7 @@ class BrainMuscleBridge:
         )
 
     def audit_and_execute(
-        self, decision: str, rationale: str, action: Optional[dict] = None
+        self, decision: str, rationale: str, action: dict = None
     ) -> CognitiveExecutionResult:
         """Audit a decision before executing.
 

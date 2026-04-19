@@ -7,8 +7,6 @@ Tracks repository state across commits:
 - git bisect integration
 """
 
-from __future__ import annotations
-
 from .bisect_runner import BisectResult, BisectRunner
 from .drift_tracker import DriftTracker
 from .temporal_substrate import CommitState, DriftMeasurement, TemporalSubstrate

@@ -12,8 +12,6 @@ Detection Patterns:
 - Performance bottlenecks
 """
 
-from __future__ import annotations
-
 import ast
 import hashlib
 from dataclasses import dataclass
@@ -31,7 +29,7 @@ class StructuralHotspot:
     description: str
     recurrence_count: int
     suggested_evolution: str
-    affected_files: list[str]
+    affected_files: List[str]
 
 
 class EvolutionOpportunityDetector:
@@ -42,9 +40,9 @@ class EvolutionOpportunityDetector:
     def __init__(self, amos_root: str) -> None:
         """Initialize detector with AMOS codebase root."""
         self.amos_root = Path(amos_root)
-        self.hotspots: list[StructuralHotspot] = []
+        self.hotspots: List[StructuralHotspot] = []
 
-    def detect_all(self) -> list[StructuralHotspot]:
+    def detect_all(self) -> List[StructuralHotspot]:
         """Run all detection patterns and return hotspots."""
         self.hotspots = []
 

@@ -4,14 +4,13 @@ Handles data transformations, conversions, and mappings
 between different formats and structures.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -20,8 +19,8 @@ class TransformContext:
 
     source_format: str = ""
     target_format: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
-    options: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    options: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -33,10 +32,10 @@ class Transform:
     transform_type: str = ""  # map, filter, aggregate, convert
     input_schema: str = ""
     output_schema: str = ""
-    config: dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    config: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -53,8 +52,8 @@ class TransformEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.transforms: dict[str, Transform] = {}
-        self.transformers: dict[str, Callable] = {}
+        self.transforms: Dict[str, Transform] = {}
+        self.transformers: Dict[str, Callable] = {}
 
         self._load_transforms()
         self._register_default_transformers()
@@ -83,7 +82,7 @@ class TransformEngine:
         """Save transforms to disk."""
         transforms_file = self.data_dir / "transforms.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "transforms": [t.to_dict() for t in self.transforms.values()],
         }
         transforms_file.write_text(json.dumps(data, indent=2))
@@ -106,7 +105,7 @@ class TransformEngine:
         transform_type: str,
         input_schema: str = "",
         output_schema: str = "",
-        config: Optional[dict] = None,
+        config: dict = None,
     ) -> Transform:
         """Create a new transform definition."""
         transform = Transform(
@@ -125,7 +124,7 @@ class TransformEngine:
         transform_id: str,
         data: Any,
         context: Optional[TransformContext] = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Execute a transform on data."""
         transform = self.transforms.get(transform_id)
         if not transform:
@@ -160,7 +159,7 @@ class TransformEngine:
         data: Any,
         transform_ids: list[str],
         context: Optional[TransformContext] = None,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Apply multiple transforms in sequence."""
         current_data = data
         applied = []
@@ -205,9 +204,9 @@ class TransformEngine:
     def _add_timestamp(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Add timestamp to data."""
         if isinstance(data, dict):
-            data["_timestamp"] = datetime.utcnow().isoformat()
+            data["_timestamp"] = datetime.now(UTC).isoformat()
             return data
-        return {"data": data, "_timestamp": datetime.utcnow().isoformat()}
+        return {"data": data, "_timestamp": datetime.now(UTC).isoformat()}
 
     def _flatten(self, data: Any, config: dict, context: TransformContext) -> Any:
         """Flatten nested structure."""

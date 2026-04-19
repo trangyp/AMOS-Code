@@ -1,0 +1,299 @@
+# AMOS API Gateway v1.0.0
+# Traefik Dynamic Configuration for Microservices
+#
+# Features:
+#   - Edge proxy with SSL termination
+#   - Path-based routing (REST, GraphQL, WebSocket)
+#   - Middleware chain (auth, rate limit, compress)
+#   - Load balancing with health checks
+#   - Circuit breaker protection
+#   - Automatic service discovery
+#   - Let's Encrypt SSL automation
+#
+# Usage:
+#   docker-compose -f docker-compose.traefik.yml up -d
+#
+# Endpoints:
+#   https://api.amos.localhost     -> REST API
+#   https://graphql.amos.localhost -> GraphQL API
+#   https://ws.amos.localhost    -> WebSocket
+#   https://traefik.amos.localhost -> Dashboard
+
+version: "3.8"
+
+services:
+  # Traefik API Gateway
+  traefik:
+    image: traefik:v3.0
+    container_name: amos-traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard (optional, protected)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./traefik/certs:/etc/traefik/certs:ro
+      - traefik-letsencrypt:/letsencrypt
+    environment:
+      - TZ=UTC
+    networks:
+      - amos-gateway
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      # Dashboard router
+      - "traefik.http.routers.traefik-dashboard.rule=Host(\`traefik.amos.localhost\`)"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth@file"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # AMOS REST API
+  amos-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-api
+    restart: unless-stopped
+    environment:
+      - AMOS_MODE=api
+      - DATABASE_URL=postgresql+asyncpg://amos:${DB_PASSWORD:-amos}@postgres:5432/amos
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - LOG_LEVEL=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - amos-gateway
+      - amos-internal
+    labels:
+      - "traefik.enable=true"
+      # REST API Router
+      - "traefik.http.routers.amos-api.rule=Host(\`api.amos.localhost\`) || PathPrefix(\`/api\`)"
+      - "traefik.http.routers.amos-api.service=amos-api"
+      - "traefik.http.routers.amos-api.tls=true"
+      - "traefik.http.routers.amos-api.middlewares=rate-limit@file,compress@file"
+      # Service definition
+      - "traefik.http.services.amos-api.loadbalancer.server.port=8080"
+      - "traefik.http.services.amos-api.loadbalancer.healthcheck.path=/health"
+      - "traefik.http.services.amos-api.loadbalancer.healthcheck.interval=10s"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  # AMOS GraphQL API
+  amos-graphql:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-graphql
+    restart: unless-stopped
+    environment:
+      - AMOS_MODE=graphql
+      - DATABASE_URL=postgresql+asyncpg://amos:${DB_PASSWORD:-amos}@postgres:5432/amos
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - amos-gateway
+      - amos-internal
+    labels:
+      - "traefik.enable=true"
+      # GraphQL Router
+      - "traefik.http.routers.amos-graphql.rule=Host(\`graphql.amos.localhost\`) || Path(\`/graphql\`)"
+      - "traefik.http.routers.amos-graphql.service=amos-graphql"
+      - "traefik.http.routers.amos-graphql.tls=true"
+      - "traefik.http.routers.amos-graphql.middlewares=rate-limit@file,compress@file"
+      # Service definition
+      - "traefik.http.services.amos-graphql.loadbalancer.server.port=8080"
+
+  # AMOS WebSocket Server
+  amos-websocket:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-websocket
+    restart: unless-stopped
+    environment:
+      - AMOS_MODE=websocket
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - amos-gateway
+      - amos-internal
+    labels:
+      - "traefik.enable=true"
+      # WebSocket Router
+      - "traefik.http.routers.amos-ws.rule=Host(\`ws.amos.localhost\`) || PathPrefix(\`/ws\`)"
+      - "traefik.http.routers.amos-ws.service=amos-websocket"
+      - "traefik.http.routers.amos-ws.tls=true"
+      - "traefik.http.routers.amos-ws.middlewares=auth@file"
+      # WebSocket upgrade headers
+      - "traefik.http.services.amos-websocket.loadbalancer.server.port=8080"
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: amos-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=amos
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-amos}
+      - POSTGRES_DB=amos
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - amos-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amos -d amos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=false"
+
+  # Redis Cache + Broker
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - amos-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    labels:
+      - "traefik.enable=false"
+
+  # Celery Worker
+  amos-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-worker
+    restart: unless-stopped
+    environment:
+      - AMOS_MODE=worker
+      - DATABASE_URL=postgresql+asyncpg://amos:${DB_PASSWORD:-amos}@postgres:5432/amos
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - amos-internal
+    labels:
+      - "traefik.enable=false"
+    deploy:
+      replicas: 2
+
+  # Flower - Celery Monitoring
+  flower:
+    image: mher/flower:latest
+    container_name: amos-flower
+    restart: unless-stopped
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_BASIC_AUTH=${FLOWER_AUTH:-admin:admin}
+    depends_on:
+      - redis
+    networks:
+      - amos-internal
+      - amos-gateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amos-flower.rule=Host(\`flower.amos.localhost\`)"
+      - "traefik.http.routers.amos-flower.service=amos-flower"
+      - "traefik.http.routers.amos-flower.tls=true"
+      - "traefik.http.routers.amos-flower.middlewares=auth@file"
+      - "traefik.http.services.amos-flower.loadbalancer.server.port=5555"
+
+  # Prometheus Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amos-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - amos-internal
+      - amos-gateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amos-prometheus.rule=Host(\`prometheus.amos.localhost\`)"
+      - "traefik.http.routers.amos-prometheus.service=amos-prometheus"
+      - "traefik.http.routers.amos-prometheus.tls=true"
+      - "traefik.http.routers.amos-prometheus.middlewares=auth@file"
+      - "traefik.http.services.amos-prometheus.loadbalancer.server.port=9090"
+
+  # Grafana Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: amos-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - amos-internal
+      - amos-gateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amos-grafana.rule=Host(\`grafana.amos.localhost\`)"
+      - "traefik.http.routers.amos-grafana.service=amos-grafana"
+      - "traefik.http.routers.amos-grafana.tls=true"
+      - "traefik.http.services.amos-grafana.loadbalancer.server.port=3000"
+
+networks:
+  amos-gateway:
+    driver: bridge
+    external: false
+  amos-internal:
+    driver: bridge
+    internal: true  # No external access
+
+volumes:
+  postgres_data:
+  redis_data:
+  traefik-letsencrypt:
+  prometheus_data:
+  grafana_data:

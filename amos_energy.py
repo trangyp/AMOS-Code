@@ -14,7 +14,7 @@ Key constraints:
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -103,8 +103,8 @@ class EnergyAllocator:
 
     def __init__(self, pool: EnergyPool):
         self.pool = pool
-        self.consumers: dict[str, EnergyConsumer] = {}
-        self.allocation_history: list[dict] = []
+        self.consumers: Dict[str, EnergyConsumer] = {}
+        self.allocation_history: List[dict] = []
 
     def register_consumer(self, consumer: EnergyConsumer):
         """Register an energy consumer."""
@@ -157,7 +157,7 @@ class EnergyAllocator:
         # Record history
         self.allocation_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "available": self.pool.available,
                 "allocations": allocations.copy(),
             }
@@ -165,7 +165,7 @@ class EnergyAllocator:
 
         return allocations
 
-    def get_consumer_status(self) -> list[dict]:
+    def get_consumer_status(self) -> List[dict]:
         """Get status of all consumers."""
         return [
             {
@@ -222,7 +222,7 @@ class EnergyMonitor:
 
     def __init__(self, pool: EnergyPool):
         self.pool = pool
-        self.usage_history: list[dict] = []
+        self.usage_history: List[dict] = []
         self.efficiency_metrics: dict[str, list[float]] = defaultdict(list)
 
     def record_usage(self, consumer_id: str, energy_used: float, output_produced: float):
@@ -231,7 +231,7 @@ class EnergyMonitor:
 
         self.usage_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "consumer": consumer_id,
                 "energy": energy_used,
                 "output": output_produced,
@@ -302,14 +302,14 @@ class AMOSEnergySystem:
         )
 
         # Subsystem energy pools
-        self.pools: dict[str, EnergyPool] = {
+        self.pools: Dict[str, EnergyPool] = {
             "compute": self.compute_pool,
             "memory": EnergyPool(name="memory", total_capacity=200, current_level=200),
             "io": EnergyPool(name="io", total_capacity=100, current_level=100),
         }
 
         # Allocators for each pool
-        self.allocators: dict[str, EnergyAllocator] = {
+        self.allocators: Dict[str, EnergyAllocator] = {
             name: EnergyAllocator(pool) for name, pool in self.pools.items()
         }
 
@@ -367,7 +367,7 @@ class AMOSEnergySystem:
             allocations[pool_name] = allocator.allocate()
         return allocations
 
-    def check_energy_constraints(self) -> dict[str, Any]:
+    def check_energy_constraints(self) -> Dict[str, Any]:
         """Check all energy constraints."""
         results = {}
 

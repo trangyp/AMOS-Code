@@ -3,8 +3,6 @@
 Validates the 8 invariant laws across all substrates.
 """
 
-from __future__ import annotations
-
 from .ast_nodes import Program
 
 
@@ -18,7 +16,7 @@ class InvariantChecker:
     """Check AMOSL invariants."""
 
     def __init__(self):
-        self.violations: list[str] = []
+        self.violations: List[str] = []
 
     def validate(self, program: Program) -> bool:
         """Validate all 8 invariants.

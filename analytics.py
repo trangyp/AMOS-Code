@@ -43,7 +43,7 @@ class Analytics:
             else 0,
         }
 
-    def get_popular_queries(self, limit: int = 10) -> list[dict]:
+    def get_popular_queries(self, limit: int = 10) -> List[dict]:
         """Get most popular query types."""
         # Get recent query history
         queries = self.db.get_query_history(limit=1000)

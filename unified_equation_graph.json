@@ -1,0 +1,179 @@
+{
+  "equations": [
+    {
+      "id": "f9e32e885f6f",
+      "name": "Type Preservation",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "type_theory",
+      "expression": "\\Gamma \\vdash e : T \\land e \\to e' \\Rightarrow \\Gamma \\vdash e' : T",
+      "description": "Well-typed programs never get stuck",
+      "language": "universal",
+      "invariants": [
+        "type_safety",
+        "progress",
+        "preservation"
+      ]
+    },
+    {
+      "id": "d95f4a69eec3",
+      "name": "Church-Rosser Theorem",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "lambda_calculus",
+      "expression": "M \\to N_1 \\land M \\to N_2 \\Rightarrow \\exists P: N_1 \\to^* P \\land N_2 \\to^* P",
+      "description": "Normal forms are unique when they exist",
+      "language": "universal",
+      "invariants": [
+        "confluence"
+      ]
+    },
+    {
+      "id": "17afa006ad74",
+      "name": "Beta Reduction",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "lambda_calculus",
+      "expression": "(\\lambda x.M) N \\to_\\beta M[x := N]",
+      "description": "Fundamental computation rule of lambda calculus",
+      "language": "universal",
+      "invariants": [
+        "confluence"
+      ]
+    },
+    {
+      "id": "97dee0105b72",
+      "name": "Hoare Triple",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "hoare_logic",
+      "expression": "\\{P\\} S \\{Q\\}",
+      "description": "If P holds before S, and S terminates, then Q holds after",
+      "language": "universal",
+      "invariants": [
+        "correctness"
+      ]
+    },
+    {
+      "id": "0b31ec3b6ec9",
+      "name": "Monad Left Identity",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "type_theory",
+      "expression": "\\text{return } a \\bind f \\equiv f \\, a",
+      "description": "Monad law: return is left identity for bind",
+      "language": "haskell",
+      "invariants": [
+        "associativity"
+      ]
+    },
+    {
+      "id": "1231629f86cf",
+      "name": "Rust Ownership XOR",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "memory_safety",
+      "expression": "(\\&mut T) \\oplus (\\&T, \\&T, ...)",
+      "description": "At any point: either one mutable reference OR any number of immutable references",
+      "language": "rust",
+      "invariants": [
+        "memory_safety",
+        "data_race_freedom"
+      ]
+    },
+    {
+      "id": "3520e21597f4",
+      "name": "Haskell Purity",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "language_specific",
+      "expression": "\\forall x: f(x) = f(x) \\quad \\frac{\\partial (global\\_state)}{\\partial f} = 0",
+      "description": "Referential transparency: same input always gives same output, no side effects",
+      "language": "haskell",
+      "invariants": [
+        "referential_transparency"
+      ]
+    },
+    {
+      "id": "c11d0e7b9c7b",
+      "name": "Java Happens-Before",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "concurrency",
+      "expression": "hb(a, b) \\Rightarrow effects(a) \\text{ visible to } b",
+      "description": "Happens-before relation ensures visibility across threads",
+      "language": "java",
+      "invariants": [
+        "memory_visibility",
+        "happens_before"
+      ]
+    },
+    {
+      "id": "399b1602cec8",
+      "name": "Linearizability",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "concurrency",
+      "expression": "\\exists \\pi: sequential \\land \\forall op_1, op_2: finishes(op_1) < starts(op_2) \\Rightarrow \\pi(op_1) < \\pi(op_2)",
+      "description": "Concurrent execution equivalent to some sequential execution preserving real-time order",
+      "language": "universal",
+      "invariants": [
+        "consistency",
+        "correctness"
+      ]
+    },
+    {
+      "id": "810b95e74f96",
+      "name": "Bayes Theorem",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "probabilistic",
+      "expression": "P(\\theta|D) = \\frac{P(D|\\theta) \\cdot P(\\theta)}{P(D)}",
+      "description": "Posterior equals likelihood times prior divided by evidence",
+      "language": "universal",
+      "invariants": [
+        "probability_conservation"
+      ]
+    },
+    {
+      "id": "9456cd9c0c16",
+      "name": "Quantum State Normalization",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "quantum",
+      "expression": "|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\quad |\\alpha|^2 + |\\beta|^2 = 1",
+      "description": "Qubit state is normalized superposition of basis states",
+      "language": "qsharp",
+      "invariants": [
+        "unitarity",
+        "normalization"
+      ]
+    },
+    {
+      "id": "456650de0fb1",
+      "name": "SSA Single Assignment",
+      "source": "knowledge_bridge",
+      "domain": null,
+      "category": "compiler_theory",
+      "expression": "\\forall v: assigned(v) = 1",
+      "description": "Each variable assigned exactly once in static code",
+      "language": "universal",
+      "invariants": [
+        "single_assignment",
+        "dominance_frontier"
+      ]
+    }
+  ],
+  "stats": {
+    "total_equations": 12,
+    "by_source": {
+      "knowledge_bridge": 12
+    },
+    "languages": 5,
+    "categories": 9,
+    "invariants": 17,
+    "superbrain_available": true,
+    "knowledge_available": true,
+    "status": "operational"
+  }
+}

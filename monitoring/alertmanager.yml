@@ -1,0 +1,109 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@amos.ai'
+  smtp_auth_username: 'alerts@amos.ai'
+  smtp_auth_password: ''
+  resolve_timeout: 5m
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/amos.tmpl'
+
+# Routing tree for alert delivery
+route:
+  group_by: ['alertname', 'severity', 'service']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'default'
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-pagerduty'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+      continue: true
+
+    # AMOS orchestrator specific alerts
+    - match:
+        service: amos-orchestrator
+      receiver: 'amos-team-slack'
+      group_by: ['alertname', 'severity']
+      group_wait: 30s
+
+    # Module activation failures
+    - match:
+        alertname: AMOSModuleActivationFailed
+      receiver: 'amos-team-slack'
+      group_by: ['module_name']
+      group_wait: 1m
+
+    # Low activation rate
+    - match:
+        alertname: AMOSLowActivationRate
+      receiver: 'amos-team-slack'
+      group_wait: 5m
+
+    # Warning alerts - email only
+    - match:
+        severity: warning
+      receiver: 'warning-email'
+      group_wait: 5m
+      group_interval: 30m
+      repeat_interval: 4h
+
+# Receivers define notification endpoints
+receivers:
+  - name: 'default'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#amos-alerts'
+        title: '{% raw %}{{ template "amos.title" . }}{% endraw %}'
+        text: '{% raw %}{{ template "amos.message" . }}{% endraw %}'
+        send_resolved: true
+
+  - name: 'critical-pagerduty'
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_SERVICE_KEY}'
+        description: '{% raw %}{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}{% endraw %}'
+        severity: '{% raw %}{{ .GroupLabels.severity }}{% endraw %}'
+        send_resolved: true
+
+  - name: 'amos-team-slack'
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#amos-operations'
+        title: '{% raw %}{{ template "amos.title" . }}{% endraw %}'
+        text: '{% raw %}{{ template "amos.message" . }}{% endraw %}'
+        send_resolved: true
+        actions:
+          - type: button
+            text: 'Runbook'
+            url: 'https://wiki.amos.ai/runbooks/{% raw %}{{ .GroupLabels.alertname }}{% endraw %}'
+          - type: button
+            text: 'Dashboard'
+            url: 'http://grafana:3000/d/amos-orchestrator'
+
+  - name: 'warning-email'
+    email_configs:
+      - to: 'amos-team@amos.ai'
+        headers:
+          Subject: '{% raw %}[AMOS Alert] {{ .GroupLabels.alertname }}{% endraw %}'
+        text: '{% raw %}{{ template "amos.email" . }}{% endraw %}'
+        send_resolved: true
+
+# Inhibit alerts when higher severity exists
+inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: ['alertname', 'service']
+
+  - source_match:
+      severity: warning
+    target_match:
+      severity: info
+    equal: ['alertname', 'service']

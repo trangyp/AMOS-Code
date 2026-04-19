@@ -15,8 +15,9 @@ Invariants enforced:
 - I_pathology_aware: All critical decisions check for pathologies first
 - I_repair_safe: Repairs don't increase pathology count
 """
-
 from __future__ import annotations
+
+
 
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -24,6 +25,7 @@ from typing import Any
 
 # Import architecture bridge components
 from .architecture_bridge import (
+from typing import Dict, List, Optional
     ArchitecturalCognitionBridge,
     ArchitecturalContext,
     get_architecture_bridge,
@@ -58,13 +60,13 @@ class PathologyAwareContext:
     low_pathologies: int = 0
 
     # Pathology breakdown by type
-    authority_issues: list[ArchitecturalPathology] = field(default_factory=list)
-    layer_leakage: list[ArchitecturalPathology] = field(default_factory=list)
-    bootstrap_issues: list[ArchitecturalPathology] = field(default_factory=list)
-    shadow_deps: list[ArchitecturalPathology] = field(default_factory=list)
-    artifact_issues: list[ArchitecturalPathology] = field(default_factory=list)
-    migration_issues: list[ArchitecturalPathology] = field(default_factory=list)
-    mode_issues: list[ArchitecturalPathology] = field(default_factory=list)
+    authority_issues: List[ArchitecturalPathology] = field(default_factory=list)
+    layer_leakage: List[ArchitecturalPathology] = field(default_factory=list)
+    bootstrap_issues: List[ArchitecturalPathology] = field(default_factory=list)
+    shadow_deps: List[ArchitecturalPathology] = field(default_factory=list)
+    artifact_issues: List[ArchitecturalPathology] = field(default_factory=list)
+    migration_issues: List[ArchitecturalPathology] = field(default_factory=list)
+    mode_issues: List[ArchitecturalPathology] = field(default_factory=list)
 
     # Composite scores
     pathology_score: float = 1.0  # 1.0 = clean, 0.0 = max pathologies
@@ -104,12 +106,12 @@ class PathologyValidationResult:
     approved: bool
     decision_type: str
     pathology_score: float
-    issues: list[str]
-    warnings: list[str]
-    risks: list[str]
-    suggested_constraints: list[str]
+    issues: List[str]
+    warnings: List[str]
+    risks: List[str]
+    suggested_constraints: List[str]
     requires_human_review: bool
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
 
 class PathologyAwareArchitectureBridge:
@@ -121,9 +123,9 @@ class PathologyAwareArchitectureBridge:
     - Architecture + pathology unified context
     """
 
-    def __init__(self, repo_path: str | Path | None = None):
+    def __init__(self, repo_path: str | Path  = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
-        self._arch_bridge: ArchitecturalCognitionBridge | None = None
+        self._arch_bridge: Optional[ArchitecturalCognitionBridge] = None
         self._pathology_engine: Any = None
 
     @property
@@ -153,7 +155,7 @@ class PathologyAwareArchitectureBridge:
         pathology_results = self.pathology_engine.detect_all()
 
         # Flatten all pathologies
-        all_pathologies: list[ArchitecturalPathology] = []
+        all_pathologies: List[ArchitecturalPathology] = []
         for detector_pathologies in pathology_results.values():
             all_pathologies.extend(detector_pathologies)
 
@@ -231,8 +233,8 @@ class PathologyAwareArchitectureBridge:
     def validate_with_pathologies(
         self,
         action: str,
-        target_files: list[str],
-        context: dict[str, Any] | None = None,
+        target_files: List[str],
+        context: Dict[str, Any]  = None,
     ) -> PathologyValidationResult:
         """Validate an action against both architecture and pathologies.
 
@@ -395,7 +397,7 @@ class PathologyAwareArchitectureBridge:
 
 
 def get_pathology_aware_bridge(
-    repo_path: str | Path | None = None,
+    repo_path: str | Path  = None,
 ) -> PathologyAwareArchitectureBridge:
     """Factory function to get pathology-aware bridge instance."""
     return PathologyAwareArchitectureBridge(repo_path)

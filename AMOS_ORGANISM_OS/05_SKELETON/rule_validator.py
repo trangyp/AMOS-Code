@@ -31,7 +31,7 @@ class Rule:
     message: str
     severity: str = "error"
     enabled: bool = True
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -42,16 +42,16 @@ class ValidationResult:
     outcome: ValidationOutcome
     target: str
     message: str
-    details: dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    details: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class RuleValidator:
     """Validates business and operational rules."""
 
     def __init__(self):
-        self._rules: dict[str, Rule] = {}
-        self._history: list[ValidationResult] = []
+        self._rules: Dict[str, Rule] = {}
+        self._history: List[ValidationResult] = []
         self._setup_default_rules()
 
     def _setup_default_rules(self):
@@ -82,7 +82,7 @@ class RuleValidator:
         self._rules[rule.id] = rule
         return rule.id
 
-    def validate(self, target: str, context: dict[str, Any] = None) -> list[ValidationResult]:
+    def validate(self, target: str, context: Dict[str, Any] = None) -> List[ValidationResult]:
         """Validate target against all enabled rules."""
         results = []
         ctx = context or {}
@@ -97,7 +97,7 @@ class RuleValidator:
 
         return results
 
-    def _check_rule(self, rule: Rule, target: str, context: dict[str, Any]) -> ValidationResult:
+    def _check_rule(self, rule: Rule, target: str, context: Dict[str, Any]) -> ValidationResult:
         """Check a single rule."""
         # Simple rule checking - can be extended
         if rule.rule_type == RuleType.REQUIRED:
@@ -117,17 +117,17 @@ class RuleValidator:
             details={"rule_type": rule.rule_type.value},
         )
 
-    def _check_required(self, rule: Rule, target: str, context: dict[str, Any]) -> bool:
+    def _check_required(self, rule: Rule, target: str, context: Dict[str, Any]) -> bool:
         """Check required condition."""
         # Simplified implementation
         return True
 
-    def _check_forbidden(self, rule: Rule, target: str, context: dict[str, Any]) -> bool:
+    def _check_forbidden(self, rule: Rule, target: str, context: Dict[str, Any]) -> bool:
         """Check if forbidden condition exists."""
         # Simplified implementation
         return False
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get validator status."""
         failures = [r for r in self._history if r.outcome == ValidationOutcome.FAIL]
         return {

@@ -1,0 +1,128 @@
+# AMOS Traefik Static Configuration
+# Core settings for Traefik API Gateway
+
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: false  # Protected by middleware
+  debug: false
+
+ping:
+  manualRouting: false
+
+log:
+  level: INFO
+  format: json
+
+accessLog:
+  format: json
+  fields:
+    defaultMode: keep
+    names:
+      ClientAddr: keep
+      ClientHost: keep
+      RequestHost: keep
+      RequestMethod: keep
+      RequestPath: keep
+      RequestProtocol: keep
+      RequestScheme: keep
+      RequestPort: keep
+      RouterName: keep
+      ServiceName: keep
+      Status: keep
+      Duration: keep
+      OriginDuration: keep
+      Overhead: keep
+      Time: keep
+      TLSVersion: keep
+      TLSCipher: keep
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addServicesLabels: true
+    addRoutersLabels: true
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+        options: default
+      middlewares:
+        - security-headers@file
+
+  traefik:
+    address: ":8080"
+
+providers:
+  docker:
+    exposedByDefault: false
+    watch: true
+    network: amos-gateway
+
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@amos.ai
+      storage: /letsencrypt/acme.json
+      tlsChallenge: {}
+      httpChallenge:
+        entryPoint: web
+
+  # Self-signed for local development
+  selfsigned:
+    acme:
+      email: admin@amos.ai
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      storage: /letsencrypt/acme-staging.json
+      tlsChallenge: {}
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+      curvePreferences:
+        - CurveP521
+        - CurveP384
+      sniStrict: true
+
+    modern:
+      minVersion: VersionTLS13
+      sniStrict: true
+
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/amos.localhost.crt
+        keyFile: /etc/traefik/certs/amos.localhost.key
+
+# Circuit breaker configuration
+circuitBreaker:
+  expression: "LatencyAtQuantileMS(50.0) > 100"
+
+# Retry configuration
+retry:
+  attempts: 3
+  initialInterval: 100ms

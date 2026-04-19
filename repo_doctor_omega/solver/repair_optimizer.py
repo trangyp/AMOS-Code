@@ -6,8 +6,6 @@ Computes optimal repair plans using:
 3. Repair sequencing based on subsystem dependencies
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -25,7 +23,7 @@ class RepairAction:
     estimated_cost: float
     blast_radius: float
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "step": self.step,
@@ -53,7 +51,7 @@ class RepairPlan:
         """Number of repair actions."""
         return len(self.actions)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "repository": self.repository,
@@ -122,7 +120,7 @@ class RepairOptimizer:
         self,
         repo_path: str,
         violations: list[Any],
-        candidates: list[RepairCandidate] | None = None,
+        candidates: list[RepairCandidate] = None,
     ) -> RepairPlan:
         """Compute optimal repair plan for repository.
 

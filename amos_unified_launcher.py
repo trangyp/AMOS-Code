@@ -44,7 +44,7 @@ class AMOSUnifiedRuntime:
         self.knowledge_loaded = False
         self._init_status = {}
 
-    def initialize(self) -> dict[str, Any]:
+    def initialize(self) -> Dict[str, Any]:
         """Initialize all systems and return status."""
         print("🚀 AMOS Unified Runtime Initialization")
         print("=" * 60)
@@ -106,7 +106,7 @@ class AMOSUnifiedRuntime:
         print("=" * 60)
         return self._init_status
 
-    def _catalog_knowledge(self) -> dict[str, Any]:
+    def _catalog_knowledge(self) -> Dict[str, Any]:
         """Catalog available knowledge."""
         brain_path = REPO_ROOT / "_AMOS_BRAIN"
         stats = {"engines": 0, "countries": 0, "sectors": 0, "manuals": 0}
@@ -206,7 +206,7 @@ class AMOSUnifiedRuntime:
 
         return getattr(self.organism, attr, None)
 
-    def think(self, problem: str, context: dict = None) -> dict[str, Any]:
+    def think(self, problem: str, context: dict = None) -> Dict[str, Any]:
         """Use brain to think about a problem."""
         if not self.brain:
             return {"error": "Brain not initialized"}
@@ -224,7 +224,7 @@ class AMOSUnifiedRuntime:
         except Exception as e:
             return {"error": str(e)}
 
-    def decide(self, question: str, context: dict = None) -> dict[str, Any]:
+    def decide(self, question: str, context: dict = None) -> Dict[str, Any]:
         """Use brain to make a decision."""
         if not self.brain:
             return {"error": "Brain not initialized"}
@@ -242,7 +242,7 @@ class AMOSUnifiedRuntime:
         except Exception as e:
             return {"error": str(e)}
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get unified runtime status."""
         if not self._init_status:
             return {"error": "Not initialized"}

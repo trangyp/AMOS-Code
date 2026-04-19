@@ -15,27 +15,26 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
-import tempfile
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from evolution_contract_registry import EvolutionContract, EvolutionStatus
+from .evolution_contract_registry import EvolutionContract
 
 
 @dataclass
 class RollbackSnapshot:
     """A snapshot for potential rollback."""
-    
+
     snapshot_id: str
     evolution_id: str
     timestamp: str
     file_hashes: dict[str, str] = field(default_factory=dict)
     backup_path: str = ""
     description: str = ""
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "snapshot_id": self.snapshot_id,
@@ -50,15 +49,15 @@ class RollbackSnapshot:
 @dataclass
 class RollbackResult:
     """Result of a rollback operation."""
-    
+
     success: bool
     evolution_id: str
     snapshot_id: str
-    restored_files: list[str] = field(default_factory=list)
-    failed_files: list[str] = field(default_factory=list)
+    restored_files: List[str] = field(default_factory=list)
+    failed_files: List[str] = field(default_factory=list)
     error_message: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "success": self.success,
@@ -73,35 +72,37 @@ class RollbackResult:
 
 class RollbackGuard:
     """Guards against irreversible self-evolution.
-    
+
     Implements reversibility per AMOS Self-Evolution Law 8:
     - Create snapshots before mutation
     - Track file changes with hashes
     - Restore from snapshots on failure
     - Ensure no evolution is permanent until verified
-    
+
     Usage:
         guard = RollbackGuard("/path/to/repo")
-        
+
         # Before evolution
         snapshot = guard.create_snapshot(contract)
-        
+
         # Attempt evolution...
-        
+
         # If failure, rollback
         result = guard.rollback(snapshot.snapshot_id)
     """
-    
-    def __init__(self, repo_root: str = ".", backup_dir: str | None = None):
+
+    def __init__(self, repo_root: str = ".", backup_dir: str = None):
         self.repo_root = Path(repo_root).resolve()
-        self.backup_dir = Path(backup_dir) if backup_dir else self.repo_root / ".amos_rollback_backups"
+        self.backup_dir = (
+            Path(backup_dir) if backup_dir else self.repo_root / ".amos_rollback_backups"
+        )
         self.backup_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Registry of snapshots
         self._snapshots: dict[str, RollbackSnapshot] = {}
         self._registry_file = self.backup_dir / "snapshot_registry.json"
         self._load_registry()
-    
+
     def _load_registry(self) -> None:
         """Load snapshot registry from disk."""
         if self._registry_file.exists():
@@ -119,15 +120,15 @@ class RollbackGuard:
                     self._snapshots[snapshot.snapshot_id] = snapshot
             except Exception:
                 pass  # Start fresh if registry corrupted
-    
+
     def _save_registry(self) -> None:
         """Save snapshot registry to disk."""
         data = {
             "snapshots": [s.to_dict() for s in self._snapshots.values()],
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(UTC).isoformat(),
         }
         self._registry_file.write_text(json.dumps(data, indent=2))
-    
+
     def _compute_file_hash(self, filepath: Path) -> str:
         """Compute SHA256 hash of file contents."""
         try:
@@ -135,21 +136,23 @@ class RollbackGuard:
             return hashlib.sha256(content).hexdigest()[:16]
         except Exception:
             return ""
-    
-    def create_snapshot(self, contract: EvolutionContract, description: str = "") -> RollbackSnapshot:
+
+    def create_snapshot(
+        self, contract: EvolutionContract, description: str = ""
+    ) -> RollbackSnapshot:
         """Create a snapshot before applying an evolution.
-        
+
         Captures current state of all target files for potential rollback.
         """
         snapshot_id = f"snap_{contract.evolution_id}_{int(time.time())}"
-        timestamp = datetime.utcnow().isoformat()
-        
+        timestamp = datetime.now(UTC).isoformat()
+
         # Create backup directory for this snapshot
         snapshot_backup_dir = self.backup_dir / snapshot_id
         snapshot_backup_dir.mkdir(parents=True, exist_ok=True)
-        
+
         file_hashes: dict[str, str] = {}
-        
+
         # Backup each target file
         for target_file in contract.target_files:
             source_path = self.repo_root / target_file
@@ -157,14 +160,14 @@ class RollbackGuard:
                 # Compute hash
                 file_hash = self._compute_file_hash(source_path)
                 file_hashes[target_file] = file_hash
-                
+
                 # Copy to backup
                 backup_path = snapshot_backup_dir / target_file.replace("/", "_").replace("\\", "_")
                 try:
                     shutil.copy2(source_path, backup_path)
                 except Exception:
                     pass
-        
+
         snapshot = RollbackSnapshot(
             snapshot_id=snapshot_id,
             evolution_id=contract.evolution_id,
@@ -173,34 +176,34 @@ class RollbackGuard:
             backup_path=str(snapshot_backup_dir),
             description=description or f"Pre-evolution backup for {contract.evolution_id}",
         )
-        
+
         self._snapshots[snapshot_id] = snapshot
         self._save_registry()
-        
+
         return snapshot
-    
+
     def verify_snapshot_integrity(self, snapshot_id: str) -> bool:
         """Verify that a snapshot's backed up files are intact."""
         if snapshot_id not in self._snapshots:
             return False
-        
+
         snapshot = self._snapshots[snapshot_id]
         backup_dir = Path(snapshot.backup_path)
-        
+
         if not backup_dir.exists():
             return False
-        
+
         # Verify each backed up file exists
         for target_file in snapshot.file_hashes.keys():
             backup_file = backup_dir / target_file.replace("/", "_").replace("\\", "_")
             if not backup_file.exists():
                 return False
-        
+
         return True
-    
+
     def rollback(self, snapshot_id: str, dry_run: bool = False) -> RollbackResult:
         """Rollback to a previous snapshot.
-        
+
         Restores all files from the snapshot backup.
         """
         if snapshot_id not in self._snapshots:
@@ -210,10 +213,10 @@ class RollbackGuard:
                 snapshot_id=snapshot_id,
                 error_message=f"Snapshot {snapshot_id} not found",
             )
-        
+
         snapshot = self._snapshots[snapshot_id]
         backup_dir = Path(snapshot.backup_path)
-        
+
         if not backup_dir.exists():
             return RollbackResult(
                 success=False,
@@ -221,10 +224,10 @@ class RollbackGuard:
                 snapshot_id=snapshot_id,
                 error_message=f"Backup directory missing: {backup_dir}",
             )
-        
-        restored: list[str] = []
-        failed: list[str] = []
-        
+
+        restored: List[str] = []
+        failed: List[str] = []
+
         if dry_run:
             # Just report what would be restored
             for target_file in snapshot.file_hashes.keys():
@@ -233,7 +236,7 @@ class RollbackGuard:
                     restored.append(target_file)
                 else:
                     failed.append(target_file)
-            
+
             return RollbackResult(
                 success=len(failed) == 0,
                 evolution_id=snapshot.evolution_id,
@@ -242,12 +245,12 @@ class RollbackGuard:
                 failed_files=failed,
                 error_message="Dry run - no changes made" if failed else "",
             )
-        
+
         # Perform actual rollback
         for target_file in snapshot.file_hashes.keys():
             source_path = self.repo_root / target_file
             backup_file = backup_dir / target_file.replace("/", "_").replace("\\", "_")
-            
+
             if backup_file.exists():
                 try:
                     # Ensure parent directory exists
@@ -258,7 +261,7 @@ class RollbackGuard:
                     failed.append(f"{target_file}: {e}")
             else:
                 failed.append(f"{target_file}: backup missing")
-        
+
         return RollbackResult(
             success=len(failed) == 0,
             evolution_id=snapshot.evolution_id,
@@ -267,15 +270,15 @@ class RollbackGuard:
             failed_files=failed,
             error_message=f"Failed to restore {len(failed)} files" if failed else "",
         )
-    
+
     def cleanup_snapshot(self, snapshot_id: str) -> bool:
         """Remove a snapshot after successful evolution (no longer needed)."""
         if snapshot_id not in self._snapshots:
             return False
-        
+
         snapshot = self._snapshots[snapshot_id]
         backup_dir = Path(snapshot.backup_path)
-        
+
         try:
             if backup_dir.exists():
                 shutil.rmtree(backup_dir)
@@ -284,15 +287,15 @@ class RollbackGuard:
             return True
         except Exception:
             return False
-    
-    def get_snapshots_for_evolution(self, evolution_id: str) -> list[RollbackSnapshot]:
+
+    def get_snapshots_for_evolution(self, evolution_id: str) -> List[RollbackSnapshot]:
         """Get all snapshots associated with an evolution."""
         return [s for s in self._snapshots.values() if s.evolution_id == evolution_id]
-    
+
     def list_all_snapshots(self) -> list[dict[str, Any]]:
         """List all snapshots with metadata."""
         return [s.to_dict() for s in self._snapshots.values()]
-    
+
     def can_rollback(self, evolution_id: str) -> bool:
         """Check if an evolution can be rolled back."""
         snapshots = self.get_snapshots_for_evolution(evolution_id)
@@ -305,14 +308,14 @@ def main():
     print("AMOS ROLLBACK GUARD - E004 SELF-EVOLUTION SUBSYSTEM")
     print("=" * 70)
     print()
-    
+
     guard = RollbackGuard()
-    print(f"✓ Rollback Guard initialized")
+    print("✓ Rollback Guard initialized")
     print(f"  Backup directory: {guard.backup_dir}")
-    
+
     # Create a mock evolution contract
     from evolution_contract_registry import EvolutionContract
-    
+
     contract = EvolutionContract(
         evolution_id="E004_TEST",
         owner="AMOS Brain",
@@ -326,32 +329,32 @@ def main():
         target_modules=["rollback_guard"],
     )
     print(f"\n✓ Test contract created: {contract.evolution_id}")
-    
+
     # Create snapshot
-    print(f"\nCreating pre-evolution snapshot...")
+    print("\nCreating pre-evolution snapshot...")
     snapshot = guard.create_snapshot(contract, "Test snapshot before evolution")
     print(f"✓ Snapshot created: {snapshot.snapshot_id}")
     print(f"  Files backed up: {len(snapshot.file_hashes)}")
-    
+
     # Verify snapshot integrity
     if guard.verify_snapshot_integrity(snapshot.snapshot_id):
-        print(f"✓ Snapshot integrity verified")
-    
+        print("✓ Snapshot integrity verified")
+
     # Test dry-run rollback
-    print(f"\nTesting dry-run rollback...")
+    print("\nTesting dry-run rollback...")
     result = guard.rollback(snapshot.snapshot_id, dry_run=True)
     print(f"✓ Dry-run result: {result.success}")
     print(f"  Would restore: {len(result.restored_files)} files")
-    
+
     # List snapshots
     all_snaps = guard.list_all_snapshots()
     print(f"\n✓ Total snapshots in registry: {len(all_snaps)}")
-    
+
     # Cleanup
-    print(f"\nCleaning up test snapshot...")
+    print("\nCleaning up test snapshot...")
     if guard.cleanup_snapshot(snapshot.snapshot_id):
-        print(f"✓ Test snapshot cleaned up")
-    
+        print("✓ Test snapshot cleaned up")
+
     print("\n" + "=" * 70)
     print("E004 ROLLBACK GUARD OPERATIONAL")
     print("=" * 70)

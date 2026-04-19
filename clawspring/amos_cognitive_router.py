@@ -1,11 +1,9 @@
 """AMOS Active Cognitive Router - Implements the brain's orchestration pattern."""
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -14,13 +12,13 @@ class TaskAnalysis:
 
     primary_domain: str
     risk_level: str  # low, medium, high, critical
-    detected_domains: list[str]
+    detected_domains: List[str]
     requires_reasoning: bool
     requires_code: bool
     requires_multi_agent: bool
-    suggested_engines: list[str]
-    law_violations: list[str] = field(default_factory=list)
-    quadrant_check: dict[str, bool] = field(default_factory=dict)
+    suggested_engines: List[str]
+    law_violations: List[str] = field(default_factory=list)
+    quadrant_check: Dict[str, bool] = field(default_factory=dict)
 
 
 class CognitiveRouter:
@@ -117,16 +115,16 @@ class CognitiveRouter:
     ]
 
     def __init__(self):
-        self._global_laws: Optional[dict[str, Any]] = None
+        self._global_laws: dict[str, Any] = None
 
     @property
-    def global_laws(self) -> dict[str, Any]:
+    def global_laws(self) -> Dict[str, Any]:
         """Lazy-load global laws to prevent blocking during initialization."""
         if self._global_laws is None:
             self._global_laws = self._load_brain_laws()
         return self._global_laws
 
-    def _load_brain_laws(self) -> dict[str, Any]:
+    def _load_brain_laws(self) -> Dict[str, Any]:
         """Load global laws from AMOS brain."""
         brain_path = (
             Path(__file__).resolve().parent.parent
@@ -212,8 +210,8 @@ class CognitiveRouter:
         )
 
     def _suggest_engines(
-        self, domains: list[str], requires_code: bool, requires_reasoning: bool
-    ) -> list[str]:
+        self, domains: List[str], requires_code: bool, requires_reasoning: bool
+    ) -> List[str]:
         """Suggest cognitive engines based on task characteristics."""
         engines = []
 
@@ -248,7 +246,7 @@ class CognitiveRouter:
 
         return list(dict.fromkeys(engines))  # Remove duplicates
 
-    def _check_quadrants(self, task_lower: str, domains: list[str]) -> dict[str, bool]:
+    def _check_quadrants(self, task_lower: str, domains: List[str]) -> dict[str, bool]:
         """Check Rule of 4: biological, technical, economic, environmental."""
         return {
             "biological": any(d in ["ubi", "medical", "health"] for d in domains),
@@ -258,7 +256,7 @@ class CognitiveRouter:
             "environmental": "environment" in task_lower or "sustainable" in task_lower,
         }
 
-    def _check_law_violations(self, task_lower: str) -> list[str]:
+    def _check_law_violations(self, task_lower: str) -> List[str]:
         """Check for potential violations of AMOS global laws."""
         violations = []
 
@@ -276,7 +274,7 @@ class CognitiveRouter:
 
         return violations
 
-    def apply_global_laws(self, analysis: TaskAnalysis) -> list[str]:
+    def apply_global_laws(self, analysis: TaskAnalysis) -> List[str]:
         """Apply AMOS global laws to task analysis."""
         guidance = []
 
@@ -455,7 +453,7 @@ class CognitiveRouter:
 
 
 # Global singleton
-_router: CognitiveRouter | None = None
+_router: Optional[CognitiveRouter] = None
 
 
 def get_router() -> CognitiveRouter:
@@ -466,7 +464,7 @@ def get_router() -> CognitiveRouter:
     return _router
 
 
-def analyze_task(task: str) -> dict[str, Any]:
+def analyze_task(task: str) -> Dict[str, Any]:
     """Convenience function to analyze a task."""
     router = get_router()
     analysis = router.analyze(task)

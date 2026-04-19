@@ -9,8 +9,6 @@ Each Hk measures "energy" in that subsystem.
 Low energy = healthy, high energy = degraded.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -41,7 +39,7 @@ class RepositoryHamiltonian:
     This measures total repository degradation energy.
     """
 
-    def __init__(self, weights: dict[StateDimension, float] | None = None):
+    def __init__(self, weights: dict[StateDimension, float] = None):
         self.weights = weights or DEFAULT_WEIGHTS
 
     def apply(self, state_vector) -> float:
@@ -81,7 +79,7 @@ class RepositoryHamiltonian:
 
         return EnergyGradient(partials)
 
-    def eigenvalue_analysis(self, state_vector) -> dict[str, Any]:
+    def eigenvalue_analysis(self, state_vector) -> Dict[str, Any]:
         """
         Analyze eigenvalue decomposition of repository state.
 

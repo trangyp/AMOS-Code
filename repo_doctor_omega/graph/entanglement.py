@@ -18,8 +18,6 @@ Coupling types:
     - Temporal coupling: Commit co-occurrence
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -33,18 +31,18 @@ class CouplingEdge:
     target: str
     strength: float  # ∈ [0, 1]
     coupling_type: str  # "import", "call", "data", "inheritance", "temporal"
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class EntanglementMatrix:
     """Entanglement matrix M_ij for repository subsystems."""
 
-    subsystems: list[str] = field(default_factory=list)
-    edges: list[CouplingEdge] = field(default_factory=list)
+    subsystems: List[str] = field(default_factory=list)
+    edges: List[CouplingEdge] = field(default_factory=list)
 
     # Cached matrix
-    _matrix: dict[tuple[str, str], float] | None = None
+    _matrix: dict[tuple[str, str], float] = None
 
     def get_coupling(self, i: str, j: str) -> float:
         """Get coupling strength M_ij."""
@@ -117,7 +115,7 @@ class EntanglementAnalyzer:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        self.edges: list[CouplingEdge] = []
+        self.edges: List[CouplingEdge] = []
 
     def analyze(self) -> EntanglementMatrix:
         """Perform complete entanglement analysis.
@@ -161,7 +159,7 @@ class EntanglementAnalyzer:
 
         return modules
 
-    def _analyze_import_coupling(self, modules: dict[str, Path]) -> None:
+    def _analyze_import_coupling(self, modules: Dict[str, Path]) -> None:
         """Analyze import-based coupling between modules."""
         import ast
 
@@ -193,7 +191,7 @@ class EntanglementAnalyzer:
             except Exception:
                 continue
 
-    def _analyze_inheritance_coupling(self, modules: dict[str, Path]) -> None:
+    def _analyze_inheritance_coupling(self, modules: Dict[str, Path]) -> None:
         """Analyze inheritance-based coupling."""
         import ast
 
@@ -234,7 +232,7 @@ class EntanglementAnalyzer:
             )
         )
 
-    def get_entanglement_report(self) -> dict[str, Any]:
+    def get_entanglement_report(self) -> Dict[str, Any]:
         """Generate entanglement analysis report."""
         matrix = self.analyze()
 

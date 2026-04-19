@@ -6,8 +6,6 @@ Tracks state changes across commits:
 - Trend analysis
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -35,7 +33,7 @@ class DriftReport:
     trends: list[DriftTrend] = field(default_factory=list)
     destabilizing_commits: list[tuple[str, float]] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "repository": self.repository,
@@ -138,7 +136,7 @@ class DriftTracker:
             return []
 
         # Collect all subsystem keys
-        all_keys: set[str] = set()
+        all_keys: Set[str] = set()
         for state in history:
             all_keys.update(state.state_vector.keys())
 

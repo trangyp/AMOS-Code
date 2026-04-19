@@ -3,10 +3,8 @@
 Synchronous and asynchronous clients for AMOS Brain API.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 import requests
@@ -51,7 +49,7 @@ class Client:
             }
         )
 
-    def _request(self, method: str, endpoint: str, **kwargs) -> dict[str, Any]:
+    def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make HTTP request with error handling."""
         url = f"{self.config.base_url}{endpoint}"
 
@@ -226,7 +224,7 @@ class AsyncClient:
 
     def __init__(self, api_key: str, base_url: str = DEFAULT_BASE_URL):
         self.config = ClientConfig(api_key=api_key, base_url=base_url)
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create aiohttp session."""
@@ -240,7 +238,7 @@ class AsyncClient:
             )
         return self._session
 
-    async def _request(self, method: str, endpoint: str, **kwargs) -> dict[str, Any]:
+    async def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make async HTTP request."""
         session = await self._get_session()
         url = f"{self.config.base_url}{endpoint}"

@@ -1,10 +1,8 @@
 """MCP type definitions: server configs, tool descriptors, connection state."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 # ── Server config ─────────────────────────────────────────────────────────────
 
@@ -34,11 +32,11 @@ class MCPServerConfig:
     transport: MCPTransport = MCPTransport.STDIO
     # stdio fields
     command: str = ""
-    args: list[str] = field(default_factory=list)
-    env: dict[str, str] = field(default_factory=dict)
+    args: List[str] = field(default_factory=list)
+    env: Dict[str, str] = field(default_factory=dict)
     # sse / http / ws fields
     url: str = ""
-    headers: dict[str, str] = field(default_factory=dict)
+    headers: Dict[str, str] = field(default_factory=dict)
     # optional
     timeout: int = 30  # seconds per request
     disabled: bool = False
@@ -84,7 +82,7 @@ class MCPTool:
     tool_name: str  # original name from server
     qualified_name: str  # mcp__<server>__<tool>
     description: str
-    input_schema: dict[str, Any]  # JSON Schema object
+    input_schema: Dict[str, Any]  # JSON Schema object
     read_only: bool = False  # from annotations.readOnlyHint
 
     def to_tool_schema(self) -> dict:
@@ -99,14 +97,14 @@ class MCPTool:
 # ── JSON-RPC helpers ──────────────────────────────────────────────────────────
 
 
-def make_request(method: str, params: Optional[dict], req_id: int) -> dict:
+def make_request(method: str, params: dict, req_id: int) -> dict:
     msg: dict = {"jsonrpc": "2.0", "id": req_id, "method": method}
     if params is not None:
         msg["params"] = params
     return msg
 
 
-def make_notification(method: str, params: Optional[dict] = None) -> dict:
+def make_notification(method: str, params: dict = None) -> dict:
     msg: dict = {"jsonrpc": "2.0", "method": method}
     if params is not None:
         msg["params"] = params

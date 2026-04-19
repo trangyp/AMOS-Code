@@ -1,68 +1,252 @@
-# AMOS v3.0.0 - Full Stack Docker Compose
-# React Dashboard + FastAPI Backend
-# 
-# Creator: Trang Phan
+# AMOS Equation System v2.0 - Docker Compose
+# Full stack: PostgreSQL + Redis + FastAPI + Celery + Flower
+#
+# Services:
+#   - API: http://localhost:8000
+#   - API Docs: http://localhost:8000/docs
+#   - Flower (Celery): http://localhost:5555
+#   - Prometheus: http://localhost:9090
+#   - Grafana: http://localhost:3000
+#
 # Quick Start: docker-compose up -d
-
-version: '3.8'
+# Stop: docker-compose down
+# Logs: docker-compose logs -f api
 
 services:
-  # AMOS Dashboard - React Frontend
-  amos-dashboard:
-    build:
-      context: ./dashboard
-      dockerfile: Dockerfile
-    image: amos-dashboard:latest
-    container_name: amos-dashboard
-    ports:
-      - "3000:80"
+  # ============================================================================
+  # PostgreSQL Database
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: amos-postgres
     environment:
-      - NODE_ENV=production
-      - REACT_APP_API_URL=http://localhost:8000
+      POSTGRES_USER: amos
+      POSTGRES_PASSWORD: amos_secret
+      POSTGRES_DB: amos_equations
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - amos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amos -d amos_equations"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ============================================================================
+  # Redis (Cache + Message Broker)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - amos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================================================
+  # FastAPI Application
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: amos-equation-system:latest
+    container_name: amos-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Application
+      APP_NAME: AMOS Equation System
+      DEBUG: "false"
+      ENVIRONMENT: production
+      HOST: 0.0.0.0
+      PORT: 8000
+
+      # Database
+      DATABASE_URL: postgresql+asyncpg://amos:amos_secret@postgres:5432/amos_equations
+      DATABASE_POOL_SIZE: 20
+
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      CACHE_TTL: 3600
+      CACHE_ENABLED: "true"
+
+      # Celery
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+
+      # Security (change in production!)
+      SECRET_KEY: change-this-secret-key-in-production
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+
+      # Observability
+      METRICS_ENABLED: "true"
+      LOG_LEVEL: INFO
+
+      # Feature Flags
+      FEATURE_FLAGS_BACKEND: file
+      FEATURE_FLAGS_FILE: /app/feature_flags.json
+    volumes:
+      - ./feature_flags.json:/app/feature_flags.json:ro
+      - ./exports:/app/exports
+      - ./logs:/app/logs
     networks:
       - amos-network
     restart: unless-stopped
     depends_on:
-      amos-backend:
+      postgres:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      redis:
+        condition: service_healthy
 
-  # AMOS Backend - FastAPI API
-  amos-backend:
+  # ============================================================================
+  # Celery Worker
+  # ============================================================================
+  celery-worker:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    image: amos-backend:latest
-    container_name: amos-backend
-    ports:
-      - "8000:8000"
+    image: amos-equation-system:latest
+    container_name: amos-celery-worker
+    command: celery -A equation_tasks worker --loglevel=info --concurrency=4
     environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
+      # Same environment as API
+      APP_NAME: AMOS Equation System
+      DEBUG: "false"
+      ENVIRONMENT: production
+
+      DATABASE_URL: postgresql+asyncpg://amos:amos_secret@postgres:5432/amos_equations
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+
+      SECRET_KEY: change-this-secret-key-in-production
+      LOG_LEVEL: INFO
+    volumes:
+      - ./exports:/app/exports
+      - ./logs:/app/logs
     networks:
       - amos-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-  # Optional: Add more services as needed
-  # - Database (PostgreSQL)
-  # - Cache (Redis)
-  # - Queue (RabbitMQ)
+  # ============================================================================
+  # Celery Beat (Scheduler)
+  # ============================================================================
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: amos-equation-system:latest
+    container_name: amos-celery-beat
+    command: celery -A equation_tasks beat --loglevel=info
+    environment:
+      APP_NAME: AMOS Equation System
+      DEBUG: "false"
+      ENVIRONMENT: production
+
+      DATABASE_URL: postgresql+asyncpg://amos:amos_secret@postgres:5432/amos_equations
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+
+      SECRET_KEY: change-this-secret-key-in-production
+      LOG_LEVEL: INFO
+    volumes:
+      - ./celerybeat-schedule:/app/celerybeat-schedule
+    networks:
+      - amos-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - postgres
+
+  # ============================================================================
+  # Flower - Celery Monitoring
+  # ============================================================================
+  flower:
+    image: mher/flower:latest
+    container_name: amos-flower
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      FLOWER_PORT: 5555
+      FLOWER_BASIC_AUTH: admin:admin  # Change in production!
+    networks:
+      - amos-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  # ============================================================================
+  # Prometheus (Metrics)
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amos-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - amos-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # Grafana (Dashboards)
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: amos-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin  # Change in production!
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - amos-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
 
 volumes:
-  amos-memory:
+  postgres-data:
     driver: local
-  amos-logs:
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  celerybeat-schedule:
     driver: local
 
 networks:

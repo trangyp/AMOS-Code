@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # AMOS Orchestrator (updated with metrics endpoint)
+  amos-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: amos-prod-orchestrator
+    ports:
+      - "8000:8000"
+    environment:
+      - AMOS_ENV=production
+      - AMOS_LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+      - ENABLE_METRICS=true
+    volumes:
+      - amos_data:/app/data
+      - amos_logs:/app/logs
+    networks:
+      - amos_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/status')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: amos-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alerting-rules.yml:/etc/prometheus/alerting-rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - amos_network
+    restart: unless-stopped
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:10.1.2
+    container_name: amos-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+    networks:
+      - amos_network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # Alertmanager - Alert Routing
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: amos-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./monitoring/templates:/etc/alertmanager/templates
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - amos_network
+    restart: unless-stopped
+
+  # Redis - Cache & Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - amos_network
+    restart: unless-stopped
+
+volumes:
+  amos_data:
+  amos_logs:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  amos_network:
+    driver: bridge

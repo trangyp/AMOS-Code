@@ -79,6 +79,25 @@ except ImportError:
     BrainMuscleBridge = None
     get_brain_muscle_bridge = None
 
+# Canon Integration
+try:
+    import importlib
+
+    _canon_mod = importlib.import_module("AMOS_ORGANISM_OS.CANON_INTEGRATION")
+    CanonBridge = getattr(_canon_mod, "CanonBridge")
+    CanonBridgeStatus = getattr(_canon_mod, "CanonBridgeStatus")
+    CanonEnforcer = getattr(_canon_mod, "CanonEnforcer")
+    StandardsRegistry = getattr(_canon_mod, "StandardsRegistry")
+    get_canon_bridge = getattr(_canon_mod, "get_canon_bridge")
+    initialize_canon_integration = getattr(_canon_mod, "initialize_canon_integration")
+except ImportError:
+    CanonBridge = None
+    CanonBridgeStatus = None
+    CanonEnforcer = None
+    StandardsRegistry = None
+    get_canon_bridge = None
+    initialize_canon_integration = None
+
 # Primary Loop
 try:
     from .primary_loop import CycleResult, PrimaryLoop

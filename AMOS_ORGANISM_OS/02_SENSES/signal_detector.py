@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -23,7 +23,7 @@ class SignalDetector:
     def __init__(self):
         self._signals: List[Signal] = []
         self._handlers: Dict[str, Any] = {}
-        self._last_check = datetime.utcnow().isoformat()
+        self._last_check = datetime.now(UTC).isoformat()
 
     def detect(self, source: str = None) -> List[Signal]:
         """Detect signals from sources."""
@@ -40,7 +40,7 @@ class SignalDetector:
             new_signals.extend(timer_signals)
 
         self._signals.extend(new_signals)
-        self._last_check = datetime.utcnow().isoformat()
+        self._last_check = datetime.now(UTC).isoformat()
 
         return new_signals
 
@@ -60,7 +60,7 @@ class SignalDetector:
                 type="heartbeat",
                 priority="low",
                 data={"interval": "scan"},
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(UTC).isoformat(),
             )
         ]
 
@@ -88,7 +88,7 @@ class SignalDetector:
             "last_check": self._last_check,
         }
 
-    def _count_by(self, field: str) -> Dict[str, int]:
+    def _count_by(self, field: str) -> dict[str, int]:
         """Count signals by field."""
         counts: Dict[str, int] = {}
         for signal in self._signals:

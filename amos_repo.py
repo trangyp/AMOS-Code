@@ -23,7 +23,7 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -38,8 +38,8 @@ class CodeEntity:
     content: str = ""
 
     # Metadata
-    dependencies: list[str] = field(default_factory=list)
-    dependents: list[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
+    dependents: List[str] = field(default_factory=list)
     complexity: int = 0
     docstring: str = ""
 
@@ -62,8 +62,8 @@ class CodeParser:
 
     def __init__(self, root_path: str):
         self.root_path = Path(root_path)
-        self.entities: dict[str, CodeEntity] = {}
-        self.dependencies: list[DependencyEdge] = []
+        self.entities: Dict[str, CodeEntity] = {}
+        self.dependencies: List[DependencyEdge] = []
 
     def parse_repository(self) -> dict[str, CodeEntity]:
         """Parse entire repository."""
@@ -154,7 +154,7 @@ class CodeParser:
 
         self.entities[entity_id] = entity
 
-    def _get_name(self, node) -> Optional[str]:
+    def _get_name(self, node) -> str:
         """Extract name from AST node."""
         if isinstance(node, ast.Name):
             return node.id
@@ -180,7 +180,7 @@ class CodeParser:
                     # Update entity dependents
                     self.entities[target_id].dependents.append(entity_id)
 
-    def _resolve_dependency(self, name: str, file_path: str) -> Optional[str]:
+    def _resolve_dependency(self, name: str, file_path: str) -> str:
         """Resolve a dependency name to entity ID."""
         # Simple resolution - look for exact match
         for entity_id in self.entities:
@@ -295,7 +295,7 @@ class ZoneClassifier:
 
         return "unknown"
 
-    def classify_all(self, entities: dict[str, CodeEntity]) -> dict[str, CodeEntity]:
+    def classify_all(self, entities: Dict[str, CodeEntity]) -> dict[str, CodeEntity]:
         """Classify all entities."""
         for entity in entities.values():
             entity.zone = self.classify(entity)
@@ -305,11 +305,11 @@ class ZoneClassifier:
 class RepoAnalyzer:
     """Analyze repository health and structure."""
 
-    def __init__(self, entities: dict[str, CodeEntity], dependencies: list[DependencyEdge]):
+    def __init__(self, entities: Dict[str, CodeEntity], dependencies: List[DependencyEdge]):
         self.entities = entities
         self.dependencies = dependencies
 
-    def compute_metrics(self) -> dict[str, Any]:
+    def compute_metrics(self) -> Dict[str, Any]:
         """Compute repository metrics."""
         metrics = {
             "total_entities": len(self.entities),
@@ -376,7 +376,7 @@ class RepoAnalyzer:
 
         return cycles
 
-    def detect_anomalies(self) -> list[dict]:
+    def detect_anomalies(self) -> List[dict]:
         """Detect anomalies in the codebase."""
         anomalies = []
 
@@ -485,7 +485,7 @@ class AMOSRepoIntelligence:
         self.classifier = ZoneClassifier()
         self.analyzer: Optional[RepoAnalyzer] = None
 
-    def analyze(self) -> dict[str, Any]:
+    def analyze(self) -> Dict[str, Any]:
         """Complete repository analysis."""
         print(f"Analyzing repository: {self.repo_path}")
 
@@ -523,7 +523,7 @@ class AMOSRepoIntelligence:
                 return entity
         return None
 
-    def find_similar(self, entity_name: str) -> list[CodeEntity]:
+    def find_similar(self, entity_name: str) -> List[CodeEntity]:
         """Find entities similar to given one."""
         target = self.get_entity(entity_name)
         if not target:

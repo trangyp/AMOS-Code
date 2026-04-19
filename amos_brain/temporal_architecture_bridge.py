@@ -12,6 +12,7 @@ Provides API for:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -124,8 +125,8 @@ class TemporalArchitectureBridge:
         self,
         domain: str,
         declared_model: str,
-        actual_model: str | None = None,
-        convergence_bound_ms: float | None = None,
+        actual_model: str = None,
+        convergence_bound_ms: float = None,
     ) -> dict[str, Any]:
         """Validate consistency model declaration and behavior."""
         if not TEMPORAL_AVAILABLE or self.engine is None:

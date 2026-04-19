@@ -1,0 +1,28 @@
+# AMOS Equation System Pre-commit Hooks
+# ======================================
+#
+# Install: pip install pre-commit
+# Setup: pre-commit install
+#
+# These hooks run the equation verification system on committed files
+# to catch invariant violations before they reach CI/CD.
+
+- id: amos-equation-verify
+  name: AMOS Equation Verification
+  description: Verify code against formal equations and invariants
+  entry: python -m amos_equation_verify_hook
+  language: python
+  files: \.(py|js|ts|go|rs)$
+  require_serial: true
+  additional_dependencies:
+    - ast-decompiler
+    - rich
+
+- id: amos-invariant-check
+  name: AMOS Invariant Check
+  description: Check code for invariant violations (type safety, memory safety, etc.)
+  entry: python -m amos_invariant_check
+  language: python
+  files: \.py$
+  pass_filenames: true
+  require_serial: false

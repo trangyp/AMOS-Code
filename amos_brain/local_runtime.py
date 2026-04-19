@@ -8,6 +8,7 @@ This module implements the reversed architecture where:
 
 from __future__ import annotations
 
+
 import sys
 from typing import Any
 
@@ -85,7 +86,7 @@ class AMOSLocalRuntime:
         """Check if runtime is fully initialized and ready."""
         return self._ready
 
-    def reply(self, user_message: str, context: dict | None = None) -> dict:
+    def reply(self, user_message: str, context: dict = None) -> dict:
         """Process user message through AMOS + local LLM pipeline.
 
         Args:
@@ -161,7 +162,7 @@ class AMOSLocalRuntime:
                 "raw": result.raw,
             }
 
-    def reply_stream(self, user_message: str, context: dict | None = None):
+    def reply_stream(self, user_message: str, context: dict = None):
         """Stream response from AMOS + local LLM pipeline.
 
         Args:
@@ -319,9 +320,9 @@ class AMOSLocalRuntime:
 
 
 def create_local_runtime(
-    provider: str | None = None,
-    model: str | None = None,
-    base_url: str | None = None,
+    provider: str = None,
+    model: str = None,
+    base_url: str = None,
 ) -> AMOSLocalRuntime:
     """Factory function to create a configured AMOS local runtime.
 

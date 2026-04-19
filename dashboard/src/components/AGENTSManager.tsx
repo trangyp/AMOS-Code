@@ -1,20 +1,20 @@
 /**
  * AMOS AGENTS.md Manager
- * 
+ *
  * AGENTS.md is the emerging 2026 standard for guiding AI coding agents.
- * 
+ *
  * Research shows:
  * - "5x Performance Boost for AI Coding Agents" with proper AGENTS.md
  * - Supported by OpenAI Codex, Augment, Jules, Claude Code
  * - "Think of it as a README for agents" - agents.md official
- * 
+ *
  * This component provides:
  * - Visual AGENTS.md editor
  * - Hierarchical file browser (global → project → package)
  * - Template library
  * - Validation and optimization hints
  * - Preview mode
- * 
+ *
  * Based on the official AGENTS.md specification from agents.md
  */
 
@@ -156,7 +156,7 @@ export const AGENTSManager: React.FC = () => {
       isActive: true,
     },
   ]);
-  
+
   const [selectedFile, setSelectedFile] = useState<string>('project');
   const [selectedSection, setSelectedSection] = useState<string>('overview');
   const [activeTab, setActiveTab] = useState<'edit' | 'preview' | 'templates'>('edit');
@@ -166,11 +166,11 @@ export const AGENTSManager: React.FC = () => {
   const currentSection = currentFile?.sections.find(s => s.id === selectedSection);
 
   const updateSectionContent = (fileId: string, sectionId: string, content: string) => {
-    setFiles(prev => prev.map(f => 
-      f.id === fileId 
+    setFiles(prev => prev.map(f =>
+      f.id === fileId
         ? {
             ...f,
-            sections: f.sections.map(s => 
+            sections: f.sections.map(s =>
               s.id === sectionId ? { ...s, content } : s
             ),
             lastModified: new Date().toISOString(),
@@ -183,7 +183,7 @@ export const AGENTSManager: React.FC = () => {
     const template = TEMPLATES[templateKey as keyof typeof TEMPLATES];
     if (!template) return;
 
-    setFiles(prev => prev.map(f => 
+    setFiles(prev => prev.map(f =>
       f.id === selectedFile
         ? {
             ...f,
@@ -248,7 +248,7 @@ export const AGENTSManager: React.FC = () => {
         {/* Sidebar - File Browser */}
         <div style={sidebarStyle}>
           <div style={sidebarTitleStyle}>AGENTS.md Files</div>
-          
+
           {files.map(file => (
             <div
               key={file.id}
@@ -274,7 +274,7 @@ export const AGENTSManager: React.FC = () => {
               <div style={filePathStyle}>{file.path}</div>
               <div style={fileProgressStyle}>
                 <div style={fileProgressBarStyle}>
-                  <div 
+                  <div
                     style={{
                       ...fileProgressFillStyle,
                       width: `${getCompletionPercentage(file)}%`,

@@ -9,8 +9,6 @@ Generate doctor-quality output:
 - First bad commits
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
 from typing import Any
@@ -25,7 +23,7 @@ class DiagnosisReport:
     branch: str
 
     # State vector
-    state_vector: dict[str, float] = field(default_factory=dict)
+    state_vector: Dict[str, float] = field(default_factory=dict)
 
     # Energy
     energy: float = 0.0
@@ -37,16 +35,16 @@ class DiagnosisReport:
     is_valid: bool = True
 
     # Minimal failing cut
-    minimal_cut: list[str] = field(default_factory=list)
+    minimal_cut: List[str] = field(default_factory=list)
 
     # First bad commits
-    first_bad_commits: dict[str, str] = field(default_factory=dict)
+    first_bad_commits: Dict[str, str] = field(default_factory=dict)
 
     # Score
     score: int = 100
     is_releaseable: bool = True
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "repository": self.repository,
             "commit_hash": self.commit_hash,
@@ -169,9 +167,9 @@ class DiagnosisGenerator:
         self,
         state_vector,
         hamiltonian,
-        failed_invariants: list[Any],
-        first_bad_commits: dict[str, str],
-        minimal_cut: list[str],
+        failed_invariants: List[Any],
+        first_bad_commits: Dict[str, str],
+        minimal_cut: List[str],
     ) -> DiagnosisReport:
         """Generate complete diagnosis."""
         # Get state vector as dict

@@ -18,8 +18,6 @@ Invariant checks:
 Based on Alembic/SQLAlchemy best practices 2024.
 """
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -33,23 +31,23 @@ class MigrationStep:
     """A single migration step in the chain."""
 
     revision: str
-    down_revision: str | None
+    down_revision: str
     file_path: Path
     has_upgrade: bool = False
     has_downgrade: bool = False
-    dependencies: list[str] = field(default_factory=list)
-    schema_changes: list[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
+    schema_changes: List[str] = field(default_factory=list)
 
 
 @dataclass
 class MigrationChain:
     """Complete migration chain analysis."""
 
-    head: str | None = None
-    base: str | None = None
-    steps: dict[str, MigrationStep] = field(default_factory=dict)
+    head: str = None
+    base: str = None
+    steps: Dict[str, MigrationStep] = field(default_factory=dict)
     branches: list[list[str]] = field(default_factory=list)
-    merge_points: list[str] = field(default_factory=list)
+    merge_points: List[str] = field(default_factory=list)
 
 
 class MigrationInvariant(Invariant):
@@ -68,7 +66,7 @@ class MigrationInvariant(Invariant):
         super().__init__("I_migration", InvariantSeverity.ERROR)
         self.migration_dirs = ["migrations", "alembic/versions", "db/migrations"]
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check migration chain integrity."""
         context = context or {}
         repo = Path(repo_path)
@@ -135,7 +133,7 @@ class MigrationInvariant(Invariant):
             },
         )
 
-    def _find_migration_dir(self, repo: Path) -> Path | None:
+    def _find_migration_dir(self, repo: Path) -> Optional[Path]:
         """Find the migrations directory."""
         for subdir in self.migration_dirs:
             path = repo / subdir
@@ -186,7 +184,7 @@ class MigrationInvariant(Invariant):
 
         return chain
 
-    def _parse_migration_file(self, file_path: Path) -> MigrationStep | None:
+    def _parse_migration_file(self, file_path: Path) -> Optional[MigrationStep]:
         """Parse a single migration file."""
         content = file_path.read_text()
 
@@ -227,7 +225,7 @@ class MigrationInvariant(Invariant):
             schema_changes=schema_changes,
         )
 
-    def _check_branch_integrity(self, chain: MigrationChain) -> list[dict]:
+    def _check_branch_integrity(self, chain: MigrationChain) -> List[dict]:
         """Check for problematic branching."""
         issues = []
 
@@ -250,7 +248,7 @@ class MigrationInvariant(Invariant):
 
         return issues
 
-    def _check_rollback_validity(self, chain: MigrationChain) -> list[dict]:
+    def _check_rollback_validity(self, chain: MigrationChain) -> List[dict]:
         """Check that migrations can be rolled back."""
         issues = []
 
@@ -282,7 +280,7 @@ class MigrationInvariant(Invariant):
 
     def _check_schema_compatibility(
         self, repo: Path, chain: MigrationChain, context: dict
-    ) -> list[dict]:
+    ) -> List[dict]:
         """Check that code matches migrated schema."""
         issues = []
 
@@ -305,13 +303,13 @@ class MigrationInvariant(Invariant):
 
         return issues
 
-    def _check_migration_order(self, chain: MigrationChain) -> list[dict]:
+    def _check_migration_order(self, chain: MigrationChain) -> List[dict]:
         """Check migration dependency order."""
         issues = []
 
         # Detect circular dependencies
-        visited: set[str] = set()
-        rec_stack: set[str] = set()
+        visited: Set[str] = set()
+        rec_stack: Set[str] = set()
 
         def has_cycle(rev: str) -> bool:
             visited.add(rev)

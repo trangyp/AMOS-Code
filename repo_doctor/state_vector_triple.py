@@ -28,8 +28,6 @@ Basis (13 dimensions):
 This is the maximum-strength repository physics model.
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -111,7 +109,7 @@ class ObservableInstance:
     severity: float
     location: str
     surface: str
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -132,8 +130,8 @@ class StateVector:
     amplitudes: dict[BasisState, float] = field(
         default_factory=lambda: dict.fromkeys(BasisState, 1.0)
     )
-    timestamp: float | None = None
-    commit: str | None = None
+    timestamp: float = None
+    commit: str = None
 
     def __post_init__(self):
         for state in BasisState:
@@ -144,7 +142,7 @@ class StateVector:
         """Collapse a basis state: αk = exp(-severity)"""
         self.amplitudes[state] = math.exp(-severity)
 
-    def apply_observables(self, observables: list[ObservableInstance]):
+    def apply_observables(self, observables: List[ObservableInstance]):
         """Update amplitudes from observables: αk = exp(-Σj wk,j · oj)"""
         observable_map = {
             Observable.PARSE_FATAL: [(BasisState.SYNTAX, 1.0)],
@@ -266,7 +264,7 @@ class OpenSystemModel:
     """
 
     def __init__(self):
-        self.noise_operators: list[NoiseOperator] = []
+        self.noise_operators: List[NoiseOperator] = []
         self._init_default_noise()
 
     def _init_default_noise(self):
@@ -296,7 +294,7 @@ class TemporalState:
     Tracks state across commits for drift analysis.
     """
 
-    states: dict[str, StateVector] = field(default_factory=dict)
+    states: Dict[str, StateVector] = field(default_factory=dict)
     """Map of commit hash to state vector."""
 
     def add_state(self, commit: str, state: StateVector):
@@ -310,9 +308,7 @@ class TemporalState:
             return 0.0
         return self.states[commit1].drift(self.states[commit2])
 
-    def find_first_bad(
-        self, invariant: BasisState, good_commit: str, bad_commit: str
-    ) -> str | None:
+    def find_first_bad(self, invariant: BasisState, good_commit: str, bad_commit: str) -> str:
         """
         Find first commit where invariant fails.
 
@@ -339,7 +335,7 @@ class TemporalState:
         return None
 
     def path_integral_blame(
-        self, invariant: BasisState, path: list[str], coefficients: dict[str, float] | None = None
+        self, invariant: BasisState, path: List[str], coefficients: Dict[str, float] = None
     ) -> dict[str, float]:
         """
         Calculate path-integral blame scores.
@@ -358,7 +354,7 @@ class TemporalState:
             "entry_change": 0.8,
         }
 
-        actions: dict[str, float] = {}
+        actions: Dict[str, float] = {}
 
         for i in range(1, len(path)):
             prev_commit = path[i - 1]
@@ -398,7 +394,7 @@ class Hamiltonian:
     H_repo = Σk λk Hk
     """
 
-    def __init__(self, custom_weights: dict[BasisState, float] | None = None):
+    def __init__(self, custom_weights: dict[BasisState, float] = None):
         self.weights = custom_weights or {state: state.weight for state in BasisState}
 
     def energy(self, state: StateVector | DensityMatrix) -> float:
@@ -417,7 +413,7 @@ class Hamiltonian:
             basis: -2 * self.weights[basis] * (1 - state.amplitudes[basis]) for basis in BasisState
         }
 
-    def steepest_descent_repair(self, state: StateVector) -> list[BasisState]:
+    def steepest_descent_repair(self, state: StateVector) -> List[BasisState]:
         """Return basis states in order of steepest energy descent."""
         gradient = self.gradient(state)
         return sorted(BasisState, key=lambda b: gradient[b], reverse=True)
@@ -432,7 +428,7 @@ class CollapseOperator:
     def __init__(self, hamiltonian: Hamiltonian):
         self.H = hamiltonian
 
-    def collapse(self, state: StateVector) -> list[BasisState]:
+    def collapse(self, state: StateVector) -> List[BasisState]:
         """Collapse to minimal failing cut."""
         failed = [b for b in BasisState if state.amplitudes[b] < 0.5]
         if not failed:
@@ -442,7 +438,7 @@ class CollapseOperator:
         failed.sort(key=lambda b: gradient[b], reverse=True)
         return failed
 
-    def minimal_cut(self, state: StateVector, max_states: int = 3) -> list[BasisState]:
+    def minimal_cut(self, state: StateVector, max_states: int = 3) -> List[BasisState]:
         """Return minimal set of states to repair for maximum energy reduction."""
         all_failed = self.collapse(state)
         if len(all_failed) <= max_states:

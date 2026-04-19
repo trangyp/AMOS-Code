@@ -22,8 +22,6 @@ Where basis states are:
 - |H⟩  = history / temporal integrity
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -103,7 +101,7 @@ class ObservableInstance:
     severity: float  # 0.0 to 1.0
     location: str
     surface: str  # e.g., "demo_vs_runtime", "test_vs_api"
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -124,8 +122,8 @@ class StateVector:
     amplitudes: dict[BasisState, float] = field(
         default_factory=lambda: dict.fromkeys(BasisState, 1.0)
     )
-    timestamp: float | None = None
-    commit: str | None = None
+    timestamp: float = None
+    commit: str = None
 
     def __post_init__(self):
         # Normalize amplitudes to [0, 1]

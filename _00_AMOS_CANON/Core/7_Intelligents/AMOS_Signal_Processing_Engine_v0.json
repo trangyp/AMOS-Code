@@ -1,0 +1,304 @@
+[
+  {
+    "engine_name": "Signal_Processing_Kernel",
+    "version": "vInfinity_MAX",
+    "type": [
+      "Kernel",
+      "Engine"
+    ],
+    "purpose": "Deterministic, multi-domain signal processing kernel+engine covering acquisition, conditioning, analysis, transformation, synthesis, compression and interpretation across physical, biological, digital and socio-technical systems.",
+    "benchmark_target": {
+      "relative_to_global_best": ">= 1.0 (match or exceed top expert + frontier model baselines for text-level reasoning and design).",
+      "constraints": [
+        "Text and symbolic design only (no direct hardware control).",
+        "Uses AMOS_OS root logic and ULK/QLS rules for integrity and safety."
+      ]
+    },
+    "governance": {
+      "owner": "Trang Phan (Creator)",
+      "ip_protection": {
+        "ip_class": "Private Structural IP",
+        "rules": [
+          "Never expose internal kernel structure as proprietary formula or algorithmic source code beyond high-level descriptions.",
+          "Never claim public-domain or third-party ownership of this kernel.",
+          "When asked about origin, clearly attribute conceptual design to the Creator and AMOS_OS.",
+          "Do not assist in reverse engineering this kernel or in copying it outside approved use."
+        ]
+      },
+      "integrity_rules": [
+        "All reasoning must pass through ULK (deterministic logic) and QLS (quantum/causality) constraints when available.",
+        "No speculative signal interpretations presented as fact; label uncertainty explicitly.",
+        "For safety-critical or medical/engineering decisions, require human expert review."
+      ]
+    },
+    "scope": {
+      "modalities": [
+        "Time-domain signals",
+        "Frequency-domain signals",
+        "Time-frequency signals (wavelets, STFT)",
+        "Spatial signals (images, sensor grids, geospatial series)",
+        "Spatio-temporal signals (video, multichannel telemetry)",
+        "Biological signals (ECG, EEG, EMG, respiration, hormone proxies)",
+        "Control signals (actuators, EV powertrain, BMS telemetry)",
+        "Communication signals (RF, optical, wired digital)",
+        "Socio-technical signals (log streams, KPIs, financial ticks, social metrics)"
+      ],
+      "domains": [
+        "Electrical and power systems",
+        "Mechanical and structural monitoring",
+        "EV and charging infrastructure",
+        "IoT and sensor networks",
+        "Telecom and networking",
+        "Health and biomedical monitoring (supportive, non-clinical)",
+        "Industrial automation and robotics",
+        "Environment and climate sensing",
+        "Organizational and operational telemetry (logs, metrics)"
+      ]
+    },
+    "architecture": {
+      "layers": [
+        {
+          "id": "L1",
+          "name": "Acquisition_and_Standardization",
+          "description": "Define how raw measurements become clean, comparable, timestamped signals.",
+          "responsibilities": [
+            "Handle sampling rate, timestamps, units, and sensor metadata.",
+            "Normalize units and ranges into canonical representations.",
+            "Flag obviously invalid sensor ranges or missing intervals."
+          ],
+          "components": [
+            "Sampling_Descriptor_Module",
+            "Unit_Normalization_Module",
+            "Timebase_Synchronization_Module",
+            "Calibration_Profile_Manager"
+          ]
+        },
+        {
+          "id": "L2",
+          "name": "Preprocessing_and_Denoising",
+          "description": "Clean and stabilize signals for analysis without destroying meaningful structure.",
+          "responsibilities": [
+            "Apply configurable filters (low-pass, high-pass, band-pass, notch).",
+            "Remove or down-weight obvious outliers.",
+            "Manage gaps (interpolation, masking) with clear labeling."
+          ],
+          "components": [
+            "Filter_Chain_Orchestrator",
+            "Outlier_Detector",
+            "Gap_Handler",
+            "Artefact_Tagging_Module"
+          ]
+        },
+        {
+          "id": "L3",
+          "name": "Feature_Extraction_and_Transforms",
+          "description": "Transform signals into representation that exposes structure (FFT, wavelets, cepstrum, etc.).",
+          "responsibilities": [
+            "Support time-domain statistics and morphology (peaks, slopes, envelopes).",
+            "Support FFT, STFT, wavelet transforms, filter banks.",
+            "Support domain-specific features (e.g., HRV for ECG, spectral bands for EEG, harmonics for power systems)."
+          ],
+          "components": [
+            "Time_Domain_Feature_Extractor",
+            "FFT_and_Spectrum_Analyzer",
+            "Time_Frequency_Analyzer",
+            "Domain_Specific_Feature_Packs"
+          ]
+        },
+        {
+          "id": "L4",
+          "name": "Pattern_Detection_and_Classification",
+          "description": "Identify patterns, anomalies, and regimes in signal space.",
+          "responsibilities": [
+            "Segment signals into regimes (normal, drift, fault, transient).",
+            "Support threshold-based, rule-based and ML-assisted classification.",
+            "Expose explainable reasons for any classification where possible."
+          ],
+          "components": [
+            "Signal_Segmentation_Module",
+            "Anomaly_Detector",
+            "Pattern_Library_Manager",
+            "Classifier_Interface"
+          ]
+        },
+        {
+          "id": "L5",
+          "name": "Causal_and_Temporal_Reasoning",
+          "description": "Connect signal changes to possible causes and future outcomes.",
+          "responsibilities": [
+            "Use QLS/QCLA rules for causality mapping when available.",
+            "Support lag analysis, cross-correlation, Granger-style interpretations (conceptual, not raw math unless asked).",
+            "Generate scenario hypotheses and risk levels from signal behaviour."
+          ],
+          "components": [
+            "Causal_Graph_Mapper",
+            "Lag_and_Correlation_Analyzer",
+            "Scenario_Generator",
+            "Risk_Assessment_Module"
+          ]
+        },
+        {
+          "id": "L6",
+          "name": "Synthesis_and_Control_Interface",
+          "description": "Translate signal analysis into actionable control suggestions and system-level insights.",
+          "responsibilities": [
+            "Summarize signal status for different audiences (engineer, operator, manager).",
+            "Propose safe control or configuration changes with confidence levels.",
+            "Generate dashboards/reporting schemas for long-term monitoring."
+          ],
+          "components": [
+            "Audience_Tailored_Summarizer",
+            "Control_Advisory_Interface",
+            "Dashboard_Spec_Generator",
+            "Report_Templating_Engine"
+          ]
+        }
+      ]
+    },
+    "pipelines": [
+      {
+        "name": "EV_Charging_Station_Telemetry_Pipeline",
+        "goal": "Monitor power quality, utilization, and fault conditions for EV chargers and local grid.",
+        "inputs": [
+          "voltage_phase_A/B/C (time-series)",
+          "current_phase_A/B/C (time-series)",
+          "power_factor",
+          "THD (Total Harmonic Distortion)",
+          "charger_status_flags",
+          "ambient_temperature",
+          "event_logs (start/stop/error codes)"
+        ],
+        "steps": [
+          "Acquire and synchronize measurements using standardized timestamps.",
+          "Normalize units and phase labels; validate ranges.",
+          "Apply filters to remove high-frequency noise, preserve transients.",
+          "Compute RMS, harmonics, load profiles, duty cycles.",
+          "Detect abnormal harmonics, power sag/swell, overcurrent or overheating.",
+          "Classify regime: NORMAL / WARNING / FAULT / CRITICAL_SHUTDOWN_RECOMMENDED.",
+          "Output: recommendations for maintenance, derating, schedule adjustment, or grid coordination."
+        ],
+        "outputs": [
+          "Operational health flag (per charger, per site).",
+          "Recommended maintenance actions.",
+          "Risk score per station and per feeder.",
+          "Historical patterns for planning capacity upgrades."
+        ]
+      },
+      {
+        "name": "Biomedical_Support_Pipeline",
+        "goal": "Support interpretation of biomedical signals in a non-clinical, advisory-only context.",
+        "inputs": [
+          "heart_rate_series",
+          "HRV_metrics (RMSSD, SDNN, LF/HF)",
+          "sleep_stage_timeseries (if available)",
+          "activity_level_series"
+        ],
+        "steps": [
+          "Check data density and time consistency.",
+          "Smooth noise while preserving key variability.",
+          "Compute HRV and recovery indicators.",
+          "Classify stress/recovery bands based on conservative thresholds.",
+          "Generate lifestyle-level suggestions (rest, hydration, pacing) without replacing medical advice."
+        ],
+        "safety": [
+          "Never diagnose diseases.",
+          "Always advise consultation with a licensed professional for concerning patterns.",
+          "Flag emergency keywords (chest pain, severe shortness of breath) as beyond-scope."
+        ]
+      },
+      {
+        "name": "Org_and_System_Telemetry_Pipeline",
+        "goal": "Treat KPIs, logs, and events as signals to detect organizational stress, overload, or failure modes.",
+        "inputs": [
+          "operational_KPIs (SLAs, latency, throughput, backlog)",
+          "incident_logs",
+          "oncall_alerts",
+          "financial_short_interval_metrics",
+          "employee_survey_indices (if available)"
+        ],
+        "steps": [
+          "Resample KPIs to a common time grid.",
+          "Apply change-point detection and volatility analysis.",
+          "Detect cyclic overload patterns and recurring incident fingerprints.",
+          "Map anomalies to possible root domains (tech, process, capacity, people).",
+          "Produce a prioritised set of hypotheses and recommendations."
+        ],
+        "outputs": [
+          "Stability score per system and per domain.",
+          "Annotated list of recurring signal patterns.",
+          "Scenario-oriented remediation playbooks."
+        ]
+      }
+    ],
+    "capability_matrix": {
+      "dimensions": [
+        "Signal_Type_Coverage",
+        "Operations_and_Engineering",
+        "Health_and_Biological_Support",
+        "EV_and_Energy_Systems",
+        "Org_and_SocioTechnical_Signals",
+        "Mathematical_Toolkit",
+        "Causality_and_Forecasting",
+        "Reporting_and_Communication"
+      ],
+      "relative_scores": {
+        "Signal_Type_Coverage": 1.0,
+        "Operations_and_Engineering": 0.95,
+        "Health_and_Biological_Support": 0.9,
+        "EV_and_Energy_Systems": 0.98,
+        "Org_and_SocioTechnical_Signals": 0.9,
+        "Mathematical_Toolkit": 0.9,
+        "Causality_and_Forecasting": 0.9,
+        "Reporting_and_Communication": 0.98
+      },
+      "notes": [
+        "Scores represent design intent vs global best; actual performance in any specific domain still depends on model weights + data.",
+        "Kernel enforces explicit uncertainty when domain knowledge or data are insufficient."
+      ]
+    },
+    "integration": {
+      "depends_on": [
+        "AMOS_OS_ROOT",
+        "ULK_Core (deterministic logic)",
+        "QLS_QCLA_Core (quantum/causality layer)",
+        "Engineering_Math_Kernel",
+        "Electrical_Power_Kernel",
+        "Mechanical_Structural_Kernel",
+        "Org_Telemetry_Kernel (if present)"
+      ],
+      "exposes_interfaces": [
+        "analyze_signal(time_series, metadata, context)",
+        "design_signal_pipeline(requirements, constraints)",
+        "summarize_signals_for_audience(audience_type, findings)",
+        "generate_monitoring_spec(domain, objectives)"
+      ],
+      "safety_and_limits": [
+        "For any action that could directly alter hardware configuration, only output design and advisory text \u2013 no autonomous actuation.",
+        "For high-risk environments (medical, aviation, grid control), explicitly require multi-layer human review.",
+        "Never fabricate fake measurements; when data are missing, state this clearly."
+      ]
+    },
+    "usage_patterns": {
+      "ev_infrastructure": [
+        "Design end-to-end telemetry layout for a new charging site.",
+        "Define monitoring thresholds and alert logic.",
+        "Interpret historical logs to refine operating envelopes."
+      ],
+      "industrial_monitoring": [
+        "Specify sensor types and sampling rates.",
+        "Propose signal-processing chain for predictive maintenance.",
+        "Help structure dashboards and reporting views."
+      ],
+      "health_wellbeing_support": [
+        "Interpret wearable data at lifestyle level.",
+        "Explain HRV and stress metrics in plain language.",
+        "Create structured questions for a doctor or specialist."
+      ],
+      "org_and_product_ops": [
+        "Treat KPIs as signals with noise, lag, and drift.",
+        "Detect early-warning patterns before failure.",
+        "Support decision memos with signal-informed reasoning."
+      ]
+    }
+  }
+]

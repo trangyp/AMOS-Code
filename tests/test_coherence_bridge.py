@@ -5,7 +5,6 @@ Tests the integration between:
 - Local LLM runtime (Ollama, LM Studio backends)
 """
 
-from __future__ import annotations
 
 import os
 import sys
@@ -20,6 +19,7 @@ from amos_coherence_bridge import (  # noqa: E402
     CoherenceLocalBridge,
 )
 from amos_coherence_engine import (  # noqa: E402
+from typing import Set
     HumanState,
     InterventionMode,
 )

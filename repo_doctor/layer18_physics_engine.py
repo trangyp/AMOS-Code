@@ -1,8 +1,8 @@
 """Layer 18: Distributed Systems Physics Engine."""
-from __future__ import annotations
+
 import uuid
 from dataclasses import dataclass, field
-from typing import Any
+
 
 @dataclass
 class InvariantResult:
@@ -10,61 +10,140 @@ class InvariantResult:
     name: str
     satisfied: bool
     severity: str
-    evidence: list[str] = field(default_factory=list)
+    evidence: List[str] = field(default_factory=list)
+
 
 class DistributedPhysicsEngine:
     """Validates distributed truth, irreversibility, quiescence, entropy."""
+
     VERSION = "18.0.0"
 
     def __init__(self):
         self.engine_id = f"PHYSICS-{uuid.uuid4().hex[:8]}"
 
-    def validate_truth_arbitration(self, domains: list[dict]) -> InvariantResult:
-        failures = [f"Domain {d.get('name','?')}: No mechanism" for d in domains if not d.get("arbitration_mechanism")]
-        return InvariantResult("I_truth", "Truth Arbitration", len(failures)==0, "critical" if failures else "none", failures or ["OK"])
+    def validate_truth_arbitration(self, domains: List[dict]) -> InvariantResult:
+        failures = [
+            f"Domain {d.get('name','?')}: No mechanism"
+            for d in domains
+            if not d.get("arbitration_mechanism")
+        ]
+        return InvariantResult(
+            "I_truth",
+            "Truth Arbitration",
+            len(failures) == 0,
+            "critical" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_irreversibility(self, transitions: list[dict]) -> InvariantResult:
+    def validate_irreversibility(self, transitions: List[dict]) -> InvariantResult:
         valid = ["reversible", "compensable", "irreversible"]
-        failures = [f"Trans {t.get('name','?')}: Not classified" for t in transitions if t.get("irreversibility_class") not in valid]
-        return InvariantResult("I_irrev", "Irreversibility", len(failures)==0, "critical" if failures else "none", failures or ["OK"])
+        failures = [
+            f"Trans {t.get('name','?')}: Not classified"
+            for t in transitions
+            if t.get("irreversibility_class") not in valid
+        ]
+        return InvariantResult(
+            "I_irrev",
+            "Irreversibility",
+            len(failures) == 0,
+            "critical" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_compensation(self, transitions: list[dict]) -> InvariantResult:
-        failures = [f"Trans {t.get('name','?')}: No compensation" for t in transitions if t.get("irreversibility_class")=="irreversible" and not t.get("compensation_action")]
-        return InvariantResult("I_comp", "Compensation", len(failures)==0, "critical" if failures else "none", failures or ["OK"])
+    def validate_compensation(self, transitions: List[dict]) -> InvariantResult:
+        failures = [
+            f"Trans {t.get('name','?')}: No compensation"
+            for t in transitions
+            if t.get("irreversibility_class") == "irreversible" and not t.get("compensation_action")
+        ]
+        return InvariantResult(
+            "I_comp",
+            "Compensation",
+            len(failures) == 0,
+            "critical" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_quiescence(self, subsystems: list[dict]) -> InvariantResult:
-        failures = [f"Subsys {s.get('name','?')}: No quiescent state" for s in subsystems if not s.get("quiescent_state_defined")]
-        return InvariantResult("I_quiesce", "Quiescence", len(failures)==0, "high" if failures else "none", failures or ["OK"])
+    def validate_quiescence(self, subsystems: List[dict]) -> InvariantResult:
+        failures = [
+            f"Subsys {s.get('name','?')}: No quiescent state"
+            for s in subsystems
+            if not s.get("quiescent_state_defined")
+        ]
+        return InvariantResult(
+            "I_quiesce",
+            "Quiescence",
+            len(failures) == 0,
+            "high" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_policy_precedence(self, layers: list[dict]) -> InvariantResult:
-        failures = [f"Layer {l.get('name','?')}: No precedence" for l in layers if l.get("precedence_rank") is None]
-        return InvariantResult("I_policy", "Policy Precedence", len(failures)==0, "critical" if failures else "none", failures or ["OK"])
+    def validate_policy_precedence(self, layers: List[dict]) -> InvariantResult:
+        failures = [
+            f"Layer {l.get('name','?')}: No precedence"
+            for l in layers
+            if l.get("precedence_rank") is None
+        ]
+        return InvariantResult(
+            "I_policy",
+            "Policy Precedence",
+            len(failures) == 0,
+            "critical" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_adaptive_bounds(self, loops: list[dict]) -> InvariantResult:
-        failures = [f"Loop {l.get('name','?')}: No drift bound" for l in loops if l.get("drift_bound") is None]
-        return InvariantResult("I_adapt", "Adaptive Bounds", len(failures)==0, "high" if failures else "none", failures or ["OK"])
+    def validate_adaptive_bounds(self, loops: List[dict]) -> InvariantResult:
+        failures = [
+            f"Loop {l.get('name','?')}: No drift bound"
+            for l in loops
+            if l.get("drift_bound") is None
+        ]
+        return InvariantResult(
+            "I_adapt",
+            "Adaptive Bounds",
+            len(failures) == 0,
+            "high" if failures else "none",
+            failures or ["OK"],
+        )
 
-    def validate_entropy(self, measurements: list[dict]) -> InvariantResult:
+    def validate_entropy(self, measurements: List[dict]) -> InvariantResult:
         failures = []
         for m in measurements:
             if m.get("entropy_score", 0) > 0.8:
                 failures.append(f"{m.get('name','?')}: High entropy")
-        return InvariantResult("I_entropy", "Entropy Bounded", len(failures)==0, "medium" if failures else "none", failures or ["OK"])
+        return InvariantResult(
+            "I_entropy",
+            "Entropy Bounded",
+            len(failures) == 0,
+            "medium" if failures else "none",
+            failures or ["OK"],
+        )
 
     def assess_all(self, context: dict) -> dict:
         results = []
-        if "domains" in context: results.append(self.validate_truth_arbitration(context["domains"]))
+        if "domains" in context:
+            results.append(self.validate_truth_arbitration(context["domains"]))
         if "transitions" in context:
             results.append(self.validate_irreversibility(context["transitions"]))
             results.append(self.validate_compensation(context["transitions"]))
-        if "subsystems" in context: results.append(self.validate_quiescence(context["subsystems"]))
-        if "policy_layers" in context: results.append(self.validate_policy_precedence(context["policy_layers"]))
-        if "adaptive_loops" in context: results.append(self.validate_adaptive_bounds(context["adaptive_loops"]))
-        if "entropy" in context: results.append(self.validate_entropy(context["entropy"]))
+        if "subsystems" in context:
+            results.append(self.validate_quiescence(context["subsystems"]))
+        if "policy_layers" in context:
+            results.append(self.validate_policy_precedence(context["policy_layers"]))
+        if "adaptive_loops" in context:
+            results.append(self.validate_adaptive_bounds(context["adaptive_loops"]))
+        if "entropy" in context:
+            results.append(self.validate_entropy(context["entropy"]))
         failed = sum(1 for r in results if not r.satisfied)
-        return {"engine_id": self.engine_id, "version": self.VERSION, "invariants": len(results), "failed": failed, "health": (len(results)-failed)/len(results) if results else 1.0}
+        return {
+            "engine_id": self.engine_id,
+            "version": self.VERSION,
+            "invariants": len(results),
+            "failed": failed,
+            "health": (len(results) - failed) / len(results) if results else 1.0,
+        }
 
-    def compute_state_vector_amplitudes(self, results: list[InvariantResult]) -> dict[str, float]:
+    def compute_state_vector_amplitudes(self, results: List[InvariantResult]) -> dict[str, float]:
         """Map invariant results to state vector amplitudes (Ω∞∞∞∞∞).
 
         Amplitudes:
@@ -78,7 +157,9 @@ class DistributedPhysicsEngine:
         amplitudes = {}
         for result in results:
             if result.invariant_id == "I_truth":
-                amplitudes["TRUTH_ARBITRATION"] = 1.0 if result.satisfied else 0.3 if result.severity == "critical" else 0.6
+                amplitudes["TRUTH_ARBITRATION"] = (
+                    1.0 if result.satisfied else 0.3 if result.severity == "critical" else 0.6
+                )
             elif result.invariant_id == "I_irrev":
                 amplitudes["IRREVERSIBILITY_MANAGEMENT"] = 1.0 if result.satisfied else 0.2
             elif result.invariant_id == "I_comp":
@@ -98,7 +179,7 @@ class DistributedPhysicsEngine:
                 amplitudes["ARCHITECTURAL_ENTROPY"] = 1.0 - entropy_score
         return amplitudes
 
-    def generate_repair_actions(self, results: list[InvariantResult]) -> list[dict]:
+    def generate_repair_actions(self, results: List[InvariantResult]) -> List[dict]:
         """Generate repair actions for failed physics invariants (MEDIC 2024 pattern)."""
         repairs = []
         for result in results:
@@ -108,7 +189,7 @@ class DistributedPhysicsEngine:
                     repairs.append(repair)
         return repairs
 
-    def _create_repair_for_invariant(self, result: InvariantResult) -> dict | None:
+    def _create_repair_for_invariant(self, result: InvariantResult) -> dict:
         """Create repair action for a specific physics invariant failure."""
         repair_map = {
             "I_truth": {
@@ -187,15 +268,19 @@ class DistributedPhysicsEngine:
         domains = context.get("domains", [])
         if len(domains) >= 2:
             for i, d1 in enumerate(domains):
-                for j, d2 in enumerate(domains[i+1:], i+1):
+                for j, d2 in enumerate(domains[i + 1 :], i + 1):
                     # Entanglement based on shared mechanisms or dependencies
                     shared = set(d1.get("dependencies", [])) & set(d2.get("dependencies", []))
-                    mechanism_match = d1.get("arbitration_mechanism") == d2.get("arbitration_mechanism")
+                    mechanism_match = d1.get("arbitration_mechanism") == d2.get(
+                        "arbitration_mechanism"
+                    )
                     strength = 0.3 + (0.4 if shared else 0) + (0.3 if mechanism_match else 0)
                     entanglements[(d1.get("name"), d2.get("name"))] = round(strength, 2)
         return entanglements
 
-    def get_critical_domains(self, entanglements: dict[tuple, float], threshold: float = 0.7) -> list[str]:
+    def get_critical_domains(
+        self, entanglements: dict[tuple, float], threshold: float = 0.7
+    ) -> List[str]:
         """Identify highly entangled domains that are critical to system stability."""
         domain_scores = {}
         for (d1, d2), strength in entanglements.items():

@@ -1,7 +1,5 @@
 """API Server stub for INTERFACES package."""
 
-from typing import Any, Callable
-
 
 class APIServer:
     """API server for AMOS system."""

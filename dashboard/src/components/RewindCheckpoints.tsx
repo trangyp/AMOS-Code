@@ -1,24 +1,24 @@
 /**
  * AMOS /rewind Checkpoint System Component
- * 
+ *
  * #9 on RedMonk 2025 "10 Things Developers Want"
- * 
+ *
  * "Checkpoints would make Claude Code unstoppable" - Reddit r/ClaudeAI, 160+ comments
- * 
- * Developer Problem: "When it's on the right track, it can make numerous files... 
+ *
+ * Developer Problem: "When it's on the right track, it can make numerous files...
  * but when it goes wrong, it can be devastating" - GitHub feature request
- * 
+ *
  * AMOS Solution: Native checkpoint system beyond git
  * - Automatic checkpoints every N actions
  * - Manual checkpoints with descriptions
  * - One-click rewind to any state
  * - Visual diff between checkpoints
  * - Branching timeline (experiment safely)
- * 
+ *
  * Based on 2025 research from Claude Code feature requests and Cursor's implementation.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 // Checkpoint Types
 interface Checkpoint {
@@ -44,20 +44,6 @@ interface Branch {
   createdAt: string;
   parentBranch?: string;
   parentCheckpoint?: string;
-}
-
-interface DiffView {
-  fromCheckpoint: Checkpoint;
-  toCheckpoint: Checkpoint;
-  files: DiffFile[];
-}
-
-interface DiffFile {
-  path: string;
-  status: 'added' | 'modified' | 'deleted';
-  additions: number;
-  deletions: number;
-  preview: string;
 }
 
 // Mock Data
@@ -174,9 +160,6 @@ export const RewindCheckpoints: React.FC = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newCheckpointDesc, setNewCheckpointDesc] = useState('');
   const [activeBranch, setActiveBranch] = useState('branch-main');
-  const [showDiffView, setShowDiffView] = useState(false);
-  const [compareFrom, setCompareFrom] = useState<Checkpoint | null>(null);
-  const [compareTo, setCompareTo] = useState<Checkpoint | null>(null);
   const [isRewinding, setIsRewinding] = useState(false);
 
   // Stats
@@ -204,11 +187,11 @@ export const RewindCheckpoints: React.FC = () => {
     };
 
     // Mark previous current as not current
-    setCheckpoints(prev => 
+    setCheckpoints(prev =>
       prev.map(c => c.isCurrent ? { ...c, isCurrent: false } : c)
         .concat(newCheckpoint)
     );
-    
+
     setShowCreateDialog(false);
     setNewCheckpointDesc('');
   };
@@ -228,22 +211,14 @@ export const RewindCheckpoints: React.FC = () => {
     }, 2000);
   };
 
-  // Compare checkpoints
-  const compareCheckpoints = (from: Checkpoint, to: Checkpoint) => {
-    setCompareFrom(from);
-    setCompareTo(to);
-    setShowDiffView(true);
-    setSelectedCheckpoint(null);
-  };
-
   // Format time
   const formatTime = (date: string) => {
     const d = new Date(date);
-    return d.toLocaleString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return d.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -297,7 +272,7 @@ export const RewindCheckpoints: React.FC = () => {
 
       {/* Quote Banner */}
       <div style={quoteBannerStyle}>
-        <em>"Checkpoints would make Claude Code unstoppable. When it's on the right track, 
+        <em>"Checkpoints would make Claude Code unstoppable. When it's on the right track,
         it can make numerous files... but when it goes wrong, it can be devastating."</em>
         <span style={quoteAuthorStyle}>— Developer community, 2025</span>
       </div>
@@ -327,7 +302,7 @@ export const RewindCheckpoints: React.FC = () => {
       <div style={timelineContainerStyle}>
         <div style={timelineLineStyle}>
           {currentBranch && (
-            <div 
+            <div
               style={{
                 ...timelineProgressStyle,
                 backgroundColor: currentBranch.color,
@@ -340,8 +315,8 @@ export const RewindCheckpoints: React.FC = () => {
           {checkpoints
             .filter(c => currentBranch?.checkpoints.includes(c.id))
             .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-            .map((checkpoint, index) => (
-              <div 
+            .map((checkpoint) => (
+              <div
                 key={checkpoint.id}
                 style={{
                   ...checkpointCardStyle,
@@ -351,7 +326,7 @@ export const RewindCheckpoints: React.FC = () => {
                 onClick={() => setSelectedCheckpoint(checkpoint)}
               >
                 {/* Timeline dot */}
-                <div 
+                <div
                   style={{
                     ...timelineDotStyle,
                     backgroundColor: checkpoint.isCurrent ? '#10b981' : (currentBranch?.color || '#6366f1'),
@@ -494,24 +469,13 @@ export const RewindCheckpoints: React.FC = () => {
               {/* Actions */}
               <div style={modalActionsStyle}>
                 {!selectedCheckpoint.isCurrent && (
-                  <button 
+                  <button
                     onClick={() => rewindToCheckpoint(selectedCheckpoint)}
                     style={rewindButtonStyle}
                   >
                     ⏪ Rewind to This Checkpoint
                   </button>
                 )}
-                <button 
-                  onClick={() => {
-                    const current = checkpoints.find(c => c.isCurrent);
-                    if (current) {
-                      compareCheckpoints(selectedCheckpoint, current);
-                    }
-                  }}
-                  style={compareButtonStyle}
-                >
-                  📊 Compare with Current
-                </button>
               </div>
             </div>
           </div>
@@ -1012,18 +976,6 @@ const rewindButtonStyle: React.CSSProperties = {
   border: 'none',
   borderRadius: '10px',
   color: 'white',
-  fontWeight: 600,
-  cursor: 'pointer',
-  fontSize: '14px',
-};
-
-const compareButtonStyle: React.CSSProperties = {
-  flex: 1,
-  padding: '12px',
-  background: 'rgba(255, 255, 255, 0.05)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '10px',
-  color: '#f8fafc',
   fontWeight: 600,
   cursor: 'pointer',
   fontSize: '14px',

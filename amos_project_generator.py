@@ -9,8 +9,6 @@ Usage:
     python amos_project_generator.py create "An API for brain analytics"
 """
 
-from __future__ import annotations
-
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -29,8 +27,8 @@ class ProjectScaffold:
         self.name = name
         self.description = description
         self.project_type = project_type
-        self.engines: list[dict] = []
-        self.files: dict[str, str] = {}
+        self.engines: List[dict] = []
+        self.files: Dict[str, str] = {}
         self.brain_analysis: dict = {}
 
 
@@ -82,7 +80,7 @@ class AMOSProjectGenerator:
 
         return analysis
 
-    def find_engines(self, description: str) -> list[dict]:
+    def find_engines(self, description: str) -> List[dict]:
         """Find relevant cognitive engines."""
         print("\n📚 PHASE 2: Knowledge Exploration")
         print("─" * 60)
@@ -127,7 +125,7 @@ class AMOSProjectGenerator:
             return "general"
 
     def generate_scaffold(
-        self, name: str, description: str, analysis: dict, engines: list[dict]
+        self, name: str, description: str, analysis: dict, engines: List[dict]
     ) -> ProjectScaffold:
         """Generate project scaffold."""
         print("\n🏗️  PHASE 3: Project Scaffolding")
@@ -161,7 +159,7 @@ class AMOSProjectGenerator:
         return scaffold
 
     def _generate_main_py(
-        self, name: str, description: str, project_type: str, engines: list[dict]
+        self, name: str, description: str, project_type: str, engines: List[dict]
     ) -> str:
         """Generate main Python module."""
         class_name = "".join(word.capitalize() for word in name.replace("-", "_").split("_"))
@@ -182,7 +180,6 @@ Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 Recommended cognitive engines:
 {engine_refs}
 """
-from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -249,7 +246,7 @@ if __name__ == "__main__":
 '''
         return template
 
-    def _generate_config_py(self, name: str, engines: list[dict]) -> str:
+    def _generate_config_py(self, name: str, engines: List[dict]) -> str:
         """Generate configuration module."""
         engine_list = (
             "\n".join([f'    "{e["name"]}",  # {e["type"]}' for e in engines[:3]])
@@ -258,7 +255,6 @@ if __name__ == "__main__":
         )
 
         return f'''"""Configuration for {name}."""
-from __future__ import annotations
 
 
 class Config:
@@ -287,7 +283,7 @@ class Config:
 '''
 
     def _generate_readme(
-        self, name: str, description: str, project_type: str, engines: list[dict], analysis: dict
+        self, name: str, description: str, project_type: str, engines: List[dict], analysis: dict
     ) -> str:
         """Generate README."""
         engine_section = (
@@ -324,6 +320,7 @@ python main.py
 
 # Or import and use programmatically
 from main import {name.replace("-", "_").title().replace(" ", "")}
+from typing import Final, Optional
 
 app = {name.replace("-", "_").title().replace(" ", "")}()
 result = app.analyze("Your problem here")

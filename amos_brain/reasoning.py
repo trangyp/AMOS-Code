@@ -1,7 +1,5 @@
 """Reasoning engines implementing Rule of 2, Rule of 4, and structural analysis."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -32,7 +30,7 @@ class RuleOfTwo:
     contrasting perspectives or hypotheses.
     """
 
-    def analyze(self, problem: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    def analyze(self, problem: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Perform dual-perspective analysis.
 
         Returns analysis with primary and alternative perspectives.
@@ -140,7 +138,7 @@ class RuleOfFour:
         ),
     }
 
-    def analyze(self, problem: str, required_quadrants: set[str] | None = None) -> dict[str, Any]:
+    def analyze(self, problem: str, required_quadrants: set[str] = None) -> dict[str, Any]:
         """Perform four-quadrant analysis.
 
         Args:
@@ -269,7 +267,7 @@ class ReasoningEngine:
         self.rule_of_two = RuleOfTwo()
         self.rule_of_four = RuleOfFour()
 
-    def full_analysis(self, problem: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    def full_analysis(self, problem: str, context: dict[str, Any] = None) -> dict[str, Any]:
         """Perform complete AMOS-compliant analysis.
 
         Combines Rule of 2 (dual perspectives) with Rule of 4 (four quadrants).

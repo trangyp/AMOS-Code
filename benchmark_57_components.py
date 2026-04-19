@@ -11,12 +11,12 @@ State-of-the-art benchmarking for autonomous systems:
 import time
 import tracemalloc
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
 class BenchmarkResult:
     """Benchmark result for a single component."""
+
     name: str
     init_time_ms: float
     memory_kb: float
@@ -88,10 +88,6 @@ class AMOSPerformanceBenchmark:
 
         from amos_meta_ontological import (
             AMOSMetaOntological,
-            EnergyBudget,
-            TemporalHierarchy,
-            IdentityManifold,
-            EthicalBoundary,
         )
 
         # Measure initialization
@@ -196,7 +192,7 @@ class AMOSPerformanceBenchmark:
 
         return results
 
-    def run_all_benchmarks(self) -> Dict[str, List[BenchmarkResult]]:
+    def run_all_benchmarks(self) -> dict[str, list[BenchmarkResult]]:
         """Run all benchmarks and return results."""
         print("\n" + "=" * 70)
         print("AMOS 57-Component Performance Benchmark Suite")
@@ -302,7 +298,9 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
         elif total_init < 5000:
             report += "**ACCEPTABLE** - System performs adequately, monitor in production.\n"
         else:
-            report += "**NEEDS OPTIMIZATION** - Consider performance improvements before deployment.\n"
+            report += (
+                "**NEEDS OPTIMIZATION** - Consider performance improvements before deployment.\n"
+            )
 
         report += """
 ## Recommendations

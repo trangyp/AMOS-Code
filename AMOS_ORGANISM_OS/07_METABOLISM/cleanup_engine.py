@@ -4,15 +4,12 @@ Manages cleanup tasks, temporary file removal, and
 system maintenance operations.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
 
 
 class CleanupPolicy(Enum):
@@ -43,14 +40,14 @@ class CleanupTask:
     target_pattern: str = ""  # Files/paths to clean
     policy: CleanupPolicy = CleanupPolicy.DELETE
     max_age_days: int = 7
-    min_size_mb: Optional[int] = None  # Only if larger than this
+    min_size_mb: int = None  # Only if larger than this
     dry_run: bool = True  # Preview without deleting
     schedule: str = "daily"  # daily, weekly, on_demand
-    last_run: Optional[str] = None
+    last_run: str = None
     last_status: TaskStatus = TaskStatus.PENDING
     items_cleaned: int = 0
     space_reclaimed_mb: float = 0.0
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     enabled: bool = True
 
     def to_dict(self) -> dict[str, Any]:
@@ -68,7 +65,7 @@ class CleanupEngine:
     general maintenance tasks.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path | None = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
@@ -115,7 +112,7 @@ class CleanupEngine:
         """Save cleanup tasks to disk."""
         tasks_file = self.data_dir / "cleanup_tasks.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "tasks": [t.to_dict() for t in self.tasks],
         }
         tasks_file.write_text(json.dumps(data, indent=2))
@@ -180,7 +177,7 @@ class CleanupEngine:
         self.save()
         return task
 
-    def execute_task(self, task_id: str, base_path: Optional[Path] = None) -> dict[str, Any]:
+    def execute_task(self, task_id: str, base_path: Path | None = None) -> dict[str, Any]:
         """Execute a specific cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -189,7 +186,7 @@ class CleanupEngine:
         if not task.enabled:
             return {"success": False, "error": "Task disabled"}
 
-        task.last_run = datetime.utcnow().isoformat()
+        task.last_run = datetime.now(UTC).isoformat()
         task.last_status = TaskStatus.RUNNING
 
         handler = self.cleanup_handlers.get(task.policy)
@@ -214,7 +211,7 @@ class CleanupEngine:
             self.save()
             return {"success": False, "error": str(e)}
 
-    def execute_all(self, base_path: Optional[Path] = None) -> dict[str, Any]:
+    def execute_all(self, base_path: Path | None = None) -> dict[str, Any]:
         """Execute all enabled cleanup tasks."""
         results = []
         total_cleaned = 0
@@ -242,7 +239,7 @@ class CleanupEngine:
         }
 
     # Cleanup handlers
-    def _handle_delete(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
+    def _handle_delete(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
         """Handle delete policy."""
         import glob
 
@@ -253,7 +250,7 @@ class CleanupEngine:
         space_reclaimed = 0.0
 
         pattern = str(base_path / task.target_pattern)
-        cutoff = datetime.utcnow() - timedelta(days=task.max_age_days)
+        cutoff = datetime.now(UTC) - timedelta(days=task.max_age_days)
 
         for path in glob.glob(pattern):
             path_obj = Path(path)
@@ -281,7 +278,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def _handle_archive(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
+    def _handle_archive(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
         """Handle archive policy."""
         import glob
         import shutil
@@ -296,7 +293,7 @@ class CleanupEngine:
         space_reclaimed = 0.0
 
         pattern = str(base_path / task.target_pattern)
-        cutoff = datetime.utcnow() - timedelta(days=task.max_age_days)
+        cutoff = datetime.now(UTC) - timedelta(days=task.max_age_days)
 
         for path in glob.glob(pattern):
             path_obj = Path(path)
@@ -321,7 +318,7 @@ class CleanupEngine:
             "archive_dir": str(archive_dir),
         }
 
-    def _handle_truncate(self, task: CleanupTask, base_path: Optional[Path]) -> dict[str, Any]:
+    def _handle_truncate(self, task: CleanupTask, base_path: Path) -> dict[str, Any]:
         """Handle truncate policy for log files."""
         import glob
 
@@ -347,7 +344,7 @@ class CleanupEngine:
             "dry_run": task.dry_run,
         }
 
-    def get_task_status(self, task_id: str) -> Optional[dict[str, Any]]:
+    def get_task_status(self, task_id: str) -> dict[str, Any]:
         """Get status of a cleanup task."""
         task = next((t for t in self.tasks if t.id == task_id), None)
         if not task:
@@ -358,7 +355,7 @@ class CleanupEngine:
             "next_run": self._get_next_run(task),
         }
 
-    def _get_next_run(self, task: CleanupTask) -> Optional[str]:
+    def _get_next_run(self, task: CleanupTask) -> str:
         """Calculate next scheduled run time."""
         if not task.last_run:
             return "ASAP"
@@ -395,10 +392,10 @@ class CleanupEngine:
 
 
 # Global instance
-_ENGINE: Optional[CleanupEngine] = None
+_ENGINE: CleanupEngine | None = None
 
 
-def get_cleanup_engine(data_dir: Optional[Path] = None) -> CleanupEngine:
+def get_cleanup_engine(data_dir: Path | None = None) -> CleanupEngine:
     """Get or create global cleanup engine."""
     global _ENGINE
     if _ENGINE is None:

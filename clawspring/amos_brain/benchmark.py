@@ -10,10 +10,11 @@ Measures performance metrics for all critical components:
 
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from statistics import mean, stdev
-from typing import Any, Callable
+from typing import Any
 
 import psutil
 
@@ -42,7 +43,7 @@ class PerformanceBenchmark:
     """Benchmark suite for AMOS Ecosystem."""
 
     def __init__(self):
-        self.results: list[BenchmarkResult] = []
+        self.results: List[BenchmarkResult] = []
         self.process = psutil.Process()
 
     def _measure_memory(self) -> float:
@@ -59,7 +60,7 @@ class PerformanceBenchmark:
         for _ in range(warmup):
             try:
                 fn()
-            except Exception:
+            except (RuntimeError, ValueError, TypeError):
                 pass
 
         # Measure

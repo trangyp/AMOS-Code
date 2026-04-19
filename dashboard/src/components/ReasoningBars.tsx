@@ -2,7 +2,7 @@
  * AMOS Reasoning Bars Component
  * Real-time visualization of L1-L3 cognitive layer activation
  * Shows Rule of 2 (dual perspectives) and Rule of 4 (four quadrants) progress
- * 
+ *
  * Based on 2025 UI research:
  * - Streaming reasoning (OpenAI o1, Claude 3.5)
  * - Deterministic feedback loops (System 2 thinking)
@@ -76,24 +76,24 @@ export const ReasoningBars: React.FC<ReasoningBarsProps> = ({
 
     const interval = setInterval(() => {
       setElapsedTime(prev => prev + 100);
-      
+
       setLayers(prevLayers => {
         const newLayers = [...prevLayers];
-        
+
         // L1 activates first
         if (newLayers[0].progress < 100) {
           newLayers[0].progress = Math.min(100, newLayers[0].progress + 15);
           newLayers[0].status = 'active';
         } else {
           newLayers[0].status = 'complete';
-          
+
           // L2 activates after L1 completes
           if (newLayers[1].progress < 100) {
             newLayers[1].progress = Math.min(100, newLayers[1].progress + 12);
             newLayers[1].status = 'active';
           } else {
             newLayers[1].status = 'complete';
-            
+
             // L3 activates after L2
             if (newLayers[2].progress < 100) {
               newLayers[2].progress = Math.min(100, newLayers[2].progress + 10);
@@ -104,11 +104,11 @@ export const ReasoningBars: React.FC<ReasoningBarsProps> = ({
             }
           }
         }
-        
+
         // Calculate overall confidence based on progress
         const totalProgress = newLayers.reduce((sum, l) => sum + l.progress, 0);
         setConfidence(Math.round(totalProgress / 3));
-        
+
         return newLayers;
       });
     }, 100);
@@ -148,7 +148,7 @@ export const ReasoningBars: React.FC<ReasoningBarsProps> = ({
 
       {/* Progress Bars */}
       <div style={barsContainerStyle}>
-        {layers.map((layer, index) => (
+        {layers.map((layer) => (
           <div key={layer.id} style={barRowStyle}>
             {/* Label */}
             <div style={labelStyle}>
@@ -165,8 +165,8 @@ export const ReasoningBars: React.FC<ReasoningBarsProps> = ({
                   ...progressBarStyle,
                   width: `${layer.progress}%`,
                   backgroundColor: layer.color,
-                  boxShadow: layer.status === 'active' 
-                    ? `0 0 10px ${layer.color}` 
+                  boxShadow: layer.status === 'active'
+                    ? `0 0 10px ${layer.color}`
                     : 'none',
                 }}
               />
@@ -217,11 +217,11 @@ export const ReasoningBars: React.FC<ReasoningBarsProps> = ({
               key={law}
               style={{
                 ...lawBadgeStyle,
-                backgroundColor: idx < Math.floor(confidence / 34) 
-                  ? 'rgba(16, 185, 129, 0.2)' 
+                backgroundColor: idx < Math.floor(confidence / 34)
+                  ? 'rgba(16, 185, 129, 0.2)'
                   : 'rgba(255, 255, 255, 0.1)',
-                color: idx < Math.floor(confidence / 34) 
-                  ? '#10b981' 
+                color: idx < Math.floor(confidence / 34)
+                  ? '#10b981'
                   : 'rgba(255, 255, 255, 0.5)',
               }}
             >

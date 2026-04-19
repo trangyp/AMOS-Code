@@ -4,10 +4,9 @@ Provides a central registry for tool definitions, lookup, schema export,
 and dispatch with output truncation.
 """
 
-from __future__ import annotations
-
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -24,7 +23,7 @@ class ToolDef:
 
     name: str
     schema: Dict[str, Any]
-    func: Callable[[Dict[str, Any], Dict[str, Any]], str]
+    func: Callable[[dict[str, Any], dict[str, Any]], str]
     read_only: bool = False
     concurrent_safe: bool = False
 
@@ -52,7 +51,7 @@ def get_all_tools() -> List[ToolDef]:
     return list(_registry.values())
 
 
-def get_tool_schemas() -> List[Dict[str, Any]]:
+def get_tool_schemas() -> list[dict[str, Any]]:
     """Return the schemas of all registered tools (for API tool parameter)."""
     return [t.schema for t in _registry.values()]
 

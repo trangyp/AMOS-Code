@@ -1,0 +1,208 @@
+# AMOS SuperBrain v3.0 - CI/CD Pipeline
+# Validates 75% health without API keys, ready for 100% with keys
+# 2025 Best Practices: pytest, Docker build, security scan
+
+name: AMOS SuperBrain CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: amos-superbrain
+
+jobs:
+  # ============================================================================
+  # Test Suite (75% Health Validation)
+  # ============================================================================
+  test:
+    runs-on: ubuntu-latest
+    name: Test Suite - 75% Health
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run test suite
+        run: |
+          pytest tests/test_amos_extended.py -v --tb=short --cov=amos_brain --cov-report=xml
+        env:
+          PYTHONPATH: .
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+  # ============================================================================
+  # Configuration Validation
+  # ============================================================================
+  config-validation:
+    runs-on: ubuntu-latest
+    name: Configuration Validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic pydantic-settings
+
+      - name: Validate configuration
+        run: |
+          python3 -c "
+import sys
+sys.path.insert(0, '.')
+from amos_brain.config_validation import ConfigValidator
+validator = ConfigValidator()
+report = validator.validate()
+print(f'Valid: {report[\"valid\"]}')
+print(f'Environment: {report[\"environment\"]}')
+print(f'Providers: {report[\"providers_configured\"]}')
+if report['issues']:
+    print('Issues:')
+    for issue in report['issues']:
+        print(f'  - {issue}')
+if not report['valid']:
+    sys.exit(1)
+"
+
+  # ============================================================================
+  # Docker Build (75% Health Image)
+  # ============================================================================
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Docker Build - 75% Health
+    needs: [test, config-validation]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t amos-superbrain:ci-test .
+
+      - name: Test Docker image health
+        run: |
+          docker run --rm --name amos-test -d -p 8000:8000 amos-superbrain:ci-test
+          sleep 10
+          docker ps | grep amos-test
+          docker stop amos-test
+
+  # ============================================================================
+  # Security Scan
+  # ============================================================================
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    needs: docker-build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  # ============================================================================
+  # Publish Docker Image (on main branch)
+  # ============================================================================
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish Docker Image
+    needs: [test, config-validation, docker-build, security-scan]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=75-health-
+            latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+
+      - name: Output image details
+        run: |
+          echo "📦 Docker image published successfully!"
+          echo "Image: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}"
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo ""
+          echo "✅ Ready for deployment at 75% health"
+          echo "📝 To reach 100% health, inject API keys:"
+          echo "   OPENAI_API_KEY, ANTHROPIC_API_KEY, KIMI_API_KEY"

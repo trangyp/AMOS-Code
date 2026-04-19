@@ -1,0 +1,471 @@
+# AMOS Engines Kubernetes Deployment
+# Deploys all 4 new engines: Temporal, Field, Safety, Integration
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amos-engines
+  labels:
+    app.kubernetes.io/name: amos-engines
+    app.kubernetes.io/version: "v2.0"
+
+---
+# ConfigMap for engine configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amos-engines-config
+  namespace: amos-engines
+data:
+  TEMPORAL_ENABLED: "true"
+  FIELD_ENABLED: "true"
+  SAFETY_ENABLED: "true"
+  INTEGRATION_ENABLED: "true"
+  OBSERVABILITY_ENABLED: "true"
+  PROMETHEUS_PORT: "9090"
+  HEALTH_CHECK_PORT: "8080"
+  API_PORT: "8000"
+  LOG_LEVEL: "INFO"
+
+---
+# Temporal Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-temporal-engine
+  namespace: amos-engines
+  labels:
+    app: amos-temporal-engine
+    engine: temporal
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amos-temporal-engine
+  template:
+    metadata:
+      labels:
+        app: amos-temporal-engine
+        engine: temporal
+    spec:
+      containers:
+        - name: temporal-engine
+          image: amos/temporal-engine:v2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: api
+            - containerPort: 8080
+              name: health
+            - containerPort: 9090
+              name: metrics
+          envFrom:
+            - configMapRef:
+                name: amos-engines-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: engine-data
+              mountPath: /data
+      volumes:
+        - name: engine-data
+          emptyDir: {}
+
+---
+# Temporal Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-temporal-service
+  namespace: amos-engines
+  labels:
+    app: amos-temporal-engine
+spec:
+  selector:
+    app: amos-temporal-engine
+  ports:
+    - name: api
+      port: 8000
+      targetPort: 8000
+    - name: health
+      port: 8080
+      targetPort: 8080
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+  type: ClusterIP
+
+---
+# Field Dynamics Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-field-engine
+  namespace: amos-engines
+  labels:
+    app: amos-field-engine
+    engine: field
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amos-field-engine
+  template:
+    metadata:
+      labels:
+        app: amos-field-engine
+        engine: field
+    spec:
+      containers:
+        - name: field-engine
+          image: amos/field-engine:v2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+              name: api
+            - containerPort: 8081
+              name: health
+            - containerPort: 9091
+              name: metrics
+          envFrom:
+            - configMapRef:
+                name: amos-engines-config
+          env:
+            - name: FIELD_GRID_SIZE
+              value: "64"
+            - name: FIELD_MASS
+              value: "1.0"
+            - name: FIELD_COUPLING
+              value: "0.1"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: field-data
+              mountPath: /data
+      volumes:
+        - name: field-data
+          emptyDir: {}
+
+---
+# Field Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-field-service
+  namespace: amos-engines
+  labels:
+    app: amos-field-engine
+spec:
+  selector:
+    app: amos-field-engine
+  ports:
+    - name: api
+      port: 8001
+      targetPort: 8001
+    - name: health
+      port: 8081
+      targetPort: 8081
+    - name: metrics
+      port: 9091
+      targetPort: 9091
+  type: ClusterIP
+
+---
+# Safety Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-safety-engine
+  namespace: amos-engines
+  labels:
+    app: amos-safety-engine
+    engine: safety
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amos-safety-engine
+  template:
+    metadata:
+      labels:
+        app: amos-safety-engine
+        engine: safety
+    spec:
+      containers:
+        - name: safety-engine
+          image: amos/safety-engine:v2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8002
+              name: api
+            - containerPort: 8082
+              name: health
+            - containerPort: 9092
+              name: metrics
+          envFrom:
+            - configMapRef:
+                name: amos-engines-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8082
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# Safety Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-safety-service
+  namespace: amos-engines
+  labels:
+    app: amos-safety-engine
+spec:
+  selector:
+    app: amos-safety-engine
+  ports:
+    - name: api
+      port: 8002
+      targetPort: 8002
+    - name: health
+      port: 8082
+      targetPort: 8082
+    - name: metrics
+      port: 9092
+      targetPort: 9092
+  type: ClusterIP
+
+---
+# Integration Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-integration-engine
+  namespace: amos-engines
+  labels:
+    app: amos-integration-engine
+    engine: integration
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amos-integration-engine
+  template:
+    metadata:
+      labels:
+        app: amos-integration-engine
+        engine: integration
+    spec:
+      containers:
+        - name: integration-engine
+          image: amos/integration-engine:v2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8003
+              name: api
+            - containerPort: 8083
+              name: health
+            - containerPort: 9093
+              name: metrics
+          envFrom:
+            - configMapRef:
+                name: amos-engines-config
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8083
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+---
+# Integration Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-integration-service
+  namespace: amos-engines
+  labels:
+    app: amos-integration-engine
+spec:
+  selector:
+    app: amos-integration-engine
+  ports:
+    - name: api
+      port: 8003
+      targetPort: 8003
+    - name: health
+      port: 8083
+      targetPort: 8083
+    - name: metrics
+      port: 9093
+      targetPort: 9093
+  type: ClusterIP
+
+---
+# Ingress for unified API access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: amos-engines-ingress
+  namespace: amos-engines
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: amos-engines.local
+      http:
+        paths:
+          - path: /temporal
+            pathType: Prefix
+            backend:
+              service:
+                name: amos-temporal-service
+                port:
+                  number: 8000
+          - path: /field
+            pathType: Prefix
+            backend:
+              service:
+                name: amos-field-service
+                port:
+                  number: 8001
+          - path: /safety
+            pathType: Prefix
+            backend:
+              service:
+                name: amos-safety-service
+                port:
+                  number: 8002
+          - path: /integration
+            pathType: Prefix
+            backend:
+              service:
+                name: amos-integration-service
+                port:
+                  number: 8003
+
+---
+# HorizontalPodAutoscaler for Temporal Engine
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: amos-temporal-hpa
+  namespace: amos-engines
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-temporal-engine
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+# HorizontalPodAutoscaler for Field Engine
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: amos-field-hpa
+  namespace: amos-engines
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-field-engine
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+# PodDisruptionBudget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: amos-engines-pdb
+  namespace: amos-engines
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      engine: temporal

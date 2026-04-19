@@ -15,14 +15,13 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 21
 """
 
-from __future__ import annotations
 
 import argparse
 import json
 import sys
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 
 @dataclass
@@ -60,9 +59,9 @@ class ProductionDeployer:
     def __init__(self, config: Optional[DeploymentConfig] = None):
         self.config = config or DeploymentConfig()
         self.checks: list[dict[str, Any]] = []
-        self.deployment_id = f"AMOS-DEPLOY-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
+        self.deployment_id = f"AMOS-DEPLOY-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
 
-    def preflight_check(self) -> dict[str, Any]:
+    def preflight_check(self) -> Dict[str, Any]:
         """Run pre-flight checks before deployment.
 
         Checks:
@@ -78,7 +77,7 @@ class ProductionDeployer:
         """
         results = {
             "deployment_id": self.deployment_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "checks": [],
             "passed": 0,
             "failed": 0,
@@ -214,7 +213,7 @@ class ProductionDeployer:
 
         return results
 
-    def deploy(self) -> dict[str, Any]:
+    def deploy(self) -> Dict[str, Any]:
         """Execute production deployment.
 
         Steps:
@@ -253,7 +252,7 @@ class ProductionDeployer:
         print("Step 2: Deploying AMOS to production...")
         deployment = {
             "deployment_id": self.deployment_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": self.config.version,
             "layers": self.config.layers,
             "components": {},
@@ -325,7 +324,7 @@ class ProductionDeployer:
 
         return deployment
 
-    def verify(self) -> dict[str, Any]:
+    def verify(self) -> Dict[str, Any]:
         """Verify production deployment."""
         verified = []
         issues = []
@@ -367,10 +366,11 @@ class ProductionDeployer:
             "issues": issues,
         }
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get production deployment status."""
         try:
             from amos_brain import get_brain
+from typing import Final, Optional
 
             brain = get_brain()
 
@@ -386,7 +386,7 @@ class ProductionDeployer:
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
-    def _save_report(self, deployment: dict[str, Any]) -> None:
+    def _save_report(self, deployment: Dict[str, Any]) -> None:
         """Save deployment report to file."""
         report_file = f".amos_deployment_{self.deployment_id}.json"
         try:

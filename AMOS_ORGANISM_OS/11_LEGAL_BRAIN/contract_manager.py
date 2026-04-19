@@ -4,15 +4,13 @@ Manages contracts, agreements, and legal obligations
 for the AMOS organism.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class ContractStatus(Enum):
@@ -46,20 +44,20 @@ class Contract:
     title: str = ""
     contract_type: ContractType = ContractType.CUSTOM
     status: ContractStatus = ContractStatus.DRAFT
-    parties: list[str] = field(default_factory=list)
+    parties: List[str] = field(default_factory=list)
     start_date: str = ""
-    end_date: Optional[str] = None
-    renewal_date: Optional[str] = None
+    end_date: str = None
+    renewal_date: str = None
     value: float = 0.0
     currency: str = "USD"
-    key_terms: list[str] = field(default_factory=list)
-    obligations: list[str] = field(default_factory=list)
+    key_terms: List[str] = field(default_factory=list)
+    obligations: List[str] = field(default_factory=list)
     notes: str = ""
-    document_path: Optional[str] = None
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    document_path: str = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "contract_type": self.contract_type.value,
@@ -77,9 +75,9 @@ class ContractAlert:
     message: str = ""
     due_date: str = ""
     acknowledged: bool = False
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -96,8 +94,8 @@ class ContractManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.contracts: list[Contract] = []
-        self.alerts: list[ContractAlert] = []
+        self.contracts: List[Contract] = []
+        self.alerts: List[ContractAlert] = []
 
         self._load_data()
 
@@ -138,7 +136,7 @@ class ContractManager:
         """Save contract data to disk."""
         data_file = self.data_dir / "contracts.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "contracts": [c.to_dict() for c in self.contracts],
             "alerts": [a.to_dict() for a in self.alerts],
         }
@@ -148,9 +146,9 @@ class ContractManager:
         self,
         title: str,
         contract_type: ContractType,
-        parties: list[str],
+        parties: List[str],
         start_date: str,
-        end_date: Optional[str] = None,
+        end_date: str = None,
     ) -> Contract:
         """Create a new contract."""
         contract = Contract(
@@ -177,15 +175,15 @@ class ContractManager:
         contract = self.get_contract(contract_id)
         if contract:
             contract.status = status
-            contract.updated_at = datetime.utcnow().isoformat()
+            contract.updated_at = datetime.now(UTC).isoformat()
             self.save()
             return True
         return False
 
-    def check_expirations(self) -> list[ContractAlert]:
+    def check_expirations(self) -> List[ContractAlert]:
         """Check for upcoming expirations and generate alerts."""
         new_alerts = []
-        today = datetime.utcnow()
+        today = datetime.now(UTC)
         warning_days = 30
 
         for contract in self.contracts:
@@ -258,7 +256,7 @@ class ContractManager:
                 return True
         return False
 
-    def get_contract_summary(self) -> dict[str, Any]:
+    def get_contract_summary(self) -> Dict[str, Any]:
         """Get summary of contract portfolio."""
         by_status = {}
         for c in self.contracts:
@@ -302,7 +300,7 @@ if __name__ == "__main__":
         title="Cloud Service Agreement",
         contract_type=ContractType.SERVICE,
         parties=["AMOS", "AWS"],
-        start_date=datetime.utcnow().isoformat(),
+        start_date=datetime.now(UTC).isoformat(),
     )
     print(f"\nCreated contract: {contract.title}")
 

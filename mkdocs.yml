@@ -1,0 +1,214 @@
+# AMOS Documentation Site Configuration
+# Material for MkDocs - Modern documentation framework
+# https://squidfunk.github.io/mkdocs-material/
+
+site_name: AMOS Documentation
+site_description: AMOS Cognitive Operating System - Production-grade multi-agent AI platform
+site_url: https://amos-ai.readthedocs.io
+site_author: Trang Phan
+
+copyright: |
+  &copy; 2024-2025 Trang Phan. AMOS is released under the MIT License.
+
+# Repository
+repo_name: trangyp/AMOS-Code
+repo_url: https://github.com/trangyp/AMOS-Code
+edit_uri: edit/main/docs/
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Getting Started:
+    - getting-started/index.md
+    - getting-started/installation.md
+    - getting-started/quickstart.md
+    - getting-started/configuration.md
+  - User Guide:
+    - user-guide/index.md
+    - user-guide/agents.md
+    - user-guide/orchestration.md
+    - user-guide/memory.md
+    - user-guide/laws.md
+    - user-guide/tools.md
+    - user-guide/security.md
+  - API Reference:
+    - api-reference/index.md
+    - api-reference/rest-api.md
+    - api-reference/websocket.md
+    - api-reference/python-sdk.md
+  - Deployment:
+    - deployment/index.md
+    - deployment/docker.md
+    - deployment/kubernetes.md
+    - deployment/production.md
+    - deployment/monitoring.md
+  - Architecture:
+    - architecture/index.md
+    - architecture/overview.md
+    - architecture/components.md
+    - architecture/data-flow.md
+  - Development:
+    - development/index.md
+    - development/setup.md
+    - development/testing.md
+    - development/contributing.md
+  - Changelog: changelog.md
+
+# Theme configuration
+theme:
+  name: material
+  custom_dir: docs/overrides
+
+  # Color palette (supports dark/light mode)
+  palette:
+    # Dark mode (default)
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+
+  # Font configuration
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+  # Icons
+  icon:
+    logo: material/brain
+    repo: fontawesome/brands/github
+
+  # Features
+  features:
+    - navigation.tabs           # Top-level navigation tabs
+    - navigation.sections        # Expandable sections
+    - navigation.expand         # Auto-expand sections
+    - navigation.path           # Breadcrumb navigation
+    - navigation.top            # Back-to-top button
+    - navigation.tracking       # URL tracking
+    - search.suggest            # Search suggestions
+    - search.highlight          # Search highlighting
+    - search.share              # Share search results
+    - content.code.copy         # Copy code button
+    - content.code.annotate     # Code annotations
+    - content.tabs.link         # Linked content tabs
+    - content.tooltips          # Tooltips
+    - announce.dismiss          # Dismissible announcements
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      type: datetime
+      fallback_to_build_date: true
+  - git-committers:
+      repository: trangyp/AMOS-Code
+      branch: main
+  - open-in-new-tab:
+      add_icon: true
+
+# Markdown extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+  # PyMdownX extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Extra CSS and JavaScript
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# Extra variables
+extra:
+  version:
+    provider: mike
+    default: stable
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/trangyp/AMOS-Code
+      name: GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/amos_ai
+      name: Twitter
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  consent:
+    title: Cookie consent
+    description: >
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+# Validation (strict mode for CI)
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn

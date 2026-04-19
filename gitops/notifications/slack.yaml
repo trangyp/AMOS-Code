@@ -1,0 +1,87 @@
+# ArgoCD Notifications Configuration for Slack
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.slack: |
+    token: $slack-token
+
+  template.app-deployed: |
+    message: |
+      :rocket: *AMOS {{.app.metadata.name}}* deployed successfully!
+
+      Environment: {{.app.spec.destination.namespace}}
+      Version: {{.app.status.sync.revision}}
+      Sync Status: {{.app.status.sync.status}}
+      Health Status: {{.app.status.health.status}}
+
+      Deployed at: {{.app.status.operationState.finishedAt}}
+      Duration: {{.app.status.operationState.phase}}
+
+      Commit: <{{.app.status.sync.revision}}|View Commit>
+
+  template.app-sync-failed: |
+    message: |
+      :x: *AMOS {{.app.metadata.name}}* deployment failed!
+
+      Environment: {{.app.spec.destination.namespace}}
+      Error: {{.app.status.operationState.message}}
+
+      Please check: <{{.context.argocdUrl}}/applications/{{.app.metadata.name}}|ArgoCD UI>
+
+  template.app-sync-running: |
+    message: |
+      :arrows_counterclockwise: *AMOS {{.app.metadata.name}}* deployment in progress...
+
+      Environment: {{.app.spec.destination.namespace}}
+      Version: {{.app.status.sync.revision}}
+      Started: {{.app.status.operationState.startedAt}}
+
+  template.app-health-degraded: |
+    message: |
+      :warning: *AMOS {{.app.metadata.name}}* health degraded!
+
+      Environment: {{.app.spec.destination.namespace}}
+      Health: {{.app.status.health.status}}
+
+      Resources:
+      {{range .app.status.resources}}
+      - {{.kind}}/{{.name}}: {{.status}}
+      {{end}}
+
+  trigger.on-deployed: |
+    - description: Application is synced and healthy
+      send:
+        - app-deployed
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+
+  trigger.on-sync-failed: |
+    - description: Application sync failed
+      send:
+        - app-sync-failed
+      when: app.status.operationState.phase in ['Error', 'Failed']
+
+  trigger.on-sync-running: |
+    - description: Application sync started
+      send:
+        - app-sync-running
+      when: app.status.operationState.phase in ['Running']
+
+  trigger.on-health-degraded: |
+    - description: Application health degraded
+      send:
+        - app-health-degraded
+      when: app.status.health.status == 'Degraded'
+
+---
+# Slack secret (base64 encoded token)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+  namespace: argocd
+type: Opaque
+stringData:
+  slack-token: "xoxb-your-slack-bot-token"

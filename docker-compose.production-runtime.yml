@@ -1,0 +1,247 @@
+# AMOS Production Runtime Stack - Docker Compose (Phase 11)
+# ========================================================
+#
+# Full production deployment including:
+# - FastAPI Gateway (Phase 10)
+# - Production Runtime (Phase 8)
+# - Health Monitor (Phase 5)
+# - Self-Healing Controller (Phase 7)
+# - Bootstrap Orchestrator (Phase 6)
+#
+# Services:
+#   - API Gateway: http://localhost:8000
+#   - API Docs: http://localhost:8000/docs
+#   - WebSocket: ws://localhost:8000/ws/health
+#   - Health Check: http://localhost:8000/health
+#
+# Quick Start:
+#   docker-compose -f docker-compose.production-runtime.yml up -d
+#
+# Stop:
+#   docker-compose -f docker-compose.production-runtime.yml down
+#
+# Logs:
+#   docker-compose -f docker-compose.production-runtime.yml logs -f gateway
+#
+# Scale:
+#   docker-compose -f docker-compose.production-runtime.yml up -d --scale gateway=3
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # AMOS FastAPI Gateway (Phase 10)
+  # ============================================================================
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+      target: production
+    image: amos-fastapi-gateway:latest
+    container_name: amos-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      # Application
+      APP_NAME: AMOS FastAPI Gateway
+      APP_VERSION: 1.0.0
+      DEBUG: "false"
+      ENVIRONMENT: production
+
+      # Runtime Integration
+      RUNTIME_ENABLED: "true"
+      BOOTSTRAP_ON_START: "true"
+      SELF_HEALING_ENABLED: "true"
+      HEALTH_CHECK_INTERVAL: 30
+
+      # Performance
+      WORKERS: 4
+      TIMEOUT_KEEP_ALIVE: 5
+
+      # Logging
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+
+      # Security (override in production)
+      ALLOWED_HOSTS: "*"
+      CORS_ORIGINS: "http://localhost:3000,https://amos.example.com"
+
+    volumes:
+      # Mount for development (optional)
+      - ./amos_fastapi_gateway.py:/app/amos_fastapi_gateway.py:ro
+      - ./amos_production_runtime.py:/app/amos_production_runtime.py:ro
+      - ./amos_self_healing_controller.py:/app/amos_self_healing_controller.py:ro
+      - ./amos_bootstrap_orchestrator.py:/app/amos_bootstrap_orchestrator.py:ro
+      - ./amos_brain_health_monitor.py:/app/amos_brain_health_monitor.py:ro
+
+    networks:
+      - amos-production-network
+
+    restart: unless-stopped
+
+    # Service dependencies - wait for Redis to be healthy
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    # Graceful shutdown handling
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ============================================================================
+  # Redis (Cache + Pub/Sub for health streams)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: amos-redis
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-production-data:/data
+    networks:
+      - amos-production-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # ============================================================================
+  # Nginx Load Balancer (Optional - for multi-instance gateway)
+  # ============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: amos-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - amos-production-network
+    restart: unless-stopped
+    depends_on:
+      - gateway
+    profiles:
+      - with-nginx
+
+  # ============================================================================
+  # Prometheus (Metrics Collection)
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amos-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - amos-production-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+    profiles:
+      - monitoring
+
+  # ============================================================================
+  # Grafana (Visualization)
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: amos-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - amos-production-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+  # ============================================================================
+  # Jaeger (Distributed Tracing)
+  # ============================================================================
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: amos-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    networks:
+      - amos-production-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    profiles:
+      - monitoring
+      - tracing
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  amos-production-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ============================================================================
+# Volumes
+# ============================================================================
+volumes:
+  redis-production-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

@@ -5,14 +5,11 @@ combining scenario evaluation, Monte Carlo simulation, and
 multi-criteria analysis.
 """
 
-from __future__ import annotations
-
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
 
 
 class RouteType(Enum):
@@ -33,11 +30,11 @@ class RouteDecision:
     route_type: RouteType = RouteType.HYBRID
     input_data: dict[str, Any] = field(default_factory=dict)
     scenarios: list[dict[str, Any]] = field(default_factory=list)
-    simulation_result: Optional[dict[str, Any]] = None
-    optimizer_result: Optional[dict[str, Any]] = None
+    simulation_result: dict[str, Any] = None
+    optimizer_result: dict[str, Any] = None
     recommendation: str = ""
     confidence: float = 0.0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -53,7 +50,7 @@ class QuantumRouter:
     decision optimizer to provide comprehensive decision analysis.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path | None = None):
         self.data_dir = data_dir
         self.routes: dict[str, RouteDecision] = {}
 
@@ -269,7 +266,7 @@ class QuantumRouter:
                 route.recommendation = best[0]
                 route.confidence = min(0.95, best[1] / 0.4)  # Normalize
 
-    def get_route(self, route_id: str) -> Optional[RouteDecision]:
+    def get_route(self, route_id: str) -> RouteDecision | None:
         """Get a specific routed decision."""
         return self.routes.get(route_id)
 
@@ -286,10 +283,10 @@ class QuantumRouter:
         }
 
 
-_ROUTER: Optional[QuantumRouter] = None
+_ROUTER: QuantumRouter | None = None
 
 
-def get_quantum_router(data_dir: Optional[Path] = None) -> QuantumRouter:
+def get_quantum_router(data_dir: Path | None = None) -> QuantumRouter:
     """Get or create global quantum router."""
     global _ROUTER
     if _ROUTER is None:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,7 +25,7 @@ class PortManifest:
         return "\n".join(lines)
 
 
-def build_port_manifest(src_root: Path | None = None) -> PortManifest:
+def build_port_manifest(src_root: Optional[Path] = None) -> PortManifest:
     root = src_root or DEFAULT_SRC_ROOT
     files = [path for path in root.rglob("*.py") if path.is_file()]
     counter = Counter(

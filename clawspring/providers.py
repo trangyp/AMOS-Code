@@ -21,13 +21,14 @@ Model string formats:
 
 from __future__ import annotations
 
+
 import json
 import urllib.request
 from collections.abc import Generator
 
 # ── Provider registry ──────────────────────────────────────────────────────
 
-PROVIDERS: dict[str, dict] = {
+PROVIDERS: Dict[str, dict] = {
     "anthropic": {
         "type": "anthropic",
         "api_key_env": "ANTHROPIC_API_KEY",
@@ -130,12 +131,18 @@ PROVIDERS: dict[str, dict] = {
         "api_key": "ollama",
         "context_limit": 128000,
         "models": [
+            # Local models detected on this system
+            "deepseek-coder-v2:16b",  # 8.9 GB - Advanced code generation
+            "qwen2.5-coder:14b",  # 9.0 GB - Code tasks
+            "deepseek-coder:33b",  # 18 GB - Large coding model
+            "codellama",  # 3.8 GB - Code completion
+            "llama3.2",  # 2.0 GB - General tasks
+            "mistral",  # 4.4 GB - General reasoning
+            "nomic-embed-text",  # 274 MB - Embeddings
+            # Additional common models
             "llama3.3",
-            "llama3.2",
             "phi4",
-            "mistral",
             "mixtral",
-            "qwen2.5-coder",
             "deepseek-r1",
             "gemma3",
         ],
@@ -671,7 +678,7 @@ def stream(
         )
 
 
-def list_ollama_models(base_url: str) -> list[str]:
+def list_ollama_models(base_url: str) -> List[str]:
     """Fetch locally available model tags from Ollama server."""
     try:
         url = f"{base_url.rstrip('/')}/api/tags"

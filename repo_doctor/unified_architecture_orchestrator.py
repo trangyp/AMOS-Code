@@ -12,8 +12,6 @@ Capabilities:
 This is the meta-layer that makes 19 invariants act as one coherent intelligence.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -70,14 +68,14 @@ class UnifiedArchitecturalDecision:
     timestamp: str
 
     # Input from all domains
-    constitutional_status: InvariantStatus | None
-    temporal_status: InvariantStatus | None
-    operational_status: InvariantStatus | None
-    resilience_status: InvariantStatus | None
+    constitutional_status: InvariantStatus
+    temporal_status: InvariantStatus
+    operational_status: InvariantStatus
+    resilience_status: InvariantStatus
 
     # Synthesis
     overall_confidence: DecisionConfidence
-    primary_concerns: list[str]
+    primary_concerns: List[str]
     conflicting_invariants: list[tuple[str, str]]
     recommended_actions: list[dict[str, Any]]
 
@@ -95,10 +93,10 @@ class UnifiedArchitectureState:
     timestamp: str
 
     # All 19 invariants
-    invariants: dict[str, InvariantStatus]
+    invariants: Dict[str, InvariantStatus]
 
     # Correlations
-    correlations: list[CrossDomainCorrelation]
+    correlations: List[CrossDomainCorrelation]
 
     # Derived metrics
     constitutional_health: float  # 0-1
@@ -108,10 +106,10 @@ class UnifiedArchitectureState:
     overall_health: float
 
     # Critical issues
-    critical_violations: list[str]
-    warning_violations: list[str]
+    critical_violations: List[str]
+    warning_violations: List[str]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "state_id": self.state_id,
             "timestamp": self.timestamp,
@@ -122,7 +120,9 @@ class UnifiedArchitectureState:
                 "resilience": self.resilience_health,
                 "overall": self.overall_health,
             },
-            "invariants": {k: {"valid": v.valid, "severity": v.severity} for k, v in self.invariants.items()},
+            "invariants": {
+                k: {"valid": v.valid, "severity": v.severity} for k, v in self.invariants.items()
+            },
             "critical_count": len(self.critical_violations),
             "warning_count": len(self.warning_violations),
         }
@@ -141,10 +141,10 @@ class UnifiedArchitectureOrchestrator:
     """
 
     def __init__(self):
-        self.engines: dict[str, Any] = {}
-        self.correlations: list[CrossDomainCorrelation] = []
-        self.decisions: list[UnifiedArchitecturalDecision] = []
-        self.states: list[UnifiedArchitectureState] = []
+        self.engines: Dict[str, Any] = {}
+        self.correlations: List[CrossDomainCorrelation] = []
+        self.decisions: List[UnifiedArchitecturalDecision] = []
+        self.states: List[UnifiedArchitectureState] = []
 
         # Define known cross-domain correlations
         self._initialize_correlations()
@@ -214,16 +214,30 @@ class UnifiedArchitectureOrchestrator:
 
     def collect_invariant_status(self) -> dict[str, InvariantStatus]:
         """Collect status from all registered engines."""
-        invariants: dict[str, InvariantStatus] = {}
+        invariants: Dict[str, InvariantStatus] = {}
 
         # This would query each engine in practice
         # For now, return placeholder
         all_invariant_ids = [
-            "I_constitution", "I_state_ownership", "I_absence", "I_semver",
-            "I_protocol_lifecycle", "I_capability", "I_negative_capability",
-            "I_partial_order", "I_clock", "I_consistency", "I_eventuality",
-            "I_cache", "I_fallback", "I_queue", "I_idempotency",
-            "I_recovery", "I_disaster_recovery", "I_blast", "I_isolation",
+            "I_constitution",
+            "I_state_ownership",
+            "I_absence",
+            "I_semver",
+            "I_protocol_lifecycle",
+            "I_capability",
+            "I_negative_capability",
+            "I_partial_order",
+            "I_clock",
+            "I_consistency",
+            "I_eventuality",
+            "I_cache",
+            "I_fallback",
+            "I_queue",
+            "I_idempotency",
+            "I_recovery",
+            "I_disaster_recovery",
+            "I_blast",
+            "I_isolation",
         ]
 
         for inv_id in all_invariant_ids:
@@ -236,7 +250,9 @@ class UnifiedArchitectureOrchestrator:
 
         return invariants
 
-    def detect_correlations(self, invariants: dict[str, InvariantStatus]) -> list[CrossDomainCorrelation]:
+    def detect_correlations(
+        self, invariants: Dict[str, InvariantStatus]
+    ) -> List[CrossDomainCorrelation]:
         """Detect active correlations between invariant violations."""
         active_correlations = []
 
@@ -250,7 +266,7 @@ class UnifiedArchitectureOrchestrator:
 
         return active_correlations
 
-    def calculate_health_scores(self, invariants: dict[str, InvariantStatus]) -> dict[str, float]:
+    def calculate_health_scores(self, invariants: Dict[str, InvariantStatus]) -> dict[str, float]:
         """Calculate health scores for each domain."""
         constitutional = [
             invariants.get("I_constitution"),
@@ -283,7 +299,7 @@ class UnifiedArchitectureOrchestrator:
             invariants.get("I_isolation"),
         ]
 
-        def domain_health(invariant_list: list[InvariantStatus | None]) -> float:
+        def domain_health(invariant_list: list[InvariantStatus]) -> float:
             valid_count = sum(1 for i in invariant_list if i and i.valid)
             total = len([i for i in invariant_list if i])
             return valid_count / total if total > 0 else 1.0
@@ -331,18 +347,22 @@ class UnifiedArchitectureOrchestrator:
         # Generate recommendations
         recommendations = []
         if state.critical_violations:
-            recommendations.append({
-                "priority": "critical",
-                "action": "immediate_remediation",
-                "targets": state.critical_violations,
-            })
+            recommendations.append(
+                {
+                    "priority": "critical",
+                    "action": "immediate_remediation",
+                    "targets": state.critical_violations,
+                }
+            )
 
         if state.resilience_health < 0.5:
-            recommendations.append({
-                "priority": "high",
-                "action": "implement_blast_containment",
-                "rationale": "Resilience health below threshold",
-            })
+            recommendations.append(
+                {
+                    "priority": "high",
+                    "action": "implement_blast_containment",
+                    "rationale": "Resilience health below threshold",
+                }
+            )
 
         # Decision
         if confidence in (DecisionConfidence.CERTAIN, DecisionConfidence.HIGH):
@@ -444,7 +464,7 @@ class UnifiedArchitectureOrchestrator:
             },
         ]
 
-    def get_architectural_decision_report(self) -> dict[str, Any]:
+    def get_architectural_decision_report(self) -> Dict[str, Any]:
         """Get comprehensive decision report."""
         if not self.states:
             return {"error": "No assessment performed yet"}

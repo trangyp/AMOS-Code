@@ -9,7 +9,7 @@ from typing import Any
 class OrganismBridge:
     """Bridge between organism and AMOS Brain."""
 
-    def __init__(self, organism: Any | None = None):
+    def __init__(self, organism: Optional[Any] = None):
         """Initialize bridge with optional organism instance."""
         self.organism = organism
         self.status = "ready"
@@ -18,7 +18,7 @@ class OrganismBridge:
         """Establish connection to organism."""
         return True
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current bridge status."""
         return {"connected": True, "status": self.status}
 

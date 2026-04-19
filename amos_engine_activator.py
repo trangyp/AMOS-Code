@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """AMOS Engine Activator - Connect 143+ discovered engines to cognitive stack."""
 
-from __future__ import annotations
-
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -17,10 +16,10 @@ class ActivatedEngine:
     name: str
     category: str
     source_path: str
-    capabilities: list[str] = field(default_factory=list)
+    capabilities: List[str] = field(default_factory=list)
     activation_time: str = ""
     invoke_count: int = 0
-    content: dict[str, Any] = field(default_factory=dict, repr=False)
+    content: Dict[str, Any] = field(default_factory=dict, repr=False)
 
 
 class EngineActivator:
@@ -28,10 +27,10 @@ class EngineActivator:
 
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self.activated_engines: dict[str, ActivatedEngine] = {}
+        self.activated_engines: Dict[str, ActivatedEngine] = {}
         self.capability_index: dict[str, list[str]] = {}
         self.category_index: dict[str, list[str]] = {}
-        self._invoke_handlers: dict[str, Callable] = {}
+        self._invoke_handlers: Dict[str, Callable] = {}
         self._initialize_handlers()
 
     def _initialize_handlers(self):
@@ -50,7 +49,7 @@ class EngineActivator:
             "kernel": self._invoke_kernel,
         }
 
-    def scan_and_activate(self) -> dict[str, Any]:
+    def scan_and_activate(self) -> Dict[str, Any]:
         """Scan brain directory and activate all engines."""
         print("[ENGINE_ACTIVATOR] Scanning and activating engines...")
 
@@ -114,7 +113,7 @@ class EngineActivator:
                 category=category,
                 source_path=str(engine_file.relative_to(self.brain_root)),
                 capabilities=capabilities,
-                activation_time=datetime.utcnow().isoformat(),
+                activation_time=datetime.now(UTC).isoformat(),
                 content=content,
             )
 
@@ -136,7 +135,7 @@ class EngineActivator:
             category=f"{category}_large",
             source_path=str(engine_file.relative_to(self.brain_root)),
             capabilities=["on_demand_load"],
-            activation_time=datetime.utcnow().isoformat(),
+            activation_time=datetime.now(UTC).isoformat(),
             content={"status": "registered_large", "size_mb": size / (1024 * 1024)},
         )
 
@@ -169,7 +168,7 @@ class EngineActivator:
         else:
             return "general"
 
-    def _extract_capabilities(self, content: dict, category: str) -> list[str]:
+    def _extract_capabilities(self, content: dict, category: str) -> List[str]:
         """Extract capabilities from engine content."""
         capabilities = [category]
 
@@ -207,8 +206,8 @@ class EngineActivator:
                 self.capability_index[cap].append(key)
 
     def invoke_engine(
-        self, category: str, task: str, context: dict[str, Any] = None
-    ) -> dict[str, Any]:
+        self, category: str, task: str, context: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """Invoke an activated engine for a task."""
         context = context or {}
 
@@ -232,20 +231,20 @@ class EngineActivator:
             "category": category,
             "task": task,
             "result": result,
-            "invoked_at": datetime.utcnow().isoformat(),
+            "invoked_at": datetime.now(UTC).isoformat(),
         }
 
-    def get_engines_by_category(self, category: str) -> list[ActivatedEngine]:
+    def get_engines_by_category(self, category: str) -> List[ActivatedEngine]:
         """Get all engines in a category."""
         keys = self.category_index.get(category, [])
         return [self.activated_engines[k] for k in keys if k in self.activated_engines]
 
-    def get_engines_by_capability(self, capability: str) -> list[ActivatedEngine]:
+    def get_engines_by_capability(self, capability: str) -> List[ActivatedEngine]:
         """Get all engines with a capability."""
         keys = self.capability_index.get(capability, [])
         return [self.activated_engines[k] for k in keys if k in self.activated_engines]
 
-    def query_engines(self, query: str, top_n: int = 5) -> list[ActivatedEngine]:
+    def query_engines(self, query: str, top_n: int = 5) -> List[ActivatedEngine]:
         """Query engines by name/capability match."""
         query_lower = query.lower()
         scored = []
@@ -372,7 +371,7 @@ class EngineActivator:
             "engine": engine.name,
         }
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get activation statistics."""
         most_invoked = sorted(
             self.activated_engines.values(), key=lambda e: e.invoke_count, reverse=True

@@ -1,7 +1,5 @@
 """Core agent loop: neutral message format, multi-provider streaming."""
 
-from __future__ import annotations
-
 import os
 
 # AMOS Brain integration (standalone package)
@@ -11,8 +9,9 @@ from dataclasses import dataclass, field
 
 from compaction import maybe_compact
 from providers import AssistantTurn, TextChunk, ThinkingChunk, stream
-from tool_registry import get_tool_schemas
 from tools import execute_tool
+
+from tool_registry import get_tool_schemas
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -73,19 +72,21 @@ class PermissionRequest:
 
 
 def _get_enhanced_system_prompt(base_prompt: str, use_amos: bool = True) -> str:
-    """Enhance system prompt with AMOS brain context if available."""
+    """Enhance system prompt with SuperBrain context if available."""
     if not use_amos or not _amos_available:
         return base_prompt
     try:
-        from amos_runtime import get_runtime
+        from amos_brain.super_brain import get_super_brain
 
-        runtime = get_runtime()
-        identity = runtime.get_identity()
-        laws = runtime.get_law_summary()
-        amos_section = f"""# AMOS Brain (vInfinity)
-System: {identity.get("system_name", "AMOS")}
-Creator: {identity.get("creator", "Trang Phan")}
-Laws: {", ".join(l["name"] for l in laws[:4])}
+        brain = get_super_brain()
+        state = brain.get_state()
+
+        amos_section = f"""# AMOS SuperBrain (vInfinity)
+Brain ID: {state.brain_id if hasattr(state, 'brain_id') else 'AMOS-SB'}
+Status: {state.status}
+Core Frozen: {state.core_frozen}
+Health Score: {state.health_score:.2f}
+Creator: Trang Phan
 Gap: No embodiment/consciousness/autonomous action
 """
         return f"{base_prompt}\n\n{amos_section}"
@@ -103,13 +104,15 @@ def run(
     use_amos_brain: bool = True,
 ) -> Generator:
     """Multi-turn agent loop (generator).
-    Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
-            PermissionRequest | TurnDone
+    from __future__ import annotations
 
-    Args:
-        depth: sub-agent nesting depth, 0 for top-level
-        cancel_check: callable returning True to abort the loop early
-        use_amos_brain: whether to apply AMOS brain enhancement (default: True)
+        Yields: TextChunk | ThinkingChunk | ToolStart | ToolEnd |
+                PermissionRequest | TurnDone
+
+        Args:
+            depth: sub-agent nesting depth, 0 for top-level
+            cancel_check: callable returning True to abort the loop early
+            use_amos_brain: whether to apply AMOS brain enhancement (default: True)
     """
     # Enhance system prompt with AMOS brain context
     enhanced_prompt = _get_enhanced_system_prompt(system_prompt, use_amos_brain)
@@ -140,7 +143,7 @@ def run(
         if cancel_check and cancel_check():
             return
         state.turn_count += 1
-        assistant_turn: AssistantTurn | None = None
+        assistant_turn: Optional[AssistantTurn] = None
 
         # Compact context if approaching window limit
         maybe_compact(state, config)

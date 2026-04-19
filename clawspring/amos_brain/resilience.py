@@ -5,13 +5,17 @@ Automatic failure detection, recovery, and graceful degradation
 for production reliability.
 """
 
+from __future__ import annotations
+
+
 import sys
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -56,7 +60,7 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.failures = 0
-        self.last_failure_time: Optional[datetime] = None
+        self.last_failure_time: datetime = None
         self.state = "closed"  # closed, open, half-open
         self._lock = threading.Lock()
 
@@ -141,14 +145,14 @@ class ResilienceManager:
         self.retry_policy = RetryPolicy()
         self.recovery_handlers: dict[str, Callable] = {}
         self._running = False
-        self._monitor_thread: Optional[threading.Thread] = None
+        self._monitor_thread: threading.Thread = None
         self._lock = threading.Lock()
 
     def register_component(
         self,
         name: str,
-        circuit_breaker: Optional[CircuitBreaker] = None,
-        recovery_handler: Optional[Callable] = None,
+        circuit_breaker: CircuitBreaker | None = None,
+        recovery_handler: Callable | None = None,
     ) -> None:
         """Register a component for resilience management."""
         if circuit_breaker:
@@ -286,7 +290,7 @@ class ResilienceManager:
 
 
 # Global instance
-_resilience: Optional[ResilienceManager] = None
+_resilience: ResilienceManager | None = None
 
 
 def get_resilience() -> ResilienceManager:

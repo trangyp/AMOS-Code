@@ -1,7 +1,5 @@
 """ClawSpring Plugin - Auto-registers AMOS brain with clawspring runtime."""
 
-from __future__ import annotations
-
 
 def register_with_clawspring() -> None:
     """Register AMOS brain components with clawspring if available."""

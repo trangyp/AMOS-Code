@@ -12,9 +12,7 @@ Capabilities:
 This is the predictive layer that enables "architectural foresight".
 """
 
-from __future__ import annotations
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
@@ -51,8 +49,8 @@ class ArchitectureState:
     interfaces: list[dict[str, Any]]
 
     # Invariant states
-    invariant_status: dict[str, bool]
-    invariant_scores: dict[str, float]
+    invariant_status: Dict[str, bool]
+    invariant_scores: Dict[str, float]
 
     # Health metrics
     complexity_score: float
@@ -68,7 +66,7 @@ class ArchitecturalChange:
     change_type: ChangeType
     description: str
     target_component: str
-    change_details: dict[str, Any]
+    change_details: Dict[str, Any]
     expected_impact: str  # "low", "medium", "high", "critical"
 
 
@@ -94,7 +92,7 @@ class SimulationResult:
     # Predicted outcomes
     predicted_state: ArchitectureState
     invariant_changes: dict[str, tuple[bool, bool]]  # (before, after)
-    health_delta: dict[str, float]  # Change in each health metric
+    health_delta: Dict[str, float]  # Change in each health metric
 
     # Risk assessment
     risk_level: str  # "low", "medium", "high", "critical"
@@ -104,7 +102,7 @@ class SimulationResult:
     # Recommendations
     recommendations: list[str]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "result_id": self.result_id,
             "scenario_id": self.scenario_id,
@@ -144,7 +142,7 @@ class ArchitecturalDigitalTwin:
     """
 
     def __init__(self):
-        self.current_state: ArchitectureState | None = None
+        self.current_state: Optional[ArchitectureState] = None
         self.state_history: list[ArchitectureState] = []
         self.simulations: list[SimulationResult] = []
         self.forecasts: list[InvariantForecast] = []
@@ -154,8 +152,13 @@ class ArchitecturalDigitalTwin:
         self.risk_threshold_high = 0.8
         self.risk_threshold_medium = 0.5
 
-    def capture_state(self, components: list[dict], dependencies: list[dict],
-                     interfaces: list[dict], invariant_status: dict[str, bool]) -> ArchitectureState:
+    def capture_state(
+        self,
+        components: list[dict],
+        dependencies: list[dict],
+        interfaces: list[dict],
+        invariant_status: Dict[str, bool],
+    ) -> ArchitectureState:
         """Capture current architecture state into digital twin."""
         # Calculate health metrics
         complexity = self._calculate_complexity(components, dependencies)
@@ -204,8 +207,9 @@ class ArchitecturalDigitalTwin:
         # Real implementation would analyze component responsibilities
         return 0.7  # Placeholder
 
-    def simulate_change(self, change: ArchitecturalChange,
-                       base_state: ArchitectureState | None = None) -> SimulationResult:
+    def simulate_change(
+        self, change: ArchitecturalChange, base_state: Optional[ArchitectureState] = None
+    ) -> SimulationResult:
         """
         Simulate the impact of an architectural change.
 
@@ -232,8 +236,7 @@ class ArchitecturalDigitalTwin:
         if change.change_type == ChangeType.REMOVE_COMPONENT:
             # Check for dependencies on removed component
             dependent_comps = [
-                d for d in base.dependencies
-                if d.get("target") == change.target_component
+                d for d in base.dependencies if d.get("target") == change.target_component
             ]
             if dependent_comps:
                 breaking_changes.append(
@@ -244,9 +247,7 @@ class ArchitecturalDigitalTwin:
 
         elif change.change_type == ChangeType.MODIFY_INTERFACE:
             # Interface changes risk protocol violations
-            breaking_changes.append(
-                f"Interface modification may violate I_protocol_lifecycle"
-            )
+            breaking_changes.append("Interface modification may violate I_protocol_lifecycle")
             predicted_invariants["I_protocol_lifecycle"] = False
             predicted_scores["I_protocol_lifecycle"] = 0.5
             recommendations.append("Consider versioning the interface change")
@@ -254,7 +255,9 @@ class ArchitecturalDigitalTwin:
         elif change.change_type == ChangeType.CHANGE_DEPENDENCY:
             # Dependency changes can affect temporal ordering
             cascade_effects.append("May affect I_partial_order")
-            predicted_scores["I_partial_order"] = max(0, predicted_scores.get("I_partial_order", 1.0) - 0.2)
+            predicted_scores["I_partial_order"] = max(
+                0, predicted_scores.get("I_partial_order", 1.0) - 0.2
+            )
 
         # Calculate health delta
         complexity_delta = 0.0
@@ -400,7 +403,9 @@ class ArchitecturalDigitalTwin:
 
         return results
 
-    def get_what_if_recommendations(self, proposed_changes: list[ArchitecturalChange]) -> dict[str, Any]:
+    def get_what_if_recommendations(
+        self, proposed_changes: list[ArchitecturalChange]
+    ) -> Dict[str, Any]:
         """
         Get recommendations for proposed changes.
 
@@ -444,7 +449,7 @@ class ArchitecturalDigitalTwin:
             "simulations": results,
         }
 
-    def get_twin_status(self) -> dict[str, Any]:
+    def get_twin_status(self) -> Dict[str, Any]:
         """Get current digital twin status."""
         return {
             "has_current_state": self.current_state is not None,

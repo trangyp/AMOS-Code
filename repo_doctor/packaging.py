@@ -10,8 +10,6 @@ Validates:
 - Module inclusion
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,7 +31,7 @@ class PackagingIssue:
     severity: str  # "error", "warning"
     message: str
     file: str
-    fix_suggestion: str | None = None
+    fix_suggestion: str = None
 
 
 class PackagingAnalyzer:
@@ -43,10 +41,10 @@ class PackagingAnalyzer:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.issues: list[PackagingIssue] = []
+        self.issues: List[PackagingIssue] = []
         self.config: dict = {}
 
-    def analyze(self) -> list[PackagingIssue]:
+    def analyze(self) -> List[PackagingIssue]:
         """Run full packaging analysis."""
         self.issues = []
 

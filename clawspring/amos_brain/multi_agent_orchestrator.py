@@ -1,5 +1,7 @@
 """AMOS Multi-Agent Cognitive Orchestrator - Parallel engine execution."""
 
+from __future__ import annotations
+
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -259,7 +261,7 @@ def get_orchestrator() -> MultiAgentOrchestrator:
     return _orchestrator
 
 
-def run_cognitive_consensus(task: str, engines: Optional[list[str]] = None) -> ConsensusResult:
+def run_cognitive_consensus(task: str, engines: list[str] = None) -> ConsensusResult:
     """Convenience function to run multi-agent consensus."""
     orchestrator = get_orchestrator()
     if engines is None:

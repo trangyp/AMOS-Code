@@ -10,13 +10,10 @@ Usage:
     python amos_master_workflow.py batch goals.txt
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -32,10 +29,10 @@ class WorkflowPhase:
 
     name: str
     status: str = "pending"  # pending, running, completed, failed
-    start_time: Optional[str] = None
-    end_time: Optional[str] = None
+    start_time: str = None
+    end_time: str = None
     results: dict = field(default_factory=dict)
-    logs: list[str] = field(default_factory=list)
+    logs: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -45,9 +42,9 @@ class WorkflowRun:
     id: str
     goal: str
     start_time: str
-    end_time: Optional[str] = None
+    end_time: str = None
     status: str = "running"
-    phases: list[WorkflowPhase] = field(default_factory=list)
+    phases: List[WorkflowPhase] = field(default_factory=list)
     final_output: Optional[Path] = None
 
 
@@ -399,7 +396,7 @@ class AMOSMasterWorkflow:
 
         return self.current_run
 
-    def list_runs(self) -> list[WorkflowRun]:
+    def list_runs(self) -> List[WorkflowRun]:
         """List all workflow runs."""
         runs = []
         for report_file in self.workflow_dir.glob("workflow_*.md"):

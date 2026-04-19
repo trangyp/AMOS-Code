@@ -22,8 +22,6 @@ Edge types (E):
 - temporal_succ: Version history edge
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any
@@ -198,7 +196,7 @@ class Vertex:
     path: str = ""
     line_start: int = 0
     line_end: int = 0
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
     def __hash__(self) -> int:
         return hash(self.id)
@@ -212,7 +210,7 @@ class Edge:
     target: str  # Vertex id
     type: EdgeType
     weight: float = 1.0  # Coupling strength
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def id(self) -> str:
@@ -231,8 +229,8 @@ class GraphSubstrate:
     - Repair optimization
     """
 
-    vertices: dict[str, Vertex] = field(default_factory=dict)
-    edges: dict[str, Edge] = field(default_factory=dict)
+    vertices: Dict[str, Vertex] = field(default_factory=dict)
+    edges: Dict[str, Edge] = field(default_factory=dict)
 
     # Index by vertex type for efficient queries
     _vertices_by_type: dict[VertexType, set[str]] = field(
@@ -263,15 +261,15 @@ class GraphSubstrate:
         self._outgoing[edge.source].add(edge_id)
         self._incoming[edge.target].add(edge_id)
 
-    def get_vertices_by_type(self, vtype: VertexType) -> list[Vertex]:
+    def get_vertices_by_type(self, vtype: VertexType) -> List[Vertex]:
         """Get all vertices of a specific type."""
         return [self.vertices[v_id] for v_id in self._vertices_by_type[vtype]]
 
-    def get_edges_by_type(self, etype: EdgeType) -> list[Edge]:
+    def get_edges_by_type(self, etype: EdgeType) -> List[Edge]:
         """Get all edges of a specific type."""
         return [self.edges[e_id] for e_id in self._edges_by_type[etype]]
 
-    def get_neighbors(self, vertex_id: str, edge_type: EdgeType | None = None) -> list[Vertex]:
+    def get_neighbors(self, vertex_id: str, edge_type: Optional[EdgeType] = None) -> List[Vertex]:
         """Get neighboring vertices."""
         neighbors = []
         for edge_id in self._outgoing.get(vertex_id, []):
@@ -281,7 +279,9 @@ class GraphSubstrate:
                     neighbors.append(self.vertices[edge.target])
         return neighbors
 
-    def get_predecessors(self, vertex_id: str, edge_type: EdgeType | None = None) -> list[Vertex]:
+    def get_predecessors(
+        self, vertex_id: str, edge_type: Optional[EdgeType] = None
+    ) -> List[Vertex]:
         """Get predecessor vertices."""
         predecessors = []
         for edge_id in self._incoming.get(vertex_id, []):
@@ -304,7 +304,7 @@ class GraphSubstrate:
 
 
 # Singleton instance
-_graph_instance: GraphSubstrate | None = None
+_graph_instance: Optional[GraphSubstrate] = None
 
 
 def get_graph_substrate() -> GraphSubstrate:

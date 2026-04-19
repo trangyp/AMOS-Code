@@ -55,7 +55,7 @@ class EthicalDecision:
     context: str
     action: str
     ethical_score: float  # 0.0 to 1.0
-    violations: list[str]
+    violations: List[str]
     approved: bool
     reasoning: str
 
@@ -80,8 +80,8 @@ class EthicsEngine:
     """
 
     def __init__(self):
-        self.rules: dict[str, EthicsRule] = {}
-        self.decisions: list[EthicalDecision] = []
+        self.rules: Dict[str, EthicsRule] = {}
+        self.decisions: List[EthicalDecision] = []
         self._load_default_rules()
 
     def _load_default_rules(self):
@@ -139,7 +139,7 @@ class EthicsEngine:
         self.rules[rule.id] = rule
         return True
 
-    def evaluate_decision(self, context: str, action: str, data: dict[str, Any]) -> EthicalDecision:
+    def evaluate_decision(self, context: str, action: str, data: Dict[str, Any]) -> EthicalDecision:
         """Evaluate a decision against ethical rules."""
         violations = []
         score = 1.0
@@ -173,7 +173,7 @@ class EthicsEngine:
 
         decision = EthicalDecision(
             decision_id=f"ethics_{len(self.decisions) + 1}",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             context=context,
             action=action,
             ethical_score=score,
@@ -186,18 +186,40 @@ class EthicsEngine:
         return decision
 
     def _check_rule(
-        self, rule: EthicsRule, context: str, action: str, data: dict[str, Any]
+        self, rule: EthicsRule, context: str, action: str, data: Dict[str, Any]
     ) -> bool:
         """Check if a rule is violated."""
-        # Placeholder for actual rule checking logic
-        # In production, this would evaluate the condition against data
+        # Rule checking based on condition patterns
+        condition = rule.condition.lower()
+        data_str = str(data).lower()
+
+        # Check for privacy violations
+        if "personal_data" in condition and "personal_data" in data_str:
+            return True
+
+        # Check for fairness issues
+        if "decision_affects" in condition and len(data.get("parties", [])) > 1:
+            return True
+
+        # Check for transparency requirements
+        if "external_communication" in condition and data.get("external"):
+            return True
+
+        # Check for high impact decisions
+        if "high_impact" in condition and data.get("impact_score", 0) > 0.8:
+            return True
+
+        # Check for safety risks
+        if "safety_risk" in condition and data.get("safety_critical"):
+            return True
+
         return False
 
     def get_ethics_report(self) -> EthicsReport:
         """Generate an ethics report."""
         if not self.decisions:
             return EthicsReport(
-                generated_at=datetime.utcnow(),
+                generated_at=datetime.now(UTC),
                 total_decisions=0,
                 approved_count=0,
                 rejected_count=0,
@@ -217,7 +239,7 @@ class EthicsEngine:
         )
 
         return EthicsReport(
-            generated_at=datetime.utcnow(),
+            generated_at=datetime.now(UTC),
             total_decisions=len(self.decisions),
             approved_count=approved,
             rejected_count=rejected,
@@ -225,7 +247,7 @@ class EthicsEngine:
             critical_violations=critical_violations,
         )
 
-    def get_rules_by_category(self, category: EthicsCategory) -> list[EthicsRule]:
+    def get_rules_by_category(self, category: EthicsCategory) -> List[EthicsRule]:
         """Get all rules in a category."""
         return [r for r in self.rules.values() if r.category == category]
 
@@ -242,6 +264,24 @@ class EthicsEngine:
             self.rules[rule_id].enabled = False
             return True
         return False
+
+    def validate_action(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate an action against ethical rules.
+
+        Simplified interface that evaluates action data and returns
+        validation results with violations list.
+        """
+        context = data.get("context", "default")
+        action = data.get("action", "unknown")
+
+        decision = self.evaluate_decision(context, action, data)
+
+        return {
+            "approved": decision.approved,
+            "score": decision.ethical_score,
+            "violations": decision.violations,
+            "reasoning": decision.reasoning,
+        }
 
 
 if __name__ == "__main__":

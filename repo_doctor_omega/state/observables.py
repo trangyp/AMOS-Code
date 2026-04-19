@@ -3,8 +3,6 @@
 Typed facts extracted from repository analysis.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any
@@ -69,10 +67,10 @@ class Observable:
 
     # Detailed context
     message: str = ""
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
 
     # Affected basis vectors
-    basis_impact: list[str] = field(default_factory=list)
+    basis_impact: List[str] = field(default_factory=list)
 
     def __post_init__(self):
         self.severity = max(0.0, min(1.0, self.severity))
@@ -81,7 +79,7 @@ class Observable:
         if not self.basis_impact:
             self.basis_impact = self._default_basis_impact()
 
-    def _default_basis_impact(self) -> list[str]:
+    def _default_basis_impact(self) -> List[str]:
         """Map observable kind to affected basis vectors."""
         mapping = {
             ObservableKind.PARSE_FATAL: ["SYNTAX"],
@@ -106,7 +104,7 @@ class Observable:
         }
         return mapping.get(self.kind, ["SYNTAX"])
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize to dictionary."""
         return {
             "kind": self.kind.name,

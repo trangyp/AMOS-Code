@@ -7,7 +7,6 @@ Provides distributed tracing support for:
 - Integration with modern observability backends (Jaeger, Zipkin, OTLP)
 """
 
-from __future__ import annotations
 
 import os
 from contextlib import contextmanager
@@ -29,9 +28,9 @@ class TracingConfig:
 
     def __init__(
         self,
-        enabled: bool | None = None,
+        enabled: bool  = None,
         service_name: str = "amos-brain",
-        endpoint: str | None = None,
+        endpoint: str  = None,
         sample_rate: float = 1.0,
     ):
         self.enabled = (
@@ -50,20 +49,20 @@ class TracingSpan:
     Compatible with OpenTelemetry span interface for future migration.
     """
 
-    def __init__(self, name: str, tracer: Tracer, parent: TracingSpan | None = None):
+    def __init__(self, name: str, tracer: Tracer, parent: Optional[TracingSpan] = None):
         self.name = name
         self.tracer = tracer
         self.parent = parent
-        self.attributes: dict[str, Any] = {}
+        self.attributes: Dict[str, Any] = {}
         self.events: list[dict[str, Any]] = []
-        self._start_time: float | None = None
-        self._end_time: float | None = None
+        self._start_time: float  = None
+        self._end_time: float  = None
 
     def set_attribute(self, key: str, value: Any) -> None:
         """Set a span attribute."""
         self.attributes[key] = value
 
-    def add_event(self, name: str, attributes: dict[str, Any] | None = None) -> None:
+    def add_event(self, name: str, attributes: Dict[str, Any]  = None) -> None:
         """Add an event to the span."""
         import time
 
@@ -95,7 +94,7 @@ class TracingSpan:
         self._start_time = time.time()
         return self
 
-    def __exit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: Any) -> None:
+    def __exit__(self, exc_type: type , exc_val: BaseException , exc_tb: Any) -> None:
         """Context manager exit."""
         import time
 
@@ -111,12 +110,12 @@ class Tracer:
     Currently uses internal implementation; can migrate to opentelemetry-sdk.
     """
 
-    def __init__(self, config: TracingConfig | None = None):
+    def __init__(self, config: Optional[TracingConfig] = None):
         self.config = config or TracingConfig()
-        self._current_span: TracingSpan | None = None
-        self._spans: list[TracingSpan] = []
+        self._current_span: Optional[TracingSpan] = None
+        self._spans: List[TracingSpan] = []
 
-    def start_span(self, name: str, attributes: dict[str, Any] | None = None) -> TracingSpan:
+    def start_span(self, name: str, attributes: Dict[str, Any]  = None) -> TracingSpan:
         """Start a new span.
 
         Args:
@@ -139,7 +138,7 @@ class Tracer:
 
     @contextmanager
     def span(
-        self, name: str, attributes: dict[str, Any] | None = None
+        self, name: str, attributes: Dict[str, Any]  = None
     ) -> Generator[TracingSpan, None, None]:
         """Context manager for span creation.
 
@@ -160,11 +159,11 @@ class Tracer:
             else:
                 self._current_span = None
 
-    def get_current_span(self) -> TracingSpan | None:
+    def get_current_span(self) -> Optional[TracingSpan]:
         """Get the current active span."""
         return self._current_span
 
-    def get_spans(self) -> list[TracingSpan]:
+    def get_spans(self) -> List[TracingSpan]:
         """Get all recorded spans (for testing/debugging)."""
         return self._spans.copy()
 
@@ -178,7 +177,7 @@ class Tracer:
 tracer: Tracer = Tracer()
 
 
-def get_tracer(config: TracingConfig | None = None) -> Tracer:
+def get_tracer(config: Optional[TracingConfig] = None) -> Tracer:
     """Get or create the global tracer.
 
     Args:
@@ -194,9 +193,9 @@ def get_tracer(config: TracingConfig | None = None) -> Tracer:
 
 
 def configure_tracing(
-    enabled: bool | None = None,
+    enabled: bool  = None,
     service_name: str = "amos-brain",
-    endpoint: str | None = None,
+    endpoint: str  = None,
     sample_rate: float = 1.0,
 ) -> Tracer:
     """Configure and return the global tracer.
@@ -227,6 +226,8 @@ def get_otel_tracer() -> Any:
         from opentelemetry import trace
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from typing import Any, Optional, Set
+from typing import Dict, Generator, List
 
         provider = TracerProvider()
         processor = BatchSpanProcessor(ConsoleSpanExporter())

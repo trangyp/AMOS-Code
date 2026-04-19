@@ -12,7 +12,6 @@ Usage:
   python amos_brain_tutorial.py
 """
 
-from __future__ import annotations
 
 import os
 import sys
@@ -172,6 +171,7 @@ def demo_analyze(amos, memory):
 
     # Route to engines
     from amos_brain.cognitive_stack import CognitiveStack
+from typing import Final
 
     stack = CognitiveStack()
     engines = stack.route_query(topic)

@@ -10,12 +10,9 @@ Single entry point for all 60+ AMOSL capabilities:
     $ amosl service start
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
-from typing import Optional
 
 from amosl.admissibility import verify_program_admissibility
 from amosl.axioms import AxiomChecker
@@ -346,7 +343,7 @@ def cmd_status(args) -> int:
     return 0
 
 
-def main(args: Optional[list] = None) -> int:
+def main(args: list = None) -> int:
     """Main CLI entry point."""
     parser = create_parser()
     parsed_args = parser.parse_args(args)

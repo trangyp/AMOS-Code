@@ -17,8 +17,6 @@ Examples:
     repo-doctor repair-plan --output markdown
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
@@ -177,7 +175,7 @@ def cmd_repair_plan(args: argparse.Namespace) -> int:
     return 0
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: List[str] = None) -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(
         prog="repo-doctor",

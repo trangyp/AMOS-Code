@@ -13,8 +13,6 @@ Use this to detect:
 - entrypoint collapse
 """
 
-from __future__ import annotations
-
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,8 +29,8 @@ class CommitState:
     timestamp: str
     author: str
     state: RepoStateVector
-    drift_from_parent: float | None = None
-    drift_details: dict | None = None
+    drift_from_parent: float = None
+    drift_details: dict = None
 
 
 class HistoryAnalyzer:
@@ -42,10 +40,10 @@ class HistoryAnalyzer:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.commits: list[CommitState] = []
-        self.current_commit: str | None = None
+        self.commits: List[CommitState] = []
+        self.current_commit: str = None
 
-    def get_current_commit(self) -> str | None:
+    def get_current_commit(self) -> str:
         """Get the current commit hash."""
         try:
             result = subprocess.run(
@@ -90,8 +88,8 @@ class HistoryAnalyzer:
             return []
 
     def analyze_commit_range(
-        self, start_commit: str | None = None, end_commit: str | None = None
-    ) -> list[CommitState]:
+        self, start_commit: str = None, end_commit: str = None
+    ) -> List[CommitState]:
         """
         Analyze state vectors for a range of commits.
         """
@@ -102,7 +100,7 @@ class HistoryAnalyzer:
         # Get commit history
         history = self.get_commit_history(n=20)
 
-        previous_state: RepoStateVector | None = None
+        previous_state: Optional[RepoStateVector] = None
 
         for hash_val, message, timestamp, author in history:
             # Checkout the commit
@@ -114,8 +112,8 @@ class HistoryAnalyzer:
             state, _ = engine.run_all()
 
             # Compute drift
-            drift: float | None = None
-            drift_details: dict | None = None
+            drift: float = None
+            drift_details: dict = None
 
             if previous_state:
                 drift = state.drift_magnitude(previous_state)
@@ -157,9 +155,7 @@ class HistoryAnalyzer:
         except Exception:
             return False
 
-    def find_first_bad_commit(
-        self, invariant_name: str, good_commit: str, bad_commit: str
-    ) -> str | None:
+    def find_first_bad_commit(self, invariant_name: str, good_commit: str, bad_commit: str) -> str:
         """
         Use git bisect to find first commit that broke an invariant.
         """
@@ -262,6 +258,6 @@ else:
 
         return "\n".join(lines)
 
-    def get_high_drift_commits(self, threshold: float = 0.5) -> list[CommitState]:
+    def get_high_drift_commits(self, threshold: float = 0.5) -> List[CommitState]:
         """Get commits with drift above threshold."""
         return [c for c in self.commits if c.drift_from_parent and c.drift_from_parent >= threshold]

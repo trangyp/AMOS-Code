@@ -9,14 +9,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 @dataclass
@@ -190,7 +188,7 @@ class LegalEngine:
         state_file = self.data_dir / "legal_state.json"
 
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "check_count": len(self.checks),
             "risk_count": len(self.risk_assessments),
             "checks": [
@@ -236,7 +234,7 @@ class LegalEngine:
                 passed=passed,
                 severity=severity,
                 message=msg,
-                timestamp=datetime.utcnow().isoformat() + "Z",
+                timestamp=datetime.now(UTC).isoformat() + "Z",
             )
 
             results.append(check)
@@ -262,7 +260,7 @@ class LegalEngine:
         return True
 
     def assess_risk(
-        self, target: str, action_type: str, parameters: Dict[str, Any]
+        self, target: str, action_type: str, parameters: dict[str, Any]
     ) -> RiskAssessment:
         """Assess risk of an action."""
         risk_factors: List[str] = []
@@ -304,7 +302,7 @@ class LegalEngine:
             risk_level=risk_level,
             risk_factors=risk_factors,
             mitigations=mitigations,
-            assessed_at=datetime.utcnow().isoformat() + "Z",
+            assessed_at=datetime.now(UTC).isoformat() + "Z",
         )
 
         self.risk_assessments.append(assessment)
@@ -312,7 +310,7 @@ class LegalEngine:
 
         return assessment
 
-    def validate_governance(self, action: str, params: Dict) -> Dict[str, Any]:
+    def validate_governance(self, action: str, params: dict) -> dict[str, Any]:
         """Validate action against operator governance rules."""
         profile = self.operator_profile
         is_dict = isinstance(profile, dict)
@@ -342,7 +340,7 @@ class LegalEngine:
             "reasoning_preference": reasoning_style,
         }
 
-    def generate_compliance_report(self) -> Dict[str, Any]:
+    def generate_compliance_report(self) -> dict[str, Any]:
         """Generate compliance status report."""
         # Get recent checks
         recent_checks = self.checks[-50:]
@@ -351,14 +349,14 @@ class LegalEngine:
         failed = len(recent_checks) - passed
 
         # Group by severity
-        by_severity: Dict[str, int] = {}
+        by_severity: dict[str, int] = {}
         for check in recent_checks:
             if not check.passed:
                 sev = check.severity
                 by_severity[sev] = by_severity.get(sev, 0) + 1
 
         return {
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(UTC).isoformat() + "Z",
             "total_checks": len(recent_checks),
             "passed": passed,
             "failed": failed,
@@ -368,7 +366,7 @@ class LegalEngine:
             "total_risk_assessments": len(self.risk_assessments),
         }
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get legal engine status."""
         return {
             "status": "operational",

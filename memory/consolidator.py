@@ -11,7 +11,6 @@ Design principles:
 - Skips short sessions (< MIN_MESSAGES_TO_CONSOLIDATE turns)
 """
 
-from __future__ import annotations
 
 from datetime import datetime
 
@@ -45,7 +44,7 @@ Do NOT extract:
 Keep to AT MOST 3 memories. Quality over quantity."""
 
 
-def consolidate_session(messages: list, config: dict) -> list[str]:
+def consolidate_session(messages: list, config: dict) -> List[str]:
     """Analyze a session's messages and extract memories worth keeping long-term.
 
     Args:
@@ -64,10 +63,11 @@ def consolidate_session(messages: list, config: dict) -> list[str]:
         from providers import AssistantTurn, stream
 
         from .store import MemoryEntry, check_conflict, save_memory
+from typing import List
 
         # Build condensed transcript from the last 40 messages (≈ 20 turns)
         recent = messages[-40:]
-        parts: list[str] = []
+        parts: List[str] = []
         for m in recent:
             role = m.get("role", "")
             content = m.get("content", "")
@@ -101,7 +101,7 @@ def consolidate_session(messages: list, config: dict) -> list[str]:
         if not isinstance(memories_data, list):
             return []
 
-        saved: list[str] = []
+        saved: List[str] = []
         for m in memories_data[:3]:  # hard cap
             required = ("name", "type", "description", "content")
             if not all(k in m for k in required):

@@ -6,7 +6,6 @@ Provides:
   truncate_index_content()  — line + byte truncation with warning
 """
 
-from __future__ import annotations
 
 from .scan import memory_freshness_text
 from .store import (
@@ -76,7 +75,7 @@ def get_memory_context(include_guidance: bool = False) -> str:
                           (MEMORY_SYSTEM_PROMPT). Normally False since the
                           system prompt template already includes brief guidance.
     """
-    parts: list[str] = []
+    parts: List[str] = []
 
     # User-level index
     user_content = get_index_content("user")
@@ -106,8 +105,8 @@ def find_relevant_memories(
     query: str,
     max_results: int = 5,
     use_ai: bool = False,
-    config: dict | None = None,
-) -> list[dict]:
+    config: dict  = None,
+) -> List[dict]:
     """Find memories relevant to a query.
 
     Strategy:
@@ -159,7 +158,7 @@ def _ai_select_memories(
     candidates: list,
     max_results: int,
     config: dict,
-) -> list[dict]:
+) -> List[dict]:
     """Use a fast AI call to select the most relevant memories from candidates.
 
     Falls back to keyword results on any error.
@@ -199,6 +198,7 @@ def _ai_select_memories(
                 break
 
         import json as _json
+from typing import List
 
         parsed = _json.loads(result_text)
         selected_indices = [int(i) for i in parsed.get("indices", []) if isinstance(i, int)]

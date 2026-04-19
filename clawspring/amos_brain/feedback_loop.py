@@ -1,5 +1,7 @@
 """AMOS Cognitive Feedback Loop - Learn from audit history."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -22,7 +24,7 @@ class CognitiveFeedbackLoop:
 
     def __init__(self):
         self.audit = get_audit_trail()
-        self._insights_cache: Optional[list[RoutingInsight]] = None
+        self._insights_cache: list[RoutingInsight] = []
         self._domain_preferences: dict[str, list[str]] = {}
 
     def analyze_patterns(self) -> list[RoutingInsight]:
@@ -116,7 +118,7 @@ class CognitiveFeedbackLoop:
 
         return 0.5, "No matching engine combinations"
 
-    def get_similar_task_advice(self, task: str) -> Optional[dict[str, Any]]:
+    def get_similar_task_advice(self, task: str) -> dict[str, Any]:
         """Get advice from similar historical tasks."""
         similar = self.audit.find_similar(task, threshold=0.5)
         if not similar:
@@ -197,7 +199,7 @@ def get_enhanced_engines(domain: str, base_engines: list[str]) -> list[str]:
     return loop.get_engine_recommendations(domain, base_engines)
 
 
-def get_task_advice(task: str) -> Optional[dict[str, Any]]:
+def get_task_advice(task: str) -> dict[str, Any]:
     """Convenience function to get advice for a task."""
     loop = get_feedback_loop()
     return loop.get_similar_task_advice(task)

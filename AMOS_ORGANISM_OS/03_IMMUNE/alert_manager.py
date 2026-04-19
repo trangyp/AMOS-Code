@@ -13,13 +13,14 @@ import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add repo root to path to import amos_alerting
 REPO_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from amos_alerting import AlertRule, AlertSeverity, AMOSAlerting, SlackChannel, WebhookChannel
+
+from amos_alerting import AlertSeverity, AMOSAlerting, MetricAlertRule, SlackChannel, WebhookChannel
 
 
 class AlertManager:
@@ -37,7 +38,7 @@ class AlertManager:
     def _setup_default_rules(self):
         """Set up default alert rules."""
         default_rules = [
-            AlertRule(
+            MetricAlertRule(
                 name="high_subsystem_load",
                 metric="subsystem_load",
                 condition=">",
@@ -46,7 +47,7 @@ class AlertManager:
                 duration_seconds=60,
                 description="Subsystem load exceeded 80%",
             ),
-            AlertRule(
+            MetricAlertRule(
                 name="critical_subsystem_load",
                 metric="subsystem_load",
                 condition=">",
@@ -55,7 +56,7 @@ class AlertManager:
                 duration_seconds=30,
                 description="Critical: Subsystem load exceeded 95%",
             ),
-            AlertRule(
+            MetricAlertRule(
                 name="task_queue_backlog",
                 metric="pending_tasks",
                 condition=">",
@@ -64,7 +65,7 @@ class AlertManager:
                 duration_seconds=300,
                 description="Task queue has more than 10 pending tasks",
             ),
-            AlertRule(
+            MetricAlertRule(
                 name="anomaly_detected",
                 metric="anomaly_count",
                 condition=">",
@@ -83,7 +84,7 @@ class AlertManager:
         # Console channel (always available)
         self.alerting.add_channel("console", ConsoleChannel())
 
-    def evaluate_and_alert(self, metrics: dict[str, float]) -> list[dict[str, Any]]:
+    def evaluate_and_alert(self, metrics: Dict[str, float]) -> list[dict[str, Any]]:
         """Evaluate metrics and send alerts if needed."""
         alerts = self.alerting.evaluate_rules(metrics)
 
@@ -106,7 +107,7 @@ class AlertManager:
             except Exception as e:
                 print(f"[ALERT] Failed to send to {name}: {e}")
 
-    def _alert_to_dict(self, alert) -> dict[str, Any]:
+    def _alert_to_dict(self, alert) -> Dict[str, Any]:
         """Convert alert to dictionary."""
         return {
             "id": alert.id,
@@ -138,15 +139,15 @@ class AlertManager:
                 return True
         return False
 
-    def add_webhook_channel(self, name: str, url: str, headers: Optional[dict] = None):
+    def add_webhook_channel(self, name: str, url: str, headers: dict = None):
         """Add a webhook notification channel."""
         self.alerting.add_channel(name, WebhookChannel(url, headers))
 
-    def add_slack_channel(self, name: str, webhook_url: str, channel: Optional[str] = None):
+    def add_slack_channel(self, name: str, webhook_url: str, channel: str = None):
         """Add a Slack notification channel."""
         self.alerting.add_channel(name, SlackChannel(webhook_url, channel))
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get alert manager status."""
         return {
             "rules_configured": len(self.alerting.rules),

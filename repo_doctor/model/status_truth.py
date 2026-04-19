@@ -9,8 +9,6 @@ Status claims must be entailed by actual state:
 - healthy = true => no hard invariants currently fail
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -31,7 +29,7 @@ class StatusTruthChecker:
 
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
-        self.claims: list[StatusClaim] = []
+        self.claims: List[StatusClaim] = []
 
     def check_initialization(self, status_field: str, actual_specs: list) -> StatusClaim:
         """
@@ -76,7 +74,7 @@ class StatusTruthChecker:
             is_true=(claimed == actual) or not claimed,
         )
 
-    def analyze(self, sensor_data: dict[str, Any]) -> dict[str, Any]:
+    def analyze(self, sensor_data: Dict[str, Any]) -> Dict[str, Any]:
         """Full status truth analysis."""
         self.claims = []
 

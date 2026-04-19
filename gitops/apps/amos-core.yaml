@@ -1,0 +1,68 @@
+# ArgoCD Application: AMOS Core Platform
+# Deploys the main AMOS Helm chart
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amos-core
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: amos
+    app.kubernetes.io/component: core
+    app.kubernetes.io/version: "2.9.0"
+  finalizers:
+    # Ensures resources are deleted properly
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  # Source of truth - Git repository
+  source:
+    repoURL: https://github.com/amos/amos.git
+    targetRevision: HEAD
+    path: k8s/amos
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: "{{ .Values.environment }}"
+        - name: api.replicaCount
+          value: "{{ .Values.api.replicas }}"
+
+  # Destination cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amos
+
+  # Sync policy
+  syncPolicy:
+    automated:
+      # Automatically sync when drift detected
+      selfHeal: true
+      # Prune resources not in git
+      prune: true
+      # Allow deletion
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Ignore differences (for dynamic fields)
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: ""
+      kind: Secret
+      jsonPointers:
+        - /data
+
+  # Revision history limit
+  revisionHistoryLimit: 10

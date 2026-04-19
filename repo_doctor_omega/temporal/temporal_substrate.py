@@ -6,8 +6,6 @@ Tracks repository state across commits:
 - Per-invariant history
 """
 
-from __future__ import annotations
-
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -22,9 +20,9 @@ class CommitState:
     timestamp: datetime
     author: str
     message: str
-    state_vector: dict[str, float] = field(default_factory=dict)
+    state_vector: Dict[str, float] = field(default_factory=dict)
     energy: float = 0.0
-    invariant_results: dict[str, bool] = field(default_factory=dict)
+    invariant_results: Dict[str, bool] = field(default_factory=dict)
 
     @property
     def is_valid(self) -> bool:
@@ -38,7 +36,7 @@ class DriftMeasurement:
 
     from_commit: str
     to_commit: str
-    delta_vector: dict[str, float] = field(default_factory=dict)
+    delta_vector: Dict[str, float] = field(default_factory=dict)
     drift_norm: float = 0.0
     failed_invariants: list[str] = field(default_factory=list)
 
@@ -66,7 +64,7 @@ class TemporalSubstrate:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        self._state_cache: dict[str, CommitState] = {}
+        self._state_cache: Dict[str, CommitState] = {}
 
     def get_commit_history(self, max_commits: int = 100) -> list[CommitState]:
         """Get commit history from git log.
@@ -137,7 +135,7 @@ class TemporalSubstrate:
             Drift measurement
         """
         # Compute delta vector
-        delta: dict[str, float] = {}
+        delta: Dict[str, float] = {}
         all_keys = set(from_state.state_vector.keys()) | set(to_state.state_vector.keys())
 
         for key in all_keys:
@@ -167,9 +165,9 @@ class TemporalSubstrate:
     def find_first_bad_commit(
         self,
         invariant: str,
-        good_commit: str | None = None,
-        bad_commit: str | None = None,
-    ) -> str | None:
+        good_commit: str = None,
+        bad_commit: str = None,
+    ) -> str:
         """Find first commit where invariant fails.
 
         Args:
@@ -213,7 +211,7 @@ class TemporalSubstrate:
 
         return None
 
-    def get_commit_at(self, commit_hash: str) -> CommitState | None:
+    def get_commit_at(self, commit_hash: str) -> Optional[CommitState]:
         """Get state for specific commit."""
         if commit_hash in self._state_cache:
             return self._state_cache[commit_hash]

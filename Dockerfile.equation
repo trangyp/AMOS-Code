@@ -1,0 +1,71 @@
+# AMOS Equation API - Docker Production Image
+# Multi-stage build optimized for FastAPI with scientific Python stack
+# Build: docker build -f Dockerfile.equation -t amos-equation-api .
+# Run:   docker run -p 8000:8000 amos-equation-api
+
+# Stage 1: Builder
+FROM python:3.11-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies for NumPy/SciPy compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Copy requirements and install dependencies
+COPY requirements-equation.txt .
+RUN pip install --no-cache-dir --user -r requirements-equation.txt
+
+# Stage 2: Production
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1 \
+    PATH=/root/.local/bin:$PATH \
+    APP_ENV=production
+
+WORKDIR /app
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libopenblas0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from builder
+COPY --from=builder /root/.local /root/.local
+
+# Copy application code
+COPY amos_equation_kernel.py .
+COPY amos_equation_extended.py .
+COPY amos_equation_jax.py .
+COPY amos_equation_api.py .
+COPY amos_equation_cli.py .
+COPY clawspring/ ./clawspring/
+COPY tests/ ./tests/
+
+# Create non-root user for security
+RUN useradd -m -u 1000 amos && \
+    chown -R amos:amos /app
+USER amos
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; r = requests.get('http://localhost:8000/'); exit(0 if r.status_code == 200 else 1)" || exit 1
+
+# Expose port
+EXPOSE 8000
+
+# Default command
+CMD ["python", "amos_equation_api.py"]

@@ -14,14 +14,11 @@ Features:
 The predictive engine enables proactive architecture management.
 """
 
-from __future__ import annotations
-
 import math
 import time
 from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 
 @dataclass
@@ -252,7 +249,7 @@ class PatternRecognizer:
         prediction_id: str,
         pattern_id: str,
         actual_outcome: str,  # "true_positive", "false_positive", "missed"
-        time_to_failure: float | None = None,
+        time_to_failure: float = None,
     ):
         """Learn from prediction accuracy to improve future predictions."""
         pattern = self.patterns.get(pattern_id)
@@ -358,7 +355,7 @@ class TrendExtrapolator:
         # Keep only recent window
         self.trends[metric] = self.trends[metric][-self.window_size :]
 
-    def extrapolate(self, metric: str, hours_ahead: float = 24) -> dict[str, Any] | None:
+    def extrapolate(self, metric: str, hours_ahead: float = 24) -> dict[str, Any]:
         """Extrapolate metric value hours into the future."""
         if metric not in self.trends or len(self.trends[metric]) < 3:
             return None
@@ -410,7 +407,7 @@ class PredictiveArchitectureEngine:
     to predict future architecture failures before they occur.
     """
 
-    def __init__(self, repo_path: str | Path | None = None):
+    def __init__(self, repo_path: str | Path = None):
         self.repo_path = Path(repo_path) if repo_path else Path(".")
         self.pattern_recognizer = PatternRecognizer()
         self.correlation_analyzer = CorrelationAnalyzer()
@@ -621,6 +618,6 @@ class PredictiveArchitectureEngine:
         return [w for w in self.warnings if w.timestamp > cutoff]
 
 
-def get_predictive_engine(repo_path: str | Path | None = None) -> PredictiveArchitectureEngine:
+def get_predictive_engine(repo_path: str | Path = None) -> PredictiveArchitectureEngine:
     """Factory function to get predictive engine instance."""
     return PredictiveArchitectureEngine(repo_path)

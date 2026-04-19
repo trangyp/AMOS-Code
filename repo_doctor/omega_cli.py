@@ -18,8 +18,6 @@ Outputs:
 - Repair plan with blast radius
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from typing import Any
@@ -33,7 +31,7 @@ from repo_doctor.solver.repair_optimizer import RepairAction, RepairOptimizer
 from repo_doctor.solver.unsat_core import UnsatCoreExtractor
 
 
-def run_scan(repo_path: str, output_format: str = "markdown") -> dict[str, Any]:
+def run_scan(repo_path: str, output_format: str = "markdown") -> Dict[str, Any]:
     """
     Run full repository scan.
 
@@ -92,7 +90,7 @@ def run_scan(repo_path: str, output_format: str = "markdown") -> dict[str, Any]:
     return diagnosis.to_dict()
 
 
-def run_contracts(repo_path: str) -> dict[str, Any]:
+def run_contracts(repo_path: str) -> Dict[str, Any]:
     """Check public/runtime contract commutator."""
     print(f"🔍 Checking contracts: {repo_path}")
 
@@ -111,7 +109,7 @@ def run_contracts(repo_path: str) -> dict[str, Any]:
     return result
 
 
-def run_drift(repo_path: str, commit_range: str) -> dict[str, Any]:
+def run_drift(repo_path: str, commit_range: str) -> Dict[str, Any]:
     """Compute temporal drift across commits."""
     print(f"📊 Analyzing drift: {repo_path}")
     print(f"  Range: {commit_range}")
@@ -125,7 +123,7 @@ def run_drift(repo_path: str, commit_range: str) -> dict[str, Any]:
     }
 
 
-def run_bisect(repo_path: str, invariant: str, good: str, bad: str) -> dict[str, Any]:
+def run_bisect(repo_path: str, invariant: str, good: str, bad: str) -> Dict[str, Any]:
     """Bisect to find first bad commit for invariant."""
     print(f"🔎 Bisecting invariant: {invariant}")
     print(f"  Good: {good}")
@@ -139,7 +137,7 @@ def run_bisect(repo_path: str, invariant: str, good: str, bad: str) -> dict[str,
     }
 
 
-def run_repair_plan(repo_path: str) -> dict[str, Any]:
+def run_repair_plan(repo_path: str) -> Dict[str, Any]:
     """Generate repair plan."""
     print(f"🔧 Generating repair plan: {repo_path}")
 

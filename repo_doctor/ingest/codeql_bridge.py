@@ -5,8 +5,6 @@ Extracts semantic databases with AST, control-flow, and data-flow
 for deep program analysis.
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import subprocess
@@ -33,7 +31,7 @@ class QueryResult:
 
     query_name: str
     rows: list[dict[str, Any]] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
 
     @property
     def count(self) -> int:
@@ -51,14 +49,14 @@ class CodeQLBridge:
     - Query results as structured data
     """
 
-    def __init__(self, repo_path: Path, codeql_cli: Path | None = None):
+    def __init__(self, repo_path: Path, codeql_cli: Optional[Path] = None):
         self.repo_path = Path(repo_path)
         self.codeql_cli = codeql_cli or self._find_codeql()
-        self.databases: dict[str, CodeQLDatabase] = {}
+        self.databases: Dict[str, CodeQLDatabase] = {}
         self.cache_dir = self.repo_path / ".codeql_cache"
         self.cache_dir.mkdir(exist_ok=True)
 
-    def _find_codeql(self) -> Path | None:
+    def _find_codeql(self) -> Optional[Path]:
         """Find CodeQL CLI in PATH."""
         try:
             result = subprocess.run(
@@ -93,7 +91,7 @@ class CodeQLBridge:
         except Exception:
             return False
 
-    def create_database(self, language: str, db_name: str | None = None) -> CodeQLDatabase | None:
+    def create_database(self, language: str, db_name: str = None) -> Optional[CodeQLDatabase]:
         """
         Create a CodeQL database for the repository.
 
@@ -300,7 +298,7 @@ class CodeQLBridge:
 
         return results
 
-    def get_dataflow_graph(self, language: str = "python") -> dict[str, Any] | None:
+    def get_dataflow_graph(self, language: str = "python") -> Dict[str, Any]:
         """
         Extract data-flow graph from CodeQL database.
 

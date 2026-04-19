@@ -4,8 +4,6 @@ Main orchestration engine that coordinates substrate integration
 and computes repository state.
 """
 
-from __future__ import annotations
-
 import time
 from pathlib import Path
 from typing import Any
@@ -125,7 +123,7 @@ class RepoDoctorEngine:
 
         return observables
 
-    def compute_drift(self, since: str = "HEAD~10") -> dict[str, Any]:
+    def compute_drift(self, since: str = "HEAD~10") -> Dict[str, Any]:
         """Compute temporal drift from reference point.
 
         Args:
@@ -143,7 +141,7 @@ class RepoDoctorEngine:
             "per_basis": {},
         }
 
-    def compute_repair_plan(self) -> dict[str, Any]:
+    def compute_repair_plan(self) -> Dict[str, Any]:
         """Compute minimum restoring repair set.
 
         Uses optimization to find best repair order.
@@ -200,7 +198,7 @@ class RepoDoctorEngine:
             "estimated_time": len(steps) * 30,  # Minutes
         }
 
-    def get_report(self) -> dict[str, Any]:
+    def get_report(self) -> Dict[str, Any]:
         """Generate comprehensive diagnosis report."""
         state = self.compute_state()
         invariants = self.evaluate_invariants()

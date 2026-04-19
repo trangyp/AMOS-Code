@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import argparse
 
 from .bootstrap_graph import build_bootstrap_graph
@@ -132,7 +130,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: List[str] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     manifest = build_port_manifest()

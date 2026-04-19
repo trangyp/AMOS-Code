@@ -6,8 +6,6 @@ Provides SMT-based constraint solving for:
 - Unsat core extraction (minimum contradictory facts)
 """
 
-from __future__ import annotations
-
 from .repair_optimizer import RepairOptimizer, RepairPlan
 from .z3_model import InvariantConstraint, Z3Model
 

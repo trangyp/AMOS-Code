@@ -1,7 +1,5 @@
 """AMOS Scientific/Research Engine - Domain-specific scientific analysis."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,9 +12,9 @@ class ScientificAnalysis:
 
     domain: str
     input_data: str
-    findings: list[dict]
+    findings: List[dict]
     confidence: float
-    limitations: list[str]
+    limitations: List[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -108,7 +106,7 @@ class PhysicsCosmosEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get relevant physical principles for category."""
         principles = {
             "mechanics": ["Newton's laws", "Conservation of momentum"],
@@ -218,7 +216,7 @@ class EngineeringSystemsEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get engineering principles for category."""
         principles = {
             "structural": ["Load distribution", "Material selection"],
@@ -242,7 +240,7 @@ class AMOSScientificEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.engines: dict[str, Any] = {}
+        self.engines: Dict[str, Any] = {}
         self._init_engines()
 
     def _init_engines(self):
@@ -253,7 +251,7 @@ class AMOSScientificEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
+        domains: Optional[List[str]] = None,
     ) -> dict[str, ScientificAnalysis]:
         """Run scientific analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
@@ -266,7 +264,7 @@ class AMOSScientificEngine:
 
         return results
 
-    def get_findings_summary(self, results: dict[str, ScientificAnalysis]) -> str:
+    def get_findings_summary(self, results: Dict[str, ScientificAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Scientific Analysis Summary",
@@ -335,7 +333,7 @@ class AMOSScientificEngine:
 
 
 # Singleton
-_scientific_engine: AMOSScientificEngine | None = None
+_scientific_engine: Optional[AMOSScientificEngine] = None
 
 
 def get_scientific_engine() -> AMOSScientificEngine:
@@ -348,7 +346,7 @@ def get_scientific_engine() -> AMOSScientificEngine:
 
 def analyze_scientific(
     description: str,
-    domains: list[str] | None = None,
+    domains: Optional[List[str]] = None,
 ) -> dict[str, ScientificAnalysis]:
     """Quick helper for scientific analysis."""
     return get_scientific_engine().analyze(description, domains)

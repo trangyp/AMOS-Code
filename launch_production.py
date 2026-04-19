@@ -36,7 +36,7 @@ def print_launch_banner():
 def launch_sequence():
     """Execute production launch sequence."""
     print_launch_banner()
-    print(f"[{datetime.utcnow().isoformat()}] Launch initiated")
+    print(f"[{datetime.now(timezone.utc).isoformat()}] Launch initiated")
     print()
 
     root = Path(__file__).parent
@@ -103,7 +103,7 @@ def launch_sequence():
     print("  3. Deploy:  python deploy.py --env production")
     print("  4. CLI:     python amos_cli.py status")
     print()
-    print(f"[{datetime.utcnow().isoformat()}] AMOS IS LIVE")
+    print(f"[{datetime.now(timezone.utc).isoformat()}] AMOS IS LIVE")
     print()
 
 

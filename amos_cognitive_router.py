@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
-"""AMOS Cognitive Router - Route tasks to optimal engine from 251 available engines."""
+"""AMOS Cognitive Router v2.0.0 - Route tasks to optimal engine from 251 available engines.
 
-from __future__ import annotations
+SUPERBRAIN INTEGRATION:
+- All routing decisions validated via ActionGate
+- All routes recorded in brain audit trail
+- Fail-open strategy for backward compatibility
+
+Owner: Trang Phan
+Version: 2.0.0
+"""
 
 import re
+import threading
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Any
+
+# SuperBrain integration
+try:
+    from amos_brain import get_super_brain
+
+    SUPERBRAIN_AVAILABLE = True
+except ImportError:
+    SUPERBRAIN_AVAILABLE = False
 
 
 @dataclass
@@ -18,7 +34,7 @@ class RouteDecision:
     engine_category: str
     confidence: float
     reasoning: str
-    alternatives: list[str] = field(default_factory=list)
+    alternatives: List[str] = field(default_factory=list)
     route_time: str = ""
 
 
@@ -29,7 +45,7 @@ class EngineScore:
     engine_name: str
     category: str
     score: float
-    matched_keywords: list[str] = field(default_factory=list)
+    matched_keywords: List[str] = field(default_factory=list)
 
 
 class CognitiveRouter:
@@ -37,9 +53,12 @@ class CognitiveRouter:
 
     def __init__(self, engine_activator=None):
         self.engine_activator = engine_activator
-        self.route_history: list[RouteDecision] = []
+        self.route_history: List[RouteDecision] = []
         self.keyword_mappings = self._build_keyword_mappings()
         self.route_count = 0
+        self._brain = None
+        self._brain_lock = threading.Lock()
+        self._init_superbrain()
 
     def _build_keyword_mappings(self) -> dict[str, list[str]]:
         """Build keyword-to-category mappings for routing."""
@@ -155,10 +174,75 @@ class CognitiveRouter:
             ],
         }
 
-    def route_task(self, task: str, context: Optional[dict[str, Any]] = None) -> RouteDecision:
+    def _init_superbrain(self):
+        """Initialize SuperBrain connection."""
+        if SUPERBRAIN_AVAILABLE:
+            try:
+                with self._brain_lock:
+                    self._brain = get_super_brain()
+            except Exception:
+                pass  # Fail open
+
+    def _validate_route(self, task: str, category: str) -> bool:
+        """Validate routing decision via SuperBrain ActionGate."""
+        with self._brain_lock:
+            if not SUPERBRAIN_AVAILABLE or not self._brain:
+                return True  # Fail open
+
+            try:
+                if hasattr(self._brain, "action_gate"):
+                    action_result = self._brain.action_gate.validate_action(
+                        agent_id="cognitive_router",
+                        action="route_task",
+                        details={
+                            "task_length": len(task),
+                            "category": category,
+                            "route_count": self.route_count,
+                        },
+                    )
+                    return action_result.authorized
+            except Exception:
+                pass  # Fail open
+            return True
+
+    def _record_route(self, decision: RouteDecision):
+        """Record routing decision in SuperBrain audit trail."""
+        with self._brain_lock:
+            if not SUPERBRAIN_AVAILABLE or not self._brain:
+                return
+
+            try:
+                if hasattr(self._brain, "record_audit"):
+                    self._brain.record_audit(
+                        action="task_routed",
+                        agent_id="cognitive_router",
+                        details={
+                            "task": decision.task[:100],  # Truncate
+                            "selected_engine": decision.selected_engine,
+                            "category": decision.engine_category,
+                            "confidence": decision.confidence,
+                            "route_count": self.route_count,
+                        },
+                    )
+            except Exception:
+                pass  # Fail open
+
+    def route_task(self, task: str, context: dict[str, Any] = None) -> RouteDecision:
         """Route a task to the optimal engine."""
         context = context or {}
         task_lower = task.lower()
+
+        # CANONICAL: Validate routing via SuperBrain
+        if not self._validate_route(task, "unknown"):
+            return RouteDecision(
+                task=task,
+                selected_engine="BLOCKED",
+                engine_category="BLOCKED",
+                confidence=0.0,
+                reasoning="Routing blocked by SuperBrain governance",
+                alternatives=[],
+                route_time=datetime.now(timezone.utc).isoformat(),
+            )
 
         # Score all categories based on keyword matches
         category_scores = self._score_categories(task_lower)
@@ -186,12 +270,15 @@ class CognitiveRouter:
             confidence=min(best_score / 10.0, 1.0),  # Normalize to 0-1
             reasoning=reasoning,
             alternatives=alternatives,
-            route_time=datetime.utcnow().isoformat(),
+            route_time=datetime.now(timezone.utc).isoformat(),
         )
 
         # Record
         self.route_history.append(decision)
         self.route_count += 1
+
+        # CANONICAL: Record in audit trail
+        self._record_route(decision)
 
         return decision
 
@@ -234,7 +321,7 @@ class CognitiveRouter:
 
     def _find_alternatives(
         self, primary_category: str, selected_engine: str, task_lower: str
-    ) -> list[str]:
+    ) -> List[str]:
         """Find alternative engines for the task."""
         alternatives = []
 
@@ -262,11 +349,11 @@ class CognitiveRouter:
             f"Selected based on keyword matching and category relevance."
         )
 
-    def batch_route(self, tasks: list[str]) -> list[RouteDecision]:
+    def batch_route(self, tasks: List[str]) -> List[RouteDecision]:
         """Route multiple tasks."""
         return [self.route_task(task) for task in tasks]
 
-    def get_route_stats(self) -> dict[str, Any]:
+    def get_route_stats(self) -> Dict[str, Any]:
         """Get routing statistics."""
         if not self.route_history:
             return {"total_routes": 0}
@@ -287,7 +374,7 @@ class CognitiveRouter:
             else None,
         }
 
-    def get_engine_recommendation(self, task_type: str) -> dict[str, Any]:
+    def get_engine_recommendation(self, task_type: str) -> Dict[str, Any]:
         """Get engine recommendation for a task type."""
         decision = self.route_task(f"Example {task_type} task")
 
@@ -301,7 +388,6 @@ class CognitiveRouter:
 
     def query_engines(self, query: str, top_n: int = 5) -> list:
         """Query engines by keyword matching."""
-        from dataclasses import dataclass
 
         @dataclass
         class EngineInfo:

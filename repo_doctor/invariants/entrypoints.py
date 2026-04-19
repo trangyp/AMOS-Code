@@ -1,7 +1,5 @@
 """I_entry = 1 iff every launcher points to a real runnable target."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class EntrypointInvariant(Invariant):
     def __init__(self):
         super().__init__("I_entry", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check entrypoint integrity."""
         context = context or {}
         missing = context.get("missing_entrypoints", 0)

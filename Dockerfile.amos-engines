@@ -1,0 +1,52 @@
+# AMOS Engines Production Dockerfile
+# Multi-stage build for Temporal, Field, Safety, Integration engines
+
+FROM python:3.12-slim as base
+
+# Security hardening
+RUN groupadd -r amos && useradd -r -g amos amos
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy engine modules
+COPY amos_temporal_engine.py .
+COPY amos_field_dynamics.py .
+COPY amos_self_evolution_test_suite.py .
+COPY amos_engine_integration.py .
+COPY amos_observability_v2.py .
+COPY amos_api_v2.py .
+
+# Copy configuration
+COPY ruff.toml .
+
+# Set permissions
+RUN chown -R amos:amos /app
+
+# Production stage
+FROM base as production
+
+USER amos
+
+EXPOSE 8000 8080 9090
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from amos_engine_integration import get_engine_integration; print('OK')" || exit 1
+
+CMD ["python", "-m", "uvicorn", "amos_api_v2:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Development stage
+FROM base as development
+
+USER amos
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "amos_api_v2:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

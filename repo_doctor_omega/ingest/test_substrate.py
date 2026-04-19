@@ -14,8 +14,6 @@ Test partition:
 Only hard contract tests gate release.
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -330,7 +328,7 @@ class TestSubstrate:
 
         return self.run_tests(hard_tests)
 
-    def analyze_repository(self) -> dict[str, Any]:
+    def analyze_repository(self) -> Dict[str, Any]:
         """Analyze test suite health.
 
         Returns:
@@ -369,7 +367,7 @@ class TestSubstrate:
             "all_passed": all(r.passed for r in hard_results) if hard_results else True,
         }
 
-    def get_summary(self, results: list[TestResult]) -> dict[str, Any]:
+    def get_summary(self, results: list[TestResult]) -> Dict[str, Any]:
         """Generate summary statistics."""
         total = len(results)
         passed = sum(1 for r in results if r.passed)

@@ -13,13 +13,10 @@ Keyterms are passed as initial_prompt to local Whisper backends so that
 coding-domain vocabulary (grep, MCP, TypeScript, …) is recognised correctly.
 """
 
-from __future__ import annotations
-
 import io
 import logging
 import os
 import struct
-from typing import Optional
 
 from .recorder import BYTES_PER_SAMPLE, CHANNELS, SAMPLE_RATE
 
@@ -67,7 +64,7 @@ def _pcm_to_wav(pcm_bytes: bytes) -> bytes:
 # ── Availability ──────────────────────────────────────────────────────────
 
 
-def check_stt_availability() -> tuple[bool, str | None]:
+def check_stt_availability() -> Tuple[bool, str]:
     """Return (available, reason_if_not)."""
     try:
         import faster_whisper  # noqa: F401
@@ -148,8 +145,8 @@ def _has_cuda() -> bool:
 
 def _transcribe_faster_whisper(
     pcm_bytes: bytes,
-    keyterms: list[str],
-    language: Optional[str],
+    keyterms: List[str],
+    language: str,
 ) -> str:
     import numpy as np
 
@@ -187,8 +184,8 @@ def _get_openai_whisper_model():
 
 def _transcribe_openai_whisper(
     pcm_bytes: bytes,
-    keyterms: list[str],
-    language: Optional[str],
+    keyterms: List[str],
+    language: str,
 ) -> str:
     import numpy as np
 
@@ -209,7 +206,7 @@ def _transcribe_openai_whisper(
 
 def _transcribe_openai_api(
     pcm_bytes: bytes,
-    language: Optional[str],
+    language: str,
 ) -> str:
     from openai import OpenAI
 
@@ -227,7 +224,7 @@ def _transcribe_openai_api(
 # ── Keyterms → prompt ─────────────────────────────────────────────────────
 
 
-def _keyterms_to_prompt(keyterms: list[str]) -> str:
+def _keyterms_to_prompt(keyterms: List[str]) -> str:
     """Convert a list of keywords into a Whisper initial_prompt string.
 
     Whisper treats the initial_prompt as preceding context; sprinkling the
@@ -244,7 +241,7 @@ def _keyterms_to_prompt(keyterms: list[str]) -> str:
 
 def transcribe(
     pcm_bytes: bytes,
-    keyterms: Optional[list[str]] = None,
+    keyterms: list[str] = None,
     language: str = "auto",
 ) -> str:
     """Transcribe raw PCM audio to text.

@@ -13,6 +13,7 @@ Closes the cognitive loop: Predict → Decide → Act.
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -153,6 +154,6 @@ class AutonomousGovernanceBridge:
         return True
 
 
-def get_governance_bridge(repo_path: str | Path | None = None) -> AutonomousGovernanceBridge:
+def get_governance_bridge(repo_path: str | Path = None) -> AutonomousGovernanceBridge:
     """Factory function to get governance bridge instance."""
     return AutonomousGovernanceBridge(repo_path or ".")

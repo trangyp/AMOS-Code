@@ -6,7 +6,7 @@ from typing import Any
 class AMOSSDK:
     """AMOS SDK for external integration."""
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: str = None):
         self.api_key = api_key
         self.connected = False
 
@@ -15,12 +15,12 @@ class AMOSSDK:
         self.connected = True
         return True
 
-    def execute(self, command: str, **kwargs: Any) -> dict[str, Any]:
+    def execute(self, command: str, **kwargs: Any) -> Dict[str, Any]:
         """Execute AMOS command."""
         return {"status": "success", "result": None}
 
 
-def create_client(api_key: str | None = None) -> AMOSSDK:
+def create_client(api_key: str = None) -> "AMOSSDK":
     """Create AMOS SDK client."""
     return AMOSSDK(api_key)
 

@@ -10,7 +10,7 @@ Version: 1.0.0
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class StorageType(Enum):
@@ -55,7 +55,7 @@ class StorageBackend:
     status: StorageStatus
     metrics: StorageMetrics
     created_at: datetime
-    config: dict[str, Any] = field(default_factory=dict)
+    config: Dict[str, Any] = field(default_factory=dict)
 
 
 class StorageManager:
@@ -66,8 +66,8 @@ class StorageManager:
     """
 
     def __init__(self):
-        self.backends: dict[str, StorageBackend] = {}
-        self.default_backend_id: Optional[str] = None
+        self.backends: Dict[str, StorageBackend] = {}
+        self.default_backend_id: str = None
 
     def register_backend(self, backend: StorageBackend) -> bool:
         """Register a new storage backend."""
@@ -88,7 +88,7 @@ class StorageManager:
         storage_type: StorageType,
         path: str,
         capacity_bytes: int,
-        config: Optional[dict[str, Any]] = None,
+        config: dict[str, Any] = None,
     ) -> StorageBackend:
         """Create and register a new storage backend."""
         backend_id = f"storage_{len(self.backends) + 1}"
@@ -109,7 +109,7 @@ class StorageManager:
             path=path,
             status=StorageStatus.ONLINE,
             metrics=metrics,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
             config=config or {},
         )
 

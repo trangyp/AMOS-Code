@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 
@@ -11,7 +9,7 @@ class HistoryEvent:
 
 @dataclass
 class HistoryLog:
-    events: list[HistoryEvent] = field(default_factory=list)
+    events: List[HistoryEvent] = field(default_factory=list)
 
     def add(self, title: str, detail: str) -> None:
         self.events.append(HistoryEvent(title=title, detail=detail))

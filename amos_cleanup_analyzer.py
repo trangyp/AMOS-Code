@@ -14,15 +14,12 @@ Usage:
     python amos_cleanup_analyzer.py --generate-report
 """
 
-from __future__ import annotations
-
 import ast
 import re
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -43,10 +40,10 @@ class FileAnalysis:
 
     path: Path
     lines: int
-    imports: list[str]
-    functions: list[str]
-    classes: list[str]
-    issues: list[CleanupIssue] = field(default_factory=list)
+    imports: List[str]
+    functions: List[str]
+    classes: List[str]
+    issues: List[CleanupIssue] = field(default_factory=list)
 
 
 class AMOSCleanupAnalyzer:
@@ -61,8 +58,8 @@ class AMOSCleanupAnalyzer:
 
     def __init__(self, root_dir: Optional[Path] = None):
         self.root = root_dir or Path(__file__).parent
-        self.issues: list[CleanupIssue] = []
-        self.file_analyses: list[FileAnalysis] = []
+        self.issues: List[CleanupIssue] = []
+        self.file_analyses: List[FileAnalysis] = []
         self.duplicate_groups: list[list[Path]] = []
 
     def analyze(self) -> dict[str, any]:

@@ -14,8 +14,6 @@ Mathematical Foundation:
 - Isolation: domain_A ↑ domain_B (statistically independent failures)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -64,9 +62,9 @@ class RecoveryPath:
     estimated_rpo_minutes: int  # Recovery Point Objective
     automated: bool
     tested: bool
-    last_tested: str | None = None
-    procedure_doc: str | None = None
-    rollback_path: str | None = None  # Path to undo this recovery
+    last_tested: str = None
+    procedure_doc: str = None
+    rollback_path: str = None  # Path to undo this recovery
 
 
 @dataclass
@@ -76,9 +74,9 @@ class FailureDomain:
     domain_id: str
     name: str
     domain_type: FailureDomainType
-    components: list[str]  # Components in this domain
+    components: List[str]  # Components in this domain
     isolation_score: float  # 0-1, higher is better isolation
-    dependencies: list[str] = field(default_factory=list)  # External deps
+    dependencies: List[str] = field(default_factory=list)  # External deps
 
 
 @dataclass
@@ -89,7 +87,7 @@ class BlastContainment:
     name: str
     max_blast_radius: float  # Maximum acceptable blast radius
     blast_unit: BlastRadiusUnit
-    containment_measures: list[str]  # Circuit breakers, bulkheads, etc.
+    containment_measures: List[str]  # Circuit breakers, bulkheads, etc.
     isolation_domain: str  # Domain that contains failures
 
 
@@ -107,7 +105,7 @@ class DisasterRecoveryCapability:
     estimated_failover_minutes: int
     estimated_rpo_minutes: int
     data_sync_mode: str  # sync, async, snapshot
-    last_dr_test: str | None = None
+    last_dr_test: str = None
 
 
 @dataclass
@@ -120,7 +118,7 @@ class ResilienceViolation:
     description: str
     invariant_broken: str
     component: str
-    evidence: list[str] = field(default_factory=list)
+    evidence: List[str] = field(default_factory=list)
     remediation: str = ""
 
 
@@ -131,19 +129,19 @@ class ResilienceAssessment:
     assessment_id: str
     timestamp: str
 
-    recovery_paths: list[RecoveryPath]
-    failure_domains: list[FailureDomain]
-    blast_containments: list[BlastContainment]
-    dr_capabilities: list[DisasterRecoveryCapability]
+    recovery_paths: List[RecoveryPath]
+    failure_domains: List[FailureDomain]
+    blast_containments: List[BlastContainment]
+    dr_capabilities: List[DisasterRecoveryCapability]
 
-    violations: list[ResilienceViolation]
+    violations: List[ResilienceViolation]
 
     recovery_valid: bool
     dr_valid: bool
     blast_valid: bool
     isolation_valid: bool
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "assessment_id": self.assessment_id,
             "timestamp": self.timestamp,
@@ -176,11 +174,11 @@ class RecoveryResilienceEngine:
     """
 
     def __init__(self):
-        self.recovery_paths: list[RecoveryPath] = []
-        self.failure_domains: list[FailureDomain] = []
-        self.blast_containments: list[BlastContainment] = []
-        self.dr_capabilities: list[DisasterRecoveryCapability] = []
-        self.assessments: list[ResilienceAssessment] = []
+        self.recovery_paths: List[RecoveryPath] = []
+        self.failure_domains: List[FailureDomain] = []
+        self.blast_containments: List[BlastContainment] = []
+        self.dr_capabilities: List[DisasterRecoveryCapability] = []
+        self.assessments: List[ResilienceAssessment] = []
 
     def add_recovery_path(self, path: RecoveryPath) -> None:
         """Add a recovery path."""
@@ -200,7 +198,7 @@ class RecoveryResilienceEngine:
 
     def assess_resilience(self) -> ResilienceAssessment:
         """Perform comprehensive resilience assessment."""
-        violations: list[ResilienceViolation] = []
+        violations: List[ResilienceViolation] = []
 
         # 1. Check recovery paths (I_recovery)
         critical_scenarios = {"database_corruption", "api_outage", "dependency_failure"}
@@ -330,9 +328,7 @@ class RecoveryResilienceEngine:
         for domain in self.failure_domains:
             if domain.dependencies:
                 for dep in domain.dependencies:
-                    dep_domain = next(
-                        (d for d in self.failure_domains if d.domain_id == dep), None
-                    )
+                    dep_domain = next((d for d in self.failure_domains if d.domain_id == dep), None)
                     if dep_domain and domain.domain_id in dep_domain.dependencies:
                         violations.append(
                             ResilienceViolation(
@@ -365,8 +361,8 @@ class RecoveryResilienceEngine:
         return assessment
 
     def validate_recovery_procedure(
-        self, path_id: str, steps: list[str], estimated_minutes: int
-    ) -> dict[str, Any]:
+        self, path_id: str, steps: List[str], estimated_minutes: int
+    ) -> Dict[str, Any]:
         """Validate a recovery procedure."""
         issues = []
 
@@ -391,8 +387,8 @@ class RecoveryResilienceEngine:
         }
 
     def check_blast_radius(
-        self, component_id: str, failure_mode: str, affected_components: list[str]
-    ) -> dict[str, Any]:
+        self, component_id: str, failure_mode: str, affected_components: List[str]
+    ) -> Dict[str, Any]:
         """Check if blast radius is contained."""
         containment = next(
             (c for c in self.blast_containments if c.component_id == component_id), None

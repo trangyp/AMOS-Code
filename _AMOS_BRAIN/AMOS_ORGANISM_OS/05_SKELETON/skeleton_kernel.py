@@ -9,8 +9,6 @@ Responsible for:
 - Policy registry and validation
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import re
@@ -18,7 +16,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.skeleton")
@@ -58,7 +56,7 @@ class Rule:
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -70,11 +68,11 @@ class Permission:
     level: PermissionLevel
     granted_by: str
     granted_at: str = ""
-    expires_at: Optional[str] = None
+    expires_at: str = None
 
     def __post_init__(self):
         if not self.granted_at:
-            self.granted_at = datetime.utcnow().isoformat()
+            self.granted_at = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -82,9 +80,9 @@ class ValidationResult:
     """Result of constraint validation."""
 
     valid: bool
-    violations: list[str]
-    warnings: list[str]
-    checked_rules: list[str]
+    violations: List[str]
+    warnings: List[str]
+    checked_rules: List[str]
 
 
 class SkeletonKernel:
@@ -103,7 +101,7 @@ class SkeletonKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Rule registry
-        self.rules: dict[str, Rule] = {}
+        self.rules: Dict[str, Rule] = {}
 
         # Permission registry
         self.permissions: dict[str, list[Permission]] = {}
@@ -217,7 +215,7 @@ class SkeletonKernel:
             json.dump({k: asdict(v) for k, v in self.rules.items()}, f, indent=2)
 
     def validate_operation(
-        self, operation: str, context: dict[str, Any], target_rules: Optional[list[str]] = None
+        self, operation: str, context: Dict[str, Any], target_rules: list[str] = None
     ) -> ValidationResult:
         """Validate an operation against applicable rules.
 
@@ -267,7 +265,7 @@ class SkeletonKernel:
             checked_rules=checked,
         )
 
-    def _rule_applies(self, rule: Rule, operation: str, context: dict[str, Any]) -> bool:
+    def _rule_applies(self, rule: Rule, operation: str, context: Dict[str, Any]) -> bool:
         """Determine if a rule applies to an operation."""
         target = rule.target.lower()
 
@@ -290,7 +288,7 @@ class SkeletonKernel:
 
         return False
 
-    def _check_constraint(self, rule: Rule, context: dict[str, Any]) -> bool:
+    def _check_constraint(self, rule: Rule, context: Dict[str, Any]) -> bool:
         """Check if a specific constraint is satisfied."""
         constraint_type = rule.constraint_type
 
@@ -343,7 +341,7 @@ class SkeletonKernel:
 
         return False
 
-    def get_hierarchy(self, subsystem: str) -> dict[str, Any]:
+    def get_hierarchy(self, subsystem: str) -> Dict[str, Any]:
         """Get hierarchy information for a subsystem."""
         # Find parent
         parent = None
@@ -380,13 +378,13 @@ class SkeletonKernel:
             "action": action,
             "when": when.isoformat(),
             "recurring": recurring,
-            "created": datetime.utcnow().isoformat(),
+            "created": datetime.now(UTC).isoformat(),
         }
         logger.info(f"Scheduled task {task_id} for {when}")
 
     def get_due_tasks(self) -> list[dict[str, Any]]:
         """Get all tasks that are due for execution."""
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         due = []
 
         for task_id, schedule in self.schedules.items():
@@ -396,7 +394,7 @@ class SkeletonKernel:
 
         return due
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current skeleton state."""
         return {
             "rules_count": len(self.rules),
@@ -404,7 +402,7 @@ class SkeletonKernel:
             "hierarchy_nodes": len(self.hierarchy),
             "scheduled_tasks": len(self.schedules),
             "active_rules": [r.rule_id for r in self.rules.values() if r.enabled],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

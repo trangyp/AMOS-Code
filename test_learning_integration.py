@@ -1,9 +1,11 @@
 """Test Real Learning Engine integration with BrainTaskProcessor."""
+
 import sys
+
 sys.path.insert(0, "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
 
-from amos_brain.task_processor import BrainTaskProcessor, process_task
 from amos_brain.real_learning_engine import get_learning_engine
+from amos_brain.task_processor import BrainTaskProcessor
 
 print("=" * 70)
 print("REAL LEARNING ENGINE INTEGRATION TEST")
@@ -29,16 +31,15 @@ print(f"   Patterns detected: {state['patterns_stored']}")
 
 # Test 4: Verify reuse works
 print("\n[4] Testing procedure reuse...")
-from amos_brain.real_learning_engine import attempt_procedure_reuse
-
 # First learn a procedure
-from amos_brain.real_learning_engine import learn_from_task
+from amos_brain.real_learning_engine import attempt_procedure_reuse, learn_from_task
+
 proc = learn_from_task(
     "Fix import error for missing module",
     ["Check module exists", "Add __init__.py", "Verify import"],
     {"success": True, "summary": "Import fixed"},
     500,
-    {"error_type": "import"}
+    {"error_type": "import"},
 )
 print(f"   Learned procedure: {proc.name if proc else 'None'}")
 
@@ -47,7 +48,7 @@ reuse = attempt_procedure_reuse("Fix import error in another file", {"error_type
 if reuse and reuse.get("reused"):
     print(f"   ✅ Procedure REUSED: {reuse['procedure_name']}")
 else:
-    print(f"   → No procedure match (expected for new patterns)")
+    print("   → No procedure match (expected for new patterns)")
 
 print("\n" + "=" * 70)
 print("INTEGRATION TEST COMPLETE - Real Learning Active!")

@@ -30,6 +30,7 @@ New state vector amplitudes:
 
 from __future__ import annotations
 
+
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -305,6 +306,6 @@ class MetaArchitectureBridge:
         return max(0.0, 1.0 - (total_issues * 0.1))
 
 
-def get_meta_architecture_bridge(repo_path: str | Path | None = None) -> MetaArchitectureBridge:
+def get_meta_architecture_bridge(repo_path: str | Path = None) -> MetaArchitectureBridge:
     """Factory function to get meta-architecture bridge instance."""
     return MetaArchitectureBridge(repo_path or ".")

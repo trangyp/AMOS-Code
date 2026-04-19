@@ -7,10 +7,9 @@ Implements the field-theoretic regime:
     - Cross-domain interaction terms
 """
 
-from __future__ import annotations
-
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -62,7 +61,7 @@ class FieldEvolution:
         self.trajectory: list[FieldState] = []
         self.action_history: list[float] = []
 
-    def classical_lagrangian(self, phi_c: dict, phi_c_dot: dict) -> float:
+    def classical_lagrangian(self, phi_c: dict[str, Any], phi_c_dot: dict[str, Any]) -> float:
         """Classical Lagrangian L_c.
 
         L = T - V for classical mechanics style,
@@ -73,7 +72,7 @@ class FieldEvolution:
         cost = phi_c.get("computation_cost", 0.0)
         return -energy - cost  # Minimize cost, maximize efficiency
 
-    def quantum_lagrangian(self, phi_q: dict, phi_q_dot: dict) -> float:
+    def quantum_lagrangian(self, phi_q: dict[str, Any], phi_q_dot: dict[str, Any]) -> float:
         """Quantum Lagrangian L_q.
 
         L = ⟨ψ|i∂_t - H|ψ⟩ - μ·C_q
@@ -83,7 +82,7 @@ class FieldEvolution:
         penalty = (1.0 - coherence) * 0.1  # Decoherence penalty
         return -energy - penalty
 
-    def biological_lagrangian(self, phi_b: dict, phi_b_dot: dict) -> float:
+    def biological_lagrangian(self, phi_b: dict[str, Any], phi_b_dot: dict[str, Any]) -> float:
         """Biological Lagrangian L_b.
 
         Reaction-diffusion/regulation terms.
@@ -93,7 +92,7 @@ class FieldEvolution:
         metabolic_cost = phi_b.get("metabolic_cost", 0.0)
         return growth - metabolic_cost
 
-    def hybrid_lagrangian(self, phi_h: dict, phi_h_dot: dict) -> float:
+    def hybrid_lagrangian(self, phi_h: dict[str, Any], phi_h_dot: dict[str, Any]) -> float:
         """Hybrid Lagrangian L_h.
 
         Bridge/schedule optimization.
@@ -102,7 +101,13 @@ class FieldEvolution:
         bridge_cost = phi_h.get("bridge_overhead", 0.0)
         return efficiency - bridge_cost
 
-    def interaction_lagrangian(self, phi_c: dict, phi_q: dict, phi_b: dict, phi_h: dict) -> float:
+    def interaction_lagrangian(
+        self,
+        phi_c: dict[str, Any],
+        phi_q: dict[str, Any],
+        phi_b: dict[str, Any],
+        phi_h: dict[str, Any],
+    ) -> float:
         """Interaction Lagrangian L_int.
 
         L_int = L_bq + L_qc + L_bc + L_bh + L_qh + L_ch
@@ -137,7 +142,7 @@ class FieldEvolution:
         return total
 
     def compute_lagrangian(
-        self, state: FieldState, state_dot: Optional[FieldState] = None
+        self, state: FieldState, state_dot: FieldState | None = None
     ) -> LagrangianTerms:
         """Compute all Lagrangian terms."""
         terms = LagrangianTerms()
@@ -318,7 +323,7 @@ class LindbladianEvolution:
     ρ̇ = -i[H, ρ] + D(ρ)
     """
 
-    def __init__(self, hamiltonian: Optional[list[list[complex]]] = None):
+    def __init__(self, hamiltonian: list[list[complex]] = None):
         self.H = hamiltonian
         self.decoherence_rates: dict[str, float] = {}
 

@@ -18,7 +18,7 @@ Status: PRODUCTION LIVE
 import argparse
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -36,8 +36,8 @@ class AmosRuntime:
     def __init__(self, mode: str = "full"):
         self.mode = mode
         self.root = Path(__file__).parent
-        self.start_time = datetime.utcnow()
-        self.subsystems: dict[str, Any] = {}
+        self.start_time = datetime.now(timezone.utc)
+        self.subsystems: Dict[str, Any] = {}
         self.status = "initializing"
 
     def initialize(self) -> bool:
@@ -118,7 +118,7 @@ class AmosRuntime:
         print("=" * 70)
         print(f"\nRuntime Status: {self.status.upper()}")
         print(f"Started: {self.start_time.isoformat()}")
-        print(f"Uptime: {(datetime.utcnow() - self.start_time).total_seconds():.2f}s")
+        print(f"Uptime: {(datetime.now(timezone.utc) - self.start_time).total_seconds():.2f}s")
         print(
             f"\nActive Subsystems: {len([s for s in self.subsystems.values() if s['status'] == 'running'])}"
         )
@@ -152,7 +152,7 @@ class AmosRuntime:
         print("\n" + "=" * 70)
         print(" AMOS RUNTIME - SHUTDOWN COMPLETE")
         print("=" * 70)
-        print(f"Uptime: {(datetime.utcnow() - self.start_time).total_seconds():.2f}s")
+        print(f"Uptime: {(datetime.now(timezone.utc) - self.start_time).total_seconds():.2f}s")
         print(f"Status: {self.status.upper()}")
         print()
 

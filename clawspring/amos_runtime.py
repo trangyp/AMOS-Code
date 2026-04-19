@@ -1,24 +1,22 @@
 """AMOS Runtime Bootstrap - Loads and executes the AMOS brain."""
 
-from __future__ import annotations
-
 import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import List
 
 
 @dataclass
 class AMOSState:
     """Runtime state for AMOS cognitive execution."""
 
-    active_laws: list[str] = field(default_factory=lambda: ["L1", "L2", "L3", "L4", "L5", "L6"])
+    active_laws: List[str] = field(default_factory=lambda: ["L1", "L2", "L3", "L4", "L5", "L6"])
     reasoning_depth: int = 0
     perspective_checks: int = 0  # Rule of 2 tracking
-    quadrants_checked: list[str] = field(default_factory=list)  # Rule of 4 tracking
-    assumptions_made: list[str] = field(default_factory=list)
+    quadrants_checked: List[str] = field(default_factory=list)  # Rule of 4 tracking
+    assumptions_made: List[str] = field(default_factory=list)
     uncertainty_declared: bool = False
     gap_acknowledged: bool = False
 
@@ -62,12 +60,12 @@ class AMOSRuntime:
         if self._loaded:
             return self
 
-        loop = asyncio.get_event_loop()
         try:
+            loop = asyncio.get_running_loop()
             await asyncio.wait_for(
                 loop.run_in_executor(None, self.bootstrap), timeout=timeout_seconds
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Apply fallbacks on timeout to prevent hanging
             self._load_fallback_root()
             self._loaded = True
@@ -125,7 +123,7 @@ class AMOSRuntime:
             "rule_of_4": {"id": "L3", "name": "Rule of 4", "priority": 3},
         }
 
-    def execute_cognitive_task(self, task: str, context: dict | None = None) -> dict:
+    def execute_cognitive_task(self, task: str, context: dict = None) -> dict:
         """Execute a task with full AMOS cognitive law enforcement.
 
         This applies:
@@ -207,7 +205,7 @@ class AMOSRuntime:
 
         return results
 
-    def _generate_dual_perspectives(self, task: str) -> list[dict]:
+    def _generate_dual_perspectives(self, task: str) -> List[dict]:
         """Generate two structurally opposed interpretations (Rule of 2)."""
         return [
             {
@@ -257,7 +255,7 @@ class AMOSRuntime:
             },
         }
 
-    def _extract_assumptions(self, task: str, context: dict) -> list[str]:
+    def _extract_assumptions(self, task: str, context: dict) -> List[str]:
         """Extract explicit assumptions from task and context."""
         assumptions = [
             "Task description is complete and accurate",
@@ -301,7 +299,7 @@ class AMOSRuntime:
             "creator": self.brain_root.get("creator", {}).get("name", "Trang Phan"),
         }
 
-    def get_law_summary(self) -> list[dict]:
+    def get_law_summary(self) -> List[dict]:
         """Get summary of all 6 global laws."""
         laws = []
         for law_id, law_data in self.global_laws.items():
@@ -352,7 +350,7 @@ async def get_runtime_async(timeout_seconds: float = 5.0) -> AMOSRuntime:
     return _runtime_instance
 
 
-def analyze_task(task: str, context: dict | None = None) -> dict:
+def analyze_task(task: str, context: dict = None) -> dict:
     """Convenience function for task analysis with full AMOS enforcement."""
     runtime = get_runtime()
     return runtime.execute_cognitive_task(task, context)
@@ -363,7 +361,7 @@ def get_amos_identity() -> dict:
     return get_runtime().get_identity()
 
 
-def get_global_laws() -> list[dict]:
+def get_global_laws() -> List[dict]:
     """Get all 6 global laws."""
     return get_runtime().get_law_summary()
 

@@ -4,15 +4,13 @@ Tracks macroeconomic indicators, market conditions, and
 financial signals relevant to AMOS operations.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class IndicatorType(Enum):
@@ -37,13 +35,13 @@ class EconomicIndicator:
     value: float = 0.0
     unit: str = ""
     region: str = "global"  # global, US, EU, APAC, etc.
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     trend: str = "stable"  # rising, falling, stable
     volatility: float = 0.0  # 0-1 scale
     source: str = ""
     confidence: float = 0.8  # 0-1 scale
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "indicator_type": self.indicator_type.value,
@@ -59,10 +57,10 @@ class MarketSignal:
     asset_class: str = ""  # equities, bonds, commodities, crypto
     description: str = ""
     severity: int = 5  # 1-10
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    related_indicators: list[str] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    related_indicators: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -79,8 +77,8 @@ class MacroeconomicScanner:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.indicators: list[EconomicIndicator] = []
-        self.signals: list[MarketSignal] = []
+        self.indicators: List[EconomicIndicator] = []
+        self.signals: List[MarketSignal] = []
 
         self._load_data()
 
@@ -120,7 +118,7 @@ class MacroeconomicScanner:
         """Save economic data to disk."""
         data_file = self.data_dir / "macroeconomic_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "indicators": [i.to_dict() for i in self.indicators],
             "signals": [s.to_dict() for s in self.signals],
         }
@@ -177,7 +175,7 @@ class MacroeconomicScanner:
         self.save()
         return indicator
 
-    def scan(self) -> dict[str, Any]:
+    def scan(self) -> Dict[str, Any]:
         """Scan current economic conditions and generate signals."""
         # Analyze trends
         self._analyze_trends()
@@ -186,7 +184,7 @@ class MacroeconomicScanner:
         signals = self._generate_signals()
 
         return {
-            "scan_time": datetime.utcnow().isoformat(),
+            "scan_time": datetime.now(UTC).isoformat(),
             "indicators_tracked": len(self.indicators),
             "signals_generated": len(signals),
             "signals": [s.to_dict() for s in signals],
@@ -217,7 +215,7 @@ class MacroeconomicScanner:
                 else:
                     recent[1].trend = "stable"
 
-    def _generate_signals(self) -> list[MarketSignal]:
+    def _generate_signals(self) -> List[MarketSignal]:
         """Generate market signals based on conditions."""
         new_signals = []
 
@@ -254,7 +252,7 @@ class MacroeconomicScanner:
         self.save()
         return new_signals
 
-    def _get_summary(self) -> dict[str, Any]:
+    def _get_summary(self) -> Dict[str, Any]:
         """Get summary of current economic conditions."""
         by_type = {}
         for ind in self.indicators:
@@ -298,7 +296,7 @@ class MacroeconomicScanner:
         days: int = 30,
     ) -> list[dict[str, Any]]:
         """Get historical data for an indicator."""
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
         matching = [
             i.to_dict()
@@ -308,10 +306,10 @@ class MacroeconomicScanner:
 
         return sorted(matching, key=lambda x: x["timestamp"])
 
-    def get_economic_context(self) -> dict[str, Any]:
+    def get_economic_context(self) -> Dict[str, Any]:
         """Get current economic context for decision making."""
         return {
-            "scan_time": datetime.utcnow().isoformat(),
+            "scan_time": datetime.now(UTC).isoformat(),
             "stability": self._calculate_stability(),
             "indicator_count": len(self.indicators),
             "active_signals": len(

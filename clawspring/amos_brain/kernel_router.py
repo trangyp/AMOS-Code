@@ -1,12 +1,9 @@
 """AMOS Kernel Router - Routes tasks to appropriate cognitive kernels."""
 
-from __future__ import annotations
+from dataclasses import dataclass, field
+from typing import Any
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .loader import BrainLoader, KernelConfig
+from .loader import BrainLoader, KernelConfig
 
 
 @dataclass
@@ -19,6 +16,8 @@ class TaskIntent:
     requires_reasoning: bool
     requires_code: bool
     requires_memory: bool
+    mathematical_domains: list[str] = field(default_factory=list)
+    recommended_frameworks: list[str] = field(default_factory=list)
 
 
 class KernelRouter:
@@ -30,10 +29,24 @@ class KernelRouter:
         "cloud": ["deploy", "server", "aws", "azure", "gcp", "infrastructure"],
         "logic": ["analyze", "reason", "logic", "structure", "framework"],
         "ubi": ["biological", "nervous", "somatic", "health", "neuro"],
+        "design": ["design", "layout", "spacing", "typography", "ui", "ux"],
+        "security": ["encrypt", "decrypt", "auth", "jwt", "rsa", "oauth"],
+        "distributed": ["consensus", "raft", "kubernetes", "distributed", "cluster"],
     }
 
     def __init__(self, brain_loader: BrainLoader):
         self.brain = brain_loader
+        self._math_engine: Any = None
+        self._initialize_math_engine()
+
+    def _initialize_math_engine(self) -> None:
+        """Initialize mathematical framework engine for enhanced routing."""
+        try:
+            from .mathematical_framework_engine import get_framework_engine
+
+            self._math_engine = get_framework_engine()
+        except Exception:
+            self._math_engine = None
 
     def parse_intent(self, task_description: str) -> TaskIntent:
         """Parse task description to determine intent."""
@@ -59,6 +72,22 @@ class KernelRouter:
         requires_reasoning = any(kw in task_lower for kw in ["analyze", "design", "structure"])
         requires_memory = any(kw in task_lower for kw in ["remember", "previous", "context"])
 
+        # Enhanced detection with mathematical framework engine
+        math_domains: list[str] = []
+        recommended_frameworks: list[str] = []
+        if self._math_engine:
+            try:
+                math_analysis = self._math_engine.analyze_architecture(task_description)
+                math_domains = math_analysis.get("detected_domains", [])
+                recommended_frameworks = math_analysis.get("recommended_frameworks", [])
+                # Merge mathematical domains with detected domains
+                for domain in math_domains:
+                    domain_lower = domain.lower().replace("/", "_").replace(" ", "_")
+                    if domain_lower not in detected_domains:
+                        detected_domains.append(domain_lower)
+            except Exception:
+                pass
+
         return TaskIntent(
             primary_domain=detected_domains[0],
             secondary_domains=detected_domains[1:] if len(detected_domains) > 1 else [],
@@ -66,6 +95,8 @@ class KernelRouter:
             requires_reasoning=requires_reasoning,
             requires_code=requires_code,
             requires_memory=requires_memory,
+            mathematical_domains=math_domains,
+            recommended_frameworks=recommended_frameworks,
         )
 
     def route(self, task_description: str) -> list[KernelConfig]:
@@ -98,8 +129,15 @@ class KernelRouter:
         lines = [
             f"Task Domain: {intent.primary_domain}",
             f"Risk Level: {intent.risk_level}",
-            f"Active Kernels ({len(kernels)}):",
         ]
+
+        # Add mathematical analysis if available
+        if intent.mathematical_domains:
+            lines.append(f"Mathematical Domains: {', '.join(intent.mathematical_domains)}")
+        if intent.recommended_frameworks:
+            lines.append(f"Recommended Frameworks: {', '.join(intent.recommended_frameworks)}")
+
+        lines.append(f"Active Kernels ({len(kernels)}):")
 
         for k in kernels:
             req_marker = " [required]" if k.required else ""

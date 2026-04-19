@@ -13,8 +13,6 @@ Optimization objective:
   min_R [c1·EditCost(R) + c2·BlastRadius(R) + c3·EntanglementRisk(R) - c4·EnergyReduction(R)]
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -24,8 +22,8 @@ class RepairAction:
     """A single repair action."""
 
     name: str
-    target_files: list[str] = field(default_factory=list)
-    invariants_restored: list[str] = field(default_factory=list)
+    target_files: List[str] = field(default_factory=list)
+    invariants_restored: List[str] = field(default_factory=list)
     estimated_energy_reduction: float = 0.0
     blast_radius: int = 0  # Number of files affected
     entanglement_risk: float = 0.0  # 0-1 risk score
@@ -47,13 +45,13 @@ class RepairOptimizer:
     """
 
     def __init__(self):
-        self.actions: list[RepairAction] = []
+        self.actions: List[RepairAction] = []
 
     def add_action(self, action: RepairAction) -> None:
         """Add a candidate repair action."""
         self.actions.append(action)
 
-    def compute_optimal_set(self, failed_invariants: list[str]) -> list[RepairAction]:
+    def compute_optimal_set(self, failed_invariants: List[str]) -> List[RepairAction]:
         """
         Compute optimal repair set covering all failed invariants.
 
@@ -84,8 +82,8 @@ class RepairOptimizer:
         return selected
 
     def generate_repair_plan(
-        self, failed_invariants: list[str], unsat_hints: list[dict[str, str]]
-    ) -> dict[str, Any]:
+        self, failed_invariants: List[str], unsat_hints: list[dict[str, str]]
+    ) -> Dict[str, Any]:
         """
         Generate complete repair plan.
 
@@ -117,7 +115,7 @@ class RepairOptimizer:
             "unsat_core_hints": unsat_hints,
         }
 
-    def _apply_repair_ordering(self, actions: list[RepairAction]) -> list[RepairAction]:
+    def _apply_repair_ordering(self, actions: List[RepairAction]) -> List[RepairAction]:
         """
         Apply repair ordering rule:
         1. parse
@@ -152,7 +150,7 @@ class RepairOptimizer:
 
         return sorted(actions, key=get_priority)
 
-    def estimate_impact(self, action: RepairAction) -> dict[str, Any]:
+    def estimate_impact(self, action: RepairAction) -> Dict[str, Any]:
         """
         Estimate impact of a repair action.
         """

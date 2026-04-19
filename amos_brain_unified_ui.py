@@ -8,8 +8,6 @@ Owner: Trang
 Version: 4.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import sys
@@ -111,7 +109,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
 
         status = self.brain.status()
         self._send_json(
-            {"status": "active", "brain": status, "timestamp": datetime.utcnow().isoformat()}
+            {"status": "active", "brain": status, "timestamp": datetime.now(UTC).isoformat()}
         )
 
     def _serve_thoughts(self) -> None:
@@ -195,7 +193,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "query": query,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             if hasattr(result, "content"):
@@ -231,7 +229,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "scenario": scenario,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             if hasattr(result, "approved"):
@@ -259,7 +257,7 @@ class UnifiedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "proposition": proposition,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             if hasattr(result, "to_dict"):
@@ -876,19 +874,14 @@ def run_unified_server(http_port: int = 8890, ws_port: int = 8891) -> None:
     webbrowser.open(url)
 
     # Run both servers
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
     http_thread = threading.Thread(target=run_http_server, args=(http_port,))
     http_thread.daemon = True
     http_thread.start()
 
     try:
-        loop.run_until_complete(start_websocket_server(ws_port))
+        asyncio.run(start_websocket_server(ws_port))
     except KeyboardInterrupt:
         print("\n\n👋 Shutting down...")
-    finally:
-        loop.close()
 
 
 def main() -> int:

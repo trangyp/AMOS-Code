@@ -1,20 +1,20 @@
 /**
  * AMOS MCP (Model Context Protocol) Integration Component
- * 
+ *
  * Based on 2025 research: MCP became the fastest adopted standard RedMonk has seen.
  * Developers expect MCP to "just work" for connecting agents to tools and data.
- * 
+ *
  * This component provides:
  * - MCP server registry and management
  * - Tool discovery and execution
  * - Real-time connection status
  * - Authentication and authorization UI
- * 
- * Research: "MCP followed an immediate S-curve adoption that reminds of Docker's 
+ *
+ * Research: "MCP followed an immediate S-curve adoption that reminds of Docker's
  * rapid market saturation" - RedMonk, Dec 2025
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 // MCP Server Types
 interface MCPServer {
@@ -34,12 +34,6 @@ interface MCPTool {
   inputSchema: object;
   enabled: boolean;
   usageCount: number;
-}
-
-interface MCPRegistry {
-  servers: MCPServer[];
-  totalTools: number;
-  activeConnections: number;
 }
 
 // Mock MCP Registry (would come from API in production)
@@ -103,25 +97,25 @@ export const MCPIntegration: React.FC = () => {
   // Calculate stats
   const totalTools = servers.reduce((sum, s) => sum + s.tools.length, 0);
   const activeConnections = servers.filter(s => s.status === 'connected').length;
-  const totalUsage = servers.reduce((sum, s) => 
+  const totalUsage = servers.reduce((sum, s) =>
     sum + s.tools.reduce((tSum, t) => tSum + t.usageCount, 0), 0
   );
 
   // Simulate connecting to a server
   const connectServer = (serverId: string) => {
-    setServers(prev => prev.map(s => 
-      s.id === serverId 
+    setServers(prev => prev.map(s =>
+      s.id === serverId
         ? { ...s, status: 'connecting' as const }
         : s
     ));
 
     // Simulate connection delay
     setTimeout(() => {
-      setServers(prev => prev.map(s => 
-        s.id === serverId 
-          ? { 
-              ...s, 
-              status: 'connected' as const, 
+      setServers(prev => prev.map(s =>
+        s.id === serverId
+          ? {
+              ...s,
+              status: 'connected' as const,
               lastConnected: new Date().toISOString(),
               error: undefined
             }
@@ -132,8 +126,8 @@ export const MCPIntegration: React.FC = () => {
 
   // Disconnect a server
   const disconnectServer = (serverId: string) => {
-    setServers(prev => prev.map(s => 
-      s.id === serverId 
+    setServers(prev => prev.map(s =>
+      s.id === serverId
         ? { ...s, status: 'disconnected' as const }
         : s
     ));
@@ -141,12 +135,12 @@ export const MCPIntegration: React.FC = () => {
 
   // Toggle tool enabled/disabled
   const toggleTool = (serverId: string, toolName: string) => {
-    setServers(prev => prev.map(s => 
-      s.id === serverId 
-        ? { 
-            ...s, 
-            tools: s.tools.map(t => 
-              t.name === toolName 
+    setServers(prev => prev.map(s =>
+      s.id === serverId
+        ? {
+            ...s,
+            tools: s.tools.map(t =>
+              t.name === toolName
                 ? { ...t, enabled: !t.enabled }
                 : t
             )
@@ -222,20 +216,20 @@ export const MCPIntegration: React.FC = () => {
 
       {/* Info Banner */}
       <div style={infoBannerStyle}>
-        <strong>ℹ️ Why MCP?</strong> MCP is the fastest adopted standard RedMonk has seen 
-        (faster than Docker). It connects AMOS to GitHub, Slack, databases, and more. 
+        <strong>ℹ️ Why MCP?</strong> MCP is the fastest adopted standard RedMonk has seen
+        (faster than Docker). It connects AMOS to GitHub, Slack, databases, and more.
         <a href="https://modelcontextprotocol.io" target="_blank" style={linkStyle}>Learn more →</a>
       </div>
 
       {/* Server List */}
       <div style={serverListStyle}>
         {servers.map(server => (
-          <div 
-            key={server.id} 
+          <div
+            key={server.id}
             style={{
               ...serverCardStyle,
-              borderColor: selectedServer?.id === server.id 
-                ? getStatusColor(server.status) 
+              borderColor: selectedServer?.id === server.id
+                ? getStatusColor(server.status)
                 : 'rgba(255,255,255,0.1)',
             }}
             onClick={() => setSelectedServer(server)}
@@ -243,7 +237,7 @@ export const MCPIntegration: React.FC = () => {
             {/* Server Header */}
             <div style={serverHeaderStyle}>
               <div style={serverInfoStyle}>
-                <span 
+                <span
                   style={{
                     ...statusIndicatorStyle,
                     color: getStatusColor(server.status),
@@ -256,18 +250,18 @@ export const MCPIntegration: React.FC = () => {
                   <div style={serverDescriptionStyle}>{server.description}</div>
                 </div>
               </div>
-              
+
               <div style={serverActionsStyle}>
                 <span style={transportBadgeStyle}>{server.transport}</span>
                 {server.status === 'connected' ? (
-                  <button 
+                  <button
                     onClick={(e) => { e.stopPropagation(); disconnectServer(server.id); }}
                     style={disconnectButtonStyle}
                   >
                     Disconnect
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={(e) => { e.stopPropagation(); connectServer(server.id); }}
                     style={connectButtonStyle}
                   >
@@ -280,8 +274,8 @@ export const MCPIntegration: React.FC = () => {
             {/* Tools Preview */}
             <div style={toolsPreviewStyle}>
               {server.tools.slice(0, 3).map(tool => (
-                <span 
-                  key={tool.name} 
+                <span
+                  key={tool.name}
                   style={{
                     ...toolBadgeStyle,
                     opacity: tool.enabled ? 1 : 0.4,
@@ -324,20 +318,20 @@ export const MCPIntegration: React.FC = () => {
         <div style={detailPanelStyle}>
           <div style={detailHeaderStyle}>
             <h4 style={detailTitleStyle}>{selectedServer.name} Tools</h4>
-            <button 
+            <button
               onClick={() => setSelectedServer(null)}
               style={closeButtonStyle}
             >
               ✕
             </button>
           </div>
-          
+
           <div style={toolsListStyle}>
             {selectedServer.tools.map(tool => (
               <div key={tool.name} style={toolRowStyle}>
                 <div style={toolInfoStyle}>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tool.enabled}
                     onChange={() => toggleTool(selectedServer.id, tool.name)}
                     style={checkboxStyle}
@@ -361,11 +355,11 @@ export const MCPIntegration: React.FC = () => {
         <div style={dialogOverlayStyle}>
           <div style={dialogStyle}>
             <h4 style={dialogTitleStyle}>Add MCP Server</h4>
-            
+
             <div style={formGroupStyle}>
               <label style={labelStyle}>Server Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={newServerName}
                 onChange={(e) => setNewServerName(e.target.value)}
                 placeholder="e.g., My Custom MCP"
@@ -375,8 +369,8 @@ export const MCPIntegration: React.FC = () => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Command</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={newServerCommand}
                 onChange={(e) => setNewServerCommand(e.target.value)}
                 placeholder="e.g., npx my-mcp-server"

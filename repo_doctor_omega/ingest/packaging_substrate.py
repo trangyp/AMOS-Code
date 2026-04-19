@@ -10,8 +10,6 @@ Validates packaging configuration consistency:
 I_pack = 1 iff declared package surface == shipped package surface.
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -47,7 +45,7 @@ class PackagingValidation:
     has_license: bool = False
     has_readme: bool = False
     has_packages: bool = False
-    issues: list[PackagingIssue] = field(default_factory=list)
+    issues: List[PackagingIssue] = field(default_factory=list)
 
     @property
     def is_valid(self) -> bool:
@@ -87,7 +85,7 @@ class PackagingSubstrate:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
-        self._config: dict[str, Any] | None = None
+        self._config: Dict[str, Any] = None
 
     def analyze(self) -> PackagingValidation:
         """Run full packaging analysis.
@@ -175,7 +173,7 @@ class PackagingSubstrate:
 
         return result
 
-    def _analyze_pyproject(self, path: Path) -> list[PackagingIssue]:
+    def _analyze_pyproject(self, path: Path) -> List[PackagingIssue]:
         """Analyze pyproject.toml for issues."""
         issues = []
 
@@ -284,7 +282,7 @@ class PackagingSubstrate:
 
         return issues
 
-    def _analyze_setup_py(self, path: Path) -> list[PackagingIssue]:
+    def _analyze_setup_py(self, path: Path) -> List[PackagingIssue]:
         """Analyze setup.py for issues."""
         issues = []
 
@@ -365,7 +363,7 @@ class PackagingSubstrate:
 
         return False
 
-    def get_summary(self, validation: PackagingValidation) -> dict[str, Any]:
+    def get_summary(self, validation: PackagingValidation) -> Dict[str, Any]:
         """Generate summary statistics."""
         return {
             "valid": validation.is_valid,

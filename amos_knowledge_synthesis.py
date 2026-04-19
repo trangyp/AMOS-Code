@@ -21,8 +21,6 @@ Commands:
     report              Generate synthesis report
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from collections import defaultdict
@@ -40,12 +38,12 @@ class SynthesisResult:
     """Result of knowledge synthesis."""
 
     topic: str
-    internal_sources: list[str]
-    external_sources: list[str]
+    internal_sources: List[str]
+    external_sources: List[str]
     synthesis: str
     confidence: float
     timestamp: str
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -65,7 +63,7 @@ class KnowledgeSynthesisEngine:
     def __init__(self):
         self.agent = None
         self.activation = None
-        self.synthesis_cache: dict[str, SynthesisResult] = {}
+        self.synthesis_cache: Dict[str, SynthesisResult] = {}
         self.external_data_store: dict[str, list[ExternalData]] = defaultdict(list)
         self._init_components()
 
@@ -246,7 +244,7 @@ class KnowledgeSynthesisEngine:
 
         return min(score, 1.0)
 
-    def query_synthesized_knowledge(self, question: str) -> dict[str, Any]:
+    def query_synthesized_knowledge(self, question: str) -> Dict[str, Any]:
         """Query the synthesized knowledge base."""
         print("=" * 70)
         print("QUERYING SYNTHESIZED KNOWLEDGE")
@@ -319,7 +317,7 @@ class KnowledgeSynthesisEngine:
 
         return True
 
-    def update_knowledge(self) -> dict[str, Any]:
+    def update_knowledge(self) -> Dict[str, Any]:
         """Update knowledge with latest external data."""
         print("=" * 70)
         print("UPDATING KNOWLEDGE BASE")
@@ -349,7 +347,7 @@ class KnowledgeSynthesisEngine:
 
         return updates
 
-    def generate_synthesis_report(self) -> dict[str, Any]:
+    def generate_synthesis_report(self) -> Dict[str, Any]:
         """Generate comprehensive synthesis report."""
         print("=" * 70)
         print("KNOWLEDGE SYNTHESIS REPORT")

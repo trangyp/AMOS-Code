@@ -10,8 +10,6 @@ Validates:
 - Database schema alignment
 """
 
-from __future__ import annotations
-
 import json
 import pickle
 from dataclasses import dataclass
@@ -26,7 +24,7 @@ class PersistenceIssue:
     file_path: str
     issue_type: str  # "json", "pickle", "schema", "config"
     error: str
-    fix_suggestion: str | None = None
+    fix_suggestion: str = None
 
 
 class PersistenceAnalyzer:
@@ -36,9 +34,9 @@ class PersistenceAnalyzer:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.issues: list[PersistenceIssue] = []
+        self.issues: List[PersistenceIssue] = []
 
-    def analyze(self) -> list[PersistenceIssue]:
+    def analyze(self) -> List[PersistenceIssue]:
         """Run full persistence analysis."""
         self.issues = []
 
@@ -220,7 +218,7 @@ class PersistenceAnalyzer:
 
         return "\n".join(lines)
 
-    def test_roundtrip(self, data: Any, serializer: str = "json") -> tuple[bool, Any | None, str]:
+    def test_roundtrip(self, data: Any, serializer: str = "json") -> Tuple[bool, Any, str]:
         """
         Test serialize/deserialize roundtrip.
         Returns (success, result, error_message).

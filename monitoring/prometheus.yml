@@ -1,0 +1,48 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'amos-production'
+    replica: '{{.ExternalURL}}'
+
+rule_files:
+  - '/etc/prometheus/alerting-rules.yml'
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      timeout: 10s
+      api_version: v2
+      static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  - job_name: prometheus
+    honor_timestamps: true
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+        - localhost:9090
+
+  - job_name: amos-orchestrator
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+        - amos-orchestrator:8000
+        labels:
+          service: amos
+          component: orchestrator
+
+  - job_name: redis
+    scrape_interval: 30s
+    static_configs:
+      - targets:
+        - redis:6379

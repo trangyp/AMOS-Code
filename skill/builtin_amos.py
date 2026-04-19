@@ -1,7 +1,5 @@
 """AMOS Brain built-in skill for cognitive analysis."""
 
-from __future__ import annotations
-
 from .loader import SkillDef, register_builtin_skill
 
 # ── /amos analyze ──────────────────────────────────────────────────────────

@@ -1,0 +1,36 @@
+FROM python:3.11-slim-bookworm
+
+LABEL maintainer="AMOS Brain Team"
+LABEL version="14.0.0"
+LABEL description="Production AMOS Brain v14.0.0 Unified Orchestrator"
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY amos_production_orchestrator.py .
+COPY amos_brain/ ./amos_brain/
+COPY AMOS_ORGANISM_OS/ ./AMOS_ORGANISM_OS/
+COPY clawspring/ ./clawspring/
+COPY _AMOS_BRAIN/ ./_AMOS_BRAIN/
+
+RUN useradd -m -u 1000 amos && chown -R amos:amos /app
+USER amos
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/status')" || exit 1
+
+CMD ["python", "amos_production_orchestrator.py"]

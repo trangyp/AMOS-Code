@@ -1,7 +1,5 @@
 """Python package placeholder for the archived `upstreamproxy` subsystem."""
 
-from __future__ import annotations
-
 import json
 from pathlib import Path
 

@@ -1,0 +1,2834 @@
+{
+  "root_path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code",
+  "files_analyzed": 30,
+  "nodes": {
+    "module:amos_activate_self_driving": {
+      "type": "module",
+      "name": "amos_activate_self_driving",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_activate_self_driving.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "function:amos_activate_self_driving.activate_self_driving"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2499,
+        "import_count": 3,
+        "definition_count": 1
+      }
+    },
+    "function:amos_activate_self_driving.activate_self_driving": {
+      "type": "function",
+      "name": "activate_self_driving",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_activate_self_driving.py",
+      "line": 20,
+      "parent": "module:amos_activate_self_driving",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_knowledge_loader": {
+      "type": "module",
+      "name": "amos_knowledge_loader",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_knowledge_loader.LoadedKnowledge",
+        "class:amos_knowledge_loader.KnowledgeLoader",
+        "function:amos_knowledge_loader.__init__",
+        "function:amos_knowledge_loader._init_superbrain",
+        "function:amos_knowledge_loader._validate_knowledge_load",
+        "function:amos_knowledge_loader._record_knowledge_access"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3154,
+        "import_count": 10,
+        "definition_count": 6
+      }
+    },
+    "class:amos_knowledge_loader.LoadedKnowledge": {
+      "type": "class",
+      "name": "LoadedKnowledge",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 31,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_knowledge_loader.KnowledgeLoader": {
+      "type": "class",
+      "name": "KnowledgeLoader",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 43,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_knowledge_loader.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 46,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_loader._init_superbrain": {
+      "type": "function",
+      "name": "_init_superbrain",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 55,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_loader._validate_knowledge_load": {
+      "type": "function",
+      "name": "_validate_knowledge_load",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 63,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_loader._record_knowledge_access": {
+      "type": "function",
+      "name": "_record_knowledge_access",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_loader.py",
+      "line": 83,
+      "parent": "module:amos_knowledge_loader",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "module:amos_organism_runner": {
+      "type": "module",
+      "name": "amos_organism_runner",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_organism_runner.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_organism_runner.OrganismState",
+        "class:amos_organism_runner.OrganismHealth",
+        "class:amos_organism_runner.OrganismConfig"
+      ],
+      "dependencies": [
+        "module:amos_time"
+      ],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3060,
+        "import_count": 18,
+        "definition_count": 3
+      }
+    },
+    "class:amos_organism_runner.OrganismState": {
+      "type": "class",
+      "name": "OrganismState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_organism_runner.py",
+      "line": 42,
+      "parent": "module:amos_organism_runner",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_organism_runner.OrganismHealth": {
+      "type": "class",
+      "name": "OrganismHealth",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_organism_runner.py",
+      "line": 55,
+      "parent": "module:amos_organism_runner",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_organism_runner.OrganismConfig": {
+      "type": "class",
+      "name": "OrganismConfig",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_organism_runner.py",
+      "line": 77,
+      "parent": "module:amos_organism_runner",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "module:test_amos": {
+      "type": "module",
+      "name": "test_amos",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:test_amos.AMOSTestSuite",
+        "function:test_amos.__init__",
+        "function:test_amos.run_all_tests",
+        "function:test_amos._test",
+        "function:test_amos._test_v1_core",
+        "function:test_amos.test_core_import",
+        "function:test_amos.test_core_workspace",
+        "function:test_amos.test_branch_field"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2739,
+        "import_count": 8,
+        "definition_count": 8
+      }
+    },
+    "class:test_amos.AMOSTestSuite": {
+      "type": "class",
+      "name": "AMOSTestSuite",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 22,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:test_amos.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 25,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:test_amos.run_all_tests": {
+      "type": "function",
+      "name": "run_all_tests",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 30,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:test_amos._test": {
+      "type": "function",
+      "name": "_test",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 67,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "function:test_amos._test_v1_core": {
+      "type": "function",
+      "name": "_test_v1_core",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 81,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:test_amos.test_core_import": {
+      "type": "function",
+      "name": "test_core_import",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 85,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_amos.test_core_workspace": {
+      "type": "function",
+      "name": "test_core_workspace",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 90,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_amos.test_branch_field": {
+      "type": "function",
+      "name": "test_branch_field",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos.py",
+      "line": 97,
+      "parent": "module:test_amos",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_auth_system": {
+      "type": "module",
+      "name": "amos_auth_system",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_auth_system.TokenAlgorithm",
+        "class:amos_auth_system.TokenType",
+        "class:amos_auth_system.User",
+        "class:amos_auth_system.Role",
+        "function:amos_auth_system.has_role",
+        "function:amos_auth_system.has_permission",
+        "function:amos_auth_system.get_all_permissions"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3195,
+        "import_count": 18,
+        "definition_count": 7
+      }
+    },
+    "class:amos_auth_system.TokenAlgorithm": {
+      "type": "class",
+      "name": "TokenAlgorithm",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 43,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_auth_system.TokenType": {
+      "type": "class",
+      "name": "TokenType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 54,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_auth_system.User": {
+      "type": "class",
+      "name": "User",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 63,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_auth_system.Role": {
+      "type": "class",
+      "name": "Role",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 85,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_auth_system.has_role": {
+      "type": "function",
+      "name": "has_role",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 75,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_auth_system.has_permission": {
+      "type": "function",
+      "name": "has_permission",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 79,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_auth_system.get_all_permissions": {
+      "type": "function",
+      "name": "get_all_permissions",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_auth_system.py",
+      "line": 93,
+      "parent": "module:amos_auth_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:amos_self_evolution": {
+      "type": "module",
+      "name": "amos_self_evolution",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_self_evolution.EvolutionProposal",
+        "class:amos_self_evolution.EvolutionResult",
+        "class:amos_self_evolution.CodeAnalyzer",
+        "function:amos_self_evolution.__init__",
+        "function:amos_self_evolution.analyze_file"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3259,
+        "import_count": 11,
+        "definition_count": 5
+      }
+    },
+    "class:amos_self_evolution.EvolutionProposal": {
+      "type": "class",
+      "name": "EvolutionProposal",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 51,
+      "parent": "module:amos_self_evolution",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_self_evolution.EvolutionResult": {
+      "type": "class",
+      "name": "EvolutionResult",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 67,
+      "parent": "module:amos_self_evolution",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_self_evolution.CodeAnalyzer": {
+      "type": "class",
+      "name": "CodeAnalyzer",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 81,
+      "parent": "module:amos_self_evolution",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_self_evolution.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 84,
+      "parent": "module:amos_self_evolution",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_self_evolution.analyze_file": {
+      "type": "function",
+      "name": "analyze_file",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_self_evolution.py",
+      "line": 97,
+      "parent": "module:amos_self_evolution",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:pipeline_engine": {
+      "type": "module",
+      "name": "pipeline_engine",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:pipeline_engine.PipelineStage",
+        "class:pipeline_engine.Pipeline",
+        "class:pipeline_engine.PipelineEngine",
+        "function:pipeline_engine.__init__",
+        "function:pipeline_engine.__init__",
+        "function:pipeline_engine.add_stage",
+        "function:pipeline_engine.execute",
+        "function:pipeline_engine.__init__",
+        "function:pipeline_engine.create_pipeline",
+        "function:pipeline_engine.get_pipeline"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 1416,
+        "import_count": 4,
+        "definition_count": 10
+      }
+    },
+    "class:pipeline_engine.PipelineStage": {
+      "type": "class",
+      "name": "PipelineStage",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 9,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:pipeline_engine.Pipeline": {
+      "type": "class",
+      "name": "Pipeline",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 18,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:pipeline_engine.PipelineEngine": {
+      "type": "class",
+      "name": "PipelineEngine",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 37,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:pipeline_engine.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 40,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:pipeline_engine.add_stage": {
+      "type": "function",
+      "name": "add_stage",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 25,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:pipeline_engine.execute": {
+      "type": "function",
+      "name": "execute",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 29,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:pipeline_engine.create_pipeline": {
+      "type": "function",
+      "name": "create_pipeline",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 43,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:pipeline_engine.get_pipeline": {
+      "type": "function",
+      "name": "get_pipeline",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/pipeline_engine.py",
+      "line": 49,
+      "parent": "module:pipeline_engine",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:amos_event_driven": {
+      "type": "module",
+      "name": "amos_event_driven",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_event_driven.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_event_driven.EventMetadata",
+        "class:amos_event_driven.EquationComputedEvent",
+        "class:amos_event_driven.BatchStartedEvent"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3015,
+        "import_count": 19,
+        "definition_count": 3
+      }
+    },
+    "class:amos_event_driven.EventMetadata": {
+      "type": "class",
+      "name": "EventMetadata",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_event_driven.py",
+      "line": 78,
+      "parent": "module:amos_event_driven",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "BaseModel"
+        ]
+      }
+    },
+    "class:amos_event_driven.EquationComputedEvent": {
+      "type": "class",
+      "name": "EquationComputedEvent",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_event_driven.py",
+      "line": 86,
+      "parent": "module:amos_event_driven",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "BaseModel"
+        ]
+      }
+    },
+    "class:amos_event_driven.BatchStartedEvent": {
+      "type": "class",
+      "name": "BatchStartedEvent",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_event_driven.py",
+      "line": 96,
+      "parent": "module:amos_event_driven",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "BaseModel"
+        ]
+      }
+    },
+    "module:amos_service_orchestrator": {
+      "type": "module",
+      "name": "amos_service_orchestrator",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_service_orchestrator.ServiceStatus",
+        "class:amos_service_orchestrator.ServiceState",
+        "class:amos_service_orchestrator.SystemHealth",
+        "class:amos_service_orchestrator.AMOSServiceOrchestrator",
+        "function:amos_service_orchestrator.__init__"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3108,
+        "import_count": 13,
+        "definition_count": 5
+      }
+    },
+    "class:amos_service_orchestrator.ServiceStatus": {
+      "type": "class",
+      "name": "ServiceStatus",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 40,
+      "parent": "module:amos_service_orchestrator",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_service_orchestrator.ServiceState": {
+      "type": "class",
+      "name": "ServiceState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 51,
+      "parent": "module:amos_service_orchestrator",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_service_orchestrator.SystemHealth": {
+      "type": "class",
+      "name": "SystemHealth",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 65,
+      "parent": "module:amos_service_orchestrator",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_service_orchestrator.AMOSServiceOrchestrator": {
+      "type": "class",
+      "name": "AMOSServiceOrchestrator",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 77,
+      "parent": "module:amos_service_orchestrator",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_service_orchestrator.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_service_orchestrator.py",
+      "line": 98,
+      "parent": "module:amos_service_orchestrator",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:test_local_llms": {
+      "type": "module",
+      "name": "test_local_llms",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_local_llms.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "function:test_local_llms.test_local_models_detection",
+        "function:test_local_llms.test_ollama_connection",
+        "function:test_local_llms.test_provider_integration",
+        "function:test_local_llms.main"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2770,
+        "import_count": 7,
+        "definition_count": 4
+      }
+    },
+    "function:test_local_llms.test_local_models_detection": {
+      "type": "function",
+      "name": "test_local_models_detection",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_local_llms.py",
+      "line": 10,
+      "parent": "module:test_local_llms",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_local_llms.test_ollama_connection": {
+      "type": "function",
+      "name": "test_ollama_connection",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_local_llms.py",
+      "line": 43,
+      "parent": "module:test_local_llms",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_local_llms.test_provider_integration": {
+      "type": "function",
+      "name": "test_provider_integration",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_local_llms.py",
+      "line": 74,
+      "parent": "module:test_local_llms",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_local_llms.main": {
+      "type": "function",
+      "name": "main",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_local_llms.py",
+      "line": 97,
+      "parent": "module:test_local_llms",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_execution_tester": {
+      "type": "module",
+      "name": "amos_execution_tester",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_execution_tester.TestResult",
+        "class:amos_execution_tester.ExecutionTester",
+        "function:amos_execution_tester.__init__",
+        "function:amos_execution_tester.to_dict",
+        "function:amos_execution_tester.__init__",
+        "async_function:amos_execution_tester.run_all_tests"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2465,
+        "import_count": 11,
+        "definition_count": 6
+      }
+    },
+    "class:amos_execution_tester.TestResult": {
+      "type": "class",
+      "name": "TestResult",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 50,
+      "parent": "module:amos_execution_tester",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_execution_tester.ExecutionTester": {
+      "type": "class",
+      "name": "ExecutionTester",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 79,
+      "parent": "module:amos_execution_tester",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_execution_tester.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 82,
+      "parent": "module:amos_execution_tester",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_execution_tester.to_dict": {
+      "type": "function",
+      "name": "to_dict",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 68,
+      "parent": "module:amos_execution_tester",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "async_function:amos_execution_tester.run_all_tests": {
+      "type": "async_function",
+      "name": "run_all_tests",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_execution_tester.py",
+      "line": 86,
+      "parent": "module:amos_execution_tester",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_unified_launcher": {
+      "type": "module",
+      "name": "amos_unified_launcher",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_launcher.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_unified_launcher.AMOSUnifiedRuntime",
+        "function:amos_unified_launcher.__init__",
+        "function:amos_unified_launcher.initialize"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3364,
+        "import_count": 7,
+        "definition_count": 3
+      }
+    },
+    "class:amos_unified_launcher.AMOSUnifiedRuntime": {
+      "type": "class",
+      "name": "AMOSUnifiedRuntime",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_launcher.py",
+      "line": 30,
+      "parent": "module:amos_unified_launcher",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_unified_launcher.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_launcher.py",
+      "line": 40,
+      "parent": "module:amos_unified_launcher",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_unified_launcher.initialize": {
+      "type": "function",
+      "name": "initialize",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_launcher.py",
+      "line": 47,
+      "parent": "module:amos_unified_launcher",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:test_amos_complete_57": {
+      "type": "module",
+      "name": "test_amos_complete_57",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:test_amos_complete_57.TestMetaArchitectureLayer",
+        "function:test_amos_complete_57.setUp",
+        "function:test_amos_complete_57.test_promise_system",
+        "function:test_amos_complete_57.test_breach_system",
+        "function:test_amos_complete_57.test_identity_continuity"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3181,
+        "import_count": 44,
+        "definition_count": 5
+      }
+    },
+    "class:test_amos_complete_57.TestMetaArchitectureLayer": {
+      "type": "class",
+      "name": "TestMetaArchitectureLayer",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 53,
+      "parent": "module:test_amos_complete_57",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "unittest.TestCase"
+        ]
+      }
+    },
+    "function:test_amos_complete_57.setUp": {
+      "type": "function",
+      "name": "setUp",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 56,
+      "parent": "module:test_amos_complete_57",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:test_amos_complete_57.test_promise_system": {
+      "type": "function",
+      "name": "test_promise_system",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 59,
+      "parent": "module:test_amos_complete_57",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:test_amos_complete_57.test_breach_system": {
+      "type": "function",
+      "name": "test_breach_system",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 84,
+      "parent": "module:test_amos_complete_57",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:test_amos_complete_57.test_identity_continuity": {
+      "type": "function",
+      "name": "test_identity_continuity",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_amos_complete_57.py",
+      "line": 99,
+      "parent": "module:test_amos_complete_57",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_sdk": {
+      "type": "module",
+      "name": "amos_sdk",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_sdk.AMOSSDK",
+        "function:amos_sdk.create_client",
+        "function:amos_sdk.__init__",
+        "function:amos_sdk.connect",
+        "function:amos_sdk.execute"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 723,
+        "import_count": 2,
+        "definition_count": 5
+      }
+    },
+    "class:amos_sdk.AMOSSDK": {
+      "type": "class",
+      "name": "AMOSSDK",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 8,
+      "parent": "module:amos_sdk",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_sdk.create_client": {
+      "type": "function",
+      "name": "create_client",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 25,
+      "parent": "module:amos_sdk",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_sdk.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 11,
+      "parent": "module:amos_sdk",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_sdk.connect": {
+      "type": "function",
+      "name": "connect",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 15,
+      "parent": "module:amos_sdk",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_sdk.execute": {
+      "type": "function",
+      "name": "execute",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sdk.py",
+      "line": 20,
+      "parent": "module:amos_sdk",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:amos_unified_system": {
+      "type": "module",
+      "name": "amos_unified_system",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_system.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_unified_system.SystemStatus",
+        "class:amos_unified_system.AMOSUnifiedSystem",
+        "function:amos_unified_system.__init__",
+        "function:amos_unified_system.initialize"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3101,
+        "import_count": 9,
+        "definition_count": 4
+      }
+    },
+    "class:amos_unified_system.SystemStatus": {
+      "type": "class",
+      "name": "SystemStatus",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_system.py",
+      "line": 36,
+      "parent": "module:amos_unified_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_unified_system.AMOSUnifiedSystem": {
+      "type": "class",
+      "name": "AMOSUnifiedSystem",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_system.py",
+      "line": 52,
+      "parent": "module:amos_unified_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_unified_system.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_system.py",
+      "line": 61,
+      "parent": "module:amos_unified_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_unified_system.initialize": {
+      "type": "function",
+      "name": "initialize",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_system.py",
+      "line": 71,
+      "parent": "module:amos_unified_system",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_reasoning_kernel": {
+      "type": "module",
+      "name": "amos_reasoning_kernel",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_reasoning_kernel.PremiseType",
+        "class:amos_reasoning_kernel.ReasoningMode",
+        "class:amos_reasoning_kernel.HypothesisStatus",
+        "class:amos_reasoning_kernel.ConflictSeverity"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2536,
+        "import_count": 19,
+        "definition_count": 4
+      }
+    },
+    "class:amos_reasoning_kernel.PremiseType": {
+      "type": "class",
+      "name": "PremiseType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py",
+      "line": 61,
+      "parent": "module:amos_reasoning_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reasoning_kernel.ReasoningMode": {
+      "type": "class",
+      "name": "ReasoningMode",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py",
+      "line": 73,
+      "parent": "module:amos_reasoning_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reasoning_kernel.HypothesisStatus": {
+      "type": "class",
+      "name": "HypothesisStatus",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py",
+      "line": 88,
+      "parent": "module:amos_reasoning_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reasoning_kernel.ConflictSeverity": {
+      "type": "class",
+      "name": "ConflictSeverity",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reasoning_kernel.py",
+      "line": 97,
+      "parent": "module:amos_reasoning_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "module:amos_openclaw_connector": {
+      "type": "module",
+      "name": "amos_openclaw_connector",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_openclaw_connector.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_openclaw_connector.BridgeConfig",
+        "class:amos_openclaw_connector.StateSynchronizer",
+        "function:amos_openclaw_connector.__init__",
+        "async_function:amos_openclaw_connector.export_amos_state"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3047,
+        "import_count": 13,
+        "definition_count": 4
+      }
+    },
+    "class:amos_openclaw_connector.BridgeConfig": {
+      "type": "class",
+      "name": "BridgeConfig",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_openclaw_connector.py",
+      "line": 55,
+      "parent": "module:amos_openclaw_connector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_openclaw_connector.StateSynchronizer": {
+      "type": "class",
+      "name": "StateSynchronizer",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_openclaw_connector.py",
+      "line": 66,
+      "parent": "module:amos_openclaw_connector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_openclaw_connector.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_openclaw_connector.py",
+      "line": 69,
+      "parent": "module:amos_openclaw_connector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "async_function:amos_openclaw_connector.export_amos_state": {
+      "type": "async_function",
+      "name": "export_amos_state",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_openclaw_connector.py",
+      "line": 74,
+      "parent": "module:amos_openclaw_connector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_brain_enhanced": {
+      "type": "module",
+      "name": "amos_brain_enhanced",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_brain_enhanced.BrainMode",
+        "class:amos_brain_enhanced.BrainState",
+        "class:amos_brain_enhanced.AMOSBrainEnhanced",
+        "function:amos_brain_enhanced.__post_init__",
+        "function:amos_brain_enhanced.__init__"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2678,
+        "import_count": 9,
+        "definition_count": 5
+      }
+    },
+    "class:amos_brain_enhanced.BrainMode": {
+      "type": "class",
+      "name": "BrainMode",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 41,
+      "parent": "module:amos_brain_enhanced",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_brain_enhanced.BrainState": {
+      "type": "class",
+      "name": "BrainState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 54,
+      "parent": "module:amos_brain_enhanced",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_brain_enhanced.AMOSBrainEnhanced": {
+      "type": "class",
+      "name": "AMOSBrainEnhanced",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 69,
+      "parent": "module:amos_brain_enhanced",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_brain_enhanced.__post_init__": {
+      "type": "function",
+      "name": "__post_init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 64,
+      "parent": "module:amos_brain_enhanced",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_brain_enhanced.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_enhanced.py",
+      "line": 97,
+      "parent": "module:amos_brain_enhanced",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_services": {
+      "type": "module",
+      "name": "amos_services",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_services.RepositoryProtocol",
+        "class:amos_services.BaseRepository",
+        "async_function:amos_services.get",
+        "async_function:amos_services.get_all",
+        "async_function:amos_services.create",
+        "async_function:amos_services.update",
+        "async_function:amos_services.delete",
+        "async_function:amos_services.count",
+        "function:amos_services.__init__",
+        "function:amos_services.session",
+        "async_function:amos_services.get",
+        "async_function:amos_services.get_all",
+        "async_function:amos_services.create"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3169,
+        "import_count": 26,
+        "definition_count": 13
+      }
+    },
+    "class:amos_services.RepositoryProtocol": {
+      "type": "class",
+      "name": "RepositoryProtocol",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 37,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "unknown"
+        ]
+      }
+    },
+    "class:amos_services.BaseRepository": {
+      "type": "class",
+      "name": "BaseRepository",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 52,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "unknown"
+        ]
+      }
+    },
+    "async_function:amos_services.get": {
+      "type": "async_function",
+      "name": "get",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 73,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "async_function:amos_services.get_all": {
+      "type": "async_function",
+      "name": "get_all",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 78,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 4,
+        "bases": null
+      }
+    },
+    "async_function:amos_services.create": {
+      "type": "async_function",
+      "name": "create",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 94,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "async_function:amos_services.update": {
+      "type": "async_function",
+      "name": "update",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 43,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "async_function:amos_services.delete": {
+      "type": "async_function",
+      "name": "delete",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 44,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "async_function:amos_services.count": {
+      "type": "async_function",
+      "name": "count",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 45,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_services.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 62,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "function:amos_services.session": {
+      "type": "function",
+      "name": "session",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_services.py",
+      "line": 67,
+      "parent": "module:amos_services",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:test_knowledge_sync": {
+      "type": "module",
+      "name": "test_knowledge_sync",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_knowledge_sync.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "function:test_knowledge_sync.main"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2795,
+        "import_count": 3,
+        "definition_count": 1
+      }
+    },
+    "function:test_knowledge_sync.main": {
+      "type": "function",
+      "name": "main",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_knowledge_sync.py",
+      "line": 9,
+      "parent": "module:test_knowledge_sync",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_speculative_thinking": {
+      "type": "module",
+      "name": "amos_speculative_thinking",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_speculative_thinking.SpeculativeStep",
+        "class:amos_speculative_thinking.SpeculativeResult",
+        "class:amos_speculative_thinking.SpeculativeThinkingEngine",
+        "function:amos_speculative_thinking.__init__",
+        "function:amos_speculative_thinking._predict_simple_continuation",
+        "function:amos_speculative_thinking._predict_goal_convergence"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3343,
+        "import_count": 13,
+        "definition_count": 6
+      }
+    },
+    "class:amos_speculative_thinking.SpeculativeStep": {
+      "type": "class",
+      "name": "SpeculativeStep",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 29,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_speculative_thinking.SpeculativeResult": {
+      "type": "class",
+      "name": "SpeculativeResult",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 39,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_speculative_thinking.SpeculativeThinkingEngine": {
+      "type": "class",
+      "name": "SpeculativeThinkingEngine",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 50,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_speculative_thinking.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 65,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_speculative_thinking._predict_simple_continuation": {
+      "type": "function",
+      "name": "_predict_simple_continuation",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 76,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_speculative_thinking._predict_goal_convergence": {
+      "type": "function",
+      "name": "_predict_goal_convergence",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_speculative_thinking.py",
+      "line": 93,
+      "parent": "module:amos_speculative_thinking",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:amos_metrics_collector": {
+      "type": "module",
+      "name": "amos_metrics_collector",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_metrics_collector.MetricType",
+        "class:amos_metrics_collector.Metric",
+        "class:amos_metrics_collector.RequestMetrics",
+        "class:amos_metrics_collector.AMOSMetricsCollector",
+        "function:amos_metrics_collector.__init__",
+        "function:amos_metrics_collector.record_request"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2701,
+        "import_count": 13,
+        "definition_count": 6
+      }
+    },
+    "class:amos_metrics_collector.MetricType": {
+      "type": "class",
+      "name": "MetricType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 29,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_metrics_collector.Metric": {
+      "type": "class",
+      "name": "Metric",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 36,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_metrics_collector.RequestMetrics": {
+      "type": "class",
+      "name": "RequestMetrics",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 46,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_metrics_collector.AMOSMetricsCollector": {
+      "type": "class",
+      "name": "AMOSMetricsCollector",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 56,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_metrics_collector.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 59,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_metrics_collector.record_request": {
+      "type": "function",
+      "name": "record_request",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_metrics_collector.py",
+      "line": 68,
+      "parent": "module:amos_metrics_collector",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 7,
+        "bases": null
+      }
+    },
+    "module:amos_knowledge_agent": {
+      "type": "module",
+      "name": "amos_knowledge_agent",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_knowledge_agent.TaskStatus",
+        "class:amos_knowledge_agent.KnowledgeTask",
+        "class:amos_knowledge_agent.KnowledgeAgent",
+        "function:amos_knowledge_agent.__post_init__",
+        "function:amos_knowledge_agent.__init__",
+        "function:amos_knowledge_agent._init_components",
+        "function:amos_knowledge_agent.understand_goal"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3046,
+        "import_count": 13,
+        "definition_count": 7
+      }
+    },
+    "class:amos_knowledge_agent.TaskStatus": {
+      "type": "class",
+      "name": "TaskStatus",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 39,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_knowledge_agent.KnowledgeTask": {
+      "type": "class",
+      "name": "KnowledgeTask",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 48,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_knowledge_agent.KnowledgeAgent": {
+      "type": "class",
+      "name": "KnowledgeAgent",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 65,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_knowledge_agent.__post_init__": {
+      "type": "function",
+      "name": "__post_init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 60,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_agent.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 68,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_agent._init_components": {
+      "type": "function",
+      "name": "_init_components",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 75,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_knowledge_agent.understand_goal": {
+      "type": "function",
+      "name": "understand_goal",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_knowledge_agent.py",
+      "line": 94,
+      "parent": "module:amos_knowledge_agent",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:test_phase14": {
+      "type": "module",
+      "name": "test_phase14",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "function:test_phase14.test_ryu_takayanagi_entropy",
+        "function:test_phase14.test_ads_cft_correlator",
+        "function:test_phase14.test_black_hole_information_rate",
+        "function:test_phase14.test_holographic_complexity",
+        "function:test_phase14.test_sensor_fusion_confidence",
+        "function:test_phase14.test_mechanistic_interpretability"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3468,
+        "import_count": 2,
+        "definition_count": 6
+      }
+    },
+    "function:test_phase14.test_ryu_takayanagi_entropy": {
+      "type": "function",
+      "name": "test_ryu_takayanagi_entropy",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 8,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_phase14.test_ads_cft_correlator": {
+      "type": "function",
+      "name": "test_ads_cft_correlator",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 24,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_phase14.test_black_hole_information_rate": {
+      "type": "function",
+      "name": "test_black_hole_information_rate",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 41,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_phase14.test_holographic_complexity": {
+      "type": "function",
+      "name": "test_holographic_complexity",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 67,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_phase14.test_sensor_fusion_confidence": {
+      "type": "function",
+      "name": "test_sensor_fusion_confidence",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 83,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "function:test_phase14.test_mechanistic_interpretability": {
+      "type": "function",
+      "name": "test_mechanistic_interpretability",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_phase14.py",
+      "line": 97,
+      "parent": "module:test_phase14",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_time": {
+      "type": "module",
+      "name": "amos_time",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_time.Event",
+        "class:amos_time.TemporalState",
+        "class:amos_time.TemporalPath",
+        "function:amos_time.to_dict",
+        "function:amos_time.distance_to",
+        "function:amos_time.__post_init__",
+        "function:amos_time.compute_metrics"
+      ],
+      "dependencies": [],
+      "dependents": [
+        "module:amos_organism_runner"
+      ],
+      "metadata": {
+        "size_bytes": 2909,
+        "import_count": 8,
+        "definition_count": 7
+      }
+    },
+    "class:amos_time.Event": {
+      "type": "class",
+      "name": "Event",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 23,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_time.TemporalState": {
+      "type": "class",
+      "name": "TemporalState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 49,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_time.TemporalPath": {
+      "type": "class",
+      "name": "TemporalPath",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 81,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_time.to_dict": {
+      "type": "function",
+      "name": "to_dict",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 36,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_time.distance_to": {
+      "type": "function",
+      "name": "distance_to",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 57,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "function:amos_time.__post_init__": {
+      "type": "function",
+      "name": "__post_init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 95,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:amos_time.compute_metrics": {
+      "type": "function",
+      "name": "compute_metrics",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_time.py",
+      "line": 99,
+      "parent": "module:amos_time",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "module:amos_async_safety": {
+      "type": "module",
+      "name": "amos_async_safety",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_async_safety.CircuitState",
+        "class:amos_async_safety.CircuitBreakerConfig",
+        "class:amos_async_safety.CircuitBreaker",
+        "function:amos_async_safety.__init__",
+        "async_function:amos_async_safety.call",
+        "async_function:amos_async_safety._update_state",
+        "async_function:amos_async_safety._on_success"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 3203,
+        "import_count": 13,
+        "definition_count": 7
+      }
+    },
+    "class:amos_async_safety.CircuitState": {
+      "type": "class",
+      "name": "CircuitState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 27,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_async_safety.CircuitBreakerConfig": {
+      "type": "class",
+      "name": "CircuitBreakerConfig",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 35,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "class:amos_async_safety.CircuitBreaker": {
+      "type": "class",
+      "name": "CircuitBreaker",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 43,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_async_safety.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 50,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 3,
+        "bases": null
+      }
+    },
+    "async_function:amos_async_safety.call": {
+      "type": "async_function",
+      "name": "call",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 60,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 2,
+        "bases": null
+      }
+    },
+    "async_function:amos_async_safety._update_state": {
+      "type": "async_function",
+      "name": "_update_state",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 83,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "async_function:amos_async_safety._on_success": {
+      "type": "async_function",
+      "name": "_on_success",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_async_safety.py",
+      "line": 93,
+      "parent": "module:amos_async_safety",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "module:amos_reading_kernel": {
+      "type": "module",
+      "name": "amos_reading_kernel",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_reading_kernel.SegmentType",
+        "class:amos_reading_kernel.ReadingState",
+        "class:amos_reading_kernel.Perspective",
+        "class:amos_reading_kernel.Scope",
+        "class:amos_reading_kernel.SignalClass"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2513,
+        "import_count": 21,
+        "definition_count": 5
+      }
+    },
+    "class:amos_reading_kernel.SegmentType": {
+      "type": "class",
+      "name": "SegmentType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 31,
+      "parent": "module:amos_reading_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reading_kernel.ReadingState": {
+      "type": "class",
+      "name": "ReadingState",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 48,
+      "parent": "module:amos_reading_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reading_kernel.Perspective": {
+      "type": "class",
+      "name": "Perspective",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 67,
+      "parent": "module:amos_reading_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reading_kernel.Scope": {
+      "type": "class",
+      "name": "Scope",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 77,
+      "parent": "module:amos_reading_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_reading_kernel.SignalClass": {
+      "type": "class",
+      "name": "SignalClass",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_reading_kernel.py",
+      "line": 86,
+      "parent": "module:amos_reading_kernel",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "module:amos_translation_layer": {
+      "type": "module",
+      "name": "amos_translation_layer",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_translation_layer.SpeechActType",
+        "class:amos_translation_layer.PropositionType",
+        "class:amos_translation_layer.TimeReferenceType",
+        "class:amos_translation_layer.Polarity",
+        "class:amos_translation_layer.HumanStateClass",
+        "class:amos_translation_layer.IntentType"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2685,
+        "import_count": 11,
+        "definition_count": 6
+      }
+    },
+    "class:amos_translation_layer.SpeechActType": {
+      "type": "class",
+      "name": "SpeechActType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 49,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_translation_layer.PropositionType": {
+      "type": "class",
+      "name": "PropositionType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 62,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_translation_layer.TimeReferenceType": {
+      "type": "class",
+      "name": "TimeReferenceType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 72,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_translation_layer.Polarity": {
+      "type": "class",
+      "name": "Polarity",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 79,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_translation_layer.HumanStateClass": {
+      "type": "class",
+      "name": "HumanStateClass",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 85,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "class:amos_translation_layer.IntentType": {
+      "type": "class",
+      "name": "IntentType",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_translation_layer.py",
+      "line": 92,
+      "parent": "module:amos_translation_layer",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": [
+          "Enum"
+        ]
+      }
+    },
+    "module:fix_union_types": {
+      "type": "module",
+      "name": "fix_union_types",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/fix_union_types.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "function:fix_union_types.fix_file",
+        "function:fix_union_types.main"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 2124,
+        "import_count": 3,
+        "definition_count": 2
+      }
+    },
+    "function:fix_union_types.fix_file": {
+      "type": "function",
+      "name": "fix_file",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/fix_union_types.py",
+      "line": 8,
+      "parent": "module:fix_union_types",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    },
+    "function:fix_union_types.main": {
+      "type": "function",
+      "name": "main",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/fix_union_types.py",
+      "line": 48,
+      "parent": "module:fix_union_types",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 0,
+        "bases": null
+      }
+    },
+    "module:amos_analytics": {
+      "type": "module",
+      "name": "amos_analytics",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_analytics.py",
+      "line": 1,
+      "parent": null,
+      "children": [
+        "class:amos_analytics.MockClickHouse",
+        "function:amos_analytics.__init__"
+      ],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "size_bytes": 5000,
+        "import_count": 12,
+        "definition_count": 2
+      }
+    },
+    "class:amos_analytics.MockClickHouse": {
+      "type": "class",
+      "name": "MockClickHouse",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_analytics.py",
+      "line": 90,
+      "parent": "module:amos_analytics",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": null,
+        "bases": []
+      }
+    },
+    "function:amos_analytics.__init__": {
+      "type": "function",
+      "name": "__init__",
+      "path": "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_analytics.py",
+      "line": 93,
+      "parent": "module:amos_analytics",
+      "children": [],
+      "dependencies": [],
+      "dependents": [],
+      "metadata": {
+        "args": 1,
+        "bases": null
+      }
+    }
+  },
+  "edges": [
+    {
+      "source": "module:amos_organism_runner",
+      "target": "module:amos_time",
+      "type": "from",
+      "line": 39
+    }
+  ],
+  "errors": [
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_api_enhanced.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_mcp_tools.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_auth.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_brain_complete_ui.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_agent_bridge.py: EOF while scanning triple-quoted string literal (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_observer.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_security_compliance.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/batch_fix_f821_final.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_monitoring_middleware.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/mcp_server_bridge.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/test_brain_architecture_integration.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_integration_tests.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_realtime_streaming.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos-cli.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/equation_flags.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_sparse_router.py: unexpected EOF while parsing (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_unified_equation_registry.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_muscle_executor.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_v5.py: expected an indented block (<unknown>, line 100)",
+    "Syntax error in /Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code/amos_production_orchestrator.py: unexpected EOF while parsing (<unknown>, line 100)"
+  ]
+}

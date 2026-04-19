@@ -12,8 +12,6 @@ Severity weights:
 λPs=70 (persistence), λSt=65 (status), λD=35 (docs), λH=55 (history)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -57,7 +55,7 @@ class RepositoryHamiltonian:
     H_repo = Σk λk Hk
     """
 
-    def __init__(self, custom_weights: dict[StateDimension, float] | None = None):
+    def __init__(self, custom_weights: dict[StateDimension, float] = None):
         self.weights = custom_weights or {dim: StateBasis.get_weight(dim) for dim in StateDimension}
         self.operators = {dim: EnergyOperator(dim, self.weights[dim]) for dim in StateDimension}
 
@@ -92,13 +90,13 @@ class RepositoryHamiltonian:
         """Check if repository is stable (energy below threshold)."""
         return self.total_energy(amplitudes) < threshold
 
-    def critical_dimensions(self, amplitudes: dict[StateDimension, float]) -> list[StateDimension]:
+    def critical_dimensions(self, amplitudes: dict[StateDimension, float]) -> List[StateDimension]:
         """Find dimensions contributing most to energy."""
         energies = [(dim, self.subsystem_energy(dim, amp)) for dim, amp in amplitudes.items()]
         sorted_dims = sorted(energies, key=lambda x: -x[1])
         return [dim for dim, _ in sorted_dims if _ > 10.0]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize Hamiltonian configuration."""
         return {
             "weights": {dim.value: w for dim, w in self.weights.items()},

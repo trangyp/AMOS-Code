@@ -1,6 +1,7 @@
 """AMOS Tools stub for compatibility."""
 
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any, Optional
 
 
 class ToolRegistry:
@@ -25,7 +26,7 @@ class ToolRegistry:
 class ToolExecutor:
     """Executor for AMOS tools."""
 
-    def __init__(self, registry: Optional[ToolRegistry] = None):
+    def __init__(self, registry: Optional["ToolRegistry"] = None):
         self.registry = registry or ToolRegistry()
 
     def execute(self, tool_name: str, **kwargs: Any) -> Any:

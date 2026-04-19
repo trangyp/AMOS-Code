@@ -5,8 +5,6 @@ Unified maintenance using Repo Doctor Omega + industry best practices.
 Combines: Tree-sitter, CodeQL, Joern, Z3, Ruff, MyPy, Security scanning
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import subprocess
@@ -39,9 +37,9 @@ class RepoMaintenance:
     - Pre-commit hooks enforcement
     """
 
-    def __init__(self, repo_path: Path | None = None):
+    def __init__(self, repo_path: Optional[Path] = None):
         self.repo_path = repo_path or Path.cwd()
-        self.results: list[MaintenanceResult] = []
+        self.results: List[MaintenanceResult] = []
 
     def run_ruff_check(self, fix: bool = True) -> MaintenanceResult:
         """Run Ruff linter with auto-fix."""
@@ -186,7 +184,7 @@ class RepoMaintenance:
             }
         )
 
-    def run_full_maintenance(self, fix: bool = True) -> dict[str, Any]:
+    def run_full_maintenance(self, fix: bool = True) -> Dict[str, Any]:
         """Run complete maintenance workflow."""
         print("=" * 70)
         print("AMOS REPOSITORY MAINTENANCE SYSTEM")

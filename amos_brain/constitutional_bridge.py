@@ -14,8 +14,11 @@ Provides API for:
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Import constitutional architecture engine
 try:
@@ -112,7 +115,7 @@ class ConstitutionalBridge:
             try:
                 available_states.append(AbsenceState(state))
             except ValueError:
-                pass
+                logger.debug(f"Invalid absence state: {state}")
 
         # Add domain with absence taxonomy
         domain_obj = StateDomain(
@@ -159,7 +162,7 @@ class ConstitutionalBridge:
         interface: str,
         current_state: str,
         has_replacement: bool = False,
-        sunset_date: str | None = None,
+        sunset_date: str = None,
     ) -> dict[str, Any]:
         """Validate interface has complete protocol lifecycle."""
         if not CONSTITUTIONAL_AVAILABLE or self.engine is None:

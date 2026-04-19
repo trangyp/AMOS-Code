@@ -29,13 +29,12 @@ Creator: Trang Phan
 System: AMOS vInfinity - Layer 24
 """
 
-from __future__ import annotations
 
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 
 @dataclass
@@ -45,12 +44,12 @@ class Agent:
     agent_id: str
     name: str
     domain: str
-    capabilities: list[str]
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    capabilities: List[str]
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     task_count: int = 0
     status: str = "idle"
 
-    def execute(self, task: str) -> dict[str, Any]:
+    def execute(self, task: str) -> Dict[str, Any]:
         """Execute task using brain cognitive capabilities."""
         from amos_brain import think
 
@@ -75,12 +74,12 @@ class OrchestrationResult:
 
     orchestration_id: str
     task: str
-    agents_used: list[str]
+    agents_used: List[str]
     agent_results: list[dict[str, Any]]
-    consensus: Optional[str]
-    conflicts: list[str]
+    consensus: str
+    conflicts: List[str]
     final_decision: str
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class MultiAgentOrchestrator:
@@ -104,12 +103,12 @@ class MultiAgentOrchestrator:
     MAX_AGENTS = 10
 
     def __init__(self):
-        self.agents: dict[str, Agent] = {}
-        self.orchestrations: dict[str, OrchestrationResult] = {}
+        self.agents: Dict[str, Agent] = {}
+        self.orchestrations: Dict[str, OrchestrationResult] = {}
         self.orchestrator_id = f"MAO-{uuid.uuid4().hex[:8]}"
 
     def spawn_agent(
-        self, name: str, domain: str, capabilities: Optional[list[str]] = None
+        self, name: str, domain: str, capabilities: list[str ] = None
     ) -> Agent:
         """Spawn a new cognitive agent with domain specialization.
 
@@ -160,7 +159,7 @@ class MultiAgentOrchestrator:
         return False
 
     def orchestrate(
-        self, task: str, agents: Optional[list[Agent]] = None, mode: str = "parallel"
+        self, task: str, agents: list[Agent ] = None, mode: str = "parallel"
     ) -> OrchestrationResult:
         """Orchestrate multiple agents on a collaborative task.
 
@@ -203,7 +202,7 @@ class MultiAgentOrchestrator:
         self.orchestrations[orch_id] = result
         return result
 
-    def _execute_parallel(self, task: str, agents: list[Agent]) -> list[dict[str, Any]]:
+    def _execute_parallel(self, task: str, agents: List[Agent]) -> list[dict[str, Any]]:
         """Execute task in parallel across agents."""
         results = []
 
@@ -220,7 +219,7 @@ class MultiAgentOrchestrator:
 
         return results
 
-    def _execute_sequential(self, task: str, agents: list[Agent]) -> list[dict[str, Any]]:
+    def _execute_sequential(self, task: str, agents: List[Agent]) -> list[dict[str, Any]]:
         """Execute task sequentially through agents."""
         results = []
 
@@ -230,7 +229,7 @@ class MultiAgentOrchestrator:
 
         return results
 
-    def _build_consensus(self, results: list[dict[str, Any]]) -> Optional[str]:
+    def _build_consensus(self, results: list[dict[str, Any]]) -> str :
         """Attempt to build consensus from agent results."""
         # Extract key reasoning points
         all_points = []
@@ -245,7 +244,7 @@ class MultiAgentOrchestrator:
         else:
             return None
 
-    def _identify_conflicts(self, results: list[dict[str, Any]]) -> list[str]:
+    def _identify_conflicts(self, results: list[dict[str, Any]]) -> List[str]:
         """Identify conflicts between agent results."""
         conflicts = []
 
@@ -265,11 +264,13 @@ class MultiAgentOrchestrator:
         self,
         task: str,
         results: list[dict[str, Any]],
-        consensus: Optional[str],
-        conflicts: list[str],
+        consensus: str ,
+        conflicts: List[str],
     ) -> str:
         """Make final decision based on agent results."""
         from amos_brain import decide
+from typing import Final, List
+from typing import Dict, Optional
 
         # Build decision context
         perspectives = []
@@ -285,7 +286,7 @@ class MultiAgentOrchestrator:
         """Get orchestration result by ID."""
         return self.orchestrations.get(orch_id)
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get orchestrator status."""
         return {
             "orchestrator_id": self.orchestrator_id,
@@ -310,12 +311,12 @@ def get_multi_agent_orchestrator() -> MultiAgentOrchestrator:
     return _mao_instance
 
 
-def spawn_agent(name: str, domain: str, capabilities: Optional[list[str]] = None) -> Agent:
+def spawn_agent(name: str, domain: str, capabilities: list[str ] = None) -> Agent:
     """Quick agent spawn."""
     return get_multi_agent_orchestrator().spawn_agent(name, domain, capabilities)
 
 
-def orchestrate_task(task: str, agents: Optional[list[Agent]] = None) -> OrchestrationResult:
+def orchestrate_task(task: str, agents: list[Agent ] = None) -> OrchestrationResult:
     """Quick task orchestration."""
     return get_multi_agent_orchestrator().orchestrate(task, agents)
 

@@ -3,9 +3,20 @@
 
 import asyncio
 import time
-from collections import defaultdict
+from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any, Optional
+
+try:
+    from collections.abc import Callable
+    from typing import List, Optional
+
+    import redis
+
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
 
 
 @dataclass
@@ -39,18 +50,27 @@ class AMOSEventBus:
     - Decoupled component communication
     - Priority-based event processing
     - Async event handlers
+    - Redis backend for distributed systems
 
     Used by all 58 components and 15 organism subsystems.
     """
 
-    def __init__(self):
+    def __init__(self, redis_url: str = None):
         """Initialize the event bus."""
         self.subscriptions: dict[str, list[EventSubscription]] = defaultdict(list)
-        self.event_history: list[Event] = []
+        self.event_history: deque[Event] = deque(maxlen=1000)
         self.max_history = 1000
         self.event_count = 0
         self._running = False
         self._event_queue: asyncio.Queue = asyncio.Queue()
+        self._redis_url = redis_url
+        self._redis: Any = None
+        self._pubsub: Any = None
+        self._distributed_mode = redis_url is not None
+
+        if self._distributed_mode:
+            self._redis = redis.Redis.from_url(redis_url)
+            self._pubsub = self._redis.pubsub()
 
     def subscribe(
         self,
@@ -79,7 +99,7 @@ class AMOSEventBus:
 
         return subscription
 
-    def unsubscribe(self, subscriber_id: str, event_types: Optional[list[str]] = None):
+    def unsubscribe(self, subscriber_id: str, event_types: list[str] = None):
         """Unsubscribe from events."""
         types_to_check = event_types or list(self.subscriptions.keys())
 
@@ -131,14 +151,14 @@ class AMOSEventBus:
         event = Event(type=event_type, payload=payload, source=source, priority=priority)
         return self.publish(event)
 
-    def get_event_history(self, event_type: Optional[str] = None, limit: int = 100) -> list[Event]:
+    def get_event_history(self, event_type: str = None, limit: int = 100) -> list[Event]:
         """Get event history, optionally filtered by type."""
         events = self.event_history
         if event_type:
             events = [e for e in events if e.type == event_type]
         return events[-limit:]
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get event bus statistics."""
         subscriber_count = sum(len(subs) for subs in self.subscriptions.values())
         unique_subscribers = len(
@@ -196,7 +216,7 @@ EVENT_TYPES = {
 
 
 # Global event bus instance
-_global_event_bus: Optional[AMOSEventBus] = None
+_global_event_bus: AMOSEventBus | None = None
 
 
 def get_event_bus() -> AMOSEventBus:

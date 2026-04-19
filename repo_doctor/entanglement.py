@@ -245,7 +245,7 @@ class EntanglementMatrix:
             parts[-1] = path.stem
         return ".".join(parts)
 
-    def get_high_entanglement_pairs(self, threshold: float | None = None) -> list[EntanglementEdge]:
+    def get_high_entanglement_pairs(self, threshold: float = None) -> list[EntanglementEdge]:
         """Get pairs with entanglement above threshold."""
         thresh = threshold or self.THRESHOLD
         return [e for e in self.edges if e.total_weight >= thresh]

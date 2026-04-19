@@ -4,15 +4,13 @@ Predicts future resource needs, cashflow trends, and
 provides planning scenarios.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class ForecastModel(Enum):
@@ -35,11 +33,11 @@ class Forecast:
     horizon_days: int = 30
     predictions: list[dict[str, Any]] = field(default_factory=list)
     confidence_interval: float = 0.8  # 80% confidence
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     based_on_data_points: int = 0
     notes: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "model": self.model.value,
@@ -89,7 +87,7 @@ class ForecastEngine:
         """Save forecasts to disk."""
         forecasts_file = self.data_dir / "forecasts.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "forecasts": [f.to_dict() for f in self.forecasts],
         }
         forecasts_file.write_text(json.dumps(data, indent=2))
@@ -174,7 +172,7 @@ class ForecastEngine:
             predictions.append(
                 {
                     "day": day,
-                    "date": (datetime.utcnow() + timedelta(days=day)).strftime("%Y-%m-%d"),
+                    "date": (datetime.now(UTC) + timedelta(days=day)).strftime("%Y-%m-%d"),
                     "value": max(0, projected_balance),
                     "unit": "currency",
                 }
@@ -205,7 +203,7 @@ class ForecastEngine:
             return []
 
         predictions = []
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
 
         if model == ForecastModel.LINEAR:
             # Simple linear trend
@@ -298,7 +296,7 @@ class ForecastEngine:
             notes="No historical data available for forecasting",
         )
 
-    def get_forecast_summary(self, forecast_id: str) -> Optional[dict[str, Any]]:
+    def get_forecast_summary(self, forecast_id: str) -> dict[str, Any]:
         """Get summary of a specific forecast."""
         for fc in self.forecasts:
             if fc.id == forecast_id:

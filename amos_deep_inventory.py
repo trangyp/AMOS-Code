@@ -17,7 +17,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -28,7 +28,7 @@ class DiscoveredEngine:
 
     name: str
     file_path: str
-    methods: list[str] = field(default_factory=list)
+    methods: List[str] = field(default_factory=list)
     purpose: str = ""
     engine_type: str = "unknown"
 
@@ -41,7 +41,7 @@ class DiscoveredTool:
     file_path: str
     function: str
     description: str = ""
-    parameters: list[str] = field(default_factory=list)
+    parameters: List[str] = field(default_factory=list)
 
 
 class AMOSDeepInventory:
@@ -49,11 +49,11 @@ class AMOSDeepInventory:
 
     def __init__(self, root_path: Optional[Path] = None):
         self.root = root_path or Path(__file__).parent
-        self.engines: list[DiscoveredEngine] = []
-        self.tools: list[DiscoveredTool] = []
-        self.knowledge_files: list[Path] = []
-        self.specs: list[Path] = []
-        self.demos: list[Path] = []
+        self.engines: List[DiscoveredEngine] = []
+        self.tools: List[DiscoveredTool] = []
+        self.knowledge_files: List[Path] = []
+        self.specs: List[Path] = []
+        self.demos: List[Path] = []
         self.total_lines = 0
         self.total_files = 0
 
@@ -160,7 +160,7 @@ class AMOSDeepInventory:
             domains[domain] = domains.get(domain, 0) + 1
         return domains
 
-    def generate_inventory(self) -> dict[str, Any]:
+    def generate_inventory(self) -> Dict[str, Any]:
         """Generate complete inventory."""
         return {
             "metadata": {

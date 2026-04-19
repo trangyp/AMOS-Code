@@ -4,15 +4,13 @@ Manages negotiations between multiple parties (agents, humans, systems).
 Handles proposal generation, offer evaluation, and agreement formation.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class NegotiationStatus(Enum):
@@ -40,12 +38,12 @@ class Proposal:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     party: str = ""
-    terms: dict[str, Any] = field(default_factory=dict)
+    terms: Dict[str, Any] = field(default_factory=dict)
     value_estimate: float = 0.0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    expires_at: Optional[str] = None
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    expires_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -56,13 +54,13 @@ class NegotiationResult:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     status: NegotiationStatus = NegotiationStatus.PENDING
     accepted_proposal: Optional[Proposal] = None
-    final_terms: dict[str, Any] = field(default_factory=dict)
+    final_terms: Dict[str, Any] = field(default_factory=dict)
     parties: list[str] = field(default_factory=list)
     rounds: int = 0
-    started_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    completed_at: Optional[str] = None
+    started_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    completed_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -85,8 +83,8 @@ class NegotiationEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.active_negotiations: dict[str, NegotiationResult] = {}
-        self.completed_negotiations: dict[str, NegotiationResult] = {}
+        self.active_negotiations: Dict[str, NegotiationResult] = {}
+        self.completed_negotiations: Dict[str, NegotiationResult] = {}
         self.proposal_history: list[Proposal] = []
 
     def start_negotiation(
@@ -108,7 +106,7 @@ class NegotiationEngine:
         self,
         negotiation_id: str,
         party: str,
-        terms: dict[str, Any],
+        terms: Dict[str, Any],
         value_estimate: float,
     ) -> Optional[Proposal]:
         """Submit a proposal to an active negotiation."""
@@ -148,7 +146,7 @@ class NegotiationEngine:
                 negotiation.accepted_proposal = proposal
                 negotiation.final_terms = proposal.terms
                 negotiation.status = NegotiationStatus.ACCEPTED
-                negotiation.completed_at = datetime.utcnow().isoformat()
+                negotiation.completed_at = datetime.now(UTC).isoformat()
 
                 # Move to completed
                 del self.active_negotiations[negotiation.id]
@@ -161,7 +159,7 @@ class NegotiationEngine:
         negotiation_id: str,
         party: str,
         original_proposal_id: str,
-        counter_terms: dict[str, Any],
+        counter_terms: Dict[str, Any],
         counter_value: float,
     ) -> Optional[Proposal]:
         """Submit a counter-proposal."""
@@ -199,7 +197,7 @@ class NegotiationEngine:
         negotiation.accepted_proposal = proposal
         negotiation.final_terms = proposal.terms
         negotiation.status = NegotiationStatus.ACCEPTED
-        negotiation.completed_at = datetime.utcnow().isoformat()
+        negotiation.completed_at = datetime.now(UTC).isoformat()
 
         del self.active_negotiations[negotiation_id]
         self.completed_negotiations[negotiation_id] = negotiation
@@ -214,7 +212,7 @@ class NegotiationEngine:
             return False
 
         negotiation.status = NegotiationStatus.REJECTED
-        negotiation.completed_at = datetime.utcnow().isoformat()
+        negotiation.completed_at = datetime.now(UTC).isoformat()
 
         del self.active_negotiations[negotiation_id]
         self.completed_negotiations[negotiation_id] = negotiation
@@ -222,7 +220,7 @@ class NegotiationEngine:
         self._save_negotiations()
         return True
 
-    def get_negotiation_status(self, negotiation_id: str) -> Optional[dict[str, Any]]:
+    def get_negotiation_status(self, negotiation_id: str) -> dict[str, Any]:
         """Get status of a negotiation."""
         negotiation = self.active_negotiations.get(negotiation_id)
         if not negotiation:
@@ -239,7 +237,7 @@ class NegotiationEngine:
         data = {
             "active": [n.to_dict() for n in self.active_negotiations.values()],
             "completed": [n.to_dict() for n in self.completed_negotiations.values()],
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         negotiations_file.write_text(json.dumps(data, indent=2))
 
@@ -251,7 +249,7 @@ class NegotiationEngine:
 
         return [n.to_dict() for n in negotiations]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get engine status."""
         active = len(self.active_negotiations)
         completed = len(self.completed_negotiations)

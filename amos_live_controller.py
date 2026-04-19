@@ -38,7 +38,7 @@ class AMOSLiveController:
         """Initialize live controller."""
         self.running = False
         self.metrics = SystemMetrics()
-        self.components: dict[str, Any] = {}
+        self.components: Dict[str, Any] = {}
         self.event_bus = None
         self.state_manager = None
         self.plugin_manager = None
@@ -264,7 +264,7 @@ class AMOSLiveController:
         print(f"Components active: {self.metrics.active_components}")
         print("=" * 70)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current system status."""
         uptime = time.time() - self.metrics.start_time
 

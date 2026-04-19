@@ -9,8 +9,6 @@ Responsible for:
 - Circulatory network management
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import queue
@@ -18,11 +16,12 @@ import threading
 import time
 import uuid
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.blood")
@@ -58,7 +57,7 @@ class Signal:
     source: str = field(compare=False, default="")
     target: str = field(compare=False, default="")
     signal_type: SignalType = field(compare=False, default=SignalType.EVENT)
-    payload: dict[str, Any] = field(compare=False, default_factory=dict)
+    payload: Dict[str, Any] = field(compare=False, default_factory=dict)
     priority: Priority = field(compare=False, default=Priority.NORMAL)
     timestamp: str = field(compare=False, default="")
     ttl: int = field(compare=False, default=60)
@@ -69,7 +68,7 @@ class Signal:
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
         self.priority_val = self.priority.value
         if self.seq == 0:
             Signal._seq_counter += 1
@@ -84,7 +83,7 @@ class Resource:
     amount: float
     unit: str
     source: str
-    constraints: dict[str, Any] = field(default_factory=dict)
+    constraints: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -100,7 +99,7 @@ class Channel:
 
     def __post_init__(self):
         if not self.established:
-            self.established = datetime.utcnow().isoformat()
+            self.established = datetime.now(UTC).isoformat()
             self.last_activity = self.established
 
 
@@ -123,13 +122,13 @@ class BloodKernel:
         self.signal_queue: queue.PriorityQueue = queue.PriorityQueue()
 
         # Subscribers: target -> list of (callback, filter_fn)
-        self.subscribers: dict[str, list[tuple[Callable, Optional[Callable]]]] = defaultdict(list)
+        self.subscribers: dict[str, list[tuple[Callable, Callable]]] = defaultdict(list)
 
         # Active channels between subsystems
-        self.channels: dict[str, Channel] = {}
+        self.channels: Dict[str, Channel] = {}
 
         # Resource pools
-        self.resources: dict[str, float] = {
+        self.resources: Dict[str, float] = {
             "energy": 100.0,
             "compute_cycles": 1000.0,
             "memory_mb": 512.0,
@@ -140,12 +139,12 @@ class BloodKernel:
         self.allocations: dict[str, dict[str, float]] = defaultdict(lambda: defaultdict(float))
 
         # Signal history for analysis
-        self.signal_history: list[Signal] = []
+        self.signal_history: List[Signal] = []
         self.max_history = 10000
 
         # Threading
         self._running = False
-        self._dispatcher_thread: Optional[threading.Thread] = None
+        self._dispatcher_thread: threading.Thread = None
 
         logger.info(f"BloodKernel initialized at {self.blood_path}")
 
@@ -172,7 +171,7 @@ class BloodKernel:
 
                 # Check TTL
                 signal_age = (
-                    datetime.utcnow() - datetime.fromisoformat(signal.timestamp)
+                    datetime.now(UTC) - datetime.fromisoformat(signal.timestamp)
                 ).total_seconds()
                 if signal_age > signal.ttl:
                     logger.debug(f"Signal {signal.signal_id} expired, dropping")
@@ -214,7 +213,7 @@ class BloodKernel:
         # Update channel stats
         channel_key = f"{signal.source}->{signal.target}"
         if channel_key in self.channels:
-            self.channels[channel_key].last_activity = datetime.utcnow().isoformat()
+            self.channels[channel_key].last_activity = datetime.now(UTC).isoformat()
             self.channels[channel_key].message_count += 1
 
         # Store in history
@@ -229,7 +228,7 @@ class BloodKernel:
         source: str,
         target: str,
         signal_type: SignalType,
-        payload: dict[str, Any],
+        payload: Dict[str, Any],
         priority: Priority = Priority.NORMAL,
         ttl: int = 60,
     ) -> str:
@@ -271,7 +270,7 @@ class BloodKernel:
         self,
         target: str,
         callback: Callable[[Signal], None],
-        filter_fn: Optional[Callable[[Signal], bool]] = None,
+        filter_fn: Callable[[Signal, bool]] = None,
     ):
         """Subscribe to signals targeting a specific subsystem.
 
@@ -366,7 +365,7 @@ class BloodKernel:
         self.resources[resource_type] = self.resources.get(resource_type, 0.0) + amount
         logger.info(f"Resource added: {amount} {resource_type}")
 
-    def get_channel_stats(self) -> dict[str, Any]:
+    def get_channel_stats(self) -> Dict[str, Any]:
         """Get statistics for all channels."""
         return {
             channel_id: {
@@ -379,9 +378,9 @@ class BloodKernel:
             for channel_id, ch in self.channels.items()
         }
 
-    def get_signal_flow(self, minutes: int = 5) -> dict[str, Any]:
+    def get_signal_flow(self, minutes: int = 5) -> Dict[str, Any]:
         """Analyze signal flow over recent period."""
-        cutoff = datetime.utcnow().timestamp() - (minutes * 60)
+        cutoff = datetime.now(UTC).timestamp() - (minutes * 60)
         recent_signals = [
             s
             for s in self.signal_history
@@ -408,7 +407,7 @@ class BloodKernel:
             else 0,
         }
 
-    def get_resource_status(self) -> dict[str, Any]:
+    def get_resource_status(self) -> Dict[str, Any]:
         """Get current resource status."""
         return {
             resource_type: {
@@ -425,7 +424,7 @@ class BloodKernel:
             for resource_type, total in self.resources.items()
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current blood system state."""
         return {
             "circulation_active": self._running,
@@ -435,15 +434,15 @@ class BloodKernel:
             "subscribers_registered": sum(len(subs) for subs in self.subscribers.values()),
             "resource_pools": len(self.resources),
             "allocations_active": len(self.allocations),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def health_check(self) -> dict[str, Any]:
+    def health_check(self) -> Dict[str, Any]:
         """Perform health check on circulatory system."""
         issues = []
 
         # Check for stagnant channels (no activity > 5 min)
-        now = datetime.utcnow().timestamp()
+        now = datetime.now(UTC).timestamp()
         for ch_id, ch in self.channels.items():
             last_activity = datetime.fromisoformat(ch.last_activity).timestamp()
             if now - last_activity > 300:  # 5 minutes

@@ -2,7 +2,7 @@
 
 This package provides the complete self-evolution subsystem for AMOS:
 - E001: Evolution Contract Registry
-- E002: Evolution Opportunity Detector  
+- E002: Evolution Opportunity Detector
 - E003: Regression Guard
 - E004: Rollback Guard
 - E012: Evolution Execution Engine
@@ -17,45 +17,43 @@ Per AMOS Self-Evolution Directive:
 - Reversible (E004 snapshots for rollback)
 """
 
-from __future__ import annotations
-
 # Evolution Infrastructure
-from evolution_contract_registry import (
+from .evolution_contract_registry import (
     EvolutionContract,
     EvolutionContractRegistry,
     EvolutionStatus,
 )
-from evolution_opportunity_detector import (
-    DetectedOpportunity,
-    EvolutionOpportunityDetector,
-    OpportunitySeverity,
-)
-from regression_guard import (
-    CheckResult,
-    CheckStatus,
-    RegressionGuard,
-    RegressionReport,
-)
-from rollback_guard import (
-    RollbackGuard,
-    RollbackResult,
-    RollbackSnapshot,
-)
-from evolution_execution_engine import (
+from .evolution_execution_engine import (
     EvolutionExecutionEngine,
     ExecutionPhase,
     ExecutionResult,
     ExecutionStep,
     PatchOperation,
 )
+from .evolution_opportunity_detector import (
+    DetectedOpportunity,
+    EvolutionOpportunityDetector,
+    OpportunityType,
+)
 
 # Bridges
-from governance_evolution_bridge import (
+from .governance_evolution_bridge import (
     BridgeDecision,
     BridgeMetrics,
     BridgeMode,
     GovernanceEvolutionBridge,
     get_governance_evolution_bridge,
+)
+from .regression_guard import (
+    CheckStatus,
+    RegressionCheck,
+    RegressionGuard,
+    RegressionReport,
+)
+from .rollback_guard import (
+    RollbackGuard,
+    RollbackResult,
+    RollbackSnapshot,
 )
 
 __all__ = [
@@ -66,10 +64,10 @@ __all__ = [
     # E002 - Opportunity Detector
     "DetectedOpportunity",
     "EvolutionOpportunityDetector",
-    "OpportunitySeverity",
+    "OpportunityType",
     # E003 - Regression Guard
-    "CheckResult",
     "CheckStatus",
+    "RegressionCheck",
     "RegressionGuard",
     "RegressionReport",
     # E004 - Rollback Guard

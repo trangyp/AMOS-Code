@@ -95,28 +95,28 @@ def __getattr__(name: str) -> object:
         "RepoStateVector": (".state_vector", "RepoStateVector"),
         "StateDimension": (".state_vector", "StateDimension"),
         # invariants
-        "Invariant": (".invariants", "Invariant"),
-        "InvariantResult": (".invariants", "InvariantResult"),
-        "InvariantSeverity": (".invariants", "InvariantSeverity"),
-        "InvariantEngine": (".invariants", "InvariantEngine"),
-        "ParseInvariant": (".invariants", "ParseInvariant"),
-        "ImportInvariant": (".invariants", "ImportInvariant"),
-        "TypeInvariant": (".invariants", "TypeInvariant"),
-        "APIInvariant": (".invariants", "APIInvariant"),
-        "EntrypointInvariant": (".invariants", "EntrypointInvariant"),
-        "PackagingInvariant": (".invariants", "PackagingInvariant"),
-        "RuntimeInvariant": (".invariants", "RuntimeInvariant"),
-        "PersistenceInvariant": (".invariants", "PersistenceInvariant"),
-        "StatusInvariant": (".invariants", "StatusInvariant"),
-        "TestsInvariant": (".invariants", "TestsInvariant"),
-        "SecurityInvariant": (".invariants", "SecurityInvariant"),
-        "HistoryInvariant": (".invariants", "HistoryInvariant"),
-        "ArtifactInvariant": (".invariants", "ArtifactInvariant"),
-        "AuthorizationInvariant": (".invariants", "AuthorizationInvariant"),
-        "EnvironmentInvariant": (".invariants", "EnvironmentInvariant"),
-        "MigrationInvariant": (".invariants", "MigrationInvariant"),
-        "ObservabilityInvariant": (".invariants", "ObservabilityInvariant"),
-        "PerformanceInvariant": (".invariants", "PerformanceInvariant"),
+        "Invariant": (".invariants_legacy", "Invariant"),
+        "InvariantResult": (".invariants_legacy", "InvariantResult"),
+        "InvariantSeverity": (".invariants_legacy", "InvariantSeverity"),
+        "InvariantEngine": (".invariants_legacy", "InvariantEngine"),
+        "ParseInvariant": (".invariants_legacy", "ParseInvariant"),
+        "ImportInvariant": (".invariants_legacy", "ImportInvariant"),
+        "TypeInvariant": (".invariants_legacy", "TypeInvariant"),
+        "APIInvariant": (".invariants_legacy", "APIInvariant"),
+        "EntrypointInvariant": (".invariants_legacy", "EntrypointInvariant"),
+        "PackagingInvariant": (".invariants_legacy", "PackagingInvariant"),
+        "RuntimeInvariant": (".invariants_legacy", "RuntimeInvariant"),
+        "PersistenceInvariant": (".invariants_legacy", "PersistenceInvariant"),
+        "StatusInvariant": (".invariants_legacy", "StatusInvariant"),
+        "TestsInvariant": (".invariants_legacy", "TestsInvariant"),
+        "SecurityInvariant": (".invariants_legacy", "SecurityInvariant"),
+        "HistoryInvariant": (".invariants_legacy", "HistoryInvariant"),
+        "ArtifactInvariant": (".invariants_legacy", "ArtifactInvariant"),
+        "AuthorizationInvariant": (".invariants_legacy", "AuthorizationInvariant"),
+        "EnvironmentInvariant": (".invariants_legacy", "EnvironmentInvariant"),
+        "MigrationInvariant": (".invariants_legacy", "MigrationInvariant"),
+        "ObservabilityInvariant": (".invariants_legacy", "ObservabilityInvariant"),
+        "PerformanceInvariant": (".invariants_legacy", "PerformanceInvariant"),
         # arch_invariants
         "ArchInvariantResult": (".arch_invariants", "ArchInvariantResult"),
         "ArchitectureInvariantEngine": (".arch_invariants", "ArchitectureInvariantEngine"),
@@ -154,7 +154,9 @@ def __getattr__(name: str) -> object:
 
     if name in _import_map:
         module_path, attr_name = _import_map[name]
-        module = __import__(module_path, globals(), locals(), [attr_name], 1)
+        import importlib
+
+        module = importlib.import_module(module_path, package=__name__)
         result = getattr(module, attr_name)
         _lazy_modules[name] = result
         return result

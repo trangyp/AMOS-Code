@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """AMOS Ecosystem v2.1 - Plugin Architecture System.
 
 Enables extending AMOS without modifying core code.
@@ -10,9 +12,10 @@ import importlib.util
 import json
 import sys
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -103,6 +106,8 @@ class PluginManager:
 
         plugin_code = '''"""Example AMOS Plugin."""
 from amos_brain.plugin_system import CommandPlugin, PluginMetadata
+from typing import Callable, List, Any
+from typing import Any, Callable, List
 
 class HelloPlugin(CommandPlugin):
     """Example hello world plugin."""
@@ -153,7 +158,7 @@ def create_plugin():
                     plugins.append(plugin_dir)
         return plugins
 
-    def load_plugin(self, plugin_path: Path) -> Optional[AMOSPlugin]:
+    def load_plugin(self, plugin_path: Path) -> AMOSPlugin | None:
         """Load a plugin from directory."""
         try:
             manifest_path = plugin_path / "manifest.json"
@@ -216,7 +221,7 @@ def create_plugin():
                 print(f"[PluginManager] Hook error: {e}")
         return results
 
-    def get_plugin(self, name: str) -> Optional[AMOSPlugin]:
+    def get_plugin(self, name: str) -> AMOSPlugin | None:
         """Get a loaded plugin by name."""
         return self.plugins.get(name)
 

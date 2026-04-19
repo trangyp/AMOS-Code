@@ -10,12 +10,11 @@ This module enables:
 - State synchronization between brain and agent
 """
 
-from __future__ import annotations
-
 import functools
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -192,9 +191,9 @@ class BrainAgentLifecycle:
         self.state_manager = get_state_manager()
         self.meta_controller = get_meta_controller()
         self.monitor = get_monitor()
-        self.session_id: str | None = None
+        self.session_id: str = None
 
-    def on_agent_init(self, agent_name: str, goal: str) -> dict[str, Any]:
+    def on_agent_init(self, agent_name: str, goal: str) -> Dict[str, Any]:
         """Called when agent initializes.
 
         Returns brain context for the agent session.
@@ -222,7 +221,7 @@ class BrainAgentLifecycle:
             "status": "brain_initialized",
         }
 
-    def on_agent_shutdown(self, final_status: str = "completed") -> dict[str, Any]:
+    def on_agent_shutdown(self, final_status: str = "completed") -> Dict[str, Any]:
         """Called when agent shuts down.
 
         Saves state and generates audit report.
@@ -243,7 +242,7 @@ class BrainAgentLifecycle:
 
         return {"status": "no_active_session"}
 
-    def record_agent_step(self, step_description: str, tool_calls: list[dict], reasoning: str):
+    def record_agent_step(self, step_description: str, tool_calls: List[dict], reasoning: str):
         """Record an agent execution step in brain state."""
         if self.session_id:
             self.state_manager.record_reasoning_step(
@@ -292,15 +291,15 @@ class BrainClawSpringBridge:
         """Enhance a system prompt with brain context."""
         return self.prompt_injector.inject_context(base_prompt, domain)
 
-    def init_agent(self, agent_name: str, goal: str) -> dict[str, Any]:
+    def init_agent(self, agent_name: str, goal: str) -> Dict[str, Any]:
         """Initialize brain for an agent session."""
         return self.lifecycle.on_agent_init(agent_name, goal)
 
-    def shutdown_agent(self, status: str = "completed") -> dict[str, Any]:
+    def shutdown_agent(self, status: str = "completed") -> Dict[str, Any]:
         """Shutdown brain for an agent session."""
         return self.lifecycle.on_agent_shutdown(status)
 
-    def think(self, query: str, domain: str = "general") -> dict[str, Any]:
+    def think(self, query: str, domain: str = "general") -> Dict[str, Any]:
         """Direct brain consultation for agent reasoning.
 
         Args:

@@ -1,6 +1,6 @@
 # AMOS Dashboard - Frontend Dockerfile
 # Multi-stage build for optimized production image
-# 
+#
 # Stage 1: Build React application
 # Stage 2: Serve with Nginx
 #

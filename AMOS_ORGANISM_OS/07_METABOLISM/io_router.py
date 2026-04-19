@@ -4,15 +4,14 @@ Routes data between subsystems, external interfaces, and
 internal components. Handles message queuing and dispatch.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 class RouteType(Enum):
@@ -47,10 +46,10 @@ class Route:
     config: RouteConfig = field(default_factory=RouteConfig)
     filter_condition: str = ""  # Optional filter
     active: bool = True
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     message_count: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "route_type": self.route_type.value,
@@ -64,13 +63,13 @@ class RoutedMessage:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     route_id: str = ""
     payload: Any = None
-    headers: dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    headers: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     delivered: bool = False
-    delivery_time: Optional[str] = None
+    delivery_time: str = None
     error: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -81,16 +80,16 @@ class IORouter:
     and tracks delivery status.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path | None = None):
         if data_dir is None:
             data_dir = Path(__file__).parent / "data"
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.routes: dict[str, Route] = {}
+        self.routes: Dict[str, Route] = {}
         self.pending_messages: list[RoutedMessage] = []
         self.delivered_messages: list[RoutedMessage] = []
-        self.handlers: dict[str, Callable] = {}
+        self.handlers: Dict[str, Callable] = {}
 
         self._load_routes()
 
@@ -121,7 +120,7 @@ class IORouter:
         """Save routes to disk."""
         routes_file = self.data_dir / "routes.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "routes": [r.to_dict() for r in self.routes.values()],
         }
         routes_file.write_text(json.dumps(data, indent=2))
@@ -136,7 +135,7 @@ class IORouter:
         source: str,
         destination: str,
         route_type: RouteType = RouteType.INTERNAL,
-        config: Optional[RouteConfig] = None,
+        config: RouteConfig | None = None,
     ) -> Route:
         """Create a new route."""
         route = Route(
@@ -154,8 +153,8 @@ class IORouter:
         self,
         route_id: str,
         payload: Any,
-        headers: Optional[dict] = None,
-    ) -> dict[str, Any]:
+        headers: dict = None,
+    ) -> Dict[str, Any]:
         """Route a message through a specific route."""
         route = self.routes.get(route_id)
         if not route:
@@ -186,7 +185,7 @@ class IORouter:
         # Immediate delivery
         return self._deliver(message, route)
 
-    def _deliver(self, message: RoutedMessage, route: Route) -> dict[str, Any]:
+    def _deliver(self, message: RoutedMessage, route: Route) -> Dict[str, Any]:
         """Deliver a message to its destination."""
         handler = self.handlers.get(route.destination)
 
@@ -198,7 +197,7 @@ class IORouter:
         try:
             result = handler(message.payload, message.headers)
             message.delivered = True
-            message.delivery_time = datetime.utcnow().isoformat()
+            message.delivery_time = datetime.now(UTC).isoformat()
             self.delivered_messages.append(message)
             self.save()
             return {
@@ -214,7 +213,7 @@ class IORouter:
             self.save()
             return {"success": False, "error": str(e)}
 
-    def process_pending(self) -> dict[str, Any]:
+    def process_pending(self) -> Dict[str, Any]:
         """Process all pending messages."""
         processed = 0
         failed = 0
@@ -241,7 +240,7 @@ class IORouter:
             "remaining": len(self.pending_messages),
         }
 
-    def get_route_stats(self, route_id: str) -> Optional[dict[str, Any]]:
+    def get_route_stats(self, route_id: str) -> dict[str, Any]:
         """Get statistics for a route."""
         route = self.routes.get(route_id)
         if not route:
@@ -278,10 +277,10 @@ class IORouter:
 
 
 # Global instance
-_ROUTER: Optional[IORouter] = None
+_ROUTER: IORouter | None = None
 
 
-def get_io_router(data_dir: Optional[Path] = None) -> IORouter:
+def get_io_router(data_dir: Path | None = None) -> IORouter:
     """Get or create global IO router."""
     global _ROUTER
     if _ROUTER is None:

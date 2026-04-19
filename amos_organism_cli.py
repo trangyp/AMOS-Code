@@ -16,7 +16,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Optional
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -134,7 +133,7 @@ def cmd_start(args) -> int:
     return 0
 
 
-async def _run_organism(config: OrganismConfig, duration: Optional[float]) -> None:
+async def _run_organism(config: OrganismConfig, duration: float) -> None:
     """Run organism async."""
     runner = AMOSOrganismRunner(config)
 

@@ -20,14 +20,11 @@ Usage:
     # API Docs: http://localhost:8000/docs
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 # Try to import FastAPI, fall back to Flask if not available
 try:
@@ -52,7 +49,7 @@ if FASTAPI_AVAILABLE:
 
     class AnalyzeRequest(BaseModel):
         query: str
-        context: Optional[str] = None
+        context: str = None
 
     class AnalyzeResponse(BaseModel):
         result: str
@@ -70,7 +67,7 @@ if FASTAPI_AVAILABLE:
 
     class WorkflowRequest(BaseModel):
         goal: str
-        phases: list[str] = ["analyze", "explore", "generate", "report"]
+        phases: List[str] = ["analyze", "explore", "generate", "report"]
 
 
 @dataclass
@@ -94,7 +91,7 @@ class AMOSEcosystemAPI:
     def __init__(self):
         self.root = Path(__file__).parent
         self.brain = None
-        self.tools: list[ToolInfo] = []
+        self.tools: List[ToolInfo] = []
         self._register_tools()
         self._init_brain()
 

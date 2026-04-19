@@ -23,14 +23,13 @@ Commands:
     country <code>       Access country knowledge pack
 """
 
-from __future__ import annotations
-
 import argparse
+import os
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -45,7 +44,7 @@ class KnowledgeItem:
     category: str
     size_bytes: int
     modified: datetime
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class KnowledgeDiscovery:
@@ -72,7 +71,7 @@ class KnowledgeDiscovery:
             "txt_specs": 0,
         }
 
-    def scan(self) -> dict[str, Any]:
+    def scan(self) -> Dict[str, Any]:
         """Scan entire _AMOS_BRAIN directory and build index."""
         print("=" * 70)
         print("AMOS KNOWLEDGE DISCOVERY - SCANNING ECOSYSTEM")
@@ -82,36 +81,53 @@ class KnowledgeDiscovery:
         if not self.brain_root.exists():
             return {"error": f"Brain root not found: {self.brain_root}"}
 
-        # Scan all files
-        all_files = list(self.brain_root.rglob("*"))
+        # Use os.walk with directory pruning for efficient scanning
+        exclude_dirs = {
+            ".venv",
+            "__pycache__",
+            ".git",
+            "node_modules",
+            ".pytest_cache",
+            ".mypy_cache",
+            ".ruff_cache",
+        }
         total_size = 0
 
-        for file_path in all_files:
-            if file_path.is_file():
-                self.stats["total_files"] += 1
-                size = file_path.stat().st_size
-                total_size += size
+        for root, dirs, files in os.walk(self.brain_root):
+            # Prune excluded directories
+            dirs[:] = [d for d in dirs if d not in exclude_dirs]
 
-                # Categorize
-                category = self._categorize(file_path)
-                item = KnowledgeItem(
-                    name=file_path.stem,
-                    path=file_path,
-                    category=category,
-                    size_bytes=size,
-                    modified=datetime.fromtimestamp(file_path.stat().st_mtime),
-                )
+            for file in files:
+                file_path = Path(root) / file
+                try:
+                    # Single stat call for both size and mtime
+                    stat = file_path.stat()
+                    size = stat.st_size
+                    total_size += size
+                    self.stats["total_files"] += 1
 
-                if category in self.index:
-                    self.index[category].append(item)
+                    # Categorize
+                    category = self._categorize(file_path)
+                    item = KnowledgeItem(
+                        name=file_path.stem,
+                        path=file_path,
+                        category=category,
+                        size_bytes=size,
+                        modified=datetime.fromtimestamp(stat.st_mtime),
+                    )
 
-                # Track by type
-                if file_path.suffix == ".json":
-                    self.stats["json_engines"] += 1
-                elif file_path.suffix == ".pdf":
-                    self.stats["pdf_manuals"] += 1
-                elif file_path.suffix == ".txt":
-                    self.stats["txt_specs"] += 1
+                    if category in self.index:
+                        self.index[category].append(item)
+
+                    # Track by type
+                    if file_path.suffix == ".json":
+                        self.stats["json_engines"] += 1
+                    elif file_path.suffix == ".pdf":
+                        self.stats["pdf_manuals"] += 1
+                    elif file_path.suffix == ".txt":
+                        self.stats["txt_specs"] += 1
+                except OSError:
+                    pass
 
         self.stats["total_size_mb"] = round(total_size / (1024 * 1024), 2)
 

@@ -1,8 +1,8 @@
 /**
  * AMOS React Application Entry Point
- * 
+ *
  * Mounts the AMOS Dashboard React application to the DOM.
- * 
+ *
  * Architecture: AMOS Brain 14-Layer Cognitive System
  * Creator: Trang Phan
  */
@@ -10,6 +10,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { DashboardProvider } from './contexts/DashboardContext';
 
 // Mount the application
 const rootElement = document.getElementById('root');
@@ -22,7 +23,9 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <App />
+    <DashboardProvider>
+      <App />
+    </DashboardProvider>
   </React.StrictMode>
 );
 

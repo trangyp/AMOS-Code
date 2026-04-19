@@ -28,9 +28,12 @@ Repair synthesis objective:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Import repair planning from repo_doctor_omega
 try:
@@ -66,14 +69,14 @@ class SynthesizedRepair:
     # Target
     target_file: str
     target_module: str
-    line_number: int | None = None
+    line_number: int = None
 
     # Repair details
     repair_type: str = "modify"  # "add", "remove", "modify", "move", "create"
     description: str = ""
-    original_code: str | None = None
-    suggested_code: str | None = None
-    diff_preview: str | None = None
+    original_code: str = None
+    suggested_code: str = None
+    diff_preview: str = None
 
     # Risk assessment
     auto_fixable: bool = False
@@ -88,7 +91,7 @@ class SynthesizedRepair:
     # Metadata
     requires_human_review: bool = True
     test_recommendations: list[str] = field(default_factory=list)
-    rollback_plan: str | None = None
+    rollback_plan: str = None
 
 
 @dataclass
@@ -211,8 +214,8 @@ class RepairSynthesisBridge:
                 for detector_pathologies in pathology_results.values():
                     repairs = self.synthesize_from_pathologies(detector_pathologies)
                     all_repairs.extend(repairs)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Repair synthesis failed for detector: {e}")
 
         # Categorize by risk
         critical = [r for r in all_repairs if r.risk_level == "critical"]
@@ -453,6 +456,6 @@ class RepairSynthesisBridge:
             return file_path
 
 
-def get_repair_bridge(repo_path: str | Path | None = None) -> RepairSynthesisBridge:
+def get_repair_bridge(repo_path: str | Path = None) -> RepairSynthesisBridge:
     """Factory function to get repair synthesis bridge instance."""
     return RepairSynthesisBridge(repo_path or ".")

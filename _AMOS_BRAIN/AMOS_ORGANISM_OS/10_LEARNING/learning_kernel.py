@@ -10,8 +10,6 @@ Responsible for:
 - Performance improvement over time
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging
@@ -20,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.learning")
@@ -59,11 +57,11 @@ class Pattern:
     first_seen: str = ""
     last_seen: str = ""
     confidence: float = 0.5
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.first_seen:
-            self.first_seen = datetime.utcnow().isoformat()
+            self.first_seen = datetime.now(UTC).isoformat()
         if not self.last_seen:
             self.last_seen = self.first_seen
 
@@ -74,15 +72,15 @@ class Experience:
 
     experience_id: str
     timestamp: str
-    context: dict[str, Any] = field(default_factory=dict)
-    action: dict[str, Any] = field(default_factory=dict)
-    outcome: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
+    action: Dict[str, Any] = field(default_factory=dict)
+    outcome: Dict[str, Any] = field(default_factory=dict)
     feedback: float = 0.0  # -1.0 to 1.0
-    learned_patterns: list[str] = field(default_factory=list)
+    learned_patterns: List[str] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -97,13 +95,13 @@ class Skill:
     max_xp: float = 100.0
     successful_uses: int = 0
     failed_uses: int = 0
-    related_patterns: list[str] = field(default_factory=list)
+    related_patterns: List[str] = field(default_factory=list)
     created_at: str = ""
     last_used: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         if not self.last_used:
             self.last_used = self.created_at
 
@@ -111,7 +109,7 @@ class Skill:
         """Add experience points and potentially level up."""
         self.xp += amount
         self.successful_uses += 1
-        self.last_used = datetime.utcnow().isoformat()
+        self.last_used = datetime.now(UTC).isoformat()
 
         # Level up check
         while self.xp >= self.max_xp and self.level.value < 6:
@@ -147,14 +145,14 @@ class LearningKernel:
         self.experiences_path.mkdir(parents=True, exist_ok=True)
 
         # Pattern registry
-        self.patterns: dict[str, Pattern] = {}
-        self.pattern_signatures: dict[str, str] = {}  # signature -> pattern_id
+        self.patterns: Dict[str, Pattern] = {}
+        self.pattern_signatures: Dict[str, str] = {}  # signature -> pattern_id
 
         # Experience memory
         self.experiences: deque = deque(maxlen=1000)
 
         # Skill registry
-        self.skills: dict[str, Skill] = {}
+        self.skills: Dict[str, Skill] = {}
 
         # Learning configuration
         self.learning_rate = 0.1
@@ -173,8 +171,8 @@ class LearningKernel:
 
     def recognize_pattern(
         self,
-        data: dict[str, Any],
-        context: Optional[dict[str, Any]] = None,
+        data: Dict[str, Any],
+        context: dict[str, Any] = None,
         pattern_type: str = "general",
     ) -> Pattern:
         """Recognize or create a pattern from data."""
@@ -186,7 +184,7 @@ class LearningKernel:
             pattern_id = self.pattern_signatures[signature]
             pattern = self.patterns[pattern_id]
             pattern.frequency += 1
-            pattern.last_seen = datetime.utcnow().isoformat()
+            pattern.last_seen = datetime.now(UTC).isoformat()
             pattern.confidence = min(1.0, pattern.confidence + 0.05)
             if context:
                 pattern.contexts.append(context)
@@ -194,7 +192,7 @@ class LearningKernel:
         else:
             # Create new pattern
             pattern_id = (
-                f"pattern_{len(self.patterns)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+                f"pattern_{len(self.patterns)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
             )
             pattern = Pattern(
                 pattern_id=pattern_id,
@@ -211,7 +209,7 @@ class LearningKernel:
 
         return pattern
 
-    def _generate_signature(self, data: dict[str, Any]) -> str:
+    def _generate_signature(self, data: Dict[str, Any]) -> str:
         """Generate a unique signature for data."""
         # Normalize and hash the data
         normalized = json.dumps(data, sort_keys=True, default=str)
@@ -219,10 +217,10 @@ class LearningKernel:
 
     def record_experience(
         self,
-        context: dict[str, Any],
-        action: dict[str, Any],
-        outcome: dict[str, Any],
-        feedback: Optional[float] = None,
+        context: Dict[str, Any],
+        action: Dict[str, Any],
+        outcome: Dict[str, Any],
+        feedback: float = None,
     ) -> Experience:
         """Record an experience for future learning."""
         # Calculate feedback if not provided
@@ -242,10 +240,10 @@ class LearningKernel:
         learned_patterns.append(ao_pattern.pattern_id)
 
         # Create experience record
-        experience_id = f"exp_{len(self.experiences)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        experience_id = f"exp_{len(self.experiences)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
         experience = Experience(
             experience_id=experience_id,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             context=context,
             action=action,
             outcome=outcome,
@@ -259,7 +257,7 @@ class LearningKernel:
         logger.info(f"Recorded experience: {experience_id} (feedback: {feedback:+.2f})")
         return experience
 
-    def _calculate_feedback(self, outcome: dict[str, Any]) -> float:
+    def _calculate_feedback(self, outcome: Dict[str, Any]) -> float:
         """Calculate feedback score from outcome."""
         score = 0.0
 
@@ -278,7 +276,7 @@ class LearningKernel:
         return max(-1.0, min(1.0, score))
 
     def acquire_skill(
-        self, name: str, description: str, related_patterns: Optional[list[str]] = None
+        self, name: str, description: str, related_patterns: list[str] = None
     ) -> Skill:
         """Acquire or improve a skill."""
         # Check if skill already exists
@@ -287,7 +285,7 @@ class LearningKernel:
                 return skill
 
         # Create new skill
-        skill_id = f"skill_{len(self.skills)}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        skill_id = f"skill_{len(self.skills)}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
         skill = Skill(
             skill_id=skill_id,
             name=name,
@@ -301,9 +299,7 @@ class LearningKernel:
         logger.info(f"Acquired new skill: {name} ({skill_id})")
         return skill
 
-    def practice_skill(
-        self, skill_id: str, success: bool = True, xp_amount: Optional[float] = None
-    ) -> bool:
+    def practice_skill(self, skill_id: str, success: bool = True, xp_amount: float = None) -> bool:
         """Practice a skill and gain XP."""
         if skill_id not in self.skills:
             return False
@@ -324,7 +320,7 @@ class LearningKernel:
 
         return True
 
-    def learn_from_experiences(self, n_recent: int = 100) -> dict[str, Any]:
+    def learn_from_experiences(self, n_recent: int = 100) -> Dict[str, Any]:
         """Learn from recent experiences."""
         if not self.experiences:
             return {"status": "no_experiences"}
@@ -369,7 +365,7 @@ class LearningKernel:
             "improvements": improvements,
         }
 
-    def get_relevant_skills(self, context: dict[str, Any]) -> list[Skill]:
+    def get_relevant_skills(self, context: Dict[str, Any]) -> List[Skill]:
         """Get skills relevant to a given context."""
         # Simple matching based on context keys and skill names
         context_str = json.dumps(context, sort_keys=True, default=str).lower()
@@ -393,7 +389,7 @@ class LearningKernel:
         scored_skills.sort(key=lambda x: x[0], reverse=True)
         return [s for _, s in scored_skills[:5]]  # Top 5
 
-    def get_pattern_recommendations(self, context: dict[str, Any]) -> list[dict[str, Any]]:
+    def get_pattern_recommendations(self, context: Dict[str, Any]) -> list[dict[str, Any]]:
         """Get pattern-based recommendations for a context."""
         # Find similar contexts
         context_sig = self._generate_signature(context)
@@ -446,7 +442,7 @@ class LearningKernel:
 
         return len(intersection) / len(union) if union else 0.0
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current learning state."""
         # Calculate average skill level
         avg_skill_level = 0.0
@@ -473,7 +469,7 @@ class LearningKernel:
                 {"name": s.name, "level": s.level.name, "xp": round(s.xp, 1)}
                 for s in list(self.skills.values())[:5]
             ],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

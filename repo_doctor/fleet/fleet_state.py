@@ -5,8 +5,6 @@ Fleet state: |Ψ_fleet⟩ = Σr ωr |Ψ_repo_r⟩
 Fleet energy: E_fleet = Σr ωr E_repo_r
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -20,12 +18,12 @@ class FleetState:
     """
 
     repos: dict[str, dict[str, Any]] = field(default_factory=dict)
-    weights: dict[str, float] = field(default_factory=dict)
+    weights: Dict[str, float] = field(default_factory=dict)
 
     def add_repo(
         self,
         repo_id: str,
-        state_vector: dict[str, float],
+        state_vector: Dict[str, float],
         energy: float,
         weight: float = 1.0,
     ) -> None:
@@ -51,7 +49,7 @@ class FleetState:
         """
         Compute weighted aggregate state across fleet.
         """
-        aggregate: dict[str, float] = {}
+        aggregate: Dict[str, float] = {}
         total_weight = sum(self.weights.values())
 
         if total_weight == 0:
@@ -93,7 +91,7 @@ class FleetAnalyzer:
     def find_class_defects(
         self,
         invariant_name: str,
-    ) -> list[str]:
+    ) -> List[str]:
         """
         Find repos sharing the same invariant failure.
 

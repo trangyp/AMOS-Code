@@ -6,8 +6,6 @@ Action: S_k[path] = Στ (a1·||ΔΨ|| + a2·ΔEnt + a3·Δ[A_p, A_r] + a4·ΔH_
 Causality: P(t) ∝ exp(-S_k[0→t])
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass
 from typing import Any
@@ -99,8 +97,8 @@ class PathIntegralBlame:
 
     def _compute_drift(
         self,
-        prev_state: dict[str, float],
-        curr_state: dict[str, float],
+        prev_state: Dict[str, float],
+        curr_state: Dict[str, float],
     ) -> float:
         """Compute drift between two states."""
         import math

@@ -10,8 +10,6 @@ Responsible for:
 - Semantic memory search and similarity matching
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging
@@ -21,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.memory")
@@ -64,22 +62,22 @@ class MemoryEntry:
 
     memory_id: str
     memory_type: MemoryType
-    content: dict[str, Any]
+    content: Dict[str, Any]
     priority: MemoryPriority
     created_at: str
     last_accessed: str
     access_count: int = 0
-    tags: list[str] = field(default_factory=list)
-    associations: list[str] = field(default_factory=list)
-    embedding: Optional[list[float]] = None
+    tags: List[str] = field(default_factory=list)
+    associations: List[str] = field(default_factory=list)
+    embedding: list[float] = None
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         if not self.last_accessed:
             self.last_accessed = self.created_at
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "memory_id": self.memory_id,
@@ -95,7 +93,7 @@ class MemoryEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> MemoryEntry:
+    def from_dict(cls, data: Dict[str, Any]) -> MemoryEntry:
         """Create from dictionary."""
         return cls(
             memory_id=data["memory_id"],
@@ -119,7 +117,7 @@ class MemoryIndex:
     memory_type: MemoryType
     priority: MemoryPriority
     storage_tier: StorageTier
-    tags: set[str]
+    tags: Set[str]
     created_at: str
     last_accessed: str
     size_bytes: int
@@ -146,8 +144,8 @@ class MemoryArchivalKernel:
         self.index_path.mkdir(parents=True, exist_ok=True)
 
         # Memory stores
-        self.hot_memories: dict[str, MemoryEntry] = {}
-        self.memory_index: dict[str, MemoryIndex] = {}
+        self.hot_memories: Dict[str, MemoryEntry] = {}
+        self.memory_index: Dict[str, MemoryIndex] = {}
 
         # Tag index for fast lookup
         self.tag_index: dict[str, set[str]] = defaultdict(set)
@@ -241,15 +239,15 @@ class MemoryArchivalKernel:
     def store_memory(
         self,
         memory_type: MemoryType,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         priority: MemoryPriority = MemoryPriority.MEDIUM,
-        tags: Optional[list[str]] = None,
-        associations: Optional[list[str]] = None,
+        tags: list[str] = None,
+        associations: list[str] = None,
     ) -> str:
         """Store a new memory."""
         # Generate memory ID
         content_hash = hashlib.md5(json.dumps(content, sort_keys=True).encode()).hexdigest()[:12]
-        memory_id = f"mem_{memory_type.name.lower()}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{content_hash}"
+        memory_id = f"mem_{memory_type.name.lower()}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}_{content_hash}"
 
         # Create memory entry
         entry = MemoryEntry(
@@ -257,8 +255,8 @@ class MemoryArchivalKernel:
             memory_type=memory_type,
             content=content,
             priority=priority,
-            created_at=datetime.utcnow().isoformat(),
-            last_accessed=datetime.utcnow().isoformat(),
+            created_at=datetime.now(UTC).isoformat(),
+            last_accessed=datetime.now(UTC).isoformat(),
             tags=tags or [],
             associations=associations or [],
         )
@@ -315,7 +313,7 @@ class MemoryArchivalKernel:
         if memory_id in self.hot_memories:
             entry = self.hot_memories[memory_id]
             entry.access_count += 1
-            entry.last_accessed = datetime.utcnow().isoformat()
+            entry.last_accessed = datetime.now(UTC).isoformat()
             self.stats["cache_hits"] += 1
             return entry
 
@@ -329,7 +327,7 @@ class MemoryArchivalKernel:
                 # Promote to hot cache
                 self.hot_memories[memory_id] = entry
                 entry.access_count += 1
-                entry.last_accessed = datetime.utcnow().isoformat()
+                entry.last_accessed = datetime.now(UTC).isoformat()
 
                 # Update index
                 if memory_id in self.memory_index:
@@ -347,7 +345,7 @@ class MemoryArchivalKernel:
         self.stats["cache_misses"] += 1
         return None
 
-    def search_by_tags(self, tags: list[str]) -> list[MemoryEntry]:
+    def search_by_tags(self, tags: List[str]) -> List[MemoryEntry]:
         """Search memories by tags."""
         # Find intersection of all tag sets
         matching_ids = None
@@ -375,7 +373,7 @@ class MemoryArchivalKernel:
 
         return results
 
-    def search_by_type(self, memory_type: MemoryType, limit: int = 100) -> list[MemoryEntry]:
+    def search_by_type(self, memory_type: MemoryType, limit: int = 100) -> List[MemoryEntry]:
         """Search memories by type."""
         memory_ids = list(self.type_index[memory_type])[:limit]
 
@@ -391,12 +389,12 @@ class MemoryArchivalKernel:
         return results
 
     def semantic_search(
-        self, query_embedding: list[float], top_k: int = 10
+        self, query_embedding: List[float], top_k: int = 10
     ) -> list[tuple[MemoryEntry, float]]:
         """Search memories by semantic similarity."""
 
         # Simple cosine similarity (in production, use vector DB)
-        def cosine_similarity(a: list[float], b: list[float]) -> float:
+        def cosine_similarity(a: List[float], b: List[float]) -> float:
             dot = sum(x * y for x, y in zip(a, b))
             norm_a = sum(x * x for x in a) ** 0.5
             norm_b = sum(x * x for x in b) ** 0.5
@@ -488,7 +486,7 @@ class MemoryArchivalKernel:
 
     def archive_old_memories(self, days: int = 30):
         """Archive memories older than specified days to cold storage."""
-        cutoff = datetime.utcnow() - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
         archived = 0
 
         for memory_id, index in list(self.memory_index.items()):
@@ -535,7 +533,7 @@ class MemoryArchivalKernel:
         except Exception as e:
             logger.error(f"Failed to archive memory {memory_id}: {e}")
 
-    def get_memory_stats(self) -> dict[str, Any]:
+    def get_memory_stats(self) -> Dict[str, Any]:
         """Get memory statistics."""
         tier_counts = defaultdict(int)
         type_counts = defaultdict(int)
@@ -561,7 +559,7 @@ class MemoryArchivalKernel:
             "memories_archived": self.stats["memories_archived"],
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current memory archival state."""
         return {
             "total_memories": len(self.memory_index),
@@ -570,7 +568,7 @@ class MemoryArchivalKernel:
             "memories_retrieved": self.stats["memories_retrieved"],
             "cache_hit_rate": self.stats["cache_hits"]
             / max(1, self.stats["cache_hits"] + self.stats["cache_misses"]),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def shutdown(self):

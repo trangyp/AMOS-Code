@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from repo_doctor import (
+from typing import List
     InvariantEngine,
     RepoStateVector,
     SensorResult,
@@ -173,7 +174,7 @@ def main():
             sensor_results = suite.run_all()
 
             # Verify workflow completed
-            self.assertIsNotNone(_state)
+            self.assertIsNotNone(state)
             self.assertGreater(len(results), 0)
             self.assertEqual(len(sensor_results), 4)
 

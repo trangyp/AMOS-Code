@@ -16,13 +16,13 @@ class LegalEngine:
     """Engine for legal reasoning."""
 
     def __init__(self):
-        self.rules: list[LegalRule] = []
+        self.rules: List[LegalRule] = []
 
     def add_rule(self, rule: LegalRule) -> None:
         """Add legal rule."""
         self.rules.append(rule)
 
-    def evaluate(self, facts: dict[str, Any]) -> list[LegalRule]:
+    def evaluate(self, facts: Dict[str, Any]) -> List[LegalRule]:
         """Evaluate facts against rules."""
         return []
 

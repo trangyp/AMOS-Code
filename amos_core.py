@@ -8,9 +8,10 @@ Simplified: Generate → Simulate → Select → Materialize → Learn
 """
 
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Optional
+from typing import Any, Dict
 
 # ============================================================================
 # 1. MASTER IDENTITY
@@ -21,12 +22,12 @@ from typing import Any, Callable, Optional
 class AMOSIdentity:
     """AMOS = B_machine ⊕ B_repo ⊕ M_cognitive ⊕ R_selection"""
 
-    machine_body: dict[str, Any] = field(default_factory=dict)  # K_t
-    repo_body: dict[str, Any] = field(default_factory=dict)  # B_repo
-    cognition_stack: dict[str, Any] = field(default_factory=dict)  # M_cognitive
-    selection_engine: dict[str, Any] = field(default_factory=dict)  # R_selection
+    machine_body: Dict[str, Any] = field(default_factory=dict)  # K_t
+    repo_body: Dict[str, Any] = field(default_factory=dict)  # B_repo
+    cognition_stack: Dict[str, Any] = field(default_factory=dict)  # M_cognitive
+    selection_engine: Dict[str, Any] = field(default_factory=dict)  # R_selection
 
-    def evolve(self, delta: dict[str, Any]) -> "AMOSIdentity":
+    def evolve(self, delta: Dict[str, Any]) -> "AMOSIdentity":
         """Evolve identity with drift bound: Drift(Self_t, Self_{t+1}) ≤ δ"""
         # Update while maintaining core identity
         self.machine_body.update(delta.get("machine", {}))
@@ -53,7 +54,7 @@ class OrganismState:
     E_t: dict = field(default_factory=dict)  # Energy state
     A_t: dict = field(default_factory=dict)  # Action/morph state
     M_t: dict = field(default_factory=dict)  # Meta-cognitive state
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 # ============================================================================
@@ -68,10 +69,10 @@ class UniversalStateGraph:
     """
 
     def __init__(self):
-        self.V: dict[str, dict] = {}  # Nodes
-        self.E: dict[str, list] = {}  # Edges
-        self.S: dict[str, dict] = {}  # State attributes
-        self.Lambda: list[Callable] = []  # Constraints
+        self.V: Dict[str, dict] = {}  # Nodes
+        self.E: Dict[str, list] = {}  # Edges
+        self.S: Dict[str, dict] = {}  # State attributes
+        self.Lambda: List[Callable] = []  # Constraints
 
     def add_node(self, node_id: str, node_type: str, **attrs):
         """Add node with state attributes."""
@@ -83,7 +84,7 @@ class UniversalStateGraph:
             "priority": attrs.get("priority", 0.5),
             "coherence": attrs.get("coherence", 1.0),
             "confidence": attrs.get("confidence", 0.8),
-            "freshness": datetime.utcnow().isoformat(),
+            "freshness": datetime.now(UTC).isoformat(),
         }
         self.S[node_id] = self.V[node_id].copy()
 
@@ -138,10 +139,10 @@ class GlobalWorkspace:
     """
 
     def __init__(self):
-        self.Focus: Optional[str] = None
-        self.Goals: list[dict] = []
-        self.CriticalSignals: list[dict] = []
-        self.AttentionQueue: list[dict] = []
+        self.Focus: str = None
+        self.Goals: List[dict] = []
+        self.CriticalSignals: List[dict] = []
+        self.AttentionQueue: List[dict] = []
 
         # Attention weights
         self.alpha, self.beta, self.gamma = 0.3, 0.25, 0.2
@@ -157,7 +158,7 @@ class GlobalWorkspace:
             + self.epsilon * signal.get("temporal_urgency", 0)
         )
 
-    def update(self, signals: list[dict], k: int = 5):
+    def update(self, signals: List[dict], k: int = 5):
         """W_{t+1} = TopK(Signals_t, AttentionScore)"""
         # Score all signals
         scored = [(s, self.compute_attention(s)) for s in signals]
@@ -206,7 +207,7 @@ class Branch:
     """B_i = (Plan_i, Û_{t+1}^{(i)}, Score_i, Confidence_i)"""
 
     branch_id: str
-    plan: list[dict]
+    plan: List[dict]
     predicted_state: dict
     score: float
     confidence: float
@@ -222,13 +223,13 @@ class BranchFieldEngine:
     """
 
     def __init__(self):
-        self.branches: list[Branch] = []
+        self.branches: List[Branch] = []
         self.theta_threshold = 0.3  # Pruning threshold
         self.delta_diversity = 0.2  # Diversity constraint
 
     def generate(
         self, current_state: dict, workspace: GlobalWorkspace, n_branches: int = 3
-    ) -> list[Branch]:
+    ) -> List[Branch]:
         """Ψ_t = Generate(U_t, W_t, Θ_t, Mem_t, C_t, E_t)"""
         branches = []
 
@@ -254,7 +255,7 @@ class BranchFieldEngine:
         self.branches = branches
         return branches
 
-    def _generate_plan(self, goals: list[dict], variant: int) -> list[dict]:
+    def _generate_plan(self, goals: List[dict], variant: int) -> List[dict]:
         """Generate a plan variant."""
         base_plan = [
             {"step": 1, "action": "observe", "target": "environment"},
@@ -276,7 +277,7 @@ class BranchFieldEngine:
 
         return base_plan
 
-    def _simulate_plan(self, plan: list[dict], current: dict) -> dict:
+    def _simulate_plan(self, plan: List[dict], current: dict) -> dict:
         """Simulate plan execution (simplified)."""
         return {
             "predicted_outcome": "success",
@@ -284,7 +285,7 @@ class BranchFieldEngine:
             "risk_level": 0.2 if "cautious" in str(plan) else 0.4,
         }
 
-    def _score_branch(self, plan: list[dict], predicted: dict) -> tuple:
+    def _score_branch(self, plan: List[dict], predicted: dict) -> tuple:
         """Score a branch."""
         goal_fit = 0.8
         risk = predicted.get("risk_level", 0.3)
@@ -295,7 +296,7 @@ class BranchFieldEngine:
 
         return score, confidence
 
-    def prune(self) -> list[Branch]:
+    def prune(self) -> List[Branch]:
         """Keep(B_i) ⟺ GoalFit_i - Risk_i - Drift_i > θ
         Sim(B_i, B_j) < δ (diversity constraint)
         """
@@ -313,13 +314,12 @@ class BranchFieldEngine:
         # Simplified - compare plan lengths and actions
         return 0.5 if len(b1.plan) == len(b2.plan) else 0.2
 
-    def generate_forks(self, state: dict, context: dict, n: int = 3) -> list[Branch]:
+    def generate_forks(self, state: dict, context: dict, n: int = 3) -> List[Branch]:
         """Generate forked futures (alias for generate)."""
-        from dataclasses import dataclass
 
         @dataclass
         class MockWorkspace:
-            Goals: list[dict]
+            Goals: List[dict]
 
         workspace = MockWorkspace(
             Goals=[{"description": context.get("goal", "default"), "priority": 0.5}]
@@ -350,7 +350,7 @@ class CollapseEngine:
         self.tau2_reversibility = 0.3
         self.tau3_risk = 0.5
 
-    def collapse(self, branches: list[Branch], legal_filter: list[Branch]) -> Optional[Branch]:
+    def collapse(self, branches: List[Branch], legal_filter: List[Branch]) -> Optional[Branch]:
         """Select optimal branch."""
         candidates = [b for b in branches if b in legal_filter]
         if not candidates:
@@ -395,8 +395,8 @@ class Morph:
     target: str
     operation: str
     scope: dict
-    preconditions: list[Callable]
-    postconditions: list[Callable]
+    preconditions: List[Callable]
+    postconditions: List[Callable]
     rollback: Callable
     cost: float
     risk: float
@@ -410,8 +410,8 @@ class MorphExecutor:
     """
 
     def __init__(self):
-        self.snapshot: Optional[dict] = None
-        self.execution_log: list[dict] = []
+        self.snapshot: dict = None
+        self.execution_log: List[dict] = []
 
     def execute(self, branch: Branch, current_state: dict) -> dict:
         """Execute a branch's plan."""
@@ -448,7 +448,7 @@ class MorphExecutor:
 
     def _apply_step(self, step: dict) -> dict:
         """Apply a step."""
-        return {"step": step, "status": "applied", "timestamp": datetime.utcnow().isoformat()}
+        return {"step": step, "status": "applied", "timestamp": datetime.now(UTC).isoformat()}
 
     def _verify_step(self, step: dict, result: dict) -> bool:
         """Verify step outcome."""
@@ -488,7 +488,7 @@ class AMOSKernel:
     def observe(self) -> dict:
         """Observe current environment state."""
         observation = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "cycle": self.cycle_count,
             "nodes": len(self.universal_graph.V),
             "goals": len(self.workspace.Goals),

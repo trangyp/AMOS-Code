@@ -9,15 +9,14 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Add paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "06_MUSCLE"))
 sys.path.insert(0, str(Path(__file__).parent))
+
 
 from amos_worker_engine import AmosWorkerEngine, WorkerResult
 from financial_engine import FinancialEngine
@@ -33,7 +32,7 @@ class CostAwareWorker(AmosWorkerEngine):
         self.blood = FinancialEngine(organism_root)
 
     def execute_with_budget(
-        self, plan: Dict[str, Any], context: Optional[Dict] = None, budget_category: str = "compute"
+        self, plan: dict[str, Any], context: Optional[dict] = None, budget_category: str = "compute"
     ) -> WorkerResult:
         """Execute plan with cost tracking."""
         # Check budget before execution
@@ -94,7 +93,7 @@ class CostAwareWorker(AmosWorkerEngine):
 
         return result
 
-    def get_financial_status(self) -> Dict[str, Any]:
+    def get_financial_status(self) -> dict[str, Any]:
         """Get financial status from BLOOD."""
         return self.blood.get_status()
 

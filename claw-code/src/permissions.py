@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 
@@ -10,7 +8,7 @@ class ToolPermissionContext:
 
     @classmethod
     def from_iterables(
-        cls, deny_names: list[str] | None = None, deny_prefixes: list[str] | None = None
+        cls, deny_names: List[str] = None, deny_prefixes: List[str] = None
     ) -> ToolPermissionContext:
         return cls(
             deny_names=frozenset(name.lower() for name in (deny_names or [])),

@@ -8,11 +8,9 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -39,7 +37,7 @@ class FeatureRegistry:
     - Specialized Writing Engines
     """
 
-    def __init__(self, root_path: Optional[Path] = None):
+    def __init__(self, root_path: Path | None = None):
         if root_path is None:
             root_path = Path(__file__).parent.parent.parent
         self.root = root_path
@@ -199,7 +197,7 @@ class FeatureRegistry:
                     )
                 )
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get feature registry summary."""
         by_category = {}
         for f in self.features:
@@ -217,6 +215,37 @@ class FeatureRegistry:
     def list_by_category(self, category: str) -> list[FeatureModule]:
         """List features by category."""
         return [f for f in self.features if f.category == category]
+
+    # Properties for orchestrator compatibility
+    @property
+    def discovered_features(self) -> list[FeatureModule]:
+        """Get all discovered features."""
+        return self.features
+
+    @property
+    def cognitive_engines(self) -> list[FeatureModule]:
+        """Get cognitive engines."""
+        return self.list_by_category("cognitive_engine")
+
+    @property
+    def core_brain_engines(self) -> list[FeatureModule]:
+        """Get core brain engines."""
+        return self.list_by_category("core_brain_engine")
+
+    @property
+    def knowledge_packs(self) -> list[FeatureModule]:
+        """Get knowledge packs."""
+        return self.list_by_category("knowledge_pack")
+
+    def auto_discover(self) -> None:
+        """Auto-discover features (alias for _discover_all)."""
+        self._discover_all()
+
+    def save(self) -> None:
+        """Save registry state."""
+        # Registry is currently in-memory only
+        # Persistence can be added if needed
+        pass
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ Usage:
 import argparse
 import sys
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 class AMOSMasterController:
@@ -32,6 +32,17 @@ class AMOSMasterController:
     """
 
     VERSIONS = {
+        "unified": {
+            "name": "Unified Hybrid System",
+            "components": [
+                "amos_unified",
+                "amos_hybrid_orchestrator",
+                "amos_memory_system",
+                "amos_mcp_bridge",
+                "repo_doctor_omega",
+            ],
+            "description": "Neural-Symbolic Hybrid + Memory + MCP + Repo Doctor",
+        },
         "v1": {
             "name": "Core Cognitive",
             "components": ["amos_core"],
@@ -107,8 +118,8 @@ class AMOSMasterController:
     }
 
     def __init__(self):
-        self.loaded_modules: dict[str, Any] = {}
-        self.active_version: Optional[str] = None
+        self.loaded_modules: Dict[str, Any] = {}
+        self.active_version: str = None
 
     def show_architecture(self):
         """Display complete AMOS architecture."""
@@ -214,6 +225,31 @@ class AMOSMasterController:
 
                 self.loaded_modules["operational"] = AMOSOperational()
 
+            elif name == "amos_unified":
+                from amos_unified_system import AMOSUnifiedSystem
+
+                self.loaded_modules["unified"] = AMOSUnifiedSystem()
+
+            elif name == "amos_hybrid_orchestrator":
+                from amos_hybrid_orchestrator import HybridNeuralSymbolicOrchestrator
+
+                self.loaded_modules["hybrid_orchestrator"] = HybridNeuralSymbolicOrchestrator()
+
+            elif name == "amos_memory_system":
+                from amos_memory_system import AMOSMemoryManager
+
+                self.loaded_modules["memory_system"] = AMOSMemoryManager()
+
+            elif name == "amos_mcp_bridge":
+                from amos_mcp_bridge import AMOSMCPBridge
+
+                self.loaded_modules["mcp_bridge"] = AMOSMCPBridge()
+
+            elif name == "repo_doctor_omega":
+                from repo_doctor_omega.engine import RepoDoctorEngine
+
+                self.loaded_modules["repo_doctor"] = RepoDoctorEngine(".")
+
             return True
 
         except Exception:
@@ -307,7 +343,7 @@ class AMOSMasterController:
             "master_controller": "active",
             "active_version": self.active_version,
             "loaded_modules": list(self.loaded_modules.keys()),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "architecture_complete": True,
             "versions_available": list(self.VERSIONS.keys()),
         }
@@ -368,9 +404,9 @@ def main():
     parser.add_argument(
         "--version",
         "-v",
-        choices=["v1", "v2", "v3", "v4", "v4-prod", "v5", "full", "operational"],
-        default="full",
-        help="AMOS version to load (operational recommended for production)",
+        choices=["unified", "v1", "v2", "v3", "v4", "v4-prod", "v5", "full", "operational"],
+        default="unified",
+        help="AMOS version to load (unified recommended for hybrid system)",
     )
     parser.add_argument(
         "--operational",

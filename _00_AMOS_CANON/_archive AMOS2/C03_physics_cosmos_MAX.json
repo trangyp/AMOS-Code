@@ -1,0 +1,159 @@
+{
+  "id": "C03_physics_cosmos_MAX",
+  "name": "Physics, Systems & Cosmology \u2014 MAX Canon",
+  "scope": "All physical, structural and cosmic layers (RL_01 \u2192 RL_08) with U\u221e tensor anchoring",
+  "canonical_role": "Anchor for physical constraints, cosmic behaviour, conservation laws, system flows, and universal stability conditions across layers.",
+  "layer_bindings": {
+    "physics_layer": "RL_01_PHYSICS",
+    "information_layer": "RL_02_INFORMATION",
+    "cosmic_layer": "RL_08_COSMIC",
+    "temporal_layer": "RL_10_TEMPORAL",
+    "universe_layer": "RL_11_UNIVERSE"
+  },
+  "axes": {
+    "primary_axes": [
+      "Causality",
+      "Topology",
+      "Timeline",
+      "Information"
+    ],
+    "secondary_axes": [
+      "Emergence",
+      "Collapse",
+      "Potential"
+    ],
+    "tensor_projection": "U[a][b][c][d][e][f][g][h][i]"
+  },
+  "focus": "Physical intuition, constraints, flows, conservation, stability, cosmic topology, large-scale structure.",
+  "typical_questions": [
+    "What are the physical limits or bottlenecks of this design?",
+    "How does energy, matter or information flow through this system?",
+    "Which conservation laws, thresholds or stability constraints dominate?",
+    "What are the cosmic-scale consequences of this change?",
+    "How do local physical choices scale into planetary or cosmic behaviour?",
+    "Which causal modes (C0\u2013C6) are active in this configuration?",
+    "What topology changes are required for stability?",
+    "How does this map across timelines (T0\u2013T7)?",
+    "What collapse pathways or attractors exist for this configuration?"
+  ],
+  "core_methods": [
+    "constraint_mapping",
+    "order_of_magnitude_physics",
+    "systems_dynamics_patterns",
+    "stability_vs_chaos_characterization",
+    "multi_layer_conservation_analysis",
+    "energy_information_flow_modelling",
+    "cosmic_topology_projection",
+    "timeline_coupling_analysis",
+    "cross_layer_emergence_tracking"
+  ],
+  "physics_constraints": {
+    "conservation_laws": [
+      "energy_conservation",
+      "momentum_conservation",
+      "information_conservation",
+      "identity_persistence",
+      "continuity_L\u221e"
+    ],
+    "causal_modes_allowed": [
+      "C0",
+      "C1",
+      "C4"
+    ],
+    "temporal_modes_allowed": [
+      "T0",
+      "T1",
+      "T2"
+    ],
+    "forbidden_modes_without_override": [
+      "C3",
+      "C5",
+      "T6",
+      "T7"
+    ],
+    "thresholds": {
+      "max_energy_density": "contextual",
+      "max_information_gradient": "contextual",
+      "collapse_threshold": "system_stability_index < 0.65"
+    }
+  },
+  "cosmic_structure": {
+    "topologies": [
+      "euclidean",
+      "non_euclidean",
+      "quantum_topology",
+      "identity_topology",
+      "temporal_topology"
+    ],
+    "scale_invariance_rules": [
+      "local_constraints_must_hold_at_macro_scales",
+      "no_violation_of_ULK_L1_integrity",
+      "topology_changes_require_continuity"
+    ],
+    "emergence_rules": [
+      "higher_order_structure_requires_two_interacting_information_layers",
+      "large_scale_stability_requires_feedback_integrity"
+    ]
+  },
+  "system_dynamics": {
+    "flow_types": [
+      "energy_flow",
+      "matter_flow",
+      "information_flow",
+      "causality_flow",
+      "identity_flow"
+    ],
+    "model_patterns": [
+      "flux_balancing",
+      "steady_state_pattern",
+      "chaotic_scattering",
+      "resonance_modes",
+      "feedback_loop_patterns"
+    ],
+    "collapse_modes": [
+      "topology_break",
+      "energy_overload",
+      "information_loss",
+      "causality_inversion",
+      "timeline_fragment"
+    ],
+    "recovery_modes": [
+      "topology_reformation",
+      "information_rebinding",
+      "feedback_stabilization",
+      "identity_restructuring",
+      "timeline_realignment"
+    ]
+  },
+  "interfaces": {
+    "inputs": [
+      "natural_language_questions",
+      "structured_prompts",
+      "tabular_data",
+      "narrative_case_descriptions",
+      "simulation_state_vectors",
+      "tensor_slice_queries"
+    ],
+    "outputs": [
+      "structured_reasoning_steps",
+      "tables_and_summaries",
+      "scenario_trees",
+      "U\u221e_tensor_projections",
+      "stability_reports",
+      "recommendations_with_assumptions",
+      "collapse_recovery_pathways"
+    ]
+  },
+  "risk_notes": [
+    "high_risk_if_used_outside_empirical_regime",
+    "can_produce_over_simplified_models_if_data_is_sparse",
+    "timeline_errors_cascade_nonlocally",
+    "topology_misclassification_can_trigger_false_collapse_predictions"
+  ],
+  "integration_rules": {
+    "must_obey_ULK": true,
+    "must_respect_canon_constraints": true,
+    "no_output_may_violate_identity_continuity": true,
+    "all_projections_must_specify_axes_and_scales": true
+  }
+}

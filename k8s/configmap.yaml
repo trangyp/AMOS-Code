@@ -1,0 +1,60 @@
+# AMOS ConfigMap
+#
+# Non-sensitive configuration for AMOS services.
+#
+# Creator: Trang Phan
+# Version: 3.0.0
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amos-config
+  namespace: amos
+  labels:
+    app.kubernetes.io/name: amos
+    app.kubernetes.io/component: config
+data:
+  # API Configuration
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_WORKERS: "4"
+
+  # Environment
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+
+  # CORS
+  CORS_ORIGINS: '["https://amos.example.com"]'
+
+  # Database
+  DATABASE_URL: "postgresql://amos:amos@postgres:5432/amos"
+
+  # Redis
+  REDIS_URL: "redis://redis:6379/0"
+
+  # Ollama
+  OLLAMA_HOST: "http://ollama:11434"
+
+  # LLM Providers
+  DEFAULT_LLM_PROVIDER: "mock"
+
+  # JWT
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  REFRESH_TOKEN_EXPIRE_DAYS: "7"
+
+  # Rate Limiting
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_REQUESTS_PER_MINUTE: "60"
+  RATE_LIMIT_BURST_SIZE: "10"
+
+  # Cache
+  CACHE_ENABLED: "true"
+  CACHE_TTL_SECONDS: "300"
+
+  # Observability
+  METRICS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+
+  # Health Checks
+  HEALTH_CHECK_ENABLED: "true"

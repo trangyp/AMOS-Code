@@ -25,8 +25,8 @@ class AmosDeployer:
     def __init__(self, environment: str = "local"):
         self.environment = environment
         self.root = Path(__file__).parent
-        self.errors: list[str] = []
-        self.warnings: list[str] = []
+        self.errors: List[str] = []
+        self.warnings: List[str] = []
 
     def deploy(self) -> bool:
         """Execute full deployment sequence."""
@@ -34,7 +34,7 @@ class AmosDeployer:
         print(" AMOS ORGANISM PRODUCTION DEPLOYMENT")
         print("=" * 70)
         print(f"Environment: {self.environment.upper()}")
-        print(f"Timestamp: {datetime.utcnow().isoformat()}")
+        print(f"Timestamp: {datetime.now(UTC).isoformat()}")
         print()
 
         steps = [

@@ -5,8 +5,6 @@ Incremental multi-language parsing using tree-sitter.
 Builds concrete syntax trees that can be updated incrementally.
 """
 
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -22,11 +20,11 @@ class SyntaxNode:
     type: str
     start_byte: int
     end_byte: int
-    start_point: tuple[int, int]  # (row, col)
-    end_point: tuple[int, int]
+    start_point: Tuple[int, int]  # (row, col)
+    end_point: Tuple[int, int]
     text: str = ""
-    children: list[SyntaxNode] = field(default_factory=list)
-    parent: SyntaxNode | None = None
+    children: List[SyntaxNode] = field(default_factory=list)
+    parent: Optional[SyntaxNode] = None
 
 
 @dataclass
@@ -35,11 +33,11 @@ class ParsedFile:
 
     path: Path
     language: str
-    root: SyntaxNode | None = None
+    root: Optional[SyntaxNode] = None
     errors: list[dict[str, Any]] = field(default_factory=list)
-    imports: list[str] = field(default_factory=list)
-    exports: list[str] = field(default_factory=list)
-    symbols: dict[str, Any] = field(default_factory=dict)
+    imports: List[str] = field(default_factory=list)
+    exports: List[str] = field(default_factory=list)
+    symbols: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def is_valid(self) -> bool:
@@ -72,7 +70,7 @@ class TreeSitterIngest:
 
     def __init__(self, repo_path: Path):
         self.repo_path = Path(repo_path)
-        self.parsers: dict[str, Any] = {}
+        self.parsers: Dict[str, Any] = {}
         self.cache: dict[Path, ParsedFile] = {}
         self._init_parsers()
 
@@ -94,7 +92,7 @@ class TreeSitterIngest:
             self.Language = None
             self.Parser = None
 
-    def detect_language(self, file_path: Path) -> str | None:
+    def detect_language(self, file_path: Path) -> str:
         """Detect language from file extension."""
         return self.SUPPORTED_LANGUAGES.get(file_path.suffix.lower())
 
@@ -159,7 +157,7 @@ class TreeSitterIngest:
             )
 
     def _convert_node(
-        self, ts_node: Any, content: bytes, parent: SyntaxNode | None = None
+        self, ts_node: Any, content: bytes, parent: Optional[SyntaxNode] = None
     ) -> SyntaxNode:
         """Convert tree-sitter node to our SyntaxNode format."""
         node = SyntaxNode(
@@ -234,7 +232,7 @@ class TreeSitterIngest:
             )
 
     def parse_repo(
-        self, patterns: list[str] = None, exclude_dirs: list[str] = None
+        self, patterns: List[str] = None, exclude_dirs: List[str] = None
     ) -> dict[Path, ParsedFile]:
         """
         Parse entire repository.
@@ -285,7 +283,7 @@ class TreeSitterIngest:
 
         return errors
 
-    def get_symbol_graph(self) -> dict[str, Any]:
+    def get_symbol_graph(self) -> Dict[str, Any]:
         """
         Build a graph of symbols and their relationships.
 

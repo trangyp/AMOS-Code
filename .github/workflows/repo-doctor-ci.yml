@@ -24,7 +24,7 @@ jobs:
   repo-doctor-scan:
     name: Repository Health Scan
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       security-events: write
@@ -88,7 +88,7 @@ jobs:
         run: |
           echo "## Repository Energy State" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f repo_doctor_full_report.json ]; then
             python3 scripts/ci_report_parser.py summary repo_doctor_full_report.json \
               bandit_report.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || \
@@ -102,7 +102,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Hard Invariant Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f repo_doctor_full_report.json ]; then
             python3 scripts/ci_report_parser.py invariants repo_doctor_full_report.json \
               >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not check invariants"
@@ -130,7 +130,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            
+
             // Read the report
             let report = {};
             try {
@@ -139,29 +139,29 @@ jobs:
             } catch (e) {
               console.log('Could not read report:', e.message);
             }
-            
+
             const energy = report.energy || 'N/A';
             const failures = report.hard_invariant_failures || [];
             const status = failures.length === 0 ? '✅ PASS' : '❌ FAIL';
-            
+
             const body = `## Repo Doctor Ω∞∞∞∞ - Repository Health Check
-            
+
             **Status:** ${status}
             **Energy:** ${energy}
             **Failed Invariants:** ${failures.length}
-            
+
             ${failures.length > 0 ? '### Failed Invariants:\n' + failures.map(f => `- ${f}`).join('\n') : 'All invariants passing!'}
-            
+
             <details>
             <summary>View Full Report</summary>
-            
+
             \`\`\`json
             ${JSON.stringify(report, null, 2)}
             \`\`\`
-            
+
             </details>
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -175,7 +175,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            
+
             let report = {};
             try {
               const reportData = fs.readFileSync('repo_doctor_full_report.json', 'utf8');
@@ -183,10 +183,10 @@ jobs:
             } catch (e) {
               console.log('Could not read report');
             }
-            
+
             const failures = report.hard_invariant_failures || [];
             const conclusion = failures.length === 0 ? 'success' : 'failure';
-            
+
             // Create check run
             await github.rest.checks.create({
               owner: context.repo.owner,

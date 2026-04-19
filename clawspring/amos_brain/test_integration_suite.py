@@ -354,9 +354,8 @@ class IntegrationTestSuite:
 
     def _test_resilience_system(self) -> None:
         """Test resilience system."""
-        from resilience import CircuitBreaker, get_resilience
+        from resilience import CircuitBreaker
 
-        resilience = get_resilience()
         cb = CircuitBreaker(failure_threshold=3)
 
         assert cb is not None

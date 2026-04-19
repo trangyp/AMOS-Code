@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "amos.fullname" . }}-config
+  labels:
+    {{- include "amos.labels" . | nindent 4 }}
+data:
+  # AMOS Configuration
+  AMOS_VERSION: "{{ .Chart.AppVersion }}"
+  ENVIRONMENT: "{{ .Values.global.environment }}"
+
+  # API Configuration
+  API_TITLE: "AMOS API"
+  API_VERSION: "{{ .Chart.AppVersion }}"
+  API_DEBUG: "false"
+
+  # GraphQL Configuration
+  GRAPHQL_PATH: "/graphql"
+  GRAPHIQL_ENABLED: "false"
+
+  # WebSocket Configuration
+  WS_PATH: "/ws"
+  WS_PING_INTERVAL: "30"
+
+  # Celery Configuration
+  CELERY_BROKER_URL: {{ include "amos.redis.url" . | quote }}
+  CELERY_RESULT_BACKEND: {{ include "amos.redis.url" . | quote }}
+  CELERY_TASK_ALWAYS_EAGER: "false"
+
+  # Kafka Configuration
+  KAFKA_BOOTSTRAP_SERVERS: {{ include "amos.kafka.bootstrap" . | quote }}
+
+  # Observability Configuration
+  PROMETHEUS_ENABLED: {{ include "amos.monitoring.enabled" . | quote }}
+  METRICS_PORT: "9090"
+
+  # Logging Configuration
+  LOG_FORMAT: "json"
+  LOG_LEVEL: "info"
+
+  # Feature Flags
+  ENABLE_CACHE: "true"
+  ENABLE_RATE_LIMIT: "true"
+  ENABLE_AUDIT_LOG: "true"
+
+  # Limits
+  MAX_REQUEST_SIZE: "10485760"
+  MAX_CONCURRENT_REQUESTS: "100"
+
+  # Timeouts
+  REQUEST_TIMEOUT: "30"
+  DATABASE_TIMEOUT: "30"

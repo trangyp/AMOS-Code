@@ -2,7 +2,6 @@
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Module paths
 MODULES = [
@@ -28,7 +27,7 @@ def check_module_exists(module_dir: Path, name: str) -> bool:
     return (module_dir / name).exists()
 
 
-def check_imports_work() -> Tuple[bool, List[str]]:
+def check_imports_work() -> tuple[bool, list[str]]:
     """Test if core imports work."""
     errors = []
     try:
@@ -36,14 +35,14 @@ def check_imports_work() -> Tuple[bool, List[str]]:
         try:
             from amos_cognitive_router import get_router
 
-            router = get_router()
+            get_router()  # Verify import works
         except Exception as e:
             errors.append(f"Router: {e}")
 
         try:
             from amos_brain.cognitive_audit import get_audit_trail
 
-            audit = get_audit_trail()
+            get_audit_trail()  # Verify import works
         except Exception as e:
             errors.append(f"Audit: {e}")
 

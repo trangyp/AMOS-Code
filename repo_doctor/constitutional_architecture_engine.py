@@ -19,8 +19,6 @@ Mathematical Foundation:
   approval rights, and retirement rights
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -83,8 +81,8 @@ class ArchitecturalFact:
     created_at: str
     modified_at: str
     version: str
-    deprecation_date: str | None = None
-    sunset_date: str | None = None
+    deprecation_date: str = None
+    sunset_date: str = None
 
     # Semantic properties
     semantic_equivalents: list[str] = field(default_factory=list)
@@ -101,7 +99,7 @@ class StateDomain:
 
     # Ownership
     canonical_writer: str  # Single writer principle
-    conflict_resolution: str | None = None  # If multiple writers allowed
+    conflict_resolution: str = None  # If multiple writers allowed
 
     # Writers
     declared_writers: list[str] = field(default_factory=list)
@@ -120,8 +118,8 @@ class ConstitutionalViolation:
     violation_type: str
     severity: str  # "critical", "high", "medium", "low"
     description: str
-    affected_fact: str | None = None
-    affected_domain: str | None = None
+    affected_fact: str = None
+    affected_domain: str = None
     invariant_broken: str
     evidence: list[str] = field(default_factory=list)
     remediation: str = ""
@@ -153,7 +151,7 @@ class ConstitutionalAssessment:
     ambiguous_domains: int
     undefined_absence_states: int
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "assessment_id": self.assessment_id,
@@ -189,8 +187,8 @@ class ConstitutionalArchitectureEngine:
     """
 
     def __init__(self):
-        self.facts: dict[str, ArchitecturalFact] = {}
-        self.domains: dict[str, StateDomain] = {}
+        self.facts: Dict[str, ArchitecturalFact] = {}
+        self.domains: Dict[str, StateDomain] = {}
         self.assessments: list[ConstitutionalAssessment] = []
 
     def add_fact(self, fact: ArchitecturalFact) -> None:
@@ -330,8 +328,8 @@ class ConstitutionalArchitectureEngine:
         return assessment
 
     def check_semantic_versioning(
-        self, claimed_version: str, actual_changes: dict[str, Any]
-    ) -> dict[str, Any]:
+        self, claimed_version: str, actual_changes: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Check if semantic versioning is honest.
 
@@ -387,7 +385,7 @@ class ConstitutionalArchitectureEngine:
 
     def check_protocol_lifecycle(
         self, interface_id: str, current_state: ProtocolState
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Check if interface has complete protocol lifecycle.
 
@@ -427,7 +425,7 @@ class ConstitutionalArchitectureEngine:
 
     def check_capability_discipline(
         self, action: str, required_capability: str, granted_authority: str
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Check if action uses scoped capability vs ambient authority.
 
@@ -464,8 +462,8 @@ class ConstitutionalArchitectureEngine:
         }
 
     def check_negative_capability(
-        self, system_state: dict[str, Any], forbidden_states: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+        self, system_state: Dict[str, Any], forbidden_states: list[dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Check if forbidden states are explicitly blocked.
 
@@ -497,7 +495,7 @@ class ConstitutionalArchitectureEngine:
             "invariant": "I_negative_capability",
         }
 
-    def _state_matches(self, state: dict[str, Any], pattern: dict[str, Any]) -> bool:
+    def _state_matches(self, state: Dict[str, Any], pattern: Dict[str, Any]) -> bool:
         """Check if state matches forbidden pattern."""
         for key, value in pattern.items():
             if key not in state or state[key] != value:

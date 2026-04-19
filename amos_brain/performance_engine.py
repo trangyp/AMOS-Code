@@ -35,8 +35,8 @@ import hashlib
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Optional, Any
 
 
 @dataclass
@@ -68,7 +68,7 @@ class PerformanceMetrics:
     avg_response_time: float = 0.0
     memory_usage: int = 0
     active_engines: int = 0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class PerformanceEngine:

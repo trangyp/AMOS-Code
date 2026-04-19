@@ -22,8 +22,6 @@ Commands:
     server          Start knowledge API server
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
@@ -31,7 +29,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent / "clawspring"))
 sys.path.insert(0, str(Path(__file__).parent))
@@ -43,11 +41,11 @@ class ActivatedKnowledge:
 
     name: str
     category: str
-    content: dict[str, Any]
+    content: Dict[str, Any]
     activated_at: str
     size_bytes: int
     access_count: int = 0
-    last_accessed: Optional[str] = None
+    last_accessed: str = None
 
 
 class KnowledgeActivation:
@@ -73,8 +71,8 @@ class KnowledgeActivation:
 
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self.active_knowledge: dict[str, ActivatedKnowledge] = {}
-        self.query_cache: dict[str, Any] = {}
+        self.active_knowledge: Dict[str, ActivatedKnowledge] = {}
+        self.query_cache: Dict[str, Any] = {}
         self.stats = {
             "loaded_engines": 0,
             "total_size_mb": 0.0,
@@ -82,7 +80,7 @@ class KnowledgeActivation:
             "cache_hits": 0,
         }
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get activation status."""
         return {
             "active_engines": len(self.active_knowledge),
@@ -115,7 +113,7 @@ class KnowledgeActivation:
                 print(f"  {name:20s} {size_kb:8.1f} KB ({accesses} accesses)")
 
     @lru_cache(maxsize=50)
-    def _load_json_file(self, path: Path) -> Optional[dict]:
+    def _load_json_file(self, path: Path) -> dict:
         """Load JSON file with caching."""
         try:
             with open(path, encoding="utf-8") as f:
@@ -124,7 +122,7 @@ class KnowledgeActivation:
             print(f"  ⚠ Error loading {path}: {e}")
             return None
 
-    def activate_engine(self, engine_path: str, key: Optional[str] = None) -> bool:
+    def activate_engine(self, engine_path: str, key: str = None) -> bool:
         """Activate a specific engine into runtime memory."""
         full_path = self.brain_root / engine_path
 
@@ -178,7 +176,7 @@ class KnowledgeActivation:
         else:
             return "other"
 
-    def activate_critical_engines(self) -> dict[str, Any]:
+    def activate_critical_engines(self) -> Dict[str, Any]:
         """Activate all critical engines for runtime operation."""
         print("=" * 70)
         print("ACTIVATING CRITICAL ENGINES")
@@ -199,7 +197,7 @@ class KnowledgeActivation:
 
         return {"success": success, "failed": failed}
 
-    def query(self, topic: str, depth: int = 1) -> dict[str, Any]:
+    def query(self, topic: str, depth: int = 1) -> Dict[str, Any]:
         """Query active knowledge for a topic."""
         self.stats["queries_served"] += 1
         topic_lower = topic.lower()
@@ -270,7 +268,7 @@ class KnowledgeActivation:
             print(f"  ✗ Failed to inject: {e}")
             return False
 
-    def get_knowledge_graph(self) -> dict[str, Any]:
+    def get_knowledge_graph(self) -> Dict[str, Any]:
         """Get knowledge graph of active engines."""
         nodes = []
         edges = []

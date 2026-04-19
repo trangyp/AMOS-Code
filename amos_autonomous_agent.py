@@ -16,15 +16,13 @@ Usage:
     python amos_autonomous_agent.py --interactive
 """
 
-from __future__ import annotations
-
 import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -53,8 +51,8 @@ class ExecutionStep:
     command: str
     description: str
     status: ExecutionStatus = ExecutionStatus.PENDING
-    start_time: Optional[str] = None
-    end_time: Optional[str] = None
+    start_time: str = None
+    end_time: str = None
     output: str = ""
     error: str = ""
 
@@ -64,7 +62,7 @@ class ExecutionPlan:
     """Represents an autonomous execution plan."""
 
     goal: str
-    steps: list[ExecutionStep] = field(default_factory=list)
+    steps: List[ExecutionStep] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -77,7 +75,7 @@ class ExecutionResult:
     completed_steps: int
     failed_steps: int
     execution_time: float
-    final_output: Optional[str] = None
+    final_output: str = None
 
 
 class AMOSAutonomousAgent:
@@ -96,7 +94,7 @@ class AMOSAutonomousAgent:
         self.explorer = None
         self.generator = None
         self.workflow = None
-        self.execution_log: list[dict] = []
+        self.execution_log: List[dict] = []
 
     def initialize(self) -> AMOSAutonomousAgent:
         """Initialize all systems."""
@@ -114,7 +112,7 @@ class AMOSAutonomousAgent:
         print("\n🟢 Agent fully operational and ready for autonomous execution")
         return self
 
-    def understand_goal(self, goal: str) -> dict[str, Any]:
+    def understand_goal(self, goal: str) -> Dict[str, Any]:
         """Phase 1: Understand the goal using brain analysis.
 
         Determines:
@@ -147,7 +145,7 @@ class AMOSAutonomousAgent:
 
         return understanding
 
-    def plan_execution(self, understanding: dict[str, Any]) -> ExecutionPlan:
+    def plan_execution(self, understanding: Dict[str, Any]) -> ExecutionPlan:
         """Phase 2: Plan execution using available tools.
 
         Decides which tools to use and in what order.
@@ -320,7 +318,7 @@ class AMOSAutonomousAgent:
 
         print("\n✓ Report saved")
 
-    def _execute_command(self, command: str) -> dict[str, Any]:
+    def _execute_command(self, command: str) -> Dict[str, Any]:
         """Execute a shell command and return results."""
         try:
             # Run command with timeout
@@ -354,7 +352,7 @@ class AMOSAutonomousAgent:
                 "returncode": -1,
             }
 
-    def _determine_project_types(self, goal: str) -> list[str]:
+    def _determine_project_types(self, goal: str) -> List[str]:
         """Determine project types from goal."""
         goal_lower = goal.lower()
         types = []
@@ -375,7 +373,7 @@ class AMOSAutonomousAgent:
 
         return types
 
-    def _extract_domains(self, goal: str) -> list[str]:
+    def _extract_domains(self, goal: str) -> List[str]:
         """Extract relevant domains from goal."""
         goal_lower = goal.lower()
         domains = []

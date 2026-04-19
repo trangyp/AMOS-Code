@@ -234,6 +234,7 @@ class TestGlobalInvariants(unittest.TestCase):
 
         # Commit logic verified
         from amosl.admissibility import AdmissibilityComponent
+from typing import Tuple
 
         constr_result = components.get(AdmissibilityComponent.CONSTR)
         self.assertIsNotNone(constr_result)

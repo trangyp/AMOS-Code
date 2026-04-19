@@ -26,13 +26,17 @@ Layer: 17
 
 from __future__ import annotations
 
+
 import json
+import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Layer 10 - Governance
 try:
@@ -42,6 +46,7 @@ try:
         AutonomyLevel,
         GovernanceDecision,
     )
+
     GOVERNANCE_AVAILABLE = True
 except ImportError:
     GOVERNANCE_AVAILABLE = False
@@ -59,6 +64,7 @@ try:
         OmegaEvolutionResult,
         StateEvolutionTrigger,
     )
+
     BRIDGES_AVAILABLE = True
 except ImportError:
     BRIDGES_AVAILABLE = False
@@ -66,14 +72,16 @@ except ImportError:
 
 class MetaCognitivePolicy(Enum):
     """Policies for meta-cognitive reflection."""
-    CONSERVATIVE = auto()   # Only evolve when clearly beneficial
-    BALANCED = auto()     # Evolve based on trend analysis
-    AGGRESSIVE = auto()   # Proactively experiment with improvements
+
+    CONSERVATIVE = auto()  # Only evolve when clearly beneficial
+    BALANCED = auto()  # Evolve based on trend analysis
+    AGGRESSIVE = auto()  # Proactively experiment with improvements
 
 
 @dataclass
 class DecisionEffectiveness:
     """Analysis of a governance decision's effectiveness."""
+
     decision_id: str
     timestamp: str
     expected_outcome: str
@@ -87,6 +95,7 @@ class DecisionEffectiveness:
 @dataclass
 class ThresholdOptimization:
     """Optimization recommendation for governance thresholds."""
+
     threshold_name: str
     current_value: float
     recommended_value: float
@@ -98,6 +107,7 @@ class ThresholdOptimization:
 @dataclass
 class BridgePerformance:
     """Performance metrics for bridge operations."""
+
     bridge_name: str
     total_operations: int
     successful_operations: int
@@ -109,12 +119,13 @@ class BridgePerformance:
 @dataclass
 class MetaCognitiveReflection:
     """A reflection on the system's own cognitive processes."""
+
     reflection_id: str
     timestamp: str
     target_layer: str  # Which layer is being analyzed
     findings: list[str] = field(default_factory=list)
     recommendations: list[ThresholdOptimization] = field(default_factory=list)
-    proposed_evolution_id: str | None = None
+    proposed_evolution_id: str = None
 
 
 class MetaCognitiveReflectionEngine:
@@ -173,12 +184,12 @@ class MetaCognitiveReflectionEngine:
                 with open(data_file) as f:
                     data = json.load(f)
                     # Would deserialize into dataclasses
-            except Exception:
-                pass  # Start fresh if corrupted
+            except Exception as e:
+                logger.debug(f"Reflection data corrupted, starting fresh: {e}")
 
     def analyze_governance_effectiveness(
         self,
-        decisions: list[GovernanceDecision] | None = None,
+        decisions: list[GovernanceDecision] = None,
     ) -> list[DecisionEffectiveness]:
         """Analyze effectiveness of governance decisions."""
         if decisions is None and not GOVERNANCE_AVAILABLE:
@@ -196,7 +207,7 @@ class MetaCognitiveReflectionEngine:
 
             analysis = DecisionEffectiveness(
                 decision_id=decision.decision_id,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 expected_outcome=decision.decision,
                 actual_outcome="success" if success else "failure",
                 success=success,
@@ -226,9 +237,7 @@ class MetaCognitiveReflectionEngine:
             return decision.execution_time - decision.timestamp
         return 0.0
 
-    def _extract_lessons(
-        self, decision: GovernanceDecision, success: bool
-    ) -> list[str]:
+    def _extract_lessons(self, decision: GovernanceDecision, success: bool) -> list[str]:
         """Extract lessons learned from a decision."""
         lessons = []
 
@@ -245,16 +254,16 @@ class MetaCognitiveReflectionEngine:
 
     def optimize_thresholds(
         self,
-        metrics: dict[str, Any] | None = None,
+        metrics: dict[str, Any] = None,
     ) -> list[ThresholdOptimization]:
         """Generate threshold optimization recommendations."""
         optimizations = []
 
         # Analyze decision history for threshold optimization
         if self._decision_history:
-            success_rate = sum(
-                1 for d in self._decision_history if d.success
-            ) / len(self._decision_history)
+            success_rate = sum(1 for d in self._decision_history if d.success) / len(
+                self._decision_history
+            )
 
             # If success rate is very high, we can be more aggressive
             if success_rate > 0.9:
@@ -287,7 +296,7 @@ class MetaCognitiveReflectionEngine:
     def analyze_bridge_performance(
         self,
         bridge_name: str,
-        operations: list[Any] | None = None,
+        operations: list[Any] = None,
     ) -> BridgePerformance:
         """Analyze performance of a bridge."""
         if operations is None:
@@ -297,9 +306,7 @@ class MetaCognitiveReflectionEngine:
         successful = sum(1 for op in operations if getattr(op, "success", False))
 
         # Calculate average latency
-        latencies = [
-            getattr(op, "duration_ms", 0) for op in operations
-        ]
+        latencies = [getattr(op, "duration_ms", 0) for op in operations]
         avg_latency = sum(latencies) / len(latencies) if latencies else 0
 
         error_rate = (total - successful) / total if total > 0 else 0
@@ -344,9 +351,7 @@ class MetaCognitiveReflectionEngine:
 
         # Analyze bridges
         for bridge_name, performance in self._bridge_performance.items():
-            findings.append(
-                f"{bridge_name}: {performance.error_rate:.1%} error rate"
-            )
+            findings.append(f"{bridge_name}: {performance.error_rate:.1%} error rate")
 
             if performance.error_rate > 0.1:
                 findings.append(f"{bridge_name} has high error rate")
@@ -357,7 +362,7 @@ class MetaCognitiveReflectionEngine:
 
         reflection = MetaCognitiveReflection(
             reflection_id=reflection_id,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             target_layer="architecture",
             findings=findings,
             recommendations=recommendations,
@@ -366,7 +371,7 @@ class MetaCognitiveReflectionEngine:
         self._reflections.append(reflection)
         return reflection
 
-    def generate_meta_evolution_contract(self) -> dict[str, Any] | None:
+    def generate_meta_evolution_contract(self) -> dict[str, Any]:
         """Generate an evolution contract to improve the architecture itself."""
         # Get latest reflection
         if not self._reflections:
@@ -441,7 +446,7 @@ def main():
     mock_decisions = [
         DecisionEffectiveness(
             decision_id=f"dec_{i}",
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             expected_outcome="success",
             actual_outcome="success" if i % 10 != 0 else "failure",
             success=(i % 10 != 0),
@@ -465,7 +470,7 @@ def main():
     reflection = engine.reflect_on_architecture()
 
     print(f"  Reflection ID: {reflection.reflection_id}")
-    print(f"  Findings:")
+    print("  Findings:")
     for finding in reflection.findings:
         print(f"    - {finding}")
     print()

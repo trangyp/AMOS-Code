@@ -1,0 +1,127 @@
+groups:
+  - name: amos-orchestrator
+    interval: 30s
+    rules:
+      # Critical: System health is down
+      - alert: AMOSSystemDown
+        expr: amos_system_health == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: amos-orchestrator
+        annotations:
+          summary: 'AMOS Orchestrator is down'
+          description: 'System health is 0 for more than 1 minute'
+
+      # Critical: Low activation rate
+      - alert: AMOSLowActivationRate
+        expr: amos_activation_rate < 0.5
+        for: 5m
+        labels:
+          severity: critical
+          service: amos-orchestrator
+        annotations:
+          summary: 'AMOS activation rate is critically low'
+          description: 'Only {{ $value | humanizePercentage }} of modules are activated'
+
+      # Warning: Below optimal activation
+      - alert: AMOSBelowOptimalActivation
+        expr: amos_activation_rate < 0.8 and amos_activation_rate >= 0.5
+        for: 10m
+        labels:
+          severity: warning
+          service: amos-orchestrator
+        annotations:
+          summary: 'AMOS activation rate is below optimal'
+          description: 'Only {{ $value | humanizePercentage }} of modules are activated (target: 80%)'
+
+      # Critical: Critical modules failing
+      - alert: AMOSCriticalModulesFailing
+        expr: |
+          (
+            amos_modules_activated_total{tier="CRITICAL"} /
+            amos_modules_total{tier="CRITICAL"}
+          ) < 0.9
+        for: 2m
+        labels:
+          severity: critical
+          service: amos-orchestrator
+        annotations:
+          summary: 'Critical AMOS modules are failing'
+          description: 'Less than 90% of critical modules are activated'
+
+      # Warning: Module activation failures
+      - alert: AMOSModuleActivationFailed
+        expr: rate(amos_module_activation_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: amos-orchestrator
+        annotations:
+          summary: 'AMOS module activation failures detected'
+          description: '{{ $value }} module activation failures in the last 5 minutes'
+
+      # Warning: High activation duration
+      - alert: AMOSHighActivationDuration
+        expr: |
+          histogram_quantile(0.95,
+            rate(amos_module_activation_duration_seconds_bucket[5m])
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: amos-orchestrator
+        annotations:
+          summary: 'High module activation duration'
+          description: '95th percentile activation time is {{ $value }}s'
+
+      # Warning: Memory bridge issues
+      - alert: AMOSMemoryBridgeInactive
+        expr: |
+          (
+            amos_memory_bridges_active / amos_memory_bridges_total
+          ) < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: amos-orchestrator
+        annotations:
+          summary: 'Memory bridges are inactive'
+          description: 'Only {{ $value | humanizePercentage }} of memory bridges are active'
+
+      # Info: Guardrail violations
+      - alert: AMOSGuardrailViolation
+        expr: rate(amos_guardrail_violations_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: info
+          service: amos-orchestrator
+        annotations:
+          summary: 'Guardrail violations detected'
+          description: '{{ $value }} guardrail violations in the last 5 minutes'
+
+      # Warning: API error rate
+      - alert: AMOSHighAPIErrorRate
+        expr: |
+          (
+            sum(rate(amos_api_requests_total{status=~"5.."}[5m])) /
+            sum(rate(amos_api_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: amos-orchestrator
+        annotations:
+          summary: 'High API error rate'
+          description: 'API error rate is {{ $value | humanizePercentage }}'
+
+      # Critical: Orchestrator not initialized
+      - alert: AMOSNotInitialized
+        expr: amos_modules_total == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: amos-orchestrator
+        annotations:
+          summary: 'AMOS Orchestrator not initialized'
+          description: 'No modules have been discovered - orchestrator may be stuck'

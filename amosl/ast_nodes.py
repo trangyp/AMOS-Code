@@ -4,11 +4,8 @@ Implements the 9-tuple language structure:
 (O, S, D, C, E, M, U, V, A, R)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional
 
 
 class Substrate(Enum):
@@ -52,12 +49,12 @@ class Program(ASTNode):
     ontology: OntologyDecl = field(default_factory=lambda: OntologyDecl())
     state: StateDecl = field(default_factory=lambda: StateDecl())
     dynamics: DynamicsDecl = field(default_factory=lambda: DynamicsDecl())
-    constraints: list[ConstraintDecl] = field(default_factory=list)
-    effects: list[EffectDecl] = field(default_factory=list)
-    measures: list[MeasureDecl] = field(default_factory=list)
-    uncertainties: list[UncertaintyDecl] = field(default_factory=list)
-    verifies: list[VerifyDecl] = field(default_factory=list)
-    adapts: list[AdaptDecl] = field(default_factory=list)
+    constraints: List[ConstraintDecl] = field(default_factory=list)
+    effects: List[EffectDecl] = field(default_factory=list)
+    measures: List[MeasureDecl] = field(default_factory=list)
+    uncertainties: List[UncertaintyDecl] = field(default_factory=list)
+    verifies: List[VerifyDecl] = field(default_factory=list)
+    adapts: List[AdaptDecl] = field(default_factory=list)
     realizes: RealizeDecl = field(default_factory=lambda: RealizeDecl())
 
 
@@ -74,10 +71,10 @@ class OntologyDecl(ASTNode):
     O = O_c ⊕ O_q ⊕ O_b ⊕ O_h
     """
 
-    classical: list[EntityDecl] = field(default_factory=list)
-    quantum: list[QuantumEntityDecl] = field(default_factory=list)
-    biological: list[BioEntityDecl] = field(default_factory=list)
-    hybrid: list[HybridEntityDecl] = field(default_factory=list)
+    classical: List[EntityDecl] = field(default_factory=list)
+    quantum: List[QuantumEntityDecl] = field(default_factory=list)
+    biological: List[BioEntityDecl] = field(default_factory=list)
+    hybrid: List[HybridEntityDecl] = field(default_factory=list)
 
 
 @dataclass
@@ -87,11 +84,11 @@ class StateDecl(ASTNode):
     Σ = ⟨Σ_c, Σ_q, Σ_b, Σ_h, Σ_e, Σ_t⟩
     """
 
-    classical: list[StateVar] = field(default_factory=list)
-    quantum: list[QuantumState] = field(default_factory=list)
-    biological: list[BioState] = field(default_factory=list)
-    hybrid: list[HybridState] = field(default_factory=list)
-    environment: list[EnvVar] = field(default_factory=list)
+    classical: List[StateVar] = field(default_factory=list)
+    quantum: List[QuantumState] = field(default_factory=list)
+    biological: List[BioState] = field(default_factory=list)
+    hybrid: List[HybridState] = field(default_factory=list)
+    environment: List[EnvVar] = field(default_factory=list)
     time: Optional[TimeDecl] = None
 
 
@@ -102,9 +99,9 @@ class DynamicsDecl(ASTNode):
     Σ_{t+1} = F(Σ_t, α_t, μ_t, ε_t, τ_t)
     """
 
-    transitions: list[Transition] = field(default_factory=list)
-    actions: list[ActionDecl] = field(default_factory=list)
-    evolutions: list[Evolution] = field(default_factory=list)
+    transitions: List[Transition] = field(default_factory=list)
+    actions: List[ActionDecl] = field(default_factory=list)
+    evolutions: List[Evolution] = field(default_factory=list)
 
 
 @dataclass
@@ -127,7 +124,7 @@ class EffectDecl(ASTNode):
     """
 
     name: str = ""
-    effects: list[str] = field(default_factory=list)
+    effects: List[str] = field(default_factory=list)
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -163,7 +160,7 @@ class VerifyDecl(ASTNode):
     V = V_c ⊕ V_q ⊕ V_b ⊕ V_h
     """
 
-    checks: list[str] = field(default_factory=list)
+    checks: List[str] = field(default_factory=list)
     substrate: Substrate = Substrate.CLASSICAL
 
 
@@ -202,9 +199,9 @@ class EntityDecl(ASTNode):
     """Classical entity declaration."""
 
     name: str = ""
-    fields: list[Field] = field(default_factory=list)
-    states: list[str] = field(default_factory=list)
-    events: list[str] = field(default_factory=list)
+    fields: List[Field] = field(default_factory=list)
+    states: List[str] = field(default_factory=list)
+    events: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -213,8 +210,8 @@ class QuantumEntityDecl(ASTNode):
 
     name: str = ""
     qubits: int = 1
-    registers: list[str] = field(default_factory=list)
-    observables: list[str] = field(default_factory=list)
+    registers: List[str] = field(default_factory=list)
+    observables: List[str] = field(default_factory=list)
     circuit: Optional[Circuit] = None
 
 
@@ -223,10 +220,10 @@ class BioEntityDecl(ASTNode):
     """Biological entity declaration."""
 
     name: str = ""
-    dna: Optional[str] = None
-    rna: Optional[str] = None
-    protein: Optional[str] = None
-    reactions: list[Reaction] = field(default_factory=list)
+    dna: str = None
+    rna: str = None
+    protein: str = None
+    reactions: List[Reaction] = field(default_factory=list)
 
 
 @dataclass
@@ -234,9 +231,9 @@ class HybridEntityDecl(ASTNode):
     """Hybrid entity declaration."""
 
     name: str = ""
-    bridges: list[Bridge] = field(default_factory=list)
-    mappings: list[Mapping] = field(default_factory=list)
-    signals: list[Signal] = field(default_factory=list)
+    bridges: List[Bridge] = field(default_factory=list)
+    mappings: List[Mapping] = field(default_factory=list)
+    signals: List[Signal] = field(default_factory=list)
 
 
 # =============================================================================
@@ -310,7 +307,7 @@ class Transition(ASTNode):
     from_state: str = ""
     to_state: str = ""
     condition: Optional[Expr] = None
-    action: Optional[str] = None
+    action: str = None
 
 
 @dataclass
@@ -320,7 +317,7 @@ class ActionDecl(ASTNode):
     name: str = ""
     pre: Optional[Expr] = None
     post: Optional[Expr] = None
-    effects: list[str] = field(default_factory=list)
+    effects: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -349,7 +346,7 @@ class Field(ASTNode):
 class Circuit(ASTNode):
     """Quantum circuit."""
 
-    gates: list[str] = field(default_factory=list)
+    gates: List[str] = field(default_factory=list)
     depth: int = 0
 
 
@@ -357,8 +354,8 @@ class Circuit(ASTNode):
 class Reaction(ASTNode):
     """Biological reaction."""
 
-    reactants: list[str] = field(default_factory=list)
-    products: list[str] = field(default_factory=list)
+    reactants: List[str] = field(default_factory=list)
+    products: List[str] = field(default_factory=list)
     rate: Optional[Expr] = None
 
 

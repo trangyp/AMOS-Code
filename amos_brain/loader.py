@@ -1,13 +1,15 @@
 """Brain configuration loader - loads and validates AMOS brain JSON specs."""
 
-from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -126,8 +128,8 @@ class BrainLoader:
                 with open(json_file, encoding="utf-8") as f:
                     data = json.load(f)
                 self._raw_specs[f"intel_{json_file.stem}"] = data
-            except Exception:
-                pass  # Skip invalid files
+            except Exception as e:
+                logger.debug(f"Failed to load intelligence file {json_file}: {e}")
 
     async def load_async(self, timeout_seconds: float = 5.0) -> BrainConfig:
         """Async load with timeout protection to prevent UI hanging.
@@ -139,12 +141,14 @@ class BrainLoader:
             BrainConfig instance. On timeout, returns a minimal default config
             instead of raising, to avoid blocking the UI.
         """
-        loop = asyncio.get_event_loop()
+from __future__ import annotations
+
         try:
+            loop = asyncio.get_running_loop()
             return await asyncio.wait_for(
                 loop.run_in_executor(None, self.load), timeout=timeout_seconds
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Return a minimal config on timeout to prevent hanging
             self._config = BrainConfig()
             return self._config
@@ -160,8 +164,8 @@ class BrainLoader:
                     try:
                         with open(json_file, encoding="utf-8") as f:
                             stack_data[category_name].append(json.load(f))
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.debug(f"Failed to load cognitive stack file {json_file}: {e}")
         self._raw_specs["cognitive_stack"] = stack_data
         self._config.loaded_specs.append("cognitive_stack")
 

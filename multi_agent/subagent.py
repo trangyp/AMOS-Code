@@ -1,7 +1,5 @@
 """Threaded sub-agent system for spawning nested agent loops."""
 
-from __future__ import annotations
-
 import os
 import queue
 import subprocess
@@ -10,7 +8,7 @@ import uuid
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # ── Agent definition ───────────────────────────────────────────────────────
 
@@ -29,7 +27,7 @@ class AgentDefinition:
 
 # ── Built-in agent definitions ─────────────────────────────────────────────
 
-_BUILTIN_AGENTS: dict[str, AgentDefinition] = {
+_BUILTIN_AGENTS: Dict[str, AgentDefinition] = {
     "general-purpose": AgentDefinition(
         name="general-purpose",
         description=(
@@ -178,7 +176,7 @@ def load_agent_definitions() -> dict[str, AgentDefinition]:
       ~/.clawspring/agents/*.md   (user-level)
       .clawspring/agents/*.md     (project-level, overrides user)
     """
-    defs: dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
+    defs: Dict[str, AgentDefinition] = dict(_BUILTIN_AGENTS)
 
     # User-level
     user_dir = Path.home() / ".clawspring" / "agents"
@@ -218,7 +216,7 @@ class SubAgentTask:
     id: str
     prompt: str
     status: str = "pending"  # pending | running | completed | failed | cancelled
-    result: Optional[str] = None
+    result: str = None
     depth: int = 0
     name: str = ""  # optional human-readable name (addressable by SendMessage)
     worktree_path: str = ""  # set if isolation="worktree"
@@ -231,7 +229,7 @@ class SubAgentTask:
 # ── Worktree helpers ───────────────────────────────────────────────────────
 
 
-def _git_root(cwd: str) -> Optional[str]:
+def _git_root(cwd: str) -> str:
     """Return the git root directory for cwd, or None if not in a git repo."""
     try:
         r = subprocess.run(
@@ -320,8 +318,8 @@ class SubAgentManager:
     """Manages concurrent sub-agent tasks using a thread pool."""
 
     def __init__(self, max_concurrent: int = 5, max_depth: int = 5):
-        self.tasks: dict[str, SubAgentTask] = {}
-        self._by_name: dict[str, str] = {}  # name → task_id
+        self.tasks: Dict[str, SubAgentTask] = {}
+        self._by_name: Dict[str, str] = {}  # name → task_id
         self.max_concurrent = max_concurrent
         self.max_depth = max_depth
         self._pool = ThreadPoolExecutor(max_workers=max_concurrent)
@@ -475,12 +473,12 @@ class SubAgentManager:
                 pass
         return task
 
-    def get_result(self, task_id: str) -> Optional[str]:
+    def get_result(self, task_id: str) -> str:
         """Return the result string for a completed task, or None."""
         task = self.tasks.get(task_id)
         return task.result if task else None
 
-    def list_tasks(self) -> list[SubAgentTask]:
+    def list_tasks(self) -> List[SubAgentTask]:
         """Return all tracked tasks."""
         return list(self.tasks.values())
 

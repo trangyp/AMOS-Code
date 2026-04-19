@@ -9,11 +9,9 @@ Pre-built workflows for common scenarios:
   - Post-Mortem Analysis
 
 Usage:
-  from amos_brain.cookbook import ArchitectureDecision
+    from amos_brain.cookbook import ArchitectureDecision
   result = ArchitectureDecision.run("Should we use microservices?")
 """
-
-from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
@@ -50,7 +48,7 @@ class ArchitectureDecision:
     TEMPLATE_TAGS = ["architecture", "adr", "system-design"]
 
     @classmethod
-    def run(cls, problem: str, context: dict[str, Any] | None = None) -> WorkflowResult:
+    def run(cls, problem: str, context: dict[str, Any] = None) -> WorkflowResult:
         """Execute architecture decision workflow.
 
         Args:
@@ -90,7 +88,7 @@ class ArchitectureDecision:
         )
 
     @classmethod
-    def _enrich_problem(cls, problem: str, context: dict[str, Any] | None) -> str:
+    def _enrich_problem(cls, problem: str, context: dict[str, Any]) -> str:
         """Enrich problem with architectural context."""
         if not context:
             return problem
@@ -152,9 +150,9 @@ class ProjectPlanner:
     def run(
         cls,
         project: str,
-        timeline: str | None = None,
-        team: str | None = None,
-        constraints: list[str] | None = None,
+        timeline: str = None,
+        team: str = None,
+        constraints: list[str] = None,
     ) -> WorkflowResult:
         """Execute project planning workflow.
 
@@ -238,9 +236,9 @@ class ProblemDiagnosis:
     def run(
         cls,
         problem: str,
-        symptoms: list[str] | None = None,
-        checked: list[str] | None = None,
-        timeline: str | None = None,
+        symptoms: list[str] = None,
+        checked: list[str] = None,
+        timeline: str = None,
     ) -> WorkflowResult:
         """Execute problem diagnosis workflow.
 
@@ -328,8 +326,8 @@ class TechnologySelection:
         cls,
         category: str,
         options: list[str],
-        criteria: list[str] | None = None,
-        must_haves: list[str] | None = None,
+        criteria: list[str] = None,
+        must_haves: list[str] = None,
     ) -> WorkflowResult:
         """Execute technology selection workflow.
 
@@ -411,8 +409,8 @@ class RiskAssessment:
     def run(
         cls,
         action: str,
-        impacts: list[str] | None = None,
-        mitigations: list[str] | None = None,
+        impacts: list[str] = None,
+        mitigations: list[str] = None,
         severity_threshold: str = "medium",
     ) -> WorkflowResult:
         """Execute risk assessment workflow.

@@ -3,18 +3,19 @@
 Provides agent functionality for AMOS system.
 """
 
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 
 class Agent:
     """AMOS Agent for task execution."""
 
-    def __init__(self, name: str, tools: list[Callable] | None = None):
+    def __init__(self, name: str, tools: List[Callable] = None):
         self.name = name
         self.tools = tools or []
         self.state = "idle"
 
-    def run(self, task: str, **kwargs: Any) -> dict[str, Any]:
+    def run(self, task: str, **kwargs: Any) -> Dict[str, Any]:
         """Execute a task."""
         return {"status": "completed", "result": None, "agent": self.name}
 
@@ -27,13 +28,13 @@ class AgentOrchestrator:
     """Orchestrates multiple agents."""
 
     def __init__(self):
-        self.agents: dict[str, Agent] = {}
+        self.agents: Dict[str, Agent] = {}
 
     def register_agent(self, agent: Agent) -> None:
         """Register an agent."""
         self.agents[agent.name] = agent
 
-    def dispatch(self, task: str, agent_name: str | None = None) -> dict[str, Any]:
+    def dispatch(self, task: str, agent_name: str = None) -> Dict[str, Any]:
         """Dispatch task to agent."""
         if agent_name and agent_name in self.agents:
             return self.agents[agent_name].run(task)

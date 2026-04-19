@@ -1,14 +1,12 @@
 """Environment Scanner — Filesystem and change detection for AMOS."""
 
-from __future__ import annotations
-
 import hashlib
 import os
 import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -19,7 +17,7 @@ class FileChange:
     change_type: str  # created, modified, deleted, moved
     old_hash: str = ""
     new_hash: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     size_delta: int = 0
 
 
@@ -29,10 +27,10 @@ class ScanResult:
 
     timestamp: str
     files_scanned: int
-    changes: list[FileChange]
-    new_files: list[str]
-    modified_files: list[str]
-    deleted_files: list[str]
+    changes: List[FileChange]
+    new_files: List[str]
+    modified_files: List[str]
+    deleted_files: List[str]
 
 
 class EnvironmentScanner:
@@ -45,11 +43,11 @@ class EnvironmentScanner:
     - Git status integration
     """
 
-    def __init__(self, watch_paths: list[str] = None):
+    def __init__(self, watch_paths: List[str] = None):
         self._watch_paths = watch_paths or ["."]
-        self._file_hashes: dict[str, str] = {}
-        self._file_sizes: dict[str, int] = {}
-        self._last_scan: Optional[str] = None
+        self._file_hashes: Dict[str, str] = {}
+        self._file_sizes: Dict[str, int] = {}
+        self._last_scan: str = None
         self._ignore_patterns = [
             ".git",
             "__pycache__",
@@ -85,7 +83,7 @@ class EnvironmentScanner:
         new_files = []
         modified_files = []
         deleted_files = []
-        current_files: set[str] = set()
+        current_files: Set[str] = set()
 
         # Walk directory
         files_scanned = 0
@@ -148,7 +146,7 @@ class EnvironmentScanner:
             if old_file in self._file_sizes:
                 del self._file_sizes[old_file]
 
-        self._last_scan = datetime.utcnow().isoformat()
+        self._last_scan = datetime.now(UTC).isoformat()
 
         return ScanResult(
             timestamp=self._last_scan,
@@ -159,7 +157,7 @@ class EnvironmentScanner:
             deleted_files=deleted_files,
         )
 
-    def get_git_status(self) -> dict[str, Any]:
+    def get_git_status(self) -> Dict[str, Any]:
         """Get git repository status."""
         try:
             result = subprocess.run(
@@ -210,13 +208,13 @@ class EnvironmentScanner:
         except Exception:
             return "unknown"
 
-    def get_directory_summary(self, path: str = ".") -> dict[str, Any]:
+    def get_directory_summary(self, path: str = ".") -> Dict[str, Any]:
         """Get summary of directory contents."""
         try:
             total_files = 0
             total_dirs = 0
             total_size = 0
-            extensions: dict[str, int] = {}
+            extensions: Dict[str, int] = {}
 
             for root, dirs, files in os.walk(path):
                 if self._should_ignore(root):
@@ -249,7 +247,7 @@ class EnvironmentScanner:
         except Exception as e:
             return {"error": str(e)}
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get scanner status."""
         return {
             "watch_paths": self._watch_paths,

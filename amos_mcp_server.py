@@ -23,8 +23,6 @@ MCP Configuration (add to ~/.clawspring/mcp.json):
 }
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import os
@@ -36,6 +34,10 @@ from typing import Any
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import AMOS brain
+from amos_agent_governance_toolkit import (
+    CrossModelVerificationKernel,
+    get_governance_toolkit,
+)
 from amos_brain import GlobalLaws, get_amos_integration
 
 
@@ -45,7 +47,7 @@ class Tool:
 
     name: str
     description: str
-    input_schema: dict[str, Any]
+    input_schema: Dict[str, Any]
     handler: callable
 
 
@@ -157,6 +159,55 @@ class AMOSMCPServer:
                     "required": ["source"],
                 },
                 handler=self._handle_amosl_compile,
+            ),
+            "amos_governance_evaluate": Tool(
+                name="amos_governance_evaluate",
+                description=(
+                    "Evaluate action through 2026 Agent Governance Toolkit. "
+                    "Checks semantic intent (goal hijacking), execution rings, "
+                    "trust scoring, and OWASP Agentic AI compliance."
+                ),
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "action": {"type": "string", "description": "Action to evaluate"},
+                        "component_id": {
+                            "type": "string",
+                            "description": "Component making request",
+                        },
+                        "sensitivity": {
+                            "type": "string",
+                            "description": "low/medium/high/critical",
+                        },
+                    },
+                    "required": ["action", "component_id"],
+                },
+                handler=self._handle_governance_evaluate,
+            ),
+            "amos_verify_consensus": Tool(
+                name="amos_verify_consensus",
+                description=(
+                    "Cross-Model Verification Kernel (CMVK) - Verify query against "
+                    "memory poisoning via multi-model consensus. AGENT-06 protection."
+                ),
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "Query to verify"},
+                        "context": {"type": "object", "description": "Optional context"},
+                    },
+                    "required": ["query"],
+                },
+                handler=self._handle_verify_consensus,
+            ),
+            "amos_governance_report": Tool(
+                name="amos_governance_report",
+                description=(
+                    "Get comprehensive governance report including SLOs, "
+                    "policy latency, trust distribution, and OWASP coverage."
+                ),
+                input_schema={"type": "object", "properties": {}},
+                handler=self._handle_governance_report,
             ),
         }
 
@@ -307,6 +358,75 @@ class AMOSMCPServer:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+    def _handle_governance_evaluate(self, args: dict) -> dict:
+        """Handle amos_governance_evaluate tool."""
+        import asyncio
+
+        action = args.get("action", "")
+        component_id = args.get("component_id", "")
+        sensitivity = args.get("sensitivity", "medium")
+
+        if not action or not component_id:
+            return {"error": "action and component_id required"}
+
+        toolkit = get_governance_toolkit()
+
+        # Register component if not exists
+        if component_id not in toolkit.identities:
+            asyncio.run(toolkit.register_component(component_id, ["mcp_access"], initial_trust=500))
+
+        # Evaluate action
+        result = asyncio.run(
+            toolkit.evaluate_action(component_id, action, {"sensitivity": sensitivity})
+        )
+
+        return {
+            "allowed": result["allowed"],
+            "decision": result["decision"],
+            "intent_confidence": result["intent_confidence"],
+            "risk_flags": result["risk_flags"],
+            "execution_ring": result["execution_ring"],
+            "policy_latency_ms": result["policy_latency_ms"],
+            "cmvk_consensus": result.get("cmvk_consensus"),
+        }
+
+    def _handle_verify_consensus(self, args: dict) -> dict:
+        """Handle amos_verify_consensus tool."""
+        import asyncio
+
+        query = args.get("query", "")
+        context = args.get("context", {})
+
+        if not query:
+            return {"error": "query required"}
+
+        cmvk = CrossModelVerificationKernel()
+        result = asyncio.run(cmvk.verify(query, context))
+
+        return {
+            "query": result.query,
+            "models_consulted": result.models_consulted,
+            "consensus_score": result.consensus_score,
+            "is_memory_poisoned": result.is_memory_poisoned(),
+            "verified_answer": result.verified_answer,
+            "dissenting_models": result.dissenting_models,
+        }
+
+    def _handle_governance_report(self, args: dict) -> dict:
+        """Handle amos_governance_report tool."""
+        toolkit = get_governance_toolkit()
+        report = toolkit.get_governance_report()
+
+        return {
+            "toolkit_version": report["toolkit_version"],
+            "components_registered": report["components_registered"],
+            "policy_evaluations": report["policy_evaluations"],
+            "policy_p99_latency_ms": report["policy_p99_latency_ms"],
+            "slos": report["slos"],
+            "owasp_coverage": report["owasp_coverage"],
+            "circuit_breakers": report["circuit_breakers"],
+        }
+
     def handle_request(self, request: dict) -> dict:
         """Handle incoming MCP request."""
         method = request.get("method", "")
@@ -349,7 +469,7 @@ class AMOSMCPServer:
         """Run server in stdio mode (for MCP clients)."""
         while True:
             try:
-                line = await asyncio.get_event_loop().run_in_executor(None, sys.stdin.readline)
+                line = await asyncio.get_running_loop().run_in_executor(None, sys.stdin.readline)
                 if not line:
                     break
 

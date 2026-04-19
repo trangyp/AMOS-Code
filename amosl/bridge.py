@@ -13,8 +13,6 @@ Bridges:
     - Classical → Biological (control)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any
@@ -38,7 +36,7 @@ class BridgeSignal:
     value: Any
     uncertainty: float
     timestamp: float
-    metadata: dict[str, Any]
+    metadata: Dict[str, Any]
 
 
 class BridgeExecutor:
@@ -46,7 +44,7 @@ class BridgeExecutor:
 
     def __init__(self):
         self.bridges: dict[str, dict[str, Any]] = {}
-        self.active_bridges: dict[str, BridgeSignal] = {}
+        self.active_bridges: Dict[str, BridgeSignal] = {}
 
     def check_legality(
         self,
@@ -56,7 +54,7 @@ class BridgeExecutor:
         time_compat: bool = True,
         obs_compat: bool = True,
         error_compat: bool = True,
-    ) -> tuple[bool, str]:
+    ) -> Tuple[bool, str]:
         """Check Legal(B_{ij})."""
         checks = {
             "TypeCompat": type_compat,
@@ -75,7 +73,7 @@ class BridgeExecutor:
 
     def execute_classical_to_quantum(
         self, classical_value: Any, qubit_index: int = 0
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """B_{c→q}: Encode classical bit as qubit.
 
         |0⟩ for 0, |1⟩ for 1
@@ -105,7 +103,7 @@ class BridgeExecutor:
 
     def execute_quantum_to_classical(
         self, measurement_result: Any, basis: str = "computational"
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """B_{q→c}: Measurement → Classical decision.
 
         Collapses quantum state to classical bit.
@@ -133,7 +131,7 @@ class BridgeExecutor:
 
     def execute_classical_to_biological(
         self, control_signal: float, threshold: float = 0.5
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """B_{c→b}: Classical control → Biological actuation.
 
         Threshold-based gene expression trigger.
@@ -163,7 +161,7 @@ class BridgeExecutor:
 
     def execute_biological_to_classical(
         self, expression_level: float, threshold: float = 0.5
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """B_{b→c}: Expression level → Classical threshold.
 
         Converts continuous bio signal to discrete classical state.
@@ -185,7 +183,7 @@ class BridgeExecutor:
             "legality": self.check_legality(BridgeType.B_TO_C),
         }
 
-    def execute_biological_to_quantum(self, protein_concentration: float) -> dict[str, Any]:
+    def execute_biological_to_quantum(self, protein_concentration: float) -> Dict[str, Any]:
         """B_{b→q}: Protein concentration → Quantum register encoding."""
         # Encode concentration as quantum phase
         normalized = min(max(protein_concentration / 100.0, 0.0), 1.0)
@@ -211,7 +209,7 @@ class BridgeExecutor:
             "legality": self.check_legality(BridgeType.B_TO_Q),
         }
 
-    def execute_quantum_to_biological(self, quantum_state: dict) -> dict[str, Any]:
+    def execute_quantum_to_biological(self, quantum_state: dict) -> Dict[str, Any]:
         """B_{q→b}: Quantum state → Biological stimulus."""
         # Extract probability amplitude
         prob_1 = quantum_state.get("probabilities", {}).get("1", 0.5)
@@ -238,7 +236,7 @@ class BridgeExecutor:
             "legality": self.check_legality(BridgeType.Q_TO_B),
         }
 
-    def execute(self, bridge_type: BridgeType, value: Any, **kwargs) -> dict[str, Any]:
+    def execute(self, bridge_type: BridgeType, value: Any, **kwargs) -> Dict[str, Any]:
         """Execute bridge by type."""
         dispatch = {
             BridgeType.C_TO_Q: lambda: self.execute_classical_to_quantum(

@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-04-18T23:20:21.407990+00:00",
+  "passed": false,
+  "reliability_score": 0.41666666666666663,
+  "performance": {
+    "bridge_import_ms": 0.00012499999968440534
+  },
+  "recommendations": [
+    "Fix any high/critical security findings",
+    "Ensure all health check endpoints are operational",
+    "Monitor import times in production environment"
+  ]
+}

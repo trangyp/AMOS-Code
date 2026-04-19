@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 
 @dataclass
 class TranscriptStore:
-    entries: list[str] = field(default_factory=list)
+    entries: List[str] = field(default_factory=list)
     flushed: bool = False
 
     def append(self, entry: str) -> None:

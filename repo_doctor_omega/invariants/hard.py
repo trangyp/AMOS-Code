@@ -7,7 +7,6 @@ RepoValid = I_parse ∧ I_import ∧ I_type ∧ I_api ∧ I_entry ∧
             I_tests ∧ I_security ∧ I_history
 """
 
-from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -53,8 +52,8 @@ class InvariantResult:
     invariant: str
     passed: bool
     basis: BasisVector
-    violations: list[InvariantViolation] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    violations: List[InvariantViolation] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     @property
     def severity(self) -> float:
@@ -73,7 +72,7 @@ class HardInvariant(ABC):
         self.name = kind.name
 
     @abstractmethod
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check if invariant holds.
 
         Args:
@@ -101,7 +100,7 @@ class ParseInvariant(HardInvariant):
     def __init__(self, error_threshold: float = 5.0):
         super().__init__(InvariantKind.PARSE, BasisVector.SYNTAX)
         self.error_threshold = error_threshold
-        self._substrate: Any | None = None
+        self._substrate: Optional[Any] = None
 
     def _get_substrate(self) -> Any:
         """Lazy-load Tree-sitter substrate."""
@@ -114,7 +113,7 @@ class ParseInvariant(HardInvariant):
                 self._substrate = None
         return self._substrate
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check parse integrity using Tree-sitter."""
         violations = []
         substrate = self._get_substrate()
@@ -201,7 +200,7 @@ class ImportInvariant(HardInvariant):
 
     def __init__(self):
         super().__init__(InvariantKind.IMPORT, BasisVector.IMPORT)
-        self._substrate: Any | None = None
+        self._substrate: Optional[Any] = None
 
     def _get_substrate(self, repo_path: str) -> Any:
         """Lazy-load Import substrate."""
@@ -214,7 +213,7 @@ class ImportInvariant(HardInvariant):
                 self._substrate = None
         return self._substrate
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check import resolution integrity."""
         violations = []
 
@@ -275,7 +274,7 @@ class APIInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.API, BasisVector.API)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check public/runtime API commutativity."""
         violations = []
 
@@ -307,7 +306,7 @@ class EntrypointInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.ENTRYPOINT, BasisVector.ENTRYPOINT)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check entrypoint integrity."""
         violations = []
 
@@ -339,7 +338,7 @@ class PackagingInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.PACKAGING, BasisVector.PACKAGING)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check packaging integrity."""
         violations = []
 
@@ -370,7 +369,7 @@ class StatusInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.STATUS, BasisVector.STATUS)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check status truth integrity."""
         violations = []
 
@@ -401,7 +400,7 @@ class TestInvariant(HardInvariant):
 
     def __init__(self):
         super().__init__(InvariantKind.TEST, BasisVector.TEST)
-        self._substrate: Any | None = None
+        self._substrate: Optional[Any] = None
 
     def _get_substrate(self, repo_path: str) -> Any:
         """Lazy-load Test substrate."""
@@ -414,7 +413,7 @@ class TestInvariant(HardInvariant):
                 self._substrate = None
         return self._substrate
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check test integrity."""
         violations = []
 
@@ -486,20 +485,21 @@ class SecurityInvariant(HardInvariant):
 
     def __init__(self):
         super().__init__(InvariantKind.SECURITY, BasisVector.SECURITY)
-        self._substrate: Any | None = None
+        self._substrate: Optional[Any] = None
 
     def _get_substrate(self, repo_path: str) -> Any:
         """Lazy-load Security substrate."""
         if self._substrate is None:
             try:
                 from ..ingest.security_substrate import SecuritySubstrate
+from typing import Callable, Optional
 
                 self._substrate = SecuritySubstrate(repo_path)
             except ImportError:
                 self._substrate = None
         return self._substrate
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any]  = None) -> InvariantResult:
         """Check for security vulnerabilities."""
         violations = []
 

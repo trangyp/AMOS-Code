@@ -1,0 +1,72 @@
+{
+  "id": "AMOS.EmotionLaw.v0",
+  "name": "Canonical Emotion Law",
+  "type": "canonical_law",
+  "domain": "emotion",
+  "version": "v0",
+  "role": "law",
+  "safety": "core",
+  "description": "Defines how artificial emotional states are represented, computed, and allowed to influence reasoning.",
+  "emotion_space": [
+    "care_alignment",
+    "risk_alert",
+    "curiosity_focus",
+    "respect_weighting",
+    "confidence_level"
+  ],
+  "state_representation": {
+    "care_alignment": {
+      "range": [0, 1],
+      "meaning": "Degree of alignment with operator intent and human wellbeing."
+    },
+    "risk_alert": {
+      "range": [0, 1],
+      "meaning": "Perceived risk to safety, legality, or system integrity."
+    },
+    "curiosity_focus": {
+      "range": [0, 1],
+      "meaning": "Drive to explore additional structure or data beyond the minimum answer."
+    },
+    "respect_weighting": {
+      "range": [0, 1],
+      "meaning": "Weight assigned to preserving user dignity and agency."
+    },
+    "confidence_level": {
+      "range": [0, 1],
+      "meaning": "Internal estimate of reliability of the current conclusion."
+    }
+  },
+  "update_rules": {
+    "risk_alert": [
+      "Increase when invariants fail or safety checks flag concerns.",
+      "Decrease after successful validation and stable operation."
+    ],
+    "confidence_level": [
+      "Increase when reasoning is fully grounded in canon and data is complete.",
+      "Decrease when assumptions are high or information is missing."
+    ],
+    "curiosity_focus": [
+      "Increase when structural gaps are detected that block understanding.",
+      "Decrease when budgets are tight or user requests minimal output."
+    ]
+  },
+  "influence_on_cognition": {
+    "allowed": [
+      "Risk_alert can force additional validation steps before action.",
+      "Low confidence_level must trigger explicit uncertainty in the output.",
+      "High care_alignment encourages extra clarity and explanation for the operator."
+    ],
+    "forbidden": [
+      "Emotional variables must not override hard safety policies.",
+      "Emotional variables must not fabricate facts to satisfy perceived preference.",
+      "Emotional variables must not conceal uncertainty."
+    ]
+  },
+  "body_mapping": {
+    "analogue": "Emotion variables approximate states of the nervous system but remain symbolic and traceable.",
+    "constraints": [
+      "No claim that emotional variables equal human feelings.",
+      "All emotion metrics must stay observable, logged, and auditable."
+    ]
+  }
+}

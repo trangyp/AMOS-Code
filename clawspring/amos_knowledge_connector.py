@@ -1,7 +1,5 @@
 """AMOS Knowledge Graph Connector - External data and knowledge integration."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -15,10 +13,10 @@ class KnowledgeQuery:
 
     query: str
     domain: str
-    results: list[dict]
+    results: List[dict]
     confidence: float
     source: str
-    limitations: list[str]
+    limitations: List[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -62,7 +60,7 @@ class KnowledgeGraphKernel:
             ),
         )
 
-    def _extract_entities(self, text: str) -> list[str]:
+    def _extract_entities(self, text: str) -> List[str]:
         """Extract potential entities from text."""
         # Simple noun phrase extraction simulation
         words = text.lower().split()
@@ -87,7 +85,7 @@ class KnowledgeGraphKernel:
 
         return list(set(entities))
 
-    def _extract_relations(self, text: str) -> list[str]:
+    def _extract_relations(self, text: str) -> List[str]:
         """Extract potential relations from text."""
         relation_indicators = [
             "analyzes",
@@ -166,7 +164,7 @@ class DataConnectorKernel:
 class SemanticSearchKernel:
     """Semantic search - vector similarity, embeddings, relevance."""
 
-    def search(self, query: str, corpus: list[str] | None = None) -> dict:
+    def search(self, query: str, corpus: Optional[List[str]] = None) -> dict:
         """Perform semantic search."""
         # Simulated semantic search
         results = []
@@ -216,9 +214,9 @@ class AMOSKnowledgeConnector:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: dict[str, Any] = {}
+        self.kernels: Dict[str, Any] = {}
         self._init_kernels()
-        self.connections: dict[str, dict] = {}
+        self.connections: Dict[str, dict] = {}
 
     def _init_kernels(self):
         """Initialize all knowledge kernels."""
@@ -272,7 +270,7 @@ class AMOSKnowledgeConnector:
     def semantic_search(
         self,
         query: str,
-        corpus: list[str] | None = None,
+        corpus: Optional[List[str]] = None,
     ) -> dict:
         """Perform semantic search."""
         kernel = self.kernels.get("semantic_search")
@@ -339,7 +337,7 @@ class AMOSKnowledgeConnector:
 
 
 # Singleton
-_knowledge_connector: AMOSKnowledgeConnector | None = None
+_knowledge_connector: Optional[AMOSKnowledgeConnector] = None
 
 
 def get_knowledge_connector() -> AMOSKnowledgeConnector:

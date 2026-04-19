@@ -1,5 +1,7 @@
 """AMOS Predictive Integration - Connect Organism Predictive Engine to Cognitive System."""
 
+from __future__ import annotations
+
 import sys
 from dataclasses import dataclass
 from pathlib import Path

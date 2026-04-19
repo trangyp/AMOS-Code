@@ -1,8 +1,11 @@
 """AMOS Cognitive Engine Executor - Executes tasks through selected engines."""
 
+from __future__ import annotations
+
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -16,6 +19,7 @@ class ExecutionResult:
     laws_checked: list[str]
     violations_found: list[str]
     execution_time_ms: float = 0.0
+    mathematical_analysis: dict[str, Any] = None
 
 
 class EngineExecutor:
@@ -24,7 +28,18 @@ class EngineExecutor:
     def __init__(self, brain_loader: Any = None):
         self.brain_loader = brain_loader
         self._engines: dict[str, Callable] = {}
+        self._math_engine: Any = None
         self._register_default_engines()
+        self._initialize_math_engine()
+
+    def _initialize_math_engine(self):
+        """Initialize mathematical framework engine."""
+        try:
+            from .mathematical_framework_engine import get_framework_engine
+
+            self._math_engine = get_framework_engine()
+        except Exception as e:
+            print(f"[EngineExecutor] Math engine init warning: {e}")
 
     def _register_default_engines(self):
         """Register the core AMOS cognitive engines."""
@@ -35,7 +50,19 @@ class EngineExecutor:
             "AMOS_Biology_And_Cognition_Engine": self._execute_biology_engine,
             "AMOS_Strategy_Game_Engine": self._execute_strategy_engine,
             "AMOS_Society_Culture_Engine": self._execute_society_engine,
+            "AMOS_Design_Validation_Engine": self._execute_validation_engine,
         }
+        self._validation_engine = None
+        self._initialize_validation_engine()
+
+    def _initialize_validation_engine(self):
+        """Initialize design validation engine."""
+        try:
+            from .design_validation_engine import get_design_validation_engine
+
+            self._validation_engine = get_design_validation_engine()
+        except Exception as e:
+            print(f"[EngineExecutor] Validation engine init warning: {e}")
 
     def _execute_logic_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute deterministic logic analysis."""
@@ -50,30 +77,73 @@ class EngineExecutor:
         }
 
     def _execute_engineering_engine(self, task: str, context: dict) -> dict[str, Any]:
-        """Execute engineering/mathematical analysis."""
+        """Execute engineering/mathematical analysis using framework engine."""
         is_code = any(kw in task.lower() for kw in ["code", "function", "class", "implement"])
-        return {
-            "perspectives": [
-                "Technical feasibility assessment",
-                "Implementation structure",
-                "Edge case analysis" if is_code else "Mathematical formalization",
-            ],
+
+        # Get mathematical analysis from framework engine
+        math_analysis = None
+        if self._math_engine:
+            math_analysis = self._math_engine.analyze_architecture(task)
+
+        perspectives = [
+            "Technical feasibility assessment",
+            "Implementation structure",
+            "Edge case analysis" if is_code else "Mathematical formalization",
+        ]
+
+        # Add mathematical perspectives if available
+        if math_analysis and math_analysis.get("detected_domains"):
+            perspectives.append(
+                f"Mathematical domains: {', '.join(math_analysis['detected_domains'])}"
+            )
+
+        result = {
+            "perspectives": perspectives,
             "confidence": 0.80,
             "reasoning": "Engineering decomposition applied",
             "code_focused": is_code,
+            "mathematical_analysis": math_analysis,
         }
 
+        # Add specific recommendations for code tasks
+        if is_code and math_analysis:
+            result["framework_recommendations"] = math_analysis.get("recommended_frameworks", [])
+
+        return result
+
     def _execute_design_engine(self, task: str, context: dict) -> dict[str, Any]:
-        """Execute design language analysis."""
-        return {
-            "perspectives": [
-                "Structural clarity review",
-                "Pattern recognition",
-                "Aesthetic/functional balance",
-            ],
+        """Execute design language analysis with mathematical foundations."""
+        perspectives = [
+            "Structural clarity review",
+            "Pattern recognition",
+            "Aesthetic/functional balance",
+        ]
+
+        result = {
+            "perspectives": perspectives,
             "confidence": 0.75,
             "reasoning": "Design principles applied",
         }
+
+        # Add mathematical design analysis if available
+        if self._math_engine:
+            task_lower = task.lower()
+
+            # Check for spacing/layout tasks
+            if any(kw in task_lower for kw in ["spacing", "grid", "layout", "margin", "padding"]):
+                # Default to 24px analysis as example
+                spacing_analysis = self._math_engine.solve_design_spacing(24)
+                result["spacing_analysis"] = spacing_analysis
+                result["perspectives"].append(f"8-point grid: {spacing_analysis['is_8pt_aligned']}")
+
+            # Check for typography tasks
+            if any(kw in task_lower for kw in ["font", "type", "scale", "typography"]):
+                golden_ratio = self._math_engine.ui_engine.get_golden_ratio()
+                type_scale = self._math_engine.ui_engine.calculate_type_scale(16, golden_ratio, 5)
+                result["typography_scale"] = type_scale
+                result["perspectives"].append(f"Golden ratio scale applied ({golden_ratio:.3f})")
+
+        return result
 
     def _execute_biology_engine(self, task: str, context: dict) -> dict[str, Any]:
         """Execute biological/cognitive analysis."""
@@ -111,6 +181,65 @@ class EngineExecutor:
             "reasoning": "Social systems analysis applied",
         }
 
+    def _execute_validation_engine(self, task: str, context: dict) -> dict[str, Any]:
+        """Execute design validation using mathematical frameworks."""
+        if not self._validation_engine:
+            return {
+                "perspectives": ["Design validation unavailable"],
+                "confidence": 0.0,
+                "reasoning": "Validation engine not initialized",
+            }
+
+        result = {"perspectives": [], "confidence": 0.0, "reasoning": "", "validations": []}
+
+        # Check for UI validation requests
+        if any(kw in task.lower() for kw in ["spacing", "layout", "design", "ui", "typography"]):
+            try:
+                validation = self._validation_engine.validate_ui_design(
+                    spacing_values=context.get("spacing_values"),
+                    typography_sizes=context.get("typography_sizes"),
+                    color_contrasts=context.get("color_contrasts"),
+                )
+                result["validations"].append({"type": "ui", "result": validation})
+                result["perspectives"].append(f"UI validation score: {validation.score:.0%}")
+            except Exception as e:
+                result["perspectives"].append(f"UI validation error: {e}")
+
+        # Check for code architecture validation
+        if any(kw in task.lower() for kw in ["architecture", "code", "structure", "complexity"]):
+            try:
+                validation = self._validation_engine.validate_code_architecture(
+                    code_description=task, complexity_metrics=context.get("complexity_metrics")
+                )
+                result["validations"].append({"type": "code", "result": validation})
+                result["perspectives"].append(f"Code validation score: {validation.score:.0%}")
+            except Exception as e:
+                result["perspectives"].append(f"Code validation error: {e}")
+
+        # Check for AI validation
+        if any(kw in task.lower() for kw in ["model", "ai", "neural", "transformer", "layer"]):
+            try:
+                validation = self._validation_engine.validate_ai_architecture(
+                    model_description=task,
+                    parameter_count=context.get("parameter_count"),
+                    layer_config=context.get("layer_config"),
+                )
+                result["validations"].append({"type": "ai", "result": validation})
+                result["perspectives"].append(f"AI validation score: {validation.score:.0%}")
+            except Exception as e:
+                result["perspectives"].append(f"AI validation error: {e}")
+
+        if result["validations"]:
+            result["confidence"] = sum(v["result"].score for v in result["validations"]) / len(
+                result["validations"]
+            )
+            result["reasoning"] = f"Performed {len(result['validations'])} validation(s)"
+        else:
+            result["reasoning"] = "No validations triggered for this task"
+            result["confidence"] = 0.5
+
+        return result
+
     def _check_laws(self, task: str, reasoning: list[dict]) -> list[str]:
         """Check for global law violations in reasoning."""
         violations = []
@@ -134,9 +263,7 @@ class EngineExecutor:
 
         return violations
 
-    def execute(
-        self, task: str, engines: list[str], context: Optional[dict] = None
-    ) -> ExecutionResult:
+    def execute(self, task: str, engines: list[str], context: dict = None) -> ExecutionResult:
         """Execute a task through the specified cognitive engines."""
         import time
 
@@ -201,9 +328,7 @@ def get_executor(brain_loader: Any = None) -> EngineExecutor:
     return _executor_instance
 
 
-def execute_cognitive_task(
-    task: str, engines: list[str], context: Optional[dict] = None
-) -> ExecutionResult:
+def execute_cognitive_task(task: str, engines: list[str], context: dict = None) -> ExecutionResult:
     """Convenience function to execute a task through cognitive engines."""
     executor = get_executor()
     return executor.execute(task, engines, context)

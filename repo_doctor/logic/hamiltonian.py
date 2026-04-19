@@ -13,8 +13,6 @@ Healthy repo: E_repo ≈ 0 (all Ψ_k ≈ 1)
 Broken repo: E_repo >> 0 (some Ψ_k << 1)
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -51,7 +49,7 @@ class RepositoryHamiltonian:
     Each H_k = (1 - Ψ_k)^2 for the respective dimension.
     """
 
-    def __init__(self, weights: dict[StateDimension, float] | None = None):
+    def __init__(self, weights: dict[StateDimension, float] = None):
         self.weights = weights or DEFAULT_WEIGHTS
 
     def apply(self, state: RepoStateVector) -> float:
@@ -97,7 +95,7 @@ class RepositoryHamiltonian:
 
         return EnergyGradient(partials)
 
-    def eigenvalue_approximation(self, state: RepoStateVector) -> dict[str, Any]:
+    def eigenvalue_approximation(self, state: RepoStateVector) -> Dict[str, Any]:
         """
         Approximate eigenvalue analysis of repository state.
 

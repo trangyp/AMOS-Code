@@ -1,7 +1,5 @@
 """Task tools: TaskCreate, TaskUpdate, TaskGet, TaskList — registered into tool_registry."""
 
-from __future__ import annotations
-
 from tool_registry import ToolDef, register_tool
 
 from .store import create_task, delete_task, get_task, list_tasks, update_task

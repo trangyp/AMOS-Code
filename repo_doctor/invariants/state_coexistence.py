@@ -10,8 +10,6 @@ a system is valid only when all state machines, versions, teams,
 and knowledge are aligned with the architecture.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -28,14 +26,14 @@ class InvariantResult:
     passed: bool
     severity: float
     message: str
-    observables: list[Observable]
+    observables: List[Observable]
 
 
 class StateMachineIntegrityInvariant:
     """I_state_machine = 1 iff all reachable critical states are declared."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.STATE_MACHINE_INTEGRITY]
@@ -58,7 +56,7 @@ class ForbiddenStateReachabilityInvariant:
     """I_forbidden_state = 1 iff every forbidden state is blocked."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.FORBIDDEN_STATE_REACHABILITY]
@@ -81,7 +79,7 @@ class TransitionLegalityInvariant:
     """I_transition_legality = 1 iff every critical transition is valid."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.TRANSITION_LEGALITY]
@@ -102,7 +100,7 @@ class MultiversionCoexistenceInvariant:
     """I_multiversion = 1 iff version coexistence windows are safe."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.MULTIVERSION_COEXISTENCE]
@@ -125,7 +123,7 @@ class CompatibilityWindowInvariant:
     """I_compat_window = 1 iff components remain in declared windows."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.COMPATIBILITY_WINDOW]
@@ -146,7 +144,7 @@ class SplitBrainResistanceInvariant:
     """I_split_brain = 1 iff no divergent authorities without reconciliation."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.SPLIT_BRAIN_RESISTANCE]
@@ -169,7 +167,7 @@ class CutoverIntegrityInvariant:
     """I_cutover = 1 iff every cutover phase declares semantics and exit."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.CUTOVER_INTEGRITY]
@@ -190,7 +188,7 @@ class CanarySafetyInvariant:
     """I_canary = 1 iff canary paths preserve integrity."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.CANARY_SAFETY]
@@ -211,7 +209,7 @@ class ChangeCoordinationInvariant:
     """I_coordination = 1 iff multi-surface changes are coordinated."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.CHANGE_COORDINATION]
@@ -232,7 +230,7 @@ class DataQualityInvariant:
     """I_data_quality = 1 iff data preserves declared constraints."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.DATA_QUALITY]
@@ -253,7 +251,7 @@ class BackfillIntegrityInvariant:
     """I_backfill = 1 iff replay/backfill preserves semantics."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.BACKFILL_INTEGRITY]
@@ -274,7 +272,7 @@ class GarbageCollectionInvariant:
     """I_gc = 1 iff GC preserves deletion/rollback semantics."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.GARBAGE_COLLECTION]
@@ -295,7 +293,7 @@ class ExternalContractInvariant:
     """I_external_contract = 1 iff externals have versioned contracts."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.EXTERNAL_CONTRACT]
@@ -316,7 +314,7 @@ class QuotaArchitectureInvariant:
     """I_quota = 1 iff quotas are explicit and compatible."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.QUOTA_ARCHITECTURE]
@@ -337,7 +335,7 @@ class VendorSubstitutabilityInvariant:
     """I_vendor_substitutability = 1 iff critical vendors have exit paths."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.VENDOR_SUBSTITUTABILITY]
@@ -360,7 +358,7 @@ class ExperimentSafetyInvariant:
     """I_experiment = 1 iff experiments preserve authority/rollback."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.EXPERIMENT_SAFETY]
@@ -381,7 +379,7 @@ class FlagLatticeInvariant:
     """I_flag_lattice = 1 iff flag combinations are bounded."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.FLAG_LATTICE]
@@ -402,7 +400,7 @@ class ModeActivationInvariant:
     """I_mode_activation = 1 iff modes have explicit semantics."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.MODE_ACTIVATION]
@@ -423,7 +421,7 @@ class EconomicEnvelopeInvariant:
     """I_economic_envelope = 1 iff workflows remain in budgets."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.ECONOMIC_ENVELOPE]
@@ -444,7 +442,7 @@ class ResourceCouplingInvariant:
     """I_resource_coupling = 1 iff no undeclared bottlenecks."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.RESOURCE_COUPLING]
@@ -465,7 +463,7 @@ class TeamTopologyFitInvariant:
     """I_team_topology = 1 iff ownership aligns with architecture."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.TEAM_TOPOLOGY_FIT]
@@ -486,7 +484,7 @@ class KnowledgeDistributionInvariant:
     """I_knowledge_distribution = 1 iff no single-person dependencies."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.KNOWLEDGE_DISTRIBUTION]
@@ -509,7 +507,7 @@ class IncentiveAlignmentInvariant:
     """I_incentive = 1 iff local wins don't damage global validity."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.INCENTIVE_ALIGNMENT]
@@ -530,7 +528,7 @@ class ExceptionGovernanceInvariant:
     """I_exception_governance = 1 iff exceptions are bounded/reviewed."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.EXCEPTION_GOVERNANCE]
@@ -551,7 +549,7 @@ class OverrideDecayInvariant:
     """I_override_decay = 1 iff overrides have bounded lifetimes."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.OVERRIDE_DECAY]
@@ -572,7 +570,7 @@ class HotfixTopologyInvariant:
     """I_hotfix = 1 iff hotfix paths preserve architecture."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.HOTFIX_TOPOLOGY]
@@ -593,7 +591,7 @@ class ComplianceLifecycleInvariant:
     """I_compliance = 1 iff compliance is compatible with architecture."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.COMPLIANCE_LIFECYCLE]
@@ -614,7 +612,7 @@ class EpistemicIntegrityInvariant:
     """I_epistemic = 1 iff decisions have fresh, scoped evidence."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.EPISTEMIC_INTEGRITY]
@@ -635,7 +633,7 @@ class ConstitutionalIntegrityInvariant:
     """I_constitution = 1 iff architecture adheres to constitution."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.CONSTITUTIONAL_INTEGRITY]
@@ -658,7 +656,7 @@ class StateOwnershipInvariant:
     """I_state_ownership = 1 iff state authority is clear."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.STATE_OWNERSHIP]
@@ -679,7 +677,7 @@ class AbsenceSemanticsInvariant:
     """I_absence = 1 iff "not present" has declared meaning."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.ABSENCE_SEMANTICS]
@@ -700,7 +698,7 @@ class DisasterRecoveryInvariant:
     """I_dr = 1 iff DR paths are tested and complete."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.DISASTER_RECOVERY]
@@ -721,7 +719,7 @@ class GracefulDegradationInvariant:
     """I_graceful = 1 iff degradation paths are defined and bounded."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.GRACEFUL_DEGRADATION]
@@ -742,7 +740,7 @@ class InteroperabilityInvariant:
     """I_interop = 1 iff cross-system contracts are valid."""
 
     @classmethod
-    def check(cls, observables: list[Observable]) -> InvariantResult:
+    def check(cls, observables: List[Observable]) -> InvariantResult:
         from ..state.basis import StateDimension
 
         obs = [o for o in observables if o.dimension == StateDimension.INTEROPERABILITY]

@@ -54,6 +54,17 @@ from .control_systems import (
     QueueInvariant,
 )
 
+# Import Phase 5 Distributed Systems Physics invariants (7)
+from .distributed_physics import (
+    AdaptiveStabilityInvariant,
+    CompensationInvariant,
+    EntropyInvariant,
+    IrreversibilityInvariant,
+    PolicyPrecedenceInvariant,
+    QuiescenceInvariant,
+    TruthArbitrationInvariant,
+)
+
 # Import engine
 from .engine import InvariantEngine
 from .entrypoints import EntrypointInvariant
@@ -108,17 +119,6 @@ from .state_coexistence import (
 from .status import StatusInvariant
 from .tests import TestsInvariant
 from .types import TypeInvariant
-
-# Import Phase 5 Distributed Systems Physics invariants (7)
-from .distributed_physics import (
-    AdaptiveStabilityInvariant,
-    CompensationInvariant,
-    EntropyInvariant,
-    IrreversibilityInvariant,
-    PolicyPrecedenceInvariant,
-    QuiescenceInvariant,
-    TruthArbitrationInvariant,
-)
 
 __all__ = [
     # Base

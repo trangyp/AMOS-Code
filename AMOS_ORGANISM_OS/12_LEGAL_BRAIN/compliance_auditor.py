@@ -4,14 +4,12 @@ Audits actions and configurations for compliance with
 policies, regulations, and standards.
 """
 
-from __future__ import annotations
-
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class ComplianceLevel(Enum):
@@ -44,7 +42,7 @@ class AuditFinding:
     recommendation: str = ""
     reference: str = ""  # Policy/regulation reference
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -57,11 +55,11 @@ class AuditResult:
     target: str = ""
     compliance_level: ComplianceLevel = ComplianceLevel.UNKNOWN
     score: float = 0.0  # 0-100
-    findings: list[AuditFinding] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    findings: List[AuditFinding] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     duration_seconds: float = 0.0
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "audit_type": self.audit_type.value,
@@ -83,7 +81,7 @@ class ComplianceAuditor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.audit_history: list[AuditResult] = []
+        self.audit_history: List[AuditResult] = []
         self.compliance_standards: dict[str, dict[str, Any]] = {}
 
         self._init_default_standards()
@@ -122,10 +120,10 @@ class ComplianceAuditor:
         self,
         target: str,
         audit_type: AuditType = AuditType.COMPREHENSIVE,
-        context: Optional[dict[str, Any]] = None,
+        context: dict[str, Any] = None,
     ) -> AuditResult:
         """Perform a compliance audit."""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(UTC)
 
         findings = []
         score = 100.0
@@ -157,7 +155,7 @@ class ComplianceAuditor:
         else:
             level = ComplianceLevel.NON_COMPLIANT
 
-        duration = (datetime.utcnow() - start_time).total_seconds()
+        duration = (datetime.now(UTC) - start_time).total_seconds()
 
         result = AuditResult(
             audit_type=audit_type,
@@ -171,7 +169,7 @@ class ComplianceAuditor:
         self.audit_history.append(result)
         return result
 
-    def _audit_security(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
+    def _audit_security(self, context: dict[str, Any]) -> List[AuditFinding]:
         """Perform security audit."""
         findings = []
 
@@ -201,7 +199,7 @@ class ComplianceAuditor:
 
         return findings
 
-    def _audit_privacy(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
+    def _audit_privacy(self, context: dict[str, Any]) -> List[AuditFinding]:
         """Perform privacy audit."""
         findings = []
 
@@ -220,7 +218,7 @@ class ComplianceAuditor:
 
         return findings
 
-    def _audit_operational(self, context: Optional[dict[str, Any]]) -> list[AuditFinding]:
+    def _audit_operational(self, context: dict[str, Any]) -> List[AuditFinding]:
         """Perform operational audit."""
         findings = []
 
@@ -242,7 +240,7 @@ class ComplianceAuditor:
         """Get recent audit history."""
         return [a.to_dict() for a in self.audit_history[-limit:]]
 
-    def get_compliance_report(self) -> dict[str, Any]:
+    def get_compliance_report(self) -> Dict[str, Any]:
         """Generate comprehensive compliance report."""
         if not self.audit_history:
             return {"status": "no_audits_performed"}
@@ -257,7 +255,7 @@ class ComplianceAuditor:
             "standards_checked": list(self.compliance_standards.keys()),
         }
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get auditor status."""
         return {
             "total_audits": len(self.audit_history),

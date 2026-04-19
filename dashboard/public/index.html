@@ -6,33 +6,33 @@
     <meta name="description" content="AMOS - Absolute Meta Operating System by Trang Phan. A 14-layer cognitive system for AI coding agents.">
     <meta name="theme-color" content="#6366f1">
     <title>AMOS - Absolute Meta Operating System</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∞</text></svg>">
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             min-height: 100vh;
             color: #f8fafc;
         }
-        
+
         #root {
             min-height: 100vh;
         }
-        
+
         /* Loading State */
         .loading-container {
             display: flex;
@@ -42,12 +42,12 @@
             min-height: 100vh;
             gap: 24px;
         }
-        
+
         .loading-logo {
             font-size: 64px;
             animation: pulse 2s ease-in-out infinite;
         }
-        
+
         .loading-text {
             font-size: 24px;
             font-weight: 600;
@@ -56,12 +56,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .loading-subtitle {
             font-size: 14px;
             opacity: 0.6;
         }
-        
+
         .loading-bar {
             width: 200px;
             height: 4px;
@@ -69,19 +69,19 @@
             border-radius: 2px;
             overflow: hidden;
         }
-        
+
         .loading-bar-fill {
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #6366f1, #a855f7);
             animation: loading 2s ease-out forwards;
         }
-        
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
         }
-        
+
         @keyframes loading {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -100,7 +100,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- React will be mounted here by main.tsx -->
     <script type="module" src="/src/main.tsx"></script>
 </body>

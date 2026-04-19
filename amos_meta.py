@@ -17,8 +17,8 @@ Params_{t+1} = Params_t + η · UpdateSignal_t
 import statistics
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
 
 @dataclass
@@ -29,9 +29,9 @@ class MetaObservation:
     cycle_id: int
     observation_type: str  # simulation_error, collapse_quality, morph_outcome, energy_use
     value: float
-    context: dict[str, Any] = field(default_factory=dict)
-    expected_outcome: Optional[float] = None
-    actual_outcome: Optional[float] = None
+    context: Dict[str, Any] = field(default_factory=dict)
+    expected_outcome: float = None
+    actual_outcome: float = None
 
 
 @dataclass
@@ -39,11 +39,11 @@ class ReflectionResult:
     """Result of meta-cognitive reflection."""
 
     reflection_id: str
-    insights: list[str]
-    parameter_updates: dict[str, float]
-    confidence_calibration: dict[str, float]
+    insights: List[str]
+    parameter_updates: Dict[str, float]
+    confidence_calibration: Dict[str, float]
     learning_applied: bool
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class PredictionTracker:
@@ -53,9 +53,9 @@ class PredictionTracker:
 
     def __init__(self, window_size: int = 10):
         self.window_size = window_size
-        self.predictions: list[dict] = []  # {predicted, actual, error, timestamp}
-        self.error_history: list[float] = []
-        self.accuracy_trend: list[float] = []
+        self.predictions: List[dict] = []  # {predicted, actual, error, timestamp}
+        self.error_history: List[float] = []
+        self.accuracy_trend: List[float] = []
 
     def record_prediction(self, predicted: dict, actual: dict, context: str = ""):
         """Record a prediction and its actual outcome."""
@@ -67,7 +67,7 @@ class PredictionTracker:
             "actual": actual,
             "error": error,
             "context": context,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         self.predictions.append(entry)
@@ -115,7 +115,7 @@ class PredictionTracker:
         else:
             return "well_calibrated"
 
-    def improvement_suggestions(self) -> list[str]:
+    def improvement_suggestions(self) -> List[str]:
         """Generate suggestions for improving predictions."""
         suggestions = []
 
@@ -138,9 +138,9 @@ class BranchEfficiencyAnalyzer:
     """
 
     def __init__(self):
-        self.branch_stats: list[dict] = []
-        self.generation_costs: list[float] = []
-        self.selection_quality: list[float] = []
+        self.branch_stats: List[dict] = []
+        self.generation_costs: List[float] = []
+        self.selection_quality: List[float] = []
 
     def record_branch_generation(
         self, n_branches: int, cost: float, selected_branch_rank: int, outcome_success: bool
@@ -151,7 +151,7 @@ class BranchEfficiencyAnalyzer:
             "generation_cost": cost,
             "selected_rank": selected_branch_rank,  # 1 = top, higher = worse
             "outcome_success": outcome_success,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self.branch_stats.append(entry)
         self.generation_costs.append(cost)
@@ -204,8 +204,8 @@ class FailurePatternDetector:
     """
 
     def __init__(self):
-        self.failures: list[dict] = []
-        self.failure_patterns: dict[str, int] = defaultdict(int)
+        self.failures: List[dict] = []
+        self.failure_patterns: Dict[str, int] = defaultdict(int)
         self.context_signatures: dict[str, list[str]] = {}
 
     def record_failure(self, failure_type: str, context: dict, action_taken: str, consequence: str):
@@ -215,7 +215,7 @@ class FailurePatternDetector:
             "context": context,
             "action": action_taken,
             "consequence": consequence,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self.failures.append(entry)
 
@@ -241,7 +241,7 @@ class FailurePatternDetector:
         values = [str(context[k])[:20] for k in keys if k in context]
         return f"{failure_type}:{':'.join(values)}"
 
-    def detect_repeating_patterns(self) -> list[dict]:
+    def detect_repeating_patterns(self) -> List[dict]:
         """Detect patterns that repeat frequently."""
         repeating = []
         for signature, count in self.failure_patterns.items():
@@ -256,7 +256,7 @@ class FailurePatternDetector:
 
         return sorted(repeating, key=lambda x: x["occurrences"], reverse=True)
 
-    def should_avoid(self, context: dict, action: str) -> tuple[bool, str]:
+    def should_avoid(self, context: dict, action: str) -> Tuple[bool, str]:
         """Check if an action in a context should be avoided."""
         test_sig = self._extract_signature("any", context)
 
@@ -282,14 +282,14 @@ class ParameterAdapter:
 
     def __init__(self, learning_rate: float = 0.1):
         self.learning_rate = learning_rate
-        self.current_params: dict[str, float] = {
+        self.current_params: Dict[str, float] = {
             "branch_count": 3.0,
             "risk_threshold": 0.5,
             "confidence_threshold": 0.6,
             "exploration_rate": 0.3,
             "attention_noise": 0.1,
         }
-        self.param_history: list[dict] = []
+        self.param_history: List[dict] = []
         self.update_signals: dict[str, list[float]] = defaultdict(list)
 
     def compute_update_signal(
@@ -306,7 +306,7 @@ class ParameterAdapter:
 
         return statistics.mean(self.update_signals[param_name])
 
-    def adapt(self, feedback: dict[str, float]):
+    def adapt(self, feedback: Dict[str, float]):
         """Adapt parameters based on feedback."""
         old_params = self.current_params.copy()
 
@@ -330,7 +330,7 @@ class ParameterAdapter:
         # Record history
         self.param_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "old": old_params,
                 "new": self.current_params.copy(),
                 "feedback": feedback,
@@ -370,7 +370,7 @@ class ConfidenceCalibrator:
     """
 
     def __init__(self):
-        self.confidence_predictions: list[tuple] = []  # (confidence, outcome)
+        self.confidence_predictions: List[tuple] = []  # (confidence, outcome)
         self.calibration_curve: dict[float, float] = {}
 
     def record(self, confidence: float, success: bool):
@@ -450,7 +450,7 @@ class AMOSMetaCognition:
         self.parameter_adapter = ParameterAdapter()
         self.confidence_calibrator = ConfidenceCalibrator()
 
-        self.reflection_history: list[ReflectionResult] = []
+        self.reflection_history: List[ReflectionResult] = []
         self.meta_goals = [
             "improve_prediction",
             "improve_branch_efficiency",
@@ -562,7 +562,7 @@ class AMOSMetaCognition:
             "adaptation_report": self.parameter_adapter.adaptation_report(),
         }
 
-    def suggest_improvements(self) -> list[str]:
+    def suggest_improvements(self) -> List[str]:
         """Generate improvement suggestions across all domains."""
         suggestions = []
 

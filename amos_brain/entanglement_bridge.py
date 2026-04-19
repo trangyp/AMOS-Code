@@ -14,6 +14,7 @@ High M_ij means:
 
 from __future__ import annotations
 
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -345,6 +346,6 @@ class EntanglementCognitionBridge:
         return recs
 
 
-def get_entanglement_bridge(repo_path: str | Path | None = None) -> EntanglementCognitionBridge:
+def get_entanglement_bridge(repo_path: str | Path = None) -> EntanglementCognitionBridge:
     """Factory function to get entanglement bridge instance."""
     return EntanglementCognitionBridge(repo_path or ".")

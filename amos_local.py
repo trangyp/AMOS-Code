@@ -18,14 +18,13 @@ Environment:
     AMOS_API_KEY=<api-key-for-compatible-servers>
 """
 
-from __future__ import annotations
-
 import argparse
 import os
 import sys
 
 # Ensure amos_brain is in path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # noqa: E402
+
 
 from amos_brain.config_validator import (  # noqa: E402
     validate_config,

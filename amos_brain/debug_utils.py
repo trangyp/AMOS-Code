@@ -22,7 +22,11 @@ Usage:
 """
 
 import functools
-from typing import Any, Callable, Optional
+import logging
+from collections.abc import Callable
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Try to import optional debugging libraries
 try:
@@ -83,7 +87,7 @@ def ic(*args) -> Any:
 
 
 def pretty_print(
-    obj: Any, title: Optional[str] = None, use_json: bool = False, theme: str = "monokai"
+    obj: Any, title: str = None, use_json: bool = False, theme: str = "monokai"
 ) -> None:
     """Pretty print any object with rich formatting.
 
@@ -120,9 +124,7 @@ def pretty_print(
             print(obj)
 
 
-def print_table(
-    data: list[dict], columns: Optional[list[str]] = None, title: Optional[str] = None
-) -> None:
+def print_table(data: list[dict], columns: list[str] = None, title: str = None) -> None:
     """Print data as a rich table.
 
     Args:
@@ -205,7 +207,7 @@ def trace(func: Callable) -> Callable:
     return wrapper
 
 
-def debug_breakpoint(locals_dict: Optional[dict] = None) -> None:
+def debug_breakpoint(locals_dict: dict = None) -> None:
     """Enhanced breakpoint with context inspection.
 
     Args:
@@ -314,7 +316,7 @@ def install_debug_hooks() -> None:
 
         faulthandler.enable()
     except ImportError:
-        pass
+        logger.debug("faulthandler not available")
 
     if RICH_AVAILABLE:
         print("[green]✓[/green] Rich traceback handler installed")

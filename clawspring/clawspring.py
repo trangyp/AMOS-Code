@@ -61,6 +61,7 @@ Slash commands in REPL:
 
 from __future__ import annotations
 
+
 import os
 import re
 import sys
@@ -78,7 +79,6 @@ import atexit
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Union
 
 # ── Optional rich for markdown rendering ──────────────────────────────────
 try:
@@ -451,7 +451,7 @@ def cmd_model(args: str, _state, config) -> bool:
     return True
 
 
-def _generate_personas(topic: str, curr_model: str, config: dict, count: int = 5) -> dict | None:
+def _generate_personas(topic: str, curr_model: str, config: dict, count: int = 5) -> dict:
     """Ask the LLM to generate `count` topic-appropriate expert personas as a dict."""
     import json
 
@@ -1242,7 +1242,7 @@ def cmd_cwd(args: str, _state, _config) -> bool:
     return True
 
 
-def _build_session_data(state, session_id: str | None = None) -> dict:
+def _build_session_data(state, session_id: str = None) -> dict:
     """Serialize current conversation state to a JSON-serializable dict."""
     import uuid
 
@@ -2755,7 +2755,7 @@ def cmd_voice(args: str, state, config) -> bool:
     return ("__voice__", text)
 
 
-def cmd_image(args: str, state, config) -> Union[bool, tuple]:
+def cmd_image(args: str, state, config) -> bool | tuple:
     """Grab image from clipboard and send to vision model with optional prompt."""
     import sys as _sys
 
@@ -3072,7 +3072,7 @@ COMMANDS = {
 }
 
 
-def handle_slash(line: str, state, config) -> Union[bool, tuple]:
+def handle_slash(line: str, state, config) -> bool | tuple:
     """Handle /command [args]. Returns True if handled, tuple (skill, args) for skill match."""
     if not line.startswith("/"):
         return False
@@ -3224,6 +3224,8 @@ def setup_readline(history_file: Path):
 
 
 def repl(config: dict, initial_prompt: str = None):
+    from config import HISTORY_FILE
+
     from agent import (
         AgentState,
         PermissionRequest,
@@ -3234,7 +3236,6 @@ def repl(config: dict, initial_prompt: str = None):
         TurnDone,
         run,
     )
-    from config import HISTORY_FILE
     from context import build_system_prompt
 
     setup_readline(HISTORY_FILE)

@@ -4,16 +4,15 @@ Integrates AMOS Cognitive Runtime with the clawspring agent system.
 Provides tools for the agent to leverage AMOS brain capabilities.
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 # Add the repo root to path for imports
 REPO_ROOT = Path(__file__).parent
 sys.path.insert(0, str(REPO_ROOT))
+
 
 from amos_cognitive_runtime import AMOSCognitiveRuntime
 
@@ -41,7 +40,7 @@ class AMOSAgentBridge:
         """Access the underlying AMOS runtime."""
         return self._runtime
 
-    def think(self, question: str, mode: str = "exploratory_mapping") -> dict[str, Any]:
+    def think(self, question: str, mode: str = "exploratory_mapping") -> Dict[str, Any]:
         """Process a question through AMOS cognitive layers.
 
         Args:
@@ -54,7 +53,7 @@ class AMOSAgentBridge:
         """
         return self._runtime.think(question, mode)
 
-    def analyze_task(self, task_description: str, context: dict = None) -> dict[str, Any]:
+    def analyze_task(self, task_description: str, context: dict = None) -> Dict[str, Any]:
         """Analyze a coding/design task using AMOS cognitive architecture.
 
         Args:
@@ -90,7 +89,7 @@ class AMOSAgentBridge:
 
     def design_architecture(
         self, requirements: str, constraints: list[str] = None
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Generate architecture design using AMOS design engine principles.
 
         Args:
@@ -126,7 +125,7 @@ class AMOSAgentBridge:
         result["architecture_recommendations"] = arch_recommendations
         return result
 
-    def audit_decision(self, decision: str, rationale: str) -> dict[str, Any]:
+    def audit_decision(self, decision: str, rationale: str) -> Dict[str, Any]:
         """Audit a decision against AMOS global laws and constraints.
 
         Args:
@@ -156,7 +155,7 @@ class AMOSAgentBridge:
 
         return result
 
-    def get_engine_info(self, engine_name: str) -> Optional[dict]:
+    def get_engine_info(self, engine_name: str) -> dict:
         """Get information about a specific cognitive engine."""
         return self._runtime.get_engine_info(engine_name)
 
@@ -164,7 +163,7 @@ class AMOSAgentBridge:
         """List all available cognitive engines."""
         return self._runtime.list_available_engines()
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get AMOS runtime status."""
         return self._runtime.get_status()
 

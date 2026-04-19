@@ -7,8 +7,6 @@ them through Z3 to prove or disprove satisfiability.
 This turns "smells" into provable invariant failures.
 """
 
-from __future__ import annotations
-
 import logging
 from dataclasses import dataclass
 from typing import Any
@@ -30,9 +28,9 @@ class SMTResult:
     """Result of an SMT proof attempt."""
 
     satisfiable: bool
-    model: dict[str, Any] | None = None
-    proof: str | None = None
-    counterexample: dict[str, Any] | None = None
+    model: Dict[str, Any] = None
+    proof: str = None
+    counterexample: Dict[str, Any] = None
     verification_time_ms: float = 0.0
 
 
@@ -54,8 +52,8 @@ class SMTModel:
     """
 
     def __init__(self):
-        self.solver: Any | None = None
-        self.variables: dict[str, Any] = {}
+        self.solver: Optional[Any] = None
+        self.variables: Dict[str, Any] = {}
         self._init_solver()
 
     def _init_solver(self) -> None:
@@ -223,7 +221,7 @@ class SMTModel:
 
 
 def prove_invariant(
-    state_values: dict[str, float],
+    state_values: Dict[str, float],
     max_energy: float = 2.0,
 ) -> SMTResult:
     """

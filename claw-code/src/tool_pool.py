@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from .models import PortingModule
@@ -28,7 +26,7 @@ class ToolPool:
 def assemble_tool_pool(
     simple_mode: bool = False,
     include_mcp: bool = True,
-    permission_context: ToolPermissionContext | None = None,
+    permission_context: Optional[ToolPermissionContext] = None,
 ) -> ToolPool:
     return ToolPool(
         tools=get_tools(

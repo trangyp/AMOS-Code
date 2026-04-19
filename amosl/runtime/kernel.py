@@ -9,11 +9,9 @@ Evolution Rule:
     Σ_{t+1} = Φ(Σ_t, a_t, o_t, e_t, θ_t) subject to Λ(Σ_{t+1}) = ⊤
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Optional
+from typing import Any
 
 
 class Substrate(Enum):
@@ -38,10 +36,10 @@ class ClassicalState:
     - η_c: events/logical control state
     """
 
-    values: dict[str, Any] = field(default_factory=dict)
-    store: dict[str, Any] = field(default_factory=dict)
-    policies: list[str] = field(default_factory=list)
-    events: list[str] = field(default_factory=list)
+    values: Dict[str, Any] = field(default_factory=dict)
+    store: Dict[str, Any] = field(default_factory=dict)
+    policies: List[str] = field(default_factory=list)
+    events: List[str] = field(default_factory=list)
 
     def get(self, key: str, default=None):
         return self.values.get(key, self.store.get(key, default))
@@ -66,10 +64,10 @@ class QuantumState:
     """
 
     hilbert_dim: int = 2
-    density_matrix: Optional[list[list[complex]]] = None
-    observables: list[str] = field(default_factory=list)
-    operators: list[str] = field(default_factory=list)
-    registers: dict[str, int] = field(default_factory=dict)
+    density_matrix: list[list[complex]] = None
+    observables: List[str] = field(default_factory=list)
+    operators: List[str] = field(default_factory=list)
+    registers: Dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.density_matrix is None:
@@ -82,7 +80,7 @@ class QuantumState:
     def add_register(self, name: str, qubits: int):
         self.registers[name] = qubits
 
-    def apply_gate(self, gate: str, targets: list[int]):
+    def apply_gate(self, gate: str, targets: List[int]):
         self.operators.append(f"{gate}({targets})")
 
 
@@ -99,12 +97,12 @@ class BiologicalState:
     - Env_b: biological environment
     """
 
-    genome: dict[str, str] = field(default_factory=dict)
-    transcriptome: dict[str, float] = field(default_factory=dict)
-    proteome: dict[str, float] = field(default_factory=dict)
-    concentrations: dict[str, float] = field(default_factory=dict)
-    population: dict[str, int] = field(default_factory=dict)
-    environment: dict[str, Any] = field(default_factory=dict)
+    genome: Dict[str, str] = field(default_factory=dict)
+    transcriptome: Dict[str, float] = field(default_factory=dict)
+    proteome: Dict[str, float] = field(default_factory=dict)
+    concentrations: Dict[str, float] = field(default_factory=dict)
+    population: Dict[str, int] = field(default_factory=dict)
+    environment: Dict[str, Any] = field(default_factory=dict)
 
     def express_gene(self, gene: str, rate: float = 1.0):
         self.transcriptome[gene] = self.transcriptome.get(gene, 0) + rate
@@ -127,9 +125,9 @@ class HybridState:
     - S_h: scheduling/synchronization state
     """
 
-    active_bridges: list[str] = field(default_factory=list)
-    thresholds: dict[str, float] = field(default_factory=dict)
-    uncertainty_weights: dict[str, float] = field(default_factory=dict)
+    active_bridges: List[str] = field(default_factory=list)
+    thresholds: Dict[str, float] = field(default_factory=dict)
+    uncertainty_weights: Dict[str, float] = field(default_factory=dict)
     schedule: list[tuple[str, Any]] = field(default_factory=list)
 
     def activate_bridge(self, bridge_id: str, source: str, target: str):
@@ -147,10 +145,10 @@ class HybridState:
 class EnvironmentState:
     """Σ_e = ⟨external_signals, resources, noise, conditions⟩"""
 
-    signals: dict[str, Any] = field(default_factory=dict)
-    resources: dict[str, float] = field(default_factory=dict)
+    signals: Dict[str, Any] = field(default_factory=dict)
+    resources: Dict[str, float] = field(default_factory=dict)
     noise: float = 0.0
-    conditions: dict[str, Any] = field(default_factory=dict)
+    conditions: Dict[str, Any] = field(default_factory=dict)
 
     def signal(self, channel: str, value: Any):
         self.signals[channel] = value
@@ -171,7 +169,7 @@ class TimeState:
         self.t += self.dt
         return self.t
 
-    def record(self, state_snapshot: dict[str, Any]):
+    def record(self, state_snapshot: Dict[str, Any]):
         self.history.append({"time": self.t, "state": state_snapshot})
 
 
@@ -190,7 +188,7 @@ class StateManifold:
     environment: EnvironmentState = field(default_factory=EnvironmentState)
     time: TimeState = field(default_factory=TimeState)
 
-    def as_block_vector(self) -> list[Any]:
+    def as_block_vector(self) -> List[Any]:
         """Return state as block vector [Σ_c, Σ_q, Σ_b, Σ_h, Σ_e, Σ_t]."""
         return [
             self.classical,
@@ -213,7 +211,7 @@ class StateManifold:
         }
         return mapping[substrate]
 
-    def snapshot(self) -> dict[str, Any]:
+    def snapshot(self) -> Dict[str, Any]:
         """Create serializable snapshot of state."""
         return {
             "t": self.time.t,
@@ -230,15 +228,15 @@ class RuntimeKernel:
 
     def __init__(self):
         self.state = StateManifold()
-        self.invariants: list[callable] = []
-        self.verification_hooks: list[callable] = []
+        self.invariants: List[callable] = []
+        self.verification_hooks: List[callable] = []
 
     def step(
         self,
-        action_bundle: Optional[dict] = None,
-        observation_bundle: Optional[dict] = None,
-        environment: Optional[dict] = None,
-        control_params: Optional[dict] = None,
+        action_bundle: dict = None,
+        observation_bundle: dict = None,
+        environment: dict = None,
+        control_params: dict = None,
     ) -> StateManifold:
         """Execute one runtime step: Σ_{t+1} = Φ(Σ_t, a_t, o_t, e_t, θ_t)."""
         # Update time
@@ -265,7 +263,7 @@ class RuntimeKernel:
 
         return self.state
 
-    def _apply_actions(self, actions: dict[str, Any]):
+    def _apply_actions(self, actions: Dict[str, Any]):
         """Apply action bundle to state."""
         for substrate, action in actions.items():
             if substrate == "classical":
@@ -325,7 +323,7 @@ class RuntimeKernel:
         """Register an invariant check function."""
         self.invariants.append(invariant_fn)
 
-    def run(self, steps: int = 1, actions_per_step: Optional[list[dict]] = None):
+    def run(self, steps: int = 1, actions_per_step: List[dict] = None):
         """Run kernel for multiple steps."""
         results = []
         for i in range(steps):

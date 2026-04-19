@@ -17,9 +17,9 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -47,7 +47,7 @@ class Procedure:
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(timezone.utc).isoformat()
         if not self.last_used:
             self.last_used = self.created_at
 
@@ -80,7 +80,7 @@ class Pattern:
 
     def __post_init__(self):
         if not self.first_seen:
-            self.first_seen = datetime.utcnow().isoformat()
+            self.first_seen = datetime.now(timezone.utc).isoformat()
         if not self.last_seen:
             self.last_seen = self.first_seen
 
@@ -98,12 +98,12 @@ class Decision:
     context_summary: str  # Key context (not full log)
     outcome: str  # "success" or "failure"
     outcome_reason: str  # Why it succeeded or failed
-    procedure_used: Optional[str] = None  # Which procedure was applied
+    procedure_used: str = None  # Which procedure was applied
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(timezone.utc).isoformat()
 
 
 @dataclass
@@ -116,12 +116,12 @@ class FailurePattern:
     what_was_tried: str  # Brief description of the failed approach
     why_it_failed: str  # Root cause analysis
     conditions: dict[str, Any]  # When this failure occurs
-    avoidance_procedure: Optional[str] = None  # Procedure to use instead
+    avoidance_procedure: str = None  # Procedure to use instead
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(timezone.utc).isoformat()
 
 
 @dataclass
@@ -133,8 +133,8 @@ class TaskClassification:
     key_indicators: list[str]  # Extracted from task description
     complexity: str  # "simple", "medium", "complex"
     domain: str  # e.g., "api", "database", "frontend"
-    matched_pattern: Optional[str] = None
-    matched_procedure: Optional[str] = None
+    matched_pattern: str = None
+    matched_procedure: str = None
     classification_time_ms: float = 0.0
 
 
@@ -150,7 +150,7 @@ class ProcedureExtractor:
         solution_steps: list[str],
         outcome: dict[str, Any],
         execution_time_ms: float,
-    ) -> Optional[Procedure]:
+    ) -> Procedure | None:
         """Extract a reusable procedure from a successful task.
 
         Called automatically after EVERY successful task.
@@ -255,7 +255,7 @@ class PatternDetector:
     def __init__(self, learning_engine: RealLearningEngine):
         self.engine = learning_engine
 
-    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Optional[Pattern]:
+    def detect_pattern(self, task_description: str, context: dict[str, Any]) -> Pattern | None:
         """Detect what pattern a task matches."""
         desc_lower = task_description.lower()
 
@@ -263,7 +263,7 @@ class PatternDetector:
         for pattern in self.engine.patterns.values():
             if self._matches_pattern(desc_lower, pattern):
                 pattern.frequency += 1
-                pattern.last_seen = datetime.utcnow().isoformat()
+                pattern.last_seen = datetime.now(timezone.utc).isoformat()
                 return pattern
 
         # Create new pattern if no match
@@ -365,12 +365,12 @@ class AutoReuseEngine:
         self.engine = learning_engine
         self.reuse_stats = {"procedures_reused": 0, "time_saved_ms": 0}
 
-    def attempt_reuse(self, task_description: str, context: dict[str, Any]) -> Optional[dict]:
+    def attempt_reuse(self, task_description: str, context: dict[str, Any]) -> dict:
         """Attempt to reuse a known procedure for this task.
 
         Returns execution plan if match found, None if needs fresh analysis.
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
 
         # Detect pattern
         pattern = self.engine.pattern_detector.detect_pattern(task_description, context)
@@ -383,13 +383,13 @@ class AutoReuseEngine:
             return None
 
         # Calculate time saved (vs full analysis)
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         time_ms = (end_time - start_time).total_seconds() * 1000
         self.reuse_stats["time_saved_ms"] += 1000 - time_ms  # Assume 1s for analysis
         self.reuse_stats["procedures_reused"] += 1
 
         # Update procedure
-        procedure.last_used = datetime.utcnow().isoformat()
+        procedure.last_used = datetime.now(timezone.utc).isoformat()
 
         return {
             "reused": True,
@@ -403,7 +403,7 @@ class AutoReuseEngine:
             "bypass_analysis": True,  # Skip re-analysis
         }
 
-    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Optional[Procedure]:
+    def _find_matching_procedure(self, pattern: Pattern, task_desc: str) -> Procedure | None:
         """Find best matching procedure for a pattern."""
         candidates = []
 
@@ -441,7 +441,7 @@ class DecisionRecorder:
         rejected_options: list[str],
         rationale: str,
         outcome: dict[str, Any],
-        procedure_used: Optional[str] = None,
+        procedure_used: str = None,
     ) -> Decision:
         """Record a decision and its outcome."""
         # Create context summary (not full log)
@@ -449,7 +449,7 @@ class DecisionRecorder:
         context_hash = hashlib.sha256(json.dumps(context, sort_keys=True).encode()).hexdigest()[:16]
 
         decision = Decision(
-            decision_id=f"dec_{decision_type}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+            decision_id=f"dec_{decision_type}_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
             context_hash=context_hash,
             decision_type=decision_type,
             chosen_option=chosen_option,
@@ -464,7 +464,7 @@ class DecisionRecorder:
         self.engine.decisions[decision.decision_id] = decision
         return decision
 
-    def get_decision_rationale(self, decision_type: str, context: dict[str, Any]) -> Optional[str]:
+    def get_decision_rationale(self, decision_type: str, context: dict[str, Any]) -> str:
         """Retrieve rationale for similar past decisions."""
         context_hash = hashlib.sha256(json.dumps(context, sort_keys=True).encode()).hexdigest()[:16]
 
@@ -502,7 +502,7 @@ class FailureMemory:
         what_was_tried: str,
         why_it_failed: str,
         conditions: dict[str, Any],
-        alternative_procedure: Optional[str] = None,
+        alternative_procedure: str = None,
     ) -> FailurePattern:
         """Record a failure pattern."""
         conditions_hash = hashlib.sha256(
@@ -510,7 +510,7 @@ class FailureMemory:
         ).hexdigest()[:16]
 
         failure = FailurePattern(
-            failure_id=f"fail_{conditions_hash}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+            failure_id=f"fail_{conditions_hash}_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
             pattern_signature=conditions_hash,
             failure_type=self._classify_failure_type(why_it_failed),
             what_was_tried=what_was_tried,
@@ -522,7 +522,7 @@ class FailureMemory:
         self.engine.failures[failure.failure_id] = failure
         return failure
 
-    def check_avoidance(self, approach: str, conditions: dict[str, Any]) -> Optional[str]:
+    def check_avoidance(self, approach: str, conditions: dict[str, Any]) -> str:
         """Check if an approach should be avoided."""
         conditions_hash = hashlib.sha256(
             json.dumps(conditions, sort_keys=True).encode()
@@ -559,7 +559,7 @@ class ProcedureEvolutionEngine:
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Optional[Procedure]:
+    ) -> Procedure | None:
         """Evolve an existing procedure with improved steps."""
         if procedure_id not in self.engine.procedures:
             return None
@@ -578,13 +578,13 @@ class ProcedureEvolutionEngine:
             pattern_signature=old_proc.pattern_signature,
             success_count=0,  # Reset for new version
             failure_count=0,
-            created_at=datetime.utcnow().isoformat(),
+            created_at=datetime.now(timezone.utc).isoformat(),
             evolution_history=old_proc.evolution_history
             + [
                 {
                     "from_version": procedure_id,
                     "improvement": improvement_rationale,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             ],
         )
@@ -599,7 +599,7 @@ class ProcedureEvolutionEngine:
 
         return new_proc
 
-    def merge_procedures(self, procedure_ids: list[str]) -> Optional[Procedure]:
+    def merge_procedures(self, procedure_ids: list[str]) -> Procedure | None:
         """Merge multiple similar procedures into one optimized version."""
         if len(procedure_ids) < 2:
             return None
@@ -637,7 +637,7 @@ class ProcedureEvolutionEngine:
             if common_trigger
             else "",
             evolution_history=[
-                {"merged_from": procedure_ids, "timestamp": datetime.utcnow().isoformat()}
+                {"merged_from": procedure_ids, "timestamp": datetime.now(timezone.utc).isoformat()}
             ],
         )
 
@@ -653,7 +653,7 @@ class TaskPatternClassifier:
 
     def classify_task(self, task_description: str, context: dict[str, Any]) -> TaskClassification:
         """Classify a task for fast matching."""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
 
         # Extract key indicators
         indicators = self._extract_indicators(task_description)
@@ -681,7 +681,7 @@ class TaskPatternClassifier:
                     matched_procedure = pattern.related_procedures[0]
                 break
 
-        end_time = datetime.utcnow()
+        end_time = datetime.now(timezone.utc)
         time_ms = (end_time - start_time).total_seconds() * 1000
 
         return TaskClassification(
@@ -812,7 +812,7 @@ class RealLearningEngine:
             "failures_avoided": 0,
             "procedures_reused": 0,
             "time_saved_ms": 0,
-            "learning_start": datetime.utcnow().isoformat(),
+            "learning_start": datetime.now(timezone.utc).isoformat(),
         }
 
         # Load existing learning
@@ -824,8 +824,8 @@ class RealLearningEngine:
         solution_steps: list[str],
         outcome: dict[str, Any],
         execution_time_ms: float = 0,
-        context: Optional[dict[str, Any]] = None,
-    ) -> Optional[Procedure]:
+        context: dict[str, Any] = None,
+    ) -> Procedure | None:
         """Learn from a successful task execution.
 
         Called automatically after EVERY successful task.
@@ -855,9 +855,7 @@ class RealLearningEngine:
 
         return procedure
 
-    def attempt_reuse(
-        self, task_description: str, context: Optional[dict[str, Any]] = None
-    ) -> Optional[dict]:
+    def attempt_reuse(self, task_description: str, context: dict[str, Any] = None) -> dict:
         """Attempt to reuse known procedure for this task.
 
         BEFORE solving any task, call this.
@@ -872,7 +870,7 @@ class RealLearningEngine:
             proc = self.procedures.get(classification.matched_procedure)
             if proc and proc.confidence > 0.5:
                 self.stats["procedures_reused"] += 1
-                proc.last_used = datetime.utcnow().isoformat()
+                proc.last_used = datetime.now(timezone.utc).isoformat()
                 return {
                     "reused": True,
                     "procedure_id": proc.procedure_id,
@@ -902,7 +900,7 @@ class RealLearningEngine:
         rejected_options: list[str],
         rationale: str,
         outcome: dict[str, Any],
-        procedure_used: Optional[str] = None,
+        procedure_used: str = None,
     ) -> Decision:
         """Record a decision for future learning."""
         decision = self.decision_recorder.record_decision(
@@ -923,7 +921,7 @@ class RealLearningEngine:
         what_was_tried: str,
         why_it_failed: str,
         conditions: dict[str, Any],
-        alternative_procedure: Optional[str] = None,
+        alternative_procedure: str = None,
     ) -> FailurePattern:
         """Record a failure to avoid repeating it."""
         failure = self.failure_memory.record_failure(
@@ -932,13 +930,13 @@ class RealLearningEngine:
         self._save_learning()
         return failure
 
-    def check_failure_avoidance(self, approach: str, conditions: dict[str, Any]) -> Optional[str]:
+    def check_failure_avoidance(self, approach: str, conditions: dict[str, Any]) -> str:
         """Check if an approach should be avoided."""
         return self.failure_memory.check_avoidance(approach, conditions)
 
     def evolve_procedure(
         self, procedure_id: str, improved_steps: list[str], improvement_rationale: str
-    ) -> Optional[Procedure]:
+    ) -> Procedure | None:
         """Evolve a procedure with a better solution."""
         evolved = self.procedure_evolution.evolve_procedure(
             procedure_id, improved_steps, improvement_rationale
@@ -981,7 +979,7 @@ class RealLearningEngine:
             "decisions": {k: asdict(v) for k, v in self.decisions.items()},
             "failures": {k: asdict(v) for k, v in self.failures.items()},
             "stats": self.stats,
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(timezone.utc).isoformat(),
         }
 
         storage_file = self.storage_path / "learning_store.json"
@@ -1023,7 +1021,7 @@ class RealLearningEngine:
 
 
 # Global learning engine instance
-_learning_engine: Optional[RealLearningEngine] = None
+_learning_engine: RealLearningEngine | None = None
 
 
 def get_learning_engine(storage_path: str = "./amos_learning") -> RealLearningEngine:
@@ -1039,8 +1037,8 @@ def learn_from_task(
     solution_steps: list[str],
     outcome: dict[str, Any],
     execution_time_ms: float = 0,
-    context: Optional[dict[str, Any]] = None,
-) -> Optional[Procedure]:
+    context: dict[str, Any] = None,
+) -> Procedure | None:
     """Convenience function: learn from a successful task."""
     engine = get_learning_engine()
     return engine.learn_from_success(
@@ -1048,9 +1046,7 @@ def learn_from_task(
     )
 
 
-def attempt_procedure_reuse(
-    task_description: str, context: Optional[dict[str, Any]] = None
-) -> Optional[dict]:
+def attempt_procedure_reuse(task_description: str, context: dict[str, Any] = None) -> dict:
     """Convenience function: attempt to reuse a procedure."""
     engine = get_learning_engine()
     return engine.attempt_reuse(task_description, context)

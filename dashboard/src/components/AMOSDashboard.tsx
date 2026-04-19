@@ -1,31 +1,30 @@
 /**
  * AMOS Unified Dashboard - Master Control Panel
- * 
+ *
  * The culmination of the AMOS Brain architecture.
- * 
+ *
  * This dashboard integrates all 6 cognitive subsystems into a unified
  * interface that adapts to the user's cognitive mode (Seed/Growth/Full).
- * 
+ *
  * Features:
  * - Adaptive layout based on cognitive mode
  * - Real-time cognitive layer visualization
  * - Integrated MCP, Agents, Memory, Checkpoints
  * - Pricing transparency widget (RedMonk #3)
  * - Global Laws compliance indicator
- * 
+ *
  * Represents the 14-layer cognitive architecture in visual form.
  */
 
 import React, { useState, useEffect } from 'react';
 
+// AMOS API Hooks - Real backend integration
+import { useSystemStatus, useMetrics, useEvolution, useAgents, useWebSocket } from '../hooks';
+
 // Import all subsystems
-// Note: In production, these would be actual imports
-// import { ModeSwitcher } from './ModeSwitcher';
-// import { ReasoningBars } from './ReasoningBars';
-// import { MCPIntegration } from './MCPIntegration';
-// import { BackgroundAgents } from './BackgroundAgents';
-// import { PersistentMemory } from './PersistentMemory';
-// import { RewindCheckpoints } from './RewindCheckpoints';
+import { ModeSwitcher } from './ModeSwitcher';
+import { ReasoningBars } from './ReasoningBars';
+import { MCPIntegration } from './MCPIntegration';
 
 type CognitiveMode = 'seed' | 'growth' | 'full';
 type ActiveSystem = 'overview' | 'mcp' | 'agents' | 'memory' | 'checkpoints' | 'pricing';
@@ -49,13 +48,22 @@ interface PricingData {
 export const AMOSDashboard: React.FC = () => {
   const [mode, setMode] = useState<CognitiveMode>('growth');
   const [activeSystem, setActiveSystem] = useState<ActiveSystem>('overview');
+
+  // AMOS API Integration - Real backend data
+  const { data: apiStatus } = useSystemStatus(30000);
+  const { data: metrics } = useMetrics(5000);
+  const { data: evolution } = useEvolution();
+  const { data: agents } = useAgents();
+  useWebSocket('/ws/health');
+
+  // Local UI state
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     mcp: 'connected',
     agents: 'working',
     memory: 'active',
     checkpoints: 'ready',
   });
-  const [pricing, setPricing] = useState<PricingData>({
+  const [pricing] = useState<PricingData>({
     sessionCost: 0.023,
     tokenUsage: 45000,
     modelCalls: 12,
@@ -67,11 +75,22 @@ export const AMOSDashboard: React.FC = () => {
   const [confidence, setConfidence] = useState(0.87);
   const [isThinking, setIsThinking] = useState(false);
 
+  // Sync API data with local state
+  useEffect(() => {
+    if (apiStatus?.components) {
+      setSystemStatus(prev => ({
+        ...prev,
+        mcp: apiStatus.components.mcp || prev.mcp,
+        agents: apiStatus.components.agents || prev.agents,
+      }));
+    }
+  }, [apiStatus]);
+
   // Simulate thinking process
   const startThinking = () => {
     setIsThinking(true);
     setCurrentLayer(1);
-    
+
     const interval = setInterval(() => {
       setCurrentLayer(prev => {
         if (prev >= (mode === 'seed' ? 1 : mode === 'growth' ? 3 : 14)) {
@@ -122,7 +141,7 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'agents':
         return (
           <div style={previewCardStyle}>
@@ -143,7 +162,7 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'memory':
         return (
           <div style={previewCardStyle}>
@@ -164,7 +183,7 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'checkpoints':
         return (
           <div style={previewCardStyle}>
@@ -185,7 +204,7 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'pricing':
         return (
           <div style={previewCardStyle}>
@@ -206,7 +225,7 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -219,42 +238,42 @@ export const AMOSDashboard: React.FC = () => {
         return (
           <div style={pricingContainerStyle}>
             <h4 style={pricingTitleStyle}>💰 Pricing Transparency Dashboard</h4>
-            
+
             <div style={pricingGridStyle}>
               <div style={pricingCardStyle}>
                 <div style={pricingLabelStyle}>Current Session</div>
                 <div style={pricingValueStyle}>${pricing.sessionCost.toFixed(4)}</div>
                 <div style={pricingSubtextStyle}>{pricing.tokenUsage.toLocaleString()} tokens</div>
               </div>
-              
+
               <div style={pricingCardStyle}>
                 <div style={pricingLabelStyle}>Model Calls</div>
                 <div style={pricingValueStyle}>{pricing.modelCalls}</div>
                 <div style={pricingSubtextStyle}>API requests</div>
               </div>
-              
+
               <div style={pricingCardStyle}>
                 <div style={pricingLabelStyle}>Daily Budget</div>
                 <div style={pricingValueStyle}>${pricing.dailyBudget}</div>
                 <div style={pricingSubtextStyle}>${pricing.budgetUsed.toFixed(2)} used</div>
               </div>
-              
+
               <div style={pricingCardStyle}>
                 <div style={pricingLabelStyle}>Est. Monthly</div>
                 <div style={pricingValueStyle}>${pricing.estimatedMonthly}</div>
                 <div style={pricingSubtextStyle}>Pro tier</div>
               </div>
             </div>
-            
+
             <div style={pricingQuoteStyle}>
               <em>"Developers want to see exactly what they're spending: token usage per prompt, cost per session, and clear limits before they're hit."</em>
               <span style={pricingQuoteAuthorStyle}>— RedMonk, 2025</span>
             </div>
-            
+
             <div style={budgetBarContainerStyle}>
               <div style={budgetBarLabelStyle}>Daily Budget Usage</div>
               <div style={budgetBarStyle}>
-                <div 
+                <div
                   style={{
                     ...budgetBarFillStyle,
                     width: `${(pricing.budgetUsed / pricing.dailyBudget) * 100}%`,
@@ -268,14 +287,14 @@ export const AMOSDashboard: React.FC = () => {
             </div>
           </div>
         );
-      
+
       default:
         return (
           <div style={placeholderStyle}>
             <div style={placeholderIconStyle}>🧩</div>
             <div style={placeholderTextStyle}>
-              {activeSystem === 'overview' 
-                ? 'Select a subsystem to view details' 
+              {activeSystem === 'overview'
+                ? 'Select a subsystem to view details'
                 : `${activeSystem} component would render here`}
             </div>
           </div>
@@ -294,7 +313,7 @@ export const AMOSDashboard: React.FC = () => {
             <p style={subtitleStyle}>Absolute Meta Operating System</p>
           </div>
         </div>
-        
+
         {/* Cognitive Mode Selector */}
         <div style={modeSelectorStyle}>
           {(['seed', 'growth', 'full'] as const).map(m => (
@@ -324,7 +343,7 @@ export const AMOSDashboard: React.FC = () => {
         {/* Sidebar */}
         <div style={sidebarStyle}>
           <div style={sidebarTitleStyle}>Cognitive Systems</div>
-          
+
           <button
             onClick={() => setActiveSystem('overview')}
             style={{
@@ -335,7 +354,7 @@ export const AMOSDashboard: React.FC = () => {
             <span style={navIconStyle}>📊</span>
             Overview
           </button>
-          
+
           {visibleSystems.filter(s => s !== 'overview').map(system => (
             <button
               key={system}
@@ -355,7 +374,7 @@ export const AMOSDashboard: React.FC = () => {
               {system.charAt(0).toUpperCase() + system.slice(1)}
             </button>
           ))}
-          
+
           {mode !== 'full' && (
             <div style={upgradePromptStyle}>
               <span style={upgradeIconStyle}>🔒</span>
@@ -373,7 +392,7 @@ export const AMOSDashboard: React.FC = () => {
               {/* Status Bar */}
               <div style={statusBarStyle}>
                 <div style={statusItemStyle}>
-                  <span style={statusDotStyle} style={{ backgroundColor: '#10b981' }} />
+                  <span style={{ ...statusDotStyle, backgroundColor: '#10b981' }} />
                   <span style={statusTextStyle}>All Systems Operational</span>
                 </div>
                 <div style={statusItemStyle}>
@@ -389,7 +408,7 @@ export const AMOSDashboard: React.FC = () => {
               {/* Subsystem Grid */}
               <div style={subsystemGridStyle}>
                 {visibleSystems.filter(s => s !== 'overview').map(system => (
-                  <div 
+                  <div
                     key={system}
                     style={gridItemStyle}
                     onClick={() => setActiveSystem(system as ActiveSystem)}
@@ -415,7 +434,7 @@ export const AMOSDashboard: React.FC = () => {
                   <h4 style={thinkingTitleStyle}>Cognitive Processing</h4>
                   <div style={layersProgressStyle}>
                     {Array.from({ length: mode === 'seed' ? 1 : mode === 'growth' ? 3 : 14 }).map((_, i) => (
-                      <div 
+                      <div
                         key={i}
                         style={{
                           ...layerDotStyle,

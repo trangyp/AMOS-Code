@@ -6,8 +6,6 @@ t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 Uses git bisect with automated run/skip/log/replay.
 """
 
-from __future__ import annotations
-
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -29,9 +27,9 @@ class BisectStatus(Enum):
 class BisectResult:
     """Result of bisect operation."""
 
-    first_bad_commit: str | None
+    first_bad_commit: str
     iterations: int
-    skipped_commits: list[str]
+    skipped_commits: List[str]
     status: BisectStatus
     message: str
 
@@ -45,7 +43,7 @@ class BisectRunner:
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path)
-        self.skipped: list[str] = []
+        self.skipped: List[str] = []
 
     def bisect_invariant(
         self,

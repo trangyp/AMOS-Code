@@ -16,9 +16,10 @@ import json
 import random
 import statistics
 from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Callable
+from typing import Any
 
 # ============================================================================
 # 1. ENHANCED WORLD MODEL (Y_t) - With Signal Filtering & Uncertainty
@@ -30,7 +31,7 @@ class Signal:
     """A signal from the world with confidence and source reliability."""
 
     source: str
-    data: dict[str, Any]
+    data: Dict[str, Any]
     timestamp: datetime
     confidence: float = 0.5  # 0-1
     reliability_score: float = 0.5  # Historical accuracy of source
@@ -55,12 +56,12 @@ class WorldModelEngineV4:
     def __init__(self, history_window: int = 100):
         self.signals: deque = deque(maxlen=history_window)
         self.source_reliability: dict[str, list[float]] = defaultdict(list)
-        self.market_state: dict[str, float] = {}
+        self.market_state: Dict[str, float] = {}
         self.uncertainty_bounds: dict[str, tuple[float, float]] = {}
         self.model_version = 0
 
         # Kalman-filter-like state estimates
-        self.state_estimates: dict[str, dict] = {}
+        self.state_estimates: Dict[str, dict] = {}
 
     def ingest_signal(self, signal: Signal):
         """Ingest and weight a new signal."""
@@ -182,15 +183,15 @@ class WorldModelEngineV4:
 class AllocationPolicy:
     """Learned allocation policy with dynamic weights."""
 
-    goal_weights: dict[str, float] = field(default_factory=dict)
-    resource_type_weights: dict[str, float] = field(
+    goal_weights: Dict[str, float] = field(default_factory=dict)
+    resource_type_weights: Dict[str, float] = field(
         default_factory=lambda: {"time": 0.4, "capital": 0.3, "attention": 0.2, "compute": 0.1}
     )
     exploration_rate: float = 0.1  # ε-greedy exploration
     learning_rate: float = 0.05
 
     # Performance history for learning
-    allocation_history: list[dict] = field(default_factory=list)
+    allocation_history: List[dict] = field(default_factory=list)
 
 
 class AdaptiveResourceAllocator:
@@ -205,7 +206,7 @@ class AdaptiveResourceAllocator:
         self.returns_history: dict[str, list[float]] = defaultdict(list)
 
     def allocate_with_learning(
-        self, demands: list[dict], world_state: dict
+        self, demands: List[dict], world_state: dict
     ) -> dict[str, dict[str, float]]:
         """Allocate resources with adaptive learning."""
         # ε-greedy: sometimes explore randomly
@@ -215,7 +216,7 @@ class AdaptiveResourceAllocator:
         # Exploit: use learned weights
         return self._exploitative_allocation(demands, world_state)
 
-    def _exploratory_allocation(self, demands: list[dict]) -> dict:
+    def _exploratory_allocation(self, demands: List[dict]) -> dict:
         """Random allocation for exploration."""
         allocations = {"time": {}, "capital": {}, "attention": {}, "compute": {}}
 
@@ -227,7 +228,7 @@ class AdaptiveResourceAllocator:
 
         return allocations
 
-    def _exploitative_allocation(self, demands: list[dict], world_state: dict) -> dict:
+    def _exploitative_allocation(self, demands: List[dict], world_state: dict) -> dict:
         """Allocate based on learned weights and current state."""
         # Score each demand using learned goal weights
         scored_demands = []
@@ -276,7 +277,7 @@ class AdaptiveResourceAllocator:
         # Record for learning
         self.policy.allocation_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "allocations": allocations,
                 "scores": {d.get("name"): s for d, s in scored_demands},
             }
@@ -357,8 +358,8 @@ class IdentityConstraint:
 
     max_compromise_per_action: float = 0.1  # How much can identity bend per action
     cumulative_drift_limit: float = 0.3  # Total drift before alarm
-    forbidden_actions: list[str] = field(default_factory=list)
-    required_presence: list[str] = field(default_factory=list)  # Must always maintain
+    forbidden_actions: List[str] = field(default_factory=list)
+    required_presence: List[str] = field(default_factory=list)  # Must always maintain
 
 
 class IdentityPreservingEconomics:
@@ -437,7 +438,7 @@ class IdentityPreservingEconomics:
             # Record the compromise
             self.identity_state["compromise_history"].append(
                 {
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "action": action.get("name"),
                     "drift": impact["drift_contribution"],
                 }
@@ -456,7 +457,7 @@ class IdentityPreservingEconomics:
     def _decay_drift(self):
         """Decay identity drift over time (healing)."""
         # Remove old compromises (>30 days)
-        cutoff = datetime.utcnow() - timedelta(days=30)
+        cutoff = datetime.now(UTC) - timedelta(days=30)
         recent_compromises = [
             c
             for c in self.identity_state["compromise_history"]
@@ -497,7 +498,7 @@ class FeedbackCompressor:
     def __init__(self):
         self.leading_indicators: dict[str, list[Callable]] = {}
         self.partial_outcomes: deque = deque(maxlen=100)
-        self.surrogate_models: dict[str, Any] = {}
+        self.surrogate_models: Dict[str, Any] = {}
 
     def register_leading_indicator(self, action_type: str, indicator_fn: Callable[[dict], float]):
         """Register a function that provides early signal for action type."""
@@ -579,7 +580,7 @@ class FeedbackCompressor:
             {
                 "type": action.get("type"),
                 "outcome": partial_result.get("success", 0.5),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -600,10 +601,12 @@ class AMOSv4ProductionRuntime:
 
     def __init__(self, name: str = "AMOS_Production"):
         self.name = name
-        self.birth_time = datetime.utcnow()
+        self.birth_time = datetime.now(UTC)
 
         # Core v4 components (from previous implementation)
         try:
+            from collections.abc import Callable
+
             from amos_v4 import AMOSv4, EconomicEngine, GoalPortfolio, PersistenceManager
 
             self.v4_base = AMOSv4(name=name)
@@ -620,7 +623,7 @@ class AMOSv4ProductionRuntime:
         self.cycle_count = 0
         self.decision_history: deque = deque(maxlen=1000)
 
-    def cycle(self, goals: list[dict], world_signals: list[Signal]) -> dict:
+    def cycle(self, goals: List[dict], world_signals: List[Signal]) -> dict:
         """Execute one full v4 production cycle.
 
         Returns decision and learning updates.
@@ -673,7 +676,7 @@ class AMOSv4ProductionRuntime:
         execution_result = self._execute_action(best_action, allocations)
 
         # 8. Get compressed feedback
-        time_since = datetime.utcnow() - self.birth_time
+        time_since = datetime.now(UTC) - self.birth_time
         feedback = self.feedback_compressor.get_compressed_feedback(best_action, time_since)
 
         # 9. Update systems
@@ -693,7 +696,7 @@ class AMOSv4ProductionRuntime:
 
         return cycle_record
 
-    def _generate_actions(self, goals: list[dict]) -> list[dict]:
+    def _generate_actions(self, goals: List[dict]) -> List[dict]:
         """Generate candidate actions from goals."""
         actions = []
         for goal in goals:
@@ -726,7 +729,7 @@ class AMOSv4ProductionRuntime:
             "status": "planned",
             "action": action["name"],
             "allocated_resources": allocations,
-            "execution_time": datetime.utcnow().isoformat(),
+            "execution_time": datetime.now(UTC).isoformat(),
         }
 
     def _update_systems(self, action: dict, execution: dict, feedback: dict) -> dict:
@@ -765,7 +768,7 @@ class AMOSv4ProductionRuntime:
         return {
             "name": self.name,
             "cycles": self.cycle_count,
-            "age_hours": (datetime.utcnow() - self.birth_time).total_seconds() / 3600,
+            "age_hours": (datetime.now(UTC) - self.birth_time).total_seconds() / 3600,
             "world_model_signals": len(self.world_model.signals),
             "learned_goal_weights": self.adaptive_allocator.policy.goal_weights,
             "identity_health": self.identity_economics.get_identity_status(),
@@ -792,11 +795,11 @@ def demo_production_v4():
     # 1. Ingest world signals
     print("\n[1] Ingesting World Signals")
     signals = [
-        Signal("market_data", {"opportunity_index": 0.8}, datetime.utcnow(), 0.9, 0.8),
+        Signal("market_data", {"opportunity_index": 0.8}, datetime.now(UTC), 0.9, 0.8),
         Signal(
-            "market_data", {"opportunity_index": 0.75}, datetime.utcnow(), 0.8, 0.8, latency_hours=1
+            "market_data", {"opportunity_index": 0.75}, datetime.now(UTC), 0.8, 0.8, latency_hours=1
         ),
-        Signal("competitor_intel", {"competition_pressure": 0.6}, datetime.utcnow(), 0.7, 0.6),
+        Signal("competitor_intel", {"competition_pressure": 0.6}, datetime.now(UTC), 0.7, 0.6),
     ]
     for signal in signals:
         amos.world_model.ingest_signal(signal)

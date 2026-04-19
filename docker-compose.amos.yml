@@ -1,0 +1,427 @@
+# AMOS Brain v14.0.0 - 14-Layer Cognitive OS
+# Docker Compose 2025 Best Practices
+# Features: Resource limits, health checks, network segmentation, profiles
+
+version: "3.8"
+
+services:
+  # 00_ROOT - Orchestrator (Core)
+  amos-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-orchestrator
+    hostname: amos-root
+    profiles: ["core", "full"]
+    environment:
+      - AMOS_LAYER=00_ROOT
+      - AMOS_MODE=orchestrator
+      - AMOS_CONFIG_PATH=/app/_AMOS_BRAIN
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./AMOS_ORGANISM_OS:/app/AMOS_ORGANISM_OS:ro
+      - ./_AMOS_BRAIN:/app/_AMOS_BRAIN:rw
+      - amos_logs:/app/logs
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # 01_BRAIN - Cognitive Core
+  amos-brain:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-brain
+    hostname: amos-brain
+    profiles: ["core", "full"]
+    environment:
+      - AMOS_LAYER=01_BRAIN
+      - AMOS_MODE=cognitive
+    depends_on:
+      amos-orchestrator:
+        condition: service_healthy
+    volumes:
+      - ./amos_brain:/app/amos_brain:ro
+      - ./AMOS_ORGANISM_OS/01_BRAIN:/app/brain:ro
+      - ./_AMOS_BRAIN:/app/_AMOS_BRAIN:rw
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "python3", "-c", "print('brain-ok')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # 02_SENSES - Context Gathering
+  amos-senses:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-senses
+    profiles: ["senses", "full"]
+    environment:
+      - AMOS_LAYER=02_SENSES
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./AMOS_ORGANISM_OS/02_SENSES:/app/senses:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # 03_IMMUNE - Anomaly Detection
+  amos-immune:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-immune
+    profiles: ["immune", "full"]
+    environment:
+      - AMOS_LAYER=03_IMMUNE
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./AMOS_ORGANISM_OS/03_IMMUNE:/app/immune:ro
+      - ./amos_logs:/app/logs:rw
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # 04_BLOOD - Resource Management
+  amos-blood:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-blood
+    profiles: ["blood", "full"]
+    environment:
+      - AMOS_LAYER=04_BLOOD
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./AMOS_ORGANISM_OS/04_BLOOD:/app/blood:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+
+  # 05_NERVES - Event Bus
+  amos-nerves:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-nerves
+    profiles: ["nerves", "full"]
+    environment:
+      - AMOS_LAYER=05_NERVES
+    depends_on:
+      - amos-brain
+    ports:
+      - "127.0.0.1:9092:9092"  # Event bus port
+    volumes:
+      - ./AMOS_ORGANISM_OS/05_NERVES:/app/nerves:ro
+    networks:
+      - amos-internal
+      - amos-events
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # 06_MUSCLE - Workflow Engine
+  amos-muscle:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-muscle
+    profiles: ["muscle", "full"]
+    environment:
+      - AMOS_LAYER=06_MUSCLE
+    depends_on:
+      - amos-nerves
+    volumes:
+      - ./AMOS_ORGANISM_OS/06_MUSCLE:/app/muscle:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    restart: unless-stopped
+
+  # 07_METABOLISM - Pipeline Engine
+  amos-metabolism:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-metabolism
+    profiles: ["metabolism", "full"]
+    environment:
+      - AMOS_LAYER=07_METABOLISM
+    depends_on:
+      - amos-muscle
+    volumes:
+      - ./07_METABOLISM:/app/metabolism:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    restart: unless-stopped
+
+  # 08_GROWTH - Self Evolution
+  amos-growth:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-growth
+    profiles: ["growth", "full"]
+    environment:
+      - AMOS_LAYER=08_GROWTH
+    depends_on:
+      - amos-metabolism
+    volumes:
+      - ./amos_self_evolution:/app/evolution:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # 09_SOCIAL - Multi-Agent
+  amos-social:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-social
+    profiles: ["social", "full"]
+    environment:
+      - AMOS_LAYER=09_SOCIAL
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./multi_agent:/app/social:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # 10_MEMORY - Knowledge Persistence
+  amos-memory:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-memory
+    profiles: ["memory", "full"]
+    environment:
+      - AMOS_LAYER=10_MEMORY
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./memory:/app/memory:ro
+      - amos_memory_data:/app/memory_store:rw
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    restart: unless-stopped
+
+  # 11_LEGAL - Compliance
+  amos-legal:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-legal
+    profiles: ["legal", "full"]
+    environment:
+      - AMOS_LAYER=11_LEGAL
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./legal_engine.py:/app/legal.py:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+
+  # 12_ETHICS - Validation
+  amos-ethics:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-ethics
+    profiles: ["ethics", "full"]
+    environment:
+      - AMOS_LAYER=12_ETHICS
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./AMOS_ORGANISM_OS/12_ETHICS_VALIDATION:/app/ethics:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+
+  # 13_TIME - Temporal Engine
+  amos-time:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-time
+    profiles: ["time", "full"]
+    environment:
+      - AMOS_LAYER=13_TIME
+    depends_on:
+      - amos-brain
+    volumes:
+      - ./amos_time.py:/app/time.py:ro
+    networks:
+      - amos-internal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+
+  # 14_INTERFACES - API Server (Public facing)
+  amos-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.amos
+    container_name: amos-api
+    profiles: ["api", "full"]
+    environment:
+      - AMOS_LAYER=14_INTERFACES
+      - AMOS_MODE=api
+      - API_HOST=0.0.0.0
+      - API_PORT=8080
+    depends_on:
+      amos-brain:
+        condition: service_healthy
+    ports:
+      - "${AMOS_API_PORT:-8080}:8080"
+    volumes:
+      - ./AMOS_ORGANISM_OS/14_INTERFACES:/app/interfaces:ro
+      - ./amos_api_server.py:/app/api_server.py:ro
+      - ./_AMOS_BRAIN:/app/_AMOS_BRAIN:rw
+    networks:
+      - amos-internal
+      - amos-public
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # Prometheus for metrics scraping
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amos-prometheus
+    profiles: ["monitoring", "full"]
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - amos-internal
+      - amos-public
+    restart: unless-stopped
+
+volumes:
+  amos_logs:
+    driver: local
+  amos_memory_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  amos-internal:
+    driver: bridge
+    internal: true  # No external access
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  amos-events:
+    driver: bridge
+    internal: true
+  amos-public:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

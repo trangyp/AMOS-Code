@@ -1,12 +1,12 @@
 """AMOS Brain Meta-Cognitive Controller - Self-directed orchestration."""
 
-from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from functools import lru_cache
+from typing import Any
 
 from .laws import GlobalLaws
 from .loader import get_brain
@@ -33,7 +33,7 @@ class SubTask:
     dependencies: list[str]
     status: TaskStatus
     created_at: str
-    completed_at: Optional[str] = None
+    completed_at: str  = None
     result: Any = None
     law_violations: list[dict] = field(default_factory=list)
     retry_count: int = 0
@@ -62,6 +62,8 @@ class MetaCognitiveController:
     4. Strategy adaptation based on results
     5. Self-correction when laws violated
     """
+from __future__ import annotations
+
 
     def __init__(self):
         self.brain = get_brain()
@@ -295,7 +297,7 @@ class MetaCognitiveController:
             ],
         }
 
-    def adapt_strategy(self, plan_id: str, failed_task_id: str) -> Optional[SubTask]:
+    def adapt_strategy(self, plan_id: str, failed_task_id: str) -> SubTask | None:
         """Adapt strategy when a task fails.
 
         Returns:
@@ -357,13 +359,7 @@ def orchestrate_goal(
     return controller.orchestrate(goal, domain, auto_execute)
 
 
-# Global controller instance
-_controller_instance: Optional[MetaCognitiveController] = None
-
-
+@lru_cache(maxsize=1)
 def get_meta_controller() -> MetaCognitiveController:
-    """Get or create global meta-cognitive controller."""
-    global _controller_instance
-    if _controller_instance is None:
-        _controller_instance = MetaCognitiveController()
-    return _controller_instance
+    """Get or create global meta-cognitive controller (singleton)."""
+    return MetaCognitiveController()

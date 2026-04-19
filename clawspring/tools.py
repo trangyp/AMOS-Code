@@ -7,8 +7,8 @@ import os
 import re
 import subprocess
 import threading
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
 
 from tool_registry import ToolDef, register_tool
 from tool_registry import execute_tool as _registry_execute
@@ -623,7 +623,7 @@ def _websearch(query: str) -> str:
 # ── NotebookEdit implementation ────────────────────────────────────────────
 
 
-def _parse_cell_id(cell_id: str) -> Optional[int]:
+def _parse_cell_id(cell_id: str) -> int :
     """Convert 'cell-N' shorthand to integer index; return None if not that form."""
     m = re.fullmatch(r"cell-(\d+)", cell_id)
     return int(m.group(1)) if m else None
@@ -650,7 +650,7 @@ def _notebook_edit(
     cells = nb.get("cells", [])
 
     # Resolve cell index
-    def _resolve_index(cid: str) -> Optional[int]:
+    def _resolve_index(cid: str) -> int :
         # Try exact id match first
         for i, c in enumerate(cells):
             if c.get("id") == cid:
@@ -748,7 +748,7 @@ def _detect_language(file_path: str) -> str:
     }.get(ext, "unknown")
 
 
-def _run_quietly(cmd: list[str], cwd: Optional[str] = None, timeout: int = 30) -> tuple[int, str]:
+def _run_quietly(cmd: List[str], cwd: str  = None, timeout: int = 30) -> Tuple[int, str]:
     """Run a command, return (returncode, combined_output)."""
     try:
         r = subprocess.run(
@@ -775,7 +775,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
     lang = language or _detect_language(file_path)
     abs_path = str(p.resolve())
-    results: list[str] = []
+    results: List[str] = []
 
     if lang == "python":
         # Try pyright first (most comprehensive)
@@ -853,7 +853,7 @@ def _get_diagnostics(file_path: str, language: str = None) -> str:
 
 def _ask_user_question(
     question: str,
-    options: Optional[list[dict]] = None,
+    options: list[dict ] = None,
     allow_freetext: bool = True,
 ) -> str:
     """Block the agent loop and surface a question to the user in the terminal.
@@ -862,8 +862,10 @@ def _ask_user_question(
     to render any questions and collect answers.  We use a threading.Event to
     block this call until the user responds.
     """
+from __future__ import annotations
+
     event = threading.Event()
-    result_holder: list[str] = []
+    result_holder: List[str] = []
     entry = {
         "question": question,
         "options": options or [],
@@ -979,7 +981,7 @@ def execute_tool(
     name: str,
     inputs: dict,
     permission_mode: str = "auto",
-    ask_permission: Optional[Callable[[str], bool]] = None,
+    ask_permission: Callable[[str , bool]] = None,
     config: dict = None,
 ) -> str:
     """Dispatch tool execution; ask permission for write/destructive ops.

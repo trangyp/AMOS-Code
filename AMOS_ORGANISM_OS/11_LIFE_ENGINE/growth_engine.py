@@ -4,15 +4,13 @@ Manages organism growth, capability expansion, and self-improvement.
 Tracks growth plans and executes staged expansion.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class GrowthStage(Enum):
@@ -44,14 +42,14 @@ class GrowthPlan:
     growth_type: GrowthType = GrowthType.CAPABILITY
     target_subsystem: str = ""
     requirements: list[str] = field(default_factory=list)
-    expected_outcome: dict[str, Any] = field(default_factory=dict)
+    expected_outcome: Dict[str, Any] = field(default_factory=dict)
     stage: GrowthStage = GrowthStage.PLANNED
     progress: float = 0.0
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    started_at: str = None
+    completed_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "growth_type": self.growth_type.value,
@@ -72,7 +70,7 @@ class GrowthEngine:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.plans: dict[str, GrowthPlan] = {}
+        self.plans: Dict[str, GrowthPlan] = {}
         self.growth_history: list[dict[str, Any]] = []
         self.capabilities: dict[str, dict[str, Any]] = {}
 
@@ -84,22 +82,22 @@ class GrowthEngine:
             "self_awareness": {
                 "description": "Knowledge of own state and structure",
                 "level": 1.0,
-                "acquired_at": datetime.utcnow().isoformat(),
+                "acquired_at": datetime.now(UTC).isoformat(),
             },
             "learning": {
                 "description": "Ability to learn from experience",
                 "level": 1.0,
-                "acquired_at": datetime.utcnow().isoformat(),
+                "acquired_at": datetime.now(UTC).isoformat(),
             },
             "adaptation": {
                 "description": "Ability to adapt to changes",
                 "level": 0.5,
-                "acquired_at": datetime.utcnow().isoformat(),
+                "acquired_at": datetime.now(UTC).isoformat(),
             },
             "self_improvement": {
                 "description": "Ability to improve own code",
                 "level": 0.3,
-                "acquired_at": datetime.utcnow().isoformat(),
+                "acquired_at": datetime.now(UTC).isoformat(),
             },
         }
 
@@ -110,7 +108,7 @@ class GrowthEngine:
         growth_type: GrowthType,
         target_subsystem: str,
         requirements: list[str],
-        expected_outcome: dict[str, Any],
+        expected_outcome: Dict[str, Any],
     ) -> GrowthPlan:
         """Create a new growth plan."""
         plan = GrowthPlan(
@@ -131,7 +129,7 @@ class GrowthEngine:
             return False
 
         plan.stage = GrowthStage.IN_PROGRESS
-        plan.started_at = datetime.utcnow().isoformat()
+        plan.started_at = datetime.now(UTC).isoformat()
         return True
 
     def update_progress(self, plan_id: str, progress: float) -> bool:
@@ -155,7 +153,7 @@ class GrowthEngine:
 
         plan.stage = GrowthStage.COMPLETED
         plan.progress = 1.0
-        plan.completed_at = datetime.utcnow().isoformat()
+        plan.completed_at = datetime.now(UTC).isoformat()
 
         # Record in history
         self.growth_history.append(
@@ -202,7 +200,7 @@ class GrowthEngine:
                 "name": plan.name,
                 "abandoned": True,
                 "reason": reason,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -220,7 +218,7 @@ class GrowthEngine:
 
         cap = self.capabilities[capability]
         cap["level"] = min(1.0, cap["level"] + increment)
-        cap["last_improved"] = datetime.utcnow().isoformat()
+        cap["last_improved"] = datetime.now(UTC).isoformat()
         return True
 
     def _save_plans(self):
@@ -230,7 +228,7 @@ class GrowthEngine:
             "plans": [p.to_dict() for p in self.plans.values()],
             "history": self.growth_history,
             "capabilities": self.capabilities,
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         plans_file.write_text(json.dumps(data, indent=2))
 
@@ -241,7 +239,7 @@ class GrowthEngine:
             plans = [p for p in plans if p.stage == stage]
         return [p.to_dict() for p in plans]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get growth engine status."""
         active = sum(1 for p in self.plans.values() if p.stage == GrowthStage.IN_PROGRESS)
         completed = sum(1 for p in self.plans.values() if p.stage == GrowthStage.COMPLETED)

@@ -20,8 +20,6 @@ Invariant checks:
 Based on 2024 observability engineering best practices.
 """
 
-from __future__ import annotations
-
 import ast
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,7 +36,7 @@ class ObservabilityGap:
     severity: str
     location: str
     message: str
-    suggestion: str | None = None
+    suggestion: str = None
 
 
 class ObservabilityInvariant(Invariant):
@@ -57,12 +55,12 @@ class ObservabilityInvariant(Invariant):
     def __init__(self):
         super().__init__("I_observability", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check observability coverage."""
         context = context or {}
         repo = Path(repo_path)
 
-        gaps: list[ObservabilityGap] = []
+        gaps: List[ObservabilityGap] = []
 
         # Analyze Python files
         py_files = list(repo.rglob("*.py"))
@@ -115,9 +113,9 @@ class ObservabilityInvariant(Invariant):
             },
         )
 
-    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> list[ObservabilityGap]:
+    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> List[ObservabilityGap]:
         """Analyze a single file for observability gaps."""
-        gaps: list[ObservabilityGap] = []
+        gaps: List[ObservabilityGap] = []
         relative_path = str(file_path.relative_to(file_path.parent.parent))
 
         # Check for error swallowing
@@ -131,9 +129,9 @@ class ObservabilityInvariant(Invariant):
 
         return gaps
 
-    def _find_error_swallowing(self, tree: ast.AST, file_path: str) -> list[ObservabilityGap]:
+    def _find_error_swallowing(self, tree: ast.AST, file_path: str) -> List[ObservabilityGap]:
         """Find bare except clauses and pass in except blocks."""
-        gaps: list[ObservabilityGap] = []
+        gaps: List[ObservabilityGap] = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ExceptHandler):
@@ -184,9 +182,9 @@ class ObservabilityInvariant(Invariant):
 
     def _find_logging_gaps(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[ObservabilityGap]:
+    ) -> List[ObservabilityGap]:
         """Find places that should log but don't."""
-        gaps: list[ObservabilityGap] = []
+        gaps: List[ObservabilityGap] = []
 
         # Check for entry points without logging
         for node in ast.walk(tree):
@@ -207,9 +205,9 @@ class ObservabilityInvariant(Invariant):
 
         return gaps
 
-    def _find_exception_gaps(self, tree: ast.AST, file_path: str) -> list[ObservabilityGap]:
+    def _find_exception_gaps(self, tree: ast.AST, file_path: str) -> List[ObservabilityGap]:
         """Find exception handling gaps."""
-        gaps: list[ObservabilityGap] = []
+        gaps: List[ObservabilityGap] = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Raise):

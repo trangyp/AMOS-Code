@@ -1,0 +1,52 @@
+# AMOS Ingress
+#
+# Exposes AMOS services to the internet via ingress controller.
+# Requires NGINX Ingress Controller or similar.
+#
+# Creator: Trang Phan
+# Version: 3.0.0
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: amos-ingress
+  namespace: amos
+  labels:
+    app.kubernetes.io/name: amos
+    app.kubernetes.io/component: ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - amos.example.com
+    - api.amos.example.com
+    secretName: amos-tls
+  rules:
+  - host: amos.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: amos-dashboard
+            port:
+              number: 80
+  - host: api.amos.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: amos-backend
+            port:
+              number: 8000

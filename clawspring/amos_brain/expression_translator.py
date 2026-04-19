@@ -1,10 +1,7 @@
 """AMOS Expression Translation - Decodes human expression into structured logic."""
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -14,7 +11,7 @@ class TranslatedExpression:
     original: str
     structured_logic: str
     detected_domains: list[str]
-    emotional_tone: Optional[str]
+    emotional_tone: str
     implicit_constraints: list[str]
     suggested_kernels: list[str]
 
@@ -116,7 +113,7 @@ class ExpressionTranslator:
 
         return detected if detected else ["general"]
 
-    def _detect_emotion(self, text: str) -> Optional[str]:
+    def _detect_emotion(self, text: str) -> str:
         """Detect emotional tone if present."""
         text_lower = text.lower()
 
@@ -142,7 +139,7 @@ class ExpressionTranslator:
         self,
         original: str,
         domains: list[str],
-        emotion: Optional[str],
+        emotion: str,
         constraints: list[str],
     ) -> str:
         """Build structured logic representation."""

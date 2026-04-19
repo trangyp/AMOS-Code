@@ -1,7 +1,5 @@
 """AMOS Global Laws - In-memory representation of AMOS legal framework."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 
@@ -63,7 +61,7 @@ class GlobalLaws:
     def validate_decision(
         self,
         decision: str,
-        quadrants_checked: list[str] | None = None,
+        quadrants_checked: list[str] = None,
     ) -> list[LawViolation]:
         """Validate a decision follows Rule of 4."""
         violations = []

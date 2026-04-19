@@ -1,11 +1,8 @@
 """API Server — REST API for AMOS Organism."""
 
-from __future__ import annotations
-
 import json
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Optional
 
 
 class APIServer:

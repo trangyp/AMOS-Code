@@ -19,8 +19,6 @@ Tasks:
     full        Run complete workflow
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from pathlib import Path
@@ -45,7 +43,7 @@ class AMOSWorkflow:
             self.integration = get_amos_integration()
         return self.integration
 
-    def code_review(self, filepath: str) -> dict[str, Any]:
+    def code_review(self, filepath: str) -> Dict[str, Any]:
         """Review code with AMOS Brain.
 
         Applies Rule of 2 (optimistic + critical perspectives)
@@ -136,7 +134,7 @@ Provide:
 
         return {"error": "Reasoning engine not available"}
 
-    def architecture_decision(self, decision: str, options: list[str]) -> dict[str, Any]:
+    def architecture_decision(self, decision: str, options: List[str]) -> Dict[str, Any]:
         """Analyze an architecture decision with AMOS.
 
         Uses Rule of 2 to evaluate options from multiple perspectives
@@ -198,7 +196,7 @@ Recommend the best option with justification.
 
         return {"error": "Reasoning engine not available"}
 
-    def refactoring_plan(self, target: str, issues: list[str]) -> dict[str, Any]:
+    def refactoring_plan(self, target: str, issues: List[str]) -> Dict[str, Any]:
         """Generate a refactoring plan with AMOS guidance."""
         print("=" * 60)
         print("AMOS REFACTORING PLAN")

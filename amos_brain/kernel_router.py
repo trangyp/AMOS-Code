@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 
 
 @dataclass
@@ -151,6 +152,18 @@ class KernelRouter:
 
         return active_engines
 
+    def list_kernels(self) -> list[str]:
+        """List available kernel names."""
+        return list(self.DOMAIN_KEYWORDS.keys())
+
+    def is_healthy(self) -> bool:
+        """Check if kernel router is healthy."""
+        return self.brain is not None
+
+    def shutdown(self) -> None:
+        """Shutdown kernel router."""
+        self.brain = None
+
     def get_kernel_chain(self, task_description: str) -> list[str]:
         """Get ordered list of kernel IDs for a task."""
         engines = self.route(task_description)
@@ -180,15 +193,9 @@ class KernelRouter:
         return "\n".join(lines)
 
 
-# Global router instance
-_router_instance: KernelRouter | None = None
-
-
+@lru_cache(maxsize=1)
 def get_kernel_router() -> KernelRouter:
-    """Get or create global kernel router instance."""
-    global _router_instance
-    if _router_instance is None:
-        from .loader import get_brain
+    """Get or create global kernel router instance (singleton)."""
+    from .loader import get_brain
 
-        _router_instance = KernelRouter(get_brain())
-    return _router_instance
+    return KernelRouter(get_brain())

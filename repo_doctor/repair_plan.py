@@ -43,7 +43,7 @@ class RepairAction:
     invariant_dimension: StateDimension | None = None
     estimated_risk: str = "medium"  # "low", "medium", "high"
     auto_fixable: bool = False
-    fix_suggestion: str | None = None
+    fix_suggestion: str = None
 
     # Architecture-aware repair constraints (from spec section 10)
     restores_local_invariants: bool = True
@@ -55,7 +55,7 @@ class RepairAction:
     preserves_observability: bool = True
 
     # Architecture violation context (if any)
-    arch_violation_type: str | None = None
+    arch_violation_type: str = None
     arch_violation_details: dict[str, Any] = field(default_factory=dict)
 
 
@@ -529,7 +529,7 @@ class AutoFixRunner:
 
         return shutil.which(tool) is not None
 
-    def _run_ruff_fix(self, dry_run: bool = False) -> dict | None:
+    def _run_ruff_fix(self, dry_run: bool = False) -> dict:
         """Run ruff check --fix to auto-fix linting issues."""
         if not self._is_available("ruff"):
             return None
@@ -580,7 +580,7 @@ class AutoFixRunner:
                 "dry_run": dry_run,
             }
 
-    def _run_ruff_format(self, dry_run: bool = False) -> dict | None:
+    def _run_ruff_format(self, dry_run: bool = False) -> dict:
         """Run ruff format to format code."""
         if not self._is_available("ruff"):
             return None

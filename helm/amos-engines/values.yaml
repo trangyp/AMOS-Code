@@ -1,0 +1,286 @@
+# AMOS Engines Helm Chart Values
+# Production-ready configuration
+
+# Global settings
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+  amos:
+    logLevel: INFO
+    environment: production
+
+# Image configuration
+image:
+  registry: docker.io
+  repository: amos/engines
+  tag: v2.0.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Temporal Engine
+temporal:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: amos/temporal-engine
+    tag: v2.0.0
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    ports:
+      api: 8000
+      health: 8080
+      metrics: 9090
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Field Dynamics Engine
+field:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: amos/field-engine
+    tag: v2.0.0
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+  service:
+    type: ClusterIP
+    ports:
+      api: 8001
+      health: 8081
+      metrics: 9091
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  # Field-specific configuration
+  config:
+    gridSize: 64
+    mass: 1.0
+    coupling: 0.1
+
+# Safety Engine
+safety:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: amos/safety-engine
+    tag: v2.0.0
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    ports:
+      api: 8002
+      health: 8082
+      metrics: 9092
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Integration Engine
+integration:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: amos/integration-engine
+    tag: v2.0.0
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    ports:
+      api: 8003
+      health: 8083
+      metrics: 9093
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+  hosts:
+    - host: amos-engines.local
+      paths:
+        - path: /temporal
+          pathType: Prefix
+          service: temporal
+          port: 8000
+        - path: /field
+          pathType: Prefix
+          service: field
+          port: 8001
+        - path: /safety
+          pathType: Prefix
+          service: safety
+          port: 8002
+        - path: /integration
+          pathType: Prefix
+          service: integration
+          port: 8003
+
+  tls:
+    - secretName: amos-engines-tls
+      hosts:
+        - amos-engines.local
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: amos-engines
+
+# Pod Security Context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Security Context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Node Selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - amos-engines
+          topologyKey: kubernetes.io/hostname
+
+# Redis dependency
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Prometheus dependency
+prometheus:
+  enabled: true
+  server:
+    persistentVolume:
+      enabled: true
+      size: 10Gi
+  alertmanager:
+    enabled: true
+  pushgateway:
+    enabled: false

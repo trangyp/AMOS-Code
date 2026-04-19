@@ -9,7 +9,6 @@ Responsible for:
 - Integration with BLOOD signals and IMMUNE safety checks
 """
 
-from __future__ import annotations
 
 import hashlib
 import json
@@ -17,10 +16,10 @@ import logging
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.muscle")
@@ -56,19 +55,19 @@ class Action:
 
     action_id: str
     action_type: ActionType
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     source: str
     status: ActionStatus = ActionStatus.PENDING
     created_at: str = ""
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    result: Optional[dict[str, Any]] = None
-    error: Optional[str] = None
-    safety_report: Optional[dict[str, Any]] = None
+    started_at: str  = None
+    completed_at: str  = None
+    result: dict[str, Any ] = None
+    error: str  = None
+    safety_report: dict[str, Any ] = None
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(timezone.utc).isoformat()
 
 
 @dataclass
@@ -79,7 +78,7 @@ class Tool:
     name: str
     description: str
     handler: Callable[[dict[str, Any]], dict[str, Any]]
-    parameters: dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, Any] = field(default_factory=dict)
     requires_confirmation: bool = False
     category: str = "general"
 
@@ -100,11 +99,11 @@ class MuscleKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Action registry
-        self.actions: dict[str, Action] = {}
-        self.action_history: list[Action] = []
+        self.actions: Dict[str, Action] = {}
+        self.action_history: List[Action] = []
 
         # Tool registry
-        self.tools: dict[str, Tool] = {}
+        self.tools: Dict[str, Tool] = {}
         self._register_builtin_tools()
 
         # Execution settings
@@ -112,7 +111,7 @@ class MuscleKernel:
         self.executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
 
         # Safety integration (will be connected to IMMUNE)
-        self.immune_check: Optional[Callable[[str, dict[str, Any]], dict[str, Any]]] = None
+        self.immune_check: Callable[[str, dict[str, Any ], dict[str, Any]]] = None
 
         # Statistics
         self.stats = {
@@ -190,7 +189,7 @@ class MuscleKernel:
         logger.info("Immune safety checker connected")
 
     def execute_action(
-        self, action_type: ActionType, payload: dict[str, Any], source: str = "unknown"
+        self, action_type: ActionType, payload: Dict[str, Any], source: str = "unknown"
     ) -> Action:
         """Execute an action with safety validation.
 
@@ -227,20 +226,20 @@ class MuscleKernel:
 
         # 2. Execute action
         action.status = ActionStatus.EXECUTING
-        action.started_at = datetime.utcnow().isoformat()
+        action.started_at = datetime.now(timezone.utc).isoformat()
 
         try:
             result = self._execute(action_type, payload)
             action.result = result
             action.status = ActionStatus.COMPLETED
-            action.completed_at = datetime.utcnow().isoformat()
+            action.completed_at = datetime.now(timezone.utc).isoformat()
             self.stats["completed_actions"] += 1
             logger.info(f"Action {action_id} completed successfully")
 
         except Exception as e:
             action.error = str(e)
             action.status = ActionStatus.FAILED
-            action.completed_at = datetime.utcnow().isoformat()
+            action.completed_at = datetime.now(timezone.utc).isoformat()
             self.stats["failed_actions"] += 1
             logger.error(f"Action {action_id} failed: {e}")
 
@@ -251,7 +250,7 @@ class MuscleKernel:
 
         return action
 
-    def _execute(self, action_type: ActionType, payload: dict[str, Any]) -> dict[str, Any]:
+    def _execute(self, action_type: ActionType, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Internal execution dispatcher."""
         if action_type == ActionType.FILE_READ:
             return self._exec_file_read(payload)
@@ -273,7 +272,7 @@ class MuscleKernel:
             raise ValueError(f"Unknown action type: {action_type}")
 
     def invoke_tool(
-        self, tool_id: str, parameters: dict[str, Any], source: str = "unknown"
+        self, tool_id: str, parameters: Dict[str, Any], source: str = "unknown"
     ) -> Action:
         """Invoke a registered tool."""
         if tool_id not in self.tools:
@@ -299,7 +298,7 @@ class MuscleKernel:
             ActionType.TOOL_INVOKE, {"tool_id": tool_id, "parameters": parameters}, source
         )
 
-    def _exec_file_read(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_file_read(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute file read."""
         path = Path(payload["path"])
 
@@ -315,7 +314,7 @@ class MuscleKernel:
             "hash": hashlib.md5(content.encode()).hexdigest()[:8],
         }
 
-    def _exec_file_write(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_file_write(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute file write."""
         path = Path(payload["path"])
         content = payload["content"]
@@ -331,7 +330,7 @@ class MuscleKernel:
             "hash": hashlib.md5(content.encode()).hexdigest()[:8],
         }
 
-    def _exec_file_delete(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_file_delete(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute file delete."""
         path = Path(payload["path"])
 
@@ -342,7 +341,7 @@ class MuscleKernel:
 
         return {"path": str(path), "deleted": True}
 
-    def _exec_file_modify(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_file_modify(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute file modification (edit)."""
         path = Path(payload["path"])
 
@@ -367,7 +366,7 @@ class MuscleKernel:
         else:
             raise ValueError("Modification requires 'old_string' and 'new_string'")
 
-    def _exec_command(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_command(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute shell command."""
         command = payload["command"]
         timeout = payload.get("timeout", 30)
@@ -384,7 +383,7 @@ class MuscleKernel:
             "success": result.returncode == 0,
         }
 
-    def _exec_api_call(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_api_call(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute API call."""
         import urllib.error
         import urllib.request
@@ -415,7 +414,7 @@ class MuscleKernel:
         except Exception as e:
             return {"url": url, "status": 0, "error": str(e)}
 
-    def _exec_tool_invoke(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_tool_invoke(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute tool invocation."""
         tool_id = payload["tool_id"]
         parameters = payload.get("parameters", {})
@@ -426,29 +425,29 @@ class MuscleKernel:
         tool = self.tools[tool_id]
         return tool.handler(parameters)
 
-    def _exec_task_complete(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _exec_task_complete(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Mark task as complete."""
         task_id = payload.get("task_id", "unknown")
 
-        return {"task_id": task_id, "completed": True, "timestamp": datetime.utcnow().isoformat()}
+        return {"task_id": task_id, "completed": True, "timestamp": datetime.now(timezone.utc).isoformat()}
 
-    def _tool_file_read(self, params: dict[str, Any]) -> dict[str, Any]:
+    def _tool_file_read(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Tool handler for file read."""
         return self._exec_file_read(params)
 
-    def _tool_file_write(self, params: dict[str, Any]) -> dict[str, Any]:
+    def _tool_file_write(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Tool handler for file write."""
         return self._exec_file_write(params)
 
-    def _tool_file_delete(self, params: dict[str, Any]) -> dict[str, Any]:
+    def _tool_file_delete(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Tool handler for file delete."""
         return self._exec_file_delete(params)
 
-    def _tool_command_execute(self, params: dict[str, Any]) -> dict[str, Any]:
+    def _tool_command_execute(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Tool handler for command execution."""
         return self._exec_command(params)
 
-    def _tool_api_call(self, params: dict[str, Any]) -> dict[str, Any]:
+    def _tool_api_call(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Tool handler for API call."""
         return self._exec_api_call(params)
 
@@ -461,11 +460,11 @@ class MuscleKernel:
         """Get action by ID."""
         return self.actions.get(action_id)
 
-    def get_recent_actions(self, count: int = 10) -> list[Action]:
+    def get_recent_actions(self, count: int = 10) -> List[Action]:
         """Get recent actions."""
         return self.action_history[-count:]
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current muscle state."""
         return {
             "active_actions": len(
@@ -480,12 +479,13 @@ class MuscleKernel:
             "blocked_actions": self.stats["blocked_actions"],
             "registered_tools": len(self.tools),
             "immune_connected": self.immune_check is not None,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_id(self) -> str:
         """Generate unique ID."""
         import uuid
+from typing import Callable, List, Set
 
         return str(uuid.uuid4())[:8]
 

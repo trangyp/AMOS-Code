@@ -1,0 +1,347 @@
+# AMOS Kubernetes Operator
+#
+# Custom Resource Definition and Deployment for AMOS Brain
+# Enables cloud-native deployment with self-healing and auto-scaling.
+#
+# Usage:
+#   kubectl apply -f k8s/amos-operator.yaml
+#
+# Creator: Trang Phan
+# Version: 3.0.0
+
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: amossystems.amos.io
+  labels:
+    app: amos-operator
+    version: v3.0.0
+spec:
+  group: amos.io
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                # Cognitive Mode Configuration
+                cognitiveMode:
+                  type: string
+                  enum: ['seed', 'growth', 'full']
+                  default: 'growth'
+                  description: 'AMOS cognitive operating mode'
+
+                # Resource Configuration
+                resources:
+                  type: object
+                  properties:
+                    frontend:
+                      type: object
+                      properties:
+                        replicas:
+                          type: integer
+                          default: 2
+                          minimum: 1
+                          maximum: 10
+                        cpu:
+                          type: string
+                          default: '500m'
+                        memory:
+                          type: string
+                          default: '512Mi'
+                    backend:
+                      type: object
+                      properties:
+                        replicas:
+                          type: integer
+                          default: 3
+                          minimum: 1
+                          maximum: 20
+                        cpu:
+                          type: string
+                          default: '1000m'
+                        memory:
+                          type: string
+                          default: '1Gi'
+
+                # Auto-scaling Configuration
+                autoscaling:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    minReplicas:
+                      type: integer
+                      default: 2
+                    maxReplicas:
+                      type: integer
+                      default: 10
+                    targetCPUUtilization:
+                      type: integer
+                      default: 70
+
+                # Security Configuration
+                security:
+                  type: object
+                  properties:
+                    jwtSecret:
+                      type: string
+                    enableAuth:
+                      type: boolean
+                      default: true
+                    rateLimitRequests:
+                      type: integer
+                      default: 100
+
+                # Monitoring Configuration
+                monitoring:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    prometheus:
+                      type: boolean
+                      default: true
+                    grafana:
+                      type: boolean
+                      default: true
+
+                # Persistence Configuration
+                persistence:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    storageClass:
+                      type: string
+                      default: 'standard'
+                    memorySize:
+                      type: string
+                      default: '10Gi'
+
+                # Feature Flags
+                features:
+                  type: object
+                  properties:
+                    websocket:
+                      type: boolean
+                      default: true
+                    agentsMD:
+                      type: boolean
+                      default: true
+                    checkpoints:
+                      type: boolean
+                      default: true
+                    evolution:
+                      type: boolean
+                      default: true
+            status:
+              type: object
+              properties:
+                phase:
+                  type: string
+                  enum: ['Pending', 'Running', 'Failed', 'Succeeded']
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                replicas:
+                  type: integer
+                readyReplicas:
+                  type: integer
+      subresources:
+        status: {}
+  scope: Namespaced
+  names:
+    plural: amossystems
+    singular: amossystem
+    kind: AMOSSystem
+    shortNames:
+      - amos
+
+---
+# AMOS Operator Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amos-operator
+  namespace: amos-system
+  labels:
+    app: amos-operator
+    version: v3.0.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: amos-operator
+  template:
+    metadata:
+      labels:
+        app: amos-operator
+    spec:
+      serviceAccountName: amos-operator
+      containers:
+        - name: operator
+          image: ghcr.io/trangphan/amos/amos-operator:v3.0.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          env:
+            - name: WATCH_NAMESPACE
+              value: ""  # Watch all namespaces
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "amos-operator"
+
+---
+# Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: amos-operator
+  namespace: amos-system
+
+---
+# RBAC Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: amos-operator
+rules:
+  - apiGroups:
+      - amos.io
+    resources:
+      - amossystems
+      - amossystems/status
+      - amossystems/finalizers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - statefulsets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - configmaps
+      - secrets
+      - persistentvolumeclaims
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - autoscaling
+    resources:
+      - horizontalpodautoscalers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+
+---
+# RBAC Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: amos-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: amos-operator
+subjects:
+  - kind: ServiceAccount
+    name: amos-operator
+    namespace: amos-system
+
+---
+# AMOS System Example
+apiVersion: amos.io/v1
+kind: AMOSSystem
+metadata:
+  name: amos-production
+  namespace: default
+spec:
+  cognitiveMode: full
+  resources:
+    frontend:
+      replicas: 3
+      cpu: "500m"
+      memory: "512Mi"
+    backend:
+      replicas: 5
+      cpu: "1000m"
+      memory: "2Gi"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 20
+    targetCPUUtilization: 70
+  security:
+    enableAuth: true
+    rateLimitRequests: 100
+  monitoring:
+    enabled: true
+    prometheus: true
+    grafana: true
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    memorySize: "50Gi"
+  features:
+    websocket: true
+    agentsMD: true
+    checkpoints: true
+    evolution: true

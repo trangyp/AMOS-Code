@@ -1,7 +1,5 @@
 """I_persist = 1 iff serialize -> deserialize preserves operational semantics."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class PersistenceInvariant(Invariant):
     def __init__(self):
         super().__init__("I_persist", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check persistence integrity."""
         context = context or {}
         roundtrip = context.get("roundtrip_failures", 0)

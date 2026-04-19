@@ -4,15 +4,13 @@ Manages superposition states where multiple possibilities
 exist simultaneously until collapse/decision.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class SuperpositionStatus(Enum):
@@ -32,10 +30,10 @@ class PotentialState:
     name: str = ""
     description: str = ""
     probability: float = 0.5  # 0-1
-    attributes: dict[str, Any] = field(default_factory=dict)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    attributes: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -45,14 +43,14 @@ class SuperpositionState:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     context: str = ""  # What is being decided/considered
-    potential_states: list[PotentialState] = field(default_factory=list)
+    potential_states: List[PotentialState] = field(default_factory=list)
     status: SuperpositionStatus = SuperpositionStatus.ACTIVE
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    collapsed_at: Optional[str] = None
-    collapsed_to: Optional[str] = None  # ID of chosen state
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    collapsed_at: str = None
+    collapsed_to: str = None  # ID of chosen state
     collapse_reason: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "status": self.status.value,
@@ -73,7 +71,7 @@ class SuperpositionManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.superpositions: list[SuperpositionState] = []
+        self.superpositions: List[SuperpositionState] = []
 
         self._load_data()
 
@@ -114,7 +112,7 @@ class SuperpositionManager:
         """Save superposition data to disk."""
         data_file = self.data_dir / "superpositions.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "superpositions": [s.to_dict() for s in self.superpositions],
         }
         data_file.write_text(json.dumps(data, indent=2))
@@ -122,7 +120,7 @@ class SuperpositionManager:
     def create_superposition(
         self,
         context: str,
-        potential_states: list[PotentialState],
+        potential_states: List[PotentialState],
     ) -> SuperpositionState:
         """Create a new superposition state."""
         # Normalize probabilities
@@ -163,7 +161,7 @@ class SuperpositionManager:
             return None
 
         sp.status = SuperpositionStatus.COLLAPSED
-        sp.collapsed_at = datetime.utcnow().isoformat()
+        sp.collapsed_at = datetime.now(UTC).isoformat()
         sp.collapsed_to = chosen_state_id
         sp.collapse_reason = reason
 
@@ -198,7 +196,7 @@ class SuperpositionManager:
         collapsed.sort(key=lambda x: x.collapsed_at or "", reverse=True)
         return [s.to_dict() for s in collapsed[:limit]]
 
-    def get_uncertainty_for_context(self, context: str) -> dict[str, Any]:
+    def get_uncertainty_for_context(self, context: str) -> Dict[str, Any]:
         """Get uncertainty metrics for a context."""
         relevant = [
             s

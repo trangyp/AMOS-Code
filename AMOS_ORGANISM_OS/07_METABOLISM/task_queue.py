@@ -9,15 +9,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 
 class TaskStatus(Enum):
@@ -49,15 +46,15 @@ class Task:
     description: str
     task_type: str
     source_subsystem: str
-    target_agent: Optional[str] = None
+    target_agent: str | None = None
     priority: TaskPriority = TaskPriority.MEDIUM
     status: TaskStatus = TaskStatus.PENDING
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    params: Dict[str, Any] = field(default_factory=dict)
-    result: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    started_at: str | None = None
+    completed_at: str | None = None
+    params: dict[str, Any] = field(default_factory=dict)
+    result: dict[str, Any] | None = None
+    error_message: str | None = None
     retry_count: int = 0
     max_retries: int = 3
 
@@ -82,9 +79,9 @@ class TaskQueue:
         self.queue_dir = organism_root / "07_METABOLISM" / "task_queue"
         self.queue_dir.mkdir(parents=True, exist_ok=True)
 
-        self.tasks: Dict[str, Task] = {}
-        self.assignments: Dict[str, TaskAssignment] = {}
-        self.task_history: List[str] = []
+        self.tasks: dict[str, Task] = {}
+        self.assignments: dict[str, TaskAssignment] = {}
+        self.task_history: list[str] = []
 
         self._load_state()
 
@@ -127,7 +124,7 @@ class TaskQueue:
         state_file = self.queue_dir / "queue_state.json"
 
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "total_tasks": len(self.tasks),
             "pending": len(self.get_pending_tasks()),
             "running": len(self.get_running_tasks()),
@@ -165,8 +162,8 @@ class TaskQueue:
         task_type: str,
         source_subsystem: str,
         priority: TaskPriority = TaskPriority.MEDIUM,
-        target_agent: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
+        target_agent: str | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Task:
         """Submit a new task to the queue."""
         task = Task(
@@ -194,12 +191,12 @@ class TaskQueue:
 
         task.status = TaskStatus.ASSIGNED
         task.target_agent = agent_id
-        task.started_at = datetime.utcnow().isoformat()
+        task.started_at = datetime.now(UTC).isoformat()
 
         assignment = TaskAssignment(
             task_id=task_id,
             agent_id=agent_id,
-            assigned_at=datetime.utcnow().isoformat(),
+            assigned_at=datetime.now(UTC).isoformat(),
             expected_duration=300,  # 5 minutes default
         )
         self.assignments[task_id] = assignment
@@ -218,14 +215,14 @@ class TaskQueue:
         self._save_state()
         return True
 
-    def complete_task(self, task_id: str, result: Dict[str, Any]) -> bool:
+    def complete_task(self, task_id: str, result: dict[str, Any]) -> bool:
         """Mark a task as completed with result."""
         task = self.tasks.get(task_id)
         if not task:
             return False
 
         task.status = TaskStatus.COMPLETED
-        task.completed_at = datetime.utcnow().isoformat()
+        task.completed_at = datetime.now(UTC).isoformat()
         task.result = result
 
         self.task_history.append(task_id)
@@ -260,16 +257,16 @@ class TaskQueue:
         self._save_state()
         return True
 
-    def get_pending_tasks(self) -> List[Task]:
+    def get_pending_tasks(self) -> list[Task]:
         """Get all pending tasks sorted by priority."""
         pending = [t for t in self.tasks.values() if t.status == TaskStatus.PENDING]
         return sorted(pending, key=lambda x: x.priority.value, reverse=True)
 
-    def get_running_tasks(self) -> List[Task]:
+    def get_running_tasks(self) -> list[Task]:
         """Get all running tasks."""
         return [t for t in self.tasks.values() if t.status == TaskStatus.RUNNING]
 
-    def get_tasks_for_agent(self, agent_id: str) -> List[Task]:
+    def get_tasks_for_agent(self, agent_id: str) -> list[Task]:
         """Get tasks assigned to a specific agent."""
         return [
             t
@@ -277,7 +274,7 @@ class TaskQueue:
             if t.target_agent == agent_id and t.status in [TaskStatus.ASSIGNED, TaskStatus.RUNNING]
         ]
 
-    def process_next_task(self, available_agents: List[str]) -> Optional[Task]:
+    def process_next_task(self, available_agents: list[str]) -> Task | None:
         """Process the next pending task if agents available."""
         pending = self.get_pending_tasks()
         if not pending or not available_agents:
@@ -290,7 +287,7 @@ class TaskQueue:
             return task
         return None
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get queue status."""
         status_counts = dict.fromkeys(TaskStatus, 0)
         for task in self.tasks.values():
@@ -309,7 +306,7 @@ class TaskQueue:
 
     def cleanup_old_tasks(self, max_age_hours: int = 24) -> int:
         """Remove completed/failed tasks older than max_age."""
-        cutoff = datetime.utcnow().timestamp() - (max_age_hours * 3600)
+        cutoff = datetime.now(UTC).timestamp() - (max_age_hours * 3600)
         to_remove = []
 
         for task_id, task in self.tasks.items():

@@ -469,6 +469,7 @@ def api_orchestrator_cycle():
         organism_root = get_organism_root()
         sys.path.insert(0, str(organism_root))
         from AMOS_MASTER_ORCHESTRATOR import AMOSOrganismOrchestrator
+from typing import List
 
         orch = AMOSOrganismOrchestrator(organism_root)
         result = orch.cycle()

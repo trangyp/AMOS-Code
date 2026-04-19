@@ -1,14 +1,12 @@
 """Quantum Decision Engine for AMOS"""
 
-from __future__ import annotations
-
 import json
 import random
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -19,7 +17,7 @@ class DecisionPath:
     expected_value: float = 0.0
     uncertainty: float = 0.5  # 0-1
     probability: float = 0.5
-    outcomes: list[str] = field(default_factory=list)
+    outcomes: List[str] = field(default_factory=list)
 
     def to_dict(self):
         return asdict(self)
@@ -29,7 +27,7 @@ class QuantumDecisionEngine:
     def __init__(self, data_dir: Optional[Path] = None):
         self.data_dir = data_dir or Path(__file__).parent / "data"
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.decisions: list[dict] = []
+        self.decisions: List[dict] = []
         self._load_data()
 
     def _load_data(self):
@@ -44,11 +42,11 @@ class QuantumDecisionEngine:
         f = self.data_dir / "decisions.json"
         f.write_text(
             json.dumps(
-                {"saved_at": datetime.utcnow().isoformat(), "decisions": self.decisions}, indent=2
+                {"saved_at": datetime.now(UTC).isoformat(), "decisions": self.decisions}, indent=2
             )
         )
 
-    def evaluate_paths(self, paths: list[DecisionPath]) -> dict[str, Any]:
+    def evaluate_paths(self, paths: List[DecisionPath]) -> Dict[str, Any]:
         if not paths:
             return {"error": "No paths provided"}
         # Calculate expected values with uncertainty
@@ -66,14 +64,14 @@ class QuantumDecisionEngine:
             "recommendation": f"Choose {best.name} (EV: {best.expected_value:.2f})",
         }
 
-    def probabilistic_decide(self, paths: list[DecisionPath]) -> DecisionPath:
+    def probabilistic_decide(self, paths: List[DecisionPath]) -> DecisionPath:
         """Collapse to one path based on probabilities"""
         if not paths:
             return DecisionPath(name="no_options")
         weights = [1.0 / len(paths) for _ in paths]  # Equal probability
         return random.choices(paths, weights=weights, k=1)[0]
 
-    def multi_path_explore(self, paths: list[DecisionPath], top_n: int = 3) -> list[DecisionPath]:
+    def multi_path_explore(self, paths: List[DecisionPath], top_n: int = 3) -> List[DecisionPath]:
         """Keep top N paths in superposition"""
         paths.sort(key=lambda x: x.expected_value, reverse=True)
         return paths[:top_n]

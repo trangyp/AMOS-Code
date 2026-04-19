@@ -58,7 +58,7 @@ class AMOSOperational:
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
 
-    def _load_default_goals(self) -> list[dict]:
+    def _load_default_goals(self) -> List[dict]:
         """Load default operational goals."""
         return [
             {
@@ -147,7 +147,7 @@ class AMOSOperational:
     def run_cycle(self) -> dict:
         """Execute one complete operational cycle."""
         self.cycle_count += 1
-        cycle_start = datetime.utcnow()
+        cycle_start = datetime.now(UTC)
 
         print(f"\n{'─' * 70}")
         print(f"Cycle {self.cycle_count} | {cycle_start.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -167,6 +167,7 @@ class AMOSOperational:
             if self.connectors:
                 aggregated = self.connectors.ingestion.get_aggregated_state()
                 # Convert to Signal objects for v4 runtime
+
                 from amos_v4_runtime import Signal
 
                 for source_type, data in aggregated.items():
@@ -175,7 +176,7 @@ class AMOSOperational:
                             Signal(
                                 source=source_type,
                                 data=data,
-                                timestamp=datetime.utcnow(),
+                                timestamp=datetime.now(UTC),
                                 confidence=0.8,
                                 reliability_score=0.8,
                             )
@@ -229,7 +230,7 @@ class AMOSOperational:
                     f"Cycle {self.cycle_count} failed: {e}", "error"
                 )
 
-        cycle_duration = (datetime.utcnow() - cycle_start).total_seconds()
+        cycle_duration = (datetime.now(UTC) - cycle_start).total_seconds()
         result["duration_seconds"] = cycle_duration
 
         print(f"  Duration: {cycle_duration:.1f}s")
@@ -260,7 +261,7 @@ class AMOSOperational:
     def run_continuous(self, interval_minutes: int = 60):
         """Run continuous operation loop."""
         self.running = True
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(UTC)
 
         print(f"\n🔄 Starting continuous operation (interval: {interval_minutes}min)")
         print("   Press Ctrl+C to stop gracefully\n")
@@ -324,7 +325,7 @@ class AMOSOperational:
             self.connectors.stop()
 
         # Print summary
-        uptime = datetime.utcnow() - self.start_time if self.start_time else timedelta(0)
+        uptime = datetime.now(UTC) - self.start_time if self.start_time else timedelta(0)
         print("\nOperational Summary:")
         print(f"  Cycles completed: {self.cycle_count}")
         print(f"  Uptime: {uptime}")
@@ -336,7 +337,7 @@ class AMOSOperational:
 
     def get_status(self) -> dict:
         """Get complete operational status."""
-        uptime = datetime.utcnow() - self.start_time if self.start_time else timedelta(0)
+        uptime = datetime.now(UTC) - self.start_time if self.start_time else timedelta(0)
 
         return {
             "running": self.running,

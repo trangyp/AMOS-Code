@@ -5,8 +5,6 @@ Drift: ΔΨ(t) = |Ψ_repo(t)⟩ - |Ψ_repo(t-1)⟩
 Drift norm: ||ΔΨ|| = sqrt(Σk (Δαk)²)
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass
 from datetime import datetime
@@ -20,8 +18,8 @@ class TemporalDrift:
     commit_hash: str
     timestamp: datetime
     drift_norm: float
-    affected_dimensions: list[str]
-    delta_amplitudes: dict[str, float]
+    affected_dimensions: List[str]
+    delta_amplitudes: Dict[str, float]
 
     def is_significant(self, threshold: float = 0.1) -> bool:
         """Check if drift exceeds significance threshold."""
@@ -41,8 +39,8 @@ class DriftAnalyzer:
 
     def compute_drift(
         self,
-        prev_state: dict[str, float],
-        curr_state: dict[str, float],
+        prev_state: Dict[str, float],
+        curr_state: Dict[str, float],
     ) -> float:
         """
         Compute drift norm: ||ΔΨ|| = sqrt(Σk (Δαk)²)
@@ -60,8 +58,8 @@ class DriftAnalyzer:
 
     def compute_drift_vector(
         self,
-        prev_state: dict[str, float],
-        curr_state: dict[str, float],
+        prev_state: Dict[str, float],
+        curr_state: Dict[str, float],
     ) -> dict[str, float]:
         """Compute per-dimension drift."""
         result = {}
@@ -99,7 +97,7 @@ class DriftAnalyzer:
         self,
         history: list[dict[str, Any]],
         threshold: float = 0.2,
-    ) -> list[TemporalDrift]:
+    ) -> List[TemporalDrift]:
         """Detect anomalous drift events."""
         anomalies = []
 

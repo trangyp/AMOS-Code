@@ -12,7 +12,7 @@ Provides unified control interface for the complete organism.
 import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 # Core components
 from amos_organism_runner import AMOSOrganismRunner, OrganismConfig, OrganismState
@@ -69,14 +69,14 @@ class CycleMetrics:
     duration_ms: float
 
     # Component results
-    runner_result: Optional[dict] = None
+    runner_result: dict = None
     orchestrator_result: Optional[Any] = None
     ethics_result: Optional[Any] = None
 
     # Status
     success: bool = False
-    errors: list[str] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
 
 
 class AMOSOrganismIntegration:
@@ -102,7 +102,7 @@ class AMOSOrganismIntegration:
         # Runtime state
         self._cycle_count = 0
         self._running = False
-        self._metrics: list[CycleMetrics] = []
+        self._metrics: List[CycleMetrics] = []
         self._current_cycle: Optional[CycleMetrics] = None
 
     async def initialize(self) -> bool:
@@ -184,7 +184,7 @@ class AMOSOrganismIntegration:
 
         return metrics
 
-    async def _check_ethics(self) -> Optional[dict]:
+    async def _check_ethics(self) -> dict:
         """Run ethics validation on current state."""
         if not self.ethics:
             return None
@@ -202,7 +202,7 @@ class AMOSOrganismIntegration:
             "principles_checked": ["NON_MALEFICENCE", "BENEFICENCE", "AUTONOMY"],
         }
 
-    async def run(self, duration_seconds: Optional[float] = None) -> None:
+    async def run(self, duration_seconds: float = None) -> None:
         """Run integrated organism cycles.
 
         Args:
@@ -242,7 +242,7 @@ class AMOSOrganismIntegration:
         finally:
             self._running = False
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current integration status."""
         return {
             "running": self._running,

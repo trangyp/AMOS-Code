@@ -24,10 +24,8 @@ Creator: Trang Phan
 System: AMOS vInfinity
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -38,9 +36,9 @@ class AMOSResult:
     data: Any
     law_compliant: bool
     confidence: str
-    reasoning: list[str]
+    reasoning: List[str]
     layer: str  # Which layer handled this
-    session_id: Optional[str] = None
+    session_id: str = None
 
 
 class AMOS:
@@ -122,7 +120,7 @@ class AMOS:
             session_id=self.session_id,
         )
 
-    def decide(self, problem: str, options: Optional[list[str]] = None) -> AMOSResult:
+    def decide(self, problem: str, options: list[str] = None) -> AMOSResult:
         """Decision making with analysis."""
         if not self._initialized:
             self.initialize()
@@ -167,7 +165,7 @@ class AMOS:
     # ===== LAYER 12: COGNITIVE COOKBOOK =====
 
     def architecture_decision(
-        self, question: str, context: Optional[dict] = None, options: Optional[list[str]] = None
+        self, question: str, context: dict = None, options: list[str] = None
     ) -> AMOSResult:
         """Architecture Decision Record workflow."""
         if not self._initialized:
@@ -255,7 +253,8 @@ class AMOS:
                 law_compliant=result.get("law_compliant", True),
                 confidence="high",
                 reasoning=[
-                    f"Executed via {result.get('subsystem_result', {}).get('subsystem', 'unknown')}"
+                    f"Task '{task}' executed via Organism OS",
+                    f"Status: {result['status']}",
                 ],
                 layer="L18",
                 session_id=self.session_id,
@@ -266,10 +265,313 @@ class AMOS:
                 data={"error": str(e)},
                 law_compliant=False,
                 confidence="low",
-                reasoning=[f"Execution error: {e}"],
+                reasoning=[f"Execution failed: {e}"],
                 layer="L18",
                 session_id=self.session_id,
             )
+
+    # ===== NEW: UNIFIED FEATURE INTEGRATION (22 Advanced Features) =====
+
+    def scan_system(self, scan_type: str = "quick") -> AMOSResult:
+        """Execute deep system scan using amos_deep_system_scanner.
+
+        Features:
+        - Full drive scanning
+        - Security analysis
+        - File inventory
+        - Storage optimization
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            from amos_deep_system_scanner import DeepSystemScanner
+
+            scanner = DeepSystemScanner()
+            result = (
+                scanner.scan_workspace(".") if scan_type == "quick" else scanner.scan_full_system()
+            )
+
+            return AMOSResult(
+                success=True,
+                data={
+                    "files_scanned": result.get("files", 0),
+                    "directories": result.get("directories", 0),
+                    "security_findings": result.get("security_findings", []),
+                    "storage_usage": result.get("storage", {}),
+                },
+                law_compliant=True,
+                confidence="high",
+                reasoning=[f"System scan complete: {result.get('files', 0)} files analyzed"],
+                layer="DEEP_SCANNER",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Scan failed: {e}"],
+                layer="DEEP_SCANNER",
+            )
+
+    def health_check(self) -> AMOSResult:
+        """Check health of all 14 AMOS subsystems.
+
+        Features:
+        - 14 subsystem health checks
+        - Integration verification
+        - Performance metrics
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            from AMOS_ORGANISM_OS.system_health_monitor import SystemHealthMonitor
+
+            monitor = SystemHealthMonitor()
+            report = monitor.check_all()
+
+            return AMOSResult(
+                success=report.overall_status == "HEALTHY",
+                data={
+                    "overall_status": report.overall_status,
+                    "subsystems": report.subsystems,
+                    "healthy_count": report.healthy_count,
+                    "total_subsystems": 14,
+                },
+                law_compliant=True,
+                confidence="high",
+                reasoning=[f"Health check: {report.healthy_count}/14 subsystems healthy"],
+                layer="HEALTH_MONITOR",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Health check failed: {e}"],
+                layer="HEALTH_MONITOR",
+            )
+
+    def quantum_analysis(self, problem: str) -> AMOSResult:
+        """Quantum computing analysis using quantum engine.
+
+        Features:
+        - Quantum circuit simulation
+        - Qubit operations
+        - Superposition analysis
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            # Import from clawspring quantum engine
+            import sys
+
+            sys.path.insert(0, "clawspring")
+            from amos_tech_quantum_engine import QuantumEngine
+
+            engine = QuantumEngine()
+            result = engine.analyze(problem)
+
+            return AMOSResult(
+                success=True,
+                data={
+                    "quantum_solution": result.get("solution"),
+                    "qubits_used": result.get("qubits", 0),
+                    "algorithm": result.get("algorithm"),
+                },
+                law_compliant=True,
+                confidence="high",
+                reasoning=["Quantum analysis complete"],
+                layer="QUANTUM_ENGINE",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Quantum analysis unavailable: {e}"],
+                layer="QUANTUM_ENGINE",
+            )
+
+    def legal_compliance_check(self, document: str, jurisdiction: str = "VN") -> AMOSResult:
+        """Check legal compliance using VN legal engine.
+
+        Features:
+        - Vietnam legal compliance
+        - Regulatory validation
+        - Document analysis
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            import sys
+
+            sys.path.insert(0, "clawspring")
+            from amos_vn_legal_engine import LegalEngine
+
+            engine = LegalEngine()
+            result = engine.check_compliance(document, jurisdiction)
+
+            return AMOSResult(
+                success=True,
+                data={
+                    "compliant": result.get("compliant", False),
+                    "violations": result.get("violations", []),
+                    "recommendations": result.get("recommendations", []),
+                    "jurisdiction": jurisdiction,
+                },
+                law_compliant=result.get("compliant", False),
+                confidence="high",
+                reasoning=[f"Legal check: {len(result.get('violations', []))} violations found"],
+                layer="LEGAL_ENGINE",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Legal engine unavailable: {e}"],
+                layer="LEGAL_ENGINE",
+            )
+
+    def deploy_production(self, config: dict) -> AMOSResult:
+        """Deploy using production orchestrator.
+
+        Features:
+        - Kubernetes deployment
+        - Docker orchestration
+        - Health monitoring
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            from amos_production_orchestrator import ProductionOrchestrator
+
+            orchestrator = ProductionOrchestrator()
+            result = orchestrator.deploy(config)
+
+            return AMOSResult(
+                success=result.get("success", False),
+                data={
+                    "deployment_id": result.get("deployment_id"),
+                    "status": result.get("status"),
+                    "endpoints": result.get("endpoints", []),
+                },
+                law_compliant=True,
+                confidence="high" if result.get("success") else "low",
+                reasoning=[f"Deployment: {result.get('status', 'unknown')}"],
+                layer="PRODUCTION_ORCHESTRATOR",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Deployment failed: {e}"],
+                layer="PRODUCTION_ORCHESTRATOR",
+            )
+
+    def discover_modules(self) -> AMOSResult:
+        """Discover all AMOS modules using unified integrator.
+
+        Features:
+        - Module discovery
+        - Dependency graph
+        - Tier classification
+        """
+        if not self._initialized:
+            self.initialize()
+
+        try:
+            from pathlib import Path
+
+            from amos_unified_system_integrator import AMOSModuleDiscovery
+
+            discovery = AMOSModuleDiscovery(Path("."))
+            modules = discovery.discover_all()
+
+            return AMOSResult(
+                success=True,
+                data={
+                    "modules_discovered": len(modules),
+                    "by_tier": {
+                        "CRITICAL": len([m for m in modules.values() if m.tier.name == "CRITICAL"]),
+                        "ESSENTIAL": len(
+                            [m for m in modules.values() if m.tier.name == "ESSENTIAL"]
+                        ),
+                        "IMPORTANT": len(
+                            [m for m in modules.values() if m.tier.name == "IMPORTANT"]
+                        ),
+                    },
+                },
+                law_compliant=True,
+                confidence="high",
+                reasoning=[f"Discovered {len(modules)} modules"],
+                layer="UNIFIED_INTEGRATOR",
+                session_id=self.session_id,
+            )
+        except Exception as e:
+            return AMOSResult(
+                success=False,
+                data={"error": str(e)},
+                law_compliant=False,
+                confidence="low",
+                reasoning=[f"Module discovery failed: {e}"],
+                layer="UNIFIED_INTEGRATOR",
+            )
+
+    def list_all_features(self) -> dict:
+        """List all 22 integrated features."""
+        return {
+            "core_features": [
+                "think",
+                "decide",
+                "validate",
+                "execute",
+                "architecture_decision",
+                "code_review",
+                "security_audit",
+            ],
+            "advanced_features": [
+                "scan_system",
+                "health_check",
+                "quantum_analysis",
+                "legal_compliance_check",
+                "deploy_production",
+                "discover_modules",
+            ],
+            "subsystem_integrations": [
+                "Brain",
+                "Senses",
+                "Immune",
+                "Blood",
+                "Skeleton",
+                "Muscle",
+                "Metabolism",
+                "World Model",
+                "Social Engine",
+                "Life Engine",
+                "Legal Brain",
+                "Quantum Layer",
+                "Factory",
+                "Interfaces",
+            ],
+            "total_features": 22,
+        }
 
     # ===== LAYER 8: META-COGNITIVE =====
 
@@ -299,7 +601,7 @@ class AMOS:
 
     # ===== UTILITY =====
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get full system status."""
         if not self._initialized:
             return {"status": "not_initialized", "layers": 0}
@@ -334,7 +636,7 @@ def think(query: str, domain: str = "general") -> AMOSResult:
     return get_amos().think(query, domain)
 
 
-def decide(problem: str, options: Optional[list[str]] = None) -> AMOSResult:
+def decide(problem: str, options: list[str] = None) -> AMOSResult:
     """Quick decide function."""
     return get_amos().decide(problem, options)
 

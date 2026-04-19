@@ -20,8 +20,6 @@ Example:
     -d '{"problem": "Should we use microservices?"}'
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
@@ -41,7 +39,7 @@ class AMOSAPIHandler(BaseHTTPRequestHandler):
         """Suppress default logging."""
         pass
 
-    def _send_json(self, data: dict[str, Any], status: int = 200):
+    def _send_json(self, data: Dict[str, Any], status: int = 200):
         """Send JSON response."""
         self.send_response(status)
         self.send_header("Content-Type", "application/json")

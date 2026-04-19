@@ -1,0 +1,244 @@
+{
+  "meta": {
+    "name": "Audit_Quality_Kernel_vInfinity_SUPER",
+    "version": "v2.0.0+lens_integration",
+    "created_at_utc": "2025-11-28T00:10:18.516087Z",
+    "description": "Audit & Quality kernel for internal audit, controls testing, and assurance. Now enriched with cross-canon integration, lens_space, and template_library.",
+    "domain": "audit_and_quality_assurance",
+    "density_profile": "kernel_x100k_virtual",
+    "cluster_count": 18,
+    "dimension_count": 20
+  },
+  "kernel": {
+    "cluster_space": {
+      "total_clusters": 18,
+      "clusters": [
+        {
+          "id": 1,
+          "name": "audit_universe_definition"
+        },
+        {
+          "id": 2,
+          "name": "risk_based_audit_planning"
+        },
+        {
+          "id": 3,
+          "name": "engagement_scoping"
+        },
+        {
+          "id": 4,
+          "name": "process_walkthroughs"
+        },
+        {
+          "id": 5,
+          "name": "control_design_assessment"
+        },
+        {
+          "id": 6,
+          "name": "control_operating_effectiveness_testing"
+        },
+        {
+          "id": 7,
+          "name": "sampling_strategies"
+        },
+        {
+          "id": 8,
+          "name": "test_design_anddocumentation"
+        },
+        {
+          "id": 9,
+          "name": "evidence_collection_andworkpapers"
+        },
+        {
+          "id": 10,
+          "name": "issue_formation_andrating"
+        },
+        {
+          "id": 11,
+          "name": "root_cause_analysis"
+        },
+        {
+          "id": 12,
+          "name": "recommendation_andremediation_plans"
+        },
+        {
+          "id": 13,
+          "name": "audit_reporting"
+        },
+        {
+          "id": 14,
+          "name": "follow_up_and_validation"
+        },
+        {
+          "id": 15,
+          "name": "regulatory_audit_coordination"
+        },
+        {
+          "id": 16,
+          "name": "quality_assurance_andindependent_review"
+        },
+        {
+          "id": 17,
+          "name": "methodology_andstandards"
+        },
+        {
+          "id": 18,
+          "name": "automation_anddata_analytics_in_audit"
+        }
+      ]
+    },
+    "dimension_space": {
+      "total_dimensions": 20,
+      "dimensions": {
+        "01": "coverage",
+        "02": "risk_alignment",
+        "03": "testing_depth",
+        "04": "evidence_quality",
+        "05": "documentation_clarity",
+        "06": "finding_quality",
+        "07": "root_cause_rigour",
+        "08": "remediation_viability",
+        "09": "independence_and_objectivity",
+        "10": "regulatory_alignment",
+        "11": "stakeholder_impact",
+        "12": "repeat_issue_risk",
+        "13": "timeliness",
+        "14": "resource_efficiency",
+        "15": "data_usage_maturity",
+        "16": "methodology_compliance",
+        "17": "follow_up_effectiveness",
+        "18": "assurance_confidence",
+        "19": "control_environment_insight",
+        "20": "continuous_improvement"
+      }
+    },
+    "virtual_expansion_model": {
+      "density_level": "x100k_virtual",
+      "virtual_layer_count": 100000,
+      "axes": {
+        "audit_type": [
+          "internal_audit",
+          "external_audit_support",
+          "regulatory_review_support",
+          "quality_assessment"
+        ],
+        "process_type": [
+          "financial_reporting",
+          "operational_process",
+          "compliance_process",
+          "it_and_security"
+        ]
+      },
+      "notes": [
+        "Each virtual stateframe is a point in this kernel's tensor space.",
+        "Use this to derive scenarios, evaluations, or plans without storing all explicit layers."
+      ]
+    },
+    "mapping_functions": {
+      "F_cluster_selection": {
+        "input": [
+          "audit_question",
+          "entity_and_process_context"
+        ],
+        "output": "cluster_vector_audit",
+        "logic": "Align to relevant audit clusters."
+      }
+    },
+    "reasoning_modes": {
+      "mode_audit_planning": {
+        "description": "Help design an audit or review.",
+        "pipeline": [
+          "F_cluster_selection"
+        ]
+      },
+      "mode_audit_review": {
+        "description": "Review existing audit work and findings structure.",
+        "pipeline": [
+          "F_cluster_selection"
+        ]
+      }
+    },
+    "policies": {
+      "boundaries": [
+        "Do not fabricate test results or evidence.",
+        "Do not claim regulatory approvals or audit opinions."
+      ]
+    },
+    "routing": {
+      "by_task_type": {
+        "audit_plan": "mode_audit_planning",
+        "audit_report_review": "mode_audit_review"
+      }
+    },
+    "integration_links": {
+      "depends_on": [
+        "AMOS_Governance_SUPER_Engine",
+        "AMOS_Documentation_SUPER_Engine"
+      ],
+      "notes": [
+        "These references point to full AMOS SUPER engines and C-Canon blocks.",
+        "Kernel power is derived from combining this kernel with referenced engines at runtime."
+      ]
+    },
+    "lens_space": {
+      "exec": {
+        "id": "executive_view",
+        "description": "Top-layer view for CEOs, boards, ministers, and investors.",
+        "focus": [
+          "risk",
+          "impact",
+          "time_horizon",
+          "portfolio",
+          "tradeoffs"
+        ]
+      },
+      "operator": {
+        "id": "operator_view",
+        "description": "Execution view for managers and implementers.",
+        "focus": [
+          "process",
+          "sequence",
+          "dependencies",
+          "owners"
+        ]
+      },
+      "expert": {
+        "id": "expert_view",
+        "description": "Deep domain view for specialists.",
+        "focus": [
+          "method",
+          "assumptions",
+          "edge_cases"
+        ]
+      },
+      "audit": {
+        "id": "audit_view",
+        "description": "Assurance and governance view.",
+        "focus": [
+          "controls",
+          "evidence",
+          "compliance"
+        ]
+      }
+    },
+    "template_library": {
+      "doc_templates": [
+        "exec_one_pager",
+        "full_strategy_pack",
+        "operating_playbook",
+        "risk_and_decision_memo"
+      ],
+      "deck_templates": [
+        "board_update",
+        "investment_case",
+        "initiative_kickoff",
+        "postmortem_review"
+      ],
+      "table_templates": [
+        "option_comparison_matrix",
+        "risk_register",
+        "kpi_scorecard"
+      ]
+    }
+  }
+}

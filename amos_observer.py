@@ -14,8 +14,6 @@ Commands:
     dashboard   Run interactive dashboard
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
@@ -43,7 +41,7 @@ class AMOSObserver:
             self.integration = get_amos_integration()
         return self.integration
 
-    def show_status(self) -> dict[str, Any]:
+    def show_status(self) -> Dict[str, Any]:
         """Show comprehensive brain status."""
         integration = self._load_brain()
         status = integration.get_status()
@@ -61,7 +59,7 @@ class AMOSObserver:
 
         return status
 
-    def show_engines(self) -> list[dict]:
+    def show_engines(self) -> List[dict]:
         """Show all cognitive engines."""
         integration = self._load_brain()
 
@@ -85,7 +83,7 @@ class AMOSObserver:
         print(f"\nTotal: {len(engines)} engines")
         return engines
 
-    def show_laws(self) -> dict[str, Any]:
+    def show_laws(self) -> Dict[str, Any]:
         """Show global laws and compliance."""
         integration = self._load_brain()
 
@@ -107,7 +105,7 @@ class AMOSObserver:
 
         return laws_info
 
-    def trace_thought(self, problem: str) -> dict[str, Any]:
+    def trace_thought(self, problem: str) -> Dict[str, Any]:
         """Trace AMOS reasoning on a problem."""
         integration = self._load_brain()
 

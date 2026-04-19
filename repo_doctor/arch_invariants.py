@@ -56,9 +56,7 @@ class ArchInvariant(ABC):
         """Check the architectural invariant."""
         pass
 
-    def _get_graph(
-        self, repo_path: Path, arch_graph: ArchitectureGraph | None
-    ) -> ArchitectureGraph:
+    def _get_graph(self, repo_path: Path, arch_graph: ArchitectureGraph) -> ArchitectureGraph:
         """Get or build architecture graph."""
         if arch_graph is not None:
             return arch_graph

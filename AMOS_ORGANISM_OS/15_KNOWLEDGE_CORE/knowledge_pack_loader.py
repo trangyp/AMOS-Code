@@ -13,7 +13,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -24,10 +24,10 @@ class KnowledgePack:
     version: str
     description: str
     pack_type: str  # country, sector, scenario, etc.
-    data: dict[str, Any]
+    data: Dict[str, Any]
     file_path: Path
     size_bytes: int
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class KnowledgePackLoader:
@@ -43,7 +43,7 @@ class KnowledgePackLoader:
     PACKS_DIR = Path(__file__).parent.parent.parent / "_AMOS_BRAIN" / "Packs"
 
     def __init__(self):
-        self.packs: dict[str, KnowledgePack] = {}
+        self.packs: Dict[str, KnowledgePack] = {}
         self._loaded = False
         self._stats = {"country_packs": 0, "sector_packs": 0, "scenario_packs": 0, "state_packs": 0}
 
@@ -140,7 +140,7 @@ class KnowledgePackLoader:
             self.load_all_packs()
         return self.packs.get(name)
 
-    def query_packs_by_type(self, pack_type: str) -> list[KnowledgePack]:
+    def query_packs_by_type(self, pack_type: str) -> List[KnowledgePack]:
         """Query packs by type."""
         if not self._loaded:
             self.load_all_packs()
@@ -158,7 +158,7 @@ class KnowledgePackLoader:
                     return pack
         return None
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get loader status and statistics."""
         if not self._loaded:
             self.load_all_packs()

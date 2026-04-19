@@ -22,8 +22,6 @@ Usage:
     python amos_unified.py --mode full        # Full integration (default)
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 from pathlib import Path

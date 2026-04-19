@@ -1,7 +1,5 @@
 """Skill execution: inline (current conversation) or forked (sub-agent)."""
 
-from __future__ import annotations
-
 from collections.abc import Generator
 
 from .loader import SkillDef, substitute_arguments

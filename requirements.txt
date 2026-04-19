@@ -1,21 +1,117 @@
-# AMOS - Adaptive Multi-Objective System
-# Python Requirements
+# AMOS Equation System v2.0 - Production Requirements
+# Python 3.10+ required
+# Total: 35 modules, ~18,000+ lines
 
-# Core dependencies (all stdlib, no external deps required for base system)
-# Python 3.8+ recommended
+aiohttp>=3.9.0             # Async HTTP framework
+aiokafka>=0.9.0               # Kafka async client
+alembic>=1.12.0            # Database migrations
+asyncpg>=0.29.0            # PostgreSQL async driver
+celery>=5.3.0              # Distributed task queue
+cryptography>=41.0.0              # Cryptographic primitives
 
-# Optional - for API server (amos_api.py)
-fastapi>=0.100.0
-uvicorn>=0.23.0
-pydantic>=2.0.0
+# =============================================================================
+# SEARCH & ANALYTICS
+# =============================================================================
+elasticsearch[async]>=8.11.0  # Elasticsearch async client
+faker>=22.0.0              # Data generation for seeding
+# =============================================================================
+# CORE FRAMEWORK
+# =============================================================================
+fastapi>=0.104.0           # Web framework with OpenAPI
 
-# Optional - for enhanced connectors
-requests>=2.31.0
+# =============================================================================
+# HTTP & NETWORKING
+# =============================================================================
+httpx>=0.25.0              # Async HTTP client
+kombu>=5.3.0               # Messaging library
 
-# Optional - for database connectors
-# sqlite3 is stdlib, no external dep needed
+# =============================================================================
+# GRAPH DATABASE
+# =============================================================================
+neo4j>=5.15.0              # Neo4j async driver
+openpyxl>=3.1.0            # Excel reading
 
-# Development dependencies (optional)
+# =============================================================================
+# OBSERVABILITY
+# =============================================================================
+# OpenTelemetry
+opentelemetry-api>=1.21.0
+opentelemetry-exporter-otlp>=1.21.0
+opentelemetry-instrumentation-fastapi>=0.42b0
+opentelemetry-sdk>=1.21.0
+orjson>=3.9.0              # Fast JSON parsing
+
+# =============================================================================
+# DATA PROCESSING & I/O
+# =============================================================================
+pandas>=2.1.0              # Data manipulation
+passlib[bcrypt]>=1.7.4            # Password hashing
+
+# =============================================================================
+# OBSERVABILITY
+# =============================================================================
+prometheus-client>=0.19.0        # Prometheus metrics
+
+# Prometheus
+prometheus-client>=0.19.0
+prometheus-fastapi-instrumentator>=6.1.0
+pydantic>=2.5.0            # Data validation
+pydantic-settings>=2.1.0   # Configuration management
+
+# =============================================================================
+# UTILITIES
+# =============================================================================
+python-dateutil>=2.8.0     # Date parsing
+python-dotenv>=1.0.0               # Environment variables
+
+# =============================================================================
+# AUTHENTICATION & SECURITY
+# =============================================================================
+python-jose[cryptography]>=3.3.0  # JWT tokens
+python-multipart>=0.0.6    # Form data parsing
+pytz>=2023.3                # Timezone handling
+
+# =============================================================================
+# CACHE & MESSAGE QUEUE
+# =============================================================================
+redis>=5.0.0               # Redis client
+reportlab>=4.0.0           # PDF generation
+requests>=2.31.0           # Sync HTTP client
+rich>=13.7.0               # Terminal formatting
+secure>=0.3.0                      # Security headers
+
+# =============================================================================
+# DATABASE & ORM
+# =============================================================================
+sqlalchemy[asyncio]>=2.0.0 # Async ORM
+starlette>=0.27.0          # ASGI toolkit
+
+# =============================================================================
+# GRAPHQL
+# =============================================================================
+strawberry-graphql[fastapi]>=0.213.0
+
+# Logging
+structlog>=23.2.0          # Structured logging
+tenacity>=8.2.0            # Retry logic
+
+# =============================================================================
+# ADMIN & CLI
+# =============================================================================
+typer[all]>=0.9.0          # CLI framework
+ujson>=5.8.0               # Alternative JSON parser
+uvicorn[standard]>=0.24.0  # ASGI server
+websockets>=12.0           # WebSocket support
+xlsxwriter>=3.1.0          # Excel writing
+
+# =============================================================================
+# DEVELOPMENT & TESTING (Optional - install with: pip install -r requirements-dev.txt)
+# =============================================================================
 # pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.1.0
 # black>=23.0.0
-# mypy>=1.5.0
+# ruff>=0.1.0
+# mypy>=1.7.0
+# pre-commit>=3.5.0
+# locust>=2.19.0          # Load testing

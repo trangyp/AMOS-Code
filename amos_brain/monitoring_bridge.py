@@ -15,10 +15,15 @@ The monitoring bridge closes the loop from detection → continuous validation.
 
 from __future__ import annotations
 
+
+import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 # Optional watchdog for file system monitoring
 try:
@@ -249,8 +254,8 @@ class IncrementalArchitectureChecker:
                             "message": f"{meta_ctx.critical_count} critical meta-architecture issues",
                         }
                     )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Failed to get meta-architecture context: {e}")
 
         return results
 
@@ -311,7 +316,7 @@ class FileSystemWatcher(FileSystemEventHandler if WATCHDOG_AVAILABLE else object
     def __init__(
         self,
         repo_path: str | Path,
-        on_change: Callable[[list[str]], None] | None = None,
+        on_change: Callable[[list[str]], None] = None,
     ):
         self.repo_path = Path(repo_path)
         self.on_change = on_change
@@ -389,8 +394,8 @@ class ContinuousMonitoringBridge:
                 snapshot.high_count = meta_ctx.high_count
                 snapshot.medium_count = meta_ctx.medium_count
                 snapshot.low_count = meta_ctx.low_count
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Failed to get meta-architecture scores: {e}")
 
         # Get git info
         try:
@@ -411,12 +416,12 @@ class ContinuousMonitoringBridge:
                 text=True,
             )
             snapshot.branch = result.stdout.strip()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug(f"Failed to get git info: {e}")
 
         return snapshot
 
-    def start_monitoring(self, on_change: Callable[[list[str]], None] | None = None):
+    def start_monitoring(self, on_change: Callable[[list[str]], None] = None):
         """Start continuous file system monitoring."""
         if not WATCHDOG_AVAILABLE:
             raise ImportError("watchdog package required for file monitoring")
@@ -480,6 +485,6 @@ class ContinuousMonitoringBridge:
         return self.git_validator.validate_staged_files()
 
 
-def get_monitoring_bridge(repo_path: str | Path | None = None) -> ContinuousMonitoringBridge:
+def get_monitoring_bridge(repo_path: str | Path = None) -> ContinuousMonitoringBridge:
     """Factory function to get monitoring bridge instance."""
     return ContinuousMonitoringBridge(repo_path or ".")

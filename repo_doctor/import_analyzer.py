@@ -22,7 +22,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 # NOTE: tree_sitter imports are lazy-loaded in _ensure_parser() to avoid
 # ~70ms import time when the module is imported but not used
@@ -46,7 +46,7 @@ class ImportInfo:
 class DependencyGraph:
     """Dependency graph G = (V, E) for Python modules."""
 
-    vertices: set[str] = field(default_factory=set)  # Python modules
+    vertices: Set[str] = field(default_factory=set)  # Python modules
     edges: list[tuple[str, str]] = field(default_factory=list)  # (importer, imported)
 
     # Reverse lookup
@@ -158,7 +158,7 @@ class ImportAnalyzer:
             self._ensure_parser()
         return self._import_query
 
-    def _find_python_files(self) -> list[Path]:
+    def _find_python_files(self) -> List[Path]:
         """Find all Python files in the repository."""
         py_files = []
         for root, dirs, files in os.walk(self.repo_path):
@@ -176,7 +176,7 @@ class ImportAnalyzer:
 
         return py_files
 
-    def _extract_imports(self, filepath: Path) -> list[ImportInfo]:
+    def _extract_imports(self, filepath: Path) -> List[ImportInfo]:
         """Extract imports from a Python file using Tree-sitter."""
         imports = []
 
@@ -258,7 +258,7 @@ class ImportAnalyzer:
         visited = set()
         rec_stack = []
 
-        def dfs(node: str, path: list[str]) -> None:
+        def dfs(node: str, path: List[str]) -> None:
             if node in path:
                 # Found cycle
                 cycle_start = path.index(node)
@@ -371,6 +371,7 @@ def main() -> int:
     """CLI entry point for import analysis."""
     import argparse
     import json
+from typing import Any
 
     parser = argparse.ArgumentParser(
         description="Analyze Python import dependencies using Tree-sitter"

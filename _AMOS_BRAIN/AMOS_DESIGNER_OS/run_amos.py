@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from workers import WORKER_REGISTRY, WorkerResponse
 
@@ -19,7 +17,7 @@ MEMORY_DIR = BASE_DIR / "memory"
 class AmosEvent:
     timestamp: str
     event_type: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
 
 
 def _load_text_file(path: Path) -> str:
@@ -33,7 +31,7 @@ def _load_text_file(path: Path) -> str:
 
 def _parse_brain(raw: str) -> dict[str, dict[str, str]]:
     sections: dict[str, dict[str, str]] = {}
-    current: Optional[str] = None
+    current: str = None
     for line in raw.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -50,7 +48,7 @@ def _parse_brain(raw: str) -> dict[str, dict[str, str]]:
     return sections
 
 
-def _load_config() -> dict[str, Any]:
+def _load_config() -> Dict[str, Any]:
     if not CONFIG_FILE.exists():
         return {}
     try:
@@ -114,7 +112,7 @@ def main() -> None:
     print("Loaded brain sections:", ", ".join(sorted(brain.keys())))
     print("Loaded worker roles:", ", ".join(sorted(WORKER_REGISTRY.keys())))
     event = AmosEvent(
-        timestamp=datetime.utcnow().isoformat() + "Z",
+        timestamp=datetime.now(timezone.utc).isoformat() + "Z",
         event_type="startup",
         payload={
             "identity": brain.get("IDENTITY", {}),
@@ -140,14 +138,14 @@ def main() -> None:
     growth_path = MEMORY_DIR / "growth.log"
     with growth_path.open("a", encoding="utf-8") as f:
         f.write(
-            f"[{datetime.utcnow().isoformat()}Z] "
+            f"[{datetime.now(timezone.utc).isoformat()}Z] "
             f"NEXT_ACTION={_pick_next_action(brain)} | "
             f"plan_steps={len(plan_resp.details.get('plan', [])) if isinstance(plan_resp.details, dict) else 0}\n"
         )
 
     _log_event(
         AmosEvent(
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(timezone.utc).isoformat() + "Z",
             event_type="run_summary",
             payload={
                 "planner": asdict(plan_resp),

@@ -34,6 +34,7 @@ from sector_analyzer import (
     get_sector_analyzer,
 )
 from semantic_index import IndexedDocument, SemanticIndex
+
 from world_model_engine import (
     WorldContext,
     WorldModelEngine,

@@ -1,7 +1,5 @@
 """I_type = 1 iff every public callsite satisfies the actual callable signature."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class TypeInvariant(Invariant):
     def __init__(self):
         super().__init__("I_type", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check type/signature integrity."""
         context = context or {}
         arity = context.get("arity_mismatches", 0)

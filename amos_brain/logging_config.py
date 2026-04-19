@@ -14,11 +14,10 @@ Usage:
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 def setup_logging(
-    verbose: bool = False, log_file: Optional[str] = None, component: str = "amos"
+    verbose: bool = False, log_file: str = None, component: str = "amos"
 ) -> logging.Logger:
     """Configure logging with console + optional file output.
 

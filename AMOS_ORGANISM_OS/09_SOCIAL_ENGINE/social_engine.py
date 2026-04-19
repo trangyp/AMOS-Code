@@ -9,14 +9,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 
 @dataclass
@@ -104,7 +102,7 @@ class SocialEngine:
         state_file = self.data_dir / "social_state.json"
 
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "message_count": len(self.messages),
             "connection_count": len(self.connections),
             "knowledge_share_count": len(self.knowledge_shares),
@@ -159,7 +157,7 @@ class SocialEngine:
             recipient=recipient,
             message_type=message_type,
             content=content,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat() + "Z",
             priority=priority,
             read=False,
         )
@@ -175,7 +173,7 @@ class SocialEngine:
         return msg
 
     def broadcast(
-        self, sender: str, message_type: str, content: Any, exclude: Optional[Set[str]] = None
+        self, sender: str, message_type: str, content: Any, exclude: set[str] = None
     ) -> List[Message]:
         """Broadcast message to all agents."""
         exclude = exclude or set()
@@ -195,7 +193,7 @@ class SocialEngine:
         return messages
 
     def get_messages(
-        self, recipient: str, unread_only: bool = False, message_type: Optional[str] = None
+        self, recipient: str, unread_only: bool = False, message_type: str = None
     ) -> List[Message]:
         """Get messages for an agent."""
         msgs = [m for m in self.messages if m.recipient == recipient]
@@ -225,7 +223,7 @@ class SocialEngine:
                 # Update existing
                 conn.connection_type = connection_type
                 conn.strength = strength
-                conn.last_interaction = datetime.utcnow().isoformat() + "Z"
+                conn.last_interaction = datetime.now(UTC).isoformat() + "Z"
                 self._save_state()
                 return conn
 
@@ -235,8 +233,8 @@ class SocialEngine:
             agent_b=agent_b,
             connection_type=connection_type,
             strength=strength,
-            established=datetime.utcnow().isoformat() + "Z",
-            last_interaction=datetime.utcnow().isoformat() + "Z",
+            established=datetime.now(UTC).isoformat() + "Z",
+            last_interaction=datetime.now(UTC).isoformat() + "Z",
         )
 
         self.connections.append(conn)
@@ -252,7 +250,7 @@ class SocialEngine:
             agent_match = conn.agent_a == agent_a and conn.agent_b == agent_b
             reverse_match = conn.agent_a == agent_b and conn.agent_b == agent_a
             if agent_match or reverse_match:
-                conn.last_interaction = datetime.utcnow().isoformat() + "Z"
+                conn.last_interaction = datetime.now(UTC).isoformat() + "Z"
                 # Strengthen connection slightly
                 conn.strength = min(1.0, conn.strength + 0.01)
                 return
@@ -263,7 +261,7 @@ class SocialEngine:
         knowledge_type: str,
         content: Any,
         share_scope: str = "team",
-        specific_recipients: Optional[List[str]] = None,
+        specific_recipients: list[str] = None,
     ) -> KnowledgeShare:
         """Share knowledge from one agent to others."""
         ks = KnowledgeShare(
@@ -272,7 +270,7 @@ class SocialEngine:
             knowledge_type=knowledge_type,
             content=content,
             share_scope=share_scope,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat() + "Z",
             recipients=specific_recipients or [],
         )
 

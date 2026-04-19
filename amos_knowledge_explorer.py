@@ -11,13 +11,10 @@ Usage:
     python amos_knowledge_explorer.py stats
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -50,7 +47,7 @@ class KnowledgeExplorer:
     across 1,110+ knowledge files, 55 kernels, 54 country packs, etc.
     """
 
-    def __init__(self, brain_root: Optional[Path] = None):
+    def __init__(self, brain_root: Path | None = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
         self._index: list[KnowledgeFile] = []
         self._categories: dict[str, int] = {}

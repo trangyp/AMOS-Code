@@ -12,7 +12,6 @@ Optional integration with:
 - semgrep (pattern matching)
 """
 
-from __future__ import annotations
 
 import ast
 import re
@@ -40,7 +39,7 @@ class SecurityFinding:
         """Check if this is a critical severity finding."""
         return self.severity == "critical"
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "rule_id": self.rule_id,
@@ -58,7 +57,7 @@ class SecurityFinding:
 class SecurityAnalysis:
     """Complete security analysis result."""
 
-    findings: list[SecurityFinding] = field(default_factory=list)
+    findings: List[SecurityFinding] = field(default_factory=list)
 
     @property
     def critical_count(self) -> int:
@@ -179,8 +178,10 @@ class SecuritySubstrate:
         py_files = [
             f
             for f in py_files
-            if not any(part.startswith(".") or part in ["__pycache__", "venv", ".git"])
-            for part in f.relative_to(self.repo_path).parts[:1]
+            if not any(
+                part.startswith(".") or part in ["__pycache__", "venv", ".git"]
+                for part in f.relative_to(self.repo_path).parts[:1]
+            )
         ]
 
         for file_path in py_files[:100]:  # Limit for performance
@@ -198,7 +199,7 @@ class SecuritySubstrate:
 
         return SecurityAnalysis(findings=findings)
 
-    def _analyze_file(self, file_path: Path) -> list[SecurityFinding]:
+    def _analyze_file(self, file_path: Path) -> List[SecurityFinding]:
         """Analyze a single Python file."""
         findings = []
 
@@ -224,7 +225,7 @@ class SecuritySubstrate:
         tree: ast.AST,
         file_path: Path,
         source: str,
-    ) -> list[SecurityFinding]:
+    ) -> List[SecurityFinding]:
         """AST-based security analysis."""
         findings = []
         lines = source.split("\n")
@@ -248,8 +249,8 @@ class SecuritySubstrate:
         self,
         node: ast.Call,
         file_path: Path,
-        lines: list[str],
-    ) -> SecurityFinding | None:
+        lines: List[str],
+    ) -> Optional[SecurityFinding]:
         """Check for calls to dangerous functions."""
         func_name = None
 
@@ -285,8 +286,8 @@ class SecuritySubstrate:
         self,
         node: ast.Call,
         file_path: Path,
-        lines: list[str],
-    ) -> SecurityFinding | None:
+        lines: List[str],
+    ) -> Optional[SecurityFinding]:
         """Check for potential SQL injection."""
         func_name = None
 
@@ -336,7 +337,7 @@ class SecuritySubstrate:
 
         return None
 
-    def _analyze_patterns(self, source: str, file_path: Path) -> list[SecurityFinding]:
+    def _analyze_patterns(self, source: str, file_path: Path) -> List[SecurityFinding]:
         """Pattern-based security analysis."""
         findings = []
         lines = source.split("\n")
@@ -361,7 +362,7 @@ class SecuritySubstrate:
 
         return findings
 
-    def _run_bandit(self) -> list[SecurityFinding]:
+    def _run_bandit(self) -> List[SecurityFinding]:
         """Run bandit analysis if available."""
         findings = []
 
@@ -377,6 +378,7 @@ class SecuritySubstrate:
 
             if result.returncode in (0, 1):  # 0 = no issues, 1 = issues found
                 import json
+from typing import Optional
 
                 try:
                     data = json.loads(result.stdout)

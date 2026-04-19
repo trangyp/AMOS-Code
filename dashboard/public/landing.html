@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AMOS - Absolute Meta Operating System. The AI coding agent platform that puts you in control. 14-layer cognitive system, multi-agent orchestration, and transparent reasoning.">
     <title>AMOS - Devin's Power, Your Control</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         :root {
             --primary: #6366f1;
             --primary-light: #818cf8;
@@ -30,7 +30,7 @@
             --text: #f8fafc;
             --text-muted: rgba(248, 250, 252, 0.6);
         }
-        
+
         body {
             font-family: 'Inter', system-ui, sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1e293b 50%, var(--bg-dark) 100%);
@@ -38,7 +38,7 @@
             min-height: 100vh;
             line-height: 1.6;
         }
-        
+
         /* Navigation */
         .nav {
             position: fixed;
@@ -50,7 +50,7 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
         }
-        
+
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -59,7 +59,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .nav-logo {
             display: flex;
             align-items: center;
@@ -67,31 +67,31 @@
             font-weight: 700;
             font-size: 1.5rem;
         }
-        
+
         .nav-logo span {
             font-size: 2rem;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 2rem;
             align-items: center;
         }
-        
+
         .nav-links a {
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
         }
-        
+
         .nav-links a:hover {
             color: var(--text);
         }
-        
+
         .nav-cta {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -101,12 +101,12 @@
             font-weight: 600;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        
+
         .nav-cta:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
-        
+
         /* Hero Section */
         .hero {
             padding: 10rem 2rem 6rem;
@@ -114,7 +114,7 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        
+
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -127,7 +127,7 @@
             color: var(--primary-light);
             margin-bottom: 2rem;
         }
-        
+
         .hero h1 {
             font-size: 4rem;
             font-weight: 800;
@@ -138,28 +138,28 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .hero-subtitle {
             font-size: 1.5rem;
             color: var(--accent);
             font-weight: 600;
             margin-bottom: 1.5rem;
         }
-        
+
         .hero-description {
             font-size: 1.25rem;
             color: var(--text-muted);
             max-width: 700px;
             margin: 0 auto 3rem;
         }
-        
+
         .hero-ctas {
             display: flex;
             gap: 1rem;
             justify-content: center;
             margin-bottom: 4rem;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
@@ -172,12 +172,12 @@
             border: none;
             cursor: pointer;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
         }
-        
+
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
@@ -189,12 +189,12 @@
             font-size: 1.125rem;
             transition: all 0.3s;
         }
-        
+
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
         }
-        
+
         .hero-price {
             display: flex;
             align-items: center;
@@ -202,7 +202,7 @@
             gap: 1rem;
             font-size: 1.125rem;
         }
-        
+
         .price-tag {
             background: var(--success);
             color: white;
@@ -210,37 +210,37 @@
             border-radius: 6px;
             font-weight: 700;
         }
-        
+
         /* Comparison Section */
         .comparison {
             padding: 6rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .section-header {
             text-align: center;
             margin-bottom: 4rem;
         }
-        
+
         .section-header h2 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
         }
-        
+
         .section-header p {
             color: var(--text-muted);
             font-size: 1.25rem;
         }
-        
+
         .comparison-table {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 24px;
             overflow: hidden;
         }
-        
+
         .comparison-row {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
@@ -248,56 +248,56 @@
             border-bottom: 1px solid var(--border);
             align-items: center;
         }
-        
+
         .comparison-row:last-child {
             border-bottom: none;
         }
-        
+
         .comparison-row.header {
             background: rgba(99, 102, 241, 0.1);
             font-weight: 600;
         }
-        
+
         .comparison-row.winner {
             background: rgba(16, 185, 129, 0.05);
         }
-        
+
         .feature-name {
             font-weight: 500;
         }
-        
+
         .feature-check {
             text-align: center;
             font-size: 1.25rem;
         }
-        
+
         .check-yes {
             color: var(--success);
         }
-        
+
         .check-no {
             color: #ef4444;
             opacity: 0.5;
         }
-        
+
         .check-winner {
             color: var(--success);
             font-weight: 700;
         }
-        
+
         /* Features Grid */
         .features {
             padding: 6rem 2rem;
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
         }
-        
+
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -305,28 +305,28 @@
             padding: 2rem;
             transition: transform 0.3s, border-color 0.3s;
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: rgba(99, 102, 241, 0.3);
         }
-        
+
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .feature-card h3 {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 0.75rem;
         }
-        
+
         .feature-card p {
             color: var(--text-muted);
             line-height: 1.6;
         }
-        
+
         /* Stats Section */
         .stats {
             padding: 4rem 2rem;
@@ -334,7 +334,7 @@
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
         }
-        
+
         .stats-grid {
             max-width: 1200px;
             margin: 0 auto;
@@ -343,7 +343,7 @@
             gap: 2rem;
             text-align: center;
         }
-        
+
         .stat-number {
             font-size: 3rem;
             font-weight: 800;
@@ -352,13 +352,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .stat-label {
             color: var(--text-muted);
             font-size: 1rem;
             margin-top: 0.5rem;
         }
-        
+
         /* CTA Section */
         .cta {
             padding: 6rem 2rem;
@@ -366,36 +366,36 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .cta h2 {
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 1.5rem;
         }
-        
+
         .cta p {
             font-size: 1.25rem;
             color: var(--text-muted);
             margin-bottom: 2rem;
         }
-        
+
         /* Footer */
         .footer {
             padding: 3rem 2rem;
             border-top: 1px solid var(--border);
             text-align: center;
         }
-        
+
         .footer-logo {
             font-size: 2rem;
             margin-bottom: 1rem;
         }
-        
+
         .footer-text {
             color: var(--text-muted);
             margin-bottom: 1rem;
         }
-        
+
         .footer-creator {
             font-weight: 600;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -403,35 +403,35 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
-            
+
             .hero h1 {
                 font-size: 2.5rem;
             }
-            
+
             .hero-subtitle {
                 font-size: 1.25rem;
             }
-            
+
             .hero-ctas {
                 flex-direction: column;
             }
-            
+
             .comparison-row {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
                 text-align: center;
             }
-            
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .cta h2 {
                 font-size: 2rem;
             }
@@ -464,8 +464,8 @@
         <h1>Absolute Meta Operating System</h1>
         <p class="hero-subtitle">Devin's Power, Your Control</p>
         <p class="hero-description">
-            The AI coding agent platform with a 14-layer cognitive architecture. 
-            Multi-agent orchestration, persistent memory, native checkpoints, 
+            The AI coding agent platform with a 14-layer cognitive architecture.
+            Multi-agent orchestration, persistent memory, native checkpoints,
             and transparent reasoning — all under your control.
         </p>
         <div class="hero-ctas">

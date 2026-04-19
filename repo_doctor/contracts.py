@@ -11,8 +11,6 @@ Operationally:
 - A_runtime = what code actually exports or accepts
 """
 
-from __future__ import annotations
-
 import ast
 import re
 from dataclasses import dataclass, field
@@ -26,7 +24,7 @@ class APIFunction:
     name: str
     module: str
     args: list[str] = field(default_factory=list)
-    returns: str | None = None
+    returns: str = None
     found_in: list[str] = field(default_factory=list)
 
 
@@ -37,8 +35,8 @@ class ContractViolation:
     function_name: str
     claim_source: str  # docs, tests, demos, etc.
     runtime_source: str  # actual code
-    claim_sig: APIFunction | None
-    runtime_sig: APIFunction | None
+    claim_sig: APIFunction
+    runtime_sig: APIFunction
     violation_type: str  # "missing", "args_mismatch", "return_mismatch"
 
 
@@ -52,8 +50,8 @@ class ContractAnalyzer:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.public_api: dict[str, APIFunction] = {}
-        self.runtime_api: dict[str, APIFunction] = {}
+        self.public_api: Dict[str, APIFunction] = {}
+        self.runtime_api: Dict[str, APIFunction] = {}
         self.violations: list[ContractViolation] = []
 
     def analyze(self) -> list[ContractViolation]:

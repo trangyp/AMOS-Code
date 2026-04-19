@@ -10,8 +10,6 @@ Sensors:
 - deptry: Dependency checker
 """
 
-from __future__ import annotations
-
 import json
 import shutil
 import subprocess
@@ -27,9 +25,9 @@ class SensorResult:
     tool_name: str
     available: bool
     passed: bool
-    findings: list[dict] = field(default_factory=list)
-    error_message: str | None = None
-    execution_time_ms: float | None = None
+    findings: List[dict] = field(default_factory=list)
+    error_message: str = None
+    execution_time_ms: float = None
 
 
 class ExternalSensor:
@@ -553,7 +551,7 @@ class SensorSuite:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.sensors: list[ExternalSensor] = [
+        self.sensors: List[ExternalSensor] = [
             PipAuditSensor(self.repo_path),
             BanditSensor(self.repo_path),
             SafetySensor(self.repo_path),
@@ -562,18 +560,18 @@ class SensorSuite:
             DeptrySensor(self.repo_path),
         ]
 
-    def run_all(self) -> list[SensorResult]:
+    def run_all(self) -> List[SensorResult]:
         """Run all available sensors and return results."""
         results = []
         for sensor in self.sensors:
             results.append(sensor.run())
         return results
 
-    def get_available_tools(self) -> list[str]:
+    def get_available_tools(self) -> List[str]:
         """Get list of available tools."""
         return [s.__class__.__name__ for s in self.sensors if s.is_available()]
 
-    def get_report(self, results: list[SensorResult]) -> str:
+    def get_report(self, results: List[SensorResult]) -> str:
         """Generate a formatted report from sensor results."""
         lines = [
             "=" * 60,

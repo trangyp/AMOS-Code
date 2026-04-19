@@ -8,8 +8,6 @@ Builds cross-language code property graphs with:
 - Taint analysis capabilities
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import subprocess
@@ -26,8 +24,8 @@ class CPGNode:
 
     id: int
     label: str
-    properties: dict[str, Any] = field(default_factory=dict)
-    edges: list[CPGEdge] = field(default_factory=list)
+    properties: Dict[str, Any] = field(default_factory=dict)
+    edges: List[CPGEdge] = field(default_factory=list)
 
 
 @dataclass
@@ -37,7 +35,7 @@ class CPGEdge:
     source: int
     target: int
     label: str
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -45,15 +43,15 @@ class CodePropertyGraph:
     """Complete CPG for a codebase."""
 
     nodes: dict[int, CPGNode] = field(default_factory=dict)
-    edges: list[CPGEdge] = field(default_factory=list)
+    edges: List[CPGEdge] = field(default_factory=list)
     language: str = "unknown"
-    source_root: Path | None = None
+    source_root: Optional[Path] = None
 
-    def get_by_label(self, label: str) -> list[CPGNode]:
+    def get_by_label(self, label: str) -> List[CPGNode]:
         """Get all nodes with a given label."""
         return [n for n in self.nodes.values() if n.label == label]
 
-    def get_callers(self, method_name: str) -> list[CPGNode]:
+    def get_callers(self, method_name: str) -> List[CPGNode]:
         """Find all methods that call a given method."""
         # Requires DFG edges - placeholder
         return []
@@ -75,15 +73,15 @@ class JoernBridge:
     - Cross-language support (C, C++, Java, Python, JS)
     """
 
-    def __init__(self, repo_path: Path, joern_cli: Path | None = None):
+    def __init__(self, repo_path: Path, joern_cli: Optional[Path] = None):
         self.repo_path = Path(repo_path)
         self.joern_cli = joern_cli or self._find_joern()
-        self.cpg_path: Path | None = None
-        self.current_cpg: CodePropertyGraph | None = None
+        self.cpg_path: Optional[Path] = None
+        self.current_cpg: Optional[CodePropertyGraph] = None
         self.cache_dir = self.repo_path / ".joern_cache"
         self.cache_dir.mkdir(exist_ok=True)
 
-    def _find_joern(self) -> Path | None:
+    def _find_joern(self) -> Optional[Path]:
         """Find Joern CLI in PATH."""
         try:
             result = subprocess.run(
@@ -119,8 +117,8 @@ class JoernBridge:
             return False
 
     def build_cpg(
-        self, input_path: Path | None = None, language: str | None = None
-    ) -> CodePropertyGraph | None:
+        self, input_path: Optional[Path] = None, language: str = None
+    ) -> Optional[CodePropertyGraph]:
         """
         Build Code Property Graph from source.
 
@@ -183,7 +181,7 @@ class JoernBridge:
             logger.error(f"CPG build error: {e}")
             return None
 
-    def _load_cpg_from_binary(self, cpg_path: Path, language: str | None) -> CodePropertyGraph:
+    def _load_cpg_from_binary(self, cpg_path: Path, language: str) -> CodePropertyGraph:
         """Load CPG from binary file (placeholder)."""
         # Joern stores CPG in binary format
         # We would need to query it via joern console
@@ -249,7 +247,7 @@ importCpg("{self.cpg_path}")
             logger.error(f"Query error: {e}")
             return []
 
-    def taint_analysis(self, sources: list[str], sinks: list[str]) -> list[dict[str, Any]]:
+    def taint_analysis(self, sources: List[str], sinks: List[str]) -> list[dict[str, Any]]:
         """
         Run taint analysis from sources to sinks.
 

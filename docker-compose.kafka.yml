@@ -1,0 +1,205 @@
+# AMOS Event Streaming Infrastructure
+# Apache Kafka Cluster with Schema Registry
+
+version: "3.8"
+
+services:
+  # Zookeeper (Kafka dependency)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: amos-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    networks:
+      - amos-kafka
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker 1
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    container_name: amos-kafka-1
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:19092,EXTERNAL://localhost:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+    volumes:
+      - kafka1_data:/var/lib/kafka/data
+    networks:
+      - amos-kafka
+      - amos-internal
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:19092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Schema Registry
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    container_name: amos-schema-registry
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-1:19092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    networks:
+      - amos-kafka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Kafka Connect (for CDC)
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:latest
+    container_name: amos-kafka-connect
+    depends_on:
+      - kafka-1
+      - schema-registry
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka-1:19092
+      CONNECT_GROUP_ID: amos-connect-cluster
+      CONNECT_CONFIG_STORAGE_TOPIC: _amos-connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _amos-connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _amos-connect-status
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+    volumes:
+      - kafka_connect_data:/var/lib/kafka-connect
+    networks:
+      - amos-kafka
+      - amos-internal
+
+  # Kafka UI (AKHQ) - Management Tool
+  akhq:
+    image: tchiotludo/akhq:latest
+    container_name: amos-kafka-ui
+    depends_on:
+      - kafka-1
+      - schema-registry
+    ports:
+      - "8085:8080"
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            amos-kafka:
+              properties:
+                bootstrap.servers: kafka-1:19092
+              schema-registry:
+                url: http://schema-registry:8081
+              connect:
+                - name: amos-connect
+                  url: http://kafka-connect:8083
+    networks:
+      - amos-kafka
+      - amos-gateway
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.amos-kafka-ui.rule=Host(\`kafka.amos.localhost\`)"
+      - "traefik.http.routers.amos-kafka-ui.service=amos-kafka-ui"
+      - "traefik.http.routers.amos-kafka-ui.tls=true"
+      - "traefik.http.routers.amos-kafka-ui.middlewares=auth@file"
+      - "traefik.http.services.amos-kafka-ui.loadbalancer.server.port=8080"
+
+  # ksqlDB - Stream Processing
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:latest
+    container_name: amos-ksqldb
+    depends_on:
+      - kafka-1
+      - schema-registry
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: kafka-1:19092
+      KSQL_LISTENERS: http://0.0.0.0:8088
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_KSQL_SERVICE_ID: amos_ksqldb
+    networks:
+      - amos-kafka
+
+  # Topic Initialization
+  kafka-init:
+    image: confluentinc/cp-kafka:latest
+    container_name: amos-kafka-init
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      # Wait for Kafka to be ready
+      sleep 10
+
+      # Create AMOS topics
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.agent.events --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.memory.events --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.task.events --partitions 6 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.law.events --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.audit.events --partitions 6 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.system.events --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.orchestration.events --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.evolution.events --partitions 2 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic amos.dead-letter.events --partitions 1 --replication-factor 1
+
+      # List created topics
+      kafka-topics --bootstrap-server kafka-1:19092 --list
+
+      echo '✓ AMOS Kafka topics created successfully'
+      "
+    networks:
+      - amos-kafka
+    restart: "no"
+
+networks:
+  amos-kafka:
+    driver: bridge
+  amos-internal:
+    external: true
+  amos-gateway:
+    external: true
+
+volumes:
+  zookeeper_data:
+  zookeeper_logs:
+  kafka1_data:
+  kafka_connect_data:

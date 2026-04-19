@@ -10,7 +10,6 @@ Version: 1.0.0
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 
 class ValuePriority(Enum):
@@ -145,7 +144,7 @@ class MoralFramework:
             name="AMOS Core Values",
             description="Fundamental values guiding AMOS",
             principles=core_values,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         )
 
         self.value_systems[system.id] = system
@@ -187,13 +186,13 @@ class MoralFramework:
             principles_considered=considered,
             value_alignment_score=avg_weight,
             recommendation=recommendation,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
         )
 
         self.decisions.append(decision)
         return decision
 
-    def get_principle(self, principle_id: str) -> Optional[MoralPrinciple]:
+    def get_principle(self, principle_id: str) -> MoralPrinciple | None:
         """Get a moral principle."""
         return self.principles.get(principle_id)
 

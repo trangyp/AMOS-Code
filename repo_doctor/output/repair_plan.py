@@ -8,8 +8,6 @@ Generate minimum restoring repair plan with:
 - Expected energy reduction
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -26,7 +24,7 @@ class RepairPlan:
     estimated_time: str = ""
     unsat_core_hints: list[dict[str, str]] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "repository": self.repository,
             "actions": self.actions,
@@ -95,9 +93,9 @@ class RepairPlanGenerator:
 
     def generate(
         self,
-        failed_invariants: list[Any],
+        failed_invariants: List[Any],
         unsat_hints: list[dict[str, str]],
-        optimal_actions: list[Any],
+        optimal_actions: List[Any],
     ) -> RepairPlan:
         """Generate complete repair plan."""
         total_blast = sum(a.blast_radius for a in optimal_actions)

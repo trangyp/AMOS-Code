@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
 from repo_doctor.arch_invariants import ArchitectureInvariantEngine
 from repo_doctor.architecture import build_architecture_graph
 from repo_doctor.entanglement import EntanglementMatrix
@@ -64,7 +65,7 @@ class ArchitecturalCognitionBridge:
     ARCH_SCORE_THRESHOLD = 0.7
     ENTANGLEMENT_THRESHOLD = 0.5
 
-    def __init__(self, repo_path: str | Path | None = None):
+    def __init__(self, repo_path: str | Path = None):
         self.repo_path = Path(repo_path) if repo_path else Path.cwd()
         self._arch_engine: ArchitectureInvariantEngine | None = None
         self._arch_graph: ArchitectureGraph | None = None
@@ -208,6 +209,6 @@ class ArchitecturalCognitionBridge:
         )
 
 
-def get_architecture_bridge(repo_path: str | Path | None = None) -> ArchitecturalCognitionBridge:
+def get_architecture_bridge(repo_path: str | Path = None) -> ArchitecturalCognitionBridge:
     """Factory function to get architecture bridge instance."""
     return ArchitecturalCognitionBridge(repo_path)

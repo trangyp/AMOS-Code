@@ -9,8 +9,6 @@ Responsible for:
 - Homeostasis - maintaining optimal operating conditions
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import threading
@@ -20,7 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import psutil
 
@@ -62,7 +60,7 @@ class Metric:
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -80,7 +78,7 @@ class ResourceUsage:
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -91,12 +89,12 @@ class EfficiencyReport:
     cpu_efficiency: float  # 0-1
     memory_efficiency: float
     disk_efficiency: float
-    recommendations: list[str]
+    recommendations: List[str]
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 class MetabolismKernel:
@@ -115,7 +113,7 @@ class MetabolismKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Metrics storage - circular buffers for time series
-        self.metrics_history: dict[str, deque] = {
+        self.metrics_history: Dict[str, deque] = {
             "cpu": deque(maxlen=1000),
             "memory": deque(maxlen=1000),
             "disk": deque(maxlen=100),
@@ -123,7 +121,7 @@ class MetabolismKernel:
         }
 
         # Resource usage snapshots
-        self.resource_snapshots: list[ResourceUsage] = []
+        self.resource_snapshots: List[ResourceUsage] = []
         self.max_snapshots = 1000
 
         # Subsystem resource tracking
@@ -148,7 +146,7 @@ class MetabolismKernel:
 
         # Monitoring thread
         self._monitoring = False
-        self._monitor_thread: Optional[threading.Thread] = None
+        self._monitor_thread: threading.Thread = None
         self.monitor_interval = 5.0  # seconds
 
         # Statistics
@@ -341,13 +339,13 @@ class MetabolismKernel:
             recommendations=recommendations or ["System operating within normal parameters"],
         )
 
-    def garbage_collect(self) -> dict[str, Any]:
+    def garbage_collect(self) -> Dict[str, Any]:
         """Perform garbage collection and cleanup."""
         results = {
             "memory_freed": 0,
             "temp_files_removed": 0,
             "old_logs_cleaned": 0,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         # Force Python GC
@@ -379,7 +377,7 @@ class MetabolismKernel:
         # Deques handle this automatically via maxlen
         pass
 
-    def optimize(self) -> list[str]:
+    def optimize(self) -> List[str]:
         """Apply optimizations based on current state."""
         optimizations = []
 
@@ -408,9 +406,9 @@ class MetabolismKernel:
         """Get resource usage breakdown by subsystem."""
         return dict(self.subsystem_usage)
 
-    def get_metrics_summary(self, minutes: int = 5) -> dict[str, Any]:
+    def get_metrics_summary(self, minutes: int = 5) -> Dict[str, Any]:
         """Get metrics summary for recent period."""
-        cutoff = datetime.utcnow() - timedelta(minutes=minutes)
+        cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
 
         summary = {}
         for metric_type, history in self.metrics_history.items():
@@ -427,7 +425,7 @@ class MetabolismKernel:
 
         return summary
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current metabolism state."""
         usage = self.get_current_usage()
         efficiency = self.analyze_efficiency()
@@ -443,7 +441,7 @@ class MetabolismKernel:
             "gc_runs": self.stats["gc_runs"],
             "optimizations_applied": self.stats["optimizations_applied"],
             "monitor_interval": self.monitor_interval,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

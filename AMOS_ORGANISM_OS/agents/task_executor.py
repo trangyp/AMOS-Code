@@ -50,7 +50,7 @@ class TaskExecutor:
     BLOCKED_PATTERNS = ["rm -rf", "rm -f /", "mkfs", "dd if", "> /dev", ":(){", "chmod 777 /"]
 
     def __init__(self):
-        self.history: list[TaskResult] = []
+        self.history: List[TaskResult] = []
         self.setup_logging()
 
     def setup_logging(self):
@@ -60,7 +60,7 @@ class TaskExecutor:
         )
         self.logger = logging.getLogger("TaskExecutor")
 
-    def validate_command(self, command: str) -> tuple[bool, str]:
+    def validate_command(self, command: str) -> Tuple[bool, str]:
         """Check if command is safe to execute."""
         # Check blocked patterns
         for pattern in self.BLOCKED_PATTERNS:
@@ -86,7 +86,7 @@ class TaskExecutor:
                 stderr=f"BLOCKED: {reason}",
                 exit_code=-1,
                 command=command,
-                executed_at=datetime.utcnow().isoformat(),
+                executed_at=datetime.now(UTC).isoformat(),
             )
 
         # Execute
@@ -102,7 +102,7 @@ class TaskExecutor:
                 stderr=result.stderr,
                 exit_code=result.returncode,
                 command=command,
-                executed_at=datetime.utcnow().isoformat(),
+                executed_at=datetime.now(UTC).isoformat(),
             )
 
             self.history.append(task_result)
@@ -117,7 +117,7 @@ class TaskExecutor:
                 stderr=f"Timeout after {timeout} seconds",
                 exit_code=-1,
                 command=command,
-                executed_at=datetime.utcnow().isoformat(),
+                executed_at=datetime.now(UTC).isoformat(),
             )
         except Exception as e:
             self.logger.error(f"Error: {e}")
@@ -127,7 +127,7 @@ class TaskExecutor:
                 stderr=str(e),
                 exit_code=-1,
                 command=command,
-                executed_at=datetime.utcnow().isoformat(),
+                executed_at=datetime.now(UTC).isoformat(),
             )
 
     def check_status(self) -> dict:
@@ -140,7 +140,7 @@ class TaskExecutor:
             "last_command": self.history[-1].command if self.history else None,
         }
 
-    def get_history(self, limit: int = 10) -> list[TaskResult]:
+    def get_history(self, limit: int = 10) -> List[TaskResult]:
         """Get execution history."""
         return self.history[-limit:]
 

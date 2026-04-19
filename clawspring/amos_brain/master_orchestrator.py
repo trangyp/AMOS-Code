@@ -1,13 +1,15 @@
 """AMOS Master Orchestrator - Unified command layer for all ecosystem components."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Optional
 
 # Import all ecosystem components
-from organism_bridge import get_organism_bridge
-from predictive_integration import get_predictive_integration, predict_task
-from task_execution_integration import execute_task, get_task_execution_integration
+from .organism_bridge import get_organism_bridge
+from .predictive_integration import get_predictive_integration, predict_task
+from .task_execution_integration import execute_task, get_task_execution_integration
 
 
 @dataclass
@@ -23,6 +25,7 @@ class OrchestrationResult:
     organism_enhancements: dict[str, Any]
     overall_success: bool
     total_duration_ms: float
+    mathematical_analysis: Optional[dict[str, Any]] = None
 
 
 class MasterOrchestrator:
@@ -34,6 +37,7 @@ class MasterOrchestrator:
         self._organism_bridge = None
         self._predictive = None
         self._task_executor = None
+        self._math_engine = None
         self._orchestration_history: list[OrchestrationResult] = []
         self._initialized = False
 
@@ -43,6 +47,13 @@ class MasterOrchestrator:
             self._organism_bridge = get_organism_bridge()
             self._predictive = get_predictive_integration()
             self._task_executor = get_task_execution_integration()
+            # Initialize mathematical framework engine
+            try:
+                from .mathematical_framework_engine import get_framework_engine
+
+                self._math_engine = get_framework_engine()
+            except Exception:
+                self._math_engine = None
             self._initialized = True
             return True
         except Exception as e:
@@ -88,6 +99,14 @@ class MasterOrchestrator:
             except Exception:
                 pass
 
+        # Step 3b: Mathematical Framework Analysis
+        math_analysis = None
+        if self._math_engine:
+            try:
+                math_analysis = self._math_engine.analyze_architecture(task_description)
+            except Exception:
+                pass
+
         # Step 4: Task Execution
         execution_result = None
         engines = self._get_recommended_engines(domain)
@@ -110,6 +129,12 @@ class MasterOrchestrator:
             analysis={
                 "detected_domain": domain,
                 "recommended_engines": engines,
+                "mathematical_domains": (
+                    math_analysis.get("detected_domains", []) if math_analysis else []
+                ),
+                "recommended_frameworks": (
+                    math_analysis.get("recommended_frameworks", []) if math_analysis else []
+                ),
             },
             prediction={
                 "predicted_duration_ms": (
@@ -132,6 +157,7 @@ class MasterOrchestrator:
             organism_enhancements=organism_enhancements,
             overall_success=(execution_result.success if execution_result else False),
             total_duration_ms=duration_ms,
+            mathematical_analysis=math_analysis,
         )
 
         self._orchestration_history.append(result)
@@ -243,3 +269,15 @@ if __name__ == "__main__":
         result = orchestrate_task(tid, desc, priority)
         status_icon = "✓" if result.overall_success else "✗"
         print(f"  {status_icon} {tid}: {result.domain} ({result.total_duration_ms:.1f}ms)")
+
+
+# Global orchestrator instance
+_orchestrator: Optional[MasterOrchestrator] = None
+
+
+def get_orchestrator() -> MasterOrchestrator:
+    """Get or create the global orchestrator instance."""
+    global _orchestrator
+    if _orchestrator is None:
+        _orchestrator = MasterOrchestrator()
+    return _orchestrator

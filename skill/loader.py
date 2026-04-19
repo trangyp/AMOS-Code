@@ -1,10 +1,7 @@
 """Skill loading: parse markdown files with YAML frontmatter into SkillDef objects."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -72,7 +69,7 @@ def _parse_skill_file(path: Path, source: str = "user") -> Optional[SkillDef]:
     frontmatter_raw = parts[1].strip()
     prompt = parts[2].strip()
 
-    fields: dict[str, str] = {}
+    fields: Dict[str, str] = {}
     for line in frontmatter_raw.splitlines():
         line = line.strip()
         if not line or ":" not in line:
@@ -132,7 +129,7 @@ def register_builtin_skill(skill: SkillDef) -> None:
 
 def load_skills(include_builtins: bool = True) -> list[SkillDef]:
     """Return skills from disk + builtins, deduplicated (project > user > builtin)."""
-    seen: dict[str, SkillDef] = {}
+    seen: Dict[str, SkillDef] = {}
 
     # Builtins go in first (lowest priority)
     if include_builtins:

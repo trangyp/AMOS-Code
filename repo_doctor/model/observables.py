@@ -11,8 +11,6 @@ Structured measurements for repository state:
 - o_security_findings: Security findings count
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -25,10 +23,10 @@ class ObservationResult:
     value: float
     unit: str = "count"
     severity: str = "info"  # info, warning, error, critical
-    details: list[str] = field(default_factory=list)
-    files_affected: list[str] = field(default_factory=list)
+    details: List[str] = field(default_factory=list)
+    files_affected: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "value": self.value,
@@ -48,7 +46,7 @@ class ObservableSet:
     """
 
     def __init__(self):
-        self.observations: dict[str, ObservationResult] = {}
+        self.observations: Dict[str, ObservationResult] = {}
 
     def add(self, result: ObservationResult) -> None:
         """Add an observation."""
@@ -68,7 +66,7 @@ class ObservableSet:
         return {name: obs.value for name, obs in self.observations.items()}
 
     @classmethod
-    def from_sensor_data(cls, sensor_results: dict[str, Any]) -> ObservableSet:
+    def from_sensor_data(cls, sensor_results: Dict[str, Any]) -> ObservableSet:
         """
         Build observables from sensor backend results.
 
@@ -192,7 +190,7 @@ class ObservableSet:
 
         return obs
 
-    def compute_amplitude(self, dimension: str, weights: dict[str, float]) -> float:
+    def compute_amplitude(self, dimension: str, weights: Dict[str, float]) -> float:
         """
         Compute amplitude from observables: α = exp(-Σ wj · oj)
 

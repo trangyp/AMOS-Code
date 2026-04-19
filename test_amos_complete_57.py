@@ -11,42 +11,45 @@ Total: 57 components validated
 """
 
 import sys
-sys.path.insert(0, '/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code')
+
+sys.path.insert(0, "/Users/nguyenxuanlinh/Documents/Trang Phan/Downloads/AMOS-code")
 
 import unittest
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+from amos_coherence_engine import AMOSCoherenceEngine
+from amos_formal_core import ActionUniverse, AMOSFormalSystem, StateBundle
 
 # Import all layers
 from amos_meta_architecture import (
-    MetaGovernance, Promise, PromiseScope, PromiseStatus,
-    Breach, BreachClass, BreachSeverity,
-    IdentityContinuity, IdentityTransform,
+    Breach,
+    BreachClass,
+    BreachSeverity,
+    Disagreement,
+    DisagreementClass,
     EquivalenceClaim,
-    MemoryObligation, ForgettingPermit,
-    Disagreement, DisagreementClass,
+    ForgettingPermit,
+    IdentityTransform,
     LegitimacyClaim,
-    SelfModification, SelfModificationType,
+    MemoryObligation,
+    MetaGovernance,
+    Promise,
+    PromiseScope,
+    PromiseStatus,
+    SelfModification,
+    SelfModificationType,
     SemanticEntity,
-    LawRank
 )
 from amos_meta_ontological import (
-    AMOSMetaOntological, EnergyBudget, WorldState,
-    TemporalHierarchy, TimeScale,
-    SelfRepresentation,
+    AMOSMetaOntological,
+    DeonticStatus,
+    EnergyBudget,
+    EthicalBoundary,
     IdentityManifold,
-    ObserverState,
-    SheafOfTruths,
-    AgencyField,
-    EmbodimentOperator,
-    ProgramDeformation,
-    RenormalizationOperator,
-    MetaSemanticEvaluator,
-    EthicalBoundary, DeonticStatus
+    TemporalHierarchy,
+    TimeScale,
+    WorldState,
 )
-from amos_formal_core import (
-    AMOSFormalSystem, StateBundle, ActionUniverse
-)
-from amos_coherence_engine import AMOSCoherenceEngine
 
 
 class TestMetaArchitectureLayer(unittest.TestCase):
@@ -63,20 +66,20 @@ class TestMetaArchitectureLayer(unittest.TestCase):
             scope=PromiseScope.API_COMPATIBILITY,
             enforceable_authority=True,
             proof_exists=True,
-            resource_available=True
+            resource_available=True,
         )
         promise.discharge_conditions = ["migration_complete"]
-        
+
         pid = self.meta.promise_registry.register(promise)
         self.assertIsNotNone(pid)
         self.assertTrue(promise.is_strong())
-        
+
         # Test drift detection
-        valid, reason = promise.check_drift({'supports_promise': True})
+        valid, reason = promise.check_drift({"supports_promise": True})
         self.assertTrue(valid)
-        
+
         # Test discharge
-        discharged = promise.discharge({'migration_complete': True})
+        discharged = promise.discharge({"migration_complete": True})
         self.assertTrue(discharged)
         self.assertEqual(promise.status, PromiseStatus.DISCHARGED)
 
@@ -87,9 +90,9 @@ class TestMetaArchitectureLayer(unittest.TestCase):
             severity=BreachSeverity.HIGH,
             description="API promise violated",
             discharge_obligations=["rollback", "notify"],
-            escalation_path="architectural_council"
+            escalation_path="architectural_council",
         )
-        
+
         bid = self.meta.breach_registry.register(breach)
         self.assertIsNotNone(bid)
         self.assertTrue(breach.can_discharge())
@@ -98,15 +101,11 @@ class TestMetaArchitectureLayer(unittest.TestCase):
     def test_identity_continuity(self):
         """Test Identity-Over-Time System"""
         identity = self.meta.identity_registry.register("service_v1", "service")
-        identity.add_successor(
-            "service_v2", 
-            IdentityTransform.SUCCESSOR,
-            "Migrated to new version"
-        )
-        
+        identity.add_successor("service_v2", IdentityTransform.SUCCESSOR, "Migrated to new version")
+
         self.assertEqual(len(identity.successors), 1)
         self.assertEqual(identity.successors[0][1], IdentityTransform.SUCCESSOR)
-        
+
         # Test resurrection prevention
         self.meta.identity_registry.retire("service_v1")
         valid, msg = self.meta.identity_registry.check_resurrection_attempt("service_v1")
@@ -122,13 +121,11 @@ class TestMetaArchitectureLayer(unittest.TestCase):
             valid_trust_domains=["production"],
             preserved_obligations=["ACID"],
             mediated_by="migration_adapter",
-            semantic_loss_budget=0.05
+            semantic_loss_budget=0.05,
         )
-        
+
         self.assertTrue(equiv.check_wrapper_truthfulness())
-        self.assertTrue(equiv.check_contextual_validity(
-            "read_only", "compatibility", "production"
-        ))
+        self.assertTrue(equiv.check_contextual_validity("read_only", "compatibility", "production"))
 
     def test_memory_governance(self):
         """Test Memory/Forgetting System"""
@@ -136,18 +133,18 @@ class TestMetaArchitectureLayer(unittest.TestCase):
         memory = MemoryObligation(
             fact_type="audit_log",
             required_for=["compliance", "forensics"],
-            horizon=timedelta(days=365*7)
+            horizon=timedelta(days=365 * 7),
         )
         self.meta.memory_governor.add_required(memory)
-        
+
         # Permitted forgetting
         permit = ForgettingPermit(
             fact_types=["temp_cache"],
             safe_to_forget=["temp_cache"],
-            proof_of_safety="cache_is_temporary"
+            proof_of_safety="cache_is_temporary",
         )
         self.meta.memory_governor.add_permitted(permit)
-        
+
         # Test conflict check
         valid, _ = self.meta.memory_governor.check_conflict("temp_cache")
         self.assertTrue(valid)
@@ -158,9 +155,9 @@ class TestMetaArchitectureLayer(unittest.TestCase):
             disagreement_class=DisagreementClass.MODEL_DIVERGENCE,
             parties=["team_a", "team_b"],
             arbiter="chief_architect",
-            unresolved_policy="degraded_action"
+            unresolved_policy="degraded_action",
         )
-        
+
         did = self.meta.disagreement_registry.register(disagreement)
         self.assertIsNotNone(did)
         self.assertEqual(disagreement.get_progress_path(), "degraded_action")
@@ -170,9 +167,9 @@ class TestMetaArchitectureLayer(unittest.TestCase):
         legitimacy = LegitimacyClaim(
             surface="production_deployments",
             declared_authority="release_engineering",
-            actual_controller="release_engineering"
+            actual_controller="release_engineering",
         )
-        
+
         lid = self.meta.legitimacy_registry.register(legitimacy)
         self.assertIsNotNone(lid)
         self.assertTrue(legitimacy.check_alignment())
@@ -185,9 +182,9 @@ class TestMetaArchitectureLayer(unittest.TestCase):
             authority="data_governance",
             fixed_point_checkpoint="policy_v1_backup",
             staged_validation=True,
-            rollback_ready=True
+            rollback_ready=True,
         )
-        
+
         smid = self.meta.self_mod_governor.propose(self_mod)
         self.assertIsNotNone(smid)
         self.assertTrue(self_mod.check_fixed_point())
@@ -196,30 +193,24 @@ class TestMetaArchitectureLayer(unittest.TestCase):
         """Test Semantic Survival System"""
         entity = SemanticEntity(
             entity_id="consent_flow",
-            meaning_signature={
-                "informed": True,
-                "revocable": True,
-                "auditable": True
-            }
+            meaning_signature={"informed": True, "revocable": True, "auditable": True},
         )
-        
+
         sid = self.meta.semantic_registry.register(entity)
         self.assertIsNotNone(sid)
-        
+
         # Test meaning preservation
-        valid = entity.check_semantic_survival({
-            "informed": True,
-            "revocable": True,
-            "auditable": True
-        })
+        valid = entity.check_semantic_survival(
+            {"informed": True, "revocable": True, "auditable": True}
+        )
         self.assertTrue(valid)
 
     def test_full_validation(self):
         """Test complete meta-governance validation"""
         results = self.meta.validate_full_system()
-        self.assertIn('promise_integrity', results)
-        self.assertIn('breach_semantics', results)
-        self.assertIn('all_valid', results)
+        self.assertIn("promise_integrity", results)
+        self.assertIn("breach_semantics", results)
+        self.assertIn("all_valid", results)
 
 
 class TestMetaOntologicalLayer(unittest.TestCase):
@@ -231,12 +222,7 @@ class TestMetaOntologicalLayer(unittest.TestCase):
     def test_energy_budget(self):
         """Test Energy Budget (Thermodynamics)"""
         energy = EnergyBudget(
-            computation=0.5,
-            observation=0.2,
-            memory=0.1,
-            mutation=0.05,
-            control=0.05,
-            bridge=0.1
+            computation=0.5, observation=0.2, memory=0.1, mutation=0.05, control=0.05, bridge=0.1
         )
         total = energy.total()
         self.assertLessEqual(total, 1.0)
@@ -246,7 +232,7 @@ class TestMetaOntologicalLayer(unittest.TestCase):
         """Test Temporal Hierarchy (Multi-scale Time)"""
         temporal = TemporalHierarchy()
         self.assertEqual(temporal.current_scale, TimeScale.CLASSICAL)
-        
+
         # Test scale admissibility
         self.assertTrue(temporal.scale_admissible(TimeScale.QUANTUM))
         self.assertTrue(temporal.scale_admissible(TimeScale.CLASSICAL))
@@ -261,25 +247,23 @@ class TestMetaOntologicalLayer(unittest.TestCase):
     def test_ethical_boundary(self):
         """Test Ethical Boundary (Deontic)"""
         ethical = EthicalBoundary()
-        state = {'action': 'test', 'constraints': ['ethical']}
-        
+        state = {"action": "test", "constraints": ["ethical"]}
+
         valid, status = ethical.check_deontic(state)
         self.assertTrue(valid)
         self.assertEqual(status, DeonticStatus.PERMITTED)
 
     def test_grand_unified_step(self):
         """Test Grand Unified AMOS Step"""
-        x_t = {'id': 'test', 'type': 'test_system'}
-        u_t = {'action': 'test_action'}
-        w_t = WorldState(resource_availability={'compute': 1.0})
-        
-        x_t1, w_t1, meta = self.meta_ont.grand_unified_step(
-            x_t, u_t, w_t, energy_budget=1.0
-        )
-        
+        x_t = {"id": "test", "type": "test_system"}
+        u_t = {"action": "test_action"}
+        w_t = WorldState(resource_availability={"compute": 1.0})
+
+        x_t1, w_t1, meta = self.meta_ont.grand_unified_step(x_t, u_t, w_t, energy_budget=1.0)
+
         self.assertIsNotNone(x_t1)
         self.assertIsNotNone(meta)
-        self.assertIn('energy_used', meta)
+        self.assertIn("energy_used", meta)
 
 
 class TestFormalCoreLayer(unittest.TestCase):
@@ -298,21 +282,15 @@ class TestFormalCoreLayer(unittest.TestCase):
 
     def test_state_bundle_creation(self):
         """Test State Bundle creation"""
-        bundle = StateBundle(
-            classical={"test": "value"},
-            environment={"test": "env"}
-        )
+        bundle = StateBundle(classical={"test": "value"}, environment={"test": "env"})
         self.assertIsNotNone(bundle)
 
     def test_universal_step(self):
         """Test Universal AMOS Step"""
-        x_t = StateBundle(
-            classical={"test": "value"},
-            environment={"test": "env"}
-        )
+        x_t = StateBundle(classical={"test": "value"}, environment={"test": "env"})
         # ActionUniverse doesn't accept 'available' parameter
         u_t = ActionUniverse(substrate="classical", target="classical")
-        
+
         x_t1 = self.formal.universal_step(x_t, u_t)
         self.assertIsNotNone(x_t1)
 
@@ -344,50 +322,47 @@ class TestIntegration(unittest.TestCase):
         """Test all 4 layers working together"""
         # Layer 4: Meta-governance
         meta_gov = MetaGovernance()
-        
+
         # Layer 3: Meta-ontological
         meta_ont = AMOSMetaOntological()
-        
+
         # Layer 2: Formal core
         formal = AMOSFormalSystem()
-        
+
         # Layer 1: Coherence
         coherence = AMOSCoherenceEngine()
-        
+
         # Execute across all layers
         # 1. Coherence processing
         coherence_result = coherence.process("System integration test")
         self.assertIsNotNone(coherence_result)
-        
+
         # 2. Formal step
-        x_t = StateBundle(
-            classical={"test": "integration"},
-            environment={"test": "env"}
-        )
+        x_t = StateBundle(classical={"test": "integration"}, environment={"test": "env"})
         u_t = ActionUniverse(substrate="classical", target="classical")
         x_t1 = formal.universal_step(x_t, u_t)
         self.assertIsNotNone(x_t1)
-        
+
         # 3. Meta-ontological step
-        x_dict = {'id': 'integration_test'}
-        u_dict = {'action': 'unify'}
-        w_t = WorldState(resource_availability={'compute': 1.0})
+        x_dict = {"id": "integration_test"}
+        u_dict = {"action": "unify"}
+        w_t = WorldState(resource_availability={"compute": 1.0})
         x_t2, w_t2, meta = meta_ont.grand_unified_step(x_dict, u_dict, w_t, 1.0)
         self.assertIsNotNone(x_t2)
-        
+
         # 4. Meta-governance validation
         results = meta_gov.validate_full_system()
-        self.assertIn('all_valid', results)
-        
-        print(f"\n   ✓ All 57 components integrated successfully")
+        self.assertIn("all_valid", results)
+
+        print("\n   ✓ All 57 components integrated successfully")
 
     def test_component_count(self):
         """Verify all 57 components are present"""
         counts = {
-            'production': 46,
-            'formal_core': 21,
-            'meta_ontological': 12,
-            'meta_architecture': 10
+            "production": 46,
+            "formal_core": 21,
+            "meta_ontological": 12,
+            "meta_architecture": 10,
         }
         total = sum(counts.values())
         self.assertEqual(total, 57)
@@ -399,20 +374,20 @@ def run_comprehensive_tests():
     print("AMOS 57-COMPONENT COMPREHENSIVE TEST SUITE")
     print("=" * 70)
     print()
-    
+
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    
+
     # Add all test classes
     suite.addTests(loader.loadTestsFromTestCase(TestMetaArchitectureLayer))
     suite.addTests(loader.loadTestsFromTestCase(TestMetaOntologicalLayer))
     suite.addTests(loader.loadTestsFromTestCase(TestFormalCoreLayer))
     suite.addTests(loader.loadTestsFromTestCase(TestProductionLayer))
     suite.addTests(loader.loadTestsFromTestCase(TestIntegration))
-    
+
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
-    
+
     print("\n" + "=" * 70)
     print("TEST SUMMARY")
     print("=" * 70)
@@ -420,12 +395,12 @@ def run_comprehensive_tests():
     print(f"Successes: {result.testsRun - len(result.failures) - len(result.errors)}")
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")
-    
+
     if result.wasSuccessful():
         print("\n✅ ALL 57 COMPONENTS VALIDATED SUCCESSFULLY")
     else:
         print("\n⚠️  Some tests failed - review required")
-    
+
     return result.wasSuccessful()
 
 

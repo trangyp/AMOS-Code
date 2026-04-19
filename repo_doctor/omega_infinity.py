@@ -23,8 +23,6 @@ External substrate:
 - Sourcegraph Batch Changes: multi-repo remediation
 """
 
-from __future__ import annotations
-
 import json
 import math
 import subprocess
@@ -74,7 +72,7 @@ class StateVector:
     amplitudes: dict[StateDimension, float] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
 
-    # Severity weights for Hamiltonian (18 dimensions)
+    # Severity weights for Hamiltonian (25 dimensions: 18 original + 7 Layer 18)
     WEIGHTS: dict[StateDimension, float] = field(
         default_factory=lambda: {
             StateDimension.SYNTAX: 100.0,
@@ -92,6 +90,13 @@ class StateVector:
             StateDimension.HISTORY: 55.0,
             StateDimension.GENERATED_CODE: 60.0,
             StateDimension.ENVIRONMENT: 45.0,
+            # Phase 5 - Layer 18 Distributed Systems Physics (7 dimensions)
+            StateDimension.TRUTH_ARBITRATION: 95.0,
+            StateDimension.IRREVERSIBILITY_MANAGEMENT: 90.0,
+            StateDimension.QUIESCENCE_INTEGRITY: 85.0,
+            StateDimension.POLICY_PRECEDENCE: 85.0,
+            StateDimension.ADAPTIVE_STABILITY: 80.0,
+            StateDimension.ARCHITECTURAL_ENTROPY: 70.0,
         }
     )
 
@@ -130,7 +135,7 @@ class StateVector:
             total += weight * (1 - amp) ** 2
         return total
 
-    def get_critical_dimensions(self, threshold: float = 50.0) -> list[StateDimension]:
+    def get_critical_dimensions(self, threshold: float = 50.0) -> List[StateDimension]:
         """Find dimensions contributing most to energy."""
         energies = []
         for dim, amp in self.amplitudes.items():
@@ -165,7 +170,7 @@ class PureStateHypothesis:
     label: str
     state_vector: StateVector
     probability: float
-    evidence: dict[str, Any] = field(default_factory=dict)
+    evidence: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -182,7 +187,7 @@ class DensityMatrix:
     - ambiguous blame
     """
 
-    hypotheses: list[PureStateHypothesis] = field(default_factory=list)
+    hypotheses: List[PureStateHypothesis] = field(default_factory=list)
 
     def add_hypothesis(self, hypothesis: PureStateHypothesis) -> None:
         """Add a plausible state hypothesis."""
@@ -214,7 +219,7 @@ class DensityMatrix:
 
         return total
 
-    def get_dominant_hypothesis(self) -> PureStateHypothesis | None:
+    def get_dominant_hypothesis(self) -> Optional[PureStateHypothesis]:
         """Get the highest probability hypothesis."""
         if not self.hypotheses:
             return None
@@ -242,10 +247,10 @@ class Observable:
     kind: str
     location: str
     severity: str  # fatal, critical, error, warning
-    details: dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = field(default_factory=dict)
 
     # Decay model weights for amplitude computation
-    IMPACT_WEIGHTS: dict[str, float] = field(
+    IMPACT_WEIGHTS: Dict[str, float] = field(
         default_factory=lambda: {
             "fatal": 1.0,
             "critical": 0.8,
@@ -280,7 +285,7 @@ class EnergyOperator:
     dimension: StateDimension
     weight: float
 
-    def apply(self, amplitude: float, observables: list[Observable]) -> float:
+    def apply(self, amplitude: float, observables: List[Observable]) -> float:
         """
         Compute energy contribution for this subsystem.
 
@@ -305,11 +310,14 @@ class EnergyOperator:
 
 class RepositoryHamiltonian:
     """
-    Full repository Hamiltonian with all 12 subsystems.
+    Full repository Hamiltonian with all 18+ subsystems.
 
     H_repo = λS Hsyntax + λI Himports + λTy Htypes + λA Hapi +
              λE Hentry + λPk Hpack + λRt Hruntime + λD Hdocs +
-             λPs Hpersistence + λSt Hstatus + λSec Hsecurity + λH Hhistory
+             λPs Hpersistence + λSt Hstatus + λSec Hsecurity + λH Hhistory +
+             # Phase 5 - Layer 18 Distributed Systems Physics
+             λTruth Harbitration + λIrrev Hirreversibility + λQui Hquiescence +
+             λPolicy Hprecedence + λAdapt Hadaptive + λEntropy Hentropy
     """
 
     def __init__(self):
@@ -326,6 +334,25 @@ class RepositoryHamiltonian:
             StateDimension.STATUS: EnergyOperator(StateDimension.STATUS, 70.0),
             StateDimension.SECURITY: EnergyOperator(StateDimension.SECURITY, 100.0),
             StateDimension.HISTORY: EnergyOperator(StateDimension.HISTORY, 60.0),
+            # Phase 5 - Layer 18 Distributed Systems Physics (7 operators)
+            StateDimension.TRUTH_ARBITRATION: EnergyOperator(
+                StateDimension.TRUTH_ARBITRATION, 95.0
+            ),
+            StateDimension.IRREVERSIBILITY_MANAGEMENT: EnergyOperator(
+                StateDimension.IRREVERSIBILITY_MANAGEMENT, 90.0
+            ),
+            StateDimension.QUIESCENCE_INTEGRITY: EnergyOperator(
+                StateDimension.QUIESCENCE_INTEGRITY, 85.0
+            ),
+            StateDimension.POLICY_PRECEDENCE: EnergyOperator(
+                StateDimension.POLICY_PRECEDENCE, 85.0
+            ),
+            StateDimension.ADAPTIVE_STABILITY: EnergyOperator(
+                StateDimension.ADAPTIVE_STABILITY, 80.0
+            ),
+            StateDimension.ARCHITECTURAL_ENTROPY: EnergyOperator(
+                StateDimension.ARCHITECTURAL_ENTROPY, 70.0
+            ),
         }
 
     def total_energy(
@@ -367,8 +394,8 @@ class InvariantResult:
     passed: bool
     severity: str
     message: str
-    details: dict[str, Any] = field(default_factory=dict)
-    affected_files: list[str] = field(default_factory=list)
+    details: Dict[str, Any] = field(default_factory=dict)
+    affected_files: List[str] = field(default_factory=list)
 
 
 class HardInvariantChecker:
@@ -378,9 +405,9 @@ class HardInvariantChecker:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.results: list[InvariantResult] = []
+        self.results: List[InvariantResult] = []
 
-    def check_all(self) -> list[InvariantResult]:
+    def check_all(self) -> List[InvariantResult]:
         """Check all 12 hard invariants."""
         self.results = [
             self._check_parse(),
@@ -652,7 +679,7 @@ class HardInvariantChecker:
             self.check_all()
         return all(r.passed for r in self.results)
 
-    def get_failing(self) -> list[InvariantResult]:
+    def get_failing(self) -> List[InvariantResult]:
         """Get list of failing invariants."""
         return [r for r in self.results if not r.passed]
 
@@ -699,8 +726,8 @@ class RepoNode:
 
     id: str
     type: NodeType
-    path: Path | None = None
-    properties: dict[str, Any] = field(default_factory=dict)
+    path: Optional[Path] = None
+    properties: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -710,7 +737,7 @@ class RepoEdge:
     source: str
     target: str
     type: EdgeType
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
 
 
 class RepositoryGraph:
@@ -725,8 +752,8 @@ class RepositoryGraph:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.nodes: dict[str, RepoNode] = {}
-        self.edges: list[RepoEdge] = []
+        self.nodes: Dict[str, RepoNode] = {}
+        self.edges: List[RepoEdge] = []
         self._build_graph()
 
     def _build_graph(self) -> None:
@@ -748,7 +775,7 @@ class RepositoryGraph:
         """Add an edge to the graph."""
         self.edges.append(edge)
 
-    def get_neighbors(self, node_id: str, edge_type: EdgeType | None = None) -> list[RepoNode]:
+    def get_neighbors(self, node_id: str, edge_type: Optional[EdgeType] = None) -> List[RepoNode]:
         """Get neighbors of a node."""
         neighbors = []
         for edge in self.edges:
@@ -892,7 +919,7 @@ class CollapseOperator:
         self.checker = checker
         self.graph = graph
 
-    def collapse(self) -> dict[str, Any]:
+    def collapse(self) -> Dict[str, Any]:
         """
         Collapse failure surface to minimal broken subspace.
 
@@ -932,7 +959,7 @@ class CollapseOperator:
             "energy": self._estimate_energy(failing),
         }
 
-    def _build_unsat_core(self, failing: list[InvariantResult]) -> list[dict]:
+    def _build_unsat_core(self, failing: List[InvariantResult]) -> List[dict]:
         """Build unsat core - minimal contradictory fact set."""
         core = []
 
@@ -965,7 +992,7 @@ class CollapseOperator:
 
         return core
 
-    def _estimate_energy(self, failing: list[InvariantResult]) -> float:
+    def _estimate_energy(self, failing: List[InvariantResult]) -> float:
         """Estimate repository energy from failing invariants."""
         weights = {
             "I_parse": 100,
@@ -1004,7 +1031,7 @@ class TemporalState:
     commit_hash: str
     timestamp: datetime
     state_vector: StateVector
-    parent: str | None = None
+    parent: str = None
     drift_norm: float = 0.0
 
 
@@ -1015,7 +1042,7 @@ class TemporalAnalyzer:
 
     def __init__(self, repo_path: Path):
         self.repo_path = repo_path
-        self.history: list[TemporalState] = []
+        self.history: List[TemporalState] = []
 
     def compute_drift(
         self,
@@ -1039,7 +1066,7 @@ class TemporalAnalyzer:
         invariant_name: str,
         good_commit: str,
         bad_commit: str,
-    ) -> str | None:
+    ) -> str:
         """
         Find first bad commit using git bisect.
 
@@ -1086,7 +1113,7 @@ class TemporalAnalyzer:
     def compute_path_integral_blame(
         self,
         invariant_name: str,
-        history: list[TemporalState],
+        history: List[TemporalState],
     ) -> list[tuple[str, float]]:
         """
         Path-integral blame assignment.
@@ -1147,8 +1174,8 @@ class RepairOptimizer:
 
     def optimize_repairs(
         self,
-        failing_invariants: list[InvariantResult],
-    ) -> list[RepairAction]:
+        failing_invariants: List[InvariantResult],
+    ) -> List[RepairAction]:
         """
         Compute optimal repair plan.
 
@@ -1199,7 +1226,7 @@ class RepairOptimizer:
 
         return repairs
 
-    def compute_objective(self, repairs: list[RepairAction]) -> float:
+    def compute_objective(self, repairs: List[RepairAction]) -> float:
         """
         Compute optimization objective.
 
@@ -1228,8 +1255,8 @@ class FleetState:
     Fleet energy: E_fleet = Σr ωr E_repo_r
     """
 
-    repos: dict[str, StateVector] = field(default_factory=dict)
-    weights: dict[str, float] = field(default_factory=dict)
+    repos: Dict[str, StateVector] = field(default_factory=dict)
+    weights: Dict[str, float] = field(default_factory=dict)
 
     def add_repository(self, repo_id: str, state: StateVector, weight: float = 1.0):
         """Add a repository to the fleet."""
@@ -1279,15 +1306,15 @@ class DiagnosisReport:
         self,
         repo_path: Path,
         state_vector: StateVector,
-        invariants: list[InvariantResult],
-        collapse_result: dict[str, Any],
+        invariants: List[InvariantResult],
+        collapse_result: Dict[str, Any],
     ):
         self.repo_path = repo_path
         self.state_vector = state_vector
         self.invariants = invariants
         self.collapse_result = collapse_result
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Generate structured diagnosis."""
         failing = [inv for inv in self.invariants if not inv.passed]
 
@@ -1315,7 +1342,7 @@ class DiagnosisReport:
             "diagnosis": self._generate_diagnosis(failing),
         }
 
-    def _generate_diagnosis(self, failing: list[InvariantResult]) -> str:
+    def _generate_diagnosis(self, failing: List[InvariantResult]) -> str:
         """Generate human-readable diagnosis."""
         if not failing:
             return "Repository is healthy. All 12 hard invariants pass."
@@ -1432,6 +1459,14 @@ class RepoDoctorOmegaInfinity:
                 "I_tests": StateDimension.DOCS_TESTS_DEMOS,
                 "I_security": StateDimension.SECURITY,
                 "I_history": StateDimension.HISTORY,
+                # Phase 5 - Layer 18 Distributed Systems Physics (7 invariants)
+                "truth_arbitration": StateDimension.TRUTH_ARBITRATION,
+                "irreversibility_management": StateDimension.IRREVERSIBILITY_MANAGEMENT,
+                "compensation_semantics": StateDimension.IRREVERSIBILITY_MANAGEMENT,
+                "quiescence_integrity": StateDimension.QUIESCENCE_INTEGRITY,
+                "policy_precedence": StateDimension.POLICY_PRECEDENCE,
+                "adaptive_stability": StateDimension.ADAPTIVE_STABILITY,
+                "architectural_entropy": StateDimension.ARCHITECTURAL_ENTROPY,
             }
             if inv.name in dim_map:
                 amplitudes[dim_map[inv.name]] = 1.0 if inv.passed else 0.0
@@ -1451,7 +1486,7 @@ class RepoDoctorOmegaInfinity:
 
         return report
 
-    def get_repair_plan(self) -> list[RepairAction]:
+    def get_repair_plan(self) -> List[RepairAction]:
         """Get optimized repair plan."""
         failing = self.checker.get_failing()
         return self.optimizer.optimize_repairs(failing)
@@ -1460,7 +1495,7 @@ class RepoDoctorOmegaInfinity:
         """Get entangled modules."""
         return self.entanglement.get_entangled_modules(module)
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get system status."""
         return {
             "repo_path": str(self.repo_path),

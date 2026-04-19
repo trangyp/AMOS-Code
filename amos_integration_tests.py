@@ -16,13 +16,10 @@ Usage:
     python amos_integration_tests.py --all
 """
 
-from __future__ import annotations
-
 import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -35,7 +32,7 @@ class TestResult:
     name: str
     passed: bool
     duration_ms: float
-    error: Optional[str] = None
+    error: str = None
     details: dict = field(default_factory=dict)
 
 
@@ -51,8 +48,8 @@ class AMOSIntegrationTests:
     """
 
     def __init__(self):
-        self.results: list[TestResult] = []
-        self.start_time: Optional[float] = None
+        self.results: List[TestResult] = []
+        self.start_time: float = None
 
     def run_all(self) -> dict[str, any]:
         """Run complete integration test suite."""

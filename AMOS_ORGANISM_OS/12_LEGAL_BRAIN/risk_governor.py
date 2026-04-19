@@ -4,15 +4,13 @@ Assesses and governs risk for all organism activities.
 Provides risk scoring, mitigation recommendations, and governance.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class RiskLevel(Enum):
@@ -50,10 +48,10 @@ class RiskAssessment:
     score: float = 0.0  # calculated: probability * impact * 100
     mitigations: list[str] = field(default_factory=list)
     residual_risk: RiskLevel = RiskLevel.UNKNOWN
-    assessed_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    assessed_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     assessor: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "category": self.category.value,
@@ -75,7 +73,7 @@ class RiskGovernor:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.assessments: dict[str, RiskAssessment] = {}
+        self.assessments: Dict[str, RiskAssessment] = {}
         self.risk_thresholds: dict[RiskLevel, float] = {
             RiskLevel.CRITICAL: 0.9,
             RiskLevel.HIGH: 0.7,
@@ -92,7 +90,7 @@ class RiskGovernor:
         category: RiskCategory,
         probability: float,
         impact: float,
-        mitigations: Optional[list[str]] = None,
+        mitigations: list[str] = None,
         assessor: str = "system",
     ) -> RiskAssessment:
         """Assess risk for a target activity."""
@@ -144,8 +142,8 @@ class RiskGovernor:
     def evaluate_action_risk(
         self,
         action_type: str,
-        context: dict[str, Any],
-    ) -> dict[str, Any]:
+        context: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Evaluate risk of taking an action."""
         # Base risk by action type
         base_risks = {
@@ -187,7 +185,7 @@ class RiskGovernor:
             "approved": assessment.residual_risk.value < RiskLevel.HIGH.value,
         }
 
-    def get_risk_summary(self) -> dict[str, Any]:
+    def get_risk_summary(self) -> Dict[str, Any]:
         """Get summary of all risk assessments."""
         if not self.assessments:
             return {"status": "no_assessments"}
@@ -242,7 +240,7 @@ class RiskGovernor:
         assessments_file = self.data_dir / "risk_assessments.json"
         data = {
             "assessments": [a.to_dict() for a in self.assessments.values()],
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         assessments_file.write_text(json.dumps(data, indent=2))
 
@@ -250,7 +248,7 @@ class RiskGovernor:
         """List all risk assessments."""
         return [a.to_dict() for a in self.assessments.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get governor status."""
         summary = self.get_risk_summary()
         critical = sum(1 for a in self.assessments.values() if a.risk_level == RiskLevel.CRITICAL)

@@ -1,19 +1,19 @@
 /**
  * AMOS Background Agents Component
- * 
+ *
  * #1 on RedMonk 2025 "10 Things Developers Want"
- * 
+ *
  * The promise of "fire and forget" has captured the developer imagination.
- * Developers want to queue up tasks, let agents work in the background 
+ * Developers want to queue up tasks, let agents work in the background
  * or even overnight, and return to review completed pull requests.
- * 
- * As Addy Osmani writes: "Imagine coming into work to find overnight AI PRs 
+ *
+ * As Addy Osmani writes: "Imagine coming into work to find overnight AI PRs
  * for all the refactoring tasks you queued up – ready for your review."
- * 
- * Simon Willison's "parallel coding agent lifestyle" - supervise multiple 
- * AI "developers" working simultaneously rather than being tethered to a 
+ *
+ * Simon Willison's "parallel coding agent lifestyle" - supervise multiple
+ * AI "developers" working simultaneously rather than being tethered to a
  * single synchronous assistant.
- * 
+ *
  * Features:
  * - Task queue management
  * - Parallel agent orchestration
@@ -207,8 +207,8 @@ export const BackgroundAgents: React.FC = () => {
   const totalProgress = tasks.reduce((sum, t) => sum + t.progress, 0) / tasks.length;
 
   // Filter tasks
-  const filteredTasks = filter === 'all' 
-    ? tasks 
+  const filteredTasks = filter === 'all'
+    ? tasks
     : tasks.filter(t => t.status === filter);
 
   // Create new task
@@ -235,7 +235,7 @@ export const BackgroundAgents: React.FC = () => {
 
   // Cancel task
   const cancelTask = (taskId: string) => {
-    setTasks(prev => prev.map(t => 
+    setTasks(prev => prev.map(t =>
       t.id === taskId ? { ...t, status: 'cancelled' as const } : t
     ));
   };
@@ -325,8 +325,8 @@ export const BackgroundAgents: React.FC = () => {
         <h4 style={sectionTitleStyle}>Active Agents</h4>
         <div style={agentsGridStyle}>
           {agents.map(agent => (
-            <div 
-              key={agent.id} 
+            <div
+              key={agent.id}
               style={{
                 ...agentCardStyle,
                 borderColor: getStatusColor(agent.status),
@@ -356,7 +356,7 @@ export const BackgroundAgents: React.FC = () => {
               {agent.status === 'working' && (
                 <>
                   <div style={progressBarContainerStyle}>
-                    <div 
+                    <div
                       style={{
                         ...progressBarStyle,
                         width: `${agent.progress}%`,
@@ -399,8 +399,8 @@ export const BackgroundAgents: React.FC = () => {
 
         <div style={taskListStyle}>
           {filteredTasks.map(task => (
-            <div 
-              key={task.id} 
+            <div
+              key={task.id}
               style={taskCardStyle}
               onClick={() => setSelectedTask(task)}
             >
@@ -428,7 +428,7 @@ export const BackgroundAgents: React.FC = () => {
                   {task.status === 'running' && (
                     <div style={taskProgressStyle}>
                       <div style={miniProgressContainerStyle}>
-                        <div 
+                        <div
                           style={{
                             ...miniProgressBarStyle,
                             width: `${task.progress}%`,
@@ -439,9 +439,9 @@ export const BackgroundAgents: React.FC = () => {
                     </div>
                   )}
                   {task.status === 'completed' && task.result?.prUrl && (
-                    <a 
-                      href={task.result.prUrl} 
-                      target="_blank" 
+                    <a
+                      href={task.result.prUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
                       style={prLinkStyle}
                     >
@@ -449,7 +449,7 @@ export const BackgroundAgents: React.FC = () => {
                     </a>
                   )}
                   {task.status === 'queued' && (
-                    <button 
+                    <button
                       onClick={(e) => { e.stopPropagation(); cancelTask(task.id); }}
                       style={cancelButtonStyle}
                     >
@@ -492,11 +492,11 @@ export const BackgroundAgents: React.FC = () => {
         <div style={dialogOverlayStyle}>
           <div style={dialogStyle}>
             <h4 style={dialogTitleStyle}>Queue Background Task</h4>
-            
+
             <div style={formGroupStyle}>
               <label style={labelStyle}>Task Title</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 placeholder="e.g., Refactor authentication module"
@@ -506,7 +506,7 @@ export const BackgroundAgents: React.FC = () => {
 
             <div style={formGroupStyle}>
               <label style={labelStyle}>Description</label>
-              <textarea 
+              <textarea
                 value={newTaskDescription}
                 onChange={(e) => setNewTaskDescription(e.target.value)}
                 placeholder="Describe what the agent should do..."
@@ -551,7 +551,7 @@ export const BackgroundAgents: React.FC = () => {
 
             <div style={detailContentStyle}>
               <p style={detailDescriptionStyle}>{selectedTask.description}</p>
-              
+
               <div style={detailStatsStyle}>
                 <div style={detailStatStyle}>
                   <span style={detailStatLabelStyle}>Status</span>
@@ -581,9 +581,9 @@ export const BackgroundAgents: React.FC = () => {
                 <div style={detailResultStyle}>
                   <h5 style={detailResultTitleStyle}>Result</h5>
                   <p style={detailResultSummaryStyle}>{selectedTask.result.summary}</p>
-                  
+
                   {selectedTask.result.prUrl && (
-                    <a 
+                    <a
                       href={selectedTask.result.prUrl}
                       target="_blank"
                       rel="noopener noreferrer"

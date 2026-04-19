@@ -14,7 +14,7 @@ Key concepts:
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -27,9 +27,11 @@ class Event:
     source: str
     target: str
     timestamp: datetime
-    payload: dict[str, Any]
-    outcome: Optional[str] = None
-    event_id: str = field(default_factory=lambda: f"evt_{datetime.utcnow().timestamp()}")
+    payload: Dict[str, Any]
+    outcome: str = None
+    event_id: str = field(
+        default_factory=lambda: f"evt_{int(datetime.now(UTC).timestamp() * 1000)}"
+    )
 
     def to_dict(self) -> dict:
         return {
@@ -48,9 +50,9 @@ class TemporalState:
     """A state at a specific point in time."""
 
     timestamp: datetime
-    state_data: dict[str, Any]
-    event_id: Optional[str] = None
-    branch_id: Optional[str] = None
+    state_data: Dict[str, Any]
+    event_id: str = None
+    branch_id: str = None
 
     def distance_to(self, other: "TemporalState") -> float:
         """Compute state distance (simplified)."""
@@ -80,8 +82,8 @@ class TemporalPath:
     """A path through time with multiple states."""
 
     path_id: str
-    states: list[TemporalState]
-    events: list[Event]
+    states: List[TemporalState]
+    events: List[Event]
 
     # Path metrics
     goal_distance: float = 0.0
@@ -92,9 +94,9 @@ class TemporalPath:
 
     def __post_init__(self):
         if not self.path_id:
-            self.path_id = f"path_{datetime.utcnow().timestamp()}"
+            self.path_id = f"path_{datetime.now(UTC).timestamp()}"
 
-    def compute_metrics(self, goal_state: dict[str, Any]):
+    def compute_metrics(self, goal_state: Dict[str, Any]):
         """Compute path quality metrics."""
         if not self.states:
             return
@@ -149,7 +151,7 @@ class EventStore:
     """
 
     def __init__(self):
-        self.events: list[Event] = []
+        self.events: List[Event] = []
         self.event_index: dict[str, list[Event]] = defaultdict(list)
 
     def append(self, event: Event):
@@ -163,13 +165,13 @@ class EventStore:
 
     def get_events(
         self,
-        event_type: Optional[str] = None,
-        source: Optional[str] = None,
-        target: Optional[str] = None,
-        after: Optional[datetime] = None,
-        before: Optional[datetime] = None,
+        event_type: str = None,
+        source: str = None,
+        target: str = None,
+        after: datetime = None,
+        before: datetime = None,
         limit: int = 100,
-    ) -> list[Event]:
+    ) -> List[Event]:
         """Query events by criteria."""
         candidates = self.events
 
@@ -189,13 +191,13 @@ class EventStore:
 
         return candidates[-limit:]  # Most recent
 
-    def replay(self, start_time: Optional[datetime] = None) -> list[Event]:
+    def replay(self, start_time: datetime = None) -> List[Event]:
         """Replay events from a point in time."""
         if start_time is None:
             return self.events.copy()
         return [e for e in self.events if e.timestamp >= start_time]
 
-    def get_state_at(self, timestamp: datetime) -> dict[str, Any]:
+    def get_state_at(self, timestamp: datetime) -> Dict[str, Any]:
         """Reconstruct state at a specific time by replaying events."""
         state = {}
         relevant_events = [e for e in self.events if e.timestamp <= timestamp]
@@ -219,17 +221,17 @@ class TimeEngine:
     def __init__(self):
         self.event_store = EventStore()
         self.present: Optional[TemporalState] = None
-        self.future_projections: list[TemporalPath] = []
-        self.past_states: list[TemporalState] = []
-        self.recovery_points: list[datetime] = []  # Snapshots for rollback
+        self.future_projections: List[TemporalPath] = []
+        self.past_states: List[TemporalState] = []
+        self.recovery_points: List[datetime] = []  # Snapshots for rollback
 
         # Temporal parameters
         self.gamma = 0.95  # Discount factor for future rewards
         self.planning_horizon = 10  # Steps to look ahead
 
-    def observe_present(self, state_data: dict[str, Any]):
+    def observe_present(self, state_data: Dict[str, Any]):
         """Record current present state."""
-        self.present = TemporalState(timestamp=datetime.utcnow(), state_data=state_data)
+        self.present = TemporalState(timestamp=datetime.now(UTC), state_data=state_data)
 
         # Archive previous present to past
         if self.past_states:
@@ -250,7 +252,7 @@ class TimeEngine:
         )
         self.event_store.append(event)
 
-    def project_future(self, possible_actions: list[dict], n_paths: int = 3) -> list[TemporalPath]:
+    def project_future(self, possible_actions: List[dict], n_paths: int = 3) -> List[TemporalPath]:
         """Generate possible future paths.
 
         Path* = argmin[GoalDistance(path) + Risk(path) + Drift(path) - Coherence(path)]
@@ -273,7 +275,7 @@ class TimeEngine:
         events = []
 
         # Simulate action execution
-        current_time = datetime.utcnow()
+        current_time = datetime.now(UTC)
 
         # Action event
         action_event = Event(
@@ -339,7 +341,7 @@ class TimeEngine:
 
         return new_state
 
-    def select_optimal_path(self, goal_state: dict[str, Any]) -> Optional[TemporalPath]:
+    def select_optimal_path(self, goal_state: Dict[str, Any]) -> Optional[TemporalPath]:
         """Select optimal temporal path.
 
         Path* = argmin[GoalDistance + Risk + Drift - Coherence]
@@ -362,7 +364,7 @@ class TimeEngine:
 
     def create_recovery_point(self, label: str = "") -> datetime:
         """Create a snapshot for potential rollback."""
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(UTC)
         self.recovery_points.append(timestamp)
 
         event = Event(
@@ -376,7 +378,7 @@ class TimeEngine:
 
         return timestamp
 
-    def rollback_to(self, recovery_point: datetime) -> Optional[dict]:
+    def rollback_to(self, recovery_point: datetime) -> dict:
         """Rollback to a previous recovery point."""
         state = self.event_store.get_state_at(recovery_point)
 
@@ -384,14 +386,14 @@ class TimeEngine:
             event_type="rollback_executed",
             source="time_engine",
             target="system",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             payload={"recovery_point": recovery_point.isoformat(), "restored_state": state},
         )
         self.event_store.append(event)
 
         return state
 
-    def get_temporal_context(self) -> dict[str, Any]:
+    def get_temporal_context(self) -> Dict[str, Any]:
         """Get complete temporal context."""
         return {
             "past_events": len(self.past_states),
@@ -401,7 +403,7 @@ class TimeEngine:
             "total_events": len(self.event_store.events),
         }
 
-    def query_past(self, query: str, n_results: int = 5) -> list[Event]:
+    def query_past(self, query: str, n_results: int = 5) -> List[Event]:
         """Query past events semantically."""
         # Simplified: search by event type and content
         all_events = self.event_store.events
@@ -542,7 +544,7 @@ class EventSourcing(EventStore):
             event_type=action,
             source="sourcing",
             target=data.get("target", "system"),
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             payload=data,
         )
         self.append(event)

@@ -1,7 +1,7 @@
 """AMOS Brain Cognitive Facade - Simple SDK for external use."""
 
-from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,6 +14,7 @@ from .architecture_bridge import (
     ArchitectureValidationResult,
     get_architecture_bridge,
 )
+from .canon_bridge import CanonBrainBridge, get_canon_bridge
 from .laws import GlobalLaws
 from .loader import get_brain
 from .meta_controller import get_meta_controller
@@ -66,8 +67,10 @@ class BrainClient:
         # Validate action
         valid, issues = client.validate_action("delete production database")
     """
+from __future__ import annotations
 
-    def __init__(self, repo_path: str | None = None):
+
+    def __init__(self, repo_path: str  = None):
         self.brain = get_brain()
         self.laws = GlobalLaws()
         self.processor = BrainTaskProcessor()
@@ -76,6 +79,8 @@ class BrainClient:
         self.meta = get_meta_controller()
         self.monitor = get_monitor()
         self._arch_bridge: ArchitecturalCognitionBridge | None = None
+        self._execution_bridge = None
+        self._canon_bridge: CanonBrainBridge | None = None
         self._repo_path = repo_path
 
     @property
@@ -84,6 +89,29 @@ class BrainClient:
         if self._arch_bridge is None:
             self._arch_bridge = get_architecture_bridge(self._repo_path)
         return self._arch_bridge
+
+    async def canon_bridge(self) -> CanonBrainBridge:
+        """Lazy initialization of canon bridge."""
+        if self._canon_bridge is None:
+            self._canon_bridge = await get_canon_bridge()
+        return self._canon_bridge
+
+    async def execution_bridge(self):
+        """Lazy initialization of execution bridge."""
+        if self._execution_bridge is None:
+            from .execution_bridge import get_execution_bridge
+            self._execution_bridge = await get_execution_bridge()
+        return self._execution_bridge
+
+    async def execute_code(self, code: str, language: str = "python") -> dict:
+        """Execute code with brain guidance via execution platform."""
+        bridge = await self.execution_bridge()
+        return await bridge.execute_with_brain_guidance(code, language)
+
+    async def self_heal(self, issue_description: str) -> dict:
+        """Self-heal an issue using execution platform."""
+        bridge = await self.execution_bridge()
+        return await bridge.self_heal_issue(issue_description)
 
     def get_architectural_context(self) -> ArchitecturalContext:
         """Get complete architectural context for the repository."""
@@ -103,19 +131,38 @@ class BrainClient:
         """
         return self.arch_bridge.validate(action, target_files)
 
-    def think(
-        self, query: str, domain: str = "general", require_law_compliance: bool = True
+    async def think(
+        self, query: str, domain: str = "general", require_law_compliance: bool = True,
+        use_canon_context: bool = True
     ) -> BrainResponse:
-        """Process a cognitive query through the full brain.
+        """Process a cognitive query through the full brain with Canon integration.
 
         Args:
             query: The question or task to think about
             domain: Domain context (software, science, business, etc.)
             require_law_compliance: Whether to enforce global laws
+            use_canon_context: Whether to enrich query with Canon definitions
 
         Returns:
             BrainResponse with reasoning and compliance info
         """
+        # Enrich query with Canon context if enabled
+        canon_metadata = {}
+        if use_canon_context:
+            try:
+                canon = await self.canon_bridge()
+                ctx = canon.get_context_for_domain(domain)
+                if ctx.glossary_terms:
+                    query = canon.enrich_query(query, domain)
+                    canon_metadata = {
+                        "canon_enriched": True,
+                        "canon_terms": len(ctx.glossary_terms),
+                        "canon_agents": len(ctx.applicable_agents),
+                        "canon_engines": len(ctx.relevant_engines),
+                    }
+            except Exception:
+                canon_metadata = {"canon_enriched": False}
+
         # Process through brain
         result = self.processor.process(query)
 
@@ -147,12 +194,13 @@ class BrainClient:
                 "kernels_used": result.kernels_used,
                 "rule_of_two": result.rule_of_two_check,
                 "rule_of_four": result.rule_of_four_check,
+                **canon_metadata,
             },
             domain=domain,
         )
 
     def decide(
-        self, question: str, options: list[str] | None = None, context: str = ""
+        self, question: str, options: list[str]  = None, context: str = ""
     ) -> Decision:
         """Make a decision with full cognitive analysis.
 
@@ -329,6 +377,262 @@ class BrainClient:
         except ImportError:
             return {"error": "monitoring_bridge not available"}
 
+    # =========================================================================
+    # Axiom One Civilization Substrate - New Capabilities
+    # =========================================================================
+
+    def spawn_agent(
+        self,
+        agent_class: str,
+        task_objective: str,
+        authorized_by: str = "brain_client",
+    ) -> dict[str, Any]:
+        """Spawn bounded AI agent for deterministic task execution.
+
+        Args:
+            agent_class: Type of agent (repo-debugger, patch-engineer, etc.)
+            task_objective: What the agent should accomplish
+            authorized_by: Who authorized this agent run
+
+        Returns:
+            Agent run metadata with ID and status
+        """
+        from .agent_fabric_kernel import (
+            AgentTask,
+            get_agent_fabric_kernel,
+        )
+
+        kernel = get_agent_fabric_kernel()
+
+        # Register agent
+        agent = kernel.register_agent(agent_class, authorized_by)
+
+        # Create task
+        task = AgentTask(objective=task_objective)
+
+        # Spawn run
+        run = kernel.spawn_run(agent.id, task, context={"repo_path": self._repo_path})
+
+        return {
+            "agent_id": agent.id,
+            "run_id": run.id,
+            "class": agent_class,
+            "status": run.phase,
+            "budget_max_usd": run.budget.max_usd,
+            "permissions": {
+                "tools": run.permissions.tools,
+                "read_scope": run.permissions.read_scope,
+                "write_scope": run.permissions.write_scope,
+            },
+        }
+
+    def get_agent_run(self, run_id: str) -> dict[str, Any] :
+        """Get status of agent run."""
+        from .agent_fabric_kernel import get_agent_fabric_kernel
+
+        kernel = get_agent_fabric_kernel()
+        run = kernel.get_run(run_id)
+
+        if not run:
+            return None
+
+        return {
+            "run_id": run.id,
+            "phase": run.phase,
+            "agent_class": run.agent.class_id if run.agent else None,
+            "objective": run.task.objective if run.task else None,
+            "actions_count": len(run.actions),
+            "budget_spent": run.budget.current_spend,
+            "budget_remaining": run.budget.remaining(),
+            "started_at": run.started_at.isoformat(),
+        }
+
+    def approve_agent_action(self, request_id: str, approved_by: str) -> bool:
+        """Approve pending agent action."""
+        from .agent_fabric_kernel import get_agent_fabric_kernel
+
+        kernel = get_agent_fabric_kernel()
+        return kernel.approve_action(request_id, approved_by)
+
+    def autopsy_repo(
+        self,
+        failure_type: str,
+        priority: str = "p2",
+    ) -> dict[str, Any]:
+        """Start automatic repo debugging (Repo Autopsy).
+
+        Args:
+            failure_type: Type of failure (build_failure, test_failure, etc.)
+            priority: Priority level (p0, p1, p2, p3)
+
+        Returns:
+            Autopsy session metadata
+        """
+        from .repo_autopsy_engine import (
+            AutopsyRequest,
+            AutopsyRequestType,
+            get_repo_autopsy_engine,
+        )
+
+        engine = get_repo_autopsy_engine()
+
+        # Map string to enum
+        request_type = AutopsyRequestType.BUILD_FAILURE
+        try:
+            request_type = AutopsyRequestType(failure_type)
+        except ValueError:
+            pass  # Use default
+
+        request = AutopsyRequest(
+            type=request_type,
+            repo_path=self._repo_path or ".",
+            trigger_source="manual",
+            priority=priority,
+        )
+
+        session = asyncio.get_event_loop().run_until_complete(
+            engine.start_autopsy(request)
+        )
+
+        return {
+            "session_id": session.request.id,
+            "type": failure_type,
+            "phase": session.phase.value,
+            "patterns_found": len(session.identified_patterns),
+            "fault_locations": len(session.fault_locations),
+        }
+
+    def get_autopsy_report(self, session_id: str) -> dict[str, Any] :
+        """Get autopsy report for completed session."""
+        from .repo_autopsy_engine import get_repo_autopsy_engine
+
+        engine = get_repo_autopsy_engine()
+        session = engine.get_session(session_id)
+
+        if not session or not session.report:
+            return None
+
+        report = session.report
+        return {
+            "session_id": session_id,
+            "patterns_found": [
+                {
+                    "name": match.pattern.name,
+                    "confidence": match.confidence,
+                    "auto_repair": match.pattern.auto_repair_eligible,
+                }
+                for match in report.patterns_found
+            ],
+            "fault_locations": [
+                {"file": loc.file, "line": loc.line, "desc": loc.description}
+                for loc in report.fault_locations
+            ],
+            "proposed_fixes_count": len(report.proposed_fixes),
+            "recommended_fix": report.recommended_fix.description if report.recommended_fix else None,
+            "requires_human_review": report.requires_human_review,
+            "estimated_repair_time": report.estimated_repair_time,
+            "markdown": report.to_markdown(),
+        }
+
+    def simulate_deployment(
+        self,
+        target: str,
+        scenarios: list[dict]  = None,
+    ) -> dict[str, Any]:
+        """Run deployment impact simulation.
+
+        Args:
+            target: PR number or commit to simulate
+            scenarios: List of scenario configs (load_factor, etc.)
+
+        Returns:
+            Simulation result metadata
+        """
+        from .simulation_engine import (
+            Scenario,
+            SimulationRequest,
+            SimulationType,
+            get_simulation_engine,
+        )
+
+        engine = get_simulation_engine()
+
+        # Default scenarios
+        if not scenarios:
+            scenarios = [
+                {"name": "normal", "load_factor": 1.0},
+                {"name": "peak", "load_factor": 2.0},
+                {"name": "spike", "load_factor": 5.0},
+            ]
+
+        sim_scenarios = [
+            Scenario(
+                name=s.get("name", f"scenario_{i}"),
+                load_factor=s.get("load_factor", 1.0),
+                failure_mode=s.get("failure_mode"),
+            )
+            for i, s in enumerate(scenarios)
+        ]
+
+        request = SimulationRequest(
+            type=SimulationType.DEPLOYMENT_IMPACT,
+            target=target,
+            repo_path=self._repo_path or ".",
+            scenarios=sim_scenarios,
+            requested_by="brain_client",
+        )
+
+        result = asyncio.get_event_loop().run_until_complete(
+            engine.run_simulation(request)
+        )
+
+        # Wait briefly for initial processing
+        import time
+        time.sleep(0.5)
+
+        return {
+            "simulation_id": result.request.id,
+            "status": result.status,
+            "target": target,
+            "scenarios_count": len(sim_scenarios),
+            "confidence": result.confidence_score,
+        }
+
+    def get_simulation_result(self, simulation_id: str) -> dict[str, Any] :
+        """Get full simulation results."""
+        from .simulation_engine import get_simulation_engine
+
+        engine = get_simulation_engine()
+        result = engine.get_result(simulation_id)
+
+        if not result:
+            return None
+
+        return {
+            "simulation_id": simulation_id,
+            "status": result.status,
+            "confidence": result.confidence_score,
+            "impact": {
+                "latency_p95_change": result.impact_analysis.performance.latency_p95.change_percent,
+                "throughput_change": result.impact_analysis.performance.throughput.change_percent,
+                "error_rate_change": result.impact_analysis.performance.error_rate.change_percent,
+                "daily_cost": result.impact_analysis.costs.daily_cost,
+                "cost_change": result.impact_analysis.costs.change_percent,
+                "failure_probability": result.impact_analysis.risks.failure_probability,
+                "rollback_complexity": result.impact_analysis.risks.rollback_complexity,
+            },
+            "recommendations": [
+                {
+                    "priority": rec.priority,
+                    "category": rec.category,
+                    "description": rec.description,
+                    "confidence": rec.confidence,
+                }
+                for rec in result.recommendations
+            ],
+            "markdown": result.to_markdown() if result.status == "completed" else None,
+        }
+
     def validate_pre_commit(self) -> dict[str, Any]:
         """Validate staged files for pre-commit hook integration."""
         try:
@@ -466,7 +770,7 @@ class BrainClient:
             return {"error": "fleet_bridge not available"}
 
     def explain_decision(
-        self, decision: dict[str, Any], context: dict[str, Any] | None = None
+        self, decision: dict[str, Any], context: dict[str, Any]  = None
     ) -> dict[str, Any]:
         """Explain a decision with reasoning."""
         try:
@@ -663,7 +967,7 @@ class BrainClient:
         interface: str,
         current_state: str,
         has_replacement: bool = False,
-        sunset_date: str | None = None,
+        sunset_date: str  = None,
     ) -> dict[str, Any]:
         """Check protocol lifecycle completeness (I_protocol_lifecycle)."""
         try:
@@ -733,7 +1037,7 @@ class BrainClient:
 
     def validate_consistency_model(
         self, domain: str, declared_model: str,
-        actual_model: str | None = None, convergence_bound_ms: float | None = None
+        actual_model: str  = None, convergence_bound_ms: float  = None
     ) -> dict[str, Any]:
         """Validate consistency model declaration (I_consistency, I_eventuality)."""
         try:
@@ -771,9 +1075,9 @@ class BrainClient:
         cache_id: str,
         strategy: str,
         invalidation: str,
-        source_of_truth: str | None = None,
-        ttl_seconds: int | None = None,
-        staleness_bound_ms: int | None = None,
+        source_of_truth: str  = None,
+        ttl_seconds: int  = None,
+        staleness_bound_ms: int  = None,
     ) -> dict[str, Any]:
         """Validate cache configuration (I_cache)."""
         try:
@@ -789,7 +1093,7 @@ class BrainClient:
 
     def validate_fallback_topology(
         self, service_id: str, levels: dict[str, list[str]],
-        triggers: dict[str, str] | None = None
+        triggers: dict[str, str]  = None
     ) -> dict[str, Any]:
         """Validate fallback topology (I_fallback)."""
         try:
@@ -808,7 +1112,7 @@ class BrainClient:
         max_retry: int = 3,
         dlq_enabled: bool = False,
         deduplication: bool = False,
-        dedup_window_ms: int | None = None,
+        dedup_window_ms: int  = None,
     ) -> dict[str, Any]:
         """Validate queue configuration (I_queue)."""
         try:
@@ -824,7 +1128,7 @@ class BrainClient:
 
     def validate_idempotency(
         self, operation_id: str, idempotent: bool,
-        key_extractor: str | None = None, storage_backend: str | None = None
+        key_extractor: str  = None, storage_backend: str  = None
     ) -> dict[str, Any]:
         """Validate idempotency configuration (I_idempotency)."""
         try:
@@ -877,7 +1181,7 @@ class BrainClient:
         self, service_id: str, dr_enabled: bool, multi_region: bool,
         backup_frequency_hours: int, failover_automated: bool,
         estimated_failover_minutes: int, estimated_rpo_minutes: int,
-        data_sync_mode: str, last_dr_test: str | None = None
+        data_sync_mode: str, last_dr_test: str  = None
     ) -> dict[str, Any]:
         """Validate disaster recovery capability (I_disaster_recovery)."""
         try:
@@ -910,7 +1214,7 @@ class BrainClient:
 
     def validate_failure_domain(
         self, domain_id: str, domain_type: str, components: list[str],
-        isolation_score: float, dependencies: list[str] | None = None
+        isolation_score: float, dependencies: list[str]  = None
     ) -> dict[str, Any]:
         """Validate failure domain isolation (I_isolation)."""
         try:
@@ -1177,7 +1481,19 @@ def validate(action: str) -> tuple[bool, list[str]]:
     return client.validate_action(action)
 
 
-def decide(question: str, options: list[str] | None = None) -> Decision:
+def decide(question: str, options: list[str]  = None) -> Decision:
     """Quick decision function."""
     client = BrainClient()
     return client.decide(question, options)
+
+
+async def execute(code: str, language: str = "python") -> dict[str, Any]:
+    """Quick execution function with brain guidance."""
+    client = BrainClient()
+    return await client.execute_code(code, language)
+
+
+async def heal(issue_description: str) -> dict[str, Any]:
+    """Quick self-healing function."""
+    client = BrainClient()
+    return await client.self_heal(issue_description)

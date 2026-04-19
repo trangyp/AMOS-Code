@@ -1,15 +1,19 @@
 """AMOS Brain Cognitive Monitor - Observability and monitoring system."""
 
-from __future__ import annotations
 
 import json
+import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .laws import GlobalLaws
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -47,6 +51,8 @@ class CognitiveMonitor:
     5. Alerting system
     6. Decision audit logging
     """
+from __future__ import annotations
+
 
     def __init__(self, storage_path: Path | None = None):
         self.storage_path = storage_path or Path.home() / ".amos_brain" / "monitor"
@@ -309,7 +315,7 @@ class CognitiveMonitor:
 
         return anomalies
 
-    def get_alerts(self, acknowledged: bool | None = None) -> list[Alert]:
+    def get_alerts(self, acknowledged: bool  = None) -> list[Alert]:
         """Get alerts, optionally filtered."""
         if acknowledged is None:
             return self._alerts
@@ -359,17 +365,11 @@ class CognitiveMonitor:
         for hook in self._hooks:
             try:
                 hook(event_type, *data)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Hook execution failed: {e}")
 
 
-# Global monitor instance
-_monitor_instance: CognitiveMonitor | None = None
-
-
+@lru_cache(maxsize=1)
 def get_monitor() -> CognitiveMonitor:
-    """Get or create global monitor instance."""
-    global _monitor_instance
-    if _monitor_instance is None:
-        _monitor_instance = CognitiveMonitor()
-    return _monitor_instance
+    """Get or create global monitor instance (singleton)."""
+    return CognitiveMonitor()

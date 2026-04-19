@@ -9,8 +9,6 @@ Validates:
 - Entrypoint functions have correct signatures
 """
 
-from __future__ import annotations
-
 import ast
 import subprocess
 import sys
@@ -35,7 +33,7 @@ class EntrypointIssue:
     module_path: str
     function_name: str
     error: str
-    fix_suggestion: str | None = None
+    fix_suggestion: str = None
 
 
 class EntrypointAnalyzer:
@@ -45,10 +43,10 @@ class EntrypointAnalyzer:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.issues: list[EntrypointIssue] = []
+        self.issues: List[EntrypointIssue] = []
         self.entrypoints: dict[str, tuple[str, str]] = {}  # name -> (module, function)
 
-    def analyze(self) -> list[EntrypointIssue]:
+    def analyze(self) -> List[EntrypointIssue]:
         """Run full entrypoint analysis."""
         self.issues = []
         self.entrypoints = {}
@@ -170,7 +168,7 @@ class EntrypointAnalyzer:
                 )
             )
 
-    def test_entrypoint(self, name: str) -> tuple[bool, str]:
+    def test_entrypoint(self, name: str) -> Tuple[bool, str]:
         """
         Test if an entrypoint can be imported.
         Returns (success, error_message).

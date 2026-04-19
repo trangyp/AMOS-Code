@@ -3,8 +3,6 @@
 IR_AMOS = CIR ⊕ QIR ⊕ BIR ⊕ HIR
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 
 # =============================================================================
@@ -19,8 +17,8 @@ class CIR:
     CIR = ⟨Blocks, Ops, Effects, Guards⟩
     """
 
-    blocks: list[CIRBlock] = field(default_factory=list)
-    effects: list[str] = field(default_factory=list)
+    blocks: List[CIRBlock] = field(default_factory=list)
+    effects: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -28,7 +26,7 @@ class CIRBlock:
     """CIR Basic Block."""
 
     name: str = ""
-    ops: list[CIROp] = field(default_factory=list)
+    ops: List[CIROp] = field(default_factory=list)
     guard: CIRGuard = field(default_factory=lambda: CIRGuard())
 
 
@@ -37,7 +35,7 @@ class CIROp:
     """CIR Operation."""
 
     opcode: str = ""
-    operands: list[str] = field(default_factory=list)
+    operands: List[str] = field(default_factory=list)
     result: str = ""
 
 
@@ -61,10 +59,10 @@ class QIR:
     QIR = ⟨Registers, Gates, Measures, Constraints⟩
     """
 
-    registers: list[QIRRegister] = field(default_factory=list)
-    gates: list[QIRGate] = field(default_factory=list)
-    measures: list[QIRMeasure] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
+    registers: List[QIRRegister] = field(default_factory=list)
+    gates: List[QIRGate] = field(default_factory=list)
+    measures: List[QIRMeasure] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -81,9 +79,9 @@ class QIRGate:
     """QIR Quantum Gate."""
 
     name: str = ""
-    targets: list[int] = field(default_factory=list)
-    controls: list[int] = field(default_factory=list)
-    params: list[float] = field(default_factory=list)
+    targets: List[int] = field(default_factory=list)
+    controls: List[int] = field(default_factory=list)
+    params: List[float] = field(default_factory=list)
 
 
 @dataclass
@@ -107,10 +105,10 @@ class BIR:
     BIR = ⟨Species, Sequences, Reactions, RegulatoryRules, Rates⟩
     """
 
-    species: list[BIRSpecies] = field(default_factory=list)
-    sequences: list[BIRSequence] = field(default_factory=list)
-    reactions: list[BIRReaction] = field(default_factory=list)
-    regulations: list[BIRRegulation] = field(default_factory=list)
+    species: List[BIRSpecies] = field(default_factory=list)
+    sequences: List[BIRSequence] = field(default_factory=list)
+    reactions: List[BIRReaction] = field(default_factory=list)
+    regulations: List[BIRRegulation] = field(default_factory=list)
 
 
 @dataclass
@@ -135,8 +133,8 @@ class BIRSequence:
 class BIRReaction:
     """BIR Reaction."""
 
-    reactants: list[str] = field(default_factory=list)
-    products: list[str] = field(default_factory=list)
+    reactants: List[str] = field(default_factory=list)
+    products: List[str] = field(default_factory=list)
     rate_constant: float = 1.0
 
 
@@ -145,8 +143,8 @@ class BIRRegulation:
     """BIR Regulatory Rule."""
 
     target: str = ""
-    activators: list[str] = field(default_factory=list)
-    repressors: list[str] = field(default_factory=list)
+    activators: List[str] = field(default_factory=list)
+    repressors: List[str] = field(default_factory=list)
     basal_rate: float = 0.1
 
 
@@ -162,10 +160,10 @@ class HIR:
     HIR = ⟨Bridges, Schedules, Observations, Mappings, UncertaintyFlows⟩
     """
 
-    bridges: list[HIRBridge] = field(default_factory=list)
-    schedules: list[HIRSchedule] = field(default_factory=list)
-    observations: list[HIRObservation] = field(default_factory=list)
-    mappings: list[HIRMapping] = field(default_factory=list)
+    bridges: List[HIRBridge] = field(default_factory=list)
+    schedules: List[HIRSchedule] = field(default_factory=list)
+    observations: List[HIRObservation] = field(default_factory=list)
+    mappings: List[HIRMapping] = field(default_factory=list)
 
 
 @dataclass
@@ -186,8 +184,8 @@ class HIRSchedule:
     """HIR Execution Schedule."""
 
     name: str = ""
-    order: list[str] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
+    order: List[str] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -215,7 +213,7 @@ class HIRMapping:
 # =============================================================================
 
 
-def create_empty_ir() -> tuple[CIR, QIR, BIR, HIR]:
+def create_empty_ir() -> Tuple[CIR, QIR, BIR, HIR]:
     """Create empty IR tuple."""
     return CIR(), QIR(), BIR(), HIR()
 

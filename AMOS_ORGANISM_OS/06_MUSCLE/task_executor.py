@@ -9,13 +9,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
 
 
 @dataclass
@@ -24,7 +21,7 @@ class ExecutionResult:
 
     success: bool
     output: str
-    error: Optional[str] = None
+    error: str = None
     duration_ms: float = 0.0
     artifacts: dict[str, Any] = field(default_factory=dict)
 
@@ -47,7 +44,7 @@ class TaskExecutor:
 
     def execute_task(self, task_id: str, task_type: str, params: dict[str, Any]) -> ExecutionResult:
         """Execute a task based on its type."""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(UTC)
 
         handler = self.execution_handlers.get(task_type, self._execute_default)
 
@@ -57,7 +54,7 @@ class TaskExecutor:
             result = ExecutionResult(success=False, output="", error=str(e), duration_ms=0.0)
 
         # Calculate duration
-        end_time = datetime.utcnow()
+        end_time = datetime.now(UTC)
         duration_ms = (end_time - start_time).total_seconds() * 1000
         result.duration_ms = duration_ms
 
@@ -309,7 +306,7 @@ class AgentTaskRouter:
 
         return results
 
-    def _select_agent(self, task_type: str) -> Optional[str]:
+    def _select_agent(self, task_type: str) -> str:
         """Select appropriate agent for task type."""
         agent_map = {
             "analysis": "analyst_agent",

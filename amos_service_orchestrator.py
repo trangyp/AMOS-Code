@@ -23,15 +23,13 @@ Architecture:
 - Layer 14: Interfaces (API/CLI)
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import signal
 import sys
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -39,6 +37,7 @@ from typing import Any
 
 class ServiceStatus(Enum):
     """Service lifecycle states."""
+
     STOPPED = "stopped"
     STARTING = "starting"
     RUNNING = "running"
@@ -50,23 +49,25 @@ class ServiceStatus(Enum):
 @dataclass
 class ServiceState:
     """State of a single service."""
+
     layer: str
     name: str
     status: ServiceStatus
-    pid: int | None = None
-    start_time: float | None = None
-    last_health_check: float | None = None
+    pid: int = None
+    start_time: float = None
+    last_health_check: float = None
     health_score: float = 1.0
     error_count: int = 0
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class SystemHealth:
     """Overall system health snapshot."""
+
     timestamp: str
     overall_status: str
-    services: dict[str, ServiceState]
+    services: Dict[str, ServiceState]
     active_layers: int
     degraded_layers: int
     error_layers: int
@@ -86,29 +87,27 @@ class AMOSServiceOrchestrator:
         "05_NERVES": {"name": "Nerves", "module": "amos_event_bus"},
         "06_MUSCLE": {"name": "Muscle", "module": None},
         "07_METABOLISM": {"name": "Metabolism", "module": None},
-        "08_GROWTH": {"name": "Growth", "module": "amos_self_evolution.evolution_opportunity_detector"},
-        "09_SOCIAL": {"name": "Social", "module": "multi_agent.subagent"},
-        "10_MEMORY": {"name": "Memory", "module": "amos_memory.persistence"},
+        "08_GROWTH": {"name": "Growth", "module": None},
+        "09_SOCIAL": {"name": "Social", "module": None},
+        "10_MEMORY": {"name": "Memory", "module": None},
         "11_LEGAL": {"name": "Legal", "module": None},
         "12_ETHICS": {"name": "Ethics", "module": None},
-        "13_TIME": {"name": "Time", "module": "amos_time.temporal"},
-        "14_INTERFACES": {"name": "Interfaces", "module": "amos_api_server"},
+        "13_TIME": {"name": "Time", "module": None},
+        "14_INTERFACES": {"name": "Interfaces", "module": None},
     }
 
-    def __init__(self, root_path: Path | None = None) -> None:
+    def __init__(self, root_path: Optional[Path] = None) -> None:
         """Initialize orchestrator."""
         self.root = root_path or Path(__file__).parent
-        self.services: dict[str, ServiceState] = {}
+        self.services: Dict[str, ServiceState] = {}
         self.running = False
-        self.start_time: Optional[float] = None
+        self.start_time: float = None
         self._shutdown_event = asyncio.Event()
 
         # Initialize service states
         for layer_id, config in self.LAYERS.items():
             self.services[layer_id] = ServiceState(
-                layer=layer_id,
-                name=config["name"],
-                status=ServiceStatus.STOPPED
+                layer=layer_id, name=config["name"], status=ServiceStatus.STOPPED
             )
 
         # Setup signal handlers
@@ -133,10 +132,21 @@ class AMOSServiceOrchestrator:
 
         # Start sequence: 00, 01, 02, 03, 05, 04, 06, 07, 08, 09, 10, 11, 12, 13, 14
         start_order = [
-            "00_ROOT", "01_BRAIN", "02_SENSES", "03_IMMUNE",
-            "05_NERVES", "04_BLOOD", "06_MUSCLE", "07_METABOLISM",
-            "08_GROWTH", "09_SOCIAL", "10_MEMORY", "11_LEGAL",
-            "12_ETHICS", "13_TIME", "14_INTERFACES"
+            "00_ROOT",
+            "01_BRAIN",
+            "02_SENSES",
+            "03_IMMUNE",
+            "05_NERVES",
+            "04_BLOOD",
+            "06_MUSCLE",
+            "07_METABOLISM",
+            "08_GROWTH",
+            "09_SOCIAL",
+            "10_MEMORY",
+            "11_LEGAL",
+            "12_ETHICS",
+            "13_TIME",
+            "14_INTERFACES",
         ]
 
         for layer_id in start_order:
@@ -209,9 +219,7 @@ class AMOSServiceOrchestrator:
             if service.status == ServiceStatus.RUNNING:
                 active += 1
                 # Simulate health degradation over time
-                service.health_score = max(
-                    0.0, 1.0 - (now - (service.start_time or now)) / 3600
-                )
+                service.health_score = max(0.0, 1.0 - (now - (service.start_time or now)) / 3600)
                 service.last_health_check = now
                 total_health += service.health_score
 
@@ -234,17 +242,17 @@ class AMOSServiceOrchestrator:
         else:
             overall = "partial"
 
-        uptime = now - self.start_time if self.start_time else 0
+        uptime = now - (self.start_time or now)
 
         return SystemHealth(
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             overall_status=overall,
             services=self.services.copy(),
             active_layers=active,
             degraded_layers=degraded,
             error_layers=error,
             avg_health_score=avg_health,
-            uptime_seconds=uptime
+            uptime_seconds=uptime,
         )
 
     def _print_status(self) -> None:
@@ -264,7 +272,7 @@ class AMOSServiceOrchestrator:
             try:
                 await asyncio.wait_for(self._shutdown_event.wait(), timeout=30.0)
                 break  # Shutdown requested
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 # Periodic health check
                 health = await self.health_check()
                 if health.overall_status != "healthy":
@@ -283,13 +291,9 @@ def main() -> int:
         choices=["start", "stop", "status", "health"],
         default="start",
         nargs="?",
-        help="Orchestrator action"
+        help="Orchestrator action",
     )
-    parser.add_argument(
-        "--daemon", "-d",
-        action="store_true",
-        help="Run as daemon"
-    )
+    parser.add_argument("--daemon", "-d", action="store_true", help="Run as daemon")
 
     args = parser.parse_args()
 
@@ -307,25 +311,29 @@ def main() -> int:
         print("  AMOS BRAIN SERVICE STATUS")
         print("=" * 70)
         running = sum(
-            1 for s in orchestrator.services.values()
-            if s.status == ServiceStatus.RUNNING
+            1 for s in orchestrator.services.values() if s.status == ServiceStatus.RUNNING
         )
         print(f"\nActive Services: {running}/{len(orchestrator.LAYERS)}")
         for layer_id, service in orchestrator.services.items():
             icon = "✓" if service.status == ServiceStatus.RUNNING else "○"
-            print(f"  {icon} {layer_id}: {service.name} [{service.status.value}]")
+            print(f"  {icon} {layer_id}: {service.name} " f"[{service.status.value}]")
 
     elif args.action == "health":
         health = asyncio.run(orchestrator.health_check())
-        print(json.dumps({
-            "timestamp": health.timestamp,
-            "status": health.overall_status,
-            "active_layers": health.active_layers,
-            "degraded_layers": health.degraded_layers,
-            "error_layers": health.error_layers,
-            "avg_health_score": round(health.avg_health_score, 2),
-            "uptime_seconds": round(health.uptime_seconds, 2)
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "timestamp": health.timestamp,
+                    "status": health.overall_status,
+                    "active_layers": health.active_layers,
+                    "degraded_layers": health.degraded_layers,
+                    "error_layers": health.error_layers,
+                    "avg_health_score": round(health.avg_health_score, 2),
+                    "uptime_seconds": round(health.uptime_seconds, 2),
+                },
+                indent=2,
+            )
+        )
 
     return 0
 

@@ -1,6 +1,6 @@
 /**
  * AMOS Frontend Application - Main Entry Point
- * 
+ *
  * Integrates all 9 AMOS cognitive subsystems into a unified interface:
  * 1. ModeSwitcher - 3 cognitive modes (Seed/Growth/Full)
  * 2. ReasoningBars - L1-L3 reasoning visualization
@@ -11,7 +11,7 @@
  * 7. AMOSDashboard - Master control panel
  * 8. AgentOrchestra - Multi-agent orchestration
  * 9. AGENTSManager - AGENTS.md editor
- * 
+ *
  * Architecture: AMOS Brain 14-Layer Cognitive System
  * Design: Glassmorphism 2.0
  * Creator: Trang Phan
@@ -27,8 +27,10 @@ import { RewindCheckpoints } from './components/RewindCheckpoints';
 import { AMOSDashboard } from './components/AMOSDashboard';
 import { AgentOrchestra } from './components/AgentOrchestra';
 import { AGENTSManager } from './components/AGENTSManager';
+import { EquationDashboard } from './components/EquationDashboard';
+import { ExecutionDashboard } from './components/ExecutionDashboard';
 
-type ViewMode = 'dashboard' | 'mode' | 'reasoning' | 'mcp' | 'agents' | 'memory' | 'checkpoints' | 'orchestra' | 'agents-md';
+type ViewMode = 'dashboard' | 'mode' | 'reasoning' | 'mcp' | 'agents' | 'memory' | 'checkpoints' | 'orchestra' | 'agents-md' | 'equations' | 'execution';
 
 interface NavItem {
   id: ViewMode;
@@ -41,9 +43,11 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: '🎛️', description: 'Master control panel' },
   { id: 'mode', label: 'Cognitive Mode', icon: '🧠', description: 'Seed/Growth/Full' },
   { id: 'reasoning', label: 'Reasoning', icon: '📊', description: 'L1-L3 visualization' },
+  { id: 'equations', label: 'Equations', icon: '🔬', description: 'Equation system' },
+  { id: 'execution', label: 'Execution', icon: '🚀', description: 'Sandbox & Browser' },
   { id: 'mcp', label: 'MCP', icon: '🔌', description: 'Model Context Protocol' },
-  { id: 'agents', label: 'Background Agents', icon: '🚀', description: 'Task queue' },
-  { id: 'memory', label: 'Memory', icon: '🧠', description: '5-system memory' },
+  { id: 'agents', label: 'Background Agents', icon: '🤖', description: 'Task queue' },
+  { id: 'memory', label: 'Memory', icon: '💾', description: '5-system memory' },
   { id: 'checkpoints', label: 'Checkpoints', icon: '⏪', description: 'Time travel' },
   { id: 'orchestra', label: 'Orchestra', icon: '🎼', description: 'Multi-agent viz' },
   { id: 'agents-md', label: 'AGENTS.md', icon: '📋', description: 'Standard editor' },
@@ -60,8 +64,8 @@ const App: React.FC = () => {
       case 'seed':
         return NAV_ITEMS.filter(item => ['dashboard', 'mode', 'reasoning'].includes(item.id));
       case 'growth':
-        return NAV_ITEMS.filter(item => 
-          ['dashboard', 'mode', 'reasoning', 'mcp', 'agents', 'memory'].includes(item.id)
+        return NAV_ITEMS.filter(item =>
+          ['dashboard', 'mode', 'reasoning', 'equations', 'execution', 'mcp', 'agents', 'memory'].includes(item.id)
         );
       case 'full':
         return NAV_ITEMS;
@@ -79,6 +83,10 @@ const App: React.FC = () => {
         return <ModeSwitcher />;
       case 'reasoning':
         return <ReasoningBars />;
+      case 'equations':
+        return <EquationDashboard />;
+      case 'execution':
+        return <ExecutionDashboard />;
       case 'mcp':
         return <MCPIntegration />;
       case 'agents':
@@ -101,7 +109,7 @@ const App: React.FC = () => {
       {/* Header */}
       <header style={headerStyle}>
         <div style={headerLeftStyle}>
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             style={menuButtonStyle}
           >
@@ -129,7 +137,7 @@ const App: React.FC = () => {
           </div>
         </div>
         <div style={headerRightStyle}>
-          <button 
+          <button
             onClick={() => setCognitiveMode('seed')}
             style={{
               ...modeToggleStyle,
@@ -138,7 +146,7 @@ const App: React.FC = () => {
           >
             🌱
           </button>
-          <button 
+          <button
             onClick={() => setCognitiveMode('growth')}
             style={{
               ...modeToggleStyle,
@@ -147,7 +155,7 @@ const App: React.FC = () => {
           >
             🌿
           </button>
-          <button 
+          <button
             onClick={() => setCognitiveMode('full')}
             style={{
               ...modeToggleStyle,
@@ -168,7 +176,7 @@ const App: React.FC = () => {
               <span style={sidebarTitleStyle}>Cognitive Systems</span>
               <span style={sidebarCountStyle}>{visibleNavItems.length}/9</span>
             </div>
-            
+
             {visibleNavItems.map(item => (
               <button
                 key={item.id}
@@ -191,8 +199,8 @@ const App: React.FC = () => {
               <div style={upgradePromptStyle}>
                 <span style={upgradeIconStyle}>🔒</span>
                 <span style={upgradeTextStyle}>
-                  {cognitiveMode === 'seed' 
-                    ? '6 more systems in Growth' 
+                  {cognitiveMode === 'seed'
+                    ? '6 more systems in Growth'
                     : '3 more systems in Full'}
                 </span>
               </div>

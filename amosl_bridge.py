@@ -20,12 +20,10 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from amosl_ledger import EntryType, StateLedger, TransactionLog
 from amosl_verification import VerificationEngine
@@ -50,7 +48,7 @@ class BridgeOperation:
     source_substrate: SubstrateType
     target_substrate: SubstrateType
     operation_type: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
     timestamp: str
 
 
@@ -62,10 +60,10 @@ class BridgeResult:
     success: bool
     source_substrate: SubstrateType
     target_substrate: SubstrateType
-    result_data: dict[str, Any]
+    result_data: Dict[str, Any]
     verification_proof: str
     execution_time_ms: int
-    error: Optional[str] = None
+    error: str = None
 
 
 class SubstrateAdapter:
@@ -78,15 +76,15 @@ class SubstrateAdapter:
         """Check if this substrate can execute operation."""
         return True
 
-    def translate_in(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def translate_in(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Translate payload from bridge format to substrate format."""
         return payload
 
-    def translate_out(self, result: dict[str, Any]) -> dict[str, Any]:
+    def translate_out(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """Translate result from substrate format to bridge format."""
         return result
 
-    def execute(self, operation: str, payload: dict[str, Any]) -> dict[str, Any]:
+    def execute(self, operation: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute operation on this substrate."""
         return {"status": "simulated", "substrate": self.substrate_type.value}
 
@@ -97,7 +95,7 @@ class ClassicalAdapter(SubstrateAdapter):
     def __init__(self):
         super().__init__(SubstrateType.CLASSICAL)
 
-    def execute(self, operation: str, payload: dict[str, Any]) -> dict[str, Any]:
+    def execute(self, operation: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute on classical substrate."""
         # Simulate classical execution
         if operation == "compute":
@@ -113,7 +111,7 @@ class QuantumAdapter(SubstrateAdapter):
     def __init__(self):
         super().__init__(SubstrateType.QUANTUM)
 
-    def execute(self, operation: str, payload: dict[str, Any]) -> dict[str, Any]:
+    def execute(self, operation: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute on quantum substrate (simulated)."""
         # Simulate quantum execution
         return {"quantum_state": "superposition", "measurement": "probabilistic"}
@@ -125,7 +123,7 @@ class BiologicalAdapter(SubstrateAdapter):
     def __init__(self):
         super().__init__(SubstrateType.BIOLOGICAL)
 
-    def execute(self, operation: str, payload: dict[str, Any]) -> dict[str, Any]:
+    def execute(self, operation: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute on biological substrate (simulated)."""
         # Simulate biological execution
         return {"neural_activation": "pattern_recognized", "confidence": 0.95}
@@ -161,7 +159,7 @@ class BridgeExecutor:
         self.adapters[substrate] = adapter
 
     def execute_cross_substrate(
-        self, source: SubstrateType, target: SubstrateType, operation: str, payload: dict[str, Any]
+        self, source: SubstrateType, target: SubstrateType, operation: str, payload: Dict[str, Any]
     ) -> BridgeResult:
         """Execute operation across substrates.
 
@@ -179,9 +177,7 @@ class BridgeExecutor:
         start_time = time.time()
 
         # Create operation record
-        op_id = (
-            f"BRIDGE-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{hash(str(payload)) % 10000:04d}"
-        )
+        op_id = f"BRIDGE-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{hash(str(payload)) % 10000:04d}"
 
         # Log transaction start
         self.tx_log.begin_transaction(op_id, f"{source.value}_to_{target.value}", target.value)
@@ -263,7 +259,7 @@ class BridgeExecutor:
                 error=str(e),
             )
 
-    def get_bridge_statistics(self) -> dict[str, Any]:
+    def get_bridge_statistics(self) -> Dict[str, Any]:
         """Get bridge execution statistics."""
         # Count bridge operations from ledger
         bridge_ops = [e for e in self.ledger._entries if e.entry_type == EntryType.BRIDGE_OPERATION]

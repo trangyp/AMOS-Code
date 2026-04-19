@@ -4,14 +4,13 @@ Runs Monte Carlo simulations to evaluate decision outcomes
 with probabilistic confidence intervals.
 """
 
-from __future__ import annotations
-
 import random
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -28,10 +27,10 @@ class SimulationResult:
     confidence_95_low: float = 0.0
     confidence_95_high: float = 0.0
     success_rate: float = 0.0  # Probability of positive outcome
-    distribution: dict[str, float] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    distribution: Dict[str, float] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -42,9 +41,9 @@ class MonteCarloSimulator:
     providing confidence intervals and risk assessment.
     """
 
-    def __init__(self, data_dir: Optional[Path] = None):
+    def __init__(self, data_dir: Path | None = None):
         self.data_dir = data_dir
-        self.simulations: dict[str, SimulationResult] = {}
+        self.simulations: Dict[str, SimulationResult] = {}
 
     def run_simulation(
         self,
@@ -206,7 +205,7 @@ class MonteCarloSimulator:
 
     def recommend_decision(
         self,
-        results: dict[str, SimulationResult],
+        results: Dict[str, SimulationResult],
         criteria: str = "expected_value",  # expected_value, risk_adjusted, safety
     ) -> str:
         """Recommend best strategy based on simulation results."""
@@ -234,7 +233,7 @@ class MonteCarloSimulator:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored[0][0] if scored else ""
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get simulator status."""
         return {
             "total_simulations": len(self.simulations),
@@ -242,10 +241,10 @@ class MonteCarloSimulator:
         }
 
 
-_SIMULATOR: Optional[MonteCarloSimulator] = None
+_SIMULATOR: MonteCarloSimulator | None = None
 
 
-def get_monte_carlo_simulator(data_dir: Optional[Path] = None) -> MonteCarloSimulator:
+def get_monte_carlo_simulator(data_dir: Path | None = None) -> MonteCarloSimulator:
     """Get or create global Monte Carlo simulator."""
     global _SIMULATOR
     if _SIMULATOR is None:

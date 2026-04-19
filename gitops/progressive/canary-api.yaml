@@ -1,0 +1,115 @@
+# Flagger Canary Configuration for AMOS API
+# Progressive delivery with automated rollback
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: amos-api
+  namespace: amos-prod
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: amos-api
+  service:
+    port: 8080
+    gateways:
+      - traefik-gateway
+    hosts:
+      - api.amos.ai
+  analysis:
+    # Canary analysis schedule
+    interval: 1m
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+
+    # Success rate metric (99% required)
+    metrics:
+      - name: request-success-rate
+        interval: 1m
+        thresholdRange:
+          min: 99
+
+      - name: request-duration
+        interval: 1m
+        thresholdRange:
+          max: 500
+
+      - name: error-rate
+        interval: 1m
+        thresholdRange:
+          max: 1
+
+    # Automated rollback on failure
+    webhooks:
+      - name: load-test
+        type: pre-rollout
+        url: http://flagger-loadtester.test/
+        timeout: 30s
+        metadata:
+          cmd: "hey -z 1m -q 10 -c 2 http://amos-api-canary.amos-prod:8080/health"
+
+      - name: conformance-test
+        type: pre-rollout
+        url: http://flagger-loadtester.test/
+        timeout: 5m
+        metadata:
+          type: bash
+          cmd: "curl -sf http://amos-api-canary.amos-prod:8080/api/v1/health"
+
+      - name: promotion-gate
+        type: confirm-promotion
+        url: http://flagger-loadtester.test/gate/check
+        timeout: 10m
+
+      - name: rollback
+        type: rollback
+        url: http://flagger-loadtester.test/rollback
+        timeout: 10s
+
+  # Blue/Green or Canary
+  provider: traefik
+
+  # Skip analysis for hotfixes
+  skipAnalysis: false
+
+  # Progressive rollout steps
+  canary:
+    # Phase 1: 10% traffic
+    - weight: 10
+      metrics:
+        thresholdRange:
+          min: 99
+      interval: 5m
+
+    # Phase 2: 25% traffic
+    - weight: 25
+      metrics:
+        thresholdRange:
+          min: 99.5
+      interval: 5m
+
+    # Phase 3: 50% traffic
+    - weight: 50
+      metrics:
+        thresholdRange:
+          min: 99.9
+      interval: 10m
+
+    # Phase 4: 100% traffic (promotion)
+    - weight: 100
+      interval: 1m
+
+  # A/B testing (optional)
+  abTesting:
+    enabled: false
+    match:
+      - headers:
+          x-canary:
+            exact: "insider"
+      - cookies:
+          canary:
+            exact: "always"
+
+  # Mirror traffic for testing (optional)
+  mirror: false

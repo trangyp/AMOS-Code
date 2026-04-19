@@ -1,7 +1,5 @@
 """AMOS Strategy/Game Theory Engine - Strategic planning and game theory."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,9 +12,9 @@ class StrategyAnalysis:
 
     domain: str
     input_data: str
-    findings: list[dict]
+    findings: List[dict]
     confidence: float
-    limitations: list[str]
+    limitations: List[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -64,7 +62,7 @@ class GameNormalFormKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get game primitives for category."""
         primitives = {
             "players": ["player", "strategy", "payoff", "information_set"],
@@ -119,7 +117,7 @@ class GameDynamicalKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get dynamical primitives for category."""
         primitives = {
             "repeated_games": ["stage_game", "discount_factor", "continuation_value"],
@@ -195,7 +193,7 @@ class NegotiationKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get negotiation primitives for category."""
         primitives = {
             "bargaining": ["offer", "counteroffer", "zone_of_agreement"],
@@ -218,7 +216,7 @@ class AMOSStrategyEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: dict[str, Any] = {}
+        self.kernels: Dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -229,7 +227,7 @@ class AMOSStrategyEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
+        domains: Optional[List[str]] = None,
     ) -> dict[str, StrategyAnalysis]:
         """Run strategy/game analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
@@ -242,7 +240,7 @@ class AMOSStrategyEngine:
 
         return results
 
-    def get_findings_summary(self, results: dict[str, StrategyAnalysis]) -> str:
+    def get_findings_summary(self, results: Dict[str, StrategyAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Strategy/Game Theory Analysis Summary",
@@ -327,7 +325,7 @@ class AMOSStrategyEngine:
 
 
 # Singleton
-_strategy_engine: AMOSStrategyEngine | None = None
+_strategy_engine: Optional[AMOSStrategyEngine] = None
 
 
 def get_strategy_engine() -> AMOSStrategyEngine:
@@ -340,7 +338,7 @@ def get_strategy_engine() -> AMOSStrategyEngine:
 
 def analyze_strategy(
     description: str,
-    domains: list[str] | None = None,
+    domains: Optional[List[str]] = None,
 ) -> dict[str, StrategyAnalysis]:
     """Quick helper for strategy/game theory analysis."""
     return get_strategy_engine().analyze(description, domains)

@@ -9,8 +9,6 @@ Responsible for:
 - Predictive modeling
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from collections import defaultdict
@@ -18,7 +16,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.world_model")
@@ -63,7 +61,7 @@ class WorldObject:
     name: str
     object_type: ObjectType
     position: Position = field(default_factory=Position)
-    properties: dict[str, Any] = field(default_factory=dict)
+    properties: Dict[str, Any] = field(default_factory=dict)
     relationships: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     created_at: str = ""
     last_updated: str = ""
@@ -71,7 +69,7 @@ class WorldObject:
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         if not self.last_updated:
             self.last_updated = self.created_at
 
@@ -82,10 +80,10 @@ class Context:
 
     context_id: str
     timestamp: str
-    active_objects: list[str] = field(default_factory=list)
+    active_objects: List[str] = field(default_factory=list)
     spatial_relations: list[tuple[str, str, SpatialRelation]] = field(default_factory=list)
-    environmental_state: dict[str, Any] = field(default_factory=dict)
-    inferred_facts: list[str] = field(default_factory=list)
+    environmental_state: Dict[str, Any] = field(default_factory=dict)
+    inferred_facts: List[str] = field(default_factory=list)
 
 
 class WorldModelKernel:
@@ -104,10 +102,10 @@ class WorldModelKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Object registry
-        self.objects: dict[str, WorldObject] = {}
+        self.objects: Dict[str, WorldObject] = {}
 
         # Context history
-        self.contexts: list[Context] = []
+        self.contexts: List[Context] = []
         self.max_contexts = 100
 
         # Current context
@@ -134,11 +132,11 @@ class WorldModelKernel:
         name: str,
         object_type: ObjectType,
         position: Optional[Position] = None,
-        properties: Optional[dict[str, Any]] = None,
+        properties: dict[str, Any] = None,
         confidence: float = 1.0,
     ) -> WorldObject:
         """Add an object to the world model."""
-        object_id = f"{object_type.name}_{name}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        object_id = f"{object_type.name}_{name}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         obj = WorldObject(
             object_id=object_id,
@@ -183,8 +181,8 @@ class WorldModelKernel:
         self,
         object_id: str,
         position: Optional[Position] = None,
-        properties: Optional[dict[str, Any]] = None,
-        confidence: Optional[float] = None,
+        properties: dict[str, Any] = None,
+        confidence: float = None,
     ) -> bool:
         """Update an object's state."""
         if object_id not in self.objects:
@@ -212,7 +210,7 @@ class WorldModelKernel:
         if confidence is not None:
             obj.confidence = confidence
 
-        obj.last_updated = datetime.utcnow().isoformat()
+        obj.last_updated = datetime.now(UTC).isoformat()
         logger.debug(f"Updated object: {object_id}")
         return True
 
@@ -235,9 +233,9 @@ class WorldModelKernel:
     def find_objects(
         self,
         object_type: Optional[ObjectType] = None,
-        name_pattern: Optional[str] = None,
-        path_prefix: Optional[str] = None,
-    ) -> list[WorldObject]:
+        name_pattern: str = None,
+        path_prefix: str = None,
+    ) -> List[WorldObject]:
         """Find objects matching criteria."""
         results = []
 
@@ -258,12 +256,12 @@ class WorldModelKernel:
 
         return results
 
-    def capture_context(self, environmental_state: Optional[dict[str, Any]] = None) -> Context:
+    def capture_context(self, environmental_state: dict[str, Any] = None) -> Context:
         """Capture current environmental context."""
-        context_id = f"ctx_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        context_id = f"ctx_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
 
         # Gather active objects (recently updated)
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         active_objects = [
             obj_id
             for obj_id, obj in self.objects.items()
@@ -283,7 +281,7 @@ class WorldModelKernel:
 
         context = Context(
             context_id=context_id,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             active_objects=active_objects,
             spatial_relations=spatial_relations,
             environmental_state=environmental_state or {},
@@ -321,7 +319,7 @@ class WorldModelKernel:
                 inferences.append(f"Directory '{path}' contains {len(obj_ids)} related objects")
 
         # Inference 2: Recently modified objects are active
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         recent_count = sum(
             1
             for obj_id in context.active_objects
@@ -333,7 +331,7 @@ class WorldModelKernel:
             inferences.append(f"{recent_count} objects modified in last minute")
 
         # Inference 3: Object type distribution
-        type_counts: dict[str, int] = defaultdict(int)
+        type_counts: Dict[str, int] = defaultdict(int)
         for obj_id in context.active_objects:
             if obj_id in self.objects:
                 type_counts[self.objects[obj_id].object_type.name] += 1
@@ -346,7 +344,7 @@ class WorldModelKernel:
 
     def predict(
         self, object_id: str, prediction_type: str = "future_state", horizon_seconds: int = 60
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Make a prediction about an object's future state."""
         if object_id not in self.objects:
             return {"error": "Object not found"}
@@ -354,7 +352,7 @@ class WorldModelKernel:
         obj = self.objects[object_id]
 
         # Simple prediction based on recent activity
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         last_update = datetime.fromisoformat(obj.last_updated)
         time_since_update = (now - last_update).total_seconds()
 
@@ -362,7 +360,7 @@ class WorldModelKernel:
             "object_id": object_id,
             "prediction_type": prediction_type,
             "horizon_seconds": horizon_seconds,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "confidence": 0.5,
         }
 
@@ -390,7 +388,7 @@ class WorldModelKernel:
 
         return prediction
 
-    def spatial_query(self, center_path: str, depth: int = 1) -> list[WorldObject]:
+    def spatial_query(self, center_path: str, depth: int = 1) -> List[WorldObject]:
         """Query objects in spatial proximity."""
         results = []
 
@@ -412,10 +410,10 @@ class WorldModelKernel:
 
         return results
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current world model state."""
         # Count by type
-        type_counts: dict[str, int] = defaultdict(int)
+        type_counts: Dict[str, int] = defaultdict(int)
         for obj in self.objects.values():
             type_counts[obj.object_type.name] += 1
 
@@ -427,10 +425,10 @@ class WorldModelKernel:
             "spatial_locations": len(self.spatial_grid),
             "predictions_active": len(self.predictions),
             "total_inferences": self.stats["inferences_drawn"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_object_graph(self) -> dict[str, Any]:
+    def get_object_graph(self) -> Dict[str, Any]:
         """Get object relationship graph."""
         return {
             "nodes": [

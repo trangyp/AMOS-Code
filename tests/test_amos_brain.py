@@ -10,8 +10,6 @@ Tests all brain components:
 Run: python -m pytest tests/test_amos_brain.py -v
 """
 
-from __future__ import annotations
-
 import os
 import sys
 import unittest

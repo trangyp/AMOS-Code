@@ -25,6 +25,7 @@ Version: 3.0.0
 
 from __future__ import annotations
 
+
 import os
 import sys
 from pathlib import Path
@@ -33,17 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 # Import core functionality from clawspring
-from clawspring import main as clawspring_main, __version__
-from clawspring import (
-    Agent,
-    ToolRegistry,
-    Memory,
-    SkillLoader,
-    SubAgent,
-    Config,
-    Context,
-    CloudSave,
-)
+from clawspring import main as clawspring_main
 
 # AMOS Branding Constants
 AMOS_VERSION = "3.0.0"
@@ -80,7 +71,7 @@ AMOS_MODES = {
 def print_amos_banner(mode: str = "seed"):
     """Print AMOS branded startup banner."""
     mode_info = AMOS_MODES.get(mode, AMOS_MODES["seed"])
-    
+
     banner = f"""
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
@@ -166,11 +157,11 @@ def print_devin_comparison():
 def amos_think(query: str) -> dict:
     """
     AMOS thinking with Rule of 2 and Rule of 4 analysis.
-    
+
     This exposes the cognitive process that Devin hides.
     """
     print(f"\n🧠 AMOS is thinking about: {query}\n")
-    
+
     # Simulate the 14-layer cognitive process
     layers_progress = {
         "L1": {"name": "Brain Loader", "progress": 100, "status": "complete"},
@@ -181,13 +172,13 @@ def amos_think(query: str) -> dict:
         "L6": {"name": "UBI Alignment", "progress": 100, "status": "complete"},
         "L7-L14": {"name": "Advanced Layers", "progress": 85, "status": "active"},
     }
-    
+
     # Print reasoning visualization
     for layer_id, info in layers_progress.items():
         bar = "█" * (info["progress"] // 5) + "░" * (20 - info["progress"] // 5)
         icon = "✓" if info["status"] == "complete" else "◐"
         print(f"  {icon} {layer_id}: [{bar}] {info['progress']}% - {info['name']}")
-    
+
     # Return structured result
     return {
         "query": query,
@@ -206,27 +197,27 @@ def main():
             print(__doc__)
             print_mode_help()
             return 0
-        
+
         if sys.argv[1] == "--modes":
             print_mode_help()
             return 0
-        
+
         if sys.argv[1] == "--vs-devin":
             print_devin_comparison()
             return 0
-        
+
         if sys.argv[1] == "--think" and len(sys.argv) > 2:
             query = " ".join(sys.argv[2:])
             result = amos_think(query)
             print(f"\n✅ Thinking complete - Confidence: {result['confidence']:.0%}")
             return 0
-    
+
     # Get mode from environment or default
     mode = os.environ.get("AMOS_MODE", "seed")
-    
+
     # Print AMOS banner
     print_amos_banner(mode)
-    
+
     # Add AMOS-specific slash commands to the agent
     original_help = """
 AMOS-specific commands:
@@ -236,7 +227,7 @@ AMOS-specific commands:
   /think <question>         Deep analysis with Rule of 2 + 4
   /vs-devin                 Show AMOS vs Devin comparison
 """
-    
+
     # Run the original clawspring main with AMOS branding
     # The clawspring banner will be replaced by our AMOS banner above
     try:

@@ -18,8 +18,6 @@ Hard no-gauge zones:
 - security sink/source path
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -31,7 +29,7 @@ class GaugeTransform:
 
     name: str
     transform: Callable[[str], str]
-    applies_to: list[str]
+    applies_to: List[str]
 
 
 class GaugeSymmetry:
@@ -50,7 +48,7 @@ class GaugeSymmetry:
     }
 
     def __init__(self):
-        self.transforms: list[GaugeTransform] = []
+        self.transforms: List[GaugeTransform] = []
         self._register_default_transforms()
 
     def _register_default_transforms(self) -> None:
@@ -119,7 +117,7 @@ class GaugeSymmetry:
         return zone in self.HARD_ZONES
 
     def check_contract_drift(
-        self, public_claim: dict[str, Any], runtime_reality: dict[str, Any]
+        self, public_claim: Dict[str, Any], runtime_reality: Dict[str, Any]
     ) -> list[dict[str, Any]]:
         """
         Check for contract drift modulo gauge symmetry.

@@ -43,7 +43,7 @@ class SystemStatus:
     knowledge_domains: int = 0
     knowledge_mb: float = 0.0
     session_id: str = ""
-    errors: list[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
 
 
 class AMOSUnifiedEnhanced:
@@ -61,7 +61,7 @@ class AMOSUnifiedEnhanced:
         self.status = SystemStatus()
         self._initialized = False
 
-    def initialize(self, auto_load_knowledge: bool = True) -> dict[str, Any]:
+    def initialize(self, auto_load_knowledge: bool = True) -> Dict[str, Any]:
         """Initialize complete AMOS ecosystem.
 
         Args:
@@ -187,7 +187,7 @@ class AMOSUnifiedEnhanced:
 
         print("\n   🎯 System integration complete!")
 
-    def _generate_status(self) -> dict[str, Any]:
+    def _generate_status(self) -> Dict[str, Any]:
         """Generate comprehensive system status."""
         print("\n" + "=" * 70)
         print("📊 SYSTEM STATUS REPORT")
@@ -257,7 +257,7 @@ class AMOSUnifiedEnhanced:
 
         return status
 
-    def think(self, problem: str, context: dict = None) -> dict[str, Any]:
+    def think(self, problem: str, context: dict = None) -> Dict[str, Any]:
         """Think about a problem with knowledge enhancement.
 
         Uses brain + knowledge for intelligent reasoning.
@@ -276,7 +276,7 @@ class AMOSUnifiedEnhanced:
         else:
             return {"error": "Brain not available"}
 
-    def query_knowledge(self, query: str, domain: str = None, limit: int = 5) -> list[dict]:
+    def query_knowledge(self, query: str, domain: str = None, limit: int = 5) -> List[dict]:
         """Query the knowledge base."""
         if not self._initialized or not self.knowledge_brain:
             return []

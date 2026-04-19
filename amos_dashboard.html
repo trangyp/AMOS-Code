@@ -256,6 +256,33 @@
             color: #667eea;
         }
 
+        .retry-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .timeout-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            color: #fbbf24;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -431,6 +458,39 @@
             }
         }
 
+        // Timeout utility with retry support
+        async function fetchWithTimeout(url, options = {}, timeoutMs = 30000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                return response;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+            }
+        }
+
+        async function fetchWithRetry(url, options = {}, maxRetries = 3, timeoutMs = 30000) {
+            let lastError;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    return await fetchWithTimeout(url, options, timeoutMs);
+                } catch (error) {
+                    lastError = error;
+                    if (attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, 1000 * attempt));
+                    }
+                }
+            }
+            throw lastError;
+        }
+
         // Load initial stats
         async function loadStats() {
             try {
@@ -458,8 +518,8 @@
             }
         }
 
-        // Ask brain
-        async function askBrain() {
+        // Ask brain with timeout and retry
+        async function askBrain(retryCount = 0) {
             const input = document.getElementById('think-input').value;
             if (!input) {
                 alert('Please enter a question');
@@ -472,15 +532,29 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading"></span> Thinking...';
             result.style.display = 'block';
-            result.innerHTML = '<pre>Analyzing with knowledge-enhanced reasoning...</pre>';
+
+            if (retryCount > 0) {
+                result.innerHTML = `<pre>Retry attempt ${retryCount}...</pre>`;
+            } else {
+                result.innerHTML = '<pre>Analyzing with knowledge-enhanced reasoning...</pre>';
+            }
+
+            // Set up timeout warning
+            const timeoutWarningId = setTimeout(() => {
+                result.innerHTML += `<div class="timeout-warning">
+                    ⏳ This is taking a long time. Click retry if it seems stuck.<br>
+                    <button class="retry-btn" onclick="askBrain(${retryCount + 1})">Retry Now</button>
+                </div>`;
+            }, 15000);
 
             try {
-                const response = await fetch(`${API_BASE}/think`, {
+                const response = await fetchWithRetry(`${API_BASE}/think`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({problem: input})
-                });
+                }, 3, 60000);
 
+                clearTimeout(timeoutWarningId);
                 const data = await response.json();
 
                 if (data.error) {
@@ -498,11 +572,15 @@ Full Result:
 ${JSON.stringify(data.result, null, 2)}</pre>`;
                 }
             } catch (error) {
+                clearTimeout(timeoutWarningId);
                 result.className = 'result-box error';
-                result.innerHTML = `<pre>Error: ${error.message}
+                const isTimeout = error.name === 'AbortError';
+                result.innerHTML = `<pre>${isTimeout ? '⏱️ Request timed out' : 'Error'}: ${error.message}
 
-Make sure the API server is running:
-python amos_api_enhanced.py</pre>`;
+${isTimeout ? 'The request took too long. ' : ''}Make sure the API server is running:
+python amos_api_enhanced.py
+
+<button class="retry-btn" onclick="askBrain(${retryCount + 1})">Retry</button></pre>`;
             }
 
             btn.disabled = false;

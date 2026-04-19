@@ -4,8 +4,6 @@ Defines the 12-dimensional integrity space basis vectors
 and the repository wavefunction.
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -159,8 +157,8 @@ class RepositoryState:
 
     timestamp: float
     amplitudes: dict[BasisVector, Amplitude] = field(default_factory=dict)
-    observables: list[ObservableRef] = field(default_factory=list)
-    mixed_state_hypotheses: list[RepositoryState] = field(default_factory=list)
+    observables: List[ObservableRef] = field(default_factory=list)
+    mixed_state_hypotheses: List[RepositoryState] = field(default_factory=list)
 
     def __post_init__(self):
         # Initialize all basis vectors if not present
@@ -176,7 +174,7 @@ class RepositoryState:
         """Set integrity coefficient for basis vector."""
         self.amplitudes[basis] = Amplitude(basis, value, confidence)
 
-    def compute_energy(self, weights: dict[BasisVector, float] | None = None) -> float:
+    def compute_energy(self, weights: dict[BasisVector, float] = None) -> float:
         """Compute repository energy E_repo(t).
 
         E_repo = Σ λk (1 - αk)²
@@ -209,7 +207,7 @@ class RepositoryState:
             total += delta**2
         return math.sqrt(total)
 
-    def collapsed_subsystems(self, threshold: float = 0.5) -> list[BasisVector]:
+    def collapsed_subsystems(self, threshold: float = 0.5) -> List[BasisVector]:
         """Return list of degraded subsystems below threshold."""
         return [basis for basis in BasisVector if self.get_amplitude(basis) < threshold]
 
@@ -241,105 +239,82 @@ class RepositoryState:
             BasisVector.TYPE: 75.0,
             BasisVector.API: 95.0,
             BasisVector.ENTRYPOINT: 90.0,
-
             # Operational layers
             BasisVector.PACKAGING: 90.0,
             BasisVector.RUNTIME: 85.0,
             BasisVector.PERSISTENCE: 70.0,
             BasisVector.STATUS: 70.0,
             BasisVector.TEST: 80.0,
-
             # Documentation and security
             BasisVector.DOCS: 45.0,
             BasisVector.SECURITY: 100.0,
             BasisVector.HISTORY: 65.0,
-
             # Meta-architecture: Law hierarchy (critical for governance)
             BasisVector.LAW_HIERARCHY: 95.0,
             BasisVector.LAW_SCOPE: 50.0,
             BasisVector.EMERGENCY_CONSTITUTION: 90.0,
-
             # Meta-architecture: Silence and semantics
             BasisVector.SILENCE: 60.0,
             BasisVector.ABSTENTION: 45.0,
             BasisVector.NEGATIVE_EVIDENCE: 40.0,
-
             # Meta-architecture: Constraint provenance
             BasisVector.CONSTRAINT_PROVENANCE: 75.0,
             BasisVector.CONSTRAINT_TAINT: 40.0,
-
             # Meta-architecture: Observer plurality
             BasisVector.OBSERVER_PLURALITY: 85.0,
             BasisVector.OBSERVER_PRECEDENCE: 35.0,
-
             # Meta-architecture: Evidence and survival
             BasisVector.EVIDENCE_SURVIVAL: 80.0,
             BasisVector.RECOVERY_EVIDENCE: 45.0,
-
             # Meta-architecture: Path and history
             BasisVector.PATH_DEPENDENCE: 65.0,
             BasisVector.NON_ERGODIC: 40.0,
-
             # Meta-architecture: Topology
             BasisVector.TOPOLOGY_REWRITE: 70.0,
             BasisVector.TOPOLOGY_NEUTRALIZE: 35.0,
-
             # Meta-architecture: Anti-objectives
             BasisVector.ANTI_OBJECTIVE: 50.0,
             BasisVector.PROXY_CAPTURE: 30.0,
-
             # Meta-architecture: Model and world
             BasisVector.MODEL_TRANSPORT: 65.0,
             BasisVector.WORLD_DRIFT: 60.0,
             BasisVector.MODEL_FEDERATION: 45.0,
-
             # Meta-architecture: Institutional
             BasisVector.LEGIBILITY: 60.0,
             BasisVector.COMMONS: 55.0,
             BasisVector.SHADOW_CONSTITUTION: 55.0,
-
             # Meta-architecture: Proof and assumption
             BasisVector.PROOF_TRANSPORT: 50.0,
             BasisVector.ASSUMPTION_VISIBILITY: 30.0,
-
             # Ultimate meta-architecture: Modality (high - governs what is allowed)
             BasisVector.MODAL_INTEGRITY: 88.0,
             BasisVector.MODAL_COLLAPSE: 82.0,
-
             # Ultimate meta-architecture: Obligation (high - duties through time)
             BasisVector.OBLIGATION_LIFECYCLE: 87.0,
             BasisVector.OBLIGATION_TRANSFER: 78.0,
             BasisVector.PROMISE_INTEGRITY: 85.0,
-
             # Ultimate meta-architecture: Memory (medium-high - what must be remembered)
             BasisVector.MEMORY_DISCIPLINE: 76.0,
             BasisVector.FORGETTING_SAFETY: 74.0,
             BasisVector.TOMBSTONE_INTEGRITY: 72.0,
-
             # Ultimate meta-architecture: Substitution (medium - semantic preservation)
             BasisVector.SUBSTITUTION_INTEGRITY: 68.0,
-
             # Ultimate meta-architecture: Counterparty (high - external obligations)
             BasisVector.COUNTERPARTY_INTEGRITY: 86.0,
             BasisVector.EXTERNALITY_BOUNDEDNESS: 84.0,
             BasisVector.RECIPROCITY_INTEGRITY: 80.0,
-
             # Ultimate meta-architecture: Narrative (medium - story coherence)
             BasisVector.NARRATIVE_COHERENCE: 62.0,
             BasisVector.EXPLAINABILITY: 64.0,
-
             # Ultimate meta-architecture: Undecidability (medium - truth bounds)
             BasisVector.UNDECIDABILITY_AWARENESS: 58.0,
             BasisVector.SPECIFICATION_COMPLETENESS: 56.0,
-
             # Ultimate meta-architecture: Bootstrap (high - foundation integrity)
             BasisVector.BOOTSTRAP_INTEGRITY: 92.0,
             BasisVector.ANCHOR_SUCCESSION: 88.0,
-
             # Ultimate meta-architecture: Ecology (medium - external adaptation)
             BasisVector.ECOLOGICAL_AWARENESS: 54.0,
             BasisVector.MORAL_HAZARD_RESISTANCE: 52.0,
-
             # Ultimate meta-architecture: Retroactivity (high - backward change safety)
             BasisVector.RETROACTIVITY_SAFETY: 90.0,
         }
@@ -365,4 +340,4 @@ class ObservableRef:
     observable_id: str
     kind: str
     severity: float
-    basis_affected: list[BasisVector]
+    basis_affected: List[BasisVector]

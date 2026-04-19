@@ -1,0 +1,35 @@
+apiVersion: v2
+name: amos-engines
+description: AMOS Engines - Temporal, Field, Safety, Integration
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+keywords:
+  - amos
+  - temporal
+  - field-dynamics
+  - safety
+  - integration
+  - workflow
+  - simulation
+home: https://github.com/amos-project/amos-engines
+sources:
+  - https://github.com/amos-project/amos-engines
+dependencies:
+  - name: redis
+    version: 17.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+    tags:
+      - cache
+  - name: prometheus
+    version: 19.x.x
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: prometheus.enabled
+    tags:
+      - monitoring
+maintainers:
+  - name: AMOS Team
+    email: team@amos.io
+annotations:
+  category: Infrastructure

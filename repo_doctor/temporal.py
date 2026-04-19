@@ -9,8 +9,6 @@ Drift: ΔΨ(t) = |Ψ_repo(t)⟩ - |Ψ_repo(t-1)⟩
 First bad commit: t*_k = min t such that I_k(t-1)=1 and I_k(t)=0
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -24,8 +22,8 @@ class TemporalDrift:
     commit_hash: str
     timestamp: str
     drift_norm: float
-    affected_dimensions: list[str]
-    delta_amplitudes: dict[str, float]
+    affected_dimensions: List[str]
+    delta_amplitudes: Dict[str, float]
 
 
 class TemporalAnalyzer:
@@ -39,8 +37,8 @@ class TemporalAnalyzer:
 
     def compute_drift(
         self,
-        prev_state: dict[str, float],
-        curr_state: dict[str, float],
+        prev_state: Dict[str, float],
+        curr_state: Dict[str, float],
     ) -> float:
         """
         Compute drift norm: ||ΔΨ|| = sqrt(Σk (Δαk)²)

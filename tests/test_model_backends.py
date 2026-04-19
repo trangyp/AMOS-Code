@@ -7,7 +7,6 @@ Tests cover:
 - Error handling and message quality
 """
 
-from __future__ import annotations
 
 import os
 import sys
@@ -186,6 +185,7 @@ class TestOpenAICompatibleBackend(unittest.TestCase):
     def test_health_check_vllm_port(self, mock_session_class):
         """Test health check provides vLLM specific help."""
         import requests
+from typing import Set
 
         mock_session = MagicMock()
         mock_session.get.side_effect = requests.ConnectionError()

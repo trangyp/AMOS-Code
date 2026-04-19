@@ -1,7 +1,5 @@
 """Plugin loader: discover and load tools/skills/mcp from installed plugins."""
 
-from __future__ import annotations
-
 import importlib.util
 import sys
 from pathlib import Path
@@ -10,16 +8,16 @@ from .store import list_plugins
 from .types import PluginEntry, PluginScope
 
 
-def load_all_plugins(scope: PluginScope | None = None) -> list[PluginEntry]:
+def load_all_plugins(scope: Optional[PluginScope] = None) -> List[PluginEntry]:
     """Return enabled plugins (optionally filtered by scope)."""
     return [p for p in list_plugins(scope) if p.enabled]
 
 
-def load_plugin_tools(scope: PluginScope | None = None) -> list[dict]:
+def load_plugin_tools(scope: Optional[PluginScope] = None) -> List[dict]:
     """Import tool modules from all enabled plugins and collect their TOOL_SCHEMAS.
     Returns combined list of tool schema dicts.
     """
-    schemas: list[dict] = []
+    schemas: List[dict] = []
     for entry in load_all_plugins(scope):
         if not entry.manifest or not entry.manifest.tools:
             continue
@@ -30,7 +28,7 @@ def load_plugin_tools(scope: PluginScope | None = None) -> list[dict]:
     return schemas
 
 
-def register_plugin_tools(scope: PluginScope | None = None) -> int:
+def register_plugin_tools(scope: Optional[PluginScope] = None) -> int:
     """Import tool modules from enabled plugins and register them into tool_registry.
     Returns number of tools registered.
     """
@@ -52,9 +50,9 @@ def register_plugin_tools(scope: PluginScope | None = None) -> int:
     return count
 
 
-def load_plugin_skills(scope: PluginScope | None = None) -> list[Path]:
+def load_plugin_skills(scope: Optional[PluginScope] = None) -> List[Path]:
     """Return paths to skill markdown files from enabled plugins."""
-    paths: list[Path] = []
+    paths: List[Path] = []
     for entry in load_all_plugins(scope):
         if not entry.manifest or not entry.manifest.skills:
             continue
@@ -65,7 +63,7 @@ def load_plugin_skills(scope: PluginScope | None = None) -> list[Path]:
     return paths
 
 
-def load_plugin_mcp_configs(scope: PluginScope | None = None) -> dict:
+def load_plugin_mcp_configs(scope: Optional[PluginScope] = None) -> dict:
     """Return mcp server configs contributed by enabled plugins."""
     configs: dict = {}
     for entry in load_all_plugins(scope):

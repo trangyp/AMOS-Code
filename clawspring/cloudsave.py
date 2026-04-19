@@ -11,8 +11,6 @@ Config keys (stored in ~/.clawspring/config.json):
   cloudsave_last_gist_id — last uploaded gist ID (for in-place update)
 """
 
-from __future__ import annotations
-
 import json
 import urllib.error
 import urllib.request
@@ -25,7 +23,7 @@ _API = "https://api.github.com"
 # ── Low-level Gist API ────────────────────────────────────────────────────────
 
 
-def _request(method: str, path: str, token: str, body: dict | None = None) -> dict:
+def _request(method: str, path: str, token: str, body: dict = None) -> dict:
     url = f"{_API}{path}"
     data = json.dumps(body).encode() if body else None
     req = urllib.request.Request(
@@ -43,7 +41,7 @@ def _request(method: str, path: str, token: str, body: dict | None = None) -> di
         return json.loads(resp.read())
 
 
-def _request_safe(method: str, path: str, token: str, body: dict | None = None):
+def _request_safe(method: str, path: str, token: str, body: dict = None):
     """Like _request but returns (result, error_str)."""
     try:
         return _request(method, path, token, body), None
@@ -61,7 +59,7 @@ def _request_safe(method: str, path: str, token: str, body: dict | None = None):
 # ── Public API ────────────────────────────────────────────────────────────────
 
 
-def validate_token(token: str) -> tuple[bool, str]:
+def validate_token(token: str) -> Tuple[bool, str]:
     """Check token is valid and has gist scope. Returns (ok, message)."""
     result, err = _request_safe("GET", "/user", token)
     if err:
@@ -77,8 +75,8 @@ def upload_session(
     session_data: dict,
     token: str,
     description: str = "",
-    gist_id: str | None = None,
-) -> tuple[str | None, str | None]:
+    gist_id: str = None,
+) -> Tuple[str, str]:
     """Create or update a Gist with the session JSON.
     Returns (gist_id, error). On success gist_id is the Gist ID.
     """
@@ -103,7 +101,7 @@ def upload_session(
     return result["id"], None
 
 
-def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str | None]:
+def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str]:
     """List Gists tagged as clawspring sessions.
     Returns (list of {id, description, updated_at, url}), error).
     """
@@ -125,7 +123,7 @@ def list_sessions(token: str, max_results: int = 20) -> tuple[list[dict], str | 
     return sessions[:max_results], None
 
 
-def download_session(token: str, gist_id: str) -> tuple[dict | None, str | None]:
+def download_session(token: str, gist_id: str) -> Tuple[dict, str]:
     """Fetch a Gist and return the parsed session JSON.
     Returns (session_data, error).
     """

@@ -22,8 +22,6 @@ Invariant checks:
 Based on 2024 Python performance monitoring best practices.
 """
 
-from __future__ import annotations
-
 import ast
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,10 +35,10 @@ class PerformanceBudget:
     """Declared performance budget for an operation."""
 
     operation: str
-    max_latency_ms: float | None = None
-    max_memory_mb: float | None = None
-    max_cpu_percent: float | None = None
-    max_startup_ms: float | None = None
+    max_latency_ms: float = None
+    max_memory_mb: float = None
+    max_cpu_percent: float = None
+    max_startup_ms: float = None
 
 
 @dataclass
@@ -51,7 +49,7 @@ class PerformanceIssue:
     severity: str
     location: str
     message: str
-    suggestion: str | None = None
+    suggestion: str = None
 
 
 class PerformanceInvariant(Invariant):
@@ -71,7 +69,7 @@ class PerformanceInvariant(Invariant):
         super().__init__("I_perf", InvariantSeverity.WARNING)
         self.budgets: list[PerformanceBudget] = []
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check performance characteristics."""
         context = context or {}
         repo = Path(repo_path)

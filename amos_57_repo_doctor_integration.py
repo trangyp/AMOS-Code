@@ -7,7 +7,7 @@ repository invariant checking for comprehensive self-governing architecture.
 
 Architecture:
 - Repo Doctor Ω∞: Repository state modeling (19 invariants, density matrix, energy)
-- AMOS 57-Component Brain: Meta-architecture governance (10 systems) + 
+- AMOS 57-Component Brain: Meta-architecture governance (10 systems) +
                            Meta-ontological layer (12 components) +
                            21-tuple formal core
 
@@ -19,12 +19,10 @@ Integration Points:
 5. Self-healing across both cognitive and repository layers
 """
 
-from __future__ import annotations
-
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -65,7 +63,7 @@ class UnifiedDecision:
     category: str = "UNKNOWN"  # REPOSITORY/ARCHITECTURAL/GOVERNANCE/INTEGRATED
 
     # Actions
-    recommended_actions: List[Dict[str, Any]] = field(default_factory=list)
+    recommended_actions: list[dict[str, Any]] = field(default_factory=list)
     auto_executable: bool = False
     requires_human_review: bool = False
 
@@ -118,9 +116,9 @@ class AMOS57RepoDoctorIntegration:
     def _init_amos_57(self) -> bool:
         """Initialize AMOS 57-Component Brain."""
         try:
+            from amos_formal_core import AMOSFormalSystem
             from amos_meta_architecture import MetaGovernance
             from amos_meta_ontological import AMOSMetaOntological
-            from amos_formal_core import AMOSFormalSystem
 
             self.meta_governance = MetaGovernance()
             self.meta_ontological = AMOSMetaOntological()
@@ -155,9 +153,7 @@ class AMOS57RepoDoctorIntegration:
         coherence = self._compute_coherence(repo_state, governance_state)
 
         # Step 5: Determine governance grade
-        grade = self._determine_governance_grade(
-            repo_state["energy"], governance_state, coherence
-        )
+        grade = self._determine_governance_grade(repo_state["energy"], governance_state, coherence)
 
         self.unified_state = UnifiedSystemState(
             repo_path=str(self.repo_path),
@@ -238,9 +234,7 @@ class AMOS57RepoDoctorIntegration:
             "coherence_requirements": {"high_availability": True},
         }
 
-    def _run_amos_governance(
-        self, inputs: Dict[str, Any]
-    ) -> Dict[str, Dict[str, Any]]:
+    def _run_amos_governance(self, inputs: Dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Run AMOS 57-Component governance on transformed inputs."""
         if not self.amos_57_available:
             return {
@@ -354,7 +348,7 @@ class AMOS57RepoDoctorIntegration:
             governance_grade="AMOS_ONLY",
         )
 
-    def make_unified_decision(self, context: Optional[Dict[str, Any]] = None) -> UnifiedDecision:
+    def make_unified_decision(self, context: dict[str, Any] = None) -> UnifiedDecision:
         """
         Make decision using both Repo Doctor invariants and AMOS governance.
 
@@ -371,8 +365,7 @@ class AMOS57RepoDoctorIntegration:
         repo_concerns = []
         if state.energy > 20:
             repo_concerns.append(f"High repository energy: {state.energy:.1f}")
-        failing = [k for k, v in state.invariant_status.items()
-                   if not v.get("passed", True)]
+        failing = [k for k, v in state.invariant_status.items() if not v.get("passed", True)]
         if failing:
             repo_concerns.append(f"Failing invariants: {failing}")
 
@@ -431,7 +424,7 @@ class AMOS57RepoDoctorIntegration:
         repo_concerns: List[str],
         gov_concerns: List[str],
         priority: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Generate recommended actions based on unified state."""
         actions = []
 
@@ -446,8 +439,7 @@ class AMOS57RepoDoctorIntegration:
                 }
             )
 
-        failing = [k for k, v in state.invariant_status.items()
-                   if not v.get("passed", True)]
+        failing = [k for k, v in state.invariant_status.items() if not v.get("passed", True)]
         if failing:
             actions.append(
                 {
@@ -564,7 +556,6 @@ if __name__ == "__main__":
     print(f"Category: {result['decision']['category']}")
     print(f"Auto-Executable: {result['decision']['auto_executable']}")
     print(f"\nRecommended Actions: {result['decision']['action_count']}")
-    for action in result['actions']:
-        print(f"  - [{action['priority']}] {action['type']}: "
-              f"{action['action']}")
+    for action in result["actions"]:
+        print(f"  - [{action['priority']}] {action['type']}: " f"{action['action']}")
     print("\n" + "=" * 70)

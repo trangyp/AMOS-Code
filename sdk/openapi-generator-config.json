@@ -1,0 +1,15 @@
+{
+  "generatorName": "python",
+  "packageName": "amos_equation_client",
+  "projectName": "amos-equation-client",
+  "packageVersion": "2.0.0",
+  "packageUrl": "https://github.com/example/amos-equation-system",
+  "library": "asyncio",
+  "useOneOfDiscriminatorLookup": true,
+  "disallowAdditionalPropertiesIfNotPresent": false,
+  "ensureUniqueParams": true,
+  "enumUnknownDefaultCase": true,
+  "hideGenerationTimestamp": true,
+  "sortParamsByRequiredFlag": true,
+  "sortModelPropertiesByRequiredFlag": true
+}

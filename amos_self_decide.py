@@ -37,13 +37,13 @@ class DecisionOutput:
     decision: str
     rationale: str
     confidence: float
-    assumptions: dict[str, Any]
-    limits: dict[str, Any]
+    assumptions: Dict[str, Any]
+    limits: Dict[str, Any]
     coherence_score: float
-    axioms_satisfied: list[str]
-    laws_applied: list[str]
+    axioms_satisfied: List[str]
+    laws_applied: List[str]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "decision": self.decision,
             "rationale": self.rationale,
@@ -161,7 +161,7 @@ class AMOSSelfDecider:
 
         return decision
 
-    def _analyze_internal(self, request: str) -> dict[str, Any]:
+    def _analyze_internal(self, request: str) -> Dict[str, Any]:
         """Internal/Technical perspective (Rule of 2)."""
         # Pattern recognition
         next_count = request.lower().count("next")
@@ -182,7 +182,7 @@ class AMOSSelfDecider:
             "components_available": 15,
         }
 
-    def _analyze_external(self, request: str) -> dict[str, Any]:
+    def _analyze_external(self, request: str) -> Dict[str, Any]:
         """External/Value perspective (Rule of 2)."""
         return {
             "assessment": (
@@ -204,7 +204,7 @@ class AMOSSelfDecider:
             "ENVIRONMENTAL": "Uses existing components, proves ecosystem integration",
         }
 
-    def _verify_axioms(self, p1: dict, p2: dict, quadrants: dict) -> list[str]:
+    def _verify_axioms(self, p1: dict, p2: dict, quadrants: dict) -> List[str]:
         """Verify epistemic axioms are satisfied."""
         axioms = []
 
@@ -231,7 +231,7 @@ class AMOSSelfDecider:
         }
 
     def _generate_decision(
-        self, p1: dict, p2: dict, quadrants: dict, axioms: list[str], laws: dict[str, str]
+        self, p1: dict, p2: dict, quadrants: dict, axioms: List[str], laws: Dict[str, str]
     ) -> DecisionOutput:
         """Generate final decision with full epistemic tagging."""
         # Based on all analysis

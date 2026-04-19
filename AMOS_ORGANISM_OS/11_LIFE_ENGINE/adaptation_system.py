@@ -4,15 +4,13 @@ Manages organism adaptation to environmental changes.
 Implements evolutionary strategies and feedback processing.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class AdaptationStrategy(Enum):
@@ -30,10 +28,10 @@ class EnvironmentFeedback:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     source: str = ""  # Subsystem or external source
     feedback_type: str = ""  # performance, error, success, demand
-    data: dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    data: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -44,14 +42,14 @@ class Adaptation:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     trigger: str = ""  # What triggered the adaptation
     strategy: AdaptationStrategy = AdaptationStrategy.DEVELOPMENTAL
-    changes: dict[str, Any] = field(default_factory=dict)
-    before_state: dict[str, Any] = field(default_factory=dict)
-    after_state: dict[str, Any] = field(default_factory=dict)
-    successful: Optional[bool] = None
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    evaluated_at: Optional[str] = None
+    changes: Dict[str, Any] = field(default_factory=dict)
+    before_state: Dict[str, Any] = field(default_factory=dict)
+    after_state: Dict[str, Any] = field(default_factory=dict)
+    successful: bool = None
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    evaluated_at: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "strategy": self.strategy.value,
@@ -71,9 +69,9 @@ class AdaptationSystem:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.feedback_queue: list[EnvironmentFeedback] = []
-        self.processed_feedback: list[EnvironmentFeedback] = []
-        self.adaptations: dict[str, Adaptation] = {}
+        self.feedback_queue: List[EnvironmentFeedback] = []
+        self.processed_feedback: List[EnvironmentFeedback] = []
+        self.adaptations: Dict[str, Adaptation] = {}
         self.adaptation_patterns: dict[str, list[str]] = {}
 
         self._init_default_patterns()
@@ -107,7 +105,7 @@ class AdaptationSystem:
         self,
         source: str,
         feedback_type: str,
-        data: dict[str, Any],
+        data: Dict[str, Any],
     ) -> EnvironmentFeedback:
         """Record feedback from environment."""
         feedback = EnvironmentFeedback(
@@ -185,7 +183,7 @@ class AdaptationSystem:
             return False
 
         adaptation.successful = successful
-        adaptation.evaluated_at = datetime.utcnow().isoformat()
+        adaptation.evaluated_at = datetime.now(UTC).isoformat()
 
         # If successful, reinforce the pattern
         if successful:
@@ -195,7 +193,7 @@ class AdaptationSystem:
         self._save_adaptations()
         return True
 
-    def auto_adapt(self) -> list[Adaptation]:
+    def auto_adapt(self) -> List[Adaptation]:
         """Process all pending feedback and auto-adapt."""
         adaptations = []
 
@@ -214,11 +212,11 @@ class AdaptationSystem:
             "adaptations": [a.to_dict() for a in self.adaptations.values()],
             "processed_feedback": [f.to_dict() for f in self.processed_feedback],
             "patterns": self.adaptation_patterns,
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         adaptations_file.write_text(json.dumps(data, indent=2))
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get adaptation system status."""
         pending = len(self.feedback_queue)
         total_adaptations = len(self.adaptations)

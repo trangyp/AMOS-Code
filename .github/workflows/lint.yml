@@ -1,0 +1,123 @@
+# AMOS Code Quality Pipeline
+# Runs linting and type checking
+# Author: Trang Phan
+
+name: Lint
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - '**.py'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - '**.py'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black mypy
+
+      - name: Run Ruff linter (Critical Bug Checks)
+        run: |
+          # Install ruff with specific version from pyproject.toml
+          pip install ruff>=0.3.0
+          # Run critical bug checks - these will FAIL the build if found
+          echo "Running critical bug detection..."
+          ruff check clawspring/ amos_brain/ amosl/ --select E9,F63,F7,F82,F841,F401,E741,S110 --output-format=github
+          echo "✓ No critical bugs detected (F841/F401/E741/S110/E9/F63/F7/F82)"
+
+      - name: Run Ruff formatter check
+        run: |
+          ruff format --check clawspring/ amos_brain/ amosl/ || true  # Non-blocking for now
+
+      - name: Run Black formatter check
+        run: |
+          black --check --diff clawspring/ amos_brain/ amosl/ || true  # Non-blocking
+
+      - name: Run MyPy type checker (Non-blocking)
+        run: |
+          # Type checking is informational only until annotations are complete
+          mypy amos_unified_system.py \
+               amos_hybrid_orchestrator.py \
+               amos_mcp_tools.py \
+               amos_auth_integration.py \
+               amos_vector_memory.py \
+               --ignore-missing-imports \
+               --warn-unreachable \
+               --warn-unused-ignores || true  # Non-blocking until type sprint
+
+  pre-commit-check:
+    name: Pre-Commit Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit install
+
+      - name: Run pre-commit hooks
+        run: |
+          # Run all hooks on all files - fails if any hook fails
+          pre-commit run --all-files --show-diff-on-failure
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [lint, pre-commit-check]
+    if: always()
+
+    steps:
+      - name: Quality Check Summary
+        run: |
+          echo "========================================"
+          echo "   AMOS CODE QUALITY GATE RESULTS"
+          echo "========================================"
+          echo ""
+          echo "Critical Bug Checks (BLOCKING):"
+          echo "  ✓ Syntax/Runtime Errors (E9,F63,F7,F82)"
+          echo "  ✓ Unused Variables (F841)"
+          echo "  ✓ Unused Imports (F401)"
+          echo "  ✓ Ambiguous Names (E741)"
+          echo "  ✓ Security Bare Except (S110)"
+          echo ""
+          echo "Pre-Commit Validation: ${{ needs.pre-commit-check.result }}"
+          echo "Lint Status: ${{ needs.lint.result }}"
+          echo ""
+          # Fail if any critical job failed
+          if [ "${{ needs.lint.result }}" == "failure" ] || [ "${{ needs.pre-commit-check.result }}" == "failure" ]; then
+            echo "❌ QUALITY GATE FAILED"
+            exit 1
+          fi
+          echo "✅ QUALITY GATE PASSED - All critical checks clear"

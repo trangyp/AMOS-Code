@@ -11,8 +11,6 @@ Usage:
     python amos.py --agent amos       # Use AMOS agent (default)
 """
 
-from __future__ import annotations
-
 import os
 import sys
 
@@ -31,6 +29,15 @@ except ImportError as e:
     print(f"[WARNING] AMOS brain not available: {e}")
     AMOS_AVAILABLE = False
 
+# Import AMOS Canon integration
+try:
+    from amos_canon_integration import initialize_canon, get_canon_loader
+
+    CANON_AVAILABLE = True
+except ImportError as e:
+    print(f"[WARNING] AMOS Canon not available: {e}")
+    CANON_AVAILABLE = False
+
 # Import clawspring components
 try:
     import clawspring
@@ -42,6 +49,8 @@ except ImportError:
     CLAWSPRING_AVAILABLE = False
     # Fallback: try importing directly
     try:
+        from typing import Set
+
         from clawspring import main as clawspring_main
         from multi_agent.subagent import get_agent_definition
 
@@ -87,6 +96,25 @@ def print_amos_banner():
 def main():
     """Run AMOS-powered ClawSpring."""
     print_amos_banner()
+
+    # Initialize Canon integration
+    if CANON_AVAILABLE:
+        import asyncio
+
+        try:
+            canon_ready = asyncio.run(initialize_canon())
+            if canon_ready:
+                canon = get_canon_loader()
+                status = canon.get_status()
+                print(
+                    f"[Canon] Loaded: {status.total_terms} terms, "
+                    f"{status.total_agents} agents, {status.total_engines} engines"
+                )
+            else:
+                print("[Canon] Not loaded")
+        except Exception as e:
+            print(f"[WARNING] Canon initialization failed: {e}")
+        print()
 
     # Set default agent to AMOS if not specified
     if CLAWSPRING_AVAILABLE and "--agent" not in sys.argv and "-a" not in sys.argv:

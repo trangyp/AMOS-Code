@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 
 @dataclass
@@ -103,9 +103,7 @@ class GlobalLaws:
             return True, f"L1 guarded: {restricted_tools[action_type]}"
         return True, "L1 compliant"
 
-    def enforce_l2_dual_check(
-        self, analysis: str, counter_analysis: str | None
-    ) -> tuple[bool, str]:
+    def enforce_l2_dual_check(self, analysis: str, counter_analysis: str) -> tuple[bool, str]:
         """Enforce Rule of 2 - require dual perspective."""
         if not counter_analysis:
             return False, "L2 violation: Single-line conclusion without dual check"

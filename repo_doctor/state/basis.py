@@ -11,8 +11,6 @@ H_repo = H_S ⊗ H_I ⊗ H_Ty ⊗ H_A ⊗ H_E ⊗ H_Pk ⊗ H_Rt ⊗ H_Ps ⊗ H_S
 |H⟩   history            |Gc⟩  generated code |Env⟩ environment
 """
 
-from __future__ import annotations
-
 from enum import Enum
 
 
@@ -510,12 +508,12 @@ class StateBasis:
         return cls.THRESHOLDS.get(dim, 0.80)
 
     @classmethod
-    def all_dimensions(cls) -> list[StateDimension]:
+    def all_dimensions(cls) -> List[StateDimension]:
         """Return all basis dimensions."""
         return list(StateDimension)
 
     @classmethod
-    def hard_fail_dimensions(cls) -> list[StateDimension]:
+    def hard_fail_dimensions(cls) -> List[StateDimension]:
         """Dimensions that cause hard failure when collapsed."""
         return [
             # Core dimensions (Phase 1-2)

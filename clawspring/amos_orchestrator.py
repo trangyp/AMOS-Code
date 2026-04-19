@@ -1,11 +1,9 @@
 """AMOS Workflow Orchestrator - Chains cognition, execution, and output."""
 
-from __future__ import annotations
-
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable
 
 from amos_execution import full_execute, get_execution_kernel
 
@@ -22,9 +20,9 @@ class WorkflowStep:
     status: str = "pending"  # pending, running, completed, failed
     input_data: dict = field(default_factory=dict)
     output_data: dict = field(default_factory=dict)
-    started_at: datetime | None = None
-    completed_at: datetime | None = None
-    error: str | None = None
+    started_at: datetime = None
+    completed_at: datetime = None
+    error: str = None
 
 
 @dataclass
@@ -33,10 +31,10 @@ class Workflow:
 
     id: str
     name: str
-    steps: list[WorkflowStep] = field(default_factory=list)
+    steps: List[WorkflowStep] = field(default_factory=list)
     status: str = "pending"
     created_at: datetime = field(default_factory=datetime.now)
-    completed_at: datetime | None = None
+    completed_at: datetime = None
     metadata: dict = field(default_factory=dict)
 
 
@@ -108,11 +106,11 @@ class AMOSWorkflowOrchestrator:
     }
 
     def __init__(self):
-        self.workflows: dict[str, Workflow] = {}
+        self.workflows: Dict[str, Workflow] = {}
         self.runtime = get_runtime()
         self.execution = get_execution_kernel()
 
-    def create_workflow(self, name: str, steps_config: list[dict]) -> Workflow:
+    def create_workflow(self, name: str, steps_config: List[dict]) -> Workflow:
         """Create a new workflow from step configurations."""
         workflow_id = str(uuid.uuid4())[:8]
         steps = []
@@ -239,7 +237,7 @@ class AMOSWorkflowOrchestrator:
 
 
 # Singleton
-_orchestrator: AMOSWorkflowOrchestrator | None = None
+_orchestrator: Optional[AMOSWorkflowOrchestrator] = None
 
 
 def get_orchestrator() -> AMOSWorkflowOrchestrator:

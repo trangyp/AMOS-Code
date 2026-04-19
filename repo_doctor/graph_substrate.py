@@ -15,8 +15,6 @@ Backends:
 - Joern: Code property graphs (AST + CFG + DDG/PDG)
 """
 
-from __future__ import annotations
-
 import json
 import subprocess
 from abc import ABC, abstractmethod
@@ -70,7 +68,7 @@ class Node:
     id: str
     type: NodeType
     label: str
-    attributes: dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -88,7 +86,7 @@ class Edge:
     source: str
     target: str
     type: EdgeType
-    attributes: dict[str, Any] = field(default_factory=dict)
+    attributes: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -113,7 +111,7 @@ class GraphBackend(ABC):
         pass
 
     @abstractmethod
-    def query(self, query: str) -> list[dict]:
+    def query(self, query: str) -> List[dict]:
         """Execute a query against the backend."""
         pass
 
@@ -125,8 +123,8 @@ class TreeSitterBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Path | None = None
-        self.parsed_files: dict[str, Any] = {}
+        self.repo_path: Optional[Path] = None
+        self.parsed_files: Dict[str, Any] = {}
 
     def is_available(self) -> bool:
         try:
@@ -161,7 +159,7 @@ class TreeSitterBackend(GraphBackend):
         except Exception:
             return False
 
-    def query(self, query: str) -> list[dict]:
+    def query(self, query: str) -> List[dict]:
         """Query parsed trees (simplified implementation)."""
         results = []
         for file_path, tree in self.parsed_files.items():
@@ -179,7 +177,7 @@ class TreeSitterBackend(GraphBackend):
                         )
         return results
 
-    def get_changed_ranges(self, old_tree, new_tree) -> list[tuple]:
+    def get_changed_ranges(self, old_tree, new_tree) -> List[tuple]:
         """
         Get changed ranges between two tree versions.
         This enables incremental analysis.
@@ -194,8 +192,8 @@ class CodeQLBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Path | None = None
-        self.database_path: Path | None = None
+        self.repo_path: Optional[Path] = None
+        self.database_path: Optional[Path] = None
 
     def is_available(self) -> bool:
         """Check if CodeQL CLI is available."""
@@ -232,7 +230,7 @@ class CodeQLBackend(GraphBackend):
         except Exception:
             return False
 
-    def query(self, query: str) -> list[dict]:
+    def query(self, query: str) -> List[dict]:
         """Execute CodeQL query against database."""
         if not self.database_path or not self.database_path.exists():
             return []
@@ -275,8 +273,8 @@ class JoernBackend(GraphBackend):
     """
 
     def __init__(self):
-        self.repo_path: Path | None = None
-        self.cpg_path: Path | None = None
+        self.repo_path: Optional[Path] = None
+        self.cpg_path: Optional[Path] = None
 
     def is_available(self) -> bool:
         """Check if joern CLI is available."""
@@ -304,7 +302,7 @@ class JoernBackend(GraphBackend):
         except Exception:
             return False
 
-    def query(self, query: str) -> list[dict]:
+    def query(self, query: str) -> List[dict]:
         """Execute Joern query against CPG."""
         if not self.cpg_path or not self.cpg_path.exists():
             return []
@@ -330,7 +328,7 @@ class ContractNode:
 
     surface: str  # e.g., "README", "tutorial", "demo", "test", "MCP schema"
     content: str
-    promises: list[str]  # What this surface promises
+    promises: List[str]  # What this surface promises
     location: str
 
 
@@ -343,7 +341,7 @@ class ContractGraph:
 
     def __init__(self, repo_path: Path):
         self.repo_path = Path(repo_path).resolve()
-        self.nodes: dict[str, ContractNode] = {}
+        self.nodes: Dict[str, ContractNode] = {}
         self.edges: list[tuple[str, str, str]] = []  # (from, to, relation)
 
     def ingest_docs(self):
@@ -362,7 +360,7 @@ class ContractGraph:
             except Exception:
                 continue
 
-    def _extract_promises(self, content: str) -> list[str]:
+    def _extract_promises(self, content: str) -> List[str]:
         """Extract promised commands/APIs from docs."""
         promises = []
         # Look for code blocks
@@ -376,7 +374,7 @@ class ContractGraph:
                 promises.append(line.strip())
         return promises
 
-    def compute_commutator(self, runtime_surface: dict) -> list[dict]:
+    def compute_commutator(self, runtime_surface: dict) -> List[dict]:
         """
         Compute commutator: [A_public, A_runtime] = A_public A_runtime - A_runtime A_public
         Returns mismatches between contract and reality.
@@ -415,16 +413,16 @@ class UnifiedGraph:
     """
 
     repo_path: Path
-    nodes: dict[str, Node] = field(default_factory=dict)
-    edges: list[Edge] = field(default_factory=list)
-    attributes: dict[str, Any] = field(default_factory=dict)
-    timestamp: float | None = None
+    nodes: Dict[str, Node] = field(default_factory=dict)
+    edges: List[Edge] = field(default_factory=list)
+    attributes: Dict[str, Any] = field(default_factory=dict)
+    timestamp: float = None
 
     # Backend instances
-    treesitter: TreeSitterBackend | None = None
-    codeql: CodeQLBackend | None = None
-    joern: JoernBackend | None = None
-    contracts: ContractGraph | None = None
+    treesitter: Optional[TreeSitterBackend] = None
+    codeql: Optional[CodeQLBackend] = None
+    joern: Optional[JoernBackend] = None
+    contracts: Optional[ContractGraph] = None
 
     def build(self) -> bool:
         """Build unified graph from all available backends."""
@@ -467,7 +465,7 @@ class UnifiedGraph:
                 id=node_id, type=NodeType.FILE, label=file_path, attributes={"parsed": True}
             )
 
-    def get_articulation_points(self) -> list[str]:
+    def get_articulation_points(self) -> List[str]:
         """
         Find articulation modules - single points of multi-layer failure.
         These deserve higher weights.

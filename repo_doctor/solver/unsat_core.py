@@ -13,8 +13,6 @@ Example:
 
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -35,11 +33,11 @@ class UnsatCoreExtractor:
     """
 
     def __init__(self):
-        self.contradictions: list[Contradiction] = []
+        self.contradictions: List[Contradiction] = []
 
     def extract_from_z3(
-        self, unsat_core: list[str], repo_state: dict[str, Any]
-    ) -> list[Contradiction]:
+        self, unsat_core: List[str], repo_state: Dict[str, Any]
+    ) -> List[Contradiction]:
         """
         Convert Z3 unsat core to human-readable contradictions.
         """
@@ -54,8 +52,8 @@ class UnsatCoreExtractor:
         return self.contradictions
 
     def _interpret_assertion(
-        self, assertion: str, repo_state: dict[str, Any]
-    ) -> Contradiction | None:
+        self, assertion: str, repo_state: Dict[str, Any]
+    ) -> Optional[Contradiction]:
         """
         Interpret a single Z3 assertion as a contradiction.
         """
@@ -102,7 +100,7 @@ class UnsatCoreExtractor:
             )
         return hints
 
-    def minimal_failing_set(self) -> list[str]:
+    def minimal_failing_set(self) -> List[str]:
         """
         Return minimal set of facts that must change to restore consistency.
         """

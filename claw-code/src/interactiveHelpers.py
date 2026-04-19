@@ -1,5 +1,2 @@
-from __future__ import annotations
-
-
-def bulletize(items: list[str]) -> str:
+def bulletize(items: List[str]) -> str:
     return "\n".join(f"- {item}" for item in items)

@@ -9,8 +9,6 @@ Resolves Python imports to verify:
 Based on Python import resolution rules (PEP 302, PEP 451).
 """
 
-from __future__ import annotations
-
 import ast
 import sys
 from dataclasses import dataclass, field
@@ -77,7 +75,7 @@ class ImportResolution:
 
     import_stmt: ImportStatement
     resolved: bool
-    target_path: Path | None = None
+    target_path: Optional[Path] = None
     is_package: bool = False
     error_message: str = ""
 

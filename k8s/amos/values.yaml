@@ -1,0 +1,344 @@
+# AMOS Helm Chart Values
+# Default values for AMOS Cognitive Operating System
+
+# Global configuration
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: ""
+
+  # Environment
+  environment: production
+
+  # Domain configuration
+  domain: amos.local
+
+  # TLS configuration
+  tls:
+    enabled: true
+    certManager:
+      enabled: true
+      issuer: "letsencrypt-prod"
+
+# Image configuration
+image:
+  repository: amos/amos
+  tag: "v2.8.0"
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: api.amos.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: amos-api
+    - host: graphql.amos.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: amos-graphql
+  tls:
+    - secretName: amos-tls
+      hosts:
+        - api.amos.local
+        - graphql.amos.local
+
+# API Server configuration
+api:
+  enabled: true
+  replicaCount: 2
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  livenessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  env:
+    - name: AMOS_MODE
+      value: "api"
+    - name: LOG_LEVEL
+      value: "info"
+    - name: DATABASE_URL
+      valueFrom:
+        secretKeyRef:
+          name: amos-db-credentials
+          key: url
+    - name: REDIS_URL
+      valueFrom:
+        secretKeyRef:
+          name: amos-redis-credentials
+          key: url
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: amos-jwt-secret
+          key: secret
+
+# GraphQL Server configuration
+graphql:
+  enabled: true
+  replicaCount: 2
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  livenessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+  readinessProbe:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+  env:
+    - name: AMOS_MODE
+      value: "graphql"
+    - name: LOG_LEVEL
+      value: "info"
+
+# WebSocket Server configuration
+websocket:
+  enabled: true
+  replicaCount: 2
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+
+  env:
+    - name: AMOS_MODE
+      value: "websocket"
+
+# Celery Worker configuration
+workers:
+  enabled: true
+  replicaCount: 3
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 60
+
+  env:
+    - name: AMOS_MODE
+      value: "worker"
+    - name: CONCURRENCY
+      value: "4"
+
+# PostgreSQL configuration (subchart)
+postgresql:
+  enabled: true
+  auth:
+    username: amos
+    database: amos
+    existingSecret: amos-db-credentials
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+  readReplicas:
+    replicaCount: 1
+
+# Redis configuration (subchart)
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    existingSecret: amos-redis-credentials
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+  replica:
+    replicaCount: 2
+
+# Kafka configuration (subchart)
+kafka:
+  enabled: true
+  replicaCount: 3
+  persistence:
+    enabled: true
+    size: 100Gi
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+  zookeeper:
+    enabled: true
+    replicaCount: 3
+
+# Traefik configuration (subchart)
+traefik:
+  enabled: true
+  deployment:
+    replicas: 2
+  service:
+    type: LoadBalancer
+  ports:
+    web:
+      exposed: true
+      exposedPort: 80
+    websecure:
+      exposed: true
+      exposedPort: 443
+    dashboard:
+      exposed: true
+      exposedPort: 8080
+  logs:
+    general:
+      level: INFO
+    access:
+      enabled: true
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+
+  prometheus:
+    enabled: true
+    retention: 30d
+    resources:
+      limits:
+        memory: 4Gi
+      requests:
+        memory: 2Gi
+
+  grafana:
+    enabled: true
+    admin:
+      existingSecret: amos-grafana-credentials
+    resources:
+      limits:
+        memory: 512Mi
+      requests:
+        memory: 256Mi
+
+# Network policies
+networkPolicy:
+  enabled: true
+  allowExternal: false
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Security context for containers
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# RBAC
+rbac:
+  create: true

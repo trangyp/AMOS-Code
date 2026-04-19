@@ -19,7 +19,7 @@
       "failure_count": 0,
       "avg_execution_time_ms": 1000,
       "created_at": "2026-04-15T07:32:38.245763",
-      "last_used": "2026-04-15T08:18:59.052482",
+      "last_used": "2026-04-18T21:52:03.606404+00:00",
       "evolution_history": []
     },
     "proc_fix_import_error_b5db0dcd": {
@@ -64,6 +64,935 @@
       "created_at": "2026-04-15T08:18:59.052655",
       "last_used": "2026-04-15T08:18:59.052655",
       "evolution_history": []
+    },
+    "proc_fix_routing_bug_2347832d": {
+      "procedure_id": "proc_fix_routing_bug_2347832d",
+      "name": "fix_routing_bug",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "file_paths",
+        "configuration"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '\nCurrent AMOS Architecture (after 9 layers + 3 systems):\n\nINFRASTRUCTURE LAYERS (Complete):\n1. API Gateway (Port 9999) - Circuit breaker, unified entry\n2. Observability - Distributed tracing, OpenTelemetry\n3. Event Architecture - CQRS, Event Sourcing, Pub/Sub\n4. Config Management - Hierarchical, versioned, hot-reload\n5. Rate Limiting - 4 algorithms, 5 tiers for 1608+ functions\n6. Auth System - JWT + RBAC for 1608+ functions\n7. Meta-Semantic - Constitutional recursion, meaning preservation\n8. Service Discovery - Registry, health checks, load balancing\n9. Data Consistency - Saga pattern, distributed transactions\n\nPRODUCTION SYSTEMS (Just Verified):\n10. Distributed Cache - Multi-tier, stampede prevention, LLM integration\n11. Alert Manager - Multi-channel, correlation, routing\n12. Saga Orchestrator - Compensation, retry, parallel/sequential\n\nCRITICAL GAPS IDENTIFIED from open files:\n- backend/main.py: FastAPI app needs health check endpoint, metrics endpoint\n- backend/llm_providers_complete.py: Needs actual HTTP client (aiohttp) integration\n- clawspring/amos_cognitive_bridge.py: Needs memory persistence layer\n- workflow_engine.py: Needs durable execution backend\n- alert_manager.py: Replaced stub but needs integration points\n- backend/auth_integration.py: Needs middleware for FastAPI\n\nREAD THESE FILES to determine what critical infrastructure is missing:\n1. backend/main.py - what endpoints are missing?\n2. backend/llm_providers_complete.py - what providers aren't working?\n3. What would provide immediate operational value?\n\nWhat critical production system should be built next?\n- Metrics Aggregation (Prometheus-style) for all 12 systems?\n- Database Abstraction Layer (connection pooling)?\n- Feature Flag System (dynamic toggles)?\n- Secrets Manager (secure credential storage)?\n- API Documentation Generator (OpenAPI)?\n- Health Check Aggregator (service mesh health)?\n' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: highly_relevant",
+        "   - Biological: highly_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: highly_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: \nCurrent AMOS Architecture (after 9 layers + 3 sys...\n\n### Reasoning Chain\n- 1. Task Analysis: '\nCurrent AMOS Architecture (after 9 layers + 3 systems):\n\nINFRASTRUCTURE LAYERS "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "2347832de846e4c2",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T08:33:04.862570+00:00",
+      "last_used": "2026-04-18T08:33:04.862570+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_73315c_73315c72": {
+      "procedure_id": "proc_generic_73315c_73315c72",
+      "name": "generic_73315c",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Implement a Python async function for real-time data streaming with error handling' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Implement a Python async function for real-time da...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Implement a Python async function for real-time data streaming with error handli"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "73315c7205879409",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T11:18:46.233152+00:00",
+      "last_used": "2026-04-18T11:18:46.233152+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_6a84e2_6a84e29f": {
+      "procedure_id": "proc_generic_6a84e2_6a84e29f",
+      "name": "generic_6a84e2",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '{'value': 0, 'message': 'Data point 0'}' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: {'value': 0, 'message': 'Data point 0'}...\n\n### Reasoning Chain\n- 1. Task Analysis: '{'value': 0, 'message': 'Data point 0'}' requires 2 perspectives\n- 2. Kernel Routing: Activ"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "6a84e29f22b0ebd8",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 75,
+      "created_at": "2026-04-18T11:24:29.533086+00:00",
+      "last_used": "2026-04-18T11:24:29.533086+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_c71ccd_c71ccda2": {
+      "procedure_id": "proc_generic_c71ccd_c71ccda2",
+      "name": "generic_c71ccd",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '{'value': 1, 'message': 'Data point 1'}' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: {'value': 1, 'message': 'Data point 1'}...\n\n### Reasoning Chain\n- 1. Task Analysis: '{'value': 1, 'message': 'Data point 1'}' requires 2 perspectives\n- 2. Kernel Routing: Activ"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "c71ccda2494614ea",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T11:24:30.040654+00:00",
+      "last_used": "2026-04-18T11:24:30.040654+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_e8981d_e8981dea": {
+      "procedure_id": "proc_generic_e8981d_e8981dea",
+      "name": "generic_e8981d",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '{'value': 2, 'message': 'Data point 2'}' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: {'value': 2, 'message': 'Data point 2'}...\n\n### Reasoning Chain\n- 1. Task Analysis: '{'value': 2, 'message': 'Data point 2'}' requires 2 perspectives\n- 2. Kernel Routing: Activ"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "e8981deae0d80689",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T11:24:30.543950+00:00",
+      "last_used": "2026-04-18T11:24:30.543950+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_86cc31_86cc3150": {
+      "procedure_id": "proc_generic_86cc31_86cc3150",
+      "name": "generic_86cc31",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '{'value': 3, 'message': 'Data point 3'}' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: {'value': 3, 'message': 'Data point 3'}...\n\n### Reasoning Chain\n- 1. Task Analysis: '{'value': 3, 'message': 'Data point 3'}' requires 2 perspectives\n- 2. Kernel Routing: Activ"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "86cc315030caac1b",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T11:24:31.047905+00:00",
+      "last_used": "2026-04-18T11:24:31.047905+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_2fdd88_2fdd8815": {
+      "procedure_id": "proc_generic_2fdd88_2fdd8815",
+      "name": "generic_2fdd88",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '{'value': 4, 'message': 'Data point 4'}' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: {'value': 4, 'message': 'Data point 4'}...\n\n### Reasoning Chain\n- 1. Task Analysis: '{'value': 4, 'message': 'Data point 4'}' requires 2 perspectives\n- 2. Kernel Routing: Activ"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "2fdd8815af830aff",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T11:24:31.551456+00:00",
+      "last_used": "2026-04-18T11:24:31.551456+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_4c449b_4c449b2f": {
+      "procedure_id": "proc_generic_4c449b_4c449b2f",
+      "name": "generic_4c449b",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Create Python function to validate JSON schema with Pydantic v2' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Create Python function to validate JSON schema wit...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Create Python function to validate JSON schema with Pydantic v2' requires 2 pers"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "4c449b2fdf47f908",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 57,
+      "created_at": "2026-04-18T11:25:08.437741+00:00",
+      "last_used": "2026-04-18T11:25:08.437741+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_9812de_9812de77": {
+      "procedure_id": "proc_generic_9812de_9812de77",
+      "name": "generic_9812de",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze GitHub repository trangyp/AMOS-code for code quality issues' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze GitHub repository trangyp/AMOS-code for co...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze GitHub repository trangyp/AMOS-code for code quality issues' requires 2 "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "9812de77a2793d0a",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 52,
+      "created_at": "2026-04-18T11:46:12.064791+00:00",
+      "last_used": "2026-04-18T11:46:12.064791+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_3f19c8_3f19c8ed": {
+      "procedure_id": "proc_generic_3f19c8_3f19c8ed",
+      "name": "generic_3f19c8",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "file_paths"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze code quality issues in amos_code_analyzer.py and provide recommendations' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze code quality issues in amos_code_analyzer....\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze code quality issues in amos_code_analyzer.py and provide recommendations"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "3f19c8ed0234e28b",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 49,
+      "created_at": "2026-04-18T12:10:16.501834+00:00",
+      "last_used": "2026-04-18T12:10:16.501834+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_214d95_214d95eb": {
+      "procedure_id": "proc_generic_214d95_214d95eb",
+      "name": "generic_214d95",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "file_paths"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze code quality in amos_code_analyzer.py' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze code quality in amos_code_analyzer.py...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze code quality in amos_code_analyzer.py' requires 2 perspectives\n- 2. Kernel Ro"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "214d95eba6b1b4fc",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 54,
+      "created_at": "2026-04-18T12:15:42.712959+00:00",
+      "last_used": "2026-04-18T12:15:42.712959+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_c05d34_c05d342e": {
+      "procedure_id": "proc_generic_c05d34_c05d342e",
+      "name": "generic_c05d34",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze codebase for timeout and hanging issues' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze codebase for timeout and hanging issues...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze codebase for timeout and hanging issues' requires 2 perspectives\n- 2. Kerne"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "c05d342ebe9fa3b0",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T14:55:59.631186+00:00",
+      "last_used": "2026-04-18T14:55:59.631186+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_5ebfde_5ebfde5c": {
+      "procedure_id": "proc_generic_5ebfde_5ebfde5c",
+      "name": "generic_5ebfde",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Decompose into steps: Cognitive task execution with local LLMs' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Decompose into steps: Cognitive task execution wit...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Decompose into steps: Cognitive task execution with local LLMs' requires 2 persp"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "5ebfde5c9aabc975",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T15:40:05.322961+00:00",
+      "last_used": "2026-04-18T21:39:29.688004+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_61a338_61a33850": {
+      "procedure_id": "proc_generic_61a338_61a33850",
+      "name": "generic_61a338",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'What is 2+2?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: What is 2+2?...\n\n### Reasoning Chain\n- 1. Task Analysis: 'What is 2+2?' requires 2 perspectives\n- 2. Kernel Routing: Activating 0 cognitive kernels\n- 3. Rule of 2: Checking 2 c"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "61a3385003d9b9d3",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T17:38:41.538348+00:00",
+      "last_used": "2026-04-18T17:38:41.538348+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_437089_437089a5": {
+      "procedure_id": "proc_generic_437089_437089a5",
+      "name": "generic_437089",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Project Planning:\n\nProject: Test Project - A test project\n\nConstraints: {'budget': 'limited', 'timeline': '3 months'}\n\nCreate plan using Rule of 2:\n1. Optimistic path (best case)\n2. Pessimistic path (risks considered)\n\nApply Rule of 4 analysis:\n- Technical: Architecture and implementation\n- Biological: Team capacity and skills\n- Economic: Budget and ROI\n- Environmental: Dependencies and external factors\n\nProvide:\n1. Task breakdown (WBS)\n2. Effort estimates (with uncertainty)\n3. Critical path identification\n4. Risk register\n5. Milestone schedule\n6. Resource requirements' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: highly_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: highly_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Project Planning:\n\nProject: Test Project - A test ...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Project Planning:\n\nProject: Test Project - A test project\n\nConstraints: {'budget"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "437089a546966c2d",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T21:52:03.607691+00:00",
+      "last_used": "2026-04-18T21:52:03.607691+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_ec8e76_ec8e7611": {
+      "procedure_id": "proc_generic_ec8e76_ec8e7611",
+      "name": "generic_ec8e76",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Security Audit (STRIDE):\n\nSystem: python code under review:\n\ndef example(): pass\n\nApply security analysis:\n1. Identify attack surfaces\n2. Map trust boundaries\n3. Analyze data flow risks\n4. Check authentication/authorization\n5. Review input validation\n6. Assess logging and monitoring\n\nApply Rule of 2:\n- Attacker perspective: How would you exploit this?\n- Defender perspective: How would you protect this?\n\nCheck against Global Laws:\n- L4: Structural Integrity (secure by design)\n- L5: Clear communication of risks\n- L6: Universal benefit alignment (privacy, safety)' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: highly_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Security Audit (STRIDE):\n\nSystem: python code unde...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Security Audit (STRIDE):\n\nSystem: python code under review:\n\ndef example(): pass"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "ec8e76114d3ccb74",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T21:52:03.612004+00:00",
+      "last_used": "2026-04-18T21:52:03.612004+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_796e37_796e3755": {
+      "procedure_id": "proc_generic_796e37_796e3755",
+      "name": "generic_796e37",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze repository for critical build-blocking issues' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Contrarian View - Critical examination",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze repository for critical build-blocking iss...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze repository for critical build-blocking issues' requires 2 perspectives\n-"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "796e375535da161d",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T17:57:45.911195+00:00",
+      "last_used": "2026-04-18T17:57:45.911195+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_4f8fd1_4f8fd146": {
+      "procedure_id": "proc_generic_4f8fd1_4f8fd146",
+      "name": "generic_4f8fd1",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Find SQL injection vulnerabilities in backend/.\nLook for:\n1. String concatenation in SQL queries\n2. f-strings in SQL\n3. Unparameterized queries\n4. User input directly in SQL\n\nReturn specific file paths and line numbers.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Find SQL injection vulnerabilities in backend/.\nLo...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Find SQL injection vulnerabilities in backend/.\nLook for:\n1. String concatenatio"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "4f8fd146306b7a06",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T18:53:03.690191+00:00",
+      "last_used": "2026-04-18T18:53:03.690191+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_a1dce6_a1dce6fe": {
+      "procedure_id": "proc_generic_a1dce6_a1dce6fe",
+      "name": "generic_a1dce6",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Scan backend/ for unvalidated user inputs that could lead to security vulnerabilities. Focus on SQL injection, XSS, path traversal risks.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Scan backend/ for unvalidated user inputs that cou...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Scan backend/ for unvalidated user inputs that could lead to security vulnerabil"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "a1dce6fec9d4907f",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-18T19:14:46.747916+00:00",
+      "last_used": "2026-04-18T19:14:46.747916+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_9da2bd_9da2bd34": {
+      "procedure_id": "proc_generic_9da2bd_9da2bd34",
+      "name": "generic_9da2bd",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Test brain functionality' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Test brain functionality...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Test brain functionality' requires 2 perspectives\n- 2. Kernel Routing: Activating 0 cognitive kernels\n- 3."
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "9da2bd34b799f8c1",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T20:45:42.122515+00:00",
+      "last_used": "2026-04-18T20:45:42.122515+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_4eebee_4eebeeb3": {
+      "procedure_id": "proc_generic_4eebee_4eebeeb3",
+      "name": "generic_4eebee",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Scan backend/ for:\n1. Hardcoded secrets, API keys, passwords\n2. Weak cryptographic algorithms (MD5, SHA1)\n3. Insecure random number generation\n4. Missing authentication checks\n\nReturn specific file paths and line numbers.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Scan backend/ for:\n1. Hardcoded secrets, API keys,...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Scan backend/ for:\n1. Hardcoded secrets, API keys, passwords\n2. Weak cryptograph"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "4eebeeb311e44bf7",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 3,
+      "created_at": "2026-04-18T20:48:13.559969+00:00",
+      "last_used": "2026-04-18T20:48:13.559969+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_b2bc7c_b2bc7c90": {
+      "procedure_id": "proc_generic_b2bc7c_b2bc7c90",
+      "name": "generic_b2bc7c",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'List the 13 remaining high-severity security findings in AMOS production hardening. Focus on specific files with hardcoded passwords, API keys, secrets, and authentication bypasses. Provide file paths and line numbers.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: List the 13 remaining high-severity security findi...\n\n### Reasoning Chain\n- 1. Task Analysis: 'List the 13 remaining high-severity security findings in AMOS production hardeni"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "b2bc7c9014672501",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T21:39:29.688480+00:00",
+      "last_used": "2026-04-18T21:39:29.688480+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_6556f5_6556f5fd": {
+      "procedure_id": "proc_generic_6556f5_6556f5fd",
+      "name": "generic_6556f5",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Test functionality' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Test functionality...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Test functionality' requires 2 perspectives\n- 2. Kernel Routing: Activating 0 cognitive kernels\n- 3. Rule of 2: "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "6556f5fdfba23dd1",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T21:49:26.706691+00:00",
+      "last_used": "2026-04-18T21:49:26.706691+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_0a676b_0a676b82": {
+      "procedure_id": "proc_generic_0a676b_0a676b82",
+      "name": "generic_0a676b",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Scan backend/api/ and backend/ for:\n1. Unvalidated user inputs (SQL injection, path traversal)\n2. Missing authentication checks\n3. Insecure file operations\n4. Weak cryptographic algorithms\n\nReturn specific file paths and line numbers.' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Scan backend/api/ and backend/ for:\n1. Unvalidated...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Scan backend/api/ and backend/ for:\n1. Unvalidated user inputs (SQL injection, p"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "0a676b8288dc55cd",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-18T21:54:03.099752+00:00",
+      "last_used": "2026-04-18T21:54:03.099752+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_f3a4e0_f3a4e0d5": {
+      "procedure_id": "proc_generic_f3a4e0_f3a4e0d5",
+      "name": "generic_f3a4e0",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze codebase for security vulnerabilities' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze codebase for security vulnerabilities...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze codebase for security vulnerabilities' requires 2 perspectives\n- 2. Kernel Ro"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "f3a4e0d56d4eb716",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-19T00:11:57.356690+00:00",
+      "last_used": "2026-04-19T00:11:57.356690+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_af0c92_af0c92a1": {
+      "procedure_id": "proc_generic_af0c92_af0c92a1",
+      "name": "generic_af0c92",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Analyze the AMOS codebase structure' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Analyze the AMOS codebase structure...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Analyze the AMOS codebase structure' requires 2 perspectives\n- 2. Kernel Routing: Activating 0 "
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "af0c92a17a3722e6",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-19T07:37:26.498220+00:00",
+      "last_used": "2026-04-19T07:37:26.498220+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_030199_030199dd": {
+      "procedure_id": "proc_generic_030199_030199dd",
+      "name": "generic_030199",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'Test the brain functionality' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Alternative Implementation - Alternative patterns",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: Test the brain functionality...\n\n### Reasoning Chain\n- 1. Task Analysis: 'Test the brain functionality' requires 2 perspectives\n- 2. Kernel Routing: Activating 0 cognitive kern"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "030199ddf400e950",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 7,
+      "created_at": "2026-04-19T08:05:48.905423+00:00",
+      "last_used": "2026-04-19T08:05:48.905423+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_d2e8b5_d2e8b573": {
+      "procedure_id": "proc_generic_d2e8b5_d2e8b573",
+      "name": "generic_d2e8b5",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: 'What is the Universal Biological Intelligence framework?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: contextually_relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: What is the Universal Biological Intelligence fram...\n\n### Reasoning Chain\n- 1. Task Analysis: 'What is the Universal Biological Intelligence framework?' requires 2 perspective"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "d2e8b5730798dfb2",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 0,
+      "created_at": "2026-04-19T10:39:36.955697+00:00",
+      "last_used": "2026-04-19T10:39:36.955697+00:00",
+      "evolution_history": []
+    },
+    "proc_generic_81e65c_81e65c36": {
+      "procedure_id": "proc_generic_81e65c_81e65c36",
+      "name": "generic_81e65c",
+      "trigger_condition": "Task matches pattern signature",
+      "required_inputs": [
+        "task_context"
+      ],
+      "execution_steps": [
+        "1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - Absolute Biological Integrity: End state where internal and external structures are fully aligned with zero structural gaps.\n\n=== ORIGINAL QUERY ===\nWhat is biological intelligence?' requires 2 perspectives",
+        "2. Kernel Routing: Activating 0 cognitive kernels",
+        "3. Rule of 2: Checking 2 contrasting views",
+        "   - Perspective 1: Direct Analysis - Immediate solution",
+        "   - Perspective 2: Systemic Context - Long-term implications",
+        "4. Rule of 4: Analyzing 4 quadrants",
+        "   - Technical: contextually_relevant",
+        "   - Biological: contextually_relevant",
+        "   - Economic: contextually_relevant",
+        "   - Environmental: relevant",
+        "5. Law Validation: Checking against Global Laws",
+        "6. Output Generation: Synthesizing results",
+        "## AMOS Brain Analysis: === CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - Abs...\n\n### Reasoning Chain\n- 1. Task Analysis: '=== CANONICAL CONTEXT ===\n\nRelevant Terms:\n  - Absolute Biological Integrity: En"
+      ],
+      "expected_outcome": "Task processed successfully",
+      "verification_method": "Verify no errors",
+      "pattern_signature": "81e65c365d96ca23",
+      "success_count": 1,
+      "failure_count": 0,
+      "avg_execution_time_ms": 1,
+      "created_at": "2026-04-19T10:45:23.723416+00:00",
+      "last_used": "2026-04-19T10:45:23.723416+00:00",
+      "evolution_history": []
     }
   },
   "patterns": {
@@ -86,21 +1015,517 @@
         "proc_fix_import_error_b5db0dcd",
         "proc_fix_import_error_000310ca"
       ],
-      "frequency": 6,
+      "frequency": 36,
       "first_seen": "2026-04-15T07:32:38.245774",
-      "last_seen": "2026-04-15T08:18:59.052659"
+      "last_seen": "2026-04-18T21:52:03.606391+00:00"
+    },
+    "pat_integration_task_2a3e0594": {
+      "pattern_id": "pat_integration_task_2a3e0594",
+      "pattern_type": "integration_task",
+      "signature": "2a3e0594ed131b03",
+      "detection_rules": [
+        "contains: connect",
+        "contains: routing",
+        "contains: integration"
+      ],
+      "indicators": [
+        "connect",
+        "routing",
+        "integration",
+        "memory"
+      ],
+      "related_procedures": [
+        "proc_fix_routing_bug_2347832d"
+      ],
+      "frequency": 2,
+      "first_seen": "2026-04-18T08:33:04.861979+00:00",
+      "last_seen": "2026-04-18T08:33:04.862584+00:00"
+    },
+    "pat_bug_fix_73315c72": {
+      "pattern_id": "pat_bug_fix_73315c72",
+      "pattern_type": "bug_fix",
+      "signature": "73315c7205879409",
+      "detection_rules": [
+        "contains: error"
+      ],
+      "indicators": [
+        "error"
+      ],
+      "related_procedures": [
+        "proc_generic_73315c_73315c72"
+      ],
+      "frequency": 2,
+      "first_seen": "2026-04-18T11:18:46.232931+00:00",
+      "last_seen": "2026-04-18T11:18:46.233164+00:00"
+    },
+    "pat_general_6a84e29f": {
+      "pattern_id": "pat_general_6a84e29f",
+      "pattern_type": "general",
+      "signature": "6a84e29f22b0ebd8",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_6a84e2_6a84e29f"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:24:29.533114+00:00",
+      "last_seen": "2026-04-18T11:24:29.533114+00:00"
+    },
+    "pat_general_c71ccda2": {
+      "pattern_id": "pat_general_c71ccda2",
+      "pattern_type": "general",
+      "signature": "c71ccda2494614ea",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_c71ccd_c71ccda2"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:24:30.040688+00:00",
+      "last_seen": "2026-04-18T11:24:30.040688+00:00"
+    },
+    "pat_general_e8981dea": {
+      "pattern_id": "pat_general_e8981dea",
+      "pattern_type": "general",
+      "signature": "e8981deae0d80689",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_e8981d_e8981dea"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:24:30.543982+00:00",
+      "last_seen": "2026-04-18T11:24:30.543982+00:00"
+    },
+    "pat_general_86cc3150": {
+      "pattern_id": "pat_general_86cc3150",
+      "pattern_type": "general",
+      "signature": "86cc315030caac1b",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_86cc31_86cc3150"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:24:31.047938+00:00",
+      "last_seen": "2026-04-18T11:24:31.047938+00:00"
+    },
+    "pat_general_2fdd8815": {
+      "pattern_id": "pat_general_2fdd8815",
+      "pattern_type": "general",
+      "signature": "2fdd8815af830aff",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_2fdd88_2fdd8815"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:24:31.551472+00:00",
+      "last_seen": "2026-04-18T11:24:31.551472+00:00"
+    },
+    "pat_general_4c449b2f": {
+      "pattern_id": "pat_general_4c449b2f",
+      "pattern_type": "general",
+      "signature": "4c449b2fdf47f908",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_4c449b_4c449b2f"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:25:08.437827+00:00",
+      "last_seen": "2026-04-18T11:25:08.437827+00:00"
+    },
+    "pat_general_9812de77": {
+      "pattern_id": "pat_general_9812de77",
+      "pattern_type": "general",
+      "signature": "9812de77a2793d0a",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_9812de_9812de77"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T11:46:12.064826+00:00",
+      "last_seen": "2026-04-18T11:46:12.064826+00:00"
+    },
+    "pat_general_3f19c8ed": {
+      "pattern_id": "pat_general_3f19c8ed",
+      "pattern_type": "general",
+      "signature": "3f19c8ed0234e28b",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_3f19c8_3f19c8ed"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T12:10:16.501873+00:00",
+      "last_seen": "2026-04-18T12:10:16.501873+00:00"
+    },
+    "pat_general_214d95eb": {
+      "pattern_id": "pat_general_214d95eb",
+      "pattern_type": "general",
+      "signature": "214d95eba6b1b4fc",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_214d95_214d95eb"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T12:15:42.712991+00:00",
+      "last_seen": "2026-04-18T12:15:42.712991+00:00"
+    },
+    "pat_general_c05d342e": {
+      "pattern_id": "pat_general_c05d342e",
+      "pattern_type": "general",
+      "signature": "c05d342ebe9fa3b0",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_c05d34_c05d342e"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T14:55:59.631210+00:00",
+      "last_seen": "2026-04-18T14:55:59.631210+00:00"
+    },
+    "pat_general_5ebfde5c": {
+      "pattern_id": "pat_general_5ebfde5c",
+      "pattern_type": "general",
+      "signature": "5ebfde5c9aabc975",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:39:29.687991+00:00",
+      "last_seen": "2026-04-18T21:39:29.687991+00:00"
+    },
+    "pat_general_61a33850": {
+      "pattern_id": "pat_general_61a33850",
+      "pattern_type": "general",
+      "signature": "61a3385003d9b9d3",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_61a338_61a33850"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T17:38:41.538372+00:00",
+      "last_seen": "2026-04-18T17:38:41.538372+00:00"
+    },
+    "pat_general_0dd2ae03": {
+      "pattern_id": "pat_general_0dd2ae03",
+      "pattern_type": "general",
+      "signature": "0dd2ae036661c96f",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_437089_437089a5"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:52:03.607742+00:00",
+      "last_seen": "2026-04-18T21:52:03.607742+00:00"
+    },
+    "pat_general_61ddcc4e": {
+      "pattern_id": "pat_general_61ddcc4e",
+      "pattern_type": "general",
+      "signature": "61ddcc4eb0ddddf9",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_ec8e76_ec8e7611"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:52:03.612054+00:00",
+      "last_seen": "2026-04-18T21:52:03.612054+00:00"
+    },
+    "pat_general_796e3755": {
+      "pattern_id": "pat_general_796e3755",
+      "pattern_type": "general",
+      "signature": "796e375535da161d",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_796e37_796e3755"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T17:57:45.911225+00:00",
+      "last_seen": "2026-04-18T17:57:45.911225+00:00"
+    },
+    "pat_general_21351f53": {
+      "pattern_id": "pat_general_21351f53",
+      "pattern_type": "general",
+      "signature": "21351f53b4e87ae6",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_4f8fd1_4f8fd146"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T18:53:03.690227+00:00",
+      "last_seen": "2026-04-18T18:53:03.690227+00:00"
+    },
+    "pat_general_a1dce6fe": {
+      "pattern_id": "pat_general_a1dce6fe",
+      "pattern_type": "general",
+      "signature": "a1dce6fec9d4907f",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_a1dce6_a1dce6fe"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T19:14:46.747949+00:00",
+      "last_seen": "2026-04-18T19:14:46.747949+00:00"
+    },
+    "pat_general_9da2bd34": {
+      "pattern_id": "pat_general_9da2bd34",
+      "pattern_type": "general",
+      "signature": "9da2bd34b799f8c1",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_9da2bd_9da2bd34"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T20:45:42.122543+00:00",
+      "last_seen": "2026-04-18T20:45:42.122543+00:00"
+    },
+    "pat_general_69d5fa47": {
+      "pattern_id": "pat_general_69d5fa47",
+      "pattern_type": "general",
+      "signature": "69d5fa4746862b27",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_4eebee_4eebeeb3"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T20:48:13.560020+00:00",
+      "last_seen": "2026-04-18T20:48:13.560020+00:00"
+    },
+    "pat_general_b2bc7c90": {
+      "pattern_id": "pat_general_b2bc7c90",
+      "pattern_type": "general",
+      "signature": "b2bc7c9014672501",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_b2bc7c_b2bc7c90"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:39:29.688514+00:00",
+      "last_seen": "2026-04-18T21:39:29.688514+00:00"
+    },
+    "pat_general_6556f5fd": {
+      "pattern_id": "pat_general_6556f5fd",
+      "pattern_type": "general",
+      "signature": "6556f5fdfba23dd1",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_6556f5_6556f5fd"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:49:26.706717+00:00",
+      "last_seen": "2026-04-18T21:49:26.706717+00:00"
+    },
+    "pat_general_41a58509": {
+      "pattern_id": "pat_general_41a58509",
+      "pattern_type": "general",
+      "signature": "41a585098d2de034",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_0a676b_0a676b82"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-18T21:54:03.099792+00:00",
+      "last_seen": "2026-04-18T21:54:03.099792+00:00"
+    },
+    "pat_general_f3a4e0d5": {
+      "pattern_id": "pat_general_f3a4e0d5",
+      "pattern_type": "general",
+      "signature": "f3a4e0d56d4eb716",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_f3a4e0_f3a4e0d5"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T00:11:57.356721+00:00",
+      "last_seen": "2026-04-19T00:11:57.356721+00:00"
+    },
+    "pat_general_af0c92a1": {
+      "pattern_id": "pat_general_af0c92a1",
+      "pattern_type": "general",
+      "signature": "af0c92a17a3722e6",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_af0c92_af0c92a1"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T07:37:26.498252+00:00",
+      "last_seen": "2026-04-19T07:37:26.498252+00:00"
+    },
+    "pat_general_030199dd": {
+      "pattern_id": "pat_general_030199dd",
+      "pattern_type": "general",
+      "signature": "030199ddf400e950",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_030199_030199dd"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T08:05:48.905464+00:00",
+      "last_seen": "2026-04-19T08:05:48.905464+00:00"
+    },
+    "pat_general_d2e8b573": {
+      "pattern_id": "pat_general_d2e8b573",
+      "pattern_type": "general",
+      "signature": "d2e8b5730798dfb2",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_d2e8b5_d2e8b573"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T10:39:36.955731+00:00",
+      "last_seen": "2026-04-19T10:39:36.955731+00:00"
+    },
+    "pat_general_a4089300": {
+      "pattern_id": "pat_general_a4089300",
+      "pattern_type": "general",
+      "signature": "a408930010a22f9d",
+      "detection_rules": [
+        "contains: generic"
+      ],
+      "indicators": [
+        "generic"
+      ],
+      "related_procedures": [
+        "proc_generic_81e65c_81e65c36"
+      ],
+      "frequency": 1,
+      "first_seen": "2026-04-19T10:45:23.723462+00:00",
+      "last_seen": "2026-04-19T10:45:23.723462+00:00"
     }
   },
   "decisions": {},
   "failures": {},
   "stats": {
-    "procedures_learned": 5,
-    "patterns_detected": 1,
+    "procedures_learned": 53,
+    "patterns_detected": 30,
     "decisions_recorded": 0,
     "failures_avoided": 0,
-    "procedures_reused": 1,
+    "procedures_reused": 33,
     "time_saved_ms": 0,
     "learning_start": "2026-04-15T07:32:38.245581"
   },
-  "saved_at": "2026-04-15T08:18:59.052745"
+  "saved_at": "2026-04-19T10:45:23.725759+00:00"
 }

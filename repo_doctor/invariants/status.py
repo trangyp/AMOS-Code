@@ -1,7 +1,5 @@
 """I_status = 1 iff every reported status label is logically implied by actual state."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class StatusInvariant(Invariant):
     def __init__(self):
         super().__init__("I_status", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check status truthfulness."""
         context = context or {}
         false_init = context.get("false_initialized", 0)

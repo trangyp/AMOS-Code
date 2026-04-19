@@ -11,8 +11,6 @@ Every self-improvement must have a contract declaring:
 - verification_steps: How to prove it worked
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -67,15 +65,15 @@ class EvolutionContract:
     success_condition: str
     created_at: datetime = field(default_factory=datetime.now)
     status: EvolutionStatus = EvolutionStatus.CONTRACTED
-    actual_improvement: str | None = None
+    actual_improvement: str = None
     patched_files: list[str] = field(default_factory=list)
-    pre_state_hash: str | None = None
-    post_state_hash: str | None = None
+    pre_state_hash: str = None
+    post_state_hash: str = None
     # Learning layer fields
     predicted_success: float = 0.5  # 0.0-1.0 probability
     learning_recommendations: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert contract to dictionary."""
         return {
             "evolution_id": self.evolution_id,
@@ -102,7 +100,7 @@ class EvolutionRegistry:
 
     def __init__(self) -> None:
         """Initialize empty registry."""
-        self.contracts: dict[str, EvolutionContract] = {}
+        self.contracts: Dict[str, EvolutionContract] = {}
         self.completed: list[EvolutionContract] = []
         self.rolled_back: list[EvolutionContract] = []
 

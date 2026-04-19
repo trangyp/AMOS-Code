@@ -1,0 +1,26 @@
+apiVersion: v2
+name: amos-equation
+description: AMOS Equation API - Mathematical computation service with 115+ equations
+version: 1.0.0
+appVersion: "13.0.0"
+type: application
+keywords:
+  - equations
+  - mathematics
+  - api
+  - computation
+  - symbolic
+home: https://github.com/amos/amos-equation
+sources:
+  - https://github.com/amos/amos-equation
+maintainers:
+  - name: AMOS Team
+    email: amos@example.com
+annotations:
+  category: Scientific Computing
+  licenses: MIT
+dependencies:
+  - name: redis
+    version: "18.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

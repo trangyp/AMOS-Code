@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -16,7 +14,7 @@ class StoredSession:
 DEFAULT_SESSION_DIR = Path(".port_sessions")
 
 
-def save_session(session: StoredSession, directory: Path | None = None) -> Path:
+def save_session(session: StoredSession, directory: Optional[Path] = None) -> Path:
     target_dir = directory or DEFAULT_SESSION_DIR
     target_dir.mkdir(parents=True, exist_ok=True)
     path = target_dir / f"{session.session_id}.json"
@@ -24,7 +22,7 @@ def save_session(session: StoredSession, directory: Path | None = None) -> Path:
     return path
 
 
-def load_session(session_id: str, directory: Path | None = None) -> StoredSession:
+def load_session(session_id: str, directory: Optional[Path] = None) -> StoredSession:
     target_dir = directory or DEFAULT_SESSION_DIR
     data = json.loads((target_dir / f"{session_id}.json").read_text())
     return StoredSession(

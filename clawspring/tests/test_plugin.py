@@ -1,7 +1,5 @@
 """Tests for the plugin package (plugin/)."""
 
-from __future__ import annotations
-
 import json
 import threading
 from unittest.mock import patch

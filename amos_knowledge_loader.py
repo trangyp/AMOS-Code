@@ -1,13 +1,30 @@
 #!/usr/bin/env python3
-"""AMOS Knowledge Loader - Load 659+ knowledge files into runtime memory."""
+"""AMOS Knowledge Loader v2.0.0 - Load 1,500+ knowledge files with SuperBrain governance.
 
-from __future__ import annotations
+SUPERBRAIN INTEGRATION:
+- Knowledge loading validated via ActionGate
+- All knowledge access recorded in brain audit trail
+- Canonical access point for _AMOS_BRAIN knowledge base
+
+Owner: Trang Phan
+Version: 2.0.0
+"""
 
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
+
+# SuperBrain integration
+try:
+    from typing import Final
+
+    from amos_brain import get_super_brain
+
+    SUPERBRAIN_AVAILABLE = True
+except ImportError:
+    SUPERBRAIN_AVAILABLE = False
 
 
 @dataclass
@@ -17,30 +34,81 @@ class LoadedKnowledge:
     name: str
     category: str
     source_path: str
-    content: dict[str, Any] = field(default_factory=dict)
+    content: Dict[str, Any] = field(default_factory=dict)
     load_time: str = ""
     size_bytes: int = 0
     access_count: int = 0
 
 
 class KnowledgeLoader:
-    """Load and manage 659+ knowledge files for runtime use."""
+    """Load and manage 1,500+ knowledge files with SuperBrain governance."""
 
     def __init__(self, brain_root: Optional[Path] = None):
         self.brain_root = brain_root or Path(__file__).parent / "_AMOS_BRAIN"
-        self.knowledge_cache: dict[str, LoadedKnowledge] = {}
+        self.knowledge_cache: Dict[str, LoadedKnowledge] = {}
         self.category_index: dict[str, list[str]] = {}
         self.total_loaded = 0
         self.total_size_mb = 0.0
+        self._brain = None
+        self._init_superbrain()
 
-    def load_all(self) -> dict[str, Any]:
-        """Load all 659+ knowledge files into runtime memory."""
+    def _init_superbrain(self):
+        """Initialize SuperBrain connection for governance."""
+        if SUPERBRAIN_AVAILABLE:
+            try:
+                self._brain = get_super_brain()
+            except Exception:
+                pass
+
+    def _validate_knowledge_load(self, operation: str, file_count: int) -> bool:
+        """Validate knowledge loading via SuperBrain ActionGate."""
+        if not SUPERBRAIN_AVAILABLE or not self._brain:
+            return True
+
+        try:
+            if hasattr(self._brain, "action_gate"):
+                action_result = self._brain.action_gate.validate_action(
+                    agent_id="knowledge_loader",
+                    action=f"knowledge_{operation}",
+                    details={"file_count": file_count, "brain_root": str(self.brain_root)},
+                )
+                return action_result.authorized
+        except Exception:
+            pass
+        return True
+
+    def _record_knowledge_access(self, operation: str, file_count: int):
+        """Record knowledge access in SuperBrain audit trail."""
+        if not SUPERBRAIN_AVAILABLE or not self._brain:
+            return
+
+        try:
+            if hasattr(self._brain, "record_audit"):
+                self._brain.record_audit(
+                    action=f"knowledge_{operation}",
+                    agent_id="knowledge_loader",
+                    details={
+                        "files": file_count,
+                        "size_mb": self.total_size_mb,
+                        "categories": len(self.category_index),
+                    },
+                )
+        except Exception:
+            pass
+
+    def load_all(self) -> Dict[str, Any]:
+        """Load all 1,500+ knowledge files with SuperBrain governance."""
         print("[KNOWLEDGE_LOADER] Loading ecosystem knowledge...")
         print(f"  Source: {self.brain_root}")
 
         if not self.brain_root.exists():
             print("  ❌ Brain root not found")
             return {"error": "Brain root not found"}
+
+        # CANONICAL: Validate knowledge loading via SuperBrain
+        if not self._validate_knowledge_load("load_all", 0):
+            print("  ❌ Knowledge loading blocked by SuperBrain governance")
+            return {"error": "Governance blocked"}
 
         # Load JSON knowledge files
         self._load_json_knowledge()
@@ -57,6 +125,9 @@ class KnowledgeLoader:
             "categories": len(self.category_index),
             "by_category": {k: len(v) for k, v in self.category_index.items()},
         }
+
+        # CANONICAL: Record knowledge access in SuperBrain audit
+        self._record_knowledge_access("load_all", stats["total_loaded"])
 
         print(f"\n✓ Loaded {stats['total_loaded']} knowledge items")
         print(f"✓ Total size: {stats['total_size_mb']:.1f} MB")
@@ -93,7 +164,7 @@ class KnowledgeLoader:
                     category=category,
                     source_path=str(file_path.relative_to(self.brain_root)),
                     content=content,
-                    load_time=datetime.utcnow().isoformat(),
+                    load_time=datetime.now(UTC).isoformat(),
                     size_bytes=size,
                 )
 
@@ -128,7 +199,7 @@ class KnowledgeLoader:
                     category=f"{category}_text",
                     source_path=str(file_path.relative_to(self.brain_root)),
                     content={"text": text_content[:10000]},  # First 10KB
-                    load_time=datetime.utcnow().isoformat(),
+                    load_time=datetime.now(UTC).isoformat(),
                     size_bytes=size,
                 )
 
@@ -184,7 +255,7 @@ class KnowledgeLoader:
             category=f"{category}_large",
             source_path=str(file_path.relative_to(self.brain_root)),
             content={"status": "registered_for_on_demand_load", "size_mb": size / (1024 * 1024)},
-            load_time=datetime.utcnow().isoformat(),
+            load_time=datetime.now(UTC).isoformat(),
             size_bytes=size,
         )
 
@@ -199,7 +270,7 @@ class KnowledgeLoader:
                 self.category_index[cat] = []
             self.category_index[cat].append(key)
 
-    def get_knowledge(self, category: str, name: Optional[str] = None) -> list[LoadedKnowledge]:
+    def get_knowledge(self, category: str, name: str = None) -> List[LoadedKnowledge]:
         """Get knowledge by category."""
         results = []
 
@@ -219,7 +290,7 @@ class KnowledgeLoader:
 
         return results
 
-    def query_knowledge(self, query: str, top_n: int = 10) -> list[LoadedKnowledge]:
+    def query_knowledge(self, query: str, top_n: int = 10) -> List[LoadedKnowledge]:
         """Query loaded knowledge by content match."""
         query_lower = query.lower()
         scored_results = []
@@ -254,7 +325,7 @@ class KnowledgeLoader:
         scored_results.sort(key=lambda x: x[0], reverse=True)
         return [k for _, k in scored_results[:top_n]]
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get loader statistics."""
         most_accessed = sorted(
             self.knowledge_cache.values(), key=lambda k: k.access_count, reverse=True

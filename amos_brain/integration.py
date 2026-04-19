@@ -1,6 +1,5 @@
 """Integration layer connecting AMOS Brain to ClawSpring agent."""
 
-from __future__ import annotations
 
 from typing import Any
 
@@ -20,6 +19,8 @@ class AMOSBrainIntegration:
     - Cognitive stack orchestration
     - Pre/post-processing hooks for agent
     """
+from __future__ import annotations
+
 
     def __init__(self):
         self._brain = None
@@ -58,7 +59,7 @@ class AMOSBrainIntegration:
         }
 
     def pre_process(
-        self, user_message: str, context: dict[str, Any] | None = None
+        self, user_message: str, context: dict[str, Any]  = None
     ) -> dict[str, Any]:
         """Pre-process user message through AMOS brain.
 
@@ -201,7 +202,7 @@ Prohibited: direct physical control, financial execution, medical treatment, leg
     def analyze_with_rules(
         self,
         problem: str,
-        context: dict[str, Any] | None = None,
+        context: dict[str, Any]  = None,
     ) -> dict[str, Any]:
         """Analyze a problem using Rule of 2 and Rule of 4."""
         return self.reasoning.full_analysis(problem, context)

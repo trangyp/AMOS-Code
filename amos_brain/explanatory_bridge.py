@@ -11,6 +11,7 @@ Provides API for:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -46,7 +47,7 @@ class ExplanatoryBridge:
         return self._engine
 
     def explain_decision(
-        self, decision: dict[str, Any], context: dict[str, Any] | None = None
+        self, decision: dict[str, Any], context: dict[str, Any] = None
     ) -> dict[str, Any]:
         """Explain a decision."""
         if not EXPLANATORY_AVAILABLE or self.engine is None:
@@ -67,7 +68,7 @@ class ExplanatoryBridge:
         self,
         start_state: dict[str, Any],
         decision: dict[str, Any],
-        steps: list[dict[str, Any]] | None = None,
+        steps: list[dict[str, Any]] = None,
     ) -> dict[str, Any]:
         """Generate reasoning trace."""
         if not EXPLANATORY_AVAILABLE or self.engine is None:

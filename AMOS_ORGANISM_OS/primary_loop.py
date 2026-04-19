@@ -15,13 +15,10 @@ Usage:
     result = loop.execute_cycle(task="Design a system")
 """
 
-from __future__ import annotations
-
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -37,8 +34,8 @@ class CycleResult:
     started_at: str
     completed_at: str
     task: str
-    subsystem_results: dict[str, Any] = field(default_factory=dict)
-    errors: list[str] = field(default_factory=list)
+    subsystem_results: Dict[str, Any] = field(default_factory=dict)
+    errors: List[str] = field(default_factory=list)
     success: bool = True
 
 
@@ -65,7 +62,7 @@ class PrimaryLoop:
     def __init__(self):
         self.brain = get_amos_integration()
         self.cycle_count = 0
-        self._subsystems: dict[str, Any] = {}
+        self._subsystems: Dict[str, Any] = {}
 
     def _get_subsystem(self, code: str) -> Optional[Any]:
         """Lazy-load a subsystem by code."""
@@ -110,7 +107,7 @@ class PrimaryLoop:
             print(f"[PrimaryLoop] Subsystem {code} not available: {e}")
             return None
 
-    def execute_cycle(self, task: str, context: Optional[dict] = None) -> CycleResult:
+    def execute_cycle(self, task: str, context: dict = None) -> CycleResult:
         """Execute one full primary loop cycle.
 
         Args:
@@ -121,8 +118,8 @@ class PrimaryLoop:
             CycleResult with results from each subsystem
         """
         self.cycle_count += 1
-        cycle_id = f"cycle_{self.cycle_count}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-        started_at = datetime.utcnow().isoformat()
+        cycle_id = f"cycle_{self.cycle_count}_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
+        started_at = datetime.now(UTC).isoformat()
 
         print(f"\n[PrimaryLoop] Starting cycle {self.cycle_count}: {cycle_id}")
         print(f"[PrimaryLoop] Task: {task[:60]}...")
@@ -156,7 +153,7 @@ class PrimaryLoop:
                 print(f"✗ ERROR - {e}")
                 subsystem_results[subsystem_code] = {"status": "error", "error": str(e)}
 
-        completed_at = datetime.utcnow().isoformat()
+        completed_at = datetime.now(UTC).isoformat()
 
         print("\n" + "=" * 60)
         print(f"[PrimaryLoop] Cycle {self.cycle_count} complete")
@@ -177,13 +174,13 @@ class PrimaryLoop:
         )
 
     def _execute_subsystem(
-        self, code: str, subsystem: Any, task: str, context: Optional[dict]
-    ) -> dict[str, Any]:
+        self, code: str, subsystem: Any, task: str, context: dict
+    ) -> Dict[str, Any]:
         """Execute a single subsystem in the loop."""
         result = {
             "status": "executed",
             "code": code,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         # Each subsystem has a specific role
@@ -249,7 +246,7 @@ class PrimaryLoop:
 
         return result
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current primary loop status."""
         loaded = [code for code in self.PRIMARY_SEQUENCE if code in self._subsystems]
 

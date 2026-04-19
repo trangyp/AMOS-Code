@@ -14,8 +14,6 @@ Integration points:
 4. Fleet-level organism coherence
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -26,14 +24,14 @@ class CognitiveDiagnosis:
     """Diagnosis enhanced with cognitive analysis."""
 
     # Standard Repo Doctor outputs
-    state_vector: dict[str, float]
+    state_vector: Dict[str, float]
     energy: float
-    failing_invariants: list[str]
+    failing_invariants: List[str]
 
     # AMOS Brain cognitive layer
-    root_cause_analysis: dict[str, Any]
-    strategic_recommendations: list[str]
-    risk_assessment: dict[str, Any]
+    root_cause_analysis: Dict[str, Any]
+    strategic_recommendations: List[str]
+    risk_assessment: Dict[str, Any]
     cognitive_confidence: float
 
 
@@ -73,8 +71,8 @@ class AMOSBrainIntegration:
 
     def analyze_with_cognition(
         self,
-        invariant_results: list[Any],
-        state_vector: dict[str, float],
+        invariant_results: List[Any],
+        state_vector: Dict[str, float],
         energy: float,
     ) -> CognitiveDiagnosis:
         """
@@ -109,9 +107,9 @@ class AMOSBrainIntegration:
 
     def _cognitive_root_cause(
         self,
-        failing: list[str],
-        state_vector: dict[str, float],
-    ) -> dict[str, Any]:
+        failing: List[str],
+        state_vector: Dict[str, float],
+    ) -> Dict[str, Any]:
         """
         Apply cognitive reasoning to find root causes.
 
@@ -138,9 +136,9 @@ class AMOSBrainIntegration:
 
     def _strategic_recommendations(
         self,
-        failing: list[str],
+        failing: List[str],
         energy: float,
-    ) -> list[str]:
+    ) -> List[str]:
         """
         Generate strategic repair recommendations.
 
@@ -171,9 +169,9 @@ class AMOSBrainIntegration:
 
     def _four_quadrant_risk(
         self,
-        failing: list[str],
-        state_vector: dict[str, float],
-    ) -> dict[str, Any]:
+        failing: List[str],
+        state_vector: Dict[str, float],
+    ) -> Dict[str, Any]:
         """
         Assess risk across four quadrants.
 
@@ -189,7 +187,7 @@ class AMOSBrainIntegration:
             "ecosystem_risk": "High" if "I_security" in failing else "Low",
         }
 
-    def _estimate_cost(self, failing: list[str]) -> float:
+    def _estimate_cost(self, failing: List[str]) -> float:
         """Estimate remediation cost based on failing invariants."""
         weights = {
             "I_parse": 10,
@@ -211,7 +209,7 @@ class AMOSBrainIntegration:
 def integrate_with_amos_orchestrator(
     repo_path: str,
     task_id: str,
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     """
     Full integration with AMOS Master Orchestrator.
 

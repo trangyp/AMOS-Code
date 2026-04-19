@@ -1,14 +1,13 @@
 """Workflow Engine — Orchestrate multi-step workflows."""
 
-from __future__ import annotations
-
 import json
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 class StepStatus(Enum):
@@ -26,7 +25,7 @@ class WorkflowStep:
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     name: str = ""
     action: str = ""
-    params: dict[str, Any] = field(default_factory=dict)
+    params: Dict[str, Any] = field(default_factory=dict)
     status: StepStatus = StepStatus.PENDING
     result: Any = None
     error: str = ""
@@ -34,7 +33,7 @@ class WorkflowStep:
     end_time: str = ""
     depends_on: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {**asdict(self), "status": self.status.value}
 
 
@@ -46,15 +45,15 @@ class Workflow:
     name: str = ""
     description: str = ""
     steps: list[WorkflowStep] = field(default_factory=list)
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     status: str = "draft"  # draft, running, completed, failed
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
 
     def add_step(
         self,
         name: str,
         action: str,
-        params: dict[str, Any] = None,
+        params: Dict[str, Any] = None,
         depends_on: list[str] = None,
     ) -> WorkflowStep:
         """Add a step to the workflow."""
@@ -67,7 +66,7 @@ class Workflow:
         self.steps.append(step)
         return step
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "steps": [s.to_dict() for s in self.steps],
@@ -80,8 +79,8 @@ class WorkflowEngine:
     WORKFLOW_DIR = Path(__file__).parent / "workflows"
 
     def __init__(self):
-        self._workflows: dict[str, Workflow] = {}
-        self._handlers: dict[str, Callable] = {}
+        self._workflows: Dict[str, Workflow] = {}
+        self._handlers: Dict[str, Callable] = {}
         self.WORKFLOW_DIR.mkdir(parents=True, exist_ok=True)
 
     def register_handler(self, action: str, handler: Callable):
@@ -111,7 +110,7 @@ class WorkflowEngine:
                 continue
 
             # Run step
-            step.start_time = datetime.utcnow().isoformat()
+            step.start_time = datetime.now(UTC).isoformat()
             step.status = StepStatus.RUNNING
 
             handler = self._handlers.get(step.action)
@@ -127,7 +126,7 @@ class WorkflowEngine:
                     step.status = StepStatus.FAILED
                     step.error = str(e)
 
-            step.end_time = datetime.utcnow().isoformat()
+            step.end_time = datetime.now(UTC).isoformat()
 
         # Update workflow status
         failed = [s for s in workflow.steps if s.status == StepStatus.FAILED]

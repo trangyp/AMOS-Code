@@ -1,6 +1,5 @@
 """Skill tool: lets the model invoke skills by name via tool call."""
 
-from __future__ import annotations
 
 from tool_registry import ToolDef, register_tool
 
@@ -62,11 +61,12 @@ def _skill_tool(params: dict, config: dict) -> str:
 
     # Run inline via agent and collect text output
     import agent as _agent
+from typing import List
 
     system_prompt = config.get("_system_prompt", "")
 
     # Collect output text
-    output_parts: list[str] = []
+    output_parts: List[str] = []
     sub_state = _agent.AgentState()
     sub_config = {**config, "_depth": config.get("_depth", 0) + 1}
     try:

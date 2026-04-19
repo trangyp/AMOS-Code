@@ -16,7 +16,6 @@ Advanced features from Z3 research:
 - Optimization for multi-objective repairs
 """
 
-from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -37,8 +36,8 @@ class Z3Result:
     """Result of Z3 verification."""
 
     satisfiable: bool
-    model: dict[str, Any] | None = None
-    unsat_core: list[str] | None = None
+    model: Dict[str, Any]  = None
+    unsat_core: List[str]  = None
     proof_time_ms: float = 0.0
 
 
@@ -68,10 +67,10 @@ class Z3Model:
 
     def __init__(self, enable_core_minimization: bool = True):
         self.solver = None
-        self.variables: dict[str, Any] = {}
-        self.invariants: list[InvariantFormula] = []
+        self.variables: Dict[str, Any] = {}
+        self.invariants: List[InvariantFormula] = []
         self.enable_core_minimization = enable_core_minimization
-        self._assumptions: list[Any] = []  # Track assumptions for unsat cores
+        self._assumptions: List[Any] = []  # Track assumptions for unsat cores
 
         if Z3_AVAILABLE and z3:
             self.solver = z3.Solver()
@@ -112,6 +111,7 @@ class Z3Model:
     def check(self) -> Z3Result:
         """Check satisfiability of all invariants."""
         import time
+from typing import Callable
 
         if not self.is_available():
             return Z3Result(satisfiable=True, proof_time_ms=0)
@@ -140,7 +140,7 @@ class Z3Model:
                 proof_time_ms=elapsed,
             )
 
-    def _extract_model(self, z3_model: Any) -> dict[str, Any]:
+    def _extract_model(self, z3_model: Any) -> Dict[str, Any]:
         """Extract variable assignments from Z3 model."""
         model_dict = {}
         for name, var in self.variables.items():
@@ -151,7 +151,7 @@ class Z3Model:
                 model_dict[name] = "unknown"
         return model_dict
 
-    def prove_invariant(self, invariant_type: str, repo_state: dict[str, Any]) -> Z3Result:
+    def prove_invariant(self, invariant_type: str, repo_state: Dict[str, Any]) -> Z3Result:
         """
         Prove a specific invariant type.
 
@@ -181,7 +181,7 @@ class Z3Model:
         self.solver.add(formula)
         return self.check()
 
-    def _create_entrypoint_formula(self, repo_state: dict[str, Any]) -> Any:
+    def _create_entrypoint_formula(self, repo_state: Dict[str, Any]) -> Any:
         """
         Entry(name) -> Exists(Module) ∧ Exists(Function) ∧ Resolves(name, m, f)
         """
@@ -196,14 +196,14 @@ class Z3Model:
 
         return z3.And(*constraints) if constraints else z3.BoolVal(True)
 
-    def _create_api_formula(self, repo_state: dict[str, Any]) -> Any:
+    def _create_api_formula(self, repo_state: Dict[str, Any]) -> Any:
         """
         ClaimedCall(c, f, sig_claimed) -> Compatible(sig_claimed, sig_real)
         """
         # Simplified API compatibility check
         return z3.BoolVal(True)
 
-    def _create_status_formula(self, repo_state: dict[str, Any]) -> Any:
+    def _create_status_formula(self, repo_state: Dict[str, Any]) -> Any:
         """
         Status claims imply actual state.
         """
@@ -214,7 +214,7 @@ class Z3Model:
             return z3.BoolVal(specs_loaded)
         return z3.BoolVal(True)
 
-    def _create_persistence_formula(self, repo_state: dict[str, Any]) -> Any:
+    def _create_persistence_formula(self, repo_state: Dict[str, Any]) -> Any:
         """
         Serialize(x) = y ∧ Deserialize(y) = z -> Equivalent(x, z)
         """

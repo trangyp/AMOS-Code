@@ -1,9 +1,8 @@
 """AMOS Brain Dashboard - Analytics and reporting for reasoning patterns."""
 
-from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Any
 
 from amos_brain import get_amos_integration
@@ -28,6 +27,8 @@ class BrainDashboard:
     - Confidence score trends
     - Reasoning pattern insights
     """
+from __future__ import annotations
+
 
     def __init__(self, memory: BrainMemory | None = None):
         self.memory = memory or get_brain_memory()
@@ -54,7 +55,7 @@ class BrainDashboard:
         history = self.memory.get_reasoning_history(limit=1000)
 
         # Filter by date if needed
-        cutoff = datetime.utcnow() - timedelta(days=days)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
         recent = []
         for h in history:
             ts = h.get("timestamp")
@@ -68,7 +69,7 @@ class BrainDashboard:
 
         return {
             "period_days": days,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "summary": self._generate_summary(recent),
             "compliance_trends": self._analyze_compliance(recent),
             "confidence_trends": self._analyze_confidence(recent),

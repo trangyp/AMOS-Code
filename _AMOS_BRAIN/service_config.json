@@ -1,0 +1,302 @@
+{
+  "00_ROOT": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "01_BRAIN": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "02_SENSES": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "03_IMMUNE": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "04_BLOOD": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "05_NERVES": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "06_MUSCLE": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "07_METABOLISM": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "08_GROWTH": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "09_SOCIAL": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "10_MEMORY": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "11_LEGAL": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "12_ETHICS": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "13_TIME": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  },
+  "14_INTERFACES": {
+    "enabled": true,
+    "auto_restart": true,
+    "health_check_interval": 30.0,
+    "circuit_breaker": {
+      "failure_threshold": 3,
+      "recovery_timeout": 10.0,
+      "half_open_max_calls": 3,
+      "success_threshold": 2
+    },
+    "retry_policy": {
+      "max_attempts": 5,
+      "base_delay": 1.0,
+      "max_delay": 60.0,
+      "exponential_base": 2.0,
+      "jitter": true
+    },
+    "env_vars": {},
+    "resource_limits": {}
+  }
+}

@@ -210,7 +210,7 @@ class ImportInvariant(Invariant):
 
     def _resolve_relative_import(
         self, module: str, level: int, file_path: Path, repo_path: Path
-    ) -> str | None:
+    ) -> str:
         """Resolve a relative import to absolute module path."""
         rel_parts = list(file_path.relative_to(repo_path).parent.parts)
 

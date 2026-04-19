@@ -31,16 +31,16 @@ class SubsystemHealth:
     status: str  # healthy, degraded, unhealthy
     response_time_ms: float
     last_check: str
-    errors: list[str]
-    metrics: dict[str, Any]
+    errors: List[str]
+    metrics: Dict[str, Any]
 
 
 class OrganismHealthMonitor:
     """Monitors health of all Organism OS subsystems."""
 
     def __init__(self):
-        self.checks: dict[str, Any] = {}
-        self.health_history: list[dict] = []
+        self.checks: Dict[str, Any] = {}
+        self.health_history: List[dict] = []
 
     def check_all_subsystems(self) -> dict[str, SubsystemHealth]:
         """Run health checks on all subsystems."""
@@ -63,7 +63,7 @@ class OrganismHealthMonitor:
                     subsystem=info["name"],
                     status="healthy",
                     response_time_ms=duration,
-                    last_check=datetime.utcnow().isoformat(),
+                    last_check=datetime.now(UTC).isoformat(),
                     errors=[],
                     metrics={"code": code, "role": info["role"]},
                 )
@@ -77,7 +77,7 @@ class OrganismHealthMonitor:
                     subsystem=info["name"],
                     status="unhealthy",
                     response_time_ms=duration,
-                    last_check=datetime.utcnow().isoformat(),
+                    last_check=datetime.now(UTC).isoformat(),
                     errors=[str(e)],
                     metrics={},
                 )
@@ -86,14 +86,14 @@ class OrganismHealthMonitor:
 
         return results
 
-    def generate_report(self, results: dict[str, SubsystemHealth]) -> dict:
+    def generate_report(self, results: Dict[str, SubsystemHealth]) -> dict:
         """Generate health report."""
         healthy = sum(1 for h in results.values() if h.status == "healthy")
         degraded = sum(1 for h in results.values() if h.status == "degraded")
         unhealthy = sum(1 for h in results.values() if h.status == "unhealthy")
 
         report = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "total_subsystems": len(results),
             "healthy": healthy,
             "degraded": degraded,
@@ -123,7 +123,7 @@ class OrganismHealthMonitor:
                 report = self.generate_report(results)
 
                 print(
-                    f"\n  [{datetime.utcnow().strftime('%H:%M:%S')}] "
+                    f"\n  [{datetime.now(UTC).strftime('%H:%M:%S')}] "
                     f"Status: {report['overall_status'].upper()} | "
                     f"Healthy: {report['healthy']}/{report['total_subsystems']}"
                 )

@@ -9,16 +9,15 @@ Responsible for:
 - Protocol bridge between internal and external systems
 """
 
-from __future__ import annotations
-
 import json
 import logging
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.canon")
@@ -55,15 +54,15 @@ class CanonService:
     endpoint: str
     version: str = "1.0"
     status: InterfaceStatus = InterfaceStatus.DISCONNECTED
-    capabilities: list[str] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    capabilities: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     discovered_at: str = ""
     last_ping: str = ""
     health_score: float = 1.0
 
     def __post_init__(self):
         if not self.discovered_at:
-            self.discovered_at = datetime.utcnow().isoformat()
+            self.discovered_at = datetime.now(UTC).isoformat()
         if not self.last_ping:
             self.last_ping = self.discovered_at
 
@@ -78,13 +77,13 @@ class ProtocolAdapter:
     translator: Optional[Callable] = None
     encoder: Optional[Callable] = None
     decoder: Optional[Callable] = None
-    handlers: dict[str, Callable] = field(default_factory=dict)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    handlers: Dict[str, Callable] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -95,15 +94,15 @@ class ApiEndpoint:
     path: str
     method: str
     handler: Optional[Callable] = None
-    adapters: list[str] = field(default_factory=list)
+    adapters: List[str] = field(default_factory=list)
     rate_limit: int = 100
     auth_required: bool = True
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
 
 
 class CanonIntegrationKernel:
@@ -125,13 +124,13 @@ class CanonIntegrationKernel:
         self.services_path.mkdir(parents=True, exist_ok=True)
 
         # Protocol adapters
-        self.adapters: dict[str, ProtocolAdapter] = {}
+        self.adapters: Dict[str, ProtocolAdapter] = {}
 
         # Discovered services
-        self.services: dict[str, CanonService] = {}
+        self.services: Dict[str, CanonService] = {}
 
         # Unified API endpoints
-        self.endpoints: dict[str, ApiEndpoint] = {}
+        self.endpoints: Dict[str, ApiEndpoint] = {}
 
         # Protocol type registry
         self.protocol_registry: dict[ProtocolType, list[str]] = defaultdict(list)
@@ -172,18 +171,18 @@ class CanonIntegrationKernel:
 
         logger.info("Default protocol adapters initialized")
 
-    def _rest_encoder(self, data: dict[str, Any]) -> str:
+    def _rest_encoder(self, data: Dict[str, Any]) -> str:
         """Encode data for REST protocol."""
         return json.dumps(data)
 
-    def _rest_decoder(self, data: str) -> dict[str, Any]:
+    def _rest_decoder(self, data: str) -> Dict[str, Any]:
         """Decode data from REST protocol."""
         try:
             return json.loads(data)
         except json.JSONDecodeError:
             return {"error": "Invalid JSON", "raw": data}
 
-    def _mcp_encoder(self, data: dict[str, Any]) -> dict[str, Any]:
+    def _mcp_encoder(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Encode data for MCP protocol."""
         return {
             "jsonrpc": "2.0",
@@ -192,7 +191,7 @@ class CanonIntegrationKernel:
             "params": data.get("params", {}),
         }
 
-    def _mcp_decoder(self, data: dict[str, Any]) -> dict[str, Any]:
+    def _mcp_decoder(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Decode data from MCP protocol."""
         if "result" in data:
             return {"success": True, "data": data["result"]}
@@ -208,7 +207,7 @@ class CanonIntegrationKernel:
         translator: Optional[Callable] = None,
         encoder: Optional[Callable] = None,
         decoder: Optional[Callable] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] = None,
     ) -> ProtocolAdapter:
         """Create a new protocol adapter."""
         adapter = ProtocolAdapter(
@@ -235,8 +234,8 @@ class CanonIntegrationKernel:
         protocol: ProtocolType,
         endpoint: str,
         version: str = "1.0",
-        capabilities: Optional[list[str]] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        capabilities: list[str] = None,
+        metadata: dict[str, Any] = None,
     ) -> CanonService:
         """Discover and register a Canon service."""
         service = CanonService(
@@ -256,7 +255,7 @@ class CanonIntegrationKernel:
         return service
 
     def update_service_status(
-        self, service_id: str, status: InterfaceStatus, health_score: Optional[float] = None
+        self, service_id: str, status: InterfaceStatus, health_score: float = None
     ) -> bool:
         """Update the status of a service."""
         if service_id not in self.services:
@@ -264,7 +263,7 @@ class CanonIntegrationKernel:
 
         service = self.services[service_id]
         service.status = status
-        service.last_ping = datetime.utcnow().isoformat()
+        service.last_ping = datetime.now(UTC).isoformat()
 
         if health_score is not None:
             service.health_score = max(0.0, min(1.0, health_score))
@@ -278,10 +277,10 @@ class CanonIntegrationKernel:
         path: str,
         method: str = "GET",
         handler: Optional[Callable] = None,
-        adapters: Optional[list[str]] = None,
+        adapters: list[str] = None,
         rate_limit: int = 100,
         auth_required: bool = True,
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] = None,
     ) -> ApiEndpoint:
         """Register a unified API endpoint."""
         endpoint = ApiEndpoint(
@@ -303,11 +302,11 @@ class CanonIntegrationKernel:
 
     def translate_message(
         self,
-        message: dict[str, Any],
+        message: Dict[str, Any],
         source_protocol: ProtocolType,
         target_protocol: ProtocolType,
-        adapter_id: Optional[str] = None,
-    ) -> dict[str, Any]:
+        adapter_id: str = None,
+    ) -> Dict[str, Any]:
         """Translate a message between protocols."""
         # Find appropriate adapter
         adapter = None
@@ -338,7 +337,7 @@ class CanonIntegrationKernel:
         logger.debug(f"Translated message from {source_protocol.name} to {target_protocol.name}")
         return translated
 
-    def get_compatible_services(self, protocol: ProtocolType) -> list[CanonService]:
+    def get_compatible_services(self, protocol: ProtocolType) -> List[CanonService]:
         """Get services compatible with a specific protocol."""
         return [
             s
@@ -346,7 +345,7 @@ class CanonIntegrationKernel:
             if s.protocol == protocol and s.status != InterfaceStatus.ERROR
         ]
 
-    def get_healthy_services(self, min_health: float = 0.5) -> list[CanonService]:
+    def get_healthy_services(self, min_health: float = 0.5) -> List[CanonService]:
         """Get services with health score above threshold."""
         return [s for s in self.services.values() if s.health_score >= min_health]
 
@@ -372,7 +371,7 @@ class CanonIntegrationKernel:
         logger.info(f"Established connection to {service.name}")
         return True
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current Canon integration state."""
         # Count services by status
         status_counts = defaultdict(int)
@@ -392,7 +391,7 @@ class CanonIntegrationKernel:
             "services_by_status": dict(status_counts),
             "services_by_protocol": dict(protocol_counts),
             "stats": self.stats,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

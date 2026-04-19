@@ -4,14 +4,12 @@ Validates generated code and build artifacts for quality,
 syntax correctness, and compliance with standards.
 """
 
-from __future__ import annotations
-
 import ast
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -27,9 +25,9 @@ class QualityReport:
     security_issues: list[str] = field(default_factory=list)
     complexity_score: float = 0.0
     test_coverage: float = 0.0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -46,7 +44,7 @@ class QualityChecker:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.reports: dict[str, QualityReport] = {}
+        self.reports: Dict[str, QualityReport] = {}
 
     def check_file(self, file_path: Path) -> QualityReport:
         """Check quality of a single file."""
@@ -186,7 +184,7 @@ class QualityChecker:
             reports.append(report)
         return reports
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get summary of all quality checks."""
         if not self.reports:
             return {"total": 0, "passed": 0, "failed": 0, "average_score": 0}
@@ -206,7 +204,7 @@ class QualityChecker:
         """List all quality reports."""
         return [r.to_dict() for r in self.reports.values()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get checker status."""
         summary = self.get_summary()
         return {

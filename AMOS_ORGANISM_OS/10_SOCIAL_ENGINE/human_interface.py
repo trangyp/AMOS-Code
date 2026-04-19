@@ -4,15 +4,13 @@ Manages interaction between the organism and human users.
 Handles input interpretation, response generation, and context management.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class InteractionMode(Enum):
@@ -43,13 +41,13 @@ class HumanInteraction:
     mode: InteractionMode = InteractionMode.CONVERSATION
     input_type: InputType = InputType.TEXT
     input_content: str = ""
-    interpretation: dict[str, Any] = field(default_factory=dict)
+    interpretation: Dict[str, Any] = field(default_factory=dict)
     response: str = ""
-    context: dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    feedback: Optional[str] = None
+    context: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    feedback: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "mode": self.mode.value,
@@ -70,10 +68,10 @@ class HumanInterface:
         self.data_dir = data_dir
         self.data_dir.mkdir(exist_ok=True)
 
-        self.interactions: dict[str, HumanInteraction] = {}
+        self.interactions: Dict[str, HumanInteraction] = {}
         self.user_profiles: dict[str, dict[str, Any]] = {}
         self.current_mode: InteractionMode = InteractionMode.CONVERSATION
-        self.active_context: dict[str, Any] = {}
+        self.active_context: Dict[str, Any] = {}
 
     def process_input(
         self,
@@ -107,12 +105,12 @@ class HumanInterface:
         # Update user profile
         if user_id not in self.user_profiles:
             self.user_profiles[user_id] = {
-                "first_seen": datetime.utcnow().isoformat(),
+                "first_seen": datetime.now(UTC).isoformat(),
                 "interaction_count": 0,
                 "preferences": {},
             }
         self.user_profiles[user_id]["interaction_count"] += 1
-        self.user_profiles[user_id]["last_interaction"] = datetime.utcnow().isoformat()
+        self.user_profiles[user_id]["last_interaction"] = datetime.now(UTC).isoformat()
 
         self._save_interactions()
         return interaction
@@ -121,7 +119,7 @@ class HumanInterface:
         self,
         content: str,
         mode: InteractionMode,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Interpret human input based on interaction mode."""
         interpretation = {
             "intent": "unknown",
@@ -163,7 +161,7 @@ class HumanInterface:
     def _generate_response(
         self,
         input_content: str,
-        interpretation: dict[str, Any],
+        interpretation: Dict[str, Any],
         mode: InteractionMode,
     ) -> str:
         """Generate response based on interpretation."""
@@ -217,7 +215,7 @@ class HumanInterface:
         data = {
             "interactions": [i.to_dict() for i in self.interactions.values()],
             "user_profiles": self.user_profiles,
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         interactions_file.write_text(json.dumps(data, indent=2))
 
@@ -225,7 +223,7 @@ class HumanInterface:
         """List all known users."""
         return [{"user_id": uid, **profile} for uid, profile in self.user_profiles.items()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get interface status."""
         return {
             "total_interactions": len(self.interactions),

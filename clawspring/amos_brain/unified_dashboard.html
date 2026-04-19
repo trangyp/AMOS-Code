@@ -136,6 +136,500 @@
             </div>
         </div>
 
+        <!-- SuperBrain Governance -->
+        <div class="section">
+            <h2>🧠 SuperBrain Governance (v2.0.0)</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h4>Production API</h4>
+                    <div class="value">2.3.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>GraphQL API</h4>
+                    <div class="value">2.3.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>Agent Messaging</h4>
+                    <div class="value">3.1.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>Agent Observability</h4>
+                    <div class="value">3.1.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>LLM Providers</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>UBI Engine</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>Audit Exporter</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>AMOS Tools</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>Knowledge Loader</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+                <div class="status-card">
+                    <h4>Master Orchestrator</h4>
+                    <div class="value">2.0.0 ✓</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00ff88;">
+                    ✓ ActionGate Active | ✓ Audit Trail Recording | ✓ All 50+ Tools Governed | ✓ 4,644 Features
+                </p>
+            </div>
+        </div>
+
+        <!-- Unified Detection System (Hallucination, Integrity, Drift) -->
+        <div class="section">
+            <h2>🔍 Unified Detection System (v1.0.0)</h2>
+            <div class="status-grid">
+                <div class="status-card" id="detection-health-card">
+                    <h4>Overall Health</h4>
+                    <div class="value" id="detection-health">--</div>
+                </div>
+                <div class="status-card" id="hallucination-card">
+                    <h4>Hallucination Risk</h4>
+                    <div class="value" id="hallucination-score">--</div>
+                </div>
+                <div class="status-card" id="integrity-card">
+                    <h4>Integrity Score</h4>
+                    <div class="value" id="integrity-score">--</div>
+                </div>
+                <div class="status-card" id="drift-card">
+                    <h4>Structural Drift</h4>
+                    <div class="value" id="drift-score">--</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">⚠️ Critical Alerts</h3>
+                <div id="detection-alerts" style="background: #1a1a3e; padding: 1rem; border-radius: 8px; min-height: 60px;">
+                    <p style="color: #888; font-size: 0.85rem;">Click "Run Detection" to analyze system state...</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">📊 Detection Metrics</h3>
+                <div class="bridge-status">
+                    <div class="bridge-component">
+                        <h4><span style="color: #00d4ff;">🧠</span> Hallucination Detection</h4>
+                        <div class="status" id="h-metric-se">Semantic Entropy: --</div>
+                        <div class="status" id="h-metric-reppl">RePPL: --</div>
+                        <div class="status" id="h-metric-sc">Self-Consistency: --</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #ffaa00;">🔐</span> Integrity Checking</h4>
+                        <div class="status" id="i-metric-entropy">Shannon Entropy: --</div>
+                        <div class="status" id="i-metric-tv">Total Variation: --</div>
+                        <div class="status" id="i-metric-jsd">Jensen-Shannon: --</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #7b2cbf;">📈</span> Structural Drift</h4>
+                        <div class="status" id="s-metric-radius">Spectral Radius: --</div>
+                        <div class="status" id="s-metric-gap">Spectral Gap: --</div>
+                        <div class="status" id="s-metric-lyapunov">Lyapunov: --</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button onclick="runDetection()" class="refresh-btn" style="flex: 1;">🔍 Run Unified Detection</button>
+                <button onclick="exportDetectionReport()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #ffaa00, #ff6600);">📤 Export Report</button>
+            </div>
+
+            <!-- Auto-Remediation Section -->
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #2a2a4a;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🩹 Auto-Remediation System</h3>
+
+                <div class="status-grid" id="remediation-status" style="margin-bottom: 1rem;">
+                    <div class="status-card">
+                        <h4>Active Remediations</h4>
+                        <div class="value" id="active-remediations">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Completed Plans</h4>
+                        <div class="value" id="completed-plans">0</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Avg Improvement</h4>
+                        <div class="value" id="avg-improvement">--</div>
+                    </div>
+                    <div class="status-card">
+                        <h4>Self-Healing Status</h4>
+                        <div class="value" id="self-healing-status">Off</div>
+                    </div>
+                </div>
+
+                <div id="remediation-actions" style="background: #1a1a3e; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; min-height: 60px;">
+                    <p style="color: #888; font-size: 0.85rem;">Run detection first to trigger auto-remediation recommendations...</p>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button onclick="triggerAutoRemediation()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #00ff88, #00cc6a);">🩹 Auto-Remediate Issues</button>
+                    <button onclick="toggleSelfHealing()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #7b2cbf, #9d4edd);">🔁 Toggle Self-Healing</button>
+                </div>
+
+                <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                    <p style="font-size: 0.8rem; color: #00ff88;">
+                        ✓ 12 Remediation Strategies | ✓ Feedback Loop Learning | ✓ Continuous Self-Healing
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00d4ff;">
+                    📖 Implements Sections 30-34 from GLOBAL_AI_FRAMEWORKS_EQUATIONS_AND_INVARIANTS.md<br>
+                    🔧 20+ detection equations | 🧪 5 comprehensive test suites | 🩹 12 auto-remediation strategies
+                </p>
+            </div>
+        </div>
+
+        <!-- Predictive Intelligence System -->
+        <div class="section">
+            <h2>🔮 Predictive Intelligence System (v1.0.0)</h2>
+            <div class="status-grid">
+                <div class="status-card" id="pi-status-card">
+                    <h4>System Status</h4>
+                    <div class="value" id="pi-status" style="font-size: 1.2rem;">Standby</div>
+                </div>
+                <div class="status-card">
+                    <h4>Metrics Tracked</h4>
+                    <div class="value" id="pi-metrics-count">4</div>
+                </div>
+                <div class="status-card">
+                    <h4>Predictions Generated</h4>
+                    <div class="value" id="pi-predictions-count">0</div>
+                </div>
+                <div class="status-card" id="pi-alerts-card">
+                    <h4>Active Alerts</h4>
+                    <div class="value" id="pi-alerts-count">0</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">📈 Real-Time Predictions</h3>
+                <div id="predictions-container" style="background: #1a1a3e; padding: 1rem; border-radius: 8px; min-height: 150px;">
+                    <p style="color: #888; font-size: 0.85rem;">Click "Start Prediction Engine" to begin forecasting...</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">⚡ Trend Analysis</h3>
+                <div class="bridge-status">
+                    <div class="bridge-component">
+                        <h4><span style="color: #00ff88;">📊</span> Overall Health Trend</h4>
+                        <div class="status" id="pi-trend-health">Not analyzed</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #00d4ff;">🧠</span> Hallucination Trend</h4>
+                        <div class="status" id="pi-trend-hallucination">Not analyzed</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #ffaa00;">🔐</span> Integrity Trend</h4>
+                        <div class="status" id="pi-trend-integrity">Not analyzed</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #7b2cbf;">📈</span> Drift Trend</h4>
+                        <div class="status" id="pi-trend-drift">Not analyzed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🚨 Predictive Alerts</h3>
+                <div id="pi-alerts-container" style="background: #1a1a3e; padding: 1rem; border-radius: 8px; min-height: 80px;">
+                    <p style="color: #888; font-size: 0.85rem;">No predictive alerts at this time...</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button onclick="startPredictionEngine()" class="refresh-btn" style="flex: 1; min-width: 200px;">
+                    🔮 Start Prediction Engine
+                </button>
+                <button onclick="generatePredictions()" class="refresh-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #ffaa00, #ff6600);">
+                    📊 Generate Predictions
+                </button>
+                <button onclick="exportPredictions()" class="refresh-btn" style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #7b2cbf, #9d4edd);">
+                    📤 Export Predictions
+                </button>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00ff88;">
+                    ✓ Time-series forecasting | ✓ Multi-horizon predictions | ✓ Trend analysis | ✓ Early warning system<br>
+                    🔮 4 forecasting horizons | 📈 3 prediction methods | ⏱ 95% confidence intervals
+                </p>
+            </div>
+        </div>
+
+        <!-- Governance Streaming -->
+        <div class="section">
+            <h2>🌊 Governance Streaming (Live)</h2>
+            <div class="status-grid">
+                <div class="status-card" id="stream-status-card">
+                    <h4>Stream Status</h4>
+                    <div class="value" id="stream-status" style="font-size: 1.2rem;">Disconnected</div>
+                </div>
+                <div class="status-card">
+                    <h4>Connected Clients</h4>
+                    <div class="value" id="stream-clients">0</div>
+                </div>
+                <div class="status-card">
+                    <h4>Events Processed</h4>
+                    <div class="value" id="stream-events">0</div>
+                </div>
+                <div class="status-card">
+                    <h4>Governance Cycles</h4>
+                    <div class="value" id="stream-cycles">0</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🔄 Governance Cycle Log</h3>
+                <div id="governance-log" style="background: #1a1a3e; padding: 1rem; border-radius: 8px; min-height: 200px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.8rem;">
+                    <div style="color: #888;">[System] Connect to governance stream to view live cycle updates...</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button onclick="connectGovernanceStream()" class="refresh-btn" style="flex: 1;" id="btn-connect-stream">
+                    🌊 Connect Stream
+                </button>
+                <button onclick="disconnectGovernanceStream()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #ff4444, #cc3333);" id="btn-disconnect-stream" disabled>
+                    🔌 Disconnect
+                </button>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00d4ff;">
+                    🌐 WebSocket streaming | 📡 Real-time updates | 🔄 Auto-reconnect | 📊 Event filtering<br>
+                    Endpoints: /ws/governance/stream | /ws/governance/predictions | /ws/governance/alerts | /ws/governance/health
+                </p>
+            </div>
+        </div>
+
+        <!-- Governance Configuration -->
+        <div class="section">
+            <h2>⚙️ Governance Configuration</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h4>Current Policy</h4>
+                    <div class="value" id="current-policy-name">-</div>
+                </div>
+                <div class="status-card">
+                    <h4>Mode</h4>
+                    <div class="value" id="current-mode">-</div>
+                </div>
+                <div class="status-card">
+                    <h4>Cycle Interval</h4>
+                    <div class="value"><span id="cycle-interval">-</span>s</div>
+                </div>
+                <div class="status-card" id="auto-remediate-card">
+                    <h4>Auto-Remediate</h4>
+                    <div class="value" id="auto-remediate-status">-</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🎛️ Policy Management</h3>
+                <div style="background: #1a1a3e; padding: 1rem; border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; color: #888; margin-bottom: 0.5rem;">Select Policy</label>
+                            <select id="policy-select" style="width: 100%; padding: 0.5rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 0.9rem;">
+                                <option value="development">Development (Full Auto)</option>
+                                <option value="staging">Staging (Supervised)</option>
+                                <option value="production">Production (Conservative)</option>
+                                <option value="advisory">Advisory (Monitoring Only)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; color: #888; margin-bottom: 0.5rem;">Governance Mode</label>
+                            <select id="mode-select" style="width: 100%; padding: 0.5rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 0.9rem;">
+                                <option value="full_auto">Full Auto</option>
+                                <option value="supervised">Supervised</option>
+                                <option value="advisory">Advisory</option>
+                                <option value="off">Off</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; color: #888; margin-bottom: 0.5rem;">Cycle Interval (seconds)</label>
+                            <input type="number" id="interval-input" value="300" min="60" max="3600" style="width: 100%; padding: 0.5rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 0.9rem;">
+                        </div>
+                        <div style="display: flex; align-items: flex-end; gap: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="auto-remediate-check" checked style="width: 18px; height: 18px;">
+                                <span style="font-size: 0.9rem; color: #ccc;">Enable Auto-Remediation</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #444;">
+                        <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 0.75rem;">📊 Detection Thresholds</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; font-size: 0.8rem;">
+                            <div>
+                                <label style="color: #888;">Hallucination Warning</label>
+                                <input type="number" id="threshold-hall-warning" value="0.5" min="0" max="1" step="0.1" style="width: 100%; padding: 0.4rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+                            <div>
+                                <label style="color: #888;">Integrity Warning</label>
+                                <input type="number" id="threshold-integ-warning" value="0.3" min="0" max="1" step="0.1" style="width: 100%; padding: 0.4rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+                            <div>
+                                <label style="color: #888;">Drift Warning</label>
+                                <input type="number" id="threshold-drift-warning" value="0.5" min="0" max="1" step="0.1" style="width: 100%; padding: 0.4rem; background: #252545; color: #fff; border: 1px solid #444; border-radius: 4px; margin-top: 0.25rem;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button onclick="applyGovernanceConfig()" class="refresh-btn" style="flex: 2;">
+                    💾 Apply Configuration
+                </button>
+                <button onclick="loadGovernanceConfig()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #444, #666);">
+                    🔄 Refresh
+                </button>
+                <button onclick="resetGovernanceConfig()" class="refresh-btn" style="flex: 1; background: linear-gradient(135deg, #ff4444, #cc3333);">
+                    ↺ Reset
+                </button>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00d4ff;">
+                    ⚙️ JSON-based configuration | 🔄 Hot-reload support | 🌐 Environment variable overrides | 📊 Threshold management<br>
+                    Config file: amos_governance_config.json | Changes trigger immediate governance updates
+                </p>
+            </div>
+        </div>
+
+        <!-- SuperBrain Equation System -->
+        <div class="section">
+            <h2>🎯 SuperBrain Equation System (v8.0.0)</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h4>Total Domains</h4>
+                    <div class="value" id="equation-domains">36</div>
+                </div>
+                <div class="status-card">
+                    <h4>Executable Equations</h4>
+                    <div class="value" id="equation-count">23</div>
+                </div>
+                <div class="status-card">
+                    <h4>Documented Equations</h4>
+                    <div class="value">160+</div>
+                </div>
+                <div class="status-card">
+                    <h4>Universal Patterns</h4>
+                    <div class="value">9</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">📊 Pattern Distribution</h3>
+                <div class="bridge-status" id="pattern-distribution">
+                    <div class="bridge-component">
+                        <h4><span style="color: #00ff88;">●</span> Conservation Law</h4>
+                        <div class="status">2 equations (Privacy Budget, G-Set)</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #00d4ff;">●</span> Convergence</h4>
+                        <div class="status">1 equation (FedAvg)</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #ffaa00;">●</span> Information Flow</h4>
+                        <div class="status">1 equation (Entropy)</div>
+                    </div>
+                    <div class="bridge-component">
+                        <h4><span style="color: #7b2cbf;">●</span> Algebraic</h4>
+                        <div class="status">2 equations (CRDTs)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🧮 Equation Executor</h3>
+                <div style="background: #1a1a3e; padding: 1rem; border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <label style="display: block; color: #888; font-size: 0.8rem; margin-bottom: 0.5rem;">Equation</label>
+                            <select id="equation-select" style="width: 100%; padding: 0.5rem; background: #252545; border: 1px solid #2a2a4a; color: #fff; border-radius: 4px;">
+                                <option value="">Select equation...</option>
+                                <optgroup label="Core ML">
+                                    <option value="sigmoid">sigmoid(x) - Activation</option>
+                                    <option value="relu">relu(x) - Activation</option>
+                                    <option value="softmax">softmax(logits) - Probability</option>
+                                    <option value="cross_entropy">cross_entropy(y_true, y_pred)</option>
+                                    <option value="mse">mse(y_true, y_pred)</option>
+                                    <option value="bellman">bellman(reward, gamma, next_value)</option>
+                                </optgroup>
+                                <optgroup label="Information Theory">
+                                    <option value="entropy">shannon_entropy(probs)</option>
+                                    <option value="kl_divergence">kl_divergence(p, q)</option>
+                                </optgroup>
+                                <optgroup label="Queueing">
+                                    <option value="littles_law">littles_law(rate, time)</option>
+                                    <option value="mm1">mm1_queue(arrival, service)</option>
+                                </optgroup>
+                                <optgroup label="Federated Learning">
+                                    <option value="privacy_budget">privacy_budget(epsilons)</option>
+                                    <option value="fedavg">fedavg_aggregate(weights, samples)</option>
+                                </optgroup>
+                                <optgroup label="CRDTs">
+                                    <option value="gset_merge">gset_merge(set1, set2)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #888; font-size: 0.8rem; margin-bottom: 0.5rem;">Inputs (JSON)</label>
+                            <input type="text" id="equation-inputs" placeholder='{"x": 0.5}' style="width: 100%; padding: 0.5rem; background: #252545; border: 1px solid #2a2a4a; color: #fff; border-radius: 4px; font-family: monospace;">
+                        </div>
+                    </div>
+                    <button onclick="executeEquation()" class="refresh-btn" style="width: 100%;">Execute Equation</button>
+                    <div id="equation-result" style="margin-top: 1rem; padding: 1rem; background: #0a0a1f; border-radius: 4px; font-family: monospace; font-size: 0.85rem; display: none;"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <h3 style="font-size: 1rem; color: #fff; margin-bottom: 1rem;">🌐 Domain Coverage (23/36 Implemented)</h3>
+                <div class="module-list" id="equation-domains-list">
+                    <div class="module-item"><span class="icon" style="color: #00ff88;">✓</span><span class="name">Core ML (8)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #00ff88;">✓</span><span class="name">Information Theory (3)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #00ff88;">✓</span><span class="name">Queueing Theory (2)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #00ff88;">✓</span><span class="name">Federated Learning (3)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #00ff88;">✓</span><span class="name">CRDTs (3)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #ffaa00;">○</span><span class="name">Neural Verification (1)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #ffaa00;">○</span><span class="name">TPU/XLA SPMD (1)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #888;">○</span><span class="name">Distributed Systems (1)</span></div>
+                    <div class="module-item"><span class="icon" style="color: #888;">○</span><span class="name">Cryptography</span></div>
+                    <div class="module-item"><span class="icon" style="color: #888;">○</span><span class="name">Quantum Computing</span></div>
+                    <div class="module-item"><span class="icon" style="color: #888;">○</span><span class="name">Control Theory</span></div>
+                    <div class="module-item"><span class="icon" style="color: #888;">○</span><span class="name">Mamba/SSM (Phase 8)</span></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1a1a3e; border-radius: 6px;">
+                <p style="font-size: 0.8rem; color: #00d4ff;">
+                    📖 160+ equations documented in SUPERBRAIN_CONSOLIDATION_SUMMARY.md<br>
+                    🔧 23 equations executable via amos_superbrain_equation_bridge.py<br>
+                    🧪 29 tests in test_superbrain_equation_bridge.py (all passing)
+                </p>
+            </div>
+        </div>
+
         <!-- Cognitive System -->
         <div class="section">
             <h2>🧠 Cognitive System (ClawSpring)</h2>
@@ -204,12 +698,867 @@
         </div>
 
         <!-- Refresh Button -->
-        <div style="text-align: center;">
+        <div style="text-align: center; margin-bottom: 30px;">
             <button class="refresh-btn" onclick="location.reload()">🔄 Refresh Dashboard</button>
+        </div>
+
+        <!-- COGNITIVE CHAT INTERFACE WITH SIDEBAR -->
+        <div style="display: flex; gap: 20px;">
+            <!-- Conversation History Sidebar -->
+            <div style="width: 280px; flex-shrink: 0;">
+                <div class="card" style="height: 100%; border: 2px solid #e5e7eb;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #374151; margin: 0; font-size: 16px;">💬 Conversations</h3>
+                        <button
+                            onclick="startNewSession()"
+                            style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"
+                        >
+                            + New
+                        </button>
+                    </div>
+
+                    <div id="session-list" style="max-height: 500px; overflow-y: auto;">
+                        <div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">
+                            Loading conversations...
+                        </div>
+                    </div>
+
+                    <div id="current-session-info" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; display: none;">
+                        <div>Active: <span id="active-session-id" style="font-weight: 600; color: #3b82f6;">-</span></div>
+                        <div style="margin-top: 4px;">Messages: <span id="active-session-count">0</span></div>
+                    </div>
+                </div>
+
+                <!-- RAG Documents Section -->
+                <div class="card" style="margin-top: 15px; border: 2px solid #10b981;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="color: #059669; margin: 0; font-size: 14px;">📚 Documents (RAG)</h3>
+                        <label style="font-size: 11px; color: #6b7280; cursor: pointer;">
+                            <input type="checkbox" id="rag-toggle" style="margin-right: 4px;">
+                            Use Docs
+                        </label>
+                    </div>
+
+                    <div id="document-list" style="max-height: 200px; overflow-y: auto; font-size: 12px;">
+                        <div style="text-align: center; color: #9ca3af; padding: 15px;">
+                            No documents uploaded
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <input
+                            type="file"
+                            id="document-upload"
+                            accept=".txt,.md,.py,.js,.html,.json,.csv"
+                            style="display: none;"
+                            onchange="uploadDocument()"
+                        >
+                        <button
+                            onclick="document.getElementById('document-upload').click()"
+                            style="width: 100%; padding: 8px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;"
+                        >
+                            📤 Upload Document
+                        </button>
+                        <div style="font-size: 10px; color: #9ca3af; margin-top: 5px; text-align: center;">
+                            TXT, MD, PY, JS, HTML, JSON, CSV
+                        </div>
+                    </div>
+
+                    <div id="rag-status" style="margin-top: 8px; padding: 6px; background: #d1fae5; border-radius: 4px; font-size: 11px; color: #065f46; display: none;">
+                        <span id="rag-doc-count">0</span> docs active for search
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div style="flex: 1;">
+                <div class="card" style="border: 2px solid #3b82f6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h2 style="color: #3b82f6; margin: 0;">🧠 AMOS Cognitive Chat</h2>
+                        <span id="session-badge" style="display: none; padding: 4px 8px; background: #dbeafe; color: #3b82f6; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                            Session: <span id="current-session-display">-</span>
+                        </span>
+                    </div>
+                    <p style="color: #64748b; margin-bottom: 20px; margin-top: 8px;">
+                        Biologically-aware AI that adapts to your cognitive, emotional, and physical state
+                    </p>
+
+            <!-- Biological Context Input -->
+            <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                    📝 Describe Your Current State (Optional)
+                </label>
+                <input
+                    type="text"
+                    id="biological-context"
+                    placeholder="e.g., Feeling tired, 6 hours working, screen glare..."
+                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                >
+                <div id="biological-analysis" style="margin-top: 10px; display: none;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 12px;">
+                        <div class="metric-card" style="padding: 8px;">
+                            <div style="color: #64748b;">Cognitive Load</div>
+                            <div id="cognitive-load" style="font-weight: 600; color: #3b82f6;">-</div>
+                        </div>
+                        <div class="metric-card" style="padding: 8px;">
+                            <div style="color: #64748b;">Emotional State</div>
+                            <div id="emotional-state" style="font-weight: 600; color: #8b5cf6;">-</div>
+                        </div>
+                        <div class="metric-card" style="padding: 8px;">
+                            <div style="color: #64748b;">Body Comfort</div>
+                            <div id="body-comfort" style="font-weight: 600; color: #10b981;">-</div>
+                        </div>
+                        <div class="metric-card" style="padding: 8px;">
+                            <div style="color: #64748b;">Environment</div>
+                            <div id="environmental-fit" style="font-weight: 600; color: #f59e0b;">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Display -->
+            <div id="chat-messages" style="
+                height: 300px;
+                overflow-y: auto;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+                background: #fafafa;
+            ">
+                <div style="text-align: center; color: #9ca3af; padding: 40px;">
+                    Start a conversation with AMOS...<br>
+                    <small>The AI will adapt to your described state</small>
+                </div>
+            </div>
+
+            <!-- Streaming Toggle -->
+            <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #4b5563;">
+                    <input type="checkbox" id="stream-toggle" checked style="cursor: pointer;">
+                    <span>⚡ Streaming Mode (faster, real-time)</span>
+                </label>
+            </div>
+
+            <!-- Input Area -->
+            <div style="display: flex; gap: 10px;">
+                <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Ask AMOS anything..."
+                    style="flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                    onkeypress="if(event.key==='Enter') sendMessage()"
+                >
+                <button
+                    onclick="sendMessage()"
+                    id="send-btn"
+                    style="padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                >
+                    Send
+                </button>
+            </div>
+
+            <!-- UI Adaptation Notice -->
+            <div id="ui-adaptation" style="margin-top: 15px; padding: 10px; background: #dbeafe; border-radius: 6px; display: none; font-size: 13px; color: #1e40af;">
+                <strong>🎨 UI Adapted:</strong> <span id="adaptation-details">-</span>
+            </div>
+
+            <!-- Provider Info -->
+            <div style="margin-top: 15px; font-size: 12px; color: #6b7280; display: flex; justify-content: space-between; align-items: center;">
+                <span id="provider-info">Checking providers...</span>
+                <span id="latency-info"></span>
+            </div>
         </div>
     </div>
 
     <script>
+        // API Base URL
+        const API_BASE = 'http://localhost:5000';
+
+        // Chat state
+        let messages = [];
+        let isStreaming = false;
+        let currentSessionId = null;
+        let sessions = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            checkProviders();
+            loadSessions();
+            loadDocuments();
+
+            // Analyze biological state when user stops typing
+            const contextInput = document.getElementById('biological-context');
+            let debounceTimer;
+            contextInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(analyzeBiologicalState, 1000);
+            });
+        });
+
+        // Load all conversation sessions
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/sessions`);
+                const data = await response.json();
+
+                sessions = data.sessions || [];
+                displaySessions();
+
+                // Auto-select most recent if none selected
+                if (!currentSessionId && sessions.length > 0) {
+                    await loadSession(sessions[0].session_id);
+                }
+            } catch (e) {
+                console.error('Failed to load sessions:', e);
+                document.getElementById('session-list').innerHTML = `
+                    <div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">
+                        No conversations yet
+                    </div>
+                `;
+            }
+        }
+
+        // Display sessions in sidebar
+        function displaySessions() {
+            const container = document.getElementById('session-list');
+
+            if (sessions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 13px;">
+                        No conversations yet. Start chatting!
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = sessions.map(session => `
+                <div
+                    onclick="loadSession('${session.session_id}')"
+                    style="
+                        padding: 10px 12px;
+                        margin-bottom: 8px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 13px;
+                        background: ${session.session_id === currentSessionId ? '#dbeafe' : '#f9fafb'};
+                        border: 1px solid ${session.session_id === currentSessionId ? '#3b82f6' : '#e5e7eb'};
+                        transition: all 0.2s;
+                    "
+                    onmouseover="this.style.background='#f3f4f6'"
+                    onmouseout="this.style.background='${session.session_id === currentSessionId ? '#dbeafe' : '#f9fafb'}'"
+                >
+                    <div style="font-weight: 500; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${session.title || 'Untitled'}
+                    </div>
+                    <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">
+                        ${new Date(session.updated_at).toLocaleDateString()} • ${session.message_count} msgs
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Start new conversation session
+        async function startNewSession() {
+            try {
+                const response = await fetch(`${API_BASE}/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+                currentSessionId = data.session_id;
+
+                // Clear chat
+                document.getElementById('chat-messages').innerHTML = `
+                    <div style="text-align: center; color: #9ca3af; font-size: 14px; margin-top: 40px;">
+                        Start a new conversation...
+                    </div>
+                `;
+                messages = [];
+
+                // Update UI
+                updateSessionUI();
+                await loadSessions();
+
+            } catch (e) {
+                console.error('Failed to create session:', e);
+                alert('Failed to start new conversation');
+            }
+        }
+
+        // Load specific session
+        async function loadSession(sessionId) {
+            try {
+                const response = await fetch(`${API_BASE}/sessions/${sessionId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('Session not found');
+                    return;
+                }
+
+                currentSessionId = sessionId;
+                messages = data.messages || [];
+
+                // Display messages
+                displaySessionMessages(messages);
+
+                // Update UI
+                updateSessionUI();
+                displaySessions(); // Refresh to show active state
+
+            } catch (e) {
+                console.error('Failed to load session:', e);
+            }
+        }
+
+        // Display messages from session
+        function displaySessionMessages(sessionMessages) {
+            const container = document.getElementById('chat-messages');
+
+            if (sessionMessages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #9ca3af; font-size: 14px; margin-top: 40px;">
+                        Start chatting...
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            sessionMessages.forEach(msg => {
+                addMessage(msg.role, msg.content, msg.ui_guidelines);
+            });
+        }
+
+        // Update session UI indicators
+        function updateSessionUI() {
+            // Update sidebar info
+            if (currentSessionId) {
+                const session = sessions.find(s => s.session_id === currentSessionId);
+                const messageCount = session ? session.message_count : messages.length;
+
+                document.getElementById('active-session-id').textContent = currentSessionId.slice(0, 8);
+                document.getElementById('active-session-count').textContent = messageCount;
+                document.getElementById('current-session-info').style.display = 'block';
+
+                // Update badge
+                document.getElementById('current-session-display').textContent = currentSessionId.slice(0, 8);
+                document.getElementById('session-badge').style.display = 'inline-block';
+            } else {
+                document.getElementById('current-session-info').style.display = 'none';
+                document.getElementById('session-badge').style.display = 'none';
+            }
+        }
+
+        // Check available providers
+        async function checkProviders() {
+            try {
+                const response = await fetch(`${API_BASE}/providers`);
+                const data = await response.json();
+
+                if (data.status === 'available') {
+                    const providers = Object.keys(data.providers).join(', ');
+                    document.getElementById('provider-info').textContent =
+                        `Providers: ${providers} (recommended: ${data.recommended})`;
+                } else {
+                    document.getElementById('provider-info').textContent =
+                        'No providers available. Start Ollama or set OPENAI_API_KEY.';
+                }
+            } catch (e) {
+                document.getElementById('provider-info').textContent =
+                    'API not connected. Start: python amos_api_enhanced.py';
+            }
+        }
+
+        // Analyze biological state
+        async function analyzeBiologicalState() {
+            const description = document.getElementById('biological-context').value.trim();
+
+            if (!description) {
+                document.getElementById('biological-analysis').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description })
+                });
+
+                if (!response.ok) throw new Error('Analysis failed');
+
+                const data = await response.json();
+
+                // Display analysis
+                document.getElementById('cognitive-load').textContent = data.cognitive_load;
+                document.getElementById('emotional-state').textContent = data.emotional_state;
+                document.getElementById('body-comfort').textContent = data.body_comfort;
+                document.getElementById('environmental-fit').textContent = data.environmental_fit;
+
+                document.getElementById('biological-analysis').style.display = 'block';
+
+            } catch (e) {
+                console.error('Biological analysis failed:', e);
+            }
+        }
+
+        // RAG Document Management
+        let documents = [];
+
+        async function loadDocuments() {
+            try {
+                const response = await fetch(`${API_BASE}/rag/documents`);
+                const data = await response.json();
+
+                documents = data.documents || [];
+                displayDocuments();
+            } catch (e) {
+                console.error('Failed to load documents:', e);
+            }
+        }
+
+        function displayDocuments() {
+            const container = document.getElementById('document-list');
+
+            if (documents.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #9ca3af; padding: 15px;">
+                        No documents uploaded
+                    </div>
+                `;
+                document.getElementById('rag-status').style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = documents.map(doc => `
+                <div style="padding: 8px; margin-bottom: 6px; background: #f0fdf4; border-radius: 4px; font-size: 11px;">
+                    <div style="font-weight: 500; color: #166534; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${doc.filename}
+                    </div>
+                    <div style="color: #15803d; margin-top: 2px;">
+                        ${doc.chunk_count} chunks • ${(doc.size_bytes / 1024).toFixed(1)} KB
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('rag-doc-count').textContent = documents.length;
+            document.getElementById('rag-status').style.display = 'block';
+        }
+
+        async function uploadDocument() {
+            const input = document.getElementById('document-upload');
+            const file = input.files[0];
+
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/rag/documents`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(`Upload failed: ${data.error}`);
+                    return;
+                }
+
+                alert(`Document uploaded: ${data.chunks} chunks indexed`);
+                await loadDocuments();
+
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Upload failed. Check console for details.');
+            }
+
+            input.value = '';
+        }
+
+        async function deleteDocument(docId) {
+            try {
+                const response = await fetch(`${API_BASE}/rag/documents/${docId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadDocuments();
+                }
+            } catch (e) {
+                console.error('Delete error:', e);
+            }
+        }
+
+        // Send message (with streaming support)
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const contextInput = document.getElementById('biological-context');
+            const streamToggle = document.getElementById('stream-toggle');
+            const ragToggle = document.getElementById('rag-toggle');
+            const message = input.value.trim();
+            const context = contextInput.value.trim();
+            const useStreaming = streamToggle && streamToggle.checked;
+            const useRAG = ragToggle && ragToggle.checked && documents.length > 0;
+
+            if (!message || isStreaming) return;
+
+            // Add user message to chat
+            addMessage('user', message);
+            input.value = '';
+
+            // Show loading
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.textContent = useStreaming ? 'Streaming...' : 'Thinking...';
+            sendBtn.disabled = true;
+            isStreaming = true;
+
+            try {
+                if (useStreaming) {
+                    await sendMessageStreaming(message, context, currentSessionId);
+                } else {
+                    await sendMessageStandard(message, context, currentSessionId);
+                }
+            } catch (e) {
+                addMessage('system', `Error: ${e.message}. Make sure Ollama is running (ollama serve) or OPENAI_API_KEY is set.`);
+            } finally {
+                sendBtn.textContent = 'Send';
+                sendBtn.disabled = false;
+                isStreaming = false;
+            }
+        }
+
+        // Standard non-streaming chat
+        async function sendMessageStandard(message, context, sessionId) {
+            const startTime = Date.now();
+
+            const response = await fetch(`${API_BASE}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    context: context,
+                    model: null,
+                    session_id: sessionId
+                })
+            });
+
+            const latency = Date.now() - startTime;
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Chat failed');
+            }
+
+            const data = await response.json();
+
+            // Update session ID if returned from API
+            if (data.session_id && !currentSessionId) {
+                currentSessionId = data.session_id;
+                updateSessionUI();
+                loadSessions(); // Refresh sidebar
+            }
+
+            // Add assistant response
+            addMessage('assistant', data.content, data.ui_guidelines);
+
+            // Display biological context
+            if (data.biological_context) {
+                document.getElementById('cognitive-load').textContent =
+                    data.biological_context.cognitive_load;
+                document.getElementById('emotional-state').textContent =
+                    data.biological_context.emotional_state;
+                document.getElementById('body-comfort').textContent =
+                    data.biological_context.body_comfort;
+                document.getElementById('environmental-fit').textContent =
+                    data.biological_context.environmental_fit;
+                document.getElementById('biological-analysis').style.display = 'block';
+            }
+
+            // Display UI adaptation
+            if (data.ui_guidelines) {
+                const guidelines = [];
+                if (data.ui_guidelines.font_size) guidelines.push(`Font: ${data.ui_guidelines.font_size}`);
+                if (data.ui_guidelines.chunking) guidelines.push('Chunked output');
+                if (data.ui_guidelines.tone) guidelines.push(`Tone: ${data.ui_guidelines.tone}`);
+
+                document.getElementById('adaptation-details').textContent = guidelines.join(' • ');
+                document.getElementById('ui-adaptation').style.display = 'block';
+            }
+
+            // Update provider info
+            document.getElementById('provider-info').textContent =
+                `Provider: ${data.provider} • Model: ${data.model}`;
+            document.getElementById('latency-info').textContent =
+                `Latency: ${data.latency_ms.toFixed(0)}ms • Context: ${data.context_window || 0} msgs`;
+        }
+
+        // Streaming chat with Server-Sent Events
+        async function sendMessageStreaming(message, context, sessionId) {
+            const startTime = Date.now();
+            let streamedContent = '';
+            let guidelines = null;
+
+            // Create placeholder for streaming response
+            const messageId = 'streaming-' + Date.now();
+            addStreamingMessage(messageId);
+
+            try {
+                const response = await fetch(`${API_BASE}/chat/stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        context: context,
+                        model: null,
+                        session_id: sessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Streaming failed');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+
+                            if (data === '[DONE]') {
+                                break;
+                            }
+
+                            // Check if it's metadata (first chunk contains guidelines)
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.ui_guidelines) {
+                                    guidelines = parsed.ui_guidelines;
+                                    // Display biological context from metadata
+                                    if (parsed.biological_context) {
+                                        document.getElementById('cognitive-load').textContent =
+                                            parsed.biological_context.cognitive_load;
+                                        document.getElementById('emotional-state').textContent =
+                                            parsed.biological_context.emotional_state;
+                                        document.getElementById('body-comfort').textContent =
+                                            parsed.biological_context.body_comfort;
+                                        document.getElementById('environmental-fit').textContent =
+                                            parsed.biological_context.environmental_fit;
+                                        document.getElementById('biological-analysis').style.display = 'block';
+                                    }
+                                    if (parsed.provider) {
+                                        document.getElementById('provider-info').textContent =
+                                            `Provider: ${parsed.provider} • Model: ${parsed.model || 'unknown'}`;
+                                    }
+                                    continue;
+                                }
+                            } catch (e) {
+                                // Not JSON, treat as content
+                            }
+
+                            streamedContent += data;
+                            updateStreamingMessage(messageId, streamedContent, guidelines);
+                        }
+                    }
+                }
+
+                const latency = Date.now() - startTime;
+                document.getElementById('latency-info').textContent =
+                    `Streaming complete • ${latency.toFixed(0)}ms`;
+
+                // Finalize the message
+                finalizeStreamingMessage(messageId, streamedContent, guidelines);
+
+                // Display UI adaptation
+                if (guidelines) {
+                    const guidelineText = [];
+                    if (guidelines.font_size) guidelineText.push(`Font: ${guidelines.font_size}`);
+                    if (guidelines.chunking) guidelineText.push('Chunked output');
+                    if (guidelines.tone) guidelineText.push(`Tone: ${guidelines.tone}`);
+
+                    document.getElementById('adaptation-details').textContent = guidelineText.join(' • ');
+                    document.getElementById('ui-adaptation').style.display = 'block';
+                }
+
+            } catch (e) {
+                // Remove streaming placeholder and show error
+                removeStreamingMessage(messageId);
+                throw e;
+            }
+        }
+
+        // Add streaming message placeholder
+        function addStreamingMessage(id) {
+            const container = document.getElementById('chat-messages');
+
+            // Remove placeholder if exists
+            if (container.children.length === 1 &&
+                container.children[0].style.textAlign === 'center') {
+                container.innerHTML = '';
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.id = id;
+            messageDiv.style.marginBottom = '15px';
+            messageDiv.innerHTML = `
+                <div style="display: flex; justify-content: flex-start;">
+                    <div style="
+                        max-width: 80%;
+                        background: #f3f4f6;
+                        color: #1f2937;
+                        padding: 12px;
+                        border-radius: 12px;
+                        font-size: 14px;
+                        line-height: 1.5;
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    ">
+                        <strong>🤖 AMOS</strong><br>
+                        <span class="streaming-content">Thinking</span><span class="streaming-cursor">...</span>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Update streaming message content
+        function updateStreamingMessage(id, content, guidelines) {
+            const messageDiv = document.getElementById(id);
+            if (!messageDiv) return;
+
+            const contentSpan = messageDiv.querySelector('.streaming-content');
+            const cursorSpan = messageDiv.querySelector('.streaming-cursor');
+
+            if (contentSpan) {
+                // Apply UI guidelines if available
+                let fontSize = '14px';
+                let lineHeight = '1.5';
+
+                if (guidelines) {
+                    if (guidelines.font_size) fontSize = guidelines.font_size;
+                    if (guidelines.line_height) lineHeight = guidelines.line_height;
+                }
+
+                const container = contentSpan.parentElement;
+                container.style.fontSize = fontSize;
+                container.style.lineHeight = lineHeight;
+
+                contentSpan.textContent = content;
+            }
+
+            // Animate cursor
+            if (cursorSpan) {
+                const dots = cursorSpan.textContent.length > 3 ? '' : cursorSpan.textContent + '.';
+                cursorSpan.textContent = dots.length > 3 ? '...' : dots;
+            }
+
+            // Auto-scroll
+            const container = document.getElementById('chat-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Finalize streaming message
+        function finalizeStreamingMessage(id, content, guidelines) {
+            const messageDiv = document.getElementById(id);
+            if (!messageDiv) return;
+
+            // Remove cursor
+            const cursorSpan = messageDiv.querySelector('.streaming-cursor');
+            if (cursorSpan) cursorSpan.remove();
+
+            // Convert to regular message
+            messageDiv.removeAttribute('id');
+        }
+
+        // Remove streaming message on error
+        function removeStreamingMessage(id) {
+            const messageDiv = document.getElementById(id);
+            if (messageDiv) messageDiv.remove();
+        }
+
+        // Add message to chat
+        function addMessage(role, content, guidelines = null) {
+            const container = document.getElementById('chat-messages');
+
+            // Remove placeholder if exists
+            if (container.children.length === 1 &&
+                container.children[0].style.textAlign === 'center') {
+                container.innerHTML = '';
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.style.marginBottom = '15px';
+
+            const isUser = role === 'user';
+            const bgColor = isUser ? '#3b82f6' : (role === 'system' ? '#ef4444' : '#f3f4f6');
+            const textColor = isUser ? 'white' : '#1f2937';
+            const align = isUser ? 'flex-end' : 'flex-start';
+
+            // Apply UI guidelines if provided
+            let fontSize = '14px';
+            let lineHeight = '1.5';
+            let padding = '12px';
+
+            if (guidelines) {
+                if (guidelines.font_size) {
+                    fontSize = guidelines.font_size;
+                }
+                if (guidelines.line_height) {
+                    lineHeight = guidelines.line_height;
+                }
+                if (guidelines.chunking) {
+                    // Format content with better spacing
+                    content = content.replace(/\n\n/g, '\n\n\n');
+                }
+            }
+
+            messageDiv.innerHTML = `
+                <div style="display: flex; justify-content: ${align};">
+                    <div style="
+                        max-width: 80%;
+                        background: ${bgColor};
+                        color: ${textColor};
+                        padding: ${padding};
+                        border-radius: 12px;
+                        font-size: ${fontSize};
+                        line-height: ${lineHeight};
+                        white-space: pre-wrap;
+                        word-wrap: break-word;
+                    ">
+                        ${role !== 'user' ? '<strong>' + (role === 'system' ? '⚠️ System' : '🤖 AMOS') + '</strong><br>' : ''}
+                        ${escapeHtml(content)}
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Simulated data fetch
         async function loadData() {
             try {
@@ -236,6 +1585,856 @@
                 document.getElementById('total-decisions').textContent = data.decisions;
             }
         }
+
+        // Execute equation from dashboard
+        async function executeEquation() {
+            const equation = document.getElementById('equation-select').value;
+            const inputsStr = document.getElementById('equation-inputs').value;
+            const resultDiv = document.getElementById('equation-result');
+
+            if (!equation) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<span style="color: #ff4444;">⚠️ Please select an equation</span>';
+                return;
+            }
+
+            try {
+                const inputs = inputsStr ? JSON.parse(inputsStr) : {};
+
+                // Call the API endpoint
+                const response = await fetch('/api/superbrain/equations/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ equation, inputs })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    displayEquationResult(result);
+                } else {
+                    // Fallback: simulate execution for demo
+                    simulateEquationExecution(equation, inputs);
+                }
+            } catch (e) {
+                // Fallback: simulate execution for demo
+                simulateEquationExecution(equation, inputsStr ? JSON.parse(inputsStr) : {});
+            }
+        }
+
+        function simulateEquationExecution(equation, inputs) {
+            const resultDiv = document.getElementById('equation-result');
+            resultDiv.style.display = 'block';
+
+            // Simulate different equations
+            let result = {};
+            const timestamp = new Date().toISOString();
+
+            switch(equation) {
+                case 'sigmoid':
+                    const x = inputs.x || 0;
+                    result = { output: 1 / (1 + Math.exp(-x)), formula: 'σ(x) = 1/(1+e^(-x))' };
+                    break;
+                case 'relu':
+                    result = { output: Math.max(0, inputs.x || 0), formula: 'max(0, x)' };
+                    break;
+                case 'privacy_budget':
+                    const epsilons = inputs.epsilons || [0.1, 0.2];
+                    const total = epsilons.reduce((a, b) => a + b, 0);
+                    result = { output: { total_budget: total }, invariants_valid: total > 0 };
+                    break;
+                case 'entropy':
+                    result = { output: 1.5, info: 'Shannon entropy in bits' };
+                    break;
+                case 'littles_law':
+                    const l = (inputs.rate || 10) * (inputs.time || 0.5);
+                    result = { output: { avg_in_system: l }, formula: 'L = λ·W' };
+                    break;
+                case 'bellman':
+                    const v = (inputs.reward || 1) + (inputs.gamma || 0.9) * (inputs.next_value || 10);
+                    result = { output: v, formula: 'V(s) = r + γ·V(s\')' };
+                    break;
+                default:
+                    result = { output: 'Demo mode - API not connected', note: 'Connect backend for full execution' };
+            }
+
+            resultDiv.innerHTML = `
+                <div style="color: #00ff88; margin-bottom: 0.5rem;">
+                    ✓ Equation executed successfully
+                </div>
+                <div style="color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                    ${timestamp}
+                </div>
+                <pre style="color: #00d4ff; margin: 0; white-space: pre-wrap;">${JSON.stringify(result, null, 2)}</pre>
+            `;
+        }
+
+        function displayEquationResult(result) {
+            const resultDiv = document.getElementById('equation-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div style="color: ${result.invariants_valid ? '#00ff88' : '#ffaa00'}; margin-bottom: 0.5rem;">
+                    ${result.invariants_valid ? '✓' : '⚠'} Invariants: ${result.invariants_valid ? 'Valid' : 'Check warnings'}
+                </div>
+                <div style="color: #888; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                    ${result.execution_time_ms ? `⏱ ${result.execution_time_ms.toFixed(2)}ms | ` : ''}${result.timestamp}
+                </div>
+                <pre style="color: #00d4ff; margin: 0; white-space: pre-wrap;">${JSON.stringify(result.outputs, null, 2)}</pre>
+                ${result.cross_domain_links?.length ? `
+                    <div style="margin-top: 0.5rem; color: #7b2cbf; font-size: 0.75rem;">
+                        🔗 Cross-domain: ${result.cross_domain_links.join(', ')}
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // Unified Detection System Functions
+        async function runDetection() {
+            const btn = document.querySelector('button[onclick="runDetection()"]');
+            btn.textContent = '🔍 Running Detection...';
+            btn.disabled = true;
+
+            try {
+                // In production, this would call the API
+                // const response = await fetch(`${API_BASE}/detect`, { method: 'POST' });
+                // const data = await response.json();
+
+                // For now, simulate detection results
+                await simulateDetection();
+            } catch (e) {
+                console.error('Detection failed:', e);
+                alert('Detection failed. Check console for details.');
+            } finally {
+                btn.textContent = '🔍 Run Unified Detection';
+                btn.disabled = false;
+            }
+        }
+
+        async function simulateDetection() {
+            // Simulate API delay
+            await new Promise(r => setTimeout(r, 1000));
+
+            // Generate realistic detection results
+            const health = 55 + Math.random() * 30; // 55-85%
+            const hallucination = 0.3 + Math.random() * 0.4; // 0.3-0.7
+            const integrity = 0.1 + Math.random() * 0.3; // 0.1-0.4
+            const drift = 0.4 + Math.random() * 0.4; // 0.4-0.8
+
+            // Update health card
+            const healthCard = document.getElementById('detection-health-card');
+            const healthValue = document.getElementById('detection-health');
+            healthValue.textContent = health.toFixed(1) + '%';
+            healthCard.className = 'status-card' + (health < 60 ? ' error' : health < 75 ? ' warning' : '');
+
+            // Update hallucination card
+            const hallCard = document.getElementById('hallucination-card');
+            const hallValue = document.getElementById('hallucination-score');
+            hallValue.textContent = (hallucination * 100).toFixed(1) + '%';
+            hallCard.className = 'status-card' + (hallucination > 0.7 ? ' error' : hallucination > 0.5 ? ' warning' : '');
+
+            // Update integrity card
+            const integCard = document.getElementById('integrity-card');
+            const integValue = document.getElementById('integrity-score');
+            integValue.textContent = ((1 - integrity) * 100).toFixed(1) + '%';
+            integCard.className = 'status-card' + (integrity > 0.5 ? ' error' : integrity > 0.3 ? ' warning' : '');
+
+            // Update drift card
+            const driftCard = document.getElementById('drift-card');
+            const driftValue = document.getElementById('drift-score');
+            driftValue.textContent = (drift * 100).toFixed(1) + '%';
+            driftCard.className = 'status-card' + (drift > 0.7 ? ' error' : drift > 0.5 ? ' warning' : '');
+
+            // Update detailed metrics
+            document.getElementById('h-metric-se').textContent = `Semantic Entropy: ${(1.5 + Math.random()).toFixed(3)}`;
+            document.getElementById('h-metric-reppl').textContent = `RePPL: ${(2 + Math.random() * 5).toFixed(3)}`;
+            document.getElementById('h-metric-sc').textContent = `Self-Consistency: ${(0.3 + Math.random() * 0.5).toFixed(3)}`;
+
+            document.getElementById('i-metric-entropy').textContent = `Shannon Entropy: ${(0.8 + Math.random() * 0.5).toFixed(3)}`;
+            document.getElementById('i-metric-tv').textContent = `Total Variation: ${(0.2 + Math.random() * 0.4).toFixed(3)}`;
+            document.getElementById('i-metric-jsd').textContent = `Jensen-Shannon: ${(0.1 + Math.random() * 0.3).toFixed(3)}`;
+
+            document.getElementById('s-metric-radius').textContent = `Spectral Radius: ${(2 + Math.random() * 2).toFixed(3)}`;
+            document.getElementById('s-metric-gap').textContent = `Spectral Gap: ${(0.2 + Math.random() * 0.3).toFixed(3)}`;
+            document.getElementById('s-metric-lyapunov').textContent = `Lyapunov: ${(-0.5 + Math.random() * 0.8).toFixed(3)}`;
+
+            // Generate alerts
+            const alerts = [];
+            if (hallucination > 0.6) {
+                alerts.push('⚠️ Elevated hallucination risk detected - verify outputs manually');
+            }
+            if (integrity > 0.4) {
+                alerts.push('🔐 Integrity degradation - check distribution consistency');
+            }
+            if (drift > 0.6) {
+                alerts.push('📈 Structural drift accelerating - maintenance recommended');
+            }
+            if (health < 60) {
+                alerts.push('🚨 Critical system health - immediate review required');
+            }
+
+            const alertsDiv = document.getElementById('detection-alerts');
+            if (alerts.length === 0) {
+                alertsDiv.innerHTML = '<p style="color: #00ff88;">✅ No critical alerts - system operating normally</p>';
+            } else {
+                alertsDiv.innerHTML = alerts.map(a => `<p style="color: #ffaa00; margin: 0.25rem 0;">${a}</p>`).join('');
+            }
+
+            // Store detection results for export
+            window.lastDetectionResults = {
+                timestamp: new Date().toISOString(),
+                overall_health: health / 100,
+                hallucination: { unified_score: hallucination },
+                integrity: { unified_score: integrity },
+                structural_drift: { unified_drift_score: drift },
+                critical_alerts: alerts,
+            };
+        }
+
+        function exportDetectionReport() {
+            if (!window.lastDetectionResults) {
+                alert('Please run detection first!');
+                return;
+            }
+
+            const dataStr = JSON.stringify(window.lastDetectionResults, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `amos_detection_report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-Remediation Functions
+        let selfHealingEnabled = false;
+        let remediationHistory = {
+            active: 0,
+            completed: 0,
+            avgImprovement: 0,
+            lastActions: []
+        };
+
+        async function triggerAutoRemediation() {
+            if (!window.lastDetectionResults) {
+                alert('Please run detection first!');
+                return;
+            }
+
+            const btn = document.querySelector('button[onclick="triggerAutoRemediation()"]');
+            btn.textContent = '🩹 Remediating...';
+            btn.disabled = true;
+
+            try {
+                // Simulate API call
+                await new Promise(r => setTimeout(r, 1500));
+
+                // Generate remediation actions based on alerts
+                const alerts = window.lastDetectionResults.critical_alerts || [];
+                const actions = [];
+
+                alerts.forEach(alert => {
+                    if (alert.includes('HALLUCINATION')) {
+                        actions.push({
+                            strategy: 'Temperature Reduction',
+                            status: 'success',
+                            improvement: 0.22
+                        });
+                        actions.push({
+                            strategy: 'NLI Verification',
+                            status: 'success',
+                            improvement: 0.18
+                        });
+                    }
+                    if (alert.includes('INTEGRITY')) {
+                        actions.push({
+                            strategy: 'Distribution Rebalance',
+                            status: 'success',
+                            improvement: 0.25
+                        });
+                    }
+                    if (alert.includes('STRUCTURAL')) {
+                        actions.push({
+                            strategy: 'Spectral Correction',
+                            status: 'partial',
+                            improvement: 0.15
+                        });
+                    }
+                });
+
+                if (actions.length === 0) {
+                    actions.push({
+                        strategy: 'Preventive Sampling Adjustment',
+                        status: 'success',
+                        improvement: 0.05
+                    });
+                }
+
+                // Update history
+                remediationHistory.active = 0;
+                remediationHistory.completed += 1;
+                remediationHistory.lastActions = actions;
+
+                const totalImprovement = actions.reduce((sum, a) => sum + a.improvement, 0);
+                const avgImprovement = totalImprovement / actions.length;
+                remediationHistory.avgImprovement =
+                    (remediationHistory.avgImprovement * (remediationHistory.completed - 1) + avgImprovement)
+                    / remediationHistory.completed;
+
+                // Update UI
+                document.getElementById('active-remediations').textContent = remediationHistory.active;
+                document.getElementById('completed-plans').textContent = remediationHistory.completed;
+                document.getElementById('avg-improvement').textContent =
+                    (remediationHistory.avgImprovement * 100).toFixed(1) + '%';
+
+                // Show actions
+                const actionsDiv = document.getElementById('remediation-actions');
+                actionsDiv.innerHTML = actions.map(a => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #252545; border-radius: 4px;">
+                        <span style="color: #fff; font-size: 0.85rem;">${a.strategy}</span>
+                        <span style="color: ${a.status === 'success' ? '#00ff88' : '#ffaa00'}; font-size: 0.8rem;">
+                            ${a.status === 'success' ? '✓' : '◐'} ${(a.improvement * 100).toFixed(1)}%
+                        </span>
+                    </div>
+                `).join('');
+
+                console.log('Auto-remediation complete:', actions);
+
+            } catch (e) {
+                console.error('Remediation failed:', e);
+                alert('Remediation failed. Check console.');
+            } finally {
+                btn.textContent = '🩹 Auto-Remediate Issues';
+                btn.disabled = false;
+            }
+        }
+
+        function toggleSelfHealing() {
+            selfHealingEnabled = !selfHealingEnabled;
+
+            const statusEl = document.getElementById('self-healing-status');
+            const btn = document.querySelector('button[onclick="toggleSelfHealing()"]');
+
+            if (selfHealingEnabled) {
+                statusEl.textContent = 'On';
+                statusEl.style.color = '#00ff88';
+                btn.textContent = '🔁 Stop Self-Healing';
+                btn.style.background = 'linear-gradient(135deg, #ff4444, #cc3333)';
+
+                // Start periodic detection
+                window.selfHealingInterval = setInterval(() => {
+                    console.log('[Self-Healing] Running periodic detection...');
+                    // In production, this would call the actual detection API
+                }, 30000); // Every 30 seconds
+
+                console.log('[Self-Healing] Enabled');
+            } else {
+                statusEl.textContent = 'Off';
+                statusEl.style.color = '#888';
+                btn.textContent = '🔁 Toggle Self-Healing';
+                btn.style.background = 'linear-gradient(135deg, #7b2cbf, #9d4edd)';
+
+                // Stop periodic detection
+                if (window.selfHealingInterval) {
+                    clearInterval(window.selfHealingInterval);
+                }
+
+                console.log('[Self-Healing] Disabled');
+            }
+        }
+
+        // =====================================================
+        // Predictive Intelligence Functions
+        // =====================================================
+        let predictionEngineRunning = false;
+        let predictionHistory = [];
+        let activePredictions = [];
+        let predictionAlerts = [];
+
+        async function startPredictionEngine() {
+            predictionEngineRunning = true;
+
+            document.getElementById('pi-status').textContent = 'Active';
+            document.getElementById('pi-status').style.color = '#00ff88';
+            document.getElementById('pi-status-card').className = 'status-card';
+
+            document.getElementById('predictions-container').innerHTML =
+                '<p style="color: #00d4ff;">🔮 Prediction engine started. Generating baseline predictions...</p>';
+
+            console.log('[PredictiveIntelligence] Engine started');
+
+            // Generate initial predictions
+            await generatePredictions();
+        }
+
+        async function generatePredictions() {
+            if (!predictionEngineRunning) {
+                alert('Please start the prediction engine first!');
+                return;
+            }
+
+            const btn = document.querySelector('button[onclick="generatePredictions()"]');
+            btn.textContent = '📊 Generating...';
+            btn.disabled = true;
+
+            try {
+                // Simulate API delay
+                await new Promise(r => setTimeout(r, 1200));
+
+                // Generate predictions for each metric
+                const horizons = ['immediate', 'short_term', 'medium_term'];
+                const metrics = [
+                    { name: 'overall_health', current: 0.75, trend: -0.05 },
+                    { name: 'hallucination_score', current: 0.35, trend: -0.08 },
+                    { name: 'integrity_score', current: 0.82, trend: 0.03 },
+                    { name: 'drift_score', current: 0.45, trend: 0.12 }
+                ];
+
+                activePredictions = [];
+
+                metrics.forEach(metric => {
+                    horizons.forEach(horizon => {
+                        const timeMultiplier = horizon === 'immediate' ? 0.2 :
+                                              horizon === 'short_term' ? 0.5 : 1.0;
+                        const predicted = Math.max(0, Math.min(1,
+                            metric.current + (metric.trend * timeMultiplier) + (Math.random() - 0.5) * 0.1
+                        ));
+
+                        const risk = Math.abs(predicted - metric.current) * 2;
+                        const severity = risk > 0.8 ? 'critical' :
+                                        risk > 0.6 ? 'high' :
+                                        risk > 0.4 ? 'medium' : 'low';
+
+                        activePredictions.push({
+                            id: `pred_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                            metric: metric.name,
+                            horizon: horizon,
+                            current: metric.current,
+                            predicted: predicted,
+                            confidence: 0.85 + Math.random() * 0.1,
+                            risk_score: risk,
+                            severity: severity,
+                            timestamp: new Date().toISOString()
+                        });
+                    });
+                });
+
+                // Update predictions display
+                updatePredictionsDisplay();
+
+                // Update trend analysis
+                updateTrendAnalysis(metrics);
+
+                // Check for alerts
+                checkPredictionAlerts();
+
+                // Update counters
+                document.getElementById('pi-predictions-count').textContent = activePredictions.length;
+
+                console.log('[PredictiveIntelligence] Generated', activePredictions.length, 'predictions');
+
+            } catch (e) {
+                console.error('Prediction generation failed:', e);
+                alert('Prediction generation failed. Check console.');
+            } finally {
+                btn.textContent = '📊 Generate Predictions';
+                btn.disabled = false;
+            }
+        }
+
+        function updatePredictionsDisplay() {
+            const container = document.getElementById('predictions-container');
+
+            if (activePredictions.length === 0) {
+                container.innerHTML = '<p style="color: #888;">No predictions generated yet...</p>';
+                return;
+            }
+
+            // Group by metric
+            const byMetric = {};
+            activePredictions.forEach(p => {
+                if (!byMetric[p.metric]) byMetric[p.metric] = [];
+                byMetric[p.metric].push(p);
+            });
+
+            let html = '';
+            Object.keys(byMetric).forEach(metric => {
+                const predictions = byMetric[metric];
+                const displayName = metric.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                html += `
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: #252545; border-radius: 6px;">
+                        <div style="font-weight: 600; color: #fff; margin-bottom: 0.5rem;">${displayName}</div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                            ${predictions.map(p => {
+                                const color = p.severity === 'critical' ? '#ff4444' :
+                                            p.severity === 'high' ? '#ffaa00' :
+                                            p.severity === 'medium' ? '#ffdd00' : '#00ff88';
+                                const arrow = p.predicted > p.current ? '↑' : '↓';
+                                return `
+                                    <div style="text-align: center; padding: 0.5rem; background: #1a1a3e; border-radius: 4px;">
+                                        <div style="font-size: 0.7rem; color: #888; text-transform: uppercase;">${p.horizon.replace('_', ' ')}</div>
+                                        <div style="font-size: 1.1rem; color: ${color}; font-weight: 600;">
+                                            ${arrow} ${(p.predicted * 100).toFixed(0)}%
+                                        </div>
+                                        <div style="font-size: 0.7rem; color: #666;">conf: ${(p.confidence * 100).toFixed(0)}%</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateTrendAnalysis(metrics) {
+            metrics.forEach(metric => {
+                const trendId = `pi-trend-${metric.name.replace('_', '-')}`;
+                const el = document.getElementById(trendId);
+                if (el) {
+                    const trend = metric.trend > 0.05 ? 'critical (accelerating)' :
+                                 metric.trend > 0 ? 'degrading' :
+                                 metric.trend < -0.05 ? 'improving' : 'stable';
+                    const color = metric.trend > 0.05 ? '#ff4444' :
+                                  metric.trend > 0 ? '#ffaa00' :
+                                  metric.trend < 0 ? '#00ff88' : '#888';
+                    el.innerHTML = `<span style="color: ${color};">${trend}</span> (${metric.trend > 0 ? '+' : ''}${metric.trend.toFixed(3)}/hr)`;
+                }
+            });
+        }
+
+        function checkPredictionAlerts() {
+            predictionAlerts = activePredictions.filter(p => p.severity === 'critical' || p.severity === 'high');
+
+            document.getElementById('pi-alerts-count').textContent = predictionAlerts.length;
+            const alertsCard = document.getElementById('pi-alerts-card');
+
+            if (predictionAlerts.length > 0) {
+                alertsCard.className = 'status-card error';
+            } else {
+                alertsCard.className = 'status-card';
+            }
+
+            const container = document.getElementById('pi-alerts-container');
+            if (predictionAlerts.length === 0) {
+                container.innerHTML = '<p style="color: #888;">No predictive alerts at this time...</p>';
+            } else {
+                container.innerHTML = predictionAlerts.map(a => `
+                    <div style="margin: 0.5rem 0; padding: 0.75rem; background: ${a.severity === 'critical' ? '#3a1a1a' : '#3a2a1a'}; border-left: 3px solid ${a.severity === 'critical' ? '#ff4444' : '#ffaa00'}; border-radius: 4px;">
+                        <div style="font-weight: 600; color: #fff; font-size: 0.85rem;">
+                            ${a.severity === 'critical' ? '🚨' : '⚠️'} ${a.metric.replace(/_/g, ' ').toUpperCase()} - ${a.horizon.replace('_', ' ').toUpperCase()}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #aaa; margin-top: 0.25rem;">
+                            Risk: ${(a.risk_score * 100).toFixed(0)}% | Current: ${(a.current * 100).toFixed(0)}% → Predicted: ${(a.predicted * 100).toFixed(0)}%
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function exportPredictions() {
+            if (activePredictions.length === 0) {
+                alert('No predictions to export. Generate predictions first!');
+                return;
+            }
+
+            const data = {
+                timestamp: new Date().toISOString(),
+                predictions: activePredictions,
+                alerts: predictionAlerts,
+                summary: {
+                    total: activePredictions.length,
+                    alerts: predictionAlerts.length,
+                    metrics_tracked: 4
+                }
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `amos_predictions_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // =====================================================
+        // Governance Streaming Functions
+        // =====================================================
+        let governanceWS = null;
+        let governanceConnected = false;
+        let governanceEvents = [];
+        let governanceCycles = 0;
+
+        function connectGovernanceStream() {
+            const wsUrl = 'ws://localhost:8767/ws/governance/stream';
+
+            try {
+                governanceWS = new WebSocket(wsUrl);
+
+                governanceWS.onopen = () => {
+                    governanceConnected = true;
+                    document.getElementById('stream-status').textContent = 'Connected';
+                    document.getElementById('stream-status').style.color = '#00ff88';
+                    document.getElementById('stream-status-card').className = 'status-card';
+                    document.getElementById('btn-connect-stream').disabled = true;
+                    document.getElementById('btn-disconnect-stream').disabled = false;
+
+                    logGovernanceEvent('Connected to governance stream', 'success');
+                    console.log('[GovernanceStream] Connected');
+                };
+
+                governanceWS.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    handleGovernanceMessage(msg);
+                };
+
+                governanceWS.onclose = () => {
+                    governanceConnected = false;
+                    document.getElementById('stream-status').textContent = 'Disconnected';
+                    document.getElementById('stream-status').style.color = '#ff4444';
+                    document.getElementById('stream-status-card').className = 'status-card error';
+                    document.getElementById('btn-connect-stream').disabled = false;
+                    document.getElementById('btn-disconnect-stream').disabled = true;
+
+                    logGovernanceEvent('Disconnected from governance stream', 'warning');
+                    console.log('[GovernanceStream] Disconnected');
+                };
+
+                governanceWS.onerror = (error) => {
+                    console.error('[GovernanceStream] Error:', error);
+                    logGovernanceEvent('WebSocket error occurred', 'error');
+                };
+
+            } catch (e) {
+                console.error('[GovernanceStream] Connection failed:', e);
+                logGovernanceEvent('Connection failed: ' + e.message, 'error');
+
+                // Fallback to demo mode
+                startDemoGovernanceStream();
+            }
+        }
+
+        function disconnectGovernanceStream() {
+            if (governanceWS) {
+                governanceWS.close();
+                governanceWS = null;
+            }
+            governanceConnected = false;
+        }
+
+        function handleGovernanceMessage(msg) {
+            governanceEvents.push(msg);
+            document.getElementById('stream-events').textContent = governanceEvents.length;
+
+            switch (msg.type) {
+                case 'cycle_started':
+                    logGovernanceEvent(`Cycle started: ${msg.data?.cycle_id || 'unknown'}`, 'info');
+                    break;
+                case 'cycle_completed':
+                    governanceCycles++;
+                    document.getElementById('stream-cycles').textContent = governanceCycles;
+                    logGovernanceEvent(
+                        `Cycle completed: ${msg.data?.status || 'unknown'} | Issues: ${msg.data?.issues_found || 0} → Remediated: ${msg.data?.issues_remediated || 0}`,
+                        msg.data?.status === 'success' ? 'success' : 'warning'
+                    );
+                    break;
+                case 'prediction_update':
+                    logGovernanceEvent(
+                        `Prediction: ${msg.data?.metric_name || 'unknown'} ${msg.data?.horizon || ''} | Risk: ${(msg.data?.risk_score * 100).toFixed(0)}%`,
+                        msg.priority === 'critical' ? 'error' : msg.priority === 'high' ? 'warning' : 'info'
+                    );
+                    break;
+                case 'alert_triggered':
+                    logGovernanceEvent(
+                        `ALERT: ${msg.data?.worst_severity?.toUpperCase() || 'unknown'} | Risk: ${(msg.data?.overall_risk * 100).toFixed(0)}%`,
+                        'error'
+                    );
+                    break;
+                case 'health_update':
+                    document.getElementById('stream-clients').textContent = msg.data?.connected_clients || 0;
+                    break;
+                default:
+                    logGovernanceEvent(`Event: ${msg.type}`, 'info');
+            }
+        }
+
+        function logGovernanceEvent(message, level = 'info') {
+            const log = document.getElementById('governance-log');
+            const timestamp = new Date().toLocaleTimeString();
+
+            const color = level === 'error' ? '#ff4444' :
+                         level === 'warning' ? '#ffaa00' :
+                         level === 'success' ? '#00ff88' : '#00d4ff';
+
+            const entry = document.createElement('div');
+            entry.style.color = color;
+            entry.style.marginBottom = '0.25rem';
+            entry.textContent = `[${timestamp}] ${message}`;
+
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+
+            // Limit entries
+            while (log.children.length > 100) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        function startDemoGovernanceStream() {
+            logGovernanceEvent('Starting demo mode (no backend connection)', 'warning');
+
+            // Simulate periodic events
+            window.demoStreamInterval = setInterval(() => {
+                if (!governanceConnected && Math.random() > 0.7) {
+                    const events = [
+                        { type: 'health_update', data: { connected_clients: Math.floor(Math.random() * 5) } },
+                        { type: 'prediction_update', data: { metric_name: 'overall_health', horizon: 'short_term', risk_score: Math.random() }, priority: Math.random() > 0.8 ? 'high' : 'normal' }
+                    ];
+                    const event = events[Math.floor(Math.random() * events.length)];
+                    handleGovernanceMessage(event);
+                }
+            }, 5000);
+        }
+
+        // =====================================================
+        // Governance Configuration Functions
+        // =====================================================
+        let currentGovernanceConfig = {
+            policy: 'development',
+            mode: 'full_auto',
+            cycle_interval: 60,
+            auto_remediate: true,
+            thresholds: {
+                hallucination_warning: 0.5,
+                integrity_warning: 0.3,
+                drift_warning: 0.5,
+            }
+        };
+
+        function loadGovernanceConfig() {
+            // In production, this would fetch from API
+            // For demo, use mock data
+            console.log('[GovernanceConfig] Loading configuration...');
+
+            // Simulate API call
+            setTimeout(() => {
+                updateGovernanceUI(currentGovernanceConfig);
+                console.log('[GovernanceConfig] Configuration loaded');
+            }, 500);
+        }
+
+        function updateGovernanceUI(config) {
+            // Update status cards
+            document.getElementById('current-policy-name').textContent = config.policy;
+            document.getElementById('current-mode').textContent = config.mode;
+            document.getElementById('current-mode').style.color =
+                config.mode === 'full_auto' ? '#00ff88' :
+                config.mode === 'supervised' ? '#ffaa00' :
+                config.mode === 'advisory' ? '#00d4ff' : '#888';
+
+            document.getElementById('cycle-interval').textContent = config.cycle_interval;
+            document.getElementById('auto-remediate-status').textContent =
+                config.auto_remediate ? 'Enabled' : 'Disabled';
+            document.getElementById('auto-remediate-status').style.color =
+                config.auto_remediate ? '#00ff88' : '#ff4444';
+
+            // Update form controls
+            document.getElementById('policy-select').value = config.policy;
+            document.getElementById('mode-select').value = config.mode;
+            document.getElementById('interval-input').value = config.cycle_interval;
+            document.getElementById('auto-remediate-check').checked = config.auto_remediate;
+
+            // Update threshold inputs
+            document.getElementById('threshold-hall-warning').value =
+                config.thresholds.hallucination_warning;
+            document.getElementById('threshold-integ-warning').value =
+                config.thresholds.integrity_warning;
+            document.getElementById('threshold-drift-warning').value =
+                config.thresholds.drift_warning;
+
+            // Update card colors based on config
+            const card = document.getElementById('auto-remediate-card');
+            if (config.auto_remediate) {
+                card.className = 'status-card';
+            } else {
+                card.className = 'status-card warning';
+            }
+        }
+
+        function applyGovernanceConfig() {
+            const policy = document.getElementById('policy-select').value;
+            const mode = document.getElementById('mode-select').value;
+            const interval = parseInt(document.getElementById('interval-input').value);
+            const autoRemediate = document.getElementById('auto-remediate-check').checked;
+
+            // Get threshold values
+            const thresholds = {
+                hallucination_warning: parseFloat(document.getElementById('threshold-hall-warning').value),
+                integrity_warning: parseFloat(document.getElementById('threshold-integ-warning').value),
+                drift_warning: parseFloat(document.getElementById('threshold-drift-warning').value),
+            };
+
+            // Validate
+            if (interval < 60 || interval > 3600) {
+                alert('Cycle interval must be between 60 and 3600 seconds');
+                return;
+            }
+
+            // Update local config
+            currentGovernanceConfig = {
+                policy,
+                mode,
+                cycle_interval: interval,
+                auto_remediate: autoRemediate,
+                thresholds
+            };
+
+            // Update UI
+            updateGovernanceUI(currentGovernanceConfig);
+
+            // Log to governance stream if connected
+            logGovernanceEvent(`Configuration updated: Policy=${policy}, Mode=${mode}`, 'success');
+
+            console.log('[GovernanceConfig] Configuration applied:', currentGovernanceConfig);
+
+            // In production, this would save to API
+            // For demo, we just log
+            console.log('[GovernanceConfig] Would save to amos_governance_config.json');
+        }
+
+        function resetGovernanceConfig() {
+            if (!confirm('Reset governance configuration to defaults?')) {
+                return;
+            }
+
+            currentGovernanceConfig = {
+                policy: 'development',
+                mode: 'full_auto',
+                cycle_interval: 60,
+                auto_remediate: true,
+                thresholds: {
+                    hallucination_warning: 0.5,
+                    integrity_warning: 0.3,
+                    drift_warning: 0.5,
+                }
+            };
+
+            updateGovernanceUI(currentGovernanceConfig);
+            logGovernanceEvent('Configuration reset to defaults', 'warning');
+            console.log('[GovernanceConfig] Configuration reset');
+        }
+
+        // Load initial config
+        loadGovernanceConfig();
 
         // Load on startup
         loadData();

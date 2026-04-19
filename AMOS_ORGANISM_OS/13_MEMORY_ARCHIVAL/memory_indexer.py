@@ -9,7 +9,7 @@ Version: 1.0.0
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -17,11 +17,11 @@ class IndexEntry:
     """An index entry for a memory."""
 
     memory_id: str
-    tags: list[str]
-    keywords: list[str]
+    tags: List[str]
+    keywords: List[str]
     timestamp: datetime
     access_count: int = 0
-    last_accessed: Optional[datetime] = None
+    last_accessed: datetime = None
 
 
 @dataclass
@@ -30,10 +30,10 @@ class MemoryIndex:
 
     index_id: str
     name: str
-    entries: dict[str, IndexEntry] = field(default_factory=dict)
+    entries: Dict[str, IndexEntry] = field(default_factory=dict)
     tag_index: dict[str, set[str]] = field(default_factory=dict)
     keyword_index: dict[str, set[str]] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class MemoryIndexer:
@@ -44,8 +44,8 @@ class MemoryIndexer:
     """
 
     def __init__(self):
-        self.indices: dict[str, MemoryIndex] = {}
-        self.default_index_id: Optional[str] = None
+        self.indices: Dict[str, MemoryIndex] = {}
+        self.default_index_id: str = None
 
     def create_index(self, name: str) -> MemoryIndex:
         """Create a new memory index."""
@@ -112,8 +112,8 @@ class MemoryIndexer:
         return True
 
     def search_by_tags(
-        self, index_id: str, tags: list[str], match_all: bool = True
-    ) -> list[IndexEntry]:
+        self, index_id: str, tags: List[str], match_all: bool = True
+    ) -> List[IndexEntry]:
         """Search index by tags."""
         if index_id not in self.indices:
             return []
@@ -134,7 +134,7 @@ class MemoryIndexer:
 
         return [index.entries[mid] for mid in memory_ids if mid in index.entries]
 
-    def search_by_keywords(self, index_id: str, keywords: list[str]) -> list[IndexEntry]:
+    def search_by_keywords(self, index_id: str, keywords: List[str]) -> List[IndexEntry]:
         """Search index by keywords."""
         if index_id not in self.indices:
             return []
@@ -164,11 +164,11 @@ class MemoryIndexer:
 
         entry = index.entries[memory_id]
         entry.access_count += 1
-        entry.last_accessed = datetime.utcnow()
+        entry.last_accessed = datetime.now(UTC)
 
         return True
 
-    def get_most_accessed(self, index_id: str, limit: int = 10) -> list[IndexEntry]:
+    def get_most_accessed(self, index_id: str, limit: int = 10) -> List[IndexEntry]:
         """Get most frequently accessed memories."""
         if index_id not in self.indices:
             return []
@@ -179,7 +179,7 @@ class MemoryIndexer:
 
         return sorted_entries[:limit]
 
-    def get_recently_accessed(self, index_id: str, limit: int = 10) -> list[IndexEntry]:
+    def get_recently_accessed(self, index_id: str, limit: int = 10) -> List[IndexEntry]:
         """Get recently accessed memories."""
         if index_id not in self.indices:
             return []
@@ -193,7 +193,7 @@ class MemoryIndexer:
 
         return sorted_entries[:limit]
 
-    def get_index_stats(self, index_id: str) -> Optional[dict[str, Any]]:
+    def get_index_stats(self, index_id: str) -> dict[str, Any]:
         """Get statistics for an index."""
         if index_id not in self.indices:
             return None
@@ -223,7 +223,7 @@ if __name__ == "__main__":
         memory_id="mem_001",
         tags=["learning", "important"],
         keywords=["neural", "network"],
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(UTC),
     )
     indexer.add_to_index(index.index_id, entry1)
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
         memory_id="mem_002",
         tags=[["learning"], ["practice"]],
         keywords=["reinforcement", "training"],
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(UTC),
     )
     indexer.add_to_index(index.index_id, entry2)
 

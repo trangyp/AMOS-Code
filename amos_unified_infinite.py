@@ -32,7 +32,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 # ============================================================================
 # ZOOM LEVELS — Layer Selection
@@ -264,7 +264,7 @@ class LayerOperationalInterface:
         if not self.components:
             print("  ○ Layers 1-6: Operational components not available")
 
-    def run_economic_cycle(self) -> Optional[dict]:
+    def run_economic_cycle(self) -> dict:
         """Run one economic cycle (v4)."""
         if "v4" not in self.components:
             return None
@@ -286,13 +286,13 @@ class UnifiedResult:
 
     zoom_level: ZoomLevel
     input_intent: str
-    output_action: Optional[dict]
-    hyperstate_before: Optional[Any]
-    hyperstate_after: Optional[Any]
+    output_action: dict
+    hyperstate_before: Any
+    hyperstate_after: Any
     axioms_satisfied: bool
     admissible: bool
-    execution_result: Optional[Any]
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    execution_result: Any
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
@@ -324,7 +324,7 @@ class AMOSUnifiedInfinite:
         self.layer7 = Layer7Interface()
         self.operational = LayerOperationalInterface()
 
-        self.history: list[UnifiedResult] = []
+        self.history: List[UnifiedResult] = []
 
         print("\n" + "=" * 70)
         print("  AMOS Unified Infinite — 8-Layer Integration")
@@ -341,7 +341,7 @@ class AMOSUnifiedInfinite:
         print(f"Zoom level set to: {level.value}")
 
     def process(
-        self, intent: str, context: Optional[dict] = None, zoom_override: Optional[ZoomLevel] = None
+        self, intent: str, context: dict = None, zoom_override: Optional[ZoomLevel] = None
     ) -> UnifiedResult:
         """Process intent through appropriate layer(s).
 

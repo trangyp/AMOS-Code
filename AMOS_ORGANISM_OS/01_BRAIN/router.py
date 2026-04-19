@@ -1,11 +1,9 @@
 """System Router — Routes decisions to appropriate subsystems."""
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -14,7 +12,7 @@ class RoutingDecision:
 
     target: str  # Subsystem code (e.g., "06_MUSCLE")
     action: str  # Action to perform
-    params: dict[str, Any]  # Parameters for the action
+    params: Dict[str, Any]  # Parameters for the action
     priority: int = 5  # 1-10, lower is more urgent
     reason: str = ""  # Why this routing decision was made
 
@@ -109,10 +107,10 @@ class SystemRouter:
 
     def __init__(self, organism_root: Optional[Path] = None):
         self.organism_root = organism_root
-        self._history: list[RoutingDecision] = []
+        self._history: List[RoutingDecision] = []
 
     def route(
-        self, action: str, params: dict[str, Any] = None, priority: int = 5, reason: str = ""
+        self, action: str, params: Dict[str, Any] = None, priority: int = 5, reason: str = ""
     ) -> RoutingDecision:
         """Route an action to the appropriate subsystem."""
         subsystem = self.ACTION_SUBSYSTEM_MAP.get(action, "01_BRAIN")
@@ -126,7 +124,7 @@ class SystemRouter:
         self._history.append(decision)
         return decision
 
-    def route_to_primary(self, current: str) -> Optional[str]:
+    def route_to_primary(self, current: str) -> str:
         """Get next subsystem in primary loop."""
         try:
             idx = self.PRIMARY_LOOP.index(current)
@@ -135,11 +133,11 @@ class SystemRouter:
         except ValueError:
             return None
 
-    def get_supporting(self, category: str) -> list[str]:
+    def get_supporting(self, category: str) -> List[str]:
         """Get supporting subsystems for a category."""
         return self.SUPPORTING_ROUTES.get(category, [])
 
-    def suggest_parallel(self, action: str) -> list[str]:
+    def suggest_parallel(self, action: str) -> List[str]:
         """Suggest subsystems that could work in parallel."""
         # Risk-related actions should include Immune
         if any(x in action for x in ["deploy", "execute", "code", "run"]):
@@ -152,7 +150,7 @@ class SystemRouter:
             return ["14_INTERFACES"]
         return []
 
-    def get_history(self, n: int = 10) -> list[RoutingDecision]:
+    def get_history(self, n: int = 10) -> List[RoutingDecision]:
         """Get recent routing decisions."""
         return self._history[-n:]
 

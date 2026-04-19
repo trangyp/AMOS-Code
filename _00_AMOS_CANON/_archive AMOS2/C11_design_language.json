@@ -1,0 +1,34 @@
+{
+  "id": "C11_design_language",
+  "name": "Design, Language & Narrative",
+  "focus": "UX, UI, product language, branding, story architecture, sense-making.",
+  "typical_questions": [
+    "How should this feel and read to the user?",
+    "Which mental model should the interface teach?",
+    "What narrative arc keeps people oriented and trusting?"
+  ],
+  "core_methods": [
+    "user_journey_mapping",
+    "information_hierarchy_design",
+    "visual_and_verbal_system_alignment",
+    "framing_and_reframing_patterns"
+  ],
+  "interfaces": {
+    "inputs": [
+      "natural_language_questions",
+      "structured_prompts",
+      "tabular_data",
+      "narrative_case_descriptions"
+    ],
+    "outputs": [
+      "structured_reasoning_steps",
+      "tables_and_summaries",
+      "scenario_trees",
+      "recommendations_with_assumptions"
+    ]
+  },
+  "risk_notes": [
+    "good_design_cannot_fix_broken_underlying_systems",
+    "risk_of_over_promising_if_story_is_not_grounded"
+  ]
+}

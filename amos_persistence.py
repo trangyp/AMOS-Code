@@ -7,7 +7,7 @@ import gzip
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from amos_database import get_database
 
@@ -104,7 +104,7 @@ class PersistenceManager:
 
         return restored
 
-    def get_archive_summary(self) -> dict[str, Any]:
+    def get_archive_summary(self) -> Dict[str, Any]:
         """Get summary of archived data."""
         archives = list(self.archive_path.glob("*.json.gz"))
 

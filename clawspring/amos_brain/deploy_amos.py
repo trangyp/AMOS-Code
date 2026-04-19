@@ -12,7 +12,6 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -30,7 +29,7 @@ class DeploymentResult:
     """Result of deployment."""
 
     success: bool
-    steps: list[DeploymentStep]
+    steps: List[DeploymentStep]
     deploy_path: str
     timestamp: str
     version: str = "2.0"
@@ -39,14 +38,14 @@ class DeploymentResult:
 class AMOSDeployer:
     """Automated deployment for AMOS Ecosystem."""
 
-    def __init__(self, base_path: Optional[str] = None):
+    def __init__(self, base_path: str = None):
         self.base_path = Path(base_path or os.getcwd())
         self.amos_path = self.base_path / "clawspring" / "amos_brain"
         self.dashboard_path = self.amos_path / "dashboard.html"
         self.unified_dashboard_path = self.amos_path / "unified_dashboard.html"
         self.clawspring_path = self.base_path / "clawspring"
         self.log_file = self.base_path / ".amos_deploy.log"
-        self.steps: list[DeploymentStep] = []
+        self.steps: List[DeploymentStep] = []
 
     def log(self, message: str) -> None:
         """Log deployment activity."""
@@ -269,6 +268,7 @@ sys.path.insert(0, "clawspring/amos_brain")
 sys.path.insert(0, "clawspring")
 
 from system_validator import SystemValidator
+from typing import List
 
 validator = SystemValidator()
 results = validator.validate_all()

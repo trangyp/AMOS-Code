@@ -13,6 +13,7 @@ which provides:
 
 from __future__ import annotations
 
+
 import sys
 from pathlib import Path
 
@@ -22,6 +23,7 @@ if str(_parent_dir) not in sys.path:
     sys.path.insert(0, str(_parent_dir))
 
 # Import from standalone package
+
 from amos_brain import AMOSBrainIntegration, get_amos_integration
 
 
@@ -34,7 +36,7 @@ def get_runtime() -> AMOSBrainIntegration:
     return get_amos_integration()
 
 
-def analyze_task(task: str, context: dict | None = None) -> dict:
+def analyze_task(task: str, context: dict = None) -> dict:
     """Analyze a task with AMOS brain - delegated to standalone package.
 
     Args:
@@ -91,7 +93,7 @@ class AMOSRuntime:
             "creator": "Trang Phan",
         }
 
-    def get_law_summary(self) -> list[dict]:
+    def get_law_summary(self) -> List[dict]:
         """Get global laws summary."""
         return [
             {"id": "L1", "name": "Law of Law", "priority": 1},
@@ -102,7 +104,7 @@ class AMOSRuntime:
             {"id": "L6", "name": "UBI Alignment", "priority": 6},
         ]
 
-    def execute_cognitive_task(self, task: str, context: dict | None = None) -> dict:
+    def execute_cognitive_task(self, task: str, context: dict = None) -> dict:
         """Execute task with AMOS brain."""
         return analyze_task(task, context)
 

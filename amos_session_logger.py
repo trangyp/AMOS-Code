@@ -14,16 +14,17 @@ Commands:
     export      Export session data to JSON
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
+import logging
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+_module_logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -47,20 +48,20 @@ class AMOSSession:
 
     session_id: str
     start_time: str
-    end_time: str | None = None
+    end_time: str = None
     interactions: list[AMOSInteraction] = field(default_factory=list)
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def add_interaction(self, interaction: AMOSInteraction):
         """Add an interaction to the session."""
         self.interactions.append(interaction)
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Calculate session statistics."""
         if not self.interactions:
             return {"total_interactions": 0}
 
-        types: dict[str, int] = {}
+        types: Dict[str, int] = {}
         engines = set()
         laws = set()
         total_duration = 0
@@ -112,10 +113,10 @@ class AMOSSessionLogger:
     LOG_DIR = Path(__file__).parent / "amos_logs"
 
     def __init__(self):
-        self.current_session: AMOSSession | None = None
+        self.current_session: Optional[AMOSSession] = None
         self.LOG_DIR.mkdir(exist_ok=True)
 
-    def start_session(self, metadata: dict[str, Any] | None = None) -> str:
+    def start_session(self, metadata: Dict[str, Any] = None) -> str:
         """Start a new logging session."""
         session_id = self._generate_session_id()
         self.current_session = AMOSSession(
@@ -125,7 +126,7 @@ class AMOSSessionLogger:
         self._save_session()
         return session_id
 
-    def end_session(self) -> dict[str, Any]:
+    def end_session(self) -> Dict[str, Any]:
         """End current session and return stats."""
         if not self.current_session:
             return {"error": "No active session"}
@@ -145,8 +146,8 @@ class AMOSSessionLogger:
         name: str,
         input_data: str,
         output_data: str,
-        engines_used: list[str] | None = None,
-        laws_applied: list[str] | None = None,
+        engines_used: list[str] = None,
+        laws_applied: list[str] = None,
         duration_ms: int = 0,
         success: bool = True,
     ) -> bool:
@@ -171,13 +172,13 @@ class AMOSSessionLogger:
         self._save_session()
         return True
 
-    def get_current_stats(self) -> dict[str, Any]:
+    def get_current_stats(self) -> Dict[str, Any]:
         """Get stats for current session."""
         if not self.current_session:
             return {"error": "No active session"}
         return self.current_session.get_stats()
 
-    def generate_report(self, session_id: str | None = None) -> str:
+    def generate_report(self, session_id: str = None) -> str:
         """Generate a text report."""
         if session_id and self.current_session and self.current_session.session_id == session_id:
             session = self.current_session
@@ -213,7 +214,7 @@ Performance:
 """
         return report
 
-    def export_session(self, session_id: str | None = None, filepath: str | None = None) -> str:
+    def export_session(self, session_id: str = None, filepath: str = None) -> str:
         """Export session to JSON file."""
         if session_id and self.current_session and self.current_session.session_id == session_id:
             session = self.current_session
@@ -249,7 +250,8 @@ Performance:
                             "file": str(f),
                         }
                     )
-            except Exception:
+            except Exception as e:
+                _module_logger.debug(f"Failed to load session file {f}: {e}")
                 continue
         return sorted(sessions, key=lambda x: x["start_time"], reverse=True)
 
@@ -270,7 +272,7 @@ Performance:
         filepath = self.LOG_DIR / f"{self.current_session.session_id}.json"
         self.export_session(filepath=str(filepath))
 
-    def _load_session(self, session_id: str) -> AMOSSession | None:
+    def _load_session(self, session_id: str) -> Optional[AMOSSession]:
         """Load a session from file."""
         filepath = self.LOG_DIR / f"{session_id}.json"
         if not filepath.exists():
@@ -281,7 +283,8 @@ Performance:
                 data = json.load(f)
             session_data = data["session"]
             return AMOSSession(**session_data)
-        except Exception:
+        except Exception as e:
+            _module_logger.debug(f"Failed to load session {session_id}: {e}")
             return None
 
 
@@ -313,8 +316,8 @@ def main():
             with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
-        except Exception:
-            pass
+        except Exception as e:
+            _module_logger.debug(f"Failed to load current session for end: {e}")
         stats = logger.end_session()
         print(json.dumps(stats, indent=2))
 
@@ -324,8 +327,8 @@ def main():
             with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
-        except Exception:
-            pass
+        except Exception as e:
+            _module_logger.debug(f"Failed to load current session for log: {e}")
 
         success = logger.log_interaction(args.type, args.name, args.input, args.output)
         print("Logged" if success else "No active session")
@@ -336,8 +339,8 @@ def main():
             with open("/tmp/amos_current_session") as f:
                 sid = f.read().strip()
             logger.current_session = logger._load_session(sid)
-        except Exception:
-            pass
+        except Exception as e:
+            _module_logger.debug(f"Failed to load current session for stats: {e}")
         stats = logger.get_current_stats()
         print(json.dumps(stats, indent=2))
 
@@ -348,8 +351,8 @@ def main():
                 with open("/tmp/amos_current_session") as f:
                     sid = f.read().strip()
                 logger.current_session = logger._load_session(sid)
-            except Exception:
-                pass
+            except Exception as e:
+                _module_logger.debug(f"Failed to load current session for report: {e}")
         report = logger.generate_report(args.session_id)
         print(report)
 

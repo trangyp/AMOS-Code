@@ -693,18 +693,18 @@
 
         function setMode(mode) {
             currentMode = mode;
-            
+
             // Update card visuals
             document.querySelectorAll('.mode-card').forEach(card => {
                 card.classList.remove('active');
             });
             document.querySelector(`.mode-card.${mode}`).classList.add('active');
-            
+
             // Update indicators
             document.getElementById('seedIndicator').style.display = mode === 'seed' ? 'inline' : 'none';
             document.getElementById('growthIndicator').style.display = mode === 'growth' ? 'inline' : 'none';
             document.getElementById('fullIndicator').style.display = mode === 'full' ? 'inline' : 'none';
-            
+
             // Update features
             const featuresList = document.getElementById('featuresList');
             featuresList.innerHTML = modeFeatures[mode]
@@ -725,49 +725,49 @@
         function startThinking() {
             if (isThinking) return;
             isThinking = true;
-            
+
             document.getElementById('brainIcon').style.animation = 'pulse 1s infinite';
-            
+
             interval = setInterval(() => {
                 elapsedTime += 100;
                 document.getElementById('elapsedTime').textContent = (elapsedTime / 1000).toFixed(1) + 's';
-                
+
                 // Update layers
                 let allComplete = true;
                 let totalProgress = 0;
-                
+
                 layers.forEach((layer, index) => {
                     const prevComplete = index === 0 || layers[index - 1].progress >= 100;
-                    
+
                     if (prevComplete && layer.progress < 100) {
                         layer.progress = Math.min(100, layer.progress + layer.speed);
-                        
+
                         // Update UI
                         document.getElementById(`${layer.id}Bar`).style.width = layer.progress + '%';
                         document.getElementById(`${layer.id}Text`).textContent = layer.progress + '%';
-                        
+
                         // Update icon
                         const icon = layer.progress >= 100 ? '✓' : (layer.progress > 0 ? '◐' : '○');
                         document.getElementById(`${layer.id}Icon`).textContent = icon;
-                        
+
                         // Show/hide details
-                        document.getElementById(`${layer.id}Details`).style.display = 
+                        document.getElementById(`${layer.id}Details`).style.display =
                             layer.progress > 0 && layer.progress < 100 ? 'flex' : 'none';
-                        
+
                         // Show complete badge
                         if (layer.progress >= 100) {
                             document.getElementById(`${layer.id}Complete`).style.display = 'block';
                         }
                     }
-                    
+
                     if (layer.progress < 100) allComplete = false;
                     totalProgress += layer.progress;
                 });
-                
+
                 // Update confidence
                 const confidence = Math.round(totalProgress / 3);
                 document.getElementById('confidence').textContent = `Confidence: ${confidence}%`;
-                
+
                 // Stop when complete
                 if (allComplete) {
                     clearInterval(interval);
@@ -781,7 +781,7 @@
             isThinking = false;
             clearInterval(interval);
             elapsedTime = 0;
-            
+
             layers.forEach(layer => {
                 layer.progress = 0;
                 document.getElementById(`${layer.id}Bar`).style.width = '0%';
@@ -790,7 +790,7 @@
                 document.getElementById(`${layer.id}Details`).style.display = 'none';
                 document.getElementById(`${layer.id}Complete`).style.display = 'none';
             });
-            
+
             document.getElementById('elapsedTime').textContent = '0.0s';
             document.getElementById('confidence').textContent = 'Confidence: 0%';
             document.getElementById('brainIcon').textContent = '🧠';

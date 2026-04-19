@@ -10,15 +10,13 @@ Version: 1.0.0
 Python: 3.9+
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 # ============================================================================
 # CONSTANTS & PATHS
@@ -68,25 +66,25 @@ class AmosEvent:
     timestamp: str
     event_type: str
     subsystem: str
-    payload: dict[str, Any]
+    payload: Dict[str, Any]
 
 
 @dataclass
 class CycleResult:
     subsystem: str
     status: str
-    actions: list[str]
-    outputs: dict[str, Any]
-    next_recommended: Optional[str] = None
+    actions: List[str]
+    outputs: Dict[str, Any]
+    next_recommended: str = None
 
 
 @dataclass
 class OrchestratorState:
     cycle_count: int = 0
     current_position: str = "01_BRAIN"
-    active_subsystems: list[str] = field(default_factory=list)
-    last_cycle_time: Optional[float] = None
-    errors: list[str] = field(default_factory=list)
+    active_subsystems: List[str] = field(default_factory=list)
+    last_cycle_time: float = None
+    errors: List[str] = field(default_factory=list)
 
 
 # ============================================================================
@@ -98,11 +96,11 @@ class RegistryLoader:
     """Loads and caches all AMOS registries."""
 
     def __init__(self) -> None:
-        self.system_registry: Optional[dict] = None
-        self.agent_registry: Optional[dict] = None
-        self.engine_registry: Optional[dict] = None
-        self.world_state: Optional[dict] = None
-        self.operator_profile: Optional[dict] = None
+        self.system_registry: dict = None
+        self.agent_registry: dict = None
+        self.engine_registry: dict = None
+        self.world_state: dict = None
+        self.operator_profile: dict = None
 
     def load_all(self) -> bool:
         """Load all registry files. Returns True if successful."""
@@ -125,7 +123,7 @@ class RegistryLoader:
             return False
 
     @staticmethod
-    def _load_json(path: Path) -> Optional[dict]:
+    def _load_json(path: Path) -> dict:
         if not path.exists():
             return None
         try:
@@ -149,7 +147,7 @@ class SubsystemHandler:
         self.subsystems = registry.get("subsystems", {})
         self.config = self.subsystems.get(code, {})
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         """Process one cycle for this subsystem."""
         raise NotImplementedError
 
@@ -157,12 +155,12 @@ class SubsystemHandler:
 class BrainHandler(SubsystemHandler):
     """01_BRAIN: Reasoning, planning, decomposition."""
 
-    def __init__(self, code: str, config: dict[str, Any]):
+    def __init__(self, code: str, config: Dict[str, Any]):
         super().__init__(code, config)
         self._cognitive_activator = None
         self._worker_bridge = None
 
-    def _load_cognitive_engines(self, organism_root: Path) -> dict[str, Any]:
+    def _load_cognitive_engines(self, organism_root: Path) -> Dict[str, Any]:
         """Load dormant cognitive engines from _AMOS_BRAIN."""
         try:
             sys.path.insert(0, str(organism_root / "01_BRAIN"))
@@ -174,7 +172,7 @@ class BrainHandler(SubsystemHandler):
             print(f"[01_BRAIN] Cognitive engine loading error: {e}")
             return {"loaded": False, "engines_count": 0, "error": str(e)}
 
-    def _initialize_worker_bridge(self, organism_root: Path) -> dict[str, Any]:
+    def _initialize_worker_bridge(self, organism_root: Path) -> Dict[str, Any]:
         """Initialize brain-worker bridge for task routing."""
         try:
             sys.path.insert(0, str(organism_root / "01_BRAIN"))
@@ -186,7 +184,7 @@ class BrainHandler(SubsystemHandler):
             print(f"[01_BRAIN] Bridge initialization error: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _route_pending_tasks(self, organism_root: Path, tasks: list[str]) -> list[dict[str, Any]]:
+    def _route_pending_tasks(self, organism_root: Path, tasks: List[str]) -> list[dict[str, Any]]:
         """Route pending tasks to optimal workers."""
         if not self._worker_bridge:
             self._initialize_worker_bridge(organism_root)
@@ -195,7 +193,7 @@ class BrainHandler(SubsystemHandler):
             return self._worker_bridge.optimize_task_execution(tasks)
         return {"tasks": [], "total_tasks": 0, "average_confidence": 0}
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "load_cognition_engine",
             "activate_cognitive_engines",
@@ -239,7 +237,7 @@ class BrainHandler(SubsystemHandler):
 class SensesHandler(SubsystemHandler):
     """02_SENSES: Filesystem, environment, context."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["scan_filesystem", "check_environment", "read_emotion_inputs"]
 
         return CycleResult(
@@ -249,7 +247,7 @@ class SensesHandler(SubsystemHandler):
             outputs={
                 "filesystem_status": "accessible",
                 "environment_loaded": True,
-                "context_updated": datetime.utcnow().isoformat() + "Z",
+                "context_updated": datetime.now(UTC).isoformat(),
             },
             next_recommended="05_SKELETON",
         )
@@ -258,7 +256,7 @@ class SensesHandler(SubsystemHandler):
 class SkeletonHandler(SubsystemHandler):
     """05_SKELETON: Rules, constraints, hierarchy."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["load_constraints", "check_permissions", "validate_time_architecture"]
 
         return CycleResult(
@@ -276,7 +274,7 @@ class SkeletonHandler(SubsystemHandler):
 class WorldModelHandler(SubsystemHandler):
     """08_WORLD_MODEL: Macroeconomics, geopolitics, sectors."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["load_tss_tpe", "scan_global_signals", "update_sector_maps"]
 
         return CycleResult(
@@ -291,7 +289,7 @@ class WorldModelHandler(SubsystemHandler):
 class QuantumLayerHandler(SubsystemHandler):
     """12_QUANTUM_LAYER: Timing, probability flows, predictive analytics."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "load_quantum_stack",
             "check_timing_vectors",
@@ -304,11 +302,10 @@ class QuantumLayerHandler(SubsystemHandler):
         try:
             import sys
 
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "12_QUANTUM_LAYER"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "12_QUANTUM_LAYER"))
             from predictive_engine import PredictiveEngine
 
-            engine = PredictiveEngine(organism_root)
+            engine = PredictiveEngine(ORGANISM_ROOT)
             predictions = engine.get_all_predictions()
         except Exception as e:
             print(f"[12_QUANTUM_LAYER] Prediction error: {e}")
@@ -331,26 +328,26 @@ class QuantumLayerHandler(SubsystemHandler):
 class MuscleHandler(SubsystemHandler):
     """06_MUSCLE: Run commands, write code, deploy, execute tasks, run workflows."""
 
-    def __init__(self, code: str, config: dict[str, Any]):
+    def __init__(self, code: str, config: Dict[str, Any]):
         super().__init__(code, config)
         self._brain_muscle_bridge = None
 
-    def _initialize_brain_muscle_bridge(self, organism_root: Path) -> dict[str, Any]:
+    def _initialize_brain_muscle_bridge(self) -> Dict[str, Any]:
         """Initialize brain-muscle bridge for optimized execution."""
         try:
-            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "06_MUSCLE"))
             from brain_muscle_bridge import BrainMuscleBridge
 
-            self._brain_muscle_bridge = BrainMuscleBridge(organism_root)
+            self._brain_muscle_bridge = BrainMuscleBridge(ORGANISM_ROOT)
             return {"status": "operational", "optimization_enabled": True}
         except Exception as e:
             print(f"[06_MUSCLE] Bridge initialization error: {e}")
             return {"status": "error", "error": str(e)}
 
-    def _optimize_execution_plan(self, organism_root: Path, tasks: list[str]) -> dict[str, Any]:
+    def _optimize_execution_plan(self, tasks: List[str]) -> Dict[str, Any]:
         """Optimize execution plan using brain-muscle bridge."""
         if not self._brain_muscle_bridge:
-            self._initialize_brain_muscle_bridge(organism_root)
+            self._initialize_brain_muscle_bridge()
 
         if self._brain_muscle_bridge and tasks:
             plan = self._brain_muscle_bridge.create_execution_plan(
@@ -361,7 +358,7 @@ class MuscleHandler(SubsystemHandler):
             return plan
         return {"plan_created": False, "steps": []}
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "check_code_engines",
             "validate_motor_actions",
@@ -376,20 +373,18 @@ class MuscleHandler(SubsystemHandler):
         code_tasks = [t for t in pending_tasks if t.get("type") == "code"]
 
         # Initialize brain-muscle bridge
-        organism_root = context.get("organism_root", Path.cwd())
-        bridge_status = self._initialize_brain_muscle_bridge(organism_root)
+        bridge_status = self._initialize_brain_muscle_bridge()
 
         # Optimize execution plan
-        execution_plan = self._optimize_execution_plan(organism_root, code_tasks)
+        execution_plan = self._optimize_execution_plan(code_tasks)
 
         # Process task execution
         tasks_executed = 0
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "06_MUSCLE"))
             from task_executor import AgentTaskRouter
 
-            router = AgentTaskRouter(organism_root)
+            router = AgentTaskRouter(ORGANISM_ROOT)
             results = router.process_pending_tasks(max_tasks=2)
             tasks_executed = len(results)
         except Exception as e:
@@ -398,8 +393,7 @@ class MuscleHandler(SubsystemHandler):
         # Process workflow execution
         workflows_processed = 0
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "06_MUSCLE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "06_MUSCLE"))
             from workflow_engine import WorkflowEngine
 
             engine = WorkflowEngine()
@@ -443,7 +437,7 @@ class MuscleHandler(SubsystemHandler):
 class MetabolismHandler(SubsystemHandler):
     """07_METABOLISM: Pipelines, transforms, IO routing, task queue."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "run_pipeline_cleanup",
             "route_io",
@@ -458,8 +452,7 @@ class MetabolismHandler(SubsystemHandler):
         # Execute pending pipelines
         pipelines_executed = 0
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "07_METABOLISM"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "07_METABOLISM"))
             from pipeline_engine import PipelineEngine
 
             engine = PipelineEngine()
@@ -493,7 +486,7 @@ class MetabolismHandler(SubsystemHandler):
 class ImmuneHandler(SubsystemHandler):
     """03_IMMUNE: Security, threat detection, and alerting."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "validate_security_policies",
             "check_threat_indicators",
@@ -505,11 +498,10 @@ class ImmuneHandler(SubsystemHandler):
         alerts_triggered = 0
         active_alerts = 0
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "03_IMMUNE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "03_IMMUNE"))
             from alert_manager import AlertManager
 
-            manager = AlertManager(organism_root)
+            manager = AlertManager(ORGANISM_ROOT)
 
             # Build metrics from context
             metrics = {
@@ -543,7 +535,7 @@ class ImmuneHandler(SubsystemHandler):
 class LifeHandler(SubsystemHandler):
     """10_LIFE_ENGINE: Personal life management for Trang."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["check_daily_schedule", "update_habit_streaks", "calculate_life_balance"]
 
         return CycleResult(
@@ -562,7 +554,7 @@ class LifeHandler(SubsystemHandler):
 class BloodHandler(SubsystemHandler):
     """04_BLOOD: Financial engine, budgeting, resource allocation."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["check_budget_status", "record_cycle_cost", "update_cashflow"]
 
         return CycleResult(
@@ -577,7 +569,7 @@ class BloodHandler(SubsystemHandler):
 class SocialHandler(SubsystemHandler):
     """09_SOCIAL_ENGINE: Agent communication, coordination."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["sync_agent_presence", "process_messages", "update_social_graph"]
 
         return CycleResult(
@@ -596,7 +588,7 @@ class SocialHandler(SubsystemHandler):
 class LegalHandler(SubsystemHandler):
     """11_LEGAL_BRAIN: Legal compliance and governance."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["check_compliance", "validate_governance", "assess_risks"]
 
         return CycleResult(
@@ -615,7 +607,7 @@ class LegalHandler(SubsystemHandler):
 class FactoryHandler(SubsystemHandler):
     """13_FACTORY: Agent creation and management."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["sync_agent_registry", "monitor_agent_health", "spawn_needed_agents"]
 
         return CycleResult(
@@ -630,17 +622,16 @@ class FactoryHandler(SubsystemHandler):
 class MemoryArchivalHandler(SubsystemHandler):
     """13_MEMORY_ARCHIVAL: Archives resolved cases for analogical reasoning."""
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = ["archive_completed_tasks", "index_memories", "prepare_analogical_search"]
 
         # Archive completed cycle results
         archived_count = 0
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "13_MEMORY_ARCHIVAL"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "13_MEMORY_ARCHIVAL"))
             from memory_archiver import MemoryArchiver
 
-            archiver = MemoryArchiver(organism_root / "13_MEMORY_ARCHIVAL")
+            archiver = MemoryArchiver(ORGANISM_ROOT / "13_MEMORY_ARCHIVAL")
 
             # Archive cycle results if available
             cycle_results = context.get("cycle_results", [])
@@ -666,14 +657,14 @@ class MemoryArchivalHandler(SubsystemHandler):
 class KnowledgeCoreHandler(SubsystemHandler):
     """15_KNOWLEDGE_CORE: Feature discovery and knowledge catalog."""
 
-    def __init__(self, code: str, config: dict[str, Any]):
+    def __init__(self, code: str, config: Dict[str, Any]):
         super().__init__(code, config)
         self._pack_loader = None
 
-    def _load_knowledge_packs(self, organism_root: Path) -> dict[str, Any]:
+    def _load_knowledge_packs(self) -> Dict[str, Any]:
         """Load and index knowledge packs from _AMOS_BRAIN."""
         try:
-            sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "15_KNOWLEDGE_CORE"))
             from knowledge_pack_loader import KnowledgePackLoader
 
             self._pack_loader = KnowledgePackLoader()
@@ -682,7 +673,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
             print(f"[15_KNOWLEDGE_CORE] Knowledge pack loading error: {e}")
             return {"loaded": False, "total_packs": 0, "error": str(e)}
 
-    def process(self, context: dict[str, Any]) -> CycleResult:
+    def process(self, context: Dict[str, Any]) -> CycleResult:
         actions = [
             "discover_features",
             "catalog_engines",
@@ -698,11 +689,10 @@ class KnowledgeCoreHandler(SubsystemHandler):
         pack_stats = {}
 
         try:
-            organism_root = context.get("organism_root", Path.cwd())
-            sys.path.insert(0, str(organism_root / "15_KNOWLEDGE_CORE"))
+            sys.path.insert(0, str(ORGANISM_ROOT / "15_KNOWLEDGE_CORE"))
             from feature_registry import FeatureRegistry
 
-            registry = FeatureRegistry(organism_root)
+            registry = FeatureRegistry(ORGANISM_ROOT)
 
             # Auto-discover all features
             registry.auto_discover()
@@ -713,7 +703,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
             knowledge_packs_indexed = len(registry.knowledge_packs)
 
             # Load knowledge packs
-            pack_status = self._load_knowledge_packs(organism_root)
+            pack_status = self._load_knowledge_packs()
             knowledge_packs_indexed = pack_status.get("total_packs", 0)
             pack_stats = pack_status.get("stats", {})
 
@@ -721,6 +711,19 @@ class KnowledgeCoreHandler(SubsystemHandler):
             registry.save()
         except Exception as e:
             print(f"[15_KNOWLEDGE_CORE] Feature discovery error: {e}")
+
+        # Initialize equation integration services
+        equation_services = {}
+        try:
+            sys.path.insert(0, str(ORGANISM_ROOT / "15_KNOWLEDGE_CORE"))
+            from equation_integration_handler import EquationIntegrationHandler
+
+            eq_handler = EquationIntegrationHandler()
+            eq_handler.initialize()
+            equation_services = eq_handler.get_status()
+            actions.append("initialize_equation_services")
+        except Exception as e:
+            print(f"[15_KNOWLEDGE_CORE] Equation services error: {e}")
 
         return CycleResult(
             subsystem=self.code,
@@ -734,6 +737,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
                 "pack_loader_ready": self._pack_loader is not None,
                 "registry_updated": True,
                 "discovery_complete": True,
+                "equation_services": equation_services,
             },
             next_recommended="01_BRAIN",
         )
@@ -743,7 +747,7 @@ class KnowledgeCoreHandler(SubsystemHandler):
 # HANDLER FACTORY
 # ============================================================================
 
-HANDLER_MAP: dict[str, type] = {
+HANDLER_MAP: Dict[str, type] = {
     "01_BRAIN": BrainHandler,
     "02_SENSES": SensesHandler,
     "03_IMMUNE": ImmuneHandler,
@@ -810,12 +814,12 @@ class AmosMasterOrchestrator:
 
         return True
 
-    def run_cycle(self, context: Optional[dict] = None) -> list[CycleResult]:
+    def run_cycle(self, context: dict = None) -> List[CycleResult]:
         """Run one complete cycle through the primary loop."""
         if context is None:
             context = {}
 
-        results: list[CycleResult] = []
+        results: List[CycleResult] = []
         start_time = time.time()
 
         print(f"\n[AMOS] === CYCLE {self.state.cycle_count + 1} ===")
@@ -836,7 +840,7 @@ class AmosMasterOrchestrator:
                 # Log the event
                 self._log_event(
                     AmosEvent(
-                        timestamp=datetime.utcnow().isoformat() + "Z",
+                        timestamp=datetime.now(UTC).isoformat(),
                         event_type="subsystem_cycle",
                         subsystem=subsystem_code,
                         payload={
@@ -892,7 +896,7 @@ class AmosMasterOrchestrator:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current orchestrator status."""
         return {
             "cycle_count": self.state.cycle_count,

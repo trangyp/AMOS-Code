@@ -9,15 +9,13 @@ Owner: Trang
 Version: 2.0.0
 """
 
-from __future__ import annotations
-
 import asyncio
 import json
 import sys
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # WebSocket and HTTP support
 try:
@@ -37,14 +35,14 @@ class AMOSState:
 
     def __init__(self, organism_root: Path) -> None:
         self.root = organism_root
-        self.connected_clients: set[WebSocketServerProtocol] = set()
-        self.last_update = datetime.utcnow()
+        self.connected_clients: Set[WebSocketServerProtocol] = set()
+        self.last_update = datetime.now(UTC)
         self.subsystems_active = 13
         self.tasks_pending = 0
         self.tasks_running = 0
         self.health_score = 99.8
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current organism status."""
         # Load task queue status if available
         try:
@@ -59,7 +57,7 @@ class AMOSState:
             pass
 
         return {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "version": "2.0.0",
             "health_score": self.health_score,
             "subsystems_active": self.subsystems_active,
@@ -69,7 +67,7 @@ class AMOSState:
             "status": "operational",
         }
 
-    async def broadcast(self, message: dict[str, Any]) -> None:
+    async def broadcast(self, message: Dict[str, Any]) -> None:
         """Broadcast message to all connected clients."""
         if not self.connected_clients:
             return
@@ -108,7 +106,7 @@ class DashboardHTTPHandler(BaseHTTPRequestHandler):
         else:
             self._send_404()
 
-    def _send_json(self, data: dict[str, Any]) -> None:
+    def _send_json(self, data: Dict[str, Any]) -> None:
         """Send JSON response."""
         self.send_response(200)
         self.send_header("Content-Type", "application/json")

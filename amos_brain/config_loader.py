@@ -4,8 +4,6 @@ This module centralizes all environment variable access to resolve
 the 'hidden_interfaces' architectural invariant failure.
 """
 
-from __future__ import annotations
-
 import os
 from functools import lru_cache
 from pathlib import Path

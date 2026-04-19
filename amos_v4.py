@@ -21,7 +21,7 @@ import pickle
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # ============================================================================
 # 1. PERSISTENCE LAYER (Pe)
@@ -34,18 +34,18 @@ class PersistentState:
     Pe_{t+1} = Sync(Pe_t, Result_t, I_t)
     """
 
-    session_id: str = field(default_factory=lambda: f"session_{datetime.utcnow().timestamp()}")
-    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    session_id: str = field(default_factory=lambda: f"session_{datetime.now(UTC).timestamp()}")
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Episodic memory - experiences
-    episodic_memory: list[dict] = field(default_factory=list)
+    episodic_memory: List[dict] = field(default_factory=list)
 
     # Structural memory - learned patterns
-    structural_memory: dict[str, Any] = field(default_factory=dict)
+    structural_memory: Dict[str, Any] = field(default_factory=dict)
 
     # Persistent identity
-    identity: dict[str, Any] = field(
+    identity: Dict[str, Any] = field(
         default_factory=lambda: {
             "version": "v4.0",
             "build_count": 0,
@@ -55,11 +55,11 @@ class PersistentState:
     )
 
     # Open loops - unfinished tasks
-    open_loops: list[dict] = field(default_factory=list)
+    open_loops: List[dict] = field(default_factory=list)
 
     # Session continuity
-    previous_session_id: Optional[str] = None
-    cumulative_metrics: dict[str, float] = field(
+    previous_session_id: str = None
+    cumulative_metrics: Dict[str, float] = field(
         default_factory=lambda: {
             "total_cycles": 0,
             "total_value_produced": 0.0,
@@ -79,7 +79,7 @@ class PersistenceManager:
 
     def save(self, state: PersistentState):
         """Save persistent state."""
-        state.last_updated = datetime.utcnow().isoformat()
+        state.last_updated = datetime.now(UTC).isoformat()
         with open(self.state_file, "wb") as f:
             pickle.dump(state, f)
 
@@ -95,7 +95,7 @@ class PersistenceManager:
         # Add to episodic memory
         state.episodic_memory.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "results": results,
                 "identity_snapshot": identity,
             }
@@ -118,7 +118,7 @@ class PersistenceManager:
         if "new_open_loops" in results:
             state.open_loops.extend(results["new_open_loops"])
 
-        state.last_updated = datetime.utcnow().isoformat()
+        state.last_updated = datetime.now(UTC).isoformat()
         return state
 
 
@@ -133,12 +133,12 @@ class EconomicState:
     x_t* = argmax_x [Revenue(x) - Cost(x) - Risk(x) + Leverage(x) + Compounding(x)]
     """
 
-    opportunities: list[dict] = field(default_factory=list)
-    revenue_streams: dict[str, float] = field(default_factory=dict)
-    cost_structure: dict[str, float] = field(default_factory=dict)
-    risk_exposure: dict[str, float] = field(default_factory=dict)
-    leverage_points: list[str] = field(default_factory=list)
-    compounding_assets: list[str] = field(default_factory=list)
+    opportunities: List[dict] = field(default_factory=list)
+    revenue_streams: Dict[str, float] = field(default_factory=dict)
+    cost_structure: Dict[str, float] = field(default_factory=dict)
+    risk_exposure: Dict[str, float] = field(default_factory=dict)
+    leverage_points: List[str] = field(default_factory=list)
+    compounding_assets: List[str] = field(default_factory=list)
 
 
 class EconomicEngine:
@@ -146,7 +146,7 @@ class EconomicEngine:
 
     def __init__(self):
         self.state = EconomicState()
-        self.transaction_history: list[dict] = []
+        self.transaction_history: List[dict] = []
 
     def evaluate_action(self, action: dict) -> dict[str, float]:
         """Evaluate action by economic criteria.
@@ -171,7 +171,7 @@ class EconomicEngine:
             "roi": (revenue - cost) / cost if cost > 0 else float("inf"),
         }
 
-    def select_optimal_action(self, actions: list[dict]) -> Optional[dict]:
+    def select_optimal_action(self, actions: List[dict]) -> dict:
         """x_t* = argmax_x [Revenue(x) - Cost(x) - Risk(x) + Leverage(x) + Compounding(x)]"""
         if not actions:
             return None
@@ -191,7 +191,7 @@ class EconomicEngine:
         """Record real-world economic outcome."""
         self.transaction_history.append(
             {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "action": action.get("name", "unknown"),
                 "predicted_revenue": action.get("expected_revenue", 0),
                 "actual_revenue": actual_revenue,
@@ -222,7 +222,7 @@ class ResourcePool:
     optionality: float = 1.0  # Future option value
 
     # Allocations
-    allocations: dict[str, float] = field(default_factory=dict)
+    allocations: Dict[str, float] = field(default_factory=dict)
 
 
 class ResourceAllocator:
@@ -230,9 +230,9 @@ class ResourceAllocator:
 
     def __init__(self):
         self.pool = ResourcePool()
-        self.allocation_history: list[dict] = []
+        self.allocation_history: List[dict] = []
 
-    def allocate(self, demands: list[dict]) -> dict[str, dict[str, float]]:
+    def allocate(self, demands: List[dict]) -> dict[str, dict[str, float]]:
         """q_t* = argmax_q Σ ω_i · Return_i(q)
         Constraint: Σ Resource(g_i) ≤ Q_t
         """
@@ -299,12 +299,12 @@ class WorldModel:
     Y_{t+1} = Model(Y_t, Signals_t, Outcomes_t)
     """
 
-    market_state: dict[str, Any] = field(default_factory=dict)
-    institutional_landscape: dict[str, Any] = field(default_factory=dict)
-    key_actors: dict[str, Any] = field(default_factory=dict)
-    competitive_position: dict[str, Any] = field(default_factory=dict)
-    trend_forecasts: dict[str, Any] = field(default_factory=dict)
-    constraints: dict[str, Any] = field(default_factory=dict)
+    market_state: Dict[str, Any] = field(default_factory=dict)
+    institutional_landscape: Dict[str, Any] = field(default_factory=dict)
+    key_actors: Dict[str, Any] = field(default_factory=dict)
+    competitive_position: Dict[str, Any] = field(default_factory=dict)
+    trend_forecasts: Dict[str, Any] = field(default_factory=dict)
+    constraints: Dict[str, Any] = field(default_factory=dict)
 
     # Learning
     prediction_accuracy: float = 0.5
@@ -316,15 +316,15 @@ class WorldModelEngine:
 
     def __init__(self):
         self.model = WorldModel()
-        self.signal_history: list[dict] = []
-        self.prediction_errors: list[float] = []
+        self.signal_history: List[dict] = []
+        self.prediction_errors: List[float] = []
 
     def update(self, signals: dict, outcomes: dict):
         """Y_{t+1} = Model(Y_t, Signals_t, Outcomes_t)
         Learning_real = Result_world - Prediction_model
         """
         self.signal_history.append(
-            {"timestamp": datetime.utcnow().isoformat(), "signals": signals, "outcomes": outcomes}
+            {"timestamp": datetime.now(UTC).isoformat(), "signals": signals, "outcomes": outcomes}
         )
 
         # Update market state
@@ -381,7 +381,7 @@ class Goal:
     description: str
     priority: float = 1.0
     expected_value: float = 0.0
-    resource_cost: dict[str, float] = field(default_factory=dict)
+    resource_cost: Dict[str, float] = field(default_factory=dict)
     time_horizon: int = 30  # Days
     risk_score: float = 0.1
     status: str = "active"  # active, completed, deferred
@@ -391,14 +391,14 @@ class GoalPortfolio:
     """Manages portfolio of goals with optimization."""
 
     def __init__(self):
-        self.goals: dict[str, Goal] = {}
-        self.portfolio_history: list[dict] = []
+        self.goals: Dict[str, Goal] = {}
+        self.portfolio_history: List[dict] = []
 
     def add_goal(self, goal: Goal):
         """Add goal to portfolio."""
         self.goals[goal.id] = goal
 
-    def optimize_portfolio(self, available_resources: ResourcePool) -> list[Goal]:
+    def optimize_portfolio(self, available_resources: ResourcePool) -> List[Goal]:
         """g*_{set} = argmax Σ [Value(g_i) - Cost(g_i) - Risk(g_i)]
         Constraint: Σ Resource(g_i) ≤ Q_t
         """
@@ -471,7 +471,7 @@ class SurvivalEngine:
         numerator = self.resilience_score + self.redundancy_score + self.adaptation_score
         return numerator / max(self.fragility_score, 0.1)
 
-    def check_threats(self, state: dict) -> list[dict]:
+    def check_threats(self, state: dict) -> List[dict]:
         """Identify threats to system survival."""
         threats = []
 
@@ -513,7 +513,7 @@ class SurvivalEngine:
             "threat": threat["type"],
             "action": threat["mitigation"],
             "applied": True,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
@@ -531,7 +531,7 @@ class AMOSv4:
 
     def __init__(self, name: str = "AMOS_v4"):
         self.name = name
-        self.birth_time = datetime.utcnow()
+        self.birth_time = datetime.now(UTC)
 
         # Core v4 layers
         self.persistence = PersistenceManager()
@@ -556,7 +556,7 @@ class AMOSv4:
         # Cycle counter
         self.current_cycle = 0
 
-    def cycle(self, world_signals: Optional[dict] = None) -> dict:
+    def cycle(self, world_signals: dict = None) -> dict:
         """Single AMOS v4 decision-action cycle.
         Model → Decision → Action → World → Outcome → Update
         """
@@ -585,7 +585,7 @@ class AMOSv4:
         # 7. Execute and record
         result = {
             "cycle": self.current_cycle,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "selected_action": optimal["action"]["name"] if optimal else None,
             "economic_score": optimal["score"] if optimal else 0,
             "selected_goals": [g.name for g in selected_goals],
@@ -611,7 +611,7 @@ class AMOSv4:
             "survival_score": self.survival.compute_survival(),
         }
 
-    def _generate_actions(self, goals: list[Goal], threats: list[dict]) -> list[dict]:
+    def _generate_actions(self, goals: List[Goal], threats: List[dict]) -> List[dict]:
         """Generate candidate actions from goals and threats."""
         actions = []
 

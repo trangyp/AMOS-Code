@@ -11,8 +11,6 @@ Handles:
 - Nondeterministic test outcomes
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass, field
 from typing import Any
@@ -48,7 +46,7 @@ class MixedState:
     ρ = Σi pi |Ψ_i⟩⟨Ψ_i|
     """
 
-    components: list[PureState] = field(default_factory=list)
+    components: List[PureState] = field(default_factory=list)
 
     def add_component(self, state: PureState) -> None:
         """Add a pure state component."""
@@ -72,7 +70,7 @@ class MixedState:
             total += comp.probability * amp
         return total
 
-    def expected_energy(self, weights: dict[StateDimension, float] | None = None) -> float:
+    def expected_energy(self, weights: dict[StateDimension, float] = None) -> float:
         """
         Compute expected energy: E = Tr(ρ · H)
         E = Σk λk (1 - ⟨αk⟩)²
@@ -208,7 +206,7 @@ class DensityMatrix:
                 # Evolution toward target
                 comp.amplitudes[dim] = current + rate * (target - current) * dt
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Serialize density matrix."""
         return {
             "repo_path": self.repo_path,

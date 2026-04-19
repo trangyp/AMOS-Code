@@ -18,7 +18,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -27,11 +27,11 @@ class CountryKnowledge:
 
     country_code: str
     country_name: str
-    geography: dict[str, Any] = field(default_factory=dict)
-    economy: dict[str, Any] = field(default_factory=dict)
-    culture: dict[str, Any] = field(default_factory=dict)
-    regulations: dict[str, Any] = field(default_factory=dict)
-    tags: list[str] = field(default_factory=list)
+    geography: Dict[str, Any] = field(default_factory=dict)
+    economy: Dict[str, Any] = field(default_factory=dict)
+    culture: Dict[str, Any] = field(default_factory=dict)
+    regulations: Dict[str, Any] = field(default_factory=dict)
+    tags: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -41,9 +41,9 @@ class SectorKnowledge:
     sector_code: str
     sector_name: str
     domain: str
-    expertise: dict[str, Any] = field(default_factory=dict)
-    standards: list[str] = field(default_factory=list)
-    tags: list[str] = field(default_factory=list)
+    expertise: Dict[str, Any] = field(default_factory=dict)
+    standards: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
 
 
 class ExtendedKnowledgeLoader:
@@ -54,12 +54,12 @@ class ExtendedKnowledgeLoader:
     """
 
     def __init__(self):
-        self.countries: dict[str, CountryKnowledge] = {}
-        self.sectors: dict[str, SectorKnowledge] = {}
+        self.countries: Dict[str, CountryKnowledge] = {}
+        self.sectors: Dict[str, SectorKnowledge] = {}
         self.loaded = False
         self.stats = {"countries_loaded": 0, "sectors_loaded": 0, "total_packs": 0, "memory_mb": 0}
 
-    def load_all(self, base_path: Optional[Path] = None) -> dict[str, Any]:
+    def load_all(self, base_path: Optional[Path] = None) -> Dict[str, Any]:
         """Load all extended knowledge packs.
 
         Args:
@@ -94,7 +94,7 @@ class ExtendedKnowledgeLoader:
 
         return self.stats
 
-    def _load_countries(self, path: Path) -> dict[str, Any]:
+    def _load_countries(self, path: Path) -> Dict[str, Any]:
         """Load country knowledge packs."""
         print(f"   Loading country packs from {path}...")
 
@@ -134,7 +134,7 @@ class ExtendedKnowledgeLoader:
         print(f"   ✅ Loaded {count} country packs")
         return {"count": count, "size_mb": total_size / 1024 / 1024}
 
-    def _load_sectors(self, path: Path) -> dict[str, Any]:
+    def _load_sectors(self, path: Path) -> Dict[str, Any]:
         """Load sector knowledge packs."""
         print(f"   Loading sector packs from {path}...")
 
@@ -174,7 +174,7 @@ class ExtendedKnowledgeLoader:
         print(f"   ✅ Loaded {count} sector packs")
         return {"count": count, "size_mb": total_size / 1024 / 1024}
 
-    def query_countries(self, query: str = None, limit: int = 10) -> list[CountryKnowledge]:
+    def query_countries(self, query: str = None, limit: int = 10) -> List[CountryKnowledge]:
         """Query country knowledge packs."""
         if not self.loaded:
             return []
@@ -198,7 +198,7 @@ class ExtendedKnowledgeLoader:
 
     def query_sectors(
         self, query: str = None, domain: str = None, limit: int = 10
-    ) -> list[SectorKnowledge]:
+    ) -> List[SectorKnowledge]:
         """Query sector knowledge packs."""
         if not self.loaded:
             return []
@@ -232,15 +232,15 @@ class ExtendedKnowledgeLoader:
         """Get specific sector knowledge."""
         return self.sectors.get(sector_code.upper())
 
-    def list_countries(self) -> list[str]:
+    def list_countries(self) -> List[str]:
         """List all available country codes."""
         return sorted(list(self.countries.keys()))
 
-    def list_sectors(self) -> list[str]:
+    def list_sectors(self) -> List[str]:
         """List all available sector codes."""
         return sorted(list(self.sectors.keys()))
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get loading statistics."""
         return {
             "loaded": self.loaded,
@@ -264,7 +264,7 @@ class ComprehensiveKnowledgeSystem:
         self.extended_loader = ExtendedKnowledgeLoader()
         self.initialized = False
 
-    def initialize(self, core_loader=None) -> dict[str, Any]:
+    def initialize(self, core_loader=None) -> Dict[str, Any]:
         """Initialize comprehensive knowledge system."""
         print("\n📚 Initializing Comprehensive Knowledge System...")
 
@@ -296,6 +296,8 @@ class ComprehensiveKnowledgeSystem:
         # Query core knowledge
         if self.core_loader:
             from amos_brain.knowledge_loader import query_knowledge
+from typing import List, Optional, Set
+from typing import Dict
 
             results["core"] = query_knowledge(query, limit=limit // 2)
 
@@ -306,7 +308,7 @@ class ComprehensiveKnowledgeSystem:
 
         return results
 
-    def get_geographic_intelligence(self, country_code: str) -> dict[str, Any]:
+    def get_geographic_intelligence(self, country_code: str) -> Dict[str, Any]:
         """Get comprehensive intelligence for a country."""
         country = self.extended_loader.get_country(country_code)
         if not country:
@@ -320,7 +322,7 @@ class ComprehensiveKnowledgeSystem:
             "regulations": country.regulations,
         }
 
-    def get_sector_intelligence(self, sector_code: str) -> dict[str, Any]:
+    def get_sector_intelligence(self, sector_code: str) -> Dict[str, Any]:
         """Get comprehensive intelligence for a sector."""
         sector = self.extended_loader.get_sector(sector_code)
         if not sector:
@@ -346,7 +348,7 @@ def get_comprehensive_knowledge() -> ComprehensiveKnowledgeSystem:
     return _comprehensive_knowledge
 
 
-def load_extended_knowledge() -> dict[str, Any]:
+def load_extended_knowledge() -> Dict[str, Any]:
     """Convenience function to load extended knowledge."""
     system = get_comprehensive_knowledge()
     return system.initialize()

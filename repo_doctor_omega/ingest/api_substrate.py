@@ -7,8 +7,6 @@ Extracts and compares:
 Computes API commutator: [A_public, A_runtime] = gap between promised and actual.
 """
 
-from __future__ import annotations
-
 import ast
 from dataclasses import dataclass
 from pathlib import Path
@@ -315,7 +313,7 @@ class APISubstrate:
 
         return results
 
-    def get_summary(self, results: dict[str, list[APIDiscrepancy]]) -> dict[str, Any]:
+    def get_summary(self, results: dict[str, list[APIDiscrepancy]]) -> Dict[str, Any]:
         """Generate summary statistics."""
         total_discrepancies = sum(len(d) for d in results.values())
         missing_exports = sum(1 for d in results.values() for x in d if x.kind == "missing_export")

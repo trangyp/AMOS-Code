@@ -1,7 +1,5 @@
 """AMOS Economics/Finance Engine - Economic analysis and financial systems."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,9 +12,9 @@ class EconAnalysis:
 
     domain: str
     input_data: str
-    findings: list[dict]
+    findings: List[dict]
     confidence: float
-    limitations: list[str]
+    limitations: List[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -63,7 +61,7 @@ class MicroEconomicsEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get economic principles for category."""
         principles = {
             "firm_behavior": ["Profit maximization", "Cost minimization"],
@@ -117,7 +115,7 @@ class MacroEconomicsEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get macroeconomic principles for category."""
         principles = {
             "growth": ["Solow model", "Human capital accumulation"],
@@ -171,7 +169,7 @@ class PublicFinanceEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get public finance principles for category."""
         principles = {
             "taxation": ["Ramsey taxation", "Optimal tax theory"],
@@ -243,7 +241,7 @@ class FinanceMarketsEngine:
             ),
         )
 
-    def _get_principles(self, category: str) -> list[str]:
+    def _get_principles(self, category: str) -> List[str]:
         """Get finance principles for category."""
         principles = {
             "markets": ["Efficient markets hypothesis", "Arbitrage pricing"],
@@ -267,7 +265,7 @@ class AMOSEconEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.engines: dict[str, Any] = {}
+        self.engines: Dict[str, Any] = {}
         self._init_engines()
 
     def _init_engines(self):
@@ -278,7 +276,7 @@ class AMOSEconEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
+        domains: Optional[List[str]] = None,
     ) -> dict[str, EconAnalysis]:
         """Run economic analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
@@ -291,7 +289,7 @@ class AMOSEconEngine:
 
         return results
 
-    def get_findings_summary(self, results: dict[str, EconAnalysis]) -> str:
+    def get_findings_summary(self, results: Dict[str, EconAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Economics/Finance Analysis Summary",
@@ -377,7 +375,7 @@ class AMOSEconEngine:
 
 
 # Singleton
-_econ_engine: AMOSEconEngine | None = None
+_econ_engine: Optional[AMOSEconEngine] = None
 
 
 def get_econ_engine() -> AMOSEconEngine:
@@ -390,7 +388,7 @@ def get_econ_engine() -> AMOSEconEngine:
 
 def analyze_economics(
     description: str,
-    domains: list[str] | None = None,
+    domains: Optional[List[str]] = None,
 ) -> dict[str, EconAnalysis]:
     """Quick helper for economics analysis."""
     return get_econ_engine().analyze(description, domains)

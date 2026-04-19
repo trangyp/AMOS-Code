@@ -1,7 +1,5 @@
 """I_security = 1 iff no forbidden source-to-sink flow exists."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class SecurityInvariant(Invariant):
     def __init__(self):
         super().__init__("I_security", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check security integrity."""
         context = context or {}
         flow = context.get("security_flow_violations", 0)

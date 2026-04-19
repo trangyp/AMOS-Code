@@ -13,6 +13,7 @@ Commands:
 Usage:
   amos [command] [options]
 """
+
 from __future__ import annotations
 
 import os

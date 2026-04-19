@@ -15,7 +15,7 @@ class ComponentCheck:
     file_path: str
     importable: bool
     has_main_function: bool
-    errors: list[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
     load_time_ms: float = 0.0
 
 
@@ -27,7 +27,7 @@ class DiagnosticsReport:
     total_components: int
     importable: int
     failed: int
-    components: list[ComponentCheck]
+    components: List[ComponentCheck]
     ecosystem_integrity: str  # intact, degraded, broken
 
 
@@ -116,7 +116,7 @@ class SystemDiagnostics:
     def __init__(self, repo_path: str = "."):
         """Initialize diagnostics tool."""
         self.repo_path = Path(repo_path)
-        self.results: list[ComponentCheck] = []
+        self.results: List[ComponentCheck] = []
 
     def run_full_diagnostics(self) -> DiagnosticsReport:
         """Run complete diagnostics on all components."""
@@ -200,7 +200,7 @@ class SystemDiagnostics:
             load_time_ms=load_time,
         )
 
-    def get_failed_components(self) -> list[ComponentCheck]:
+    def get_failed_components(self) -> List[ComponentCheck]:
         """Get list of failed components."""
         return [r for r in self.results if not r.importable]
 

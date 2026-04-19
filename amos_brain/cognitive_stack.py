@@ -1,6 +1,5 @@
 """Cognitive Stack - Domain engine management and orchestration."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -62,6 +61,8 @@ class CognitiveStack:
     - 7_Intelligents (domain engines)
     - Cognitive_Stack (cognitive capabilities)
     """
+from __future__ import annotations
+
 
     INTELLIGENCES = [
         "AMOS_Biology_And_Cognition_Engine",
@@ -78,7 +79,7 @@ class CognitiveStack:
         "AMOS_Strategy_Game_Engine",
     ]
 
-    def __init__(self, core_path: str | None = None):
+    def __init__(self, core_path: str  = None):
         self.core_path = core_path
         self.engines: dict[str, DomainEngine] = {}
         self._routing_table: dict[str, list[str]] = {}
@@ -160,7 +161,7 @@ class CognitiveStack:
 
         return list(matched_engines)
 
-    def execute(self, query: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    def execute(self, query: str, context: dict[str, Any]  = None) -> dict[str, Any]:
         """Execute query through appropriate engines."""
         engines_to_use = self.route_query(query)
         results = []

@@ -1,0 +1,71 @@
+# AMOS Staging Environment Configuration
+
+global:
+  environment: staging
+  domain: staging.amos.local
+
+api:
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+
+graphql:
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+
+websocket:
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+
+workers:
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+
+postgresql:
+  primary:
+    persistence:
+      size: 25Gi
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+  readReplicas:
+    replicaCount: 1
+
+redis:
+  master:
+    persistence:
+      size: 10Gi
+  replica:
+    replicaCount: 1
+
+kafka:
+  replicaCount: 2
+  persistence:
+    size: 50Gi
+  zookeeper:
+    replicaCount: 2
+
+monitoring:
+  enabled: true
+  grafana:
+    enabled: true
+
+ingress:
+  enabled: true
+  tls:
+    enabled: true
+    certManager:
+      enabled: true
+      issuer: "letsencrypt-staging"

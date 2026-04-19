@@ -9,15 +9,13 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import statistics
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class AnomalySeverity(Enum):
@@ -53,7 +51,7 @@ class Anomaly:
     deviation_percent: float
     timestamp: str
     description: str
-    remediation: list[str]
+    remediation: List[str]
     acknowledged: bool = False
     resolved: bool = False
 
@@ -83,8 +81,8 @@ class AnomalyDetector:
         self.analytics_dir.mkdir(parents=True, exist_ok=True)
 
         # Storage
-        self.baselines: dict[str, MetricBaseline] = {}
-        self.anomalies: list[Anomaly] = []
+        self.baselines: Dict[str, MetricBaseline] = {}
+        self.anomalies: List[Anomaly] = []
         self.recent_metrics: dict[str, list[float]] = {}
 
         # Detection thresholds
@@ -121,7 +119,7 @@ class AnomalyDetector:
         """Save metric baselines to disk."""
         baseline_file = self.analytics_dir / "baselines.json"
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "baselines": {
                 metric: {
                     "mean": b.mean,
@@ -169,7 +167,7 @@ class AnomalyDetector:
         """Save anomalies to disk."""
         anomalies_file = self.analytics_dir / "anomalies.json"
         data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "total_count": len(self.anomalies),
             "active_count": len(self.get_active_anomalies()),
             "anomalies": [
@@ -218,7 +216,7 @@ class AnomalyDetector:
                 min_value=min(samples),
                 max_value=max(samples),
                 sample_count=len(samples),
-                last_updated=datetime.utcnow().isoformat(),
+                last_updated=datetime.now(UTC).isoformat(),
             )
 
             self._save_baselines()
@@ -273,7 +271,7 @@ class AnomalyDetector:
 
         # Create anomaly
         anomaly = Anomaly(
-            id=f"anom_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{len(self.anomalies)}",
+            id=f"anom_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}_{len(self.anomalies)}",
             anomaly_type=anomaly_type,
             severity=severity,
             subsystem=subsystem,
@@ -281,7 +279,7 @@ class AnomalyDetector:
             expected_value=baseline.mean,
             actual_value=value,
             deviation_percent=deviation_percent,
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             description=f"{anomaly_type.value} detected in {subsystem}:{metric} "
             f"(expected {baseline.mean:.2f}, got {value:.2f}, "
             f"deviation: {deviation:.1f}σ)",
@@ -297,7 +295,7 @@ class AnomalyDetector:
 
     def _generate_remediation(
         self, anomaly_type: AnomalyType, subsystem: str, metric: str
-    ) -> list[str]:
+    ) -> List[str]:
         """Generate remediation suggestions based on anomaly type."""
         remediation_map = {
             AnomalyType.HIGH_LOAD: [
@@ -334,7 +332,7 @@ class AnomalyDetector:
 
         return remediation_map.get(anomaly_type, ["Investigate root cause"])
 
-    def check_all_subsystems(self) -> list[Anomaly]:
+    def check_all_subsystems(self) -> List[Anomaly]:
         """Run anomaly detection on all subsystems."""
         detected = []
 
@@ -369,9 +367,9 @@ class AnomalyDetector:
 
         return detected
 
-    def get_active_anomalies(self) -> list[Anomaly]:
+    def get_active_anomalies(self) -> List[Anomaly]:
         """Get all unresolved anomalies."""
-        cutoff = (datetime.utcnow() - timedelta(hours=24)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(hours=24)).isoformat()
         return [a for a in self.anomalies if not a.resolved and a.timestamp > cutoff]
 
     def acknowledge_anomaly(self, anomaly_id: str) -> bool:
@@ -392,7 +390,7 @@ class AnomalyDetector:
                 return True
         return False
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get detector status."""
         active = self.get_active_anomalies()
         critical = sum(1 for a in active if a.severity == AnomalySeverity.CRITICAL)

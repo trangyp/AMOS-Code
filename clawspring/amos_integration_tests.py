@@ -1,7 +1,5 @@
 """AMOS Integration Test Suite - Validates all 11 layers."""
 
-from __future__ import annotations
-
 import time
 import traceback
 from dataclasses import dataclass
@@ -15,7 +13,7 @@ class TestResult:
     layer: str
     passed: bool
     execution_time: float
-    error: str | None
+    error: str
     details: dict
 
 
@@ -35,7 +33,7 @@ class AMOSIntegrationTests:
     """Integration test suite for AMOS 11-layer architecture."""
 
     def __init__(self):
-        self.results: list[TestResult] = []
+        self.results: List[TestResult] = []
 
     def run_all_tests(self) -> TestSuiteResult:
         """Run complete integration test suite."""

@@ -8,15 +8,13 @@ Primary Loop:
 12_QUANTUM_LAYER -> 06_MUSCLE -> 07_METABOLISM -> 01_BRAIN
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add parent to path for imports
 _PARENT = Path(__file__).parent
@@ -76,10 +74,10 @@ class OrganismState:
     """Global state of the AMOS organism."""
 
     session_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
-    started_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    started_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     cycle_count: int = 0
     current_subsystem: str = "00_ROOT"
-    global_context: dict[str, Any] = field(default_factory=dict)
+    global_context: Dict[str, Any] = field(default_factory=dict)
 
 
 class AmosOrganism:
@@ -264,7 +262,7 @@ class AmosOrganism:
         ctx = context or ExecutionContext()
         return self.muscle.execute(command, ctx)
 
-    def cycle(self) -> dict[str, Any]:
+    def cycle(self) -> Dict[str, Any]:
         """Run one primary loop cycle."""
         results = {}
 
@@ -287,7 +285,7 @@ class AmosOrganism:
 
         # QUANTUM_LAYER: Timing
         self.state.current_subsystem = "12_QUANTUM_LAYER"
-        results["quantum"] = {"timestamp": datetime.utcnow().isoformat()}
+        results["quantum"] = {"timestamp": datetime.now(UTC).isoformat()}
 
         # MUSCLE: Execute pending actions
         self.state.current_subsystem = "06_MUSCLE"
@@ -325,7 +323,7 @@ class AmosOrganism:
         """Search memory."""
         return self.memory.search(query, limit=limit)
 
-    def status(self) -> dict[str, Any]:
+    def status(self) -> Dict[str, Any]:
         """Get complete organism status."""
         return {
             "session_id": self.state.session_id,
@@ -410,7 +408,7 @@ class AmosOrganism:
         """Scan environment via SENSES."""
         return self.senses.scan(path)
 
-    def gather_context(self) -> dict[str, Any]:
+    def gather_context(self) -> Dict[str, Any]:
         """Gather environment context."""
         return self.context.gather()
 

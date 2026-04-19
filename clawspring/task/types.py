@@ -1,7 +1,5 @@
 """Task system types: Task dataclass, TaskStatus enum."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -26,9 +24,9 @@ class Task:
     status: TaskStatus = TaskStatus.PENDING
     active_form: str = ""  # e.g. "Running tests"
     owner: str = ""
-    blocks: list[str] = field(default_factory=list)  # IDs this task blocks
-    blocked_by: list[str] = field(default_factory=list)  # IDs that block this task
-    metadata: dict[str, Any] = field(default_factory=dict)
+    blocks: List[str] = field(default_factory=list)  # IDs this task blocks
+    blocked_by: List[str] = field(default_factory=list)  # IDs that block this task
+    metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
@@ -80,7 +78,7 @@ class Task:
             TaskStatus.CANCELLED: "✗",
         }.get(self.status, "?")
 
-    def one_line(self, resolved_ids: set[str] | None = None) -> str:
+    def one_line(self, resolved_ids: Set[str] = None) -> str:
         owner_str = f" ({self.owner})" if self.owner else ""
         pending_blockers = [
             b for b in self.blocked_by if resolved_ids is None or b not in resolved_ids

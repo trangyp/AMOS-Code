@@ -9,14 +9,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -25,9 +22,9 @@ class AgentSpec:
 
     name: str
     agent_type: str
-    kernel_refs: List[str]
-    capabilities: List[str]
-    constraints: Dict[str, Any] = field(default_factory=dict)
+    kernel_refs: list[str]
+    capabilities: list[str]
+    constraints: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,7 +50,7 @@ class AgentFactory:
         self.agents_dir = organism_root / "13_FACTORY" / "agents"
         self.agents_dir.mkdir(parents=True, exist_ok=True)
 
-        self._registry: Dict[str, AgentInstance] = {}
+        self._registry: dict[str, AgentInstance] = {}
         self._load_existing()
 
     def _load_existing(self) -> None:
@@ -88,8 +85,8 @@ class AgentFactory:
             id=agent_id,
             spec=spec,
             status="idle",
-            created_at=datetime.utcnow().isoformat() + "Z",
-            last_active=datetime.utcnow().isoformat() + "Z",
+            created_at=datetime.now(UTC).isoformat() + "Z",
+            last_active=datetime.now(UTC).isoformat() + "Z",
         )
 
         self._registry[agent_id] = instance
@@ -128,7 +125,7 @@ class AgentFactory:
 
         data = {
             "factory_version": "1.0.0",
-            "last_updated": datetime.utcnow().isoformat() + "Z",
+            "last_updated": datetime.now(UTC).isoformat() + "Z",
             "agent_count": len(self._registry),
             "agents": [
                 {
@@ -153,11 +150,11 @@ class AgentFactory:
         with open(registry_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
-    def get_agent(self, agent_id: str) -> Optional[AgentInstance]:
+    def get_agent(self, agent_id: str) -> AgentInstance | None:
         """Get agent by ID."""
         return self._registry.get(agent_id)
 
-    def list_agents(self, status: Optional[str] = None) -> List[AgentInstance]:
+    def list_agents(self, status: str = None) -> list[AgentInstance]:
         """List all agents, optionally filtered by status."""
         agents = list(self._registry.values())
         if status:
@@ -170,7 +167,7 @@ class AgentFactory:
             return False
 
         self._registry[agent_id].status = status
-        self._registry[agent_id].last_active = datetime.utcnow().isoformat() + "Z"
+        self._registry[agent_id].last_active = datetime.now(UTC).isoformat() + "Z"
 
         self._save_agent_file(self._registry[agent_id])
         self._persist_registry()
@@ -194,11 +191,11 @@ class AgentFactory:
                 msg = f"[FACTORY] Agent {agent_id} retired: high error rate"
                 print(msg)
 
-        agent.last_active = datetime.utcnow().isoformat() + "Z"
+        agent.last_active = datetime.now(UTC).isoformat() + "Z"
         self._save_agent_file(agent)
         self._persist_registry()
 
-    def get_quality_report(self) -> Dict[str, Any]:
+    def get_quality_report(self) -> dict[str, Any]:
         """Generate quality report for all agents."""
         execs = [a.execution_count for a in self._registry.values()]
         total_execs = sum(execs)
@@ -214,15 +211,15 @@ class AgentFactory:
             "agents_by_type": self._count_by_type(),
         }
 
-    def _count_by_type(self) -> Dict[str, int]:
+    def _count_by_type(self) -> dict[str, int]:
         """Count agents by type."""
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for agent in self._registry.values():
             t = agent.spec.agent_type
             counts[t] = counts.get(t, 0) + 1
         return counts
 
-    def create_standard_agents(self) -> List[AgentInstance]:
+    def create_standard_agents(self) -> list[AgentInstance]:
         """Create standard AMOS agents from registry."""
         registry_path = self.root / "agent_registry.json"
 

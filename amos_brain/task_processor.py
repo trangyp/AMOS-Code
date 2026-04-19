@@ -1,23 +1,25 @@
 """AMOS Brain Task Processor - Standalone cognitive task processing with Real Learning."""
 
-from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
+import logging
+import time
+from dataclasses import dataclass
 
+logger = logging.getLogger(__name__)
+
+from .canon_bridge import get_canon_bridge
 from .kernel_router import KernelRouter
 from .laws import GlobalLaws
 from .loader import get_brain
-from .reasoning import RuleOfFour, RuleOfTwo
 
 # Real Learning Engine integration
 from .real_learning_engine import (
     RealLearningEngine,
-    Procedure,
     attempt_procedure_reuse,
-    learn_from_task,
     get_learning_engine,
+    learn_from_task,
 )
+from .reasoning import RuleOfFour, RuleOfTwo
 
 
 @dataclass
@@ -34,6 +36,7 @@ class TaskResult:
     rule_of_four_check: dict
     confidence: str
     processing_time_ms: int = 0
+    canon_context: dict = None
 
 
 @dataclass
@@ -57,6 +60,8 @@ class BrainTaskProcessor:
     - Validates output against Global Laws
     - Tracks reasoning chain
     """
+from __future__ import annotations
+
 
     def __init__(self):
         self._brain = None
@@ -67,6 +72,14 @@ class BrainTaskProcessor:
         self._task_counter = 0
         # Real Learning Engine integration
         self._learning_engine: RealLearningEngine | None = None
+        # Canon integration
+        self._canon_bridge = None
+
+    async def _get_canon_bridge(self):
+        """Lazy initialization of canon bridge."""
+        if self._canon_bridge is None:
+            self._canon_bridge = await get_canon_bridge()
+        return self._canon_bridge
 
     @property
     def learning_engine(self) -> RealLearningEngine:
@@ -89,7 +102,7 @@ class BrainTaskProcessor:
             self._router = KernelRouter(self.brain)
         return self._router
 
-    def process(self, task: str, context: dict | None = None) -> TaskResult:
+    def process(self, task: str, context: dict  = None) -> TaskResult:
         """Process a task through the AMOS brain with Real Learning.
 
         Args:
@@ -99,8 +112,6 @@ class BrainTaskProcessor:
         Returns:
             TaskResult with reasoning chain and validation
         """
-        import time
-
         start_time = time.time()
 
         self._task_counter += 1
@@ -190,8 +201,8 @@ class BrainTaskProcessor:
                 execution_time_ms=result.processing_time_ms,
                 context=context or {},
             )
-        except Exception:
-            pass  # Learning failure should not break processing
+        except Exception as e:
+            logger.debug(f"Learning failure (non-critical): {e}")
 
         return result
 
@@ -363,7 +374,7 @@ class BrainTaskProcessor:
         }
 
 
-def process_task(task: str, context: dict | None = None) -> TaskResult:
+def process_task(task: str, context: dict  = None) -> TaskResult:
     """Convenience function to process a single task."""
     processor = BrainTaskProcessor()
     return processor.process(task, context)

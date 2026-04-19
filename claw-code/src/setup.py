@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import platform
 import sys
 from dataclasses import dataclass
@@ -66,7 +64,7 @@ def build_workspace_setup() -> WorkspaceSetup:
     )
 
 
-def run_setup(cwd: Path | None = None, trusted: bool = True) -> SetupReport:
+def run_setup(cwd: Optional[Path] = None, trusted: bool = True) -> SetupReport:
     root = cwd or Path(__file__).resolve().parent.parent
     prefetches = [
         start_mdm_raw_read(),

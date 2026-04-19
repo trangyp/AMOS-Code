@@ -37,6 +37,7 @@ def start_api_server():
     # Check if running
     try:
         import urllib.request
+from typing import Final, List
 
         req = urllib.request.Request("http://localhost:8765/health")
         with urllib.request.urlopen(req, timeout=5) as resp:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from .commands import PORTED_COMMANDS, execute_command
@@ -29,14 +27,14 @@ class ExecutionRegistry:
     commands: tuple[MirroredCommand, ...]
     tools: tuple[MirroredTool, ...]
 
-    def command(self, name: str) -> MirroredCommand | None:
+    def command(self, name: str) -> Optional[MirroredCommand]:
         lowered = name.lower()
         for command in self.commands:
             if command.name.lower() == lowered:
                 return command
         return None
 
-    def tool(self, name: str) -> MirroredTool | None:
+    def tool(self, name: str) -> Optional[MirroredTool]:
         lowered = name.lower()
         for tool in self.tools:
             if tool.name.lower() == lowered:

@@ -3,10 +3,11 @@
 
 import importlib
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 @dataclass
@@ -64,8 +65,8 @@ class AMOSPluginManager:
         self.plugin_dir = Path(plugin_dir)
         self.plugin_dir.mkdir(exist_ok=True)
 
-        self.plugins: dict[str, PluginInfo] = {}
-        self.hooks: dict[str, PluginHook] = {
+        self.plugins: Dict[str, PluginInfo] = {}
+        self.hooks: Dict[str, PluginHook] = {
             name: PluginHook(name=name, description=desc)
             for name, desc in self.STANDARD_HOOKS.items()
         }
@@ -214,7 +215,7 @@ def on_system_startup():
 '''
         return template
 
-    def get_stats(self) -> dict[str, Any]:
+    def get_stats(self) -> Dict[str, Any]:
         """Get plugin manager statistics."""
         return {
             "total_plugins": len(self.plugins),

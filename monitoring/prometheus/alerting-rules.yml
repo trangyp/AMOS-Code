@@ -1,0 +1,532 @@
+# AMOS Equation System v2.0 - Prometheus Alerting Rules
+#
+# Alerting rules based on SRE best practices and SLO-based alerting
+#
+# Usage:
+#   Place in prometheus/alerting-rules.yml and reference in prometheus.yml:
+#
+#   rule_files:
+#     - "alerting-rules.yml"
+#
+# Author: AMOS Team
+# Version: 2.0.0
+
+groups:
+  # =============================================================================
+  # API Availability & Latency SLOs
+  # =============================================================================
+  - name: api_slo
+    interval: 30s
+    rules:
+      # SLO: 99.9% availability over 30 days
+      - alert: APIHighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{job="amos-equation",status_code=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="amos-equation"}[5m]))
+          ) > 0.001
+        for: 5m
+        labels:
+          severity: critical
+          category: slo
+        annotations:
+          summary: "API error rate exceeds SLO threshold"
+          description: "Error rate is {{ $value | humanizePercentage }} over last 5m (threshold: 0.1%)"
+          runbook_url: "https://wiki.internal/amos/runbooks/api-high-error-rate"
+
+      # SLO: 95th percentile latency < 200ms
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{job="amos-equation"}[5m])) by (le)
+          ) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          category: slo
+        annotations:
+          summary: "API p95 latency exceeds 200ms"
+          description: "p95 latency is {{ $value | humanizeDuration }} (threshold: 200ms)"
+          runbook_url: "https://wiki.internal/amos/runbooks/api-high-latency"
+
+      # SLO: 99th percentile latency < 500ms
+      - alert: APIVeryHighLatency
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket{job="amos-equation"}[5m])) by (le)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          category: slo
+        annotations:
+          summary: "API p99 latency exceeds 500ms"
+          description: "p99 latency is {{ $value | humanizeDuration }} (threshold: 500ms)"
+          runbook_url: "https://wiki.internal/amos/runbooks/api-high-latency"
+
+      # Request rate anomaly detection
+      - alert: APITrafficDrop
+        expr: |
+          (
+            sum(rate(http_requests_total{job="amos-equation"}[5m]))
+            /
+            avg_over_time(sum(rate(http_requests_total{job="amos-equation"}[5m]))[1h:5m])
+          ) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          category: slo
+        annotations:
+          summary: "API traffic dropped significantly"
+          description: "Request rate dropped to {{ $value | humanizePercentage }} of baseline"
+          runbook_url: "https://wiki.internal/amos/runbooks/api-traffic-drop"
+
+  # =============================================================================
+  # Resource Utilization
+  # =============================================================================
+  - name: resources
+    interval: 30s
+    rules:
+      # CPU usage alert
+      - alert: HighCPUUsage
+        expr: process_cpu_percent{job="amos-equation"} > 80
+        for: 10m
+        labels:
+          severity: warning
+          category: resource
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% for more than 10 minutes"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-cpu-usage"
+
+      # Critical CPU usage
+      - alert: CriticalCPUUsage
+        expr: process_cpu_percent{job="amos-equation"} > 95
+        for: 5m
+        labels:
+          severity: critical
+          category: resource
+        annotations:
+          summary: "Critical CPU usage detected"
+          description: "CPU usage is {{ $value }}% for more than 5 minutes"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-cpu-usage"
+
+      # Memory usage alert
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{job="amos-equation"}
+            /
+            container_spec_memory_limit_bytes{job="amos-equation"}
+          ) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          category: resource
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-memory-usage"
+
+      # Critical memory usage
+      - alert: CriticalMemoryUsage
+        expr: |
+          (
+            process_resident_memory_bytes{job="amos-equation"}
+            /
+            container_spec_memory_limit_bytes{job="amos-equation"}
+          ) > 0.95
+        for: 5m
+        labels:
+          severity: critical
+          category: resource
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Memory usage is {{ $value | humanizePercentage }} - OOM risk"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-memory-usage"
+
+      # File descriptor usage
+      - alert: HighFileDescriptorUsage
+        expr: |
+          (
+            process_open_fds{job="amos-equation"}
+            /
+            process_max_fds{job="amos-equation"}
+          ) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          category: resource
+        annotations:
+          summary: "High file descriptor usage"
+          description: "FD usage is {{ $value | humanizePercentage }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-fd-usage"
+
+  # =============================================================================
+  # Database Alerts
+  # =============================================================================
+  - name: database
+    interval: 30s
+    rules:
+      # Slow query detection
+      - alert: DatabaseSlowQueries
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(database_query_duration_seconds_bucket[5m])) by (le)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Database slow queries detected"
+          description: "p95 query time is {{ $value | humanizeDuration }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/database-slow-queries"
+
+      # Critical slow queries
+      - alert: DatabaseVerySlowQueries
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(database_query_duration_seconds_bucket[5m])) by (le)
+          ) > 1.0
+        for: 3m
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: "Database critical slow queries"
+          description: "p99 query time is {{ $value | humanizeDuration }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/database-slow-queries"
+
+      # Database connection pool saturation
+      - alert: DatabaseConnectionPoolSaturation
+        expr: |
+          (
+            database_connections_active
+            /
+            database_connections_max
+          ) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Database connection pool near saturation"
+          description: "Connection pool is {{ $value | humanizePercentage }} utilized"
+          runbook_url: "https://wiki.internal/amos/runbooks/database-connection-pool"
+
+      # Database error rate
+      - alert: DatabaseHighErrorRate
+        expr: |
+          (
+            sum(rate(database_errors_total[5m]))
+            /
+            sum(rate(database_queries_total[5m]))
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: "Database error rate is high"
+          description: "Database error rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/database-errors"
+
+  # =============================================================================
+  # Cache (Redis) Alerts
+  # =============================================================================
+  - name: cache
+    interval: 30s
+    rules:
+      # Low cache hit ratio
+      - alert: LowCacheHitRatio
+        expr: equation_cache_hit_ratio < 0.5
+        for: 15m
+        labels:
+          severity: warning
+          category: cache
+        annotations:
+          summary: "Cache hit ratio is low"
+          description: "Cache hit ratio is {{ $value | humanizePercentage }} (threshold: 50%)"
+          runbook_url: "https://wiki.internal/amos/runbooks/low-cache-hit-ratio"
+
+      # Very low cache hit ratio
+      - alert: VeryLowCacheHitRatio
+        expr: equation_cache_hit_ratio < 0.3
+        for: 10m
+        labels:
+          severity: critical
+          category: cache
+        annotations:
+          summary: "Cache hit ratio is critically low"
+          description: "Cache hit ratio is {{ $value | humanizePercentage }} (threshold: 30%)"
+          runbook_url: "https://wiki.internal/amos/runbooks/low-cache-hit-ratio"
+
+      # Redis slow operations
+      - alert: RedisSlowOperations
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(redis_operation_duration_seconds_bucket[5m])) by (le)
+          ) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          category: cache
+        annotations:
+          summary: "Redis operations are slow"
+          description: "p95 Redis latency is {{ $value | humanizeDuration }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/redis-slow-operations"
+
+      # Redis connection errors
+      - alert: RedisConnectionErrors
+        expr: rate(redis_connection_errors_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: critical
+          category: cache
+        annotations:
+          summary: "Redis connection errors detected"
+          description: "{{ $value }} Redis connection errors per second"
+          runbook_url: "https://wiki.internal/amos/runbooks/redis-connection-errors"
+
+  # =============================================================================
+  # Task Queue (Celery) Alerts
+  # =============================================================================
+  - name: tasks
+    interval: 30s
+    rules:
+      # Task queue backlog
+      - alert: TaskQueueBacklog
+        expr: celery_tasks_pending > 1000
+        for: 10m
+        labels:
+          severity: warning
+          category: tasks
+        annotations:
+          summary: "Task queue backlog is high"
+          description: "{{ $value }} tasks pending in queue"
+          runbook_url: "https://wiki.internal/amos/runbooks/task-queue-backlog"
+
+      # Critical task queue backlog
+      - alert: CriticalTaskQueueBacklog
+        expr: celery_tasks_pending > 5000
+        for: 5m
+        labels:
+          severity: critical
+          category: tasks
+        annotations:
+          summary: "Task queue critically backlogged"
+          description: "{{ $value }} tasks pending - immediate action required"
+          runbook_url: "https://wiki.internal/amos/runbooks/task-queue-backlog"
+
+      # High task failure rate
+      - alert: HighTaskFailureRate
+        expr: |
+          (
+            sum(rate(celery_tasks_failed_total[10m]))
+            /
+            sum(rate(celery_tasks_total[10m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          category: tasks
+        annotations:
+          summary: "High task failure rate"
+          description: "{{ $value | humanizePercentage }} of tasks are failing"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-task-failure-rate"
+
+      # Task processing rate drop
+      - alert: TaskProcessingRateDrop
+        expr: |
+          (
+            sum(rate(celery_tasks_succeeded_total[10m]))
+            <
+            0.5 * avg_over_time(sum(rate(celery_tasks_succeeded_total[10m]))[1h:10m])
+          )
+        for: 10m
+        labels:
+          severity: warning
+          category: tasks
+        annotations:
+          summary: "Task processing rate dropped"
+          description: "Processing rate is 50% below baseline"
+          runbook_url: "https://wiki.internal/amos/runbooks/task-processing-rate-drop"
+
+  # =============================================================================
+  # Circuit Breaker Alerts
+  # =============================================================================
+  - name: circuit_breaker
+    interval: 30s
+    rules:
+      # Circuit breaker open
+      - alert: CircuitBreakerOpen
+        expr: circuit_breaker_state == 2  # 2 = OPEN state
+        for: 1m
+        labels:
+          severity: critical
+          category: resilience
+        annotations:
+          summary: "Circuit breaker is open"
+          description: "Circuit breaker {{ $labels.name }} is open - service degraded"
+          runbook_url: "https://wiki.internal/amos/runbooks/circuit-breaker-open"
+
+      # Circuit breaker half-open (recovering)
+      - alert: CircuitBreakerHalfOpen
+        expr: circuit_breaker_state == 1  # 1 = HALF_OPEN state
+        for: 5m
+        labels:
+          severity: warning
+          category: resilience
+        annotations:
+          summary: "Circuit breaker is half-open"
+          description: "Circuit breaker {{ $labels.name }} is testing recovery"
+          runbook_url: "https://wiki.internal/amos/runbooks/circuit-breaker-recovery"
+
+      # High failure rate triggering circuit breaker
+      - alert: HighCircuitBreakerFailureRate
+        expr: |
+          (
+            sum(rate(circuit_breaker_failures_total[5m]))
+            /
+            sum(rate(circuit_breaker_requests_total[5m]))
+          ) > 0.5
+        for: 3m
+        labels:
+          severity: warning
+          category: resilience
+        annotations:
+          summary: "High failure rate may trigger circuit breaker"
+          description: "Failure rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://wiki.internal/amos/runbooks/circuit-breaker-failures"
+
+  # =============================================================================
+  # Business Metrics
+  # =============================================================================
+  - name: business
+    interval: 60s
+    rules:
+      # Unusual equation operation drop
+      - alert: LowEquationActivity
+        expr: |
+          (
+            sum(rate(equation_operations_total[1h]))
+            <
+            0.3 * avg_over_time(sum(rate(equation_operations_total[1h]))[24h:1h])
+          )
+        for: 30m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Equation activity is unusually low"
+          description: "Activity is 70% below 24h average"
+          runbook_url: "https://wiki.internal/amos/runbooks/low-equation-activity"
+
+      # Export failure rate
+      - alert: HighExportFailureRate
+        expr: |
+          (
+            sum(rate(data_export_failures_total[10m]))
+            /
+            sum(rate(data_exports_total[10m]))
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "High data export failure rate"
+          description: "{{ $value | humanizePercentage }} of exports are failing"
+          runbook_url: "https://wiki.internal/amos/runbooks/export-failures"
+
+      # Webhook delivery failures
+      - alert: WebhookDeliveryFailures
+        expr: |
+          (
+            sum(rate(webhook_deliveries_failed_total[10m]))
+            /
+            sum(rate(webhook_deliveries_total[10m]))
+          ) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "High webhook delivery failure rate"
+          description: "{{ $value | humanizePercentage }} of webhooks failing"
+          runbook_url: "https://wiki.internal/amos/runbooks/webhook-failures"
+
+  # =============================================================================
+  # Security Alerts
+  # =============================================================================
+  - name: security
+    interval: 30s
+    rules:
+      # High rate of 401/403 responses (possible attack)
+      - alert: HighAuthFailureRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code=~"401|403"}[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value | humanizePercentage }} auth failures - possible attack"
+          runbook_url: "https://wiki.internal/amos/runbooks/high-auth-failures"
+
+      # Rate limiting triggered frequently
+      - alert: RateLimitingTriggered
+        expr: sum(rate(rate_limit_violations_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: info
+          category: security
+        annotations:
+          summary: "Rate limiting actively triggering"
+          description: "{{ $value }} rate limit violations per second"
+          runbook_url: "https://wiki.internal/amos/runbooks/rate-limiting"
+
+  # =============================================================================
+  # Backup & Recovery
+  # =============================================================================
+  - name: backup
+    interval: 300s  # Check every 5 minutes
+    rules:
+      # Backup failure
+      - alert: BackupFailed
+        expr: |
+          time() - max(backup_last_success_timestamp) > 86400  # 24 hours
+        for: 1m
+        labels:
+          severity: critical
+          category: backup
+        annotations:
+          summary: "Backup has not succeeded in 24 hours"
+          description: "Last successful backup was {{ $value | humanizeDuration }} ago"
+          runbook_url: "https://wiki.internal/amos/runbooks/backup-failure"
+
+      # Backup size anomaly
+      - alert: BackupSizeAnomaly
+        expr: |
+          (
+            abs(
+              backup_size_bytes - avg_over_time(backup_size_bytes[7d])
+            )
+            /
+            avg_over_time(backup_size_bytes[7d])
+          ) > 0.5
+        for: 1h
+        labels:
+          severity: warning
+          category: backup
+        annotations:
+          summary: "Backup size anomaly detected"
+          description: "Backup size deviated 50% from 7-day average"
+          runbook_url: "https://wiki.internal/amos/runbooks/backup-size-anomaly"

@@ -24,9 +24,9 @@ Usage:
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from amos_axiom_validator import AxiomCheck, AxiomValidator, ValidationLevel, ValidationReport
 from amos_coherence_engine import (
@@ -62,8 +62,8 @@ class CoherenceOmegaResult:
     coherence_result: CoherenceResult
     validation_report: ValidationReport
     omega_state: State
-    axioms_satisfied: dict[str, bool]
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    axioms_satisfied: Dict[str, bool]
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def is_valid(self) -> bool:
@@ -105,14 +105,14 @@ class CoherenceOmega:
 
         # Tracking
         self.last_validation: Optional[ValidationReport] = None
-        self.interaction_history: list[CoherenceOmegaResult] = []
+        self.interaction_history: List[CoherenceOmegaResult] = []
 
     # --------------------------------------------------------------------
     # Core Processing with Ω Validation
     # --------------------------------------------------------------------
 
     def process_message(
-        self, message: str, context: Optional[dict] = None, validate: bool = True
+        self, message: str, context: dict = None, validate: bool = True
     ) -> CoherenceOmegaResult:
         """Process message through coherence engines with Ω validation.
 
@@ -185,7 +185,7 @@ class CoherenceOmega:
             coherence_result=coherence_result,
             validation_report=validation_report
             or ValidationReport(
-                timestamp=datetime.utcnow(), target="coherence_unvalidated", checks=[]
+                timestamp=datetime.now(timezone.utc), target="coherence_unvalidated", checks=[]
             ),
             omega_state=omega_state,
             axioms_satisfied=axioms_satisfied,
@@ -281,7 +281,7 @@ class CoherenceOmega:
                 "noise": analysis.noise_components,
             },
             identity=context.get("human_identity", "unknown_human"),
-            time=datetime.utcnow().timestamp(),
+            time=datetime.now(timezone.utc).timestamp(),
             utility=self._calculate_utility(analysis),
         )
 
@@ -427,7 +427,7 @@ class CoherenceOmega:
         checks.append(energy_check)
 
         return ValidationReport(
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             target=f"CoherenceOp({result.intervention_mode.name})",
             checks=checks,
         )
@@ -440,11 +440,11 @@ class CoherenceOmega:
         """Get validation report from last operation."""
         return self.last_validation
 
-    def get_history(self) -> list[CoherenceOmegaResult]:
+    def get_history(self) -> List[CoherenceOmegaResult]:
         """Get interaction history."""
         return self.interaction_history
 
-    def get_compliance_stats(self) -> dict[str, Any]:
+    def get_compliance_stats(self) -> Dict[str, Any]:
         """Get Master Law compliance statistics."""
         if not self.interaction_history:
             return {"total": 0, "compliant": 0, "rate": 0.0}

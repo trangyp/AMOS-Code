@@ -38,12 +38,12 @@ class UnifiedIntegrationTestSuite:
     """Test suite for unified AMOS integration."""
 
     def __init__(self):
-        self.results: list[TestResult] = []
+        self.results: List[TestResult] = []
         self.runtime = None
         self.organism = None
         self.brain = None
 
-    def run_all_tests(self) -> dict[str, Any]:
+    def run_all_tests(self) -> Dict[str, Any]:
         """Run complete test suite."""
         print("=" * 70)
         print("AMOS UNIFIED INTEGRATION TEST SUITE")
@@ -559,7 +559,7 @@ class UnifiedIntegrationTestSuite:
             self.results.append(TestResult("Adaptation System", False, str(e)))
             print(f"  ❌ Adaptation system: FAILED - {e}")
 
-    def _generate_report(self) -> dict[str, Any]:
+    def _generate_report(self) -> Dict[str, Any]:
         """Generate final test report."""
         print("\n" + "=" * 70)
         print("TEST RESULTS SUMMARY")

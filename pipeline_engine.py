@@ -1,12 +1,13 @@
 """Pipeline Engine stub for compatibility."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 class PipelineStage:
     """Represents a pipeline stage."""
 
-    def __init__(self, name: str, func: Callable, config: dict[str, Any] | None = None):
+    def __init__(self, name: str, func: Callable, config: Dict[str, Any] = None):
         self.name = name
         self.func = func
         self.config = config or {}
@@ -17,7 +18,7 @@ class Pipeline:
 
     def __init__(self, name: str):
         self.name = name
-        self.stages: list[PipelineStage] = []
+        self.stages: List[PipelineStage] = []
 
     def add_stage(self, stage: PipelineStage) -> None:
         """Add stage to pipeline."""
@@ -35,7 +36,7 @@ class PipelineEngine:
     """Engine for pipeline management."""
 
     def __init__(self):
-        self.pipelines: dict[str, Pipeline] = {}
+        self.pipelines: Dict[str, Pipeline] = {}
 
     def create_pipeline(self, name: str) -> Pipeline:
         """Create new pipeline."""
@@ -43,7 +44,7 @@ class PipelineEngine:
         self.pipelines[name] = pipeline
         return pipeline
 
-    def get_pipeline(self, name: str) -> Pipeline | None:
+    def get_pipeline(self, name: str) -> Optional[Pipeline]:
         """Get pipeline by name."""
         return self.pipelines.get(name)
 

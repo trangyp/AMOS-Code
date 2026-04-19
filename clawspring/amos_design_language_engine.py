@@ -1,6 +1,5 @@
 """AMOS Design Language Engine - UX, information architecture, and visual design."""
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -30,9 +29,9 @@ class InformationArchitectureKernel:
     """Kernel for information architecture and navigation."""
 
     def __init__(self):
-        self.navigations: list[dict] = []
-        self.hierarchies: list[dict] = []
-        self.content_chunks: list[dict] = []
+        self.navigations: List[dict] = []
+        self.hierarchies: List[dict] = []
+        self.content_chunks: List[dict] = []
 
     def define_navigation(
         self,
@@ -53,7 +52,7 @@ class InformationArchitectureKernel:
     def define_hierarchy(
         self,
         name: str,
-        levels: list[str],
+        levels: List[str],
     ) -> dict:
         """Define content hierarchy."""
         hierarchy = {
@@ -66,7 +65,7 @@ class InformationArchitectureKernel:
     def chunk_content(
         self,
         content_id: str,
-        chunks: list[str],
+        chunks: List[str],
         max_chunk_size: int = 7,
     ) -> dict:
         """Apply content chunking (Miller's Law: 7±2)."""
@@ -83,7 +82,7 @@ class InformationArchitectureKernel:
         self.content_chunks.append(chunked)
         return chunked
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Navigation: Clear paths, logical flow",
@@ -97,8 +96,8 @@ class VisualSemanticsKernel:
     """Kernel for visual design and layout."""
 
     def __init__(self):
-        self.layouts: list[dict] = []
-        self.visual_groups: list[dict] = []
+        self.layouts: List[dict] = []
+        self.visual_groups: List[dict] = []
 
     def define_layout(
         self,
@@ -139,7 +138,7 @@ class VisualSemanticsKernel:
     def create_visual_group(
         self,
         name: str,
-        elements: list[str],
+        elements: List[str],
         proximity: str = "close",
     ) -> dict:
         """Create visual grouping via proximity."""
@@ -152,7 +151,7 @@ class VisualSemanticsKernel:
         self.visual_groups.append(group)
         return group
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Grid systems for alignment",
@@ -166,14 +165,14 @@ class LanguageClarityKernel:
     """Kernel for content clarity and tone."""
 
     def __init__(self):
-        self.terminology: dict[str, str] = {}
-        self.content_items: list[dict] = []
+        self.terminology: Dict[str, str] = {}
+        self.content_items: List[dict] = []
 
     def define_term(
         self,
         term: str,
         definition: str,
-        context: str | None = None,
+        context: str  = None,
     ) -> dict:
         """Define terminology."""
         self.terminology[term] = definition
@@ -225,7 +224,7 @@ class LanguageClarityKernel:
             return "plain_language"
         return "neutral"
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Plain language over jargon",
@@ -239,7 +238,7 @@ class AccessibilityKernel:
     """Kernel for accessibility and inclusive design."""
 
     def __init__(self):
-        self.a11y_checks: list[dict] = []
+        self.a11y_checks: List[dict] = []
 
     def check_contrast(
         self,
@@ -269,7 +268,7 @@ class AccessibilityKernel:
         self,
         element_id: str,
         role: str,
-        properties: list[str] | None = None,
+        properties: Optional[List[str]] = None,
     ) -> dict:
         """Define ARIA role for accessibility."""
         return {
@@ -298,7 +297,7 @@ class AccessibilityKernel:
             "accessible": has_text,  # Text is minimum
         }
 
-    def _get_principles(self) -> list[str]:
+    def _get_principles(self) -> List[str]:
         """Return kernel principles."""
         return [
             "Perceivable: Information available to all senses",
@@ -323,11 +322,11 @@ class DesignLanguageEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
-    ) -> dict[str, Any]:
+        domains: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
         """Run design language analysis across specified domains."""
         domains = domains or ["ia", "visual", "language", "accessibility"]
-        results: dict[str, Any] = {}
+        results: Dict[str, Any] = {}
 
         if "ia" in domains or "information_architecture" in domains:
             results["information_architecture"] = self._analyze_ia(description)
@@ -453,11 +452,13 @@ class DesignLanguageEngine:
 
 
 # Singleton
-_design_language_engine: DesignLanguageEngine | None = None
+_design_language_engine: Optional[DesignLanguageEngine] = None
 
 
 def get_design_language_engine() -> DesignLanguageEngine:
     """Get singleton design language engine instance."""
+from __future__ import annotations
+
     global _design_language_engine
     if _design_language_engine is None:
         _design_language_engine = DesignLanguageEngine()

@@ -1,7 +1,5 @@
 """Layer 18 Bridge - Distributed Systems Physics Engine Bridge."""
-from __future__ import annotations
 
-from typing import Any
 
 
 try:
@@ -13,6 +11,8 @@ except ImportError:
 
 class DistributedPhysicsBridge:
     """Bridge between Layer 18 Physics Engine and AMOS Brain."""
+from __future__ import annotations
+
 
     def __init__(self) -> None:
         self.engine: DistributedPhysicsEngine | None = None

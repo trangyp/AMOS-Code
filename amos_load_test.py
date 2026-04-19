@@ -21,7 +21,6 @@ import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 import aiohttp
 
@@ -35,8 +34,8 @@ class LoadTestResult:
     failed: int = 0
     response_times: list[float] = field(default_factory=list)
     errors: dict[str, int] = field(default_factory=dict)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    start_time: datetime = None
+    end_time: datetime = None
 
     @property
     def duration_seconds(self) -> float:
@@ -162,7 +161,7 @@ class AMOSLoadTester:
         print("\n🚀 Starting constant load test")
         print(f"   Duration: {duration}s | Concurrency: {concurrency} | Endpoint: {endpoint}")
 
-        self.results.start_time = datetime.utcnow()
+        self.results.start_time = datetime.now(timezone.utc)
         self._stop_event.clear()
 
         async with aiohttp.ClientSession() as session:
@@ -174,7 +173,7 @@ class AMOSLoadTester:
 
             await asyncio.gather(*tasks)
 
-        self.results.end_time = datetime.utcnow()
+        self.results.end_time = datetime.now(timezone.utc)
 
     async def _warmup(self, session: aiohttp.ClientSession):
         """Warmup the system."""
@@ -282,7 +281,7 @@ class AMOSLoadTester:
     def save_report(self, filename: str = "load_test_report.json"):
         """Save report to file."""
         report = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "base_url": self.base_url,
             "total_requests": self.results.total_requests,
             "successful": self.results.successful,

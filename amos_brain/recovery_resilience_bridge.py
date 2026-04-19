@@ -12,6 +12,7 @@ Provides API for:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,7 @@ try:
         RecoveryResilienceEngine,
         RecoveryType,
     )
+
     RESILIENCE_AVAILABLE = True
 except ImportError:
     RESILIENCE_AVAILABLE = False
@@ -110,7 +112,7 @@ class RecoveryResilienceBridge:
         estimated_failover_minutes: int,
         estimated_rpo_minutes: int,
         data_sync_mode: str,
-        last_dr_test: str | None = None,
+        last_dr_test: str = None,
     ) -> dict[str, Any]:
         """Validate disaster recovery capability (I_disaster_recovery)."""
         if not RESILIENCE_AVAILABLE or self.engine is None:
@@ -194,7 +196,7 @@ class RecoveryResilienceBridge:
         domain_type: str,
         components: list[str],
         isolation_score: float,
-        dependencies: list[str] | None = None,
+        dependencies: list[str] = None,
     ) -> dict[str, Any]:
         """Validate failure domain isolation (I_isolation)."""
         if not RESILIENCE_AVAILABLE or self.engine is None:

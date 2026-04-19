@@ -6,8 +6,6 @@ Uses git bisect run with invariant checks to find:
 - Minimum patch set that restores commutativity
 """
 
-from __future__ import annotations
-
 import subprocess
 import tempfile
 from dataclasses import dataclass
@@ -18,14 +16,14 @@ from pathlib import Path
 class BisectResult:
     """Result of a bisect operation."""
 
-    first_bad_commit: str | None
-    first_bad_message: str | None
+    first_bad_commit: str
+    first_bad_message: str
     good_commit: str
     bad_commit: str
     invariant_name: str
     steps: int
     success: bool
-    error: str | None = None
+    error: str = None
 
 
 class BisectEngine:
@@ -35,7 +33,7 @@ class BisectEngine:
 
     def __init__(self, repo_path: str | Path):
         self.repo_path = Path(repo_path).resolve()
-        self.original_commit: str | None = None
+        self.original_commit: str = None
         self._save_current_commit()
 
     def _save_current_commit(self):
@@ -247,7 +245,7 @@ except Exception as e:
             except Exception:
                 pass
 
-    def quick_check(self, commit: str, invariant_name: str) -> tuple[bool, str]:
+    def quick_check(self, commit: str, invariant_name: str) -> Tuple[bool, str]:
         """
         Quick check if a specific commit passes an invariant.
         Returns (passed, message).
@@ -282,7 +280,7 @@ except Exception as e:
 
     def find_regression_range(
         self, invariant_name: str, lookback_commits: int = 20
-    ) -> tuple[str, str] | None:
+    ) -> Tuple[str, str]:
         """
         Find the regression range for an invariant.
         Returns (good_commit, bad_commit) or None.

@@ -1,0 +1,64 @@
+# Docker Compose for AMOS Equation API
+# Usage: docker-compose -f docker-compose.equation.yml up -d
+
+version: '3.8'
+
+services:
+  equation-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.equation
+    container_name: amos-equation-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; r = requests.get('http://localhost:8000/'); exit(0 if r.status_code == 200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - amos-network
+
+  # Optional: Add Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: amos-equation-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - amos-network
+    profiles:
+      - with-cache
+
+  # Optional: Add nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: amos-equation-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.equation.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - equation-api
+    restart: unless-stopped
+    networks:
+      - amos-network
+    profiles:
+      - with-nginx
+
+volumes:
+  redis-data:
+
+networks:
+  amos-network:
+    driver: bridge

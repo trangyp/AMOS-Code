@@ -10,18 +10,17 @@ Responsible for:
 - Session management
 """
 
-from __future__ import annotations
-
 import json
 import logging
 import queue
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.interfaces")
@@ -54,14 +53,14 @@ class Command:
 
     command_type: CommandType
     raw_input: str
-    args: list[str] = field(default_factory=list)
-    kwargs: dict[str, Any] = field(default_factory=dict)
+    args: List[str] = field(default_factory=list)
+    kwargs: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = ""
     session_id: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -70,15 +69,15 @@ class Response:
 
     success: bool
     message: str
-    data: dict[str, Any] = field(default_factory=dict)
+    data: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = ""
     response_type: str = "text"
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "success": self.success,
             "message": self.message,
@@ -95,14 +94,14 @@ class Session:
     session_id: str
     user_id: str
     interface_type: InterfaceType
-    context: dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory=dict)
     message_history: list[dict[str, Any]] = field(default_factory=list)
     created_at: str = ""
     last_active: str = ""
 
     def __post_init__(self):
         if not self.created_at:
-            self.created_at = datetime.utcnow().isoformat()
+            self.created_at = datetime.now(UTC).isoformat()
         if not self.last_active:
             self.last_active = self.created_at
 
@@ -126,7 +125,7 @@ class InterfaceLayerKernel:
         self.organism = organism_instance
 
         # Active sessions
-        self.sessions: dict[str, Session] = {}
+        self.sessions: Dict[str, Session] = {}
 
         # Command handlers
         self.command_handlers: dict[CommandType, Callable] = {}
@@ -137,7 +136,7 @@ class InterfaceLayerKernel:
 
         # API server
         self.api_server: Optional[HTTPServer] = None
-        self.api_thread: Optional[threading.Thread] = None
+        self.api_thread: threading.Thread = None
 
         # Statistics
         self.stats = {
@@ -283,7 +282,7 @@ Examples:
     def create_session(self, user_id: str, interface_type: InterfaceType) -> Session:
         """Create a new user session."""
         session_id = (
-            f"sess_{interface_type.name.lower()}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+            f"sess_{interface_type.name.lower()}_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
         )
 
         session = Session(session_id=session_id, user_id=user_id, interface_type=interface_type)
@@ -312,7 +311,7 @@ Examples:
                 {
                     "input": message,
                     "output": response.message,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
 
@@ -354,7 +353,7 @@ Examples:
                     {
                         "input": user_input,
                         "output": response.message,
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     }
                 )
 
@@ -367,7 +366,7 @@ Examples:
                     print(f"✗ {response.message}")
 
                 # Update session activity
-                session.last_active = datetime.utcnow().isoformat()
+                session.last_active = datetime.now(UTC).isoformat()
 
             except KeyboardInterrupt:
                 print("\nInterrupted. Goodbye!")
@@ -378,7 +377,7 @@ Examples:
             except Exception as e:
                 print(f"Error: {e}")
 
-    def start_api_server(self, port: Optional[int] = None):
+    def start_api_server(self, port: int = None):
         """Start the REST API server."""
         port = port or self.config["api_port"]
 
@@ -424,7 +423,7 @@ Examples:
                         response = {
                             "success": True,
                             "response": result,
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(UTC).isoformat(),
                         }
                     else:
                         response = {"success": False, "error": "Interface layer not initialized"}
@@ -463,7 +462,7 @@ Examples:
             self.api_server.shutdown()
             logger.info("API server stopped")
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current interface layer state."""
         return {
             "active_sessions": len(self.sessions),
@@ -472,7 +471,7 @@ Examples:
             "api_enabled": self.config["api_enabled"],
             "cli_enabled": self.config["cli_enabled"],
             "chat_enabled": self.config["chat_enabled"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def shutdown(self):

@@ -8,8 +8,6 @@ Ensures all self-improvements are:
 - Reversible at any point
 """
 
-from __future__ import annotations
-
 import hashlib
 import subprocess
 from dataclasses import dataclass
@@ -112,7 +110,7 @@ class RegressionGuard:
                 return False
         return True
 
-    def _run_tests(self) -> dict[str, Any]:
+    def _run_tests(self) -> Dict[str, Any]:
         """Run test suite and return results."""
         try:
             result = subprocess.run(
@@ -129,7 +127,7 @@ class RegressionGuard:
         except Exception as e:
             return {"passed": False, "error": str(e)}
 
-    def _run_lint_check(self) -> dict[str, Any]:
+    def _run_lint_check(self) -> Dict[str, Any]:
         """Check for lint errors."""
         try:
             result = subprocess.run(
@@ -143,7 +141,7 @@ class RegressionGuard:
         except Exception:
             return {"new_errors": 0}
 
-    def _run_type_check(self) -> dict[str, Any]:
+    def _run_type_check(self) -> Dict[str, Any]:
         """Run type checker."""
         try:
             result = subprocess.run(
@@ -163,7 +161,7 @@ class RollbackGuard:
     def __init__(self, amos_root: str) -> None:
         """Initialize rollback guard."""
         self.amos_root = Path(amos_root)
-        self.backups: dict[str, str] = {}  # evolution_id -> backup_path
+        self.backups: Dict[str, str] = {}  # evolution_id -> backup_path
 
     def create_backup(self, evolution_id: str, contract: EvolutionContract) -> str:
         """Create backup before patching."""

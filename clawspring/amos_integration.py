@@ -4,21 +4,17 @@ Integrates AMOS Cognitive Runtime with the clawspring agent system.
 Adds 'AMOS' tool for 6-layer cognitive reasoning with all built-in tools.
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from pathlib import Path
-from typing import Optional
 
 # Add parent directory to path for AMOS imports
 _PARENT = Path(__file__).parent.parent
 if str(_PARENT) not in sys.path:
     sys.path.insert(0, str(_PARENT))
 
-from tool_registry import ToolDef, register_tool
-
 from amos_agent_bridge import AMOSAgentBridge
+from tool_registry import ToolDef, register_tool
 
 
 class AMOSClawspringIntegration:

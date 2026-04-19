@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Optional
+from typing import Any
 
 from amos_axiom_validator import AxiomValidator, ValidationReport
 from amos_coherence_engine import SignalExtractionEngine
@@ -66,9 +66,9 @@ class OrganismHealth:
     energy_efficiency: float = 0.0
 
     # Active components
-    active_processes: list[str] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    active_processes: List[str] = field(default_factory=list)
+    warnings: List[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -121,8 +121,8 @@ class AMOSOrganismRunner:
 
         # Runtime state
         self._running = False
-        self._health_task: Optional[asyncio.Task] = None
-        self._start_time: Optional[datetime] = None
+        self._health_task: asyncio.Task = None
+        self._start_time: datetime = None
 
     async def initialize(self) -> bool:
         """Initialize the organism across all enabled layers.
@@ -360,7 +360,7 @@ class AMOSOrganismRunner:
 
         print(f"[{self.config.name}] Shutdown complete.")
 
-    async def status(self) -> dict[str, Any]:
+    async def status(self) -> Dict[str, Any]:
         """Get organism status as dictionary."""
         return {
             "name": self.config.name,

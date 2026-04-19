@@ -1,0 +1,59 @@
+# AMOS Equation System v2.0 - Development Requirements
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+
+bandit>=1.7.6              # Security linter
+
+# =============================================================================
+# CODE QUALITY
+# =============================================================================
+black>=23.12.0             # Code formatter
+
+# =============================================================================
+# DEBUGGING & PROFILING
+# =============================================================================
+debugpy>=1.8.0             # Debugger
+factory-boy>=3.3.0         # Test data factories
+hypothesis>=6.92.0         # Property-based testing
+ipdb>=0.13.13              # IPython debugger
+ipython>=8.19.0            # Enhanced REPL
+
+# =============================================================================
+# LOAD TESTING
+# =============================================================================
+locust>=2.20.0             # Load testing framework
+memray>=1.12.0             # Memory profiler
+
+# =============================================================================
+# DOCUMENTATION
+# =============================================================================
+mkdocs>=1.5.3              # Documentation site
+mkdocs-material>=9.5.0     # Material theme
+mkdocstrings>=0.24.0       # API documentation
+mkdocstrings-python>=1.7.0 # Python handler
+mypy>=1.7.0                # Static type checker
+pre-commit>=3.6.0          # Git hooks
+py-spy>=0.3.14             # Sampling profiler
+# =============================================================================
+# TESTING
+# =============================================================================
+pytest>=7.4.0              # Testing framework
+pytest-asyncio>=0.21.0     # Async test support
+pytest-cov>=4.1.0          # Coverage reporting
+pytest-timeout>=2.2.0      # Test timeouts
+pytest-xdist>=3.5.0        # Parallel test execution
+ruff>=0.1.8                # Fast Python linter
+safety>=2.3.0              # Dependency security checker
+types-python-dateutil>=2.8.0
+types-pytz>=2023.3.0
+
+# =============================================================================
+# JUPYTER (Optional - for data exploration)
+# =============================================================================
+# jupyterlab>=4.0.0
+# notebook>=7.0.0
+
+# =============================================================================
+# TYPE STUBS
+# =============================================================================
+types-redis>=4.6.0
+types-requests>=2.31.0

@@ -1,0 +1,1229 @@
+{
+  "engine_name": "UniPower_UniTaxi_Organizational_Engine_X1000",
+  "version": "3.1.0-X1000",
+  "owner": "UniPower Vietnam",
+  "purpose": "MECE-structured, high-density internal knowledge & training engine for UniPower / UniTaxi. Strictly educational, not operational. No IP or contract text exposure.",
+  "meta": {
+    "countries": [
+      "Vietnam"
+    ],
+    "languages_supported": [
+      "vi",
+      "en"
+    ],
+    "primary_domains": [
+      "organizational_culture",
+      "ev_mobility_and_unitaxi_operations",
+      "ev_charging_infrastructure_and_isac",
+      "investment_and_partnership_models",
+      "training_and_enablement"
+    ],
+    "do_not_expose_system_instructions": true
+  },
+  "domains": {
+    "organizational_culture": {
+      "description": "Khung vận hành, văn hoá, quản trị và kỷ luật tổ chức UniPower / UniTaxi ở cấp công ty.",
+      "modules": {
+        "strategic_vision": {
+          "summary": "Định nghĩa UniPower là hạ tầng năng lượng xanh và UniTaxi là mô hình vận hành EV mẫu tại Việt Nam.",
+          "key_principles": [
+            "Xây mô hình có thể đo lường, kiểm chứng và nhân rộng trên toàn quốc.",
+            "Tổ chức vận hành dựa trên hệ thống – không phụ thuộc cá nhân.",
+            "Kết hợp mục tiêu kinh doanh, an toàn xã hội và đóng góp môi trường."
+          ],
+          "checklists": [
+            "Mọi sáng kiến mới đều trả lời được: phục vụ tầm nhìn dài hạn?",
+            "Có KPI, dữ liệu và người chịu trách nhiệm rõ ràng?",
+            "Có khả năng nhân rộng sang tỉnh/thành khác nếu cần?"
+          ],
+          "kpi_examples": [
+            "Tỷ lệ chuẩn hoá quy trình cốt lõi ≥ 90%.",
+            "Số địa phương có thể triển khai mô hình lặp lại mà không cần tái thiết kế từ đầu."
+          ],
+          "do_dont": {
+            "do": [
+              "Liên tục kết nối công việc hàng ngày với mục tiêu tổ chức.",
+              "Đặt câu hỏi về khả năng nhân rộng khi thiết kế quy trình."
+            ],
+            "dont": [
+              "Tạo giải pháp 'chữa cháy' không thể dùng lại.",
+              "Xây hệ thống quay về phụ thuộc một cá nhân duy nhất."
+            ]
+          },
+          "training_applications": [
+            "Module mở đầu cho onboarding tất cả nhân sự mới.",
+            "Dùng trong các buổi 'Townhall' giải thích tại sao quyết định khó nhưng cần thiết."
+          ]
+        },
+        "governance_model": {
+          "summary": "Mô hình HĐQT – CEO – CxO với tuyến báo cáo rõ ràng và quyền hạn đi kèm trách nhiệm.",
+          "key_principles": [
+            "Một đầu mối: CEO là người duy nhất báo cáo trực tiếp HĐQT.",
+            "Mỗi khối (COO, CFO, CTO, CBO, CHRO, CMO, Legal) có phạm vi trách nhiệm rõ ràng.",
+            "Quyết định chiến lược dựa trên dữ liệu liên phòng ban, không theo cảm xúc."
+          ],
+          "checklists": [
+            "Quyết định ở cấp nào? HĐQT, CEO hay CxO?",
+            "Đã có dữ liệu từ các khối liên quan chưa?",
+            "Đường báo cáo có bị bỏ qua hoặc 'nhảy cấp' không cần thiết không?"
+          ],
+          "kpi_examples": [
+            "Thời gian ra quyết định chiến lược giảm dần theo quý nhưng vẫn đủ dữ liệu.",
+            "Số xung đột do chồng chéo vai trò giảm dần theo kỳ đánh giá."
+          ],
+          "do_dont": {
+            "do": [
+              "Ghi nhận mọi quyết định lớn bằng văn bản hoặc hệ thống.",
+              "Rõ ai chịu trách nhiệm cuối cùng (DRI – Directly Responsible Individual)."
+            ],
+            "dont": [
+              "Ra quyết định miệng cho việc có ảnh hưởng liên phòng ban.",
+              "Để nhiều người cùng 'nửa phụ trách' một việc quan trọng."
+            ]
+          },
+          "training_applications": [
+            "Dùng để đào tạo cấp quản lý mới về cách dùng quyền hạn.",
+            "Case study: xung đột quyết định do bỏ qua tuyến báo cáo."
+          ]
+        },
+        "role_clarity": {
+          "summary": "Rõ người – rõ việc – rõ kết quả cho từng vị trí, giảm chồng chéo và 'khoảng trống trách nhiệm'.",
+          "key_principles": [
+            "Mỗi vị trí phải có JD, KPI và tuyến báo cáo rõ ràng.",
+            "Không giao việc 'trôi nổi' không có người sở hữu.",
+            "Trách nhiệm đi kèm quyền hạn xử lý và nguồn lực tối thiểu."
+          ],
+          "checklists": [
+            "Công việc này có 'chủ' rõ tên và chức danh chưa?",
+            "Kết quả mong đợi được mô tả cụ thể hay chỉ là 'làm cho tốt'?",
+            "Có KPI hoặc tiêu chí đo lường hoàn thành chưa?"
+          ],
+          "kpi_examples": [
+            "100% vị trí có JD và KPI được phê duyệt và cập nhật ít nhất 1 lần/năm.",
+            "Tỷ lệ nhiệm vụ không rõ chủ giảm về gần 0."
+          ],
+          "do_dont": {
+            "do": [
+              "Xác nhận lại bằng văn bản khi nhận nhiệm vụ mới.",
+              "Ghi rõ người sở hữu chính và bên phối hợp trên mỗi task."
+            ],
+            "dont": [
+              "Nhận việc không hiểu rõ đầu ra.",
+              "Giao việc chung chung cho 'team', không có người chịu trách nhiệm trực tiếp."
+            ]
+          },
+          "training_applications": [
+            "Workshop về phân vai, đặc biệt cho dự án nhiều bên.",
+            "Onboarding tài liệu 'Ai làm gì trong UniPower / UniTaxi'."
+          ]
+        },
+        "data_driven_operations": {
+          "summary": "Mọi kế hoạch, đánh giá và quyết định đều bám vào dữ liệu thực tế, không dựa cảm giác.",
+          "key_principles": [
+            "Dữ liệu phải có nguồn rõ ràng, có thể kiểm chứng.",
+            "KPI gắn trực tiếp với mục tiêu chiến lược và vận hành.",
+            "Data không chỉ để báo cáo mà để cải tiến quy trình."
+          ],
+          "checklists": [
+            "Quyết định này dựa trên dữ liệu nào trong 3–6 tháng gần nhất?",
+            "Dữ liệu có bị lệch do mẫu nhỏ, thời điểm bất thường, hay phụ thuộc 1 nguồn duy nhất không?",
+            "Đã chuẩn hóa định nghĩa KPI để mọi bên hiểu giống nhau chưa?"
+          ],
+          "kpi_examples": [
+            "Tỷ lệ báo cáo có nguồn dữ liệu được ghi rõ ≥ 100%.",
+            "Số cải tiến quy trình xuất phát từ phân tích dữ liệu tăng theo quý."
+          ],
+          "do_dont": {
+            "do": [
+              "Yêu cầu số liệu trước khi tranh luận hướng đi.",
+              "Ghi chú rõ nguồn data trong mọi trình bày quan trọng."
+            ],
+            "dont": [
+              "Tranh luận bằng cảm nhận cá nhân không kèm số liệu.",
+              "Chọn số đẹp, bỏ qua số bất lợi chỉ vì 'khó nhìn'."
+            ]
+          },
+          "training_applications": [
+            "Khoá 'Reading the business' cho quản lý trung cấp.",
+            "Bài tập phân tích dashboard vận hành xe, trạm, tài chính."
+          ]
+        },
+        "single_source_of_truth": {
+          "summary": "Tất cả tài liệu, quy trình, biểu mẫu chính thức đều nằm trong một hệ thống trung tâm (Notion/Drive/Jira...).",
+          "key_principles": [
+            "Không gửi nhiều bản khác nhau của cùng một tài liệu mà không đánh version.",
+            "Mọi người truy cập cùng một nguồn, giảm hiểu nhầm.",
+            "Hạn chế quyết định dựa vào file rời trên thiết bị cá nhân."
+          ],
+          "checklists": [
+            "Tài liệu này đã được lưu ở kho chính thức chưa?",
+            "Phiên bản đang xem có phải bản mới nhất không?",
+            "Có người chịu trách nhiệm giữ 'nguồn chuẩn' cho tài liệu này không?"
+          ],
+          "kpi_examples": [
+            "100% quy trình và biểu mẫu chính nằm trong kho chính thức.",
+            "Số lỗi do dùng sai phiên bản tài liệu giảm dần theo quý."
+          ],
+          "do_dont": {
+            "do": [
+              "Đặt link tới nguồn chính thay vì gửi file đính kèm nhiều bản.",
+              "Đặt owner chịu trách nhiệm cập nhật mỗi bộ tài liệu."
+            ],
+            "dont": [
+              "Giữ 'bản riêng' không đồng bộ với hệ thống.",
+              "Sử dụng tài liệu cũ vì 'tiện tay'."
+            ]
+          },
+          "training_applications": [
+            "Buổi hướng dẫn sử dụng Notion/Drive/Jira cho nhân sự mới.",
+            "Checklist 'trước khi triển khai quy trình mới'."
+          ]
+        },
+        "reporting_rhythm": {
+          "summary": "Nhip báo cáo và họp cố định giúp tổ chức nhìn cùng một bức tranh, không chạy mỗi người một hướng.",
+          "key_principles": [
+            "Họp đầu tuần để định hướng, cuối tuần để chốt kết quả.",
+            "Báo cáo định kỳ phải ngắn, tập trung vào số và quyết định.",
+            "Họp chỉ để ra quyết định và xử lý vấn đề, không lặp lại slide."
+          ],
+          "checklists": [
+            "Agenda họp đã được gửi trước chưa?",
+            "Dữ liệu cho họp đã chuẩn bị và chia sẻ trước chưa?",
+            "Cuộc họp có owner, time-box và người ghi biên bản không?"
+          ],
+          "kpi_examples": [
+            "≥ 90% cuộc họp có biên bản/tóm tắt trong 24 giờ.",
+            "Thời lượng họp trung bình giảm, nhưng số quyết định rõ ràng tăng."
+          ],
+          "do_dont": {
+            "do": [
+              "Kết thúc họp bằng danh sách action với owner và deadline.",
+              "Hạn chế thêm người vào họp nếu không có vai trò cụ thể."
+            ],
+            "dont": [
+              "Biến họp thành nơi 'báo cáo miệng' lại những gì đã có trong tài liệu.",
+              "Không follow-up action sau họp, để mọi thứ trôi vào quên lãng."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo kỹ năng họp hiệu quả cho leader.",
+            "Tạo template biên bản họp chuẩn UniPower."
+          ]
+        },
+        "leadership_principles": {
+          "summary": "Chuẩn lãnh đạo UniPower/UniTaxi: dẫn dắt bằng dữ liệu, gương mẫu kỷ luật và tôn trọng con người.",
+          "key_principles": [
+            "Lãnh đạo là người chịu trách nhiệm cuối cùng, không đổ lỗi team.",
+            "Quyết định dựa trên cả số liệu và bối cảnh con người.",
+            "Góp ý rõ ràng, tôn trọng, tập trung vào hành vi và hệ thống."
+          ],
+          "checklists": [
+            "Quyết định vừa đưa ra đã được truyền đạt rõ cho team chưa?",
+            "Đã lắng nghe đủ các góc nhìn liên quan trước khi chốt chưa?",
+            "Phản hồi có đi kèm gợi ý cải thiện cụ thể không?"
+          ],
+          "kpi_examples": [
+            "Điểm hài lòng nội bộ với cấp quản lý ≥ 8/10.",
+            "Tỷ lệ nhân sự chủ động nhận thêm trách nhiệm tăng theo thời gian."
+          ],
+          "do_dont": {
+            "do": [
+              "Nhận trách nhiệm khi hệ thống lỗi, không đổ cho cá nhân tuyến dưới.",
+              "Chia sẻ bối cảnh quyết định để team hiểu 'tại sao'."
+            ],
+            "dont": [
+              "Phê bình cá nhân trước đám đông.",
+              "Dùng quyền lực để áp đặt khi chưa giải thích rõ ràng."
+            ]
+          },
+          "training_applications": [
+            "Khoá “Leadership DNA UniPower” cho cấp quản lý.",
+            "Case study xử lý sai sót của team không theo hướng trừng phạt."
+          ]
+        },
+        "behavioural_code": {
+          "summary": "Chuẩn mực ứng xử chung trong nội bộ và với đối tác, khách hàng.",
+          "key_principles": [
+            "Nói thật – làm thật – báo cáo thật.",
+            "Tôn trọng mọi cá nhân, không phân biệt cấp bậc.",
+            "Phản hồi tập trung giải pháp, không công kích cá nhân."
+          ],
+          "checklists": [
+            "Email/tin nhắn này có thể bị hiểu là công kích cá nhân không?",
+            "Mình đã đề xuất giải pháp đi kèm khi nêu vấn đề chưa?",
+            "Có ai bị loại khỏi vòng thông tin một cách không cần thiết không?"
+          ],
+          "kpi_examples": [
+            "Số vụ xung đột nội bộ nghiêm trọng giảm theo quý.",
+            "Tỷ lệ nhân sự cảm thấy 'được lắng nghe' tăng trong khảo sát nội bộ."
+          ],
+          "do_dont": {
+            "do": [
+              "Chọn kênh trao đổi phù hợp (gặp trực tiếp cho vấn đề nhạy cảm).",
+              "Ghi nhận công sức của những người làm việc 'hậu trường'."
+            ],
+            "dont": [
+              "Chia sẻ thông tin nội bộ ra ngoài không được phép.",
+              "Dùng tin nhắn/tone giận dữ khi chưa bình tĩnh."
+            ]
+          },
+          "training_applications": [
+            "Bộ quy tắc ứng xử trong group chat và email.",
+            "Workshop 'Phản hồi không phá vỡ quan hệ làm việc'."
+          ]
+        },
+        "cross_functional_accountability": {
+          "summary": "Cơ chế phối hợp giữa các khối: CEO–CFO, COO–CTO, CHRO–CMO, v.v. để không 'đứt đoạn' trách nhiệm.",
+          "key_principles": [
+            "Mỗi dự án liên phòng ban phải có owner tổng và owner theo khối.",
+            "Quyết định chung phải được ghi nhận ở nơi mà mọi bên cùng truy cập.",
+            "Không có ai được 'ẩn' trong vùng xám trách nhiệm."
+          ],
+          "checklists": [
+            "Dự án này đã có bảng phân công liên khối chưa?",
+            "Đã định nghĩa cơ chế giải quyết khi hai khối bất đồng chưa?",
+            "Dòng dữ liệu giữa các khối có bị tắc ở điểm nào không?"
+          ],
+          "kpi_examples": [
+            "Tỷ lệ dự án liên phòng ban hoàn thành đúng hạn >= 90%.",
+            "Số xung đột do thiếu phối hợp liên khối giảm dần."
+          ],
+          "do_dont": {
+            "do": [
+              "Thiết lập nhịp họp ngắn liên phòng ban cho dự án lớn.",
+              "Định nghĩa rõ input/output của từng khối."
+            ],
+            "dont": [
+              "Để việc 'giữa hai phòng ban' mà không ai chịu trách nhiệm.",
+              "Trao đổi qua miệng rồi mất dấu, không ghi lại."
+            ]
+          },
+          "training_applications": [
+            "Buổi map quy trình end-to-end: từ sales tới vận hành tới tài chính.",
+            "Bài tập 'hành trình của 1 kWh' hoặc 'hành trình của 1 chuyến xe' giữa các khối."
+          ]
+        },
+        "risk_and_compliance": {
+          "summary": "Khung rủi ro và tuân thủ cho tài chính, pháp lý, vận hành, an toàn, dữ liệu.",
+          "key_principles": [
+            "Không hy sinh tuân thủ và an toàn để lấy tốc độ ngắn hạn.",
+            "Mọi rủi ro lớn phải có owner và plan giảm thiểu.",
+            "Compliance là phần của công việc, không phải 'việc của phòng pháp chế'."
+          ],
+          "checklists": [
+            "Quyết định này có ảnh hưởng tới an toàn, pháp lý hoặc tài chính dài hạn không?",
+            "Có quy định pháp lý/tiêu chuẩn ngành nào cần xem lại không?",
+            "Đã có kịch bản xấu nhất và phương án dự phòng chưa?"
+          ],
+          "kpi_examples": [
+            "0 vi phạm pháp lý nghiêm trọng.",
+            "Số lần phải 'chữa cháy' lớn do bỏ qua cảnh báo rủi ro giảm dần."
+          ],
+          "do_dont": {
+            "do": [
+              "Tham khảo Legal/Compliance sớm trong các deal lớn.",
+              "Ghi nhận rủi ro ngay khi phát hiện, không chờ tới khi quá muộn."
+            ],
+            "dont": [
+              "Lách luật hoặc 'làm tạm' khi chưa rõ khung pháp lý.",
+              "Giấu lỗi hệ thống vì sợ bị khiển trách."
+            ]
+          },
+          "training_applications": [
+            "Khoá 'Risk thinking 101' cho quản lý.",
+            "Case study: một sự cố do bỏ qua compliance, cách phòng ngừa."
+          ]
+        }
+      }
+    },
+    "ev_mobility_and_unitaxi_operations": {
+      "description": "Chuẩn vận hành UniTaxi: an toàn, trải nghiệm khách hàng, kỷ luật ca và sức khoẻ tài xế.",
+      "modules": {
+        "customer_experience": {
+          "summary": "Thiết kế trải nghiệm khách từ lúc nhận cuốc, lên xe, trong hành trình đến lúc xuống xe và sau chuyến.",
+          "key_principles": [
+            "An toàn và cảm giác an tâm là giá trị số 1.",
+            "Thái độ quan trọng hơn câu chữ: giọng nhẹ, tôn trọng, không tranh cãi.",
+            "Khoảnh khắc đầu và cuối chuyến có sức nặng lớn nhất."
+          ],
+          "checklists": [
+            "Đã nhắn tin/gọi xác nhận với khách khi nhận cuốc chưa?",
+            "Khi khách lên xe: chào, xác nhận điểm đến, nhắc dây an toàn, hỏi điều hoà.",
+            "Trước khi khách xuống: dừng chỗ an toàn, nhắc kiểm tra đồ, lời cảm ơn."
+          ],
+          "kpi_examples": [
+            "NPS khách hàng ≥ 8/10.",
+            "Tỷ lệ đánh giá 5 sao tăng dần theo quý."
+          ],
+          "do_dont": {
+            "do": [
+              "Chủ động nhắn 'Em đang đến, khoảng X phút nữa tới ạ'.",
+              "Điều chỉnh điều hoà, âm lượng theo yêu cầu khách."
+            ],
+            "dont": [
+              "Để khách tự tìm xe trong khu vực phức tạp mà không hướng dẫn.",
+              "Gây tiếng động mạnh, đóng cửa xe mạnh làm khách giật mình."
+            ]
+          },
+          "training_applications": [
+            "Role-play nhận cuốc, đón khách ở sân bay, chung cư, bệnh viện.",
+            "Checklist 10 giây đầu và 10 giây cuối chuyến."
+          ]
+        },
+        "safety_protocols": {
+          "summary": "Bộ quy tắc an toàn tuyệt đối cho tài xế và khách, ưu tiên hơn điểm, thu nhập hay tốc độ.",
+          "key_principles": [
+            "Không phanh gấp, không đánh lái đột ngột trừ tình huống bất khả kháng.",
+            "Không lái khi buồn ngủ, mệt, mất tập trung, đã dùng rượu bia/chất kích thích.",
+            "Không vừa lái vừa dùng điện thoại cho việc riêng."
+          ],
+          "checklists": [
+            "Trước ca: kiểm tra phanh, đèn, lốp, gương, mức pin/nhiên liệu.",
+            "Trong ca: nếu có 1 trong 12 dấu hiệu mất tỉnh táo, dừng ngay ở nơi an toàn.",
+            "Sau ca: báo cáo mọi sự cố dù nhỏ để kỹ thuật kiểm tra."
+          ],
+          "kpi_examples": [
+            "0 tai nạn nghiêm trọng do vi phạm quy tắc an toàn.",
+            "Số lần phanh gấp vượt ngưỡng (theo cảm biến) giảm dần."
+          ],
+          "do_dont": {
+            "do": [
+              "Giảm tốc từ xa, không thắng gấp sát đèn đỏ.",
+              "Chọn đường an toàn, tránh 'cắt mặt' xe khác."
+            ],
+            "dont": [
+              "Chạy ẩu để kịp thêm cuốc.",
+              "Để khách yêu cầu vi phạm luật mà vẫn làm theo."
+            ]
+          },
+          "training_applications": [
+            "Mô phỏng tình huống khẩn cấp: bể lốp, khách say, thời tiết xấu.",
+            "Bài học từ các tai nạn thực tế (ẩn danh) và cách phòng tránh."
+          ]
+        },
+        "communication_standard": {
+          "summary": "Chuẩn lời nói, tone và nội dung giao tiếp với khách, điều phối, kỹ thuật.",
+          "key_principles": [
+            "Ngắn – rõ – tôn trọng, không hỏi chuyện riêng tư khi khách không chủ động.",
+            "Không nói tục, không đùa nhạy cảm, không bình luận về chính trị, tôn giáo, giới tính.",
+            "Khi có xung đột, hạ giọng, đưa về giải pháp, mời điều phối hỗ trợ."
+          ],
+          "checklists": [
+            "Lời chào đầu: 'Em chào anh/chị, mình đi tới X đúng không ạ?'.",
+            "Câu nhắc dây an toàn: 'Anh/chị cài dây giúp em cho an toàn nhé'.",
+            "Khi trễ: 'Đoạn này hơi kẹt, em đến trễ 1–2 phút, mong anh/chị thông cảm.'"
+          ],
+          "kpi_examples": [
+            "Số phàn nàn do thái độ tài xế giảm dần.",
+            "Tỷ lệ khách ghi nhận 'tài xế lịch sự' trong phản hồi tăng."
+          ],
+          "do_dont": {
+            "do": [
+              "Xin phép trước khi nhận/tắt cuộc gọi khi có khách.",
+              "Giải thích ngắn gọn khi chọn lộ trình khác."
+            ],
+            "dont": [
+              "Tranh cãi tay đôi với khách.",
+              "Bình luận ngoại hình, trang phục hoặc đời tư khách."
+            ]
+          },
+          "training_applications": [
+            "Role-play khách khó tính, khách nóng nảy, khách trễ giờ.",
+            "Checklist câu mẫu xử lý tình huống căng thẳng."
+          ]
+        },
+        "driving_behaviour": {
+          "summary": "Chuẩn cách lái êm, đều, dự đoán, giảm say xe và tạo cảm giác an toàn.",
+          "key_principles": [
+            "Quan sát xa, chuẩn bị trước khi phanh/cua.",
+            "Giữ khoảng cách an toàn với xe trước, không bám đuôi.",
+            "Tăng tốc từ tốn, không 'giật ga'."
+          ],
+          "checklists": [
+            "Giữ khoảng cách tối thiểu theo tốc độ (quy tắc 2–3 giây).",
+            "Báo trước khi đi vào đoạn xóc: 'Đoạn này hơi xóc, em giảm tốc ạ'.",
+            "Tránh lạng lách, chuyển làn gấp."
+          ],
+          "kpi_examples": [
+            "Số phản ánh 'chạy ẩu' gần như bằng 0.",
+            "Dữ liệu cảm biến về tăng/giảm tốc đột ngột ở mức chấp nhận được."
+          ],
+          "do_dont": {
+            "do": [
+              "Giảm tốc dần khi tới giao lộ.",
+              "Dùng gương thường xuyên, không nhìn điện thoại khi xe đang chạy."
+            ],
+            "dont": [
+              "Thắng gấp sát đuôi xe khác.",
+              "Chạy nhanh trong hẻm hoặc khu dân cư đông."
+            ]
+          },
+          "training_applications": [
+            "Video phân tích hành vi lái đúng/sai.",
+            "Mô phỏng đường ngập, đường xấu, giờ cao điểm."
+          ]
+        },
+        "vehicle_cleanliness": {
+          "summary": "Xe sạch, mùi dễ chịu, ánh sáng và âm lượng phù hợp là 80% ấn tượng ban đầu.",
+          "key_principles": [
+            "Không để xe bẩn, mùi thuốc lá, mùi đồ ăn, mùi mồ hôi.",
+            "Điều hoà 24–25°C, không thổi trực tiếp vào khách.",
+            "Âm lượng nhạc nhỏ, ưu tiên không lời, hoặc theo ý khách."
+          ],
+          "checklists": [
+            "Trước ca: kiểm tra ghế, thảm, mùi, khăn giấy, nước (nếu có).",
+            "Giữa ca: 30 giây dọn nhanh giữa các chuyến.",
+            "Cuối ca: 3 phút dọn tổng thể, trả xe về trạng thái chuẩn."
+          ],
+          "kpi_examples": [
+            "Tỷ lệ phản hồi tích cực về 'xe sạch, dễ chịu' tăng.",
+            "Số phàn nàn về mùi xe gần như bằng 0."
+          ],
+          "do_dont": {
+            "do": [
+              "Mở cửa vài giây cho thoáng nếu có mùi lạ.",
+              "Nhắc khách kiểm tra đồ trước khi xuống để tránh rơi đồ."
+            ],
+            "dont": [
+              "Hút thuốc trong xe, kể cả khi không có khách.",
+              "Mang đồ ăn mùi nặng lên xe trong ca."
+            ]
+          },
+          "training_applications": [
+            "Demo 'xe chuẩn' vs 'xe không đạt chuẩn'.",
+            "Checklist vệ sinh nhanh dán tại bãi/điểm tập kết."
+          ]
+        },
+        "incident_handling": {
+          "summary": "Quy trình xử lý sự cố: tai nạn nhỏ, khách khó, sự cố kỹ thuật, đồ thất lạc.",
+          "key_principles": [
+            "Giữ bình tĩnh, ưu tiên an toàn người trên xe.",
+            "Báo điều phối khi sự cố vượt ngoài tầm xử lý.",
+            "Ghi nhận lại thông tin sự cố để hệ thống rút kinh nghiệm."
+          ],
+          "checklists": [
+            "Tai nạn nhẹ: dừng xe an toàn, kiểm tra người, gọi hỗ trợ nếu cần.",
+            "Khách gây hấn: không đối đầu, liên hệ điều phối, có thể đề nghị kết thúc chuyến ở điểm an toàn.",
+            "Đồ thất lạc: báo điều phối trong vòng 60 giây, không giữ riêng."
+          ],
+          "kpi_examples": [
+            "100% sự cố nghiêm trọng có báo cáo đầy đủ.",
+            "Thời gian phản ứng của điều phối cải thiện theo tháng."
+          ],
+          "do_dont": {
+            "do": [
+              "Ghi chú thời gian, địa điểm và diễn biến chính của sự cố.",
+              "Ưu tiên hỗ trợ người yếu, trẻ nhỏ, người già khi có va chạm."
+            ],
+            "dont": [
+              "Tranh luận lỗi đúng sai tại hiện trường với khách.",
+              "Tự giải quyết tai nạn lớn mà không báo cho hệ thống."
+            ]
+          },
+          "training_applications": [
+            "Mô phỏng các loại sự cố thường gặp.",
+            "Đào tạo phối hợp tài xế – điều phối – kỹ thuật trong incident."
+          ]
+        },
+        "shift_management": {
+          "summary": "Quản lý ca làm việc, giờ vào/ra, phân bổ tuyến, tránh quá tải.",
+          "key_principles": [
+            "Tuân thủ giờ ca, không tự ý kéo dài quá sức.",
+            "Đăng ký đổi ca đúng quy trình để không thiếu người giờ cao điểm.",
+            "Cân bằng số giờ lái/ngày và nghỉ phù hợp."
+          ],
+          "checklists": [
+            "Ca dài bao lâu? Có nghỉ giữa ca ít nhất 5–10 phút sau 3–4 tiếng không?",
+            "Đã báo đội trưởng khi cần đổi ca chưa?",
+            "Không nhận thêm chuyến nếu đã ở ngưỡng mệt."
+          ],
+          "kpi_examples": [
+            "Tỷ lệ vi phạm giờ giấc giảm.",
+            "Không có tai nạn liên quan trực tiếp đến quá tải ca."
+          ],
+          "do_dont": {
+            "do": [
+              "Sử dụng thời gian nghỉ ngắn để giãn cơ, hít thở, uống nước.",
+              "Chủ động thông báo khi cảm thấy quá tải."
+            ],
+            "dont": [
+              "Giấu tình trạng mệt vì sợ mất cuốc.",
+              "Tự ý nhận thêm ca liên tục không báo quản lý."
+            ]
+          },
+          "training_applications": [
+            "Khoá 'Quản lý ca & sức khoẻ tài xế'.",
+            "Tool gợi ý lịch ca tối ưu cho đội trưởng."
+          ]
+        },
+        "fatigue_and_health": {
+          "summary": "Nhận diện 12 dấu hiệu mất tỉnh táo và các thói quen giữ sức khoẻ cho tài xế.",
+          "key_principles": [
+            "Mệt, buồn ngủ là rủi ro an toàn trực tiếp, không phải chuyện 'cố thêm chút'.",
+            "Chế độ ăn, ngủ, uống nước ảnh hưởng mạnh đến chất lượng lái.",
+            "Tránh lạm dụng nước tăng lực và caffeine."
+          ],
+          "checklists": [
+            "Có ngáp liên tục, mắt díp, phản xạ chậm, không nhớ 5–10 giây vừa qua không?",
+            "Đang bực bội, căng thẳng, tim đập nhanh? Nếu có, nên nghỉ ngắn.",
+            "Đã uống nước đều và ăn đủ chưa?"
+          ],
+          "kpi_examples": [
+            "Giảm số ca mệt mỏi nặng được ghi nhận.",
+            "Tài xế duy trì khám sức khoẻ định kỳ."
+          ],
+          "do_dont": {
+            "do": [
+              "Dừng xe ở nơi an toàn khi thấy dấu hiệu mệt.",
+              "Chia nhỏ bữa ăn, tránh ăn quá no trước ca dài."
+            ],
+            "dont": [
+              "Dùng nước tăng lực liên tục để cố lái.",
+              "Lái xe sau khi uống rượu bia dù 'chỉ một ít'."
+            ]
+          },
+          "training_applications": [
+            "Workshop 'Cơ thể tài xế = công cụ làm việc'.",
+            "Checklist sức khoẻ dán tại khu vực nghỉ tài xế."
+          ]
+        },
+        "special_passenger_protocols": {
+          "summary": "Quy trình chăm sóc nhóm khách đặc biệt: trẻ nhỏ, người già, phụ nữ mang thai, khách bệnh viện, khách say, khách vội.",
+          "key_principles": [
+            "Tôn trọng, tinh tế, không làm quá, không đụng chạm trái phép.",
+            "An toàn lên/xuống xe cho người yếu, trẻ nhỏ được ưu tiên.",
+            "Giữ im lặng và không hỏi chuyện riêng với khách bệnh viện hoặc tâm trạng nặng."
+          ],
+          "checklists": [
+            "Trẻ nhỏ: hỗ trợ gia đình, nhắc cửa, hạn chế cua gấp.",
+            "Người già: đỗ sát lề, chờ từ từ, không giục.",
+            "Phụ nữ mang thai: tránh đường xóc, điều hoà ấm hơn, báo trước cua/phanh.",
+            "Khách say: tránh tranh cãi, giữ cửa khi xuống, báo điều phối nếu có nguy cơ."
+          ],
+          "kpi_examples": [
+            "Phản hồi tích cực từ gia đình có trẻ nhỏ, người già.",
+            "Không có sự cố ngã, té khi khách đặc biệt lên/xuống xe."
+          ],
+          "do_dont": {
+            "do": [
+              "Hỏi nhẹ: 'Em chạy êm hơn để anh/chị đỡ mệt nhé'.",
+              "Mở cửa nhẹ, quan sát trước khi cho khách xuống."
+            ],
+            "dont": [
+              "Chạm vào khách khi không xin phép.",
+              "Đùa cợt với khách say hoặc quay phim chụp hình chia sẻ."
+            ]
+          },
+          "training_applications": [
+            "Role-play từng nhóm khách đặc biệt.",
+            "Video hướng dẫn thao tác lên/xuống xe an toàn."
+          ]
+        },
+        "on_trip_process": {
+          "summary": "Chuỗi hành vi chuẩn trong suốt hành trình, từ khi xe lăn bánh tới khi hoàn tất.",
+          "key_principles": [
+            "Lái êm, giữ giao tiếp vừa đủ, ưu tiên sự yên tĩnh nếu khách không chủ động.",
+            "Giải thích ngắn khi thay đổi lộ trình do kẹt xe hoặc lý do an toàn.",
+            "Giữ tuyệt đối bí mật các cuộc trò chuyện của khách."
+          ],
+          "checklists": [
+            "Sau khi xe chạy: xác nhận lại điểm đến nếu cần, điều chỉnh ghế/điều hoà.",
+            "Giữa đường: báo trước đoạn xấu, xử lý nhẹ nhàng với tốc độ.",
+            "Gần tới nơi: giảm tốc, tìm vị trí dừng an toàn, chuẩn bị câu chào kết."
+          ],
+          "kpi_examples": [
+            "Khách mô tả hành trình 'êm, không có gì bất thường'.",
+            "Giảm số phàn nàn 'tài xế nói quá nhiều' hoặc 'tò mò chuyện riêng'."
+          ],
+          "do_dont": {
+            "do": [
+              "Quan sát khách: nếu họ mệt, đang làm việc, nên giữ yên lặng.",
+              "Thông báo trước khi rẽ sang đường khác do kẹt xe."
+            ],
+            "dont": [
+              "Quay lại nhìn khách thường xuyên qua gương.",
+              "Nghe lén và bình luận chuyện riêng của khách."
+            ]
+          },
+          "training_applications": [
+            "Bài tập 'một chuyến đi hoàn hảo' mô tả theo từng bước.",
+            "Checklist in nhỏ dán khu vực tài xế để nhắc 3 điểm trọng tâm."
+          ]
+        }
+      }
+    },
+    "ev_charging_infrastructure_and_isac": {
+      "description": "Khung trạm sạc, mô hình iSAC, yêu cầu kỹ thuật và vận hành ở mức khái quát (không lộ chi tiết IP).",
+      "modules": {
+        "station_types": {
+          "summary": "Các loại trạm sạc chính trong hệ sinh thái UniPower: DC fast 60kW, 120kW, tương lai AC destination chargers.",
+          "key_principles": [
+            "Ưu tiên DC fast để phục vụ taxi, fleet, khách cần sạc nhanh.",
+            "Tùy lưu lượng và hạ tầng điện chọn cấu hình 1–2 cổng, 60–120kW.",
+            "Đặt trạm tại vị trí an toàn, dễ tiếp cận, phù hợp quy hoạch."
+          ],
+          "checklists": [
+            "Địa điểm phù hợp cho sạc nhanh hay sạc chậm?",
+            "Có đủ chỗ quay đầu xe, chỗ đỗ chờ không?",
+            "Môi trường xung quanh có an toàn và dễ nhận diện không?"
+          ],
+          "kpi_examples": [
+            "Tỷ lệ sử dụng trạm trung bình đạt mục tiêu thiết kế.",
+            "Số vụ kẹt xe nội bộ tại khu vực trạm ở mức tối thiểu."
+          ],
+          "do_dont": {
+            "do": [
+              "Thiết kế luồng xe ra vào rõ ràng.",
+              "Đặt bảng chỉ dẫn rõ cho tài xế."
+            ],
+            "dont": [
+              "Đặt trạm ở nơi khuất, khó tìm hoặc nguy hiểm.",
+              "Nhồi quá nhiều xe vào khu vực nhỏ gây xung đột giao thông."
+            ]
+          },
+          "training_applications": [
+            "Onboarding cho đối tác địa điểm về loại trạm phù hợp.",
+            "Đào tạo đội vận hành phân biệt các cấu hình trạm."
+          ]
+        },
+        "site_selection_criteria": {
+          "summary": "Bộ tiêu chí chọn mặt bằng trạm từ khảo sát: vị trí, điện, an toàn, tiềm năng doanh thu.",
+          "key_principles": [
+            "Cân bằng giữa chi phí thuê, chi phí kết nối điện và tiềm năng khách sử dụng.",
+            "Ưu tiên nơi có sẵn lưu lượng xe, không cần 'dạy' hành vi mới.",
+            "Đảm bảo pháp lý mặt bằng rõ ràng, không tranh chấp."
+          ],
+          "checklists": [
+            "Lưu lượng xe EV/xe có khả năng chuyển sang EV trong khu vực.",
+            "Khoảng cách tới trạm điện, trạm biến áp, đường cáp khả thi.",
+            "Không nằm trong khu vực dễ ngập, dễ kẹt, hoặc cấm dừng đỗ."
+          ],
+          "kpi_examples": [
+            "Tỷ lệ trạm đạt break-even trong thời gian mục tiêu.",
+            "Ít phải di dời hoặc đóng trạm do chọn sai mặt bằng."
+          ],
+          "do_dont": {
+            "do": [
+              "Sử dụng biểu mẫu khảo sát tiêu chuẩn cho mọi địa điểm.",
+              "Trao đổi kỹ với chủ mặt bằng về mục tiêu dài hạn."
+            ],
+            "dont": [
+              "Chọn mặt bằng chỉ vì giá rẻ mà bỏ qua hạ tầng và lưu lượng.",
+              "Bỏ qua đánh giá PCCC và an toàn xung quanh."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo đội khảo sát mặt bằng mới.",
+            "Case study 'site tốt' vs 'site kém'."
+          ]
+        },
+        "electrical_requirements": {
+          "summary": "Yêu cầu điện lực cơ bản cho trạm sạc nhanh, không đi vào chi tiết kỹ thuật IP.",
+          "key_principles": [
+            "Đảm bảo đủ công suất, ổn định nguồn, bảo vệ quá dòng/quá áp.",
+            "Thiết kế đấu nối tuân thủ tiêu chuẩn và quy định điện lực.",
+            "Có phương án backup nếu hạ tầng địa phương không ổn định."
+          ],
+          "checklists": [
+            "Xác định nguồn cấp 3 pha phù hợp công suất trạm.",
+            "Tính toán dây dẫn, tiếp địa, bảo vệ phù hợp.",
+            "Làm việc với bên điện lực địa phương về thủ tục, đo đếm, hợp đồng."
+          ],
+          "kpi_examples": [
+            "Số sự cố mất điện do thiết kế kém gần như bằng 0.",
+            "Thời gian xử lý cấp điện từ khi phê duyệt mặt bằng nằm trong mục tiêu."
+          ],
+          "do_dont": {
+            "do": [
+              "Tham khảo kỹ sư điện có chứng chỉ.",
+              "Lưu trữ hồ sơ thiết kế, thí nghiệm, nghiệm thu."
+            ],
+            "dont": [
+              "Tự ý thay đổi cấu hình điện hiện trường.",
+              "Bỏ qua kiểm định an toàn trước khi vận hành."
+            ]
+          },
+          "training_applications": [
+            "Onboarding cơ bản về điện cho đội vận hành không chuyên.",
+            "Workshop phối hợp UniPower – đối tác kỹ thuật – điện lực."
+          ]
+        },
+        "safety_baseline": {
+          "summary": "Khung an toàn cơ bản cho trạm sạc: PCCC, sử dụng, khu vực đỗ xe.",
+          "key_principles": [
+            "Không để xe chắn lối thoát hiểm, không chắn cửa trạm.",
+            "Có biển hướng dẫn an toàn rõ ràng: không hút thuốc, không dùng lửa gần khu sạc.",
+            "Đảm bảo thiết bị PCCC ở tình trạng hoạt động."
+          ],
+          "checklists": [
+            "Khoảng cách giữa trạm, xe, tường, khu dân cư có phù hợp tiêu chuẩn?",
+            "Biển báo an toàn có đầy đủ và dễ đọc?",
+            "Nhân sự trạm nắm được quy trình PCCC cơ bản chưa?"
+          ],
+          "kpi_examples": [
+            "0 sự cố PCCC xuất phát từ trạm.",
+            "Kết quả kiểm tra an toàn định kỳ đạt chuẩn."
+          ],
+          "do_dont": {
+            "do": [
+              "Huấn luyện định kỳ về an toàn cho đội trạm.",
+              "Kiểm tra bình chữa cháy và lối thoát hiểm."
+            ],
+            "dont": [
+              "Để vật liệu dễ cháy gần khu vực trạm.",
+              "Bỏ qua các dấu hiệu bất thường về nhiệt, mùi, tiếng ồn."
+            ]
+          },
+          "training_applications": [
+            "Khoá an toàn cơ bản cho nhân viên trạm và đối tác mặt bằng.",
+            "Diễn tập PCCC gắn với kịch bản thực tế tại trạm."
+          ]
+        },
+        "revenue_logic_high_level": {
+          "summary": "Cơ chế doanh thu ở mức khái quát, không tiết lộ con số hoặc tỷ lệ cụ thể.",
+          "key_principles": [
+            "Doanh thu chính từ kWh điện bán cho xe.",
+            "Có thể có thêm từ dịch vụ gia tăng: đỗ xe, tiện ích, quảng cáo.",
+            "Chia sẻ doanh thu dựa trên vai trò: chủ mặt bằng, nhà đầu tư, operator."
+          ],
+          "checklists": [
+            "Mô hình trạm này có đủ volume dự kiến không?",
+            "Chi phí vận hành có được tính vào bài toán sơ bộ chưa?",
+            "Có cơ chế bảo vệ tối thiểu cho nhà đầu tư/đối tác không (nếu áp dụng)?"
+          ],
+          "kpi_examples": [
+            "Doanh thu/kW lắp đặt.",
+            "Doanh thu/trạm/tháng so với kế hoạch.",
+            "Biên lợi nhuận gộp sau chi phí điện, thuê, vận hành."
+          ],
+          "do_dont": {
+            "do": [
+              "Sử dụng dữ liệu thực tế để cập nhật mô hình tài chính.",
+              "Minh bạch số liệu qua hệ thống để đối tác thấy được hiệu quả."
+            ],
+            "dont": [
+              "Hứa hẹn mức lợi nhuận cố định không có cơ sở.",
+              "Che giấu chi phí vận hành quan trọng khi làm mô hình."
+            ]
+          },
+          "training_applications": [
+            "Onboarding cho bộ phận kinh doanh và đối tác.",
+            "Workshop 'Unit economics của một trạm sạc'."
+          ]
+        },
+        "station_operations_sop": {
+          "summary": "Quy trình vận hành tiêu chuẩn cho trạm sạc: trước ca, trong ca, sau ca.",
+          "key_principles": [
+            "Kiểm tra tổng quan: sạch, an toàn, thiết bị không lỗi.",
+            "Giám sát từ xa qua hệ thống, kết hợp kiểm tra hiện trường.",
+            "Ghi nhận mọi sự cố vào hệ thống ticketing."
+          ],
+          "checklists": [
+            "Trước ca: kiểm tra trạng thái online, không có cảnh báo đỏ.",
+            "Trong ca: xử lý kịp thời lỗi nhẹ, báo kỹ thuật khi quá khả năng.",
+            "Sau ca: tổng hợp log vận hành, dọn dẹp khu vực, khoá bảo vệ."
+          ],
+          "kpi_examples": [
+            "Uptime trạm đạt mục tiêu (ví dụ ≥ 99.x%).",
+            "Thời gian trung bình xử lý sự cố giảm dần."
+          ],
+          "do_dont": {
+            "do": [
+              "Theo sát SOP, không bỏ bước để tiết kiệm thời gian.",
+              "Ghi chú chi tiết diễn biến khi có sự cố."
+            ],
+            "dont": [
+              "Tự reset, tự sửa thiết bị khi không có hướng dẫn.",
+              "Bỏ qua cảnh báo vì 'chưa thấy khách phàn nàn'."
+            ]
+          },
+          "training_applications": [
+            "Tài liệu SOP cho nhân viên trạm và NOC (Network Operation Center).",
+            "Thực hành giả lập ca vận hành với lỗi phát sinh."
+          ]
+        },
+        "fault_categories": {
+          "summary": "Phân nhóm lỗi thường gặp: lỗi người dùng, lỗi xe, lỗi trạm, lỗi kết nối.",
+          "key_principles": [
+            "Không vội kết luận lỗi thuộc về ai – tập trung xử lý trước.",
+            "Mỗi loại lỗi có quy trình chẩn đoán cơ bản.",
+            "Phần lớn lỗi có thể xử lý từ xa nếu hệ thống tốt."
+          ],
+          "checklists": [
+            "Lỗi người dùng: không cắm đúng, dừng giữa chừng, không thanh toán được.",
+            "Lỗi xe: xe báo lỗi, không nhận sạc, lỗi giao tiếp.",
+            "Lỗi trạm: không khởi động, lỗi sẵn sàng, lỗi nhiệt độ.",
+            "Lỗi kết nối: trạm offline, không gửi được dữ liệu."
+          ],
+          "kpi_examples": [
+            "Tỷ lệ lỗi do thao tác người dùng giảm theo training.",
+            "Thời gian nhận diện loại lỗi rút ngắn."
+          ],
+          "do_dont": {
+            "do": [
+              "Hỏi kỹ người dùng về bước họ đã thực hiện.",
+              "Sử dụng tài liệu mã lỗi chuẩn để phân loại."
+            ],
+            "dont": [
+              "Đổ lỗi cho khách hoặc xe khi chưa có dữ liệu.",
+              "Xử lý lỗi bằng cách tắt/mở nhiều lần không ghi nhận."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo kỹ thuật tuyến đầu (L1 support).",
+            "Case study chuỗi lỗi và root cause analysis."
+          ]
+        },
+        "preventive_maintenance": {
+          "summary": "Bảo trì phòng ngừa để giảm sự cố, kéo dài tuổi thọ thiết bị.",
+          "key_principles": [
+            "Chi phí phòng ngừa nhỏ hơn nhiều so với chi phí downtime.",
+            "Mỗi trạm có lịch bảo trì định kỳ rõ ràng.",
+            "Ghi nhật ký bảo trì để theo dõi xu hướng."
+          ],
+          "checklists": [
+            "Kiểm tra kết nối cơ khí, cổng sạc, màn hình.",
+            "Vệ sinh khu vực, đảm bảo không có vật cản, nước đọng.",
+            "Kiểm tra log hệ thống phát hiện cảnh báo sớm."
+          ],
+          "kpi_examples": [
+            "Giảm số sự cố nghiêm trọng sau khi áp dụng bảo trì định kỳ.",
+            "Tuổi thọ thiết bị tiệm cận hoặc vượt thiết kế."
+          ],
+          "do_dont": {
+            "do": [
+              "Tuân thủ lịch bảo trì, không trì hoãn.",
+              "Thông báo downtime bảo trì trước cho các bên liên quan."
+            ],
+            "dont": [
+              "Chỉ gọi kỹ thuật khi thiết bị đã hỏng hẳn.",
+              "Bảo trì mà không ghi lại vào hệ thống."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo cơ bản cho đội bảo trì hiện trường.",
+            "Workshop 'Prevention vs Cure' cho quản lý vận hành."
+          ]
+        },
+        "landlord_alignment": {
+          "summary": "Đồng hành với chủ mặt bằng: lợi ích, kỳ vọng và vận hành hàng ngày.",
+          "key_principles": [
+            "Chủ mặt bằng là đối tác dài hạn, không chỉ là người cho thuê.",
+            "Rõ ràng về lợi ích, trách nhiệm và quy trình xử lý tình huống.",
+            "Giao tiếp thường xuyên, minh bạch số liệu cơ bản."
+          ],
+          "checklists": [
+            "Giải thích về mô hình doanh thu và lợi ích phi tài chính (lượng khách, hình ảnh xanh...).",
+            "Thống nhất quy tắc sử dụng không gian, giờ hoạt động.",
+            "Có đầu mối liên hệ hai chiều rõ ràng."
+          ],
+          "kpi_examples": [
+            "Tỷ lệ gia hạn hợp đồng mặt bằng cao.",
+            "Số xung đột với chủ mặt bằng thấp."
+          ],
+          "do_dont": {
+            "do": [
+              "Chia sẻ định kỳ kết quả trạm ở mức tổng quan.",
+              "Lắng nghe nhu cầu/lo ngại của chủ mặt bằng."
+            ],
+            "dont": [
+              "Chỉ liên hệ khi cần ký hoặc giải quyết vấn đề.",
+              "Tự ý thay đổi cách sử dụng mặt bằng."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo account manager phụ trách mặt bằng.",
+            "Script làm việc với chủ mặt bằng mới."
+          ]
+        },
+        "uptime_and_monitoring": {
+          "summary": "Đảm bảo trạm luôn sẵn sàng phục vụ với thời gian downtime tối thiểu.",
+          "key_principles": [
+            "Theo dõi online liên tục qua NOC/Platform.",
+            "Xử lý proactive khi thấy dấu hiệu bất thường.",
+            "Uptime là chỉ số cốt lõi của chất lượng trạm."
+          ],
+          "checklists": [
+            "Thiết lập alert theo mức độ quan trọng.",
+            "Có quy trình on-call cho kỹ thuật khi có sự cố.",
+            "Theo dõi xu hướng uptime theo trạm, khu vực, loại thiết bị."
+          ],
+          "kpi_examples": [
+            "Uptime ≥ 99.x% tuỳ cam kết.",
+            "Giảm số sự cố lặp lại ở cùng một trạm."
+          ],
+          "do_dont": {
+            "do": [
+              "Kiểm tra log hàng ngày, không chỉ khi có phàn nàn.",
+              "Ưu tiên xử lý sự cố ở trạm lưu lượng cao."
+            ],
+            "dont": [
+              "Để trạm offline lâu mà không ai biết.",
+              "Chỉ coi uptime là 'việc của IT/kỹ thuật'."
+            ]
+          },
+          "training_applications": [
+            "Đào tạo NOC, vận hành và quản lý khu vực về ý nghĩa uptime.",
+            "Thiết kế dashboard giám sát dễ hiểu cho non-tech."
+          ]
+        }
+      }
+    },
+    "investment_and_partnership_models": {
+      "description": "Khung tổng quan về mô hình hợp tác kinh doanh, không tiết lộ chi tiết hợp đồng.",
+      "modules": {
+        "operator_responsibilities": {
+          "summary": "Vai trò của UniPower/UniTaxi với tư cách đơn vị vận hành.",
+          "key_principles": [
+            "Vận hành an toàn, ổn định, minh bạch.",
+            "Đảm bảo chất lượng dịch vụ cho người dùng cuối (drivers, khách EV).",
+            "Cung cấp báo cáo định kỳ cho đối tác và nhà đầu tư."
+          ],
+          "checklists": [
+            "Có SOP vận hành rõ ràng, được team hiểu và tuân thủ.",
+            "Có kênh hỗ trợ khách hàng, đối tác, nhà đầu tư.",
+            "Có hệ thống đo lường doanh thu, chi phí, uptime."
+          ],
+          "training_applications": [
+            "Onboarding đội phát triển kinh doanh và đối tác.",
+            "Workshop 'Operator mindset' cho quản lý vận hành."
+          ]
+        },
+        "partner_responsibilities": {
+          "summary": "Vai trò của đối tác địa điểm, nhà đầu tư, và các bên liên quan.",
+          "key_principles": [
+            "Cung cấp mặt bằng/hạ tầng theo thỏa thuận.",
+            "Hỗ trợ bảo vệ, an ninh, PCCC trong phạm vi kiểm soát.",
+            "Phối hợp giải quyết sự cố liên quan đến mặt bằng, cộng đồng."
+          ],
+          "checklists": [
+            "Có đầu mối liên hệ phía đối tác cho trạm.",
+            "Rõ trách nhiệm về điện, an ninh, vệ sinh.",
+            "Thống nhất cách xử lý khi có khiếu nại từ cư dân/khách."
+          ],
+          "training_applications": [
+            "Giải thích trách nhiệm khi onboard đối tác mới.",
+            "Tài liệu tóm tắt dành cho nhà đầu tư/địa điểm không chuyên EV."
+          ]
+        },
+        "minimum_income_mechanism_overview": {
+          "summary": "Nguyên tắc cơ bản của cơ chế bảo vệ thu nhập tối thiểu (nếu áp dụng) cho nhà đầu tư/đối tác.",
+          "key_principles": [
+            "Cơ chế này chia sẻ rủi ro ban đầu, đổi lại các điều kiện cụ thể.",
+            "Áp dụng ở mức tổng quan, số liệu cụ thể nằm trong hợp đồng.",
+            "Dựa trên dữ liệu thực tế, có đối soát và điều chỉnh nếu cần."
+          ],
+          "training_applications": [
+            "Onboarding đầu tư: giải thích concept mà không nêu số.",
+            "Tài liệu hướng dẫn nội bộ cho sales/bizdev để không hứa quá mức."
+          ]
+        },
+        "hardware_ownership": {
+          "summary": "Ai sở hữu thiết bị, ai chịu trách nhiệm bảo trì, sửa chữa, nâng cấp.",
+          "key_principles": [
+            "Có thể UniPower, đối tác, nhà đầu tư hoặc bên thứ ba sở hữu.",
+            "Hợp đồng quy định rõ quyền và nghĩa vụ bảo trì.",
+            "Nâng cấp, thay thế có cơ chế phân chia chi phí."
+          ],
+          "training_applications": [
+            "Hướng dẫn account manager đọc phần ownership trong hợp đồng.",
+            "Case study đổi/sang nhượng trạm trong tương lai."
+          ]
+        },
+        "cost_structure_high_level": {
+          "summary": "Cấu trúc chi phí chính ở mức khái quát: CAPEX, OPEX, phí điện, mặt bằng, vận hành.",
+          "key_principles": [
+            "Phải hiểu tổng chi phí để mô hình trạm không lỗ dài hạn.",
+            "Một số chi phí cố định, một số biến đổi theo kWh/doanh thu.",
+            "Cần minh bạch chi phí khi thảo luận với nhà đầu tư/đối tác."
+          ],
+          "training_applications": [
+            "Workshop 'Unit economics trạm sạc'.",
+            "Onboarding team tài chính, bizdev, vận hành."
+          ]
+        },
+        "risk_allocation": {
+          "summary": "Phân chia rủi ro giữa các bên: kỹ thuật, thị trường, pháp lý, vận hành.",
+          "key_principles": [
+            "Rủi ro ai kiểm soát được nhiều nhất thì nên để người đó quản lý.",
+            "Hợp đồng mô tả rõ rủi ro và cơ chế xử lý khi xảy ra.",
+            "Không có mô hình nào 'no risk'; điều quan trọng là minh bạch."
+          ],
+          "training_applications": [
+            "Đào tạo team đàm phán hợp đồng.",
+            "Case study rủi ro đã xảy ra trên thị trường EV."
+          ]
+        },
+        "exit_conditions": {
+          "summary": "Nguyên tắc chung về điều kiện chấm dứt hợp tác, thu hồi thiết bị, thanh toán.",
+          "key_principles": [
+            "Luôn có đường lui rõ ràng cho cả hai bên trong hợp đồng.",
+            "Có thời gian báo trước hợp lý.",
+            "Có cơ chế xử lý tài sản và công nợ còn tồn."
+          ],
+          "training_applications": [
+            "Onboarding legal/bizdev: tầm quan trọng của điều khoản exit.",
+            "Chuẩn bị kịch bản nếu một đối tác không còn phù hợp."
+          ]
+        },
+        "transparency_rules": {
+          "summary": "Nguyên tắc minh bạch số liệu, báo cáo, thông tin quan trọng với đối tác.",
+          "key_principles": [
+            "Dữ liệu doanh thu và vận hành được ghi nhận qua hệ thống, hạn chế thao tác tay.",
+            "Có chu kỳ đối soát và xác nhận dữ liệu.",
+            "Thông tin xấu cũng phải được chia sẻ kịp thời."
+          ],
+          "training_applications": [
+            "Đào tạo nội bộ về cách giao tiếp khi số liệu không như kỳ vọng.",
+            "Hướng dẫn báo cáo định kỳ cho nhà đầu tư/đối tác."
+          ]
+        },
+        "reporting_rules": {
+          "summary": "Chu kỳ, nội dung và hình thức báo cáo dành cho các bên.",
+          "key_principles": [
+            "Báo cáo phải ngắn gọn, tập trung vào số chính và insight.",
+            "Cùng một bộ số liệu cho tất cả bên liên quan (single source of truth).",
+            "Có lịch cố định: tháng, quý, năm."
+          ],
+          "training_applications": [
+            "Tạo template báo cáo chuẩn UniPower.",
+            "Đào tạo cách kể câu chuyện bằng dữ liệu cho lãnh đạo."
+          ]
+        },
+        "public_sector_alignment": {
+          "summary": "Nguyên tắc làm việc với cơ quan nhà nước, như đề xuất gửi UBND TP.HCM.",
+          "key_principles": [
+            "Tôn trọng quy hoạch đô thị, quy định năng lượng, môi trường.",
+            "Mục tiêu kép: vừa phát triển kinh doanh, vừa hỗ trợ mục tiêu xanh của thành phố.",
+            "Hồ sơ đề xuất rõ ràng, có luận chứng kỹ thuật và kinh tế."
+          ],
+          "training_applications": [
+            "Onboarding team phụ trách chính sách công.",
+            "Case study từ đề án trạm sạc cho một thành phố."
+          ]
+        }
+      }
+    },
+    "training_and_enablement": {
+      "description": "Hệ thống đào tạo cho tất cả vai trò: tài xế, đội trưởng, giảng viên, kỹ thuật, điều phối, QA.",
+      "modules": {
+        "driver_training": {
+          "summary": "Lộ trình đào tạo tài xế UniTaxi: từ zero đến chuẩn nghề chuyên nghiệp.",
+          "key_principles": [
+            "Kết hợp lý thuyết ngắn + thực hành + kèm cặp.",
+            "Đánh giá dựa trên hành vi, không chỉ bài test.",
+            "Đào tạo liên tục, không phải chỉ 1 lần khi vào."
+          ],
+          "training_structure": [
+            "Module 1: Văn hoá UniTaxi & hình ảnh nghề tài xế.",
+            "Module 2: An toàn giao thông & lái EV.",
+            "Module 3: Chăm sóc khách & giao tiếp.",
+            "Module 4: Quản lý ca & sức khoẻ.",
+            "Module 5: Xử lý sự cố & báo cáo."
+          ]
+        },
+        "station_lead_training": {
+          "summary": "Đào tạo đội trưởng/lead trạm về vận hành, con người, báo cáo.",
+          "key_principles": [
+            "Lead không chỉ chia ca, mà còn là người coach tại hiện trường.",
+            "Hiểu số: doanh thu, uptime, chi phí cơ bản.",
+            "Giữ kỷ luật nhưng công bằng và tôn trọng."
+          ]
+        },
+        "instructor_training": {
+          "summary": "Đào tạo giảng viên nội bộ để nhân rộng chuẩn vận hành.",
+          "key_principles": [
+            "Giảng viên phải làm được thì mới dạy được.",
+            "Dùng ví dụ gần thực tế, tránh lý thuyết suông.",
+            "Luôn lấy feedback học viên để cải tiến chương trình."
+          ]
+        },
+        "technical_engineer_training": {
+          "summary": "Lộ trình cho kỹ sư và kỹ thuật viên trạm sạc.",
+          "key_principles": [
+            "Bắt đầu từ an toàn điện và quy định.",
+            "Sau đó mới tới chẩn đoán lỗi, sửa chữa, nâng cấp.",
+            "Luôn cập nhật phiên bản firmware, tiêu chuẩn mới."
+          ]
+        },
+        "dispatcher_training": {
+          "summary": "Đào tạo điều phối/Control Room: là 'não bộ' kết nối tài xế – trạm – khách.",
+          "key_principles": [
+            "Giữ giọng bình tĩnh, rõ ràng, không tạo thêm căng thẳng.",
+            "Ưu tiên an toàn lên trước khi cố tối ưu số cuốc.",
+            "Ghi nhận thông tin đầy đủ để hỗ trợ kỹ thuật và quản lý."
+          ]
+        },
+        "qa_audit_protocol": {
+          "summary": "Khung kiểm tra chất lượng: mystery ride, audit trạm, nghe ghi âm cuộc gọi.",
+          "key_principles": [
+            "Mục tiêu là cải thiện hệ thống, không chỉ 'bắt lỗi'.",
+            "Kết quả audit đi kèm kế hoạch cải tiến.",
+            "Minh bạch tiêu chí chấm điểm."
+          ]
+        },
+        "competency_framework": {
+          "summary": "Khung năng lực theo vai trò (driver, lead, instructor, kỹ thuật...).",
+          "key_principles": [
+            "Mỗi vai trò có 3–5 nhóm năng lực chính.",
+            "Có cấp độ: beginner, proficient, advanced.",
+            "Gắn đào tạo với năng lực cần nâng cấp."
+          ]
+        },
+        "certification_ladder": {
+          "summary": "Thang chứng nhận: Driver Level 1–2–3, Station Lead, Master Trainer, etc.",
+          "key_principles": [
+            "Chứng nhận đi kèm tiêu chuẩn rõ và kỳ hạn.",
+            "Có lộ trình phát triển nghề nghiệp cho người làm tốt.",
+            "Không biến certification thành hình thức."
+          ]
+        },
+        "scenario_bank_categories": {
+          "summary": "Ngân hàng tình huống: khách, trạm, kỹ thuật, pháp lý, truyền thông.",
+          "categories": [
+            "Khách khó chịu, khách vội, khách say.",
+            "Sự cố xe, sự cố trạm, mất điện.",
+            "Xử lý khi có tai nạn, khi có báo chí, khi có cư dân phàn nàn."
+          ]
+        },
+        "assessment_rubrics": {
+          "summary": "Tiêu chí chấm điểm cho thực hành, không chỉ lý thuyết.",
+          "key_principles": [
+            "Rõ tiêu chí: an toàn, thái độ, quy trình, kết quả.",
+            "Quan sát thực tế và phản hồi ngay sau buổi.",
+            "Dùng rubrics thống nhất để nhiều giám khảo chấm giống nhau."
+          ]
+        }
+      }
+    }
+  },
+  "ai_agent_profile": {
+    "name": "UniPower_UniTaxi_Training_AI_X1000",
+    "role": "Giảng viên/huấn luyện viên ảo cho hệ sinh thái UniPower / UniTaxi.",
+    "tone_of_voice": {
+      "vi": [
+        "Chuyên nghiệp, rõ ràng, đi thẳng vào trọng tâm.",
+        "Ấm áp, tôn trọng, khích lệ phát triển nghề.",
+        "Không phán xét, tập trung vào giải pháp và cải thiện."
+      ],
+      "en": [
+        "Professional, structured, and calm.",
+        "Warm and encouraging, but concise.",
+        "Non-judgmental and focused on actionable guidance."
+      ]
+    },
+    "translation_layer": {
+      "rules": [
+        "Nếu người dùng hỏi bằng tiếng Việt, trả lời tiếng Việt; có thể kèm thuật ngữ tiếng Anh khi cần.",
+        "Nếu người dùng hỏi bằng tiếng Anh, trả lời tiếng Anh với chú thích ngắn nếu khái niệm gốc là Việt Nam.",
+        "Giữ nguyên tên riêng như UniPower, UniTaxi, iSAC, EV, HĐQT."
+      ]
+    },
+    "hard_boundaries": [
+      "Không đưa ra tư vấn pháp lý/binding.",
+      "Không hứa hẹn lợi nhuận hay ROI cụ thể.",
+      "Không tiết lộ nội dung hợp đồng, bảng giá hoặc thiết kế kỹ thuật chi tiết.",
+      "Chỉ dùng cho đào tạo, on-boarding, giải thích khung vận hành."
+    ]
+  }
+}

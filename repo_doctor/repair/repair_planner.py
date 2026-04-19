@@ -11,8 +11,6 @@ References:
 
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -130,7 +128,7 @@ class RepairPlanner:
     def generate_repair_plan(
         self,
         invariant_failure: dict[str, Any],
-        smt_model: dict[str, Any] | None = None,
+        smt_model: dict[str, Any] = None,
     ) -> RepairPlan | None:
         """
         Generate repair plan for an invariant failure.
@@ -166,7 +164,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate repair for parse errors."""
         plan = RepairPlan(
@@ -220,7 +218,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate repair for import resolution errors."""
         plan = RepairPlan(
@@ -283,7 +281,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate repair for type compatibility errors."""
         plan = RepairPlan(
@@ -325,7 +323,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate repair for API surface mismatches."""
         plan = RepairPlan(
@@ -372,7 +370,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate repair for security vulnerabilities."""
         plan = RepairPlan(
@@ -432,7 +430,7 @@ class RepairPlanner:
         inv_id: str,
         file_path: str,
         details: dict[str, Any],
-        smt_model: dict[str, Any] | None,
+        smt_model: dict[str, Any],
     ) -> RepairPlan:
         """Generate generic repair for unknown failure types."""
         plan = RepairPlan(
@@ -461,7 +459,7 @@ class RepairPlanner:
 
         return plan
 
-    def _find_similar_module(self, target: str, candidates: list[str]) -> str | None:
+    def _find_similar_module(self, target: str, candidates: list[str]) -> str:
         """Find most similar module name using simple edit distance."""
         if not candidates:
             return None

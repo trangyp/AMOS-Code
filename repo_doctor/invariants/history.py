@@ -1,7 +1,5 @@
 """I_history = 1 iff structural transitions over commits remain localizable."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class HistoryInvariant(Invariant):
     def __init__(self):
         super().__init__("I_history", InvariantSeverity.WARNING)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check history integrity."""
         context = context or {}
         unlocalized = context.get("unlocalized_flips", 0)

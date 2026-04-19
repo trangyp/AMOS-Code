@@ -16,8 +16,6 @@ Mathematical Foundation:
 - Convergence bound: system reaches valid state within bounded time
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -80,7 +78,7 @@ class PartialOrder:
     operations: list[Operation]
     enforced: bool = False  # Whether constraint is enforced
 
-    def validate_order(self, execution_sequence: list[str]) -> dict[str, Any]:
+    def validate_order(self, execution_sequence: list[str]) -> Dict[str, Any]:
         """Validate that execution respects partial order."""
         violations = []
         op_map = {op.op_id: op for op in self.operations}
@@ -133,8 +131,8 @@ class ClockConstraint:
 
     component_id: str
     clock_type: ClockType
-    timezone: str | None = None
-    precision_ms: float | None = None
+    timezone: str = None
+    precision_ms: float = None
     bound_to: list[str] = field(default_factory=list)  # Components it must agree with
 
 
@@ -144,9 +142,9 @@ class ConsistencyConstraint:
 
     domain_id: str
     declared_model: ConsistencyModel
-    actual_behavior: ConsistencyModel | None = None
+    actual_behavior: Optional[ConsistencyModel] = None
     dependent_domains: list[str] = field(default_factory=list)
-    convergence_bound_ms: float | None = None
+    convergence_bound_ms: float = None
 
 
 @dataclass
@@ -183,7 +181,7 @@ class TemporalAssessment:
     consistency_valid: bool
     eventuality_valid: bool
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "assessment_id": self.assessment_id,
@@ -369,7 +367,7 @@ class TemporalArchitectureEngine:
 
     def validate_migration_order(
         self, migrations: list[str], execution_order: list[str]
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Validate migration execution order.
 
@@ -405,7 +403,7 @@ class TemporalArchitectureEngine:
 
     def validate_rollback_safety(
         self, rollback_steps: list[str], safety_checks: list[str]
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Validate rollback sequence has proper safety checks.
 
@@ -445,7 +443,7 @@ class TemporalArchitectureEngine:
 
         return order.validate_order(safety_checks + rollback_steps)
 
-    def check_clock_consistency(self, components: list[dict[str, Any]]) -> dict[str, Any]:
+    def check_clock_consistency(self, components: list[dict[str, Any]]) -> Dict[str, Any]:
         """
         Check clock semantics consistency across components.
 

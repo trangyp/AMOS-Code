@@ -4,15 +4,13 @@ Tracks mood states, emotional patterns, and provides
 insights into psychological well-being.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class MoodState(Enum):
@@ -40,10 +38,10 @@ class MoodEntry:
     arousal: float = 0.0  # -1.0 (low) to 1.0 (high)
     context: str = ""  # what was happening
     notes: str = ""
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    tags: list[str] = field(default_factory=list)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    tags: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "mood": self.mood.value,
@@ -63,7 +61,7 @@ class MoodTracker:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.entries: list[MoodEntry] = []
+        self.entries: List[MoodEntry] = []
 
         self._load_data()
 
@@ -93,7 +91,7 @@ class MoodTracker:
         """Save mood data to disk."""
         data_file = self.data_dir / "mood_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "entries": [e.to_dict() for e in self.entries],
         }
         data_file.write_text(json.dumps(data, indent=2))
@@ -147,13 +145,13 @@ class MoodTracker:
 
     def get_recent_moods(self, hours: int = 24) -> list[dict[str, Any]]:
         """Get recent mood entries."""
-        cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
         return [e.to_dict() for e in recent]
 
-    def get_mood_summary(self, days: int = 7) -> dict[str, Any]:
+    def get_mood_summary(self, days: int = 7) -> Dict[str, Any]:
         """Get mood summary for a period."""
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
 
         if not recent:
@@ -186,7 +184,7 @@ class MoodTracker:
 
     def get_mood_trend(self, days: int = 7) -> str:
         """Analyze mood trend."""
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         recent = [e for e in self.entries if e.timestamp > cutoff]
 
         if len(recent) < 2:
@@ -211,7 +209,7 @@ class MoodTracker:
         else:
             return "stable"
 
-    def get_recommendations(self) -> list[str]:
+    def get_recommendations(self) -> List[str]:
         """Get mood-based recommendations."""
         recs = []
         summary = self.get_mood_summary(7)

@@ -1,7 +1,5 @@
 """Plugin system types: manifest, entry, scope."""
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -22,11 +20,11 @@ class PluginManifest:
     version: str = "0.1.0"
     description: str = ""
     author: str = ""
-    tags: list[str] = field(default_factory=list)
-    tools: list[str] = field(default_factory=list)  # python modules exporting tools
-    skills: list[str] = field(default_factory=list)  # skill .md files
-    mcp_servers: dict[str, Any] = field(default_factory=dict)  # name → mcp server config
-    dependencies: list[str] = field(default_factory=list)  # pip packages
+    tags: List[str] = field(default_factory=list)
+    tools: List[str] = field(default_factory=list)  # python modules exporting tools
+    skills: List[str] = field(default_factory=list)  # skill .md files
+    mcp_servers: Dict[str, Any] = field(default_factory=dict)  # name → mcp server config
+    dependencies: List[str] = field(default_factory=list)  # pip packages
     homepage: str = ""
 
     @classmethod
@@ -45,7 +43,7 @@ class PluginManifest:
         )
 
     @classmethod
-    def from_plugin_dir(cls, plugin_dir: Path) -> PluginManifest | None:
+    def from_plugin_dir(cls, plugin_dir: Path) -> Optional[PluginManifest]:
         """Load manifest from a plugin directory (plugin.json or PLUGIN.md frontmatter)."""
         # Try plugin.json first
         json_file = plugin_dir / "plugin.json"
@@ -65,7 +63,7 @@ class PluginManifest:
         return None
 
     @classmethod
-    def _from_md(cls, md_file: Path) -> PluginManifest | None:
+    def _from_md(cls, md_file: Path) -> Optional[PluginManifest]:
         text = md_file.read_text()
         if not text.startswith("---"):
             return None
@@ -98,7 +96,7 @@ class PluginEntry:
     source: str  # git URL, local path, or marketplace name@url
     install_dir: Path
     enabled: bool = True
-    manifest: PluginManifest | None = None
+    manifest: Optional[PluginManifest] = None
 
     @property
     def qualified_name(self) -> str:
@@ -124,7 +122,7 @@ class PluginEntry:
         )
 
 
-def parse_plugin_identifier(identifier: str) -> tuple[str, str | None]:
+def parse_plugin_identifier(identifier: str) -> Tuple[str, str]:
     """Parse 'name' or 'name@source'. Returns (name, source_or_None)."""
     if "@" in identifier:
         name, _, source = identifier.partition("@")

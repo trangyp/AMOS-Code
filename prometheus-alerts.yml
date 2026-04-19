@@ -1,0 +1,85 @@
+groups:
+  - name: amos-equation-alerts
+    rules:
+      # High error rate alert
+      - alert: EquationAPIHighErrorRate
+        expr: |
+          sum(rate(amos_verification_requests_total{status="error"}[5m]))
+          /
+          sum(rate(amos_verification_requests_total[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate in Equation API"
+          description: "Error rate is above 10% for 2 minutes"
+
+      # API down alert
+      - alert: EquationAPIDown
+        expr: up{job="equation-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Equation API is down"
+          description: "Equation API has been down for 1 minute"
+
+      # High latency alert
+      - alert: EquationAPIHighLatency
+        expr: |
+          histogram_quantile(0.95,
+            rate(amos_verification_duration_seconds_bucket[5m])
+          ) > 5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency in Equation API"
+          description: "P95 latency is above 5 seconds"
+
+      # Too many active connections
+      - alert: EquationAPITooManyConnections
+        expr: amos_active_websocket_connections > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many WebSocket connections"
+          description: "Active connections exceed 1000"
+
+      # Memory usage alert
+      - alert: EquationAPIMemoryHigh
+        expr: |
+          container_memory_usage_bytes{container="api"}
+          /
+          container_spec_memory_limit_bytes{container="api"} > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage above 85%"
+
+      # CPU usage alert
+      - alert: EquationAPICPUHigh
+        expr: |
+          rate(container_cpu_usage_seconds_total{container="api"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage above 80%"
+
+      # Pod crash loop
+      - alert: EquationAPICrashLoop
+        expr: |
+          rate(kube_pod_container_status_restarts_total{
+            container="api"
+          }[15m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pod crash looping"
+          description: "Pod has restarted in the last 15 minutes"

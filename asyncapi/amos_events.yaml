@@ -1,0 +1,194 @@
+asyncapi: '2.6.0'
+info:
+  title: AMOS Equation Events API
+  version: '19.0.0'
+  description: |
+    Event-driven API for AMOS Equation System.
+    Enables real-time equation computation events, audit logging,
+    and cross-service communication via message broker.
+  contact:
+    name: AMOS Architecture Team
+    email: arch@amos.dev
+
+channels:
+  equation.computed:
+    description: Events emitted when equation computation completes
+    subscribe:
+      message:
+        $ref: '#/components/messages/EquationComputed'
+    publish:
+      message:
+        $ref: '#/components/messages/EquationComputed'
+
+  equation.batch.started:
+    description: Batch computation job started
+    subscribe:
+      message:
+        $ref: '#/components/messages/BatchStarted'
+
+  equation.progress:
+    description: Real-time computation progress updates
+    subscribe:
+      message:
+        $ref: '#/components/messages/ProgressUpdate'
+
+  audit.event:
+    description: Audit trail events for compliance
+    subscribe:
+      message:
+        $ref: '#/components/messages/AuditEvent'
+
+  system.health:
+    description: System health status changes
+    subscribe:
+      message:
+        $ref: '#/components/messages/HealthEvent'
+
+components:
+  messages:
+    EquationComputed:
+      name: EquationComputed
+      title: Equation Computation Complete
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            description: Unique event identifier
+            format: uuid
+          equation_id:
+            type: string
+            description: Equation identifier
+          status:
+            type: string
+            enum: [success, failure, timeout]
+          result:
+            type: number
+            description: Computed result value
+          execution_time_ms:
+            type: integer
+            minimum: 0
+          variables:
+            type: object
+            description: Input variables used
+          computed_at:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+            description: Tracing correlation ID
+
+    BatchStarted:
+      name: BatchStarted
+      title: Batch Computation Started
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          batch_id:
+            type: string
+            format: uuid
+          equation_ids:
+            type: array
+            items:
+              type: string
+          total_count:
+            type: integer
+            minimum: 1
+          started_at:
+            type: string
+            format: date-time
+          initiated_by:
+            type: string
+            description: User or service that initiated batch
+
+    ProgressUpdate:
+      name: ProgressUpdate
+      title: Computation Progress Update
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          job_id:
+            type: string
+          progress_percent:
+            type: number
+            minimum: 0
+            maximum: 100
+          current_step:
+            type: integer
+          total_steps:
+            type: integer
+          message:
+            type: string
+            description: Human-readable status message
+          updated_at:
+            type: string
+            format: date-time
+
+    AuditEvent:
+      name: AuditEvent
+      title: Security Audit Event
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          event_type:
+            type: string
+            enum: [equation_accessed, equation_modified, user_action, system_event]
+          severity:
+            type: string
+            enum: [info, warning, critical]
+          actor:
+            type: string
+            description: User ID or service name
+          resource:
+            type: string
+            description: Resource being accessed
+          action:
+            type: string
+            enum: [read, write, delete, compute, export]
+          success:
+            type: boolean
+          timestamp:
+            type: string
+            format: date-time
+          ip_address:
+            type: string
+            format: ipv4
+
+    HealthEvent:
+      name: HealthEvent
+      title: System Health Status
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          component:
+            type: string
+            enum: [api, database, cache, broker, compute_engine]
+          status:
+            type: string
+            enum: [healthy, degraded, unhealthy]
+          message:
+            type: string
+          metrics:
+            type: object
+            properties:
+              cpu_percent:
+                type: number
+              memory_percent:
+                type: number
+              active_connections:
+                type: integer
+
+servers:
+  production:
+    url: amos-kafka.prod:9092
+    protocol: kafka
+    description: Production Kafka cluster
+  development:
+    url: amos-redis.dev:6379
+    protocol: redis
+    description: Development Redis instance

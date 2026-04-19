@@ -3,7 +3,6 @@
 Importing this module registers the three tools into the central registry.
 """
 
-from __future__ import annotations
 
 from datetime import datetime
 
@@ -108,6 +107,7 @@ def _memory_search(params: dict, config: dict) -> str:
 def _memory_list(params: dict, config: dict) -> str:
     """List all memory entries with type, scope, age, confidence, and description."""
     from .store import load_entries
+from typing import List, Optional, Set
 
     scope_filter = params.get("scope", "all")
     scopes = ["user", "project"] if scope_filter == "all" else [scope_filter]

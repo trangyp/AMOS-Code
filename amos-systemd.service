@@ -1,0 +1,33 @@
+[Unit]
+Description=AMOS Brain Cognitive OS v14.0.0
+Documentation=https://github.com/amos-brain/docs
+Requires=docker.service
+After=docker.service network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/amos
+
+# Environment
+Environment="COMPOSE_PROJECT_NAME=amos"
+Environment="AMOS_API_PORT=8080"
+Environment="LOG_LEVEL=INFO"
+
+# Load env file if exists
+EnvironmentFile=-/opt/amos/.env
+
+# Start command
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.amos.yml --profile full up -d
+
+# Stop command
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.amos.yml --profile full down
+
+# Reload - graceful restart
+ExecReload=/usr/local/bin/docker-compose -f docker-compose.amos.yml --profile full restart
+
+# Status check
+ExecStatus=/usr/local/bin/docker-compose -f docker-compose.amos.yml ps
+
+[Install]
+WantedBy=multi-user.target

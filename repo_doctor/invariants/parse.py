@@ -4,8 +4,6 @@ I_parse = 1 iff every required source file yields acceptable parse tree
 Tree-sitter provides incremental, error-tolerant parsing.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from ..constants import MSG_PARSING_SUCCESS
@@ -21,7 +19,7 @@ class ParseInvariant(Invariant):
     def __init__(self):
         super().__init__("I_parse", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check parse integrity."""
         context = context or {}
         parse_errors = context.get("parse_fatal", 0)

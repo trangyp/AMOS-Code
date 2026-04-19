@@ -1,6 +1,5 @@
 """AMOS Memory Layer - Persistence for brain state and cognitive artifacts."""
 
-from __future__ import annotations
 
 import json
 import time
@@ -247,7 +246,7 @@ class AMOSMemoryBridge:
         )
         return self.store.save_brain_state(state)
 
-    def recall_recent(self, memory_type: str | None = None, limit: int = 10) -> list[MemoryEntry]:
+    def recall_recent(self, memory_type: str  = None, limit: int = 10) -> list[MemoryEntry]:
         """Recall recent memories."""
         if memory_type:
             entries = self.store.query_by_type(memory_type)
@@ -306,8 +305,10 @@ def remember(task_type: str, data: dict) -> str:
     return ""
 
 
-def recall(memory_type: str | None = None, limit: int = 10) -> list[MemoryEntry]:
+def recall(memory_type: str  = None, limit: int = 10) -> list[MemoryEntry]:
     """Quick recall helper."""
+from __future__ import annotations
+
     return get_memory_bridge().recall_recent(memory_type, limit)
 
 

@@ -9,8 +9,6 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from datetime import datetime
@@ -41,7 +39,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         else:
             self._send_404()
 
-    def _send_json(self, data: dict[str, Any]) -> None:
+    def _send_json(self, data: Dict[str, Any]) -> None:
         """Send JSON response."""
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -76,10 +74,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
         data = self._collect_subsystem_data()
         self._send_json(data)
 
-    def _collect_organism_status(self) -> dict[str, Any]:
+    def _collect_organism_status(self) -> Dict[str, Any]:
         """Collect overall organism status."""
         return {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat() + "Z",
             "version": "1.0.0",
             "total_subsystems": 13,
             "active_subsystems": 13,
@@ -87,7 +85,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
             "health_score": 99.8,
         }
 
-    def _collect_subsystem_data(self) -> dict[str, Any]:
+    def _collect_subsystem_data(self) -> Dict[str, Any]:
         """Collect data from all subsystems."""
         subsystems = []
 

@@ -64,7 +64,7 @@ def check_production_readiness() -> bool:
 def launch_production():
     """Launch AMOS in production mode."""
     print_live_banner()
-    print(f"[{datetime.utcnow().isoformat()}] Launch sequence initiated")
+    print(f"[{datetime.now(timezone.utc).isoformat()}] Launch sequence initiated")
     print()
 
     # Phase 1: Readiness check
@@ -121,7 +121,7 @@ def launch_production():
     print("  • Monitor:  python AMOS_ORGANISM_OS/amos_activate.py --monitor")
     print("  • Deploy:   python deploy.py --env production")
     print()
-    print(f"[{datetime.utcnow().isoformat()}] AMOS PRODUCTION LIVE")
+    print(f"[{datetime.now(timezone.utc).isoformat()}] AMOS PRODUCTION LIVE")
     print()
 
     return True

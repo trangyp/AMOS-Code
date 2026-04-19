@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """AMOS Brain Unified CLI - Complete 8-layer brain interface."""
 
-from __future__ import annotations
-
 import argparse
 import sys
 

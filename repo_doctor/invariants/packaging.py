@@ -1,7 +1,5 @@
 """I_pack = 1 iff build metadata describes the same runtime surface."""
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -13,7 +11,7 @@ class PackagingInvariant(Invariant):
     def __init__(self):
         super().__init__("I_pack", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check packaging integrity."""
         context = context or {}
         conflicts = context.get("metadata_conflicts", 0)

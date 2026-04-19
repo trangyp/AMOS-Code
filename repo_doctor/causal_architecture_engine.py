@@ -16,8 +16,6 @@ Mathematical Foundation:
 - Counterfactuals: Y_x(u) - outcome Y if X had been x for unit u
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -89,8 +87,8 @@ class Intervention:
 
     target_node: str
     new_value: Any
-    context: dict[str, Any]  # Other variables held constant
-    expected_effect: dict[str, Any] | None = None
+    context: Dict[str, Any]  # Other variables held constant
+    expected_effect: Dict[str, Any] = None
 
 
 @dataclass
@@ -98,9 +96,9 @@ class Counterfactual:
     """Counterfactual query result."""
 
     query_id: str
-    actual_observation: dict[str, Any]
+    actual_observation: Dict[str, Any]
     intervention: Intervention
-    predicted_outcome: dict[str, Any]
+    predicted_outcome: Dict[str, Any]
     confidence: float
     assumptions: list[str]
 
@@ -111,13 +109,13 @@ class CausalAnalysis:
 
     analysis_id: str
     target_variable: str
-    causal_graph: dict[str, Any]
+    causal_graph: Dict[str, Any]
     root_causes: list[dict[str, Any]]
     spurious_correlations: list[dict[str, Any]]
     interventions: list[dict[str, Any]]
     counterfactuals: list[dict[str, Any]]
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             "analysis_id": self.analysis_id,
@@ -139,7 +137,7 @@ class CausalArchitectureEngine:
     """
 
     def __init__(self):
-        self.nodes: dict[str, CausalNode] = {}
+        self.nodes: Dict[str, CausalNode] = {}
         self.edges: list[CausalEdge] = []
         self.paths: list[CausalPath] = []
         self.analyses: list[CausalAnalysis] = []
@@ -259,7 +257,7 @@ class CausalArchitectureEngine:
         self,
         observations: list[dict[str, Any]],
         target_variable: str,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Build causal graph from observations.
 
@@ -369,7 +367,7 @@ class CausalArchitectureEngine:
         self,
         variable1: str,
         variable2: str,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Determine if correlation between variables is spurious.
 
@@ -450,7 +448,7 @@ class CausalArchitectureEngine:
 
     def counterfactual_analysis(
         self,
-        observation: dict[str, Any],
+        observation: Dict[str, Any],
         intervention: Intervention,
     ) -> Counterfactual:
         """
@@ -506,7 +504,7 @@ class CausalArchitectureEngine:
     def analyze_intervention(
         self,
         intervention: Intervention,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Analyze potential effects of an intervention.
 
@@ -638,7 +636,7 @@ class CausalArchitectureEngine:
 
         return list(descendants)
 
-    def _find_strongest_path(self, source: str, target: str) -> CausalPath | None:
+    def _find_strongest_path(self, source: str, target: str) -> Optional[CausalPath]:
         """Find strongest causal path from source to target."""
         # Simplified BFS
         visited = {source}
@@ -667,7 +665,7 @@ class CausalArchitectureEngine:
 
     def analyze_architecture_causality(
         self,
-        metric_data: dict[str, Any],
+        metric_data: Dict[str, Any],
         target_metric: str,
     ) -> CausalAnalysis:
         """

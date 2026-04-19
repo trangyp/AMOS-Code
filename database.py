@@ -6,7 +6,6 @@ Supports SQLite (development) and PostgreSQL (production).
 import os
 import sqlite3
 from contextlib import contextmanager
-from typing import Optional
 
 # Database configuration
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///app/data/amos.db")
@@ -15,7 +14,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///app/data/amos.db")
 class Database:
     """Database connection manager."""
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str = None):
         self.db_path = db_path or DATABASE_URL.replace("sqlite:///", "")
         self._init_db()
 
@@ -134,8 +133,8 @@ class Database:
             conn.commit()
 
     def get_query_history(
-        self, api_key_hash: Optional[str] = None, limit: int = 100, offset: int = 0
-    ) -> list[dict]:
+        self, api_key_hash: str = None, limit: int = 100, offset: int = 0
+    ) -> List[dict]:
         """Get query history for an API key."""
         with self.get_connection() as conn:
             cursor = conn.cursor()

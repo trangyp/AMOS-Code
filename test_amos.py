@@ -23,7 +23,7 @@ class AMOSTestSuite:
     """Comprehensive test suite for AMOS."""
 
     def __init__(self):
-        self.results: list[dict] = []
+        self.results: List[dict] = []
         self.passed = 0
         self.failed = 0
 
@@ -32,7 +32,7 @@ class AMOSTestSuite:
         print("=" * 70)
         print("🧪 AMOS TEST & VALIDATION SUITE")
         print("=" * 70)
-        print(f"Started: {datetime.utcnow().isoformat()}")
+        print(f"Started: {datetime.now(UTC).isoformat()}")
         print()
 
         start_time = time.time()
@@ -269,7 +269,7 @@ class AMOSTestSuite:
             from amos_v4_runtime import Signal, WorldModelEngineV4
 
             wm = WorldModelEngineV4()
-            signal = Signal("test", {"opportunity": 0.8}, datetime.utcnow(), 0.9, 0.9)
+            signal = Signal("test", {"opportunity": 0.8}, datetime.now(UTC), 0.9, 0.9)
             wm.ingest_signal(signal)
             assert len(wm.signals) > 0
 
@@ -299,7 +299,7 @@ class AMOSTestSuite:
             compressor = FeedbackCompressor()
             action = {"type": "test", "expected_duration_days": 30}
             feedback = compressor.get_compressed_feedback(
-                action, datetime.utcnow() - datetime.utcnow()
+                action, datetime.now(UTC) - datetime.now(UTC)
             )
             assert "compressed_score" in feedback
 
@@ -319,7 +319,7 @@ class AMOSTestSuite:
             ]
             from amos_v4_runtime import Signal
 
-            signals = [Signal("test", {}, datetime.utcnow(), 0.5, 0.5)]
+            signals = [Signal("test", {}, datetime.now(UTC), 0.5, 0.5)]
             result = amos.cycle(goals, signals)
             assert "cycle" in result
             assert result["cycle"] == 1

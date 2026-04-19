@@ -9,8 +9,6 @@ Responsible for:
 - Integration with SKELETON rules
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging
@@ -19,7 +17,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.immune")
@@ -50,13 +48,13 @@ class Threat:
     level: ThreatLevel
     source: str
     description: str
-    context: dict[str, Any]
+    context: Dict[str, Any]
     timestamp: str = ""
     mitigated: bool = False
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -68,12 +66,12 @@ class Anomaly:
     confidence: float
     description: str
     affected_subsystem: str
-    indicators: list[str]
+    indicators: List[str]
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -82,15 +80,15 @@ class SafetyReport:
 
     operation: str
     safe: bool
-    threats: list[Threat]
-    anomalies: list[Anomaly]
-    required_confirmations: list[str]
+    threats: List[Threat]
+    anomalies: List[Anomaly]
+    required_confirmations: List[str]
     risk_score: float  # 0.0 - 1.0
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 class ImmuneKernel:
@@ -109,12 +107,12 @@ class ImmuneKernel:
         self.logs_path.mkdir(parents=True, exist_ok=True)
 
         # Threat registry
-        self.active_threats: dict[str, Threat] = {}
-        self.threat_history: list[Threat] = []
+        self.active_threats: Dict[str, Threat] = {}
+        self.threat_history: List[Threat] = []
 
         # Anomaly patterns
         self.baseline_patterns: dict[str, dict[str, Any]] = {}
-        self.detected_anomalies: list[Anomaly] = []
+        self.detected_anomalies: List[Anomaly] = []
 
         # Safety boundaries
         self.boundaries: dict[str, dict[str, Any]] = self._load_default_boundaries()
@@ -177,7 +175,7 @@ class ImmuneKernel:
             },
         }
 
-    def check_safety(self, operation: str, context: dict[str, Any]) -> SafetyReport:
+    def check_safety(self, operation: str, context: Dict[str, Any]) -> SafetyReport:
         """Comprehensive safety check for an operation.
 
         Args:
@@ -187,9 +185,9 @@ class ImmuneKernel:
         Returns:
             SafetyReport with threats, anomalies, and risk assessment
         """
-        threats: list[Threat] = []
-        anomalies: list[Anomaly] = []
-        required_confirmations: list[str] = []
+        threats: List[Threat] = []
+        anomalies: List[Anomaly] = []
+        required_confirmations: List[str] = []
 
         # 1. Check boundaries
         boundary_threats = self._check_boundary_violations(operation, context)
@@ -269,7 +267,7 @@ class ImmuneKernel:
 
         return report
 
-    def _check_boundary_violations(self, operation: str, context: dict[str, Any]) -> list[Threat]:
+    def _check_boundary_violations(self, operation: str, context: Dict[str, Any]) -> List[Threat]:
         """Check if operation violates safety boundaries."""
         threats = []
 
@@ -303,7 +301,7 @@ class ImmuneKernel:
 
         return threats
 
-    def _is_irreversible(self, operation: str, context: dict[str, Any]) -> bool:
+    def _is_irreversible(self, operation: str, context: Dict[str, Any]) -> bool:
         """Check if operation is irreversible."""
         irreversible_ops = ["delete", "drop", "truncate", "format", "destroy"]
         if operation in irreversible_ops:
@@ -313,7 +311,7 @@ class ImmuneKernel:
         irreversible_patterns = ["rm -rf", "drop", "delete from", "truncate"]
         return any(pattern in command.lower() for pattern in irreversible_patterns)
 
-    def _check_sensitive_data(self, context: dict[str, Any]) -> list[str]:
+    def _check_sensitive_data(self, context: Dict[str, Any]) -> List[str]:
         """Check for sensitive data patterns in context."""
         found_patterns = []
 
@@ -326,7 +324,7 @@ class ImmuneKernel:
 
         return found_patterns
 
-    def _detect_anomaly(self, operation: str, context: dict[str, Any]) -> Optional[Anomaly]:
+    def _detect_anomaly(self, operation: str, context: Dict[str, Any]) -> Optional[Anomaly]:
         """Detect anomalies in operation patterns."""
         # Check for unusual patterns
         recent_ops = [op for op in self.operation_history[-50:] if op["operation"] == operation]
@@ -370,7 +368,7 @@ class ImmuneKernel:
             )
         return None
 
-    def _check_compliance(self, operation: str, context: dict[str, Any]) -> list[str]:
+    def _check_compliance(self, operation: str, context: Dict[str, Any]) -> List[str]:
         """Check compliance requirements."""
         confirmations = []
 
@@ -382,7 +380,7 @@ class ImmuneKernel:
 
         return confirmations
 
-    def _calculate_risk_score(self, threats: list[Threat], anomalies: list[Anomaly]) -> float:
+    def _calculate_risk_score(self, threats: List[Threat], anomalies: List[Anomaly]) -> float:
         """Calculate overall risk score."""
         score = 0.0
 
@@ -406,13 +404,13 @@ class ImmuneKernel:
     def _log_operation(
         self,
         operation: str,
-        context: dict[str, Any],
-        threats: list[Threat],
-        anomalies: list[Anomaly],
+        context: Dict[str, Any],
+        threats: List[Threat],
+        anomalies: List[Anomaly],
     ):
         """Log operation for pattern analysis."""
         op_record = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "operation": operation,
             "context_hash": self._hash_context(context),
             "threat_count": len(threats),
@@ -425,7 +423,7 @@ class ImmuneKernel:
         if len(self.operation_history) > self.max_history:
             self.operation_history = self.operation_history[-self.max_history :]
 
-    def _hash_context(self, context: dict[str, Any]) -> str:
+    def _hash_context(self, context: Dict[str, Any]) -> str:
         """Create hash of context for comparison."""
         context_str = json.dumps(context, sort_keys=True, default=str)
         return hashlib.md5(context_str.encode()).hexdigest()[:16]
@@ -444,7 +442,7 @@ class ImmuneKernel:
             return True
         return False
 
-    def get_active_threats(self, min_level: ThreatLevel = ThreatLevel.LOW) -> list[Threat]:
+    def get_active_threats(self, min_level: ThreatLevel = ThreatLevel.LOW) -> List[Threat]:
         """Get all active threats at or above specified level."""
         return [
             t
@@ -452,7 +450,7 @@ class ImmuneKernel:
             if not t.mitigated and t.level.value >= min_level.value
         ]
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current immune system state."""
         active = self.get_active_threats()
         return {
@@ -462,7 +460,7 @@ class ImmuneKernel:
             "anomalies_detected": len(self.detected_anomalies),
             "operations_checked": len(self.operation_history),
             "boundaries_defined": len(self.boundaries),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

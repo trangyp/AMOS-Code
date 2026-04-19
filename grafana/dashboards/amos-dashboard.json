@@ -1,0 +1,45 @@
+{
+  "dashboard": {
+    "title": "AMOS Equation API",
+    "panels": [
+      {
+        "title": "Verification Requests",
+        "type": "stat",
+        "targets": [{
+          "expr": "sum(rate(amos_verification_requests_total[5m]))",
+          "legendFormat": "req/s"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "title": "Request Duration",
+        "type": "graph",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(amos_verification_duration_seconds_bucket[5m]))",
+          "legendFormat": "p95"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "title": "Active WebSocket Connections",
+        "type": "stat",
+        "targets": [{
+          "expr": "amos_active_websocket_connections",
+          "legendFormat": "connections"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "title": "Equations Loaded",
+        "type": "stat",
+        "targets": [{
+          "expr": "amos_equations_loaded",
+          "legendFormat": "equations"
+        }],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      }
+    ],
+    "time": {"from": "now-1h", "to": "now"},
+    "refresh": "5s"
+  }
+}

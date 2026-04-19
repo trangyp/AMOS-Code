@@ -1,7 +1,5 @@
 """AMOS Consciousness Engine - Self-modeling and meta-cognitive awareness."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,9 +12,9 @@ class ConsciousnessAnalysis:
 
     domain: str
     input_data: str
-    findings: list[dict]
+    findings: List[dict]
     confidence: float
-    limitations: list[str]
+    limitations: List[str]
     law_compliance: dict
     gap_acknowledgment: str
 
@@ -63,7 +61,7 @@ class SelfModelingKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get consciousness primitives for category."""
         primitives = {
             "self_awareness": ["self_reference", "monitoring", "recognition"],
@@ -116,7 +114,7 @@ class AttentionKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get attention primitives for category."""
         primitives = {
             "selective_attention": ["selection", "focus", "gating"],
@@ -169,7 +167,7 @@ class NarrativeKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get narrative primitives for category."""
         primitives = {
             "story_building": ["causality", "plot", "arc"],
@@ -222,7 +220,7 @@ class EmbodimentKernel:
             ),
         )
 
-    def _get_primitives(self, category: str) -> list[str]:
+    def _get_primitives(self, category: str) -> List[str]:
         """Get embodiment primitives for category."""
         primitives = {
             "body_awareness": ["proprioception", "somatic_markers", "feedback"],
@@ -254,7 +252,7 @@ class AMOSConsciousnessEngine:
 
     def __init__(self):
         self.runtime = get_runtime()
-        self.kernels: dict[str, Any] = {}
+        self.kernels: Dict[str, Any] = {}
         self._init_kernels()
 
     def _init_kernels(self):
@@ -265,7 +263,7 @@ class AMOSConsciousnessEngine:
     def analyze(
         self,
         description: str,
-        domains: list[str] | None = None,
+        domains: Optional[List[str]] = None,
     ) -> dict[str, ConsciousnessAnalysis]:
         """Run consciousness analysis across specified domains."""
         domains = domains or list(self.DOMAINS.keys())
@@ -278,7 +276,7 @@ class AMOSConsciousnessEngine:
 
         return results
 
-    def get_findings_summary(self, results: dict[str, ConsciousnessAnalysis]) -> str:
+    def get_findings_summary(self, results: Dict[str, ConsciousnessAnalysis]) -> str:
         """Generate human-readable findings summary."""
         lines = [
             "# AMOS Consciousness Analysis Summary",
@@ -367,7 +365,7 @@ class AMOSConsciousnessEngine:
 
 
 # Singleton
-_consciousness_engine: AMOSConsciousnessEngine | None = None
+_consciousness_engine: Optional[AMOSConsciousnessEngine] = None
 
 
 def get_consciousness_engine() -> AMOSConsciousnessEngine:
@@ -380,7 +378,7 @@ def get_consciousness_engine() -> AMOSConsciousnessEngine:
 
 def analyze_consciousness(
     description: str,
-    domains: list[str] | None = None,
+    domains: Optional[List[str]] = None,
 ) -> dict[str, ConsciousnessAnalysis]:
     """Quick helper for consciousness analysis."""
     return get_consciousness_engine().analyze(description, domains)

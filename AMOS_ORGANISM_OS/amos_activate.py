@@ -12,14 +12,11 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 def print_banner():
@@ -68,14 +65,14 @@ class AmosActivator:
         if organism_root is None:
             organism_root = Path(__file__).parent
         self.organism_root = organism_root
-        self.activated: list[str] = []
-        self.failed: list[str] = []
-        self.start_time: Optional[datetime] = None
+        self.activated: List[str] = []
+        self.failed: List[str] = []
+        self.start_time: datetime = None
 
     def activate(self, mode: str = "full", monitor: bool = False) -> bool:
         """Activate the AMOS organism."""
         print_banner()
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(UTC)
 
         print(f"[{self._timestamp()}] Starting activation sequence...")
         print(f"[{self._timestamp()}] Mode: {mode.upper()}")
@@ -114,7 +111,7 @@ class AmosActivator:
 
     def _timestamp(self) -> str:
         """Get current timestamp."""
-        return datetime.utcnow().strftime("%H:%M:%S.%f")[:-3]
+        return datetime.now(UTC).strftime("%H:%M:%S.%f")[:-3]
 
     def _preflight_checks(self) -> bool:
         """Run pre-flight system checks."""
@@ -183,7 +180,7 @@ class AmosActivator:
 
     def _print_status(self):
         """Print final activation status."""
-        elapsed = (datetime.utcnow() - self.start_time).total_seconds()
+        elapsed = (datetime.now(UTC) - self.start_time).total_seconds()
 
         print()
         print("=" * 60)
@@ -224,7 +221,7 @@ class AmosActivator:
         print("\r" + " " * 80, end="")
 
         status = "🟢 RUNNING" if not self.failed else "🟡 DEGRADED"
-        uptime = (datetime.utcnow() - self.start_time).total_seconds()
+        uptime = (datetime.now(UTC) - self.start_time).total_seconds()
 
         line = f"\r{status} | Uptime: {int(uptime)}s | Subsystems: {len(self.activated)}/15"
         print(line, end="", flush=True)

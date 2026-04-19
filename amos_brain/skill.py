@@ -1,6 +1,5 @@
 """AMOS Brain Decision Analysis Skill - Built-in skill for structured reasoning."""
 
-from __future__ import annotations
 
 # NOTE: Imports are lazy to avoid circular dependency with clawspring
 # This module is imported by amos_brain/__init__.py, so it must not
@@ -116,6 +115,8 @@ Use tools if needed to gather context about the problem domain.
 
 
 _ANALYZE_PROMPT = """\
+from __future__ import annotations
+
 Perform deep systems analysis on the user's topic using AMOS Brain cognitive stack.
 
 Topic: $ARGUMENTS

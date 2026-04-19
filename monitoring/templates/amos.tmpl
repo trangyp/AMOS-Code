@@ -1,0 +1,67 @@
+{{ define "amos.title" -}}
+[{{ .Status | toUpper }}] AMOS Alert: {{ .GroupLabels.alertname }}
+{{- end }}
+
+{{ define "amos.message" -}}
+{{ if gt (len .Alerts.Firing) 0 -}}
+Firing ({{ .Alerts.Firing | len }}):
+{{ range .Alerts.Firing -}}
+- {{ .Annotations.summary }}
+  {{ .Annotations.description }}
+  Severity: {{ .Labels.severity }}
+  Service: {{ .Labels.service }}
+{{ end -}}
+{{ end -}}
+
+{{ if gt (len .Alerts.Resolved) 0 -}}
+Resolved ({{ .Alerts.Resolved | len }}):
+{{ range .Alerts.Resolved -}}
+- {{ .Annotations.summary }}
+{{ end -}}
+{{ end -}}
+{{- end }}
+
+{{ define "amos.email" -}}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #2d3748; color: white; padding: 20px; }
+        .firing { background: #fed7d7; border-left: 4px solid #e53e3e; padding: 15px; margin: 10px 0; }
+        .resolved { background: #c6f6d5; border-left: 4px solid #38a169; padding: 15px; margin: 10px 0; }
+        .label { font-weight: bold; color: #4a5568; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AMOS Orchestrator Alert</h1>
+        <p>Status: {{ .Status | toUpper }}</p>
+    </div>
+
+    {{ if gt (len .Alerts.Firing) 0 }}
+    <h2>Firing Alerts ({{ .Alerts.Firing | len }})</h2>
+    {{ range .Alerts.Firing }}
+    <div class="firing">
+        <p><span class="label">Alert:</span> {{ .Labels.alertname }}</p>
+        <p><span class="label">Summary:</span> {{ .Annotations.summary }}</p>
+        <p><span class="label">Description:</span> {{ .Annotations.description }}</p>
+        <p><span class="label">Severity:</span> {{ .Labels.severity }}</p>
+        <p><span class="label">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05" }}</p>
+    </div>
+    {{ end }}
+    {{ end }}
+
+    {{ if gt (len .Alerts.Resolved) 0 }}
+    <h2>Resolved Alerts ({{ .Alerts.Resolved | len }})</h2>
+    {{ range .Alerts.Resolved }}
+    <div class="resolved">
+        <p><span class="label">Alert:</span> {{ .Labels.alertname }}</p>
+        <p><span class="label">Summary:</span> {{ .Annotations.summary }}</p>
+        <p><span class="label">Resolved:</span> {{ .EndsAt.Format "2006-01-02 15:04:05" }}</p>
+    </div>
+    {{ end }}
+    {{ end }}
+</body>
+</html>
+{{- end }}

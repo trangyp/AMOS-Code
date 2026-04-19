@@ -5,8 +5,6 @@ Validates that the AMOS Brain properly integrates with the Repo Doctor
 Architectural Integrity Engine through the Architecture Bridge.
 """
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
 

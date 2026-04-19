@@ -16,10 +16,11 @@ import queue
 import sqlite3
 import threading
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 # ============================================================================
 # 1. DATA INGESTION - Market Signals & Opportunity Detection
@@ -35,7 +36,7 @@ class DataSource:
     endpoint: str
     refresh_interval: int = 3600  # seconds
     reliability_score: float = 0.8
-    last_fetch: Optional[datetime] = None
+    last_fetch: datetime = None
     data_cache: dict = field(default_factory=dict)
 
 
@@ -50,18 +51,18 @@ class DataIngestionEngine:
     """
 
     def __init__(self):
-        self.sources: dict[str, DataSource] = {}
+        self.sources: Dict[str, DataSource] = {}
         self.ingestion_queue: queue.Queue = queue.Queue()
         self.signal_history: deque = deque(maxlen=1000)
         self.running = False
-        self.ingestion_thread: Optional[threading.Thread] = None
+        self.ingestion_thread: threading.Thread = None
 
     def register_source(self, source: DataSource):
         """Register a new data source."""
         self.sources[source.source_id] = source
         print(f"Registered source: {source.source_id} ({source.source_type})")
 
-    def fetch_from_source(self, source_id: str) -> Optional[dict]:
+    def fetch_from_source(self, source_id: str) -> dict:
         """Fetch data from registered source."""
         if source_id not in self.sources:
             return None
@@ -79,13 +80,13 @@ class DataIngestionEngine:
             else:
                 data = {}
 
-            source.last_fetch = datetime.utcnow()
+            source.last_fetch = datetime.now(UTC)
             source.data_cache = data
 
             # Convert to AMOS Signal format
             signal = {
                 "source": source_id,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "data": data,
                 "reliability": source.reliability_score,
             }
@@ -145,7 +146,7 @@ class DataIngestionEngine:
                 # Check if refresh needed
                 if (
                     source.last_fetch is None
-                    or (datetime.utcnow() - source.last_fetch).total_seconds()
+                    or (datetime.now(UTC) - source.last_fetch).total_seconds()
                     > source.refresh_interval
                 ):
                     signal = self.fetch_from_source(source_id)
@@ -163,7 +164,7 @@ class DataIngestionEngine:
         if self.ingestion_thread:
             self.ingestion_thread.join(timeout=5)
 
-    def get_latest_signals(self, n: int = 100) -> list[dict]:
+    def get_latest_signals(self, n: int = 100) -> List[dict]:
         """Get latest N signals from all sources."""
         return list(self.signal_history)[-n:]
 
@@ -173,7 +174,7 @@ class DataIngestionEngine:
             "market": {},
             "tasks": {},
             "financial": {},
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         for signal in self.signal_history:
@@ -218,7 +219,7 @@ class ExecutionManager:
     """
 
     def __init__(self):
-        self.hooks: dict[str, ExecutionHook] = {}
+        self.hooks: Dict[str, ExecutionHook] = {}
         self.execution_log: deque = deque(maxlen=500)
 
     def register_hook(self, hook: ExecutionHook):
@@ -260,7 +261,7 @@ class ExecutionManager:
             # Log
             self.execution_log.append(
                 {
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "hook_id": hook.hook_id,
                     "action": action,
                     "result": result,
@@ -314,17 +315,17 @@ class NotificationSystem:
     """
 
     def __init__(self):
-        self.channels: dict[str, dict] = {}
+        self.channels: Dict[str, dict] = {}
         self.notification_log: deque = deque(maxlen=200)
 
     def register_channel(self, channel_id: str, channel_type: str, config: dict):
         """Register notification channel."""
         self.channels[channel_id] = {"type": channel_type, "config": config, "enabled": True}
 
-    def notify(self, message: str, level: str = "info", data: Optional[dict] = None):
+    def notify(self, message: str, level: str = "info", data: dict = None):
         """Send notification through all enabled channels."""
         notification = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": level,
             "message": message,
             "data": data or {},
@@ -477,7 +478,7 @@ class PersistenceLayer:
                 decision.get("economic_score", 0.0),
                 decision.get("identity_drift", 0.0),
                 decision.get("uncertainty", 0.0),
-                datetime.utcnow().isoformat(),
+                datetime.now(UTC).isoformat(),
             ),
         )
 
@@ -498,14 +499,14 @@ class PersistenceLayer:
                 signal.get("source", "unknown"),
                 json.dumps(signal.get("data", {})),
                 signal.get("reliability", 0.5),
-                signal.get("timestamp", datetime.utcnow().isoformat()),
+                signal.get("timestamp", datetime.now(UTC).isoformat()),
             ),
         )
 
         conn.commit()
         conn.close()
 
-    def get_decision_history(self, n: int = 100) -> list[dict]:
+    def get_decision_history(self, n: int = 100) -> List[dict]:
         """Get recent decision history."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -536,12 +537,12 @@ class PersistenceLayer:
             for row in rows
         ]
 
-    def get_metrics_timeseries(self, metric_type: str, hours: int = 24) -> list[dict]:
+    def get_metrics_timeseries(self, metric_type: str, hours: int = 24) -> List[dict]:
         """Get metrics timeseries."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cutoff = (datetime.utcnow() - timedelta(hours=hours)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(hours=hours)).isoformat()
 
         cursor.execute(
             """
@@ -687,7 +688,7 @@ class AMOSConnectorSystem:
         # Task creation hook
         def task_handler(action: dict) -> dict:
             print(f"  [EXEC] Creating task: {action.get('name')}")
-            return {"success": True, "task_id": f"task_{datetime.utcnow().timestamp()}"}
+            return {"success": True, "task_id": f"task_{datetime.now(UTC).timestamp()}"}
 
         self.execution.register_hook(
             ExecutionHook(hook_id="default_task", action_type="create_task", handler=task_handler)

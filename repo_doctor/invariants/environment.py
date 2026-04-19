@@ -15,8 +15,6 @@ Invariant checks:
 Based on 2024 cross-platform Python deployment best practices.
 """
 
-from __future__ import annotations
-
 import ast
 import re
 from dataclasses import dataclass
@@ -34,7 +32,7 @@ class EnvironmentGap:
     severity: str
     location: str
     message: str
-    suggestion: str | None = None
+    suggestion: str = None
 
 
 class EnvironmentInvariant(Invariant):
@@ -53,12 +51,12 @@ class EnvironmentInvariant(Invariant):
     def __init__(self):
         super().__init__("I_envcompat", InvariantSeverity.ERROR)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check environment compatibility."""
         context = context or {}
         repo = Path(repo_path)
 
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         # Check pyproject.toml for version constraints
         gaps.extend(self._check_pyproject_constraints(repo))
@@ -118,9 +116,9 @@ class EnvironmentInvariant(Invariant):
             },
         )
 
-    def _check_pyproject_constraints(self, repo: Path) -> list[EnvironmentGap]:
+    def _check_pyproject_constraints(self, repo: Path) -> List[EnvironmentGap]:
         """Check pyproject.toml for version/environment constraints."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         pyproject = repo / "pyproject.toml"
         if not pyproject.exists():
@@ -162,9 +160,9 @@ class EnvironmentInvariant(Invariant):
 
         return gaps
 
-    def _check_requirements_constraints(self, repo: Path) -> list[EnvironmentGap]:
+    def _check_requirements_constraints(self, repo: Path) -> List[EnvironmentGap]:
         """Check requirements files for version pinning."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         req_files = list(repo.glob("*requirements*.txt"))
 
@@ -195,9 +193,9 @@ class EnvironmentInvariant(Invariant):
 
         return gaps
 
-    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> list[EnvironmentGap]:
+    def _analyze_file(self, file_path: Path, tree: ast.AST, content: str) -> List[EnvironmentGap]:
         """Analyze a single file for environment assumptions."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
         relative_path = str(file_path.relative_to(file_path.parent.parent))
 
         gaps.extend(self._find_platform_specific_code(tree, relative_path, content))
@@ -208,9 +206,9 @@ class EnvironmentInvariant(Invariant):
 
     def _find_platform_specific_code(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[EnvironmentGap]:
+    ) -> List[EnvironmentGap]:
         """Find platform-specific code that may not be portable."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         # Check for platform-specific imports
         platform_modules = ["winreg", "msvcrt", "posix", "pwd", "grp", "termios"]
@@ -261,9 +259,9 @@ class EnvironmentInvariant(Invariant):
 
     def _find_hardcoded_paths(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[EnvironmentGap]:
+    ) -> List[EnvironmentGap]:
         """Find hard-coded file paths."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         # Check for common hard-coded patterns
         bad_patterns = [
@@ -289,9 +287,9 @@ class EnvironmentInvariant(Invariant):
 
     def _find_secret_access_patterns(
         self, tree: ast.AST, file_path: str, content: str
-    ) -> list[EnvironmentGap]:
+    ) -> List[EnvironmentGap]:
         """Find secret access patterns without validation."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         # Check for os.environ.get without default
         if "os.environ.get(" in content:
@@ -311,9 +309,9 @@ class EnvironmentInvariant(Invariant):
 
         return gaps
 
-    def _check_env_documentation(self, repo: Path) -> list[EnvironmentGap]:
+    def _check_env_documentation(self, repo: Path) -> List[EnvironmentGap]:
         """Check for environment variable documentation."""
-        gaps: list[EnvironmentGap] = []
+        gaps: List[EnvironmentGap] = []
 
         env_example = repo / ".env.example"
         env_template = repo / ".env.template"

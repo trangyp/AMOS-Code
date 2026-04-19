@@ -1,7 +1,5 @@
 """Thread-safe task store: in-memory dict persisted to .clawspring/tasks.json."""
 
-from __future__ import annotations
-
 import json
 import threading
 from datetime import datetime
@@ -15,7 +13,7 @@ _lock = threading.Lock()
 # Tasks are keyed by ID, stored per session in <cwd>/.clawspring/tasks.json
 # The store is kept in memory; we reload from disk on first access.
 
-_tasks: dict[str, Task] = {}
+_tasks: Dict[str, Task] = {}
 _loaded = False
 
 
@@ -64,7 +62,7 @@ def create_task(
     subject: str,
     description: str,
     active_form: str = "",
-    metadata: dict[str, Any] | None = None,
+    metadata: Dict[str, Any] = None,
 ) -> Task:
     with _lock:
         _load()
@@ -80,13 +78,13 @@ def create_task(
         return task
 
 
-def get_task(task_id: str) -> Task | None:
+def get_task(task_id: str) -> Optional[Task]:
     with _lock:
         _load()
         return _tasks.get(str(task_id))
 
 
-def list_tasks() -> list[Task]:
+def list_tasks() -> List[Task]:
     with _lock:
         _load()
         return list(_tasks.values())
@@ -94,15 +92,15 @@ def list_tasks() -> list[Task]:
 
 def update_task(
     task_id: str,
-    subject: str | None = None,
-    description: str | None = None,
-    status: str | None = None,
-    active_form: str | None = None,
-    owner: str | None = None,
-    add_blocks: list[str] | None = None,
-    add_blocked_by: list[str] | None = None,
-    metadata: dict[str, Any] | None = None,
-) -> tuple[Task | None, list[str]]:
+    subject: str = None,
+    description: str = None,
+    status: str = None,
+    active_form: str = None,
+    owner: str = None,
+    add_blocks: List[str] = None,
+    add_blocked_by: List[str] = None,
+    metadata: Dict[str, Any] = None,
+) -> tuple[Task, list[str]]:
     """Update a task. Returns (updated_task, list_of_updated_fields)."""
     with _lock:
         _load()
@@ -110,7 +108,7 @@ def update_task(
         if task is None:
             return None, []
 
-        updated_fields: list[str] = []
+        updated_fields: List[str] = []
 
         if subject is not None and subject != task.subject:
             task.subject = subject

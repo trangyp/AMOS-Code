@@ -10,9 +10,10 @@ import sys
 import threading
 import time
 from collections import deque
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -26,7 +27,7 @@ class MetricPoint:
     timestamp: float
     name: str
     value: float
-    labels: dict[str, str]
+    labels: Dict[str, str]
 
 
 @dataclass
@@ -45,12 +46,12 @@ class MetricsCollector:
 
     def __init__(self, retention_seconds: int = 3600):
         self.retention = retention_seconds
-        self.metrics: dict[str, deque] = {}
+        self.metrics: Dict[str, deque] = {}
         self._lock = threading.Lock()
-        self._counters: dict[str, int] = {}
-        self._gauges: dict[str, float] = {}
+        self._counters: Dict[str, int] = {}
+        self._gauges: Dict[str, float] = {}
 
-    def record(self, name: str, value: float, labels: Optional[dict[str, str]] = None) -> None:
+    def record(self, name: str, value: float, labels: dict[str, str] = None) -> None:
         """Record a metric value."""
         with self._lock:
             if name not in self.metrics:
@@ -71,14 +72,14 @@ class MetricsCollector:
             self._gauges[name] = value
             self.record(name, value)
 
-    def get_metrics(self, name: Optional[str] = None) -> dict[str, list[dict]]:
+    def get_metrics(self, name: str = None) -> dict[str, list[dict]]:
         """Get collected metrics."""
         with self._lock:
             if name:
                 return {name: [asdict(m) for m in self.metrics.get(name, [])]}
             return {k: [asdict(m) for m in v] for k, v in self.metrics.items()}
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get metrics summary."""
         with self._lock:
             summary = {
@@ -88,6 +89,50 @@ class MetricsCollector:
                 "total_datapoints": sum(len(v) for v in self.metrics.values()),
             }
             return summary
+
+    def record_validation(
+        self, validation_type: str, score: float, is_valid: bool, violations: int
+    ) -> None:
+        """Record design validation metrics."""
+        self.record(
+            "validation_score",
+            score,
+            {"type": validation_type, "result": "valid" if is_valid else "invalid"},
+        )
+        self.increment_counter(f"validations_{validation_type}")
+        if violations > 0:
+            self.record("validation_violations", violations, {"type": validation_type})
+
+    def record_math_analysis(self, domain: str, frameworks: List[str]) -> None:
+        """Record mathematical framework analysis metrics."""
+        self.increment_counter("math_analyses_total")
+        self.record("math_domain_detection", 1.0, {"domain": domain})
+        for framework in frameworks:
+            self.increment_counter(f"math_framework_recommendation_{framework}")
+
+    def get_dashboard_data(self) -> Dict[str, Any]:
+        """Get comprehensive dashboard data including math framework metrics."""
+        with self._lock:
+            return {
+                "metrics": self.get_summary(),
+                "validation_stats": {
+                    "total_validations": self._counters.get("validations_ui", 0)
+                    + self._counters.get("validations_code", 0)
+                    + self._counters.get("validations_ai", 0),
+                    "math_analyses": self._counters.get("math_analyses_total", 0),
+                    "recent_validation_scores": [
+                        {"timestamp": m.timestamp, "score": m.value, "type": m.labels.get("type")}
+                        for m in list(self.metrics.get("validation_score", []))[-10:]
+                    ],
+                },
+                "framework_recommendations": {
+                    k.replace("math_framework_recommendation_", ""): v
+                    for k, v in self._counters.items()
+                    if k.startswith("math_framework_recommendation_")
+                },
+                "health_status": "healthy",
+                "timestamp": datetime.now().isoformat(),
+            }
 
 
 class HealthMonitor:
@@ -124,7 +169,7 @@ class HealthMonitor:
 
         return result
 
-    def run_all_checks(self) -> list[HealthCheck]:
+    def run_all_checks(self) -> List[HealthCheck]:
         """Run all registered health checks."""
         results = []
         for name in self.checks:
@@ -133,7 +178,7 @@ class HealthMonitor:
                 results.append(result)
         return results
 
-    def get_health_summary(self) -> dict[str, Any]:
+    def get_health_summary(self) -> Dict[str, Any]:
         """Get health summary."""
         checks = self.run_all_checks()
 
@@ -164,7 +209,7 @@ class TelemetrySystem:
         self.metrics = MetricsCollector()
         self.health = HealthMonitor()
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread = None
         self._interval = 30  # seconds
 
     def start(self) -> None:
@@ -202,7 +247,7 @@ class TelemetrySystem:
 
             time.sleep(self._interval)
 
-    def get_dashboard_data(self) -> dict[str, Any]:
+    def get_dashboard_data(self) -> Dict[str, Any]:
         """Get data for telemetry dashboard."""
         return {
             "timestamp": datetime.now().isoformat(),

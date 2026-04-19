@@ -21,14 +21,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 
 class EntryType(Enum):
@@ -47,7 +45,7 @@ class LedgerEntry:
 
     Attributes:
         index: Sequential position in ledger
-        timestamp: UTC ISO format timestamp
+        timestamp: timezone.utc ISO format timestamp
         entry_type: Category of entry
         state_hash: Hash of state at this point
         previous_hash: Hash of previous entry (chain)
@@ -60,10 +58,10 @@ class LedgerEntry:
     entry_type: EntryType
     state_hash: str
     previous_hash: str
-    data: dict[str, Any]
+    data: Dict[str, Any]
     signature: str
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Convert entry to dictionary."""
         return {
             "index": self.index,
@@ -104,8 +102,8 @@ class StateLedger:
     def append(
         self,
         entry_type: EntryType,
-        state_data: dict[str, Any],
-        metadata: Optional[dict[str, Any]] = None,
+        state_data: Dict[str, Any],
+        metadata: dict[str, Any] = None,
     ) -> LedgerEntry:
         """Append new entry to ledger.
 
@@ -124,7 +122,7 @@ class StateLedger:
         # Create entry
         entry = LedgerEntry(
             index=len(self._entries),
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             entry_type=entry_type,
             state_hash=state_hash,
             previous_hash=self._current_hash,
@@ -172,13 +170,11 @@ class StateLedger:
             return self._entries[index]
         return None
 
-    def get_state_at(self, index: int) -> Optional[dict[str, Any]]:
+    def get_state_at(self, index: int) -> dict[str, Any]:
         """Get reconstructed state at specific ledger index."""
         return self._state_cache.get(index)
 
-    def get_audit_trail(
-        self, start_index: int = 0, end_index: Optional[int] = None
-    ) -> list[LedgerEntry]:
+    def get_audit_trail(self, start_index: int = 0, end_index: int = None) -> list[LedgerEntry]:
         """Get audit trail for range of entries.
 
         Args:
@@ -191,7 +187,7 @@ class StateLedger:
         end = end_index or len(self._entries)
         return self._entries[start_index:end]
 
-    def get_statistics(self) -> dict[str, Any]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get ledger statistics."""
         type_counts = {}
         for entry in self._entries:
@@ -207,7 +203,7 @@ class StateLedger:
             "last_timestamp": self._entries[-1].timestamp if self._entries else None,
         }
 
-    def reconstruct_state(self, target_index: int) -> dict[str, Any]:
+    def reconstruct_state(self, target_index: int) -> Dict[str, Any]:
         """Reconstruct state at specific point in history.
 
         Args:
@@ -234,7 +230,7 @@ class StateLedger:
             data = {
                 "metadata": {
                     "version": "1.0.0",
-                    "export_time": datetime.utcnow().isoformat(),
+                    "export_time": datetime.now(timezone.utc).isoformat(),
                     "total_entries": len(self._entries),
                 },
                 "entries": [e.to_dict() for e in self._entries],
@@ -292,7 +288,7 @@ class TransactionLog:
         self._active_transactions[tx_id] = {
             "operation": operation,
             "substrate": substrate,
-            "start_time": datetime.utcnow().isoformat(),
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "status": "active",
         }
 
@@ -309,7 +305,7 @@ class TransactionLog:
 
         tx = self._active_transactions[tx_id]
         tx["status"] = "committed"
-        tx["end_time"] = datetime.utcnow().isoformat()
+        tx["end_time"] = datetime.now(timezone.utc).isoformat()
 
         entry = self.ledger.append(
             EntryType.BRIDGE_OPERATION,
@@ -328,7 +324,7 @@ class TransactionLog:
         tx = self._active_transactions[tx_id]
         tx["status"] = "rolled_back"
         tx["reason"] = reason
-        tx["end_time"] = datetime.utcnow().isoformat()
+        tx["end_time"] = datetime.now(timezone.utc).isoformat()
 
         entry = self.ledger.append(
             EntryType.BRIDGE_OPERATION,

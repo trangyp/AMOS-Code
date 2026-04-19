@@ -4,15 +4,13 @@ Tracks geopolitical events, regional stability, and
 global risk factors affecting AMOS operations.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class RiskLevel(Enum):
@@ -47,14 +45,14 @@ class GeopoliticalEvent:
     description: str = ""
     region: str = ""  # country, region, or global
     risk_level: RiskLevel = RiskLevel.LOW
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     expected_duration_days: int = 1
-    affected_sectors: list[str] = field(default_factory=list)
-    sources: list[str] = field(default_factory=list)
+    affected_sectors: List[str] = field(default_factory=list)
+    sources: List[str] = field(default_factory=list)
     resolved: bool = False
-    resolution_time: Optional[str] = None
+    resolution_time: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "event_type": self.event_type.value,
@@ -70,9 +68,9 @@ class RegionalStability:
     stability_score: float = 0.5  # 0-1, higher is more stable
     trend: str = "stable"  # improving, deteriorating, stable
     active_events: int = 0
-    last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -89,8 +87,8 @@ class GeopoliticalMonitor:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.events: list[GeopoliticalEvent] = []
-        self.regional_stability: dict[str, RegionalStability] = {}
+        self.events: List[GeopoliticalEvent] = []
+        self.regional_stability: Dict[str, RegionalStability] = {}
 
         self._load_data()
 
@@ -132,7 +130,7 @@ class GeopoliticalMonitor:
         """Save geopolitical data to disk."""
         data_file = self.data_dir / "geopolitical_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "events": [e.to_dict() for e in self.events],
             "regional_stability": {r: s.to_dict() for r, s in self.regional_stability.items()},
         }
@@ -180,7 +178,7 @@ class GeopoliticalMonitor:
         for event in self.events:
             if event.id == event_id and not event.resolved:
                 event.resolved = True
-                event.resolution_time = datetime.utcnow().isoformat()
+                event.resolution_time = datetime.now(UTC).isoformat()
                 self._update_regional_stability(event.region)
                 self.save()
                 return True
@@ -188,7 +186,7 @@ class GeopoliticalMonitor:
 
     def get_active_events(
         self,
-        region: Optional[str] = None,
+        region: str = None,
         risk_threshold: RiskLevel = RiskLevel.LOW,
     ) -> list[dict[str, Any]]:
         """Get active events matching criteria."""
@@ -205,7 +203,7 @@ class GeopoliticalMonitor:
             reverse=True,
         )
 
-    def assess_risk(self, regions: list[str]) -> dict[str, Any]:
+    def assess_risk(self, regions: List[str]) -> Dict[str, Any]:
         """Assess geopolitical risk for given regions."""
         region_risks = {}
         total_risk = 0
@@ -257,7 +255,7 @@ class GeopoliticalMonitor:
             return "Reduce exposure, increase monitoring"
         return "Consider suspending operations in high-risk regions"
 
-    def get_global_summary(self) -> dict[str, Any]:
+    def get_global_summary(self) -> Dict[str, Any]:
         """Get global geopolitical summary."""
         active = [e for e in self.events if not e.resolved]
         by_type = {}
@@ -274,7 +272,7 @@ class GeopoliticalMonitor:
             "by_event_type": by_type,
             "regional_stability": by_region,
             "highest_risk_regions": self._get_highest_risk(),
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         }
 
     def _get_highest_risk(self, n: int = 3) -> list[dict[str, Any]]:

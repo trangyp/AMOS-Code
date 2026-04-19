@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,7 +14,7 @@ class PortContext:
     archive_available: bool
 
 
-def build_port_context(base: Path | None = None) -> PortContext:
+def build_port_context(base: Optional[Path] = None) -> PortContext:
     root = base or Path(__file__).resolve().parent.parent
     source_root = root / "src"
     tests_root = root / "tests"

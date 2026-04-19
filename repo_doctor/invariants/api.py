@@ -4,8 +4,6 @@ I_api = 1 iff [A_public, A_runtime] = 0
 Public contract commutator - detects drift between claimed and actual API.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from .base import Invariant, InvariantResult, InvariantSeverity
@@ -20,7 +18,7 @@ class APIInvariant(Invariant):
     def __init__(self):
         super().__init__("I_api", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check API contract commutator."""
         context = context or {}
 

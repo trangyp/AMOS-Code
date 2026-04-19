@@ -10,7 +10,6 @@ Usage:
 import argparse
 import json
 import sys
-from typing import Optional
 
 try:
     import requests
@@ -45,7 +44,7 @@ class AMOSBrainClient:
         r.raise_for_status()
         return r.json()
 
-    def decide(self, question: str, options: Optional[list] = None) -> dict:
+    def decide(self, question: str, options: list = None) -> dict:
         """Make a decision."""
         payload = {"question": question}
         if options:

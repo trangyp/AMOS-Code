@@ -4,15 +4,13 @@ Analyzes industry sectors, supply chain health, and
 sector-specific risks and opportunities.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class SectorHealth(Enum):
@@ -36,13 +34,13 @@ class Sector:
     health: SectorHealth = SectorHealth.STABLE
     growth_rate: float = 0.0  # Annual growth %
     market_size_b: float = 0.0  # Market size in billions
-    key_players: list[str] = field(default_factory=list)
-    related_sectors: list[str] = field(default_factory=list)
-    risk_factors: list[str] = field(default_factory=list)
-    opportunities: list[str] = field(default_factory=list)
-    last_updated: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    key_players: List[str] = field(default_factory=list)
+    related_sectors: List[str] = field(default_factory=list)
+    risk_factors: List[str] = field(default_factory=list)
+    opportunities: List[str] = field(default_factory=list)
+    last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "health": self.health.value,
@@ -59,10 +57,10 @@ class SupplyChainNode:
     region: str = ""
     sector: str = ""
     health_score: float = 1.0  # 0-1
-    dependencies: list[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
     risk_level: str = "low"  # low, medium, high
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
@@ -79,7 +77,7 @@ class SectorAnalyzer:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.sectors: dict[str, Sector] = {}
+        self.sectors: Dict[str, Sector] = {}
         self.supply_chains: dict[str, list[SupplyChainNode]] = {}
 
         self._load_data()
@@ -116,7 +114,7 @@ class SectorAnalyzer:
         """Save sector data to disk."""
         data_file = self.data_dir / "sector_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "sectors": [s.to_dict() for s in self.sectors.values()],
         }
         data_file.write_text(json.dumps(data, indent=2))
@@ -177,7 +175,7 @@ class SectorAnalyzer:
         self.save()
         return sector
 
-    def analyze_sector(self, sector_id: str) -> Optional[dict[str, Any]]:
+    def analyze_sector(self, sector_id: str) -> dict[str, Any]:
         """Analyze a specific sector."""
         sector = self.sectors.get(sector_id)
         if not sector:
@@ -227,7 +225,7 @@ class SectorAnalyzer:
         else:
             return "Low"
 
-    def _assess_risk(self, sector: Sector) -> dict[str, Any]:
+    def _assess_risk(self, sector: Sector) -> Dict[str, Any]:
         """Assess sector risks."""
         risk_count = len(sector.risk_factors)
 
@@ -257,7 +255,7 @@ class SectorAnalyzer:
 
         return opportunities
 
-    def get_sector_comparison(self, sector_ids: list[str]) -> dict[str, Any]:
+    def get_sector_comparison(self, sector_ids: List[str]) -> Dict[str, Any]:
         """Compare multiple sectors."""
         comparison = []
 
@@ -310,7 +308,7 @@ class SectorAnalyzer:
 
         return opportunities
 
-    def get_sector_overview(self) -> dict[str, Any]:
+    def get_sector_overview(self) -> Dict[str, Any]:
         """Get overview of all sectors."""
         by_health = {}
         for sector in self.sectors.values():

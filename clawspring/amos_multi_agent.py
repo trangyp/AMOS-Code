@@ -1,12 +1,12 @@
 """AMOS Multi-Agent Coordinator - Parallel cognition across 9 layers."""
 
-from __future__ import annotations
 
 import time
 import uuid
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from amos_execution import full_execute
 
@@ -93,7 +93,7 @@ class AMOSMultiAgentCoordinator:
     def __init__(self, max_workers: int = 4):
         self.max_workers = max_workers
         self.runtime = get_runtime()
-        self.agent_registry: dict[str, Callable] = {}
+        self.agent_registry: Dict[str, Callable] = {}
         self._register_default_agents()
 
     def _register_default_agents(self):
@@ -109,7 +109,7 @@ class AMOSMultiAgentCoordinator:
     def create_quadrant_analysis(
         self,
         problem_description: str,
-    ) -> list[AgentTask]:
+    ) -> List[AgentTask]:
         """Create 4 parallel tasks for quadrant analysis."""
         base_id = str(uuid.uuid4())[:8]
 
@@ -147,7 +147,7 @@ class AMOSMultiAgentCoordinator:
     def create_dual_perspective_analysis(
         self,
         problem_description: str,
-    ) -> list[AgentTask]:
+    ) -> List[AgentTask]:
         """Create 2 parallel tasks for dual perspective (Rule of 2)."""
         base_id = str(uuid.uuid4())[:8]
 
@@ -168,8 +168,8 @@ class AMOSMultiAgentCoordinator:
 
     def execute_parallel(
         self,
-        tasks: list[AgentTask],
-    ) -> list[AgentResult]:
+        tasks: List[AgentTask],
+    ) -> List[AgentResult]:
         """Execute multiple agent tasks in parallel."""
         results = []
 
@@ -206,7 +206,7 @@ class AMOSMultiAgentCoordinator:
 
     def synthesize_results(
         self,
-        results: list[AgentResult],
+        results: List[AgentResult],
         synthesis_type: str = "quadrant",
     ) -> str:
         """Synthesize parallel agent results into unified output."""
@@ -274,7 +274,7 @@ class AMOSMultiAgentCoordinator:
 
 
 # Singleton
-coordinator: AMOSMultiAgentCoordinator | None = None
+coordinator: Optional[AMOSMultiAgentCoordinator] = None
 
 
 def get_multi_agent_coordinator() -> AMOSMultiAgentCoordinator:
@@ -292,6 +292,8 @@ def analyze_quadrants(problem: str) -> str:
 
 def analyze_dual(problem: str) -> str:
     """Quick helper for dual perspective analysis."""
+from __future__ import annotations
+
     return get_multi_agent_coordinator().run_dual_perspective(problem)
 
 

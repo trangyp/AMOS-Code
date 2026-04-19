@@ -4,8 +4,6 @@ Shared Contract Analysis Across Fleet
 Detects contract violations that repeat across repositories.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -16,9 +14,9 @@ class ContractViolationCluster:
 
     violation_type: str
     pattern: str
-    affected_repos: list[str]
-    common_cause: str | None = None
-    suggested_fix: str | None = None
+    affected_repos: List[str]
+    common_cause: str = None
+    suggested_fix: str = None
 
 
 class SharedContractAnalyzer:
@@ -35,11 +33,11 @@ class SharedContractAnalyzer:
     def register_repo_contracts(
         self,
         repo_id: str,
-        api_schema: dict[str, Any],
-        packaging_policy: dict[str, Any],
-        entrypoint_policy: dict[str, Any],
-        runtime_policy: dict[str, Any],
-        security_policy: dict[str, Any],
+        api_schema: Dict[str, Any],
+        packaging_policy: Dict[str, Any],
+        entrypoint_policy: Dict[str, Any],
+        runtime_policy: Dict[str, Any],
+        security_policy: Dict[str, Any],
     ) -> None:
         """Register a repo's contract surface."""
         self.contracts[repo_id] = {
@@ -50,7 +48,7 @@ class SharedContractAnalyzer:
             "security": security_policy,
         }
 
-    def find_api_schema_divergence(self) -> list[ContractViolationCluster]:
+    def find_api_schema_divergence(self) -> List[ContractViolationCluster]:
         """
         Find API schema inconsistencies across repos.
 
@@ -84,7 +82,7 @@ class SharedContractAnalyzer:
 
         return clusters
 
-    def find_packaging_policy_violations(self) -> list[ContractViolationCluster]:
+    def find_packaging_policy_violations(self) -> List[ContractViolationCluster]:
         """Find repos violating shared packaging policies."""
         clusters = []
 
@@ -113,7 +111,7 @@ class SharedContractAnalyzer:
 
         return clusters
 
-    def find_shared_security_violations(self) -> list[ContractViolationCluster]:
+    def find_shared_security_violations(self) -> List[ContractViolationCluster]:
         """Find security violations common across repos."""
         clusters = []
 
@@ -143,7 +141,7 @@ class SharedContractAnalyzer:
 
         return clusters
 
-    def _hash_schema(self, schema: dict[str, Any]) -> str:
+    def _hash_schema(self, schema: Dict[str, Any]) -> str:
         """Create simple hash of schema structure."""
         import hashlib
         import json

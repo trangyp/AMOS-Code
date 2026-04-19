@@ -4,8 +4,6 @@ I_import = 1 iff every claimed symbol import resolves
 Covers: internal imports, package exports, entrypoint imports, docs/demo/test imports
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from ..constants import MSG_IMPORTS_RESOLVED
@@ -21,7 +19,7 @@ class ImportInvariant(Invariant):
     def __init__(self):
         super().__init__("I_import", InvariantSeverity.CRITICAL)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: Dict[str, Any] = None) -> InvariantResult:
         """Check import resolution."""
         context = context or {}
         unresolved = context.get("unresolved_imports", 0)

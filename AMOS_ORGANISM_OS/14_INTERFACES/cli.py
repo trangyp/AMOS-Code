@@ -1,10 +1,8 @@
 """AMOS CLI — Command-line interface for the organism."""
 
-from __future__ import annotations
-
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 
 @dataclass
@@ -14,7 +12,7 @@ class CommandHandler:
     name: str
     description: str
     handler: Callable
-    args: list[tuple] = None  # [(name, type, help), ...]
+    args: List[tuple] = None  # [(name, type, help), ...]
 
 
 class AmosCLI:
@@ -31,7 +29,7 @@ class AmosCLI:
 
     def __init__(self, organism=None):
         self.organism = organism
-        self._handlers: dict[str, CommandHandler] = {}
+        self._handlers: Dict[str, CommandHandler] = {}
         self._setup_default_handlers()
 
     def _setup_default_handlers(self):
@@ -75,7 +73,7 @@ class AmosCLI:
         """Register a command handler."""
         self._handlers[handler.name] = handler
 
-    def run(self, args: list[str] = None) -> int:
+    def run(self, args: List[str] = None) -> int:
         """Run the CLI."""
         if args is None:
             args = sys.argv[1:]
@@ -108,7 +106,7 @@ class AmosCLI:
         print()
         print("Usage: python -m AMOS_ORGANISM_OS <command> [args...]")
 
-    def _cmd_status(self, args: list[str]) -> int:
+    def _cmd_status(self, args: List[str]) -> int:
         """Show organism status."""
         if not self.organism:
             print("No organism instance connected")
@@ -126,7 +124,7 @@ class AmosCLI:
             print(f"  {sub}: {info}")
         return 0
 
-    def _cmd_brain(self, args: list[str]) -> int:
+    def _cmd_brain(self, args: List[str]) -> int:
         """Brain subsystem commands."""
         if not self.organism or not self.organism.brain:
             print("Brain subsystem not available")
@@ -154,7 +152,7 @@ class AmosCLI:
             return 1
         return 0
 
-    def _cmd_muscle(self, args: list[str]) -> int:
+    def _cmd_muscle(self, args: List[str]) -> int:
         """Muscle subsystem commands."""
         if not self.organism or not self.organism.muscle:
             print("Muscle subsystem not available")
@@ -181,7 +179,7 @@ class AmosCLI:
             return 1
         return 0
 
-    def _cmd_route(self, args: list[str]) -> int:
+    def _cmd_route(self, args: List[str]) -> int:
         """Route an action."""
         if not self.organism:
             print("No organism instance connected")

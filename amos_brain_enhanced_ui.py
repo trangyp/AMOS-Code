@@ -9,12 +9,10 @@ Owner: Trang
 Version: 3.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib.parse import urlparse
@@ -97,7 +95,11 @@ class EnhancedBrainUIHandler(BaseHTTPRequestHandler):
 
         status = self.brain.status()
         self._send_json(
-            {"status": "active", "brain": status, "timestamp": datetime.utcnow().isoformat()}
+            {
+                "status": "active",
+                "brain": status,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
         )
 
     def _serve_thoughts(self) -> None:
@@ -222,7 +224,7 @@ class EnhancedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "query": query,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             if hasattr(result, "to_dict"):
@@ -260,7 +262,7 @@ class EnhancedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "scenario": scenario,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             if hasattr(result, "to_dict"):
@@ -290,7 +292,7 @@ class EnhancedBrainUIHandler(BaseHTTPRequestHandler):
             response_data = {
                 "success": True,
                 "proposition": proposition,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             if hasattr(result, "to_dict"):

@@ -16,7 +16,7 @@ v5 transforms AMOS from economic organism to civilization-scale actor.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 # ============================================================================
 # 1. POLITICAL / INSTITUTIONAL LAYER (Pi)
@@ -39,9 +39,9 @@ class InstitutionalActor:
     name: str
     actor_type: str  # state, corporation, ngo, individual, coalition
     power_base: dict[PowerType, float] = field(default_factory=dict)
-    interests: list[str] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
-    relationships: dict[str, float] = field(default_factory=dict)  # actor_id -> trust/alignment
+    interests: List[str] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
+    relationships: Dict[str, float] = field(default_factory=dict)  # actor_id -> trust/alignment
 
     def total_power(self) -> float:
         """Calculate total power across all bases."""
@@ -58,9 +58,9 @@ class InstitutionalActor:
 class PoliticalLandscape:
     """Pi_t = (Actors, Institutions, PowerDistribution, AlignmentMap, ConflictZones)"""
 
-    actors: dict[str, InstitutionalActor] = field(default_factory=dict)
-    institutions: dict[str, dict] = field(default_factory=dict)
-    power_distribution: dict[str, float] = field(default_factory=dict)
+    actors: Dict[str, InstitutionalActor] = field(default_factory=dict)
+    institutions: Dict[str, dict] = field(default_factory=dict)
+    power_distribution: Dict[str, float] = field(default_factory=dict)
 
     def add_actor(self, actor: InstitutionalActor):
         """Add actor to landscape."""
@@ -174,12 +174,12 @@ class NegotiationState:
 
     negotiation_id: str
     counterparty: str
-    amos_position: dict[str, Any]
-    counterparty_position: dict[str, Any]
-    issues: list[str]
+    amos_position: Dict[str, Any]
+    counterparty_position: Dict[str, Any]
+    issues: List[str]
     rounds: int = 0
     max_rounds: int = 10
-    history: list[dict] = field(default_factory=list)
+    history: List[dict] = field(default_factory=list)
     status: str = "active"  # active, agreement, deadlock, walkaway
 
 
@@ -187,14 +187,14 @@ class NegotiationEngine:
     """Autonomous negotiation with other actors."""
 
     def __init__(self):
-        self.active_negotiations: dict[str, NegotiationState] = {}
-        self.negotiation_history: list[dict] = []
+        self.active_negotiations: Dict[str, NegotiationState] = {}
+        self.negotiation_history: List[dict] = []
 
     def initiate_negotiation(
-        self, counterparty: str, issues: list[str], amos_position: dict
+        self, counterparty: str, issues: List[str], amos_position: dict
     ) -> NegotiationState:
         """Start new negotiation."""
-        neg_id = f"neg_{datetime.utcnow().timestamp()}"
+        neg_id = f"neg_{datetime.now(UTC).timestamp()}"
 
         state = NegotiationState(
             negotiation_id=neg_id,
@@ -252,7 +252,7 @@ class NegotiationEngine:
             "counter_offer": None if should_accept else self.generate_offer(state),
         }
 
-    def negotiate_round(self, neg_id: str, counterparty_offer: Optional[dict] = None) -> dict:
+    def negotiate_round(self, neg_id: str, counterparty_offer: dict = None) -> dict:
         """Execute one round of negotiation."""
         if neg_id not in self.active_negotiations:
             return {"error": "Negotiation not found"}
@@ -306,11 +306,11 @@ class Narrative:
     narrative_id: str
     name: str
     core_message: str
-    supporting_points: list[str]
-    target_audiences: list[str]
-    framing: dict[str, str]  # issue -> frame
+    supporting_points: List[str]
+    target_audiences: List[str]
+    framing: Dict[str, str]  # issue -> frame
 
-    def resonance_with(self, audience_values: list[str]) -> float:
+    def resonance_with(self, audience_values: List[str]) -> float:
         """Calculate narrative resonance with audience values."""
         overlap = set(self.supporting_points) & set(audience_values)
         return len(overlap) / max(len(audience_values), 1)
@@ -320,15 +320,15 @@ class NarrativeEngine:
     """Shape narratives to influence understanding and behavior."""
 
     def __init__(self):
-        self.active_narratives: dict[str, Narrative] = {}
+        self.active_narratives: Dict[str, Narrative] = {}
         self.audience_profiles: dict[str, list[str]] = {}
 
     def craft_narrative(
-        self, objective: str, target_audiences: list[str], constraints: list[str]
+        self, objective: str, target_audiences: List[str], constraints: List[str]
     ) -> Narrative:
         """Craft narrative to achieve objective."""
         # Generate narrative based on objective and constraints
-        narrative_id = f"nar_{datetime.utcnow().timestamp()}"
+        narrative_id = f"nar_{datetime.now(UTC).timestamp()}"
 
         # Craft core message
         core_message = f"{objective} is essential for {', '.join(constraints[:2])}"
@@ -402,8 +402,8 @@ class EcosystemNode:
 
     node_id: str
     node_type: str  # partner, supplier, customer, competitor, complementor
-    capabilities: list[str]
-    value_exchange: dict[str, float]  # what they provide/receive
+    capabilities: List[str]
+    value_exchange: Dict[str, float]  # what they provide/receive
     health: float = 1.0  # 0-1 health of relationship
     strategic_importance: float = 0.5
 
@@ -412,8 +412,8 @@ class EcosystemEngine:
     """Build and manage ecosystem of partnerships and relationships."""
 
     def __init__(self):
-        self.nodes: dict[str, EcosystemNode] = {}
-        self.amos_role: dict[str, Any] = {
+        self.nodes: Dict[str, EcosystemNode] = {}
+        self.amos_role: Dict[str, Any] = {
             "provides": ["intelligence", "coordination", "value_production"],
             "receives": ["resources", "legitimacy", "distribution"],
         }
@@ -445,7 +445,7 @@ class EcosystemEngine:
             "redundancy": len(self.nodes) / max(len(amos_needs), 1),
         }
 
-    def identify_gaps(self) -> list[str]:
+    def identify_gaps(self) -> List[str]:
         """Identify ecosystem gaps."""
         provided = set()
         for node in self.nodes.values():
@@ -456,7 +456,7 @@ class EcosystemEngine:
 
         return list(gaps)
 
-    def recommend_partnerships(self) -> list[dict]:
+    def recommend_partnerships(self) -> List[dict]:
         """Recommend priority partnerships to fill gaps."""
         gaps = self.identify_gaps()
 
@@ -489,15 +489,15 @@ class CivilizationPattern:
     domain: str  # technology, governance, culture, environment
     description: str
     confidence: float
-    implications: list[str]
+    implications: List[str]
 
 
 class CivilizationMemory:
     """Long-horizon strategic memory spanning civilization timeframes."""
 
     def __init__(self):
-        self.patterns: dict[str, CivilizationPattern] = {}
-        self.historical_trajectories: list[dict] = []
+        self.patterns: Dict[str, CivilizationPattern] = {}
+        self.historical_trajectories: List[dict] = []
         self.futures_cache: dict[str, list[dict]] = {}
 
     def record_pattern(self, pattern: CivilizationPattern):
@@ -521,11 +521,11 @@ class CivilizationMemory:
             {
                 "event": event,
                 "extracted_implications": implications,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
-    def project_civilization_trajectory(self, horizon: str = "decades") -> list[dict]:
+    def project_civilization_trajectory(self, horizon: str = "decades") -> List[dict]:
         """Project civilization-level trajectories."""
         # Combine patterns to generate scenarios
         relevant_patterns = [p for p in self.patterns.values() if p.timescale == horizon]
@@ -660,7 +660,7 @@ class AMOSv5:
         """Assess if action is politically feasible."""
         return self.political.assess_opportunity(action)
 
-    def negotiate(self, counterparty: str, issues: list[str], amos_position: dict) -> dict:
+    def negotiate(self, counterparty: str, issues: List[str], amos_position: dict) -> dict:
         """Conduct autonomous negotiation."""
         state = self.negotiation.initiate_negotiation(counterparty, issues, amos_position)
 
@@ -673,7 +673,7 @@ class AMOSv5:
 
         return result
 
-    def shape_narrative(self, objective: str, audiences: list[str]) -> Narrative:
+    def shape_narrative(self, objective: str, audiences: List[str]) -> Narrative:
         """Create narrative to support objective."""
         return self.narrative.craft_narrative(
             objective, audiences, ["survival", "value_production"]

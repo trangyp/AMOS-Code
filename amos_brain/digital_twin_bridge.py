@@ -11,6 +11,7 @@ Provides API for:
 
 from __future__ import annotations
 
+
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,7 @@ try:
         ArchitecturalDigitalTwin,
         ChangeType,
     )
+
     TWIN_AVAILABLE = True
 except ImportError:
     TWIN_AVAILABLE = False
@@ -40,10 +42,13 @@ class DigitalTwinBridge:
             self._twin = ArchitecturalDigitalTwin()
         return self._twin
 
-    def capture_architecture_state(self, components: list[dict[str, Any]],
-                                   dependencies: list[dict[str, Any]],
-                                   interfaces: list[dict[str, Any]],
-                                   invariant_status: dict[str, bool]) -> dict[str, Any]:
+    def capture_architecture_state(
+        self,
+        components: list[dict[str, Any]],
+        dependencies: list[dict[str, Any]],
+        interfaces: list[dict[str, Any]],
+        invariant_status: dict[str, bool],
+    ) -> dict[str, Any]:
         """Capture current architecture state into digital twin."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -58,8 +63,9 @@ class DigitalTwinBridge:
             "invariant_count": len(state.invariant_status),
         }
 
-    def simulate_architectural_change(self, change_type: str, target: str,
-                                     description: str, details: dict[str, Any]) -> dict[str, Any]:
+    def simulate_architectural_change(
+        self, change_type: str, target: str, description: str, details: dict[str, Any]
+    ) -> dict[str, Any]:
         """Simulate impact of an architectural change."""
         if not TWIN_AVAILABLE or self.twin is None:
             return {"error": "digital_twin not available"}
@@ -108,14 +114,16 @@ class DigitalTwinBridge:
             except (ValueError, KeyError):
                 continue
 
-            arch_changes.append(ArchitecturalChange(
-                change_id=f"whatif_{i}",
-                change_type=ct,
-                description=ch.get("description", ""),
-                target_component=ch.get("target", ""),
-                change_details=ch.get("details", {}),
-                expected_impact=ch.get("impact", "medium"),
-            ))
+            arch_changes.append(
+                ArchitecturalChange(
+                    change_id=f"whatif_{i}",
+                    change_type=ct,
+                    description=ch.get("description", ""),
+                    target_component=ch.get("target", ""),
+                    change_details=ch.get("details", {}),
+                    expected_impact=ch.get("impact", "medium"),
+                )
+            )
 
         return self.twin.get_what_if_recommendations(arch_changes)
 

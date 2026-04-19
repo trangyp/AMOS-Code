@@ -4,15 +4,13 @@ Manages communication with external systems, agents, and services.
 Handles message routing, protocol adaptation, and connection management.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class MessageType(Enum):
@@ -44,12 +42,12 @@ class Message:
     priority: MessagePriority = MessagePriority.NORMAL
     sender: str = ""
     recipient: str = ""
-    content: dict[str, Any] = field(default_factory=dict)
-    metadata: dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-    replied_to: Optional[str] = None
+    content: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    replied_to: str = None
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "msg_type": self.msg_type.value,
@@ -108,7 +106,7 @@ class CommunicationBridge:
         connection_id: str,
         protocol: str,
         endpoint: str,
-        credentials: Optional[dict[str, Any]] = None,
+        credentials: dict[str, Any] = None,
     ) -> bool:
         """Register a new external connection."""
         if protocol not in self.protocols:
@@ -119,18 +117,18 @@ class CommunicationBridge:
             "endpoint": endpoint,
             "credentials": credentials or {},
             "status": "connected",
-            "created_at": datetime.utcnow().isoformat(),
-            "last_activity": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
+            "last_activity": datetime.now(UTC).isoformat(),
         }
         return True
 
     def send_message(
         self,
         recipient: str,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         msg_type: MessageType = MessageType.REQUEST,
         priority: MessagePriority = MessagePriority.NORMAL,
-        reply_to: Optional[str] = None,
+        reply_to: str = None,
     ) -> Message:
         """Send a message to an external recipient."""
         message = Message(
@@ -146,12 +144,12 @@ class CommunicationBridge:
 
         # Update connection activity
         if recipient in self.connections:
-            self.connections[recipient]["last_activity"] = datetime.utcnow().isoformat()
+            self.connections[recipient]["last_activity"] = datetime.now(UTC).isoformat()
 
         self._save_messages()
         return message
 
-    def receive_message(self, sender: str, content: dict[str, Any]) -> Message:
+    def receive_message(self, sender: str, content: Dict[str, Any]) -> Message:
         """Receive a message from an external sender."""
         message = Message(
             msg_type=MessageType.EVENT,
@@ -164,14 +162,14 @@ class CommunicationBridge:
 
         # Update connection activity
         if sender in self.connections:
-            self.connections[sender]["last_activity"] = datetime.utcnow().isoformat()
+            self.connections[sender]["last_activity"] = datetime.now(UTC).isoformat()
 
         self._save_messages()
         return message
 
     def broadcast(
         self,
-        content: dict[str, Any],
+        content: Dict[str, Any],
         msg_type: MessageType = MessageType.EVENT,
     ) -> list[Message]:
         """Broadcast a message to all connected recipients."""
@@ -188,7 +186,7 @@ class CommunicationBridge:
 
     def get_message_history(
         self,
-        recipient: Optional[str] = None,
+        recipient: str = None,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
         """Get message history."""
@@ -206,11 +204,11 @@ class CommunicationBridge:
         data = {
             "sent": [m.to_dict() for m in self.sent_messages[-100:]],
             "received": [m.to_dict() for m in self.received_messages[-100:]],
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
         }
         messages_file.write_text(json.dumps(data, indent=2))
 
-    def get_connection_status(self, connection_id: str) -> Optional[dict[str, Any]]:
+    def get_connection_status(self, connection_id: str) -> dict[str, Any]:
         """Get status of a connection."""
         return self.connections.get(connection_id)
 
@@ -218,7 +216,7 @@ class CommunicationBridge:
         """List all registered connections."""
         return [{"id": cid, **info} for cid, info in self.connections.items()]
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get bridge status."""
         return {
             "active_connections": len(self.connections),

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass
 from functools import lru_cache
@@ -45,11 +43,11 @@ def build_command_backlog() -> PortingBacklog:
     return PortingBacklog(title="Command surface", modules=list(PORTED_COMMANDS))
 
 
-def command_names() -> list[str]:
+def command_names() -> List[str]:
     return [module.name for module in PORTED_COMMANDS]
 
 
-def get_command(name: str) -> PortingModule | None:
+def get_command(name: str) -> Optional[PortingModule]:
     needle = name.lower()
     for module in PORTED_COMMANDS:
         if module.name.lower() == needle:
@@ -58,7 +56,7 @@ def get_command(name: str) -> PortingModule | None:
 
 
 def get_commands(
-    cwd: str | None = None,
+    cwd: str = None,
     include_plugin_commands: bool = True,
     include_skill_commands: bool = True,
 ) -> tuple[PortingModule, ...]:
@@ -70,7 +68,7 @@ def get_commands(
     return tuple(commands)
 
 
-def find_commands(query: str, limit: int = 20) -> list[PortingModule]:
+def find_commands(query: str, limit: int = 20) -> List[PortingModule]:
     needle = query.lower()
     matches = [
         module
@@ -100,7 +98,7 @@ def execute_command(name: str, prompt: str = "") -> CommandExecution:
     )
 
 
-def render_command_index(limit: int = 20, query: str | None = None) -> str:
+def render_command_index(limit: int = 20, query: str = None) -> str:
     modules = find_commands(query, limit) if query else list(PORTED_COMMANDS[:limit])
     lines = [f"Command entries: {len(PORTED_COMMANDS)}", ""]
     if query:

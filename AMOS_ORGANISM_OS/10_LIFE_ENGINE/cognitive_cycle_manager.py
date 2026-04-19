@@ -4,15 +4,13 @@ Manages cognitive cycles, attention periods, and
 optimal work-rest rhythms for peak performance.
 """
 
-from __future__ import annotations
-
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class CyclePhase(Enum):
@@ -39,7 +37,7 @@ class FocusSession:
 
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     start_time: str = ""
-    end_time: Optional[str] = None
+    end_time: str = None
     duration_minutes: int = 0
     focus_state: FocusState = FocusState.FOCUSED
     interruptions: int = 0
@@ -47,7 +45,7 @@ class FocusSession:
     task_type: str = ""
     notes: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "focus_state": self.focus_state.value,
@@ -63,7 +61,7 @@ class CycleRecommendation:
     activity: str
     rationale: str
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             **asdict(self),
             "phase": self.phase.value,
@@ -83,7 +81,7 @@ class CognitiveCycleManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        self.sessions: list[FocusSession] = []
+        self.sessions: List[FocusSession] = []
         self.current_session: Optional[FocusSession] = None
         self.default_focus_duration = 25  # minutes
         self.default_break_duration = 5  # minutes
@@ -118,19 +116,17 @@ class CognitiveCycleManager:
         """Save cycle data to disk."""
         data_file = self.data_dir / "cycle_data.json"
         data = {
-            "saved_at": datetime.utcnow().isoformat(),
+            "saved_at": datetime.now(UTC).isoformat(),
             "sessions": [s.to_dict() for s in self.sessions],
         }
         data_file.write_text(json.dumps(data, indent=2))
 
-    def start_focus_session(
-        self, task_type: str = "", duration: Optional[int] = None
-    ) -> FocusSession:
+    def start_focus_session(self, task_type: str = "", duration: int = None) -> FocusSession:
         """Start a focused work session."""
         duration = duration or self.default_focus_duration
 
         session = FocusSession(
-            start_time=datetime.utcnow().isoformat(),
+            start_time=datetime.now(UTC).isoformat(),
             duration_minutes=duration,
             task_type=task_type,
             focus_state=FocusState.FOCUSED,
@@ -147,7 +143,7 @@ class CognitiveCycleManager:
             return None
 
         session = self.current_session
-        session.end_time = datetime.utcnow().isoformat()
+        session.end_time = datetime.now(UTC).isoformat()
         session.productivity_score = productivity
 
         # Calculate actual duration
@@ -168,9 +164,9 @@ class CognitiveCycleManager:
                 self.current_session.notes += f"[Interruption: {note}] "
             self.save()
 
-    def get_today_stats(self) -> dict[str, Any]:
+    def get_today_stats(self) -> Dict[str, Any]:
         """Get today's focus session statistics."""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(UTC).strftime("%Y-%m-%d")
 
         today_sessions = [s for s in self.sessions if s.start_time.startswith(today) and s.end_time]
 
@@ -241,7 +237,7 @@ class CognitiveCycleManager:
     def _get_elapsed_minutes(self, start_time: str) -> int:
         """Calculate elapsed minutes since start time."""
         start = datetime.fromisoformat(start_time)
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         return int((now - start).total_seconds() / 60)
 
     def _get_break_duration(self, sessions_completed: int) -> int:
@@ -250,9 +246,9 @@ class CognitiveCycleManager:
             return self.long_break_duration
         return self.default_break_duration
 
-    def get_focus_patterns(self, days: int = 7) -> dict[str, Any]:
+    def get_focus_patterns(self, days: int = 7) -> Dict[str, Any]:
         """Analyze focus patterns over time."""
-        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
         recent = [s for s in self.sessions if s.end_time and s.start_time > cutoff]
 
         if not recent:
@@ -277,7 +273,7 @@ class CognitiveCycleManager:
             "average_productivity": sum(s.productivity_score for s in recent) / len(recent),
         }
 
-    def get_status(self) -> dict[str, Any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get current cognitive cycle status."""
         return {
             "current_session_active": self.current_session is not None,

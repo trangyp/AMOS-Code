@@ -13,13 +13,13 @@ Core Principles:
 - Learning (remember and improve from history)
 """
 
-from .detector import EvolutionOpportunityDetector
+from .audit import AuditAction, AuditEntry, EvolutionAuditor, GovernanceController
 from .contract import EvolutionContract, EvolutionRegistry
-from .planner import SelfPatchPlanner
-from .guard import RegressionGuard, RollbackGuard
+from .detector import EvolutionOpportunityDetector
 from .engine import SelfEvolutionEngine
-from .memory import EvolutionMemoryStore, LearningEngine, EvolutionMemory
-from .audit import EvolutionAuditor, GovernanceController, AuditEntry, AuditAction
+from .guard import RegressionGuard, RollbackGuard
+from .memory import EvolutionMemory, EvolutionMemoryStore, LearningEngine
+from .planner import SelfPatchPlanner
 
 __all__ = [
     "EvolutionOpportunityDetector",

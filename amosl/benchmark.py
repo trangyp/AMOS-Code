@@ -7,8 +7,6 @@ Measures and validates field-theoretic performance:
     - Scalability metrics
 """
 
-from __future__ import annotations
-
 import statistics
 import time
 from dataclasses import dataclass, field

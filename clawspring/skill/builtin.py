@@ -1,7 +1,5 @@
 """Built-in skills that ship with clawspring."""
 
-from __future__ import annotations
-
 from .loader import SkillDef, register_builtin_skill
 
 # ── /commit ────────────────────────────────────────────────────────────────

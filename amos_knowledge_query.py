@@ -12,7 +12,7 @@ Usage: python amos_knowledge_query.py <query> [--domain <domain>]
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -24,7 +24,7 @@ class AMOSKnowledgeQuery:
         self.legacy_dir = Path(__file__).parent / "_AMOS_BRAIN" / "_LEGACY BRAIN" / "Unipower"
         self.engines = self._load_engine_index()
 
-    def _load_engine_index(self) -> dict[str, Any]:
+    def _load_engine_index(self) -> Dict[str, Any]:
         """Load index of available engines."""
         return {
             "system_operations": {
@@ -101,7 +101,7 @@ class AMOSKnowledgeQuery:
             },
         }
 
-    def route_query(self, query: str) -> list[str]:
+    def route_query(self, query: str) -> List[str]:
         """Determine which engines to query based on keywords."""
         query_lower = query.lower()
         matched_engines = []
@@ -118,7 +118,7 @@ class AMOSKnowledgeQuery:
         matched_engines.sort(key=lambda x: x[1], reverse=True)
         return [e[0] for e in matched_engines[:5]]  # Top 5
 
-    def query(self, query: str, domain: Optional[str] = None) -> dict[str, Any]:
+    def query(self, query: str, domain: str = None) -> Dict[str, Any]:
         """Query the knowledge base."""
         print(f"\n{'=' * 70}")
         print(f"🔍 KNOWLEDGE QUERY: {query[:60]}")

@@ -1,7 +1,5 @@
 """Amplitude calculation for repository state dimensions."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from .basis import StateDimension

@@ -10,7 +10,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 
@@ -20,7 +20,7 @@ class ComponentConfig:
     """Configuration for a single component."""
 
     enabled: bool
-    settings: dict[str, Any]
+    settings: Dict[str, Any]
     last_updated: datetime
 
 
@@ -31,8 +31,8 @@ class ConfigManager:
     ENV_PREFIX = "AMOS_"
 
     def __init__(self):
-        self.configs: dict[str, ComponentConfig] = {}
-        self.global_settings: dict[str, Any] = {}
+        self.configs: Dict[str, ComponentConfig] = {}
+        self.global_settings: Dict[str, Any] = {}
         self._config_path = Path(self.CONFIG_FILE)
         self._load_default_config()
 
@@ -95,7 +95,7 @@ class ConfigManager:
             ),
         }
 
-    def load_from_file(self, path: Optional[str] = None) -> bool:
+    def load_from_file(self, path: str = None) -> bool:
         """Load configuration from YAML file."""
         config_path = Path(path) if path else self._config_path
 
@@ -121,7 +121,7 @@ class ConfigManager:
             print(f"[ConfigManager] Load error: {e}")
             return False
 
-    def save_to_file(self, path: Optional[str] = None) -> bool:
+    def save_to_file(self, path: str = None) -> bool:
         """Save configuration to YAML file."""
         config_path = Path(path) if path else self._config_path
 
@@ -206,7 +206,7 @@ class ConfigManager:
             return True
         return False
 
-    def get_all_configs(self) -> dict[str, Any]:
+    def get_all_configs(self) -> Dict[str, Any]:
         """Get all configurations."""
         return {
             "global": self.global_settings,
@@ -220,7 +220,7 @@ class ConfigManager:
             },
         }
 
-    def validate(self) -> list[str]:
+    def validate(self) -> List[str]:
         """Validate configuration and return any issues."""
         issues = []
 

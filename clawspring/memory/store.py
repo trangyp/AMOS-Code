@@ -9,8 +9,6 @@ every save/delete. It is loaded into the system prompt to give Claude an
 overview of available memories.
 """
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -86,7 +84,7 @@ def _slugify(name: str) -> str:
     return s[:60]
 
 
-def parse_frontmatter(text: str) -> tuple[dict, str]:
+def parse_frontmatter(text: str) -> Tuple[dict, str]:
     """Parse ---\\nkey: value\\n---\\nbody format.
 
     Returns:
@@ -162,7 +160,7 @@ def delete_memory(name: str, scope: str = "user") -> None:
     _rewrite_index(scope)
 
 
-def load_entries(scope: str = "user") -> list[MemoryEntry]:
+def load_entries(scope: str = "user") -> List[MemoryEntry]:
     """Scan all .md files (except MEMORY.md) in a scope and return entries.
 
     Returns:
@@ -171,7 +169,7 @@ def load_entries(scope: str = "user") -> list[MemoryEntry]:
     mem_dir = get_memory_dir(scope)
     if not mem_dir.exists():
         return []
-    entries: list[MemoryEntry] = []
+    entries: List[MemoryEntry] = []
     for fp in sorted(mem_dir.glob("*.md")):
         if fp.name == INDEX_FILENAME:
             continue
@@ -198,7 +196,7 @@ def load_entries(scope: str = "user") -> list[MemoryEntry]:
     return entries
 
 
-def load_index(scope: str = "all") -> list[MemoryEntry]:
+def load_index(scope: str = "all") -> List[MemoryEntry]:
     """Load memory entries from one or both scopes.
 
     Args:
@@ -212,7 +210,7 @@ def load_index(scope: str = "all") -> list[MemoryEntry]:
     return load_entries(scope)
 
 
-def search_memory(query: str, scope: str = "all") -> list[MemoryEntry]:
+def search_memory(query: str, scope: str = "all") -> List[MemoryEntry]:
     """Case-insensitive keyword match on name + description + content.
 
     Returns:
@@ -247,7 +245,7 @@ def get_index_content(scope: str = "user") -> str:
     return index_path.read_text().strip()
 
 
-def check_conflict(entry: MemoryEntry, scope: str = "user") -> dict | None:
+def check_conflict(entry: MemoryEntry, scope: str = "user") -> dict:
     """Check whether a same-named memory already exists with different content.
 
     Returns a dict with the existing memory's key fields if a conflict is found,

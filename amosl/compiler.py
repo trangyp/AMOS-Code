@@ -3,8 +3,6 @@
 Compiles AMOSL AST to the 4 IRs (CIR, QIR, BIR, HIR).
 """
 
-from __future__ import annotations
-
 from .ast_nodes import (
     BioEntityDecl,
     DynamicsDecl,

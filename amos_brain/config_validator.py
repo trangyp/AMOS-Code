@@ -4,8 +4,6 @@ Validates environment variables and settings before runtime initialization
 to provide early, actionable error messages.
 """
 
-from __future__ import annotations
-
 import os
 import re
 from dataclasses import dataclass

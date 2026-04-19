@@ -1,0 +1,87 @@
+# AMOS Python 3.12+ Modernization Configuration
+# Ruff configuration for automated typing modernization
+
+# Target Python version
+target-version = "py312"
+
+# Line length for formatting
+line-length = 100
+
+# Include pyupgrade rules for typing modernization
+[lint]
+select = [
+    # Pyupgrade - Python upgrade checks
+    "UP006",  # Use list instead of List for type annotations
+    "UP007",  # Use X | Y for Union types
+    "UP008",  # Use super() without arguments
+    "UP009",  # UTF-8 encoding declaration
+    "UP010",  # Unnecessary __future__ import
+    "UP011",  # Unnecessary parentheses to functools.lru_cache
+    "UP012",  # Unnecessary call to encode as UTF-8
+    "UP013",  # Unnecessary Type[X] for class types
+    "UP014",  # Unnecessary typing.Dict/X (use dict/X directly)
+    "UP015",  # Unnecessary open mode parameters
+    "UP017",  # datetime.timezone.utc
+    "UP018",  # Unnecessary comprehension
+    "UP019",  # typing.Text deprecated
+    "UP020",  # open alias
+    "UP021",  # unified open alias
+    "UP022",  # replace stdout/sderr
+    "UP023",  # C style format strings
+    "UP024",  # OSError aliases
+    "UP025",  # unicode builtin
+    "UP026",  # deprecated mock imports
+    "UP028",  # yield in for loop
+    "UP029",  # builtin mock deprecation
+    "UP030",  # format literals
+    "UP031",  # format strings
+    "UP032",  # f-strings
+    "UP033",  # lru_cache maxsize
+    "UP034",  # extraneous parentheses
+    "UP035",  # deprecated import
+    "UP036",  # version blocks
+    "UP037",  # quoted annotations
+    "UP039",  # unnecessary class parens
+    "UP040",  # non-pep695-type-alias
+    "UP041",  # raw string escapes
+
+    # Additional modernization rules
+    "I",      # isort - import sorting
+    "F",      # Pyflakes - basic checks
+    "E4",     # pycodestyle errors
+    "E7",     # pycodestyle errors
+    "W",      # pycodestyle warnings
+]
+
+ignore = [
+    # Rules that may be too aggressive for initial pass
+    "UP032",  # f-strings (keep existing for now)
+    "UP030",  # format literals (may break complex cases)
+    "UP010",  # __future__ annotations (needed for some files)
+]
+
+# Exclude directories
+exclude = [
+    ".venv",
+    "__pycache__",
+    ".git",
+    "node_modules",
+    "*.pyc",
+    "dist",
+    "build",
+]
+
+# Per-file-ignores for special cases
+[lint.per-file-ignores]
+"scripts/modernize_datetime.py" = ["UP017"]  # Intentionally uses deprecated patterns
+"_AMOS_BRAIN/**" = ["UP006", "UP007"]  # Legacy brain - manual migration
+
+# Allow autofix for safe rules
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

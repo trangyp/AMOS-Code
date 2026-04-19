@@ -9,8 +9,9 @@ if str(metabolism_path) not in sys.path:
 
 from cleanup_engine import CleanupEngine, CleanupPolicy, CleanupTask, get_cleanup_engine
 from io_router import IORouter, Route, RouteConfig, get_io_router
-from pipeline_engine import Pipeline, PipelineEngine, PipelineStage, get_pipeline_engine
 from transform_engine import Transform, TransformContext, TransformEngine, get_transform_engine
+
+from pipeline_engine import Pipeline, PipelineEngine, PipelineStage, get_pipeline_engine
 
 __all__ = [
     "PipelineEngine",

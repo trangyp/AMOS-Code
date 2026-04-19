@@ -21,11 +21,9 @@ System: AMOS vInfinity - Layer 22
 Version: 20.0.0
 """
 
-from __future__ import annotations
-
 import argparse
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -40,10 +38,10 @@ class FinalValidator:
     TARGET_LAYERS = 22  # Including this validation layer
 
     def __init__(self):
-        self.validation_id = f"VAL-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
-        self.results: dict[str, Any] = {}
+        self.validation_id = f"VAL-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+        self.results: Dict[str, Any] = {}
 
-    def run_full_validation(self) -> dict[str, Any]:
+    def run_full_validation(self) -> Dict[str, Any]:
         """Execute complete system validation.
 
         Validates:
@@ -64,7 +62,7 @@ class FinalValidator:
 
         report = {
             "validation_id": self.validation_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": self.VERSION,
             "layers_target": self.TARGET_LAYERS,
             "validations": {},
@@ -203,7 +201,7 @@ class FinalValidator:
 
         return report
 
-    def get_ship_ready_status(self) -> dict[str, Any]:
+    def get_ship_ready_status(self) -> Dict[str, Any]:
         """Get current ship-ready status."""
         return {
             "version": self.VERSION,
@@ -217,7 +215,7 @@ class FinalValidator:
             "next_step": "Run full validation",
         }
 
-    def declare_ship_ready(self, validation_report: dict[str, Any]) -> dict[str, Any]:
+    def declare_ship_ready(self, validation_report: Dict[str, Any]) -> Dict[str, Any]:
         """Officially declare AMOS Brain SHIP-READY.
 
         Only declares if all validations passed.
@@ -227,7 +225,7 @@ class FinalValidator:
 
         declaration = {
             "declaration": "SHIP-READY",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "validation_id": validation_report["validation_id"],
             "version": self.VERSION,
             "system": "AMOS Brain Cognitive OS",
@@ -262,7 +260,7 @@ class FinalValidator:
 
         return declaration
 
-    def _save_report(self, report: dict[str, Any]) -> None:
+    def _save_report(self, report: Dict[str, Any]) -> None:
         """Save validation report."""
         report_file = f".amos_validation_{self.validation_id}.json"
         try:

@@ -12,8 +12,6 @@ Planning Strategy:
 5. Strengthen contracts without breaking existing code
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -28,10 +26,10 @@ class PatchAction:
     action_type: str  # "edit", "create", "merge", "extract", "delete"
     target_file: str
     description: str
-    line_start: int | None = None
-    line_end: int | None = None
-    original_code: str | None = None
-    replacement_code: str | None = None
+    line_start: int = None
+    line_end: int = None
+    original_code: str = None
+    replacement_code: str = None
     rationale: str = ""
 
 
@@ -42,9 +40,9 @@ class SelfPatchPlanner:
         """Initialize planner with AMOS root."""
         self.amos_root = Path(amos_root)
 
-    def plan(self, contract: EvolutionContract) -> list[PatchAction]:
+    def plan(self, contract: EvolutionContract) -> List[PatchAction]:
         """Generate patch actions for a contract."""
-        patches: list[PatchAction] = []
+        patches: List[PatchAction] = []
 
         # Dispatch based on pattern type
         if "duplicate" in contract.problem_pattern.lower():
@@ -70,7 +68,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def _plan_duplicate_unification(self, contract: EvolutionContract) -> list[PatchAction]:
+    def _plan_duplicate_unification(self, contract: EvolutionContract) -> List[PatchAction]:
         """Plan patches to unify duplicate code."""
         patches = []
 
@@ -109,7 +107,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def _plan_monolith_split(self, contract: EvolutionContract) -> list[PatchAction]:
+    def _plan_monolith_split(self, contract: EvolutionContract) -> List[PatchAction]:
         """Plan patches to split oversized modules."""
         patches = []
 
@@ -148,7 +146,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def _plan_literal_extraction(self, contract: EvolutionContract) -> list[PatchAction]:
+    def _plan_literal_extraction(self, contract: EvolutionContract) -> List[PatchAction]:
         """Plan patches to extract repeated literals to constants."""
         patches = []
 
@@ -170,7 +168,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def _plan_deferred_work_resolution(self, contract: EvolutionContract) -> list[PatchAction]:
+    def _plan_deferred_work_resolution(self, contract: EvolutionContract) -> List[PatchAction]:
         """Plan patches to address accumulated TODOs."""
         patches = []
 
@@ -193,7 +191,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def _plan_cycle_breaking(self, contract: EvolutionContract) -> list[PatchAction]:
+    def _plan_cycle_breaking(self, contract: EvolutionContract) -> List[PatchAction]:
         """Plan patches to break import cycles."""
         patches = []
 
@@ -216,7 +214,7 @@ class SelfPatchPlanner:
 
         return patches
 
-    def estimate_impact(self, patches: list[PatchAction]) -> dict[str, Any]:
+    def estimate_impact(self, patches: List[PatchAction]) -> Dict[str, Any]:
         """Estimate impact of planned patches."""
         files_affected = len(set(p.target_file for p in patches))
         edit_count = sum(1 for p in patches if p.action_type == "edit")

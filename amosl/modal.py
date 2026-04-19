@@ -7,12 +7,11 @@ Implements the logical regime:
     - Evolution modality E
 """
 
-from __future__ import annotations
-
 import math
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Callable, Optional
+from typing import Any
 
 
 class TruthValue(Enum):
@@ -31,11 +30,11 @@ class StratifiedTruth:
     """Stratified truth value."""
 
     value_type: TruthValue
-    probability: Optional[float] = None
-    context: Optional[str] = None
-    lower_bound: Optional[float] = None
-    upper_bound: Optional[float] = None
-    metadata: dict[str, Any] = None
+    probability: float = None
+    context: str = None
+    lower_bound: float = None
+    upper_bound: float = None
+    metadata: Dict[str, Any] = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -80,10 +79,10 @@ class ModalLogic:
 
     def __init__(self):
         self.futures: list[Callable[[], StratifiedTruth]] = []
-        self.observations: dict[str, Any] = {}
+        self.observations: Dict[str, Any] = {}
 
     def necessity(
-        self, predicate: Callable[[Any], StratifiedTruth], domain: list[Any]
+        self, predicate: Callable[[Any], StratifiedTruth], domain: List[Any]
     ) -> StratifiedTruth:
         """□P(x) := P(x) holds in all admissible futures.
 
@@ -109,7 +108,7 @@ class ModalLogic:
         return StratifiedTruth(TruthValue.PROBABILISTIC, probability=avg_confidence)
 
     def possibility(
-        self, predicate: Callable[[Any], StratifiedTruth], domain: list[Any]
+        self, predicate: Callable[[Any], StratifiedTruth], domain: List[Any]
     ) -> StratifiedTruth:
         """◇P(x) := exists admissible future where P holds.
 
@@ -275,7 +274,7 @@ class AdmissibilityLogic:
 
         return combined
 
-    def necessity_of_commitment(self, state: Any, future_states: list[Any]) -> StratifiedTruth:
+    def necessity_of_commitment(self, state: Any, future_states: List[Any]) -> StratifiedTruth:
         """Check necessity of Commit(x') → Valid(x') = 1.
 
         □(Commit → Valid)
@@ -293,7 +292,7 @@ class AdmissibilityLogic:
 
         return self.modal.necessity(implies_valid, future_states)
 
-    def possibility_of_explanation(self, ledger: list[Any], outcome: Any) -> StratifiedTruth:
+    def possibility_of_explanation(self, ledger: List[Any], outcome: Any) -> StratifiedTruth:
         """Check possibility of Explain(L) = Outcome.
 
         ◇(Explain(L) = Outcome)

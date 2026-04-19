@@ -19,10 +19,10 @@ from typing import Any
 from ..invariants.hard import HardInvariant, InvariantKind, InvariantResult, InvariantViolation
 from ..state.basis import BasisVector
 
-
 # =============================================================================
 # Ultimate Meta-Architecture: Bootstrap and Genesis
 # =============================================================================
+
 
 class BootstrapIntegrityInvariant(HardInvariant):
     """I_bootstrap = 1 iff every truth domain has explicit genesis semantics."""
@@ -30,15 +30,12 @@ class BootstrapIntegrityInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.BOOTSTRAP_INTEGRITY)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for bootstrap integrity."""
         violations = []
 
         bootstrap_files = ["BOOTSTRAP.md", "GENESIS.md", "FIRST_PRINCIPLES.md", "FOUNDATIONS.md"]
-        found_bootstrap_doc = any(
-            (Path(repo_path) / bf).exists()
-            for bf in bootstrap_files
-        )
+        found_bootstrap_doc = any((Path(repo_path) / bf).exists() for bf in bootstrap_files)
 
         if not found_bootstrap_doc:
             violations.append(
@@ -66,17 +63,14 @@ class AnchorSuccessionInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.ANCHOR_SUCCESSION)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for anchor succession policy."""
         violations = []
 
         succession_keywords = ["succession", "rotation", "handoff", "transfer", "anchor"]
         succession_files = ["SUCCESSION.md", "ROTATION.md", "ANCHOR.md"]
 
-        found_succession_doc = any(
-            (Path(repo_path) / sf).exists()
-            for sf in succession_files
-        )
+        found_succession_doc = any((Path(repo_path) / sf).exists() for sf in succession_files)
 
         if not found_succession_doc:
             # Check in governance docs
@@ -110,23 +104,21 @@ class AnchorSuccessionInvariant(HardInvariant):
 # Ultimate Meta-Architecture: Ecology and Adaptation
 # =============================================================================
 
+
 class EcologicalAwarenessInvariant(HardInvariant):
     """I_ecology = 1 iff adaptive external participants are represented in world model."""
 
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.ECOLOGICAL_AWARENESS)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for ecological awareness."""
         violations = []
 
         ecology_keywords = ["ecology", "ecosystem", "external", "vendor", "upstream", "downstream"]
         ecology_files = ["ECOLOGY.md", "ECOSYSTEM.md", "EXTERNAL.md", "VENDORS.md"]
 
-        found_ecology_doc = any(
-            (Path(repo_path) / ef).exists()
-            for ef in ecology_files
-        )
+        found_ecology_doc = any((Path(repo_path) / ef).exists() for ef in ecology_files)
 
         if not found_ecology_doc:
             violations.append(
@@ -154,17 +146,14 @@ class MoralHazardResistanceInvariant(HardInvariant):
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.MORAL_HAZARD_RESISTANCE)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for moral hazard awareness."""
         violations = []
 
         moral_keywords = ["incentive", "moral hazard", "gaming", "metric", "reward", "alignment"]
         incentive_files = ["INCENTIVES.md", "ALIGNMENT.md", "ETHICS.md", "MORAL_HAZARD.md"]
 
-        found_incentive_doc = any(
-            (Path(repo_path) / inf).exists()
-            for inf in incentive_files
-        )
+        found_incentive_doc = any((Path(repo_path) / inf).exists() for inf in incentive_files)
 
         if not found_incentive_doc:
             violations.append(
@@ -190,23 +179,21 @@ class MoralHazardResistanceInvariant(HardInvariant):
 # Ultimate Meta-Architecture: Retroactivity
 # =============================================================================
 
+
 class RetroactivitySafetyInvariant(HardInvariant):
     """I_retro = 1 iff backward changes have explicit safety semantics."""
 
     def __init__(self):
         super().__init__(InvariantKind.META, BasisVector.RETROACTIVITY_SAFETY)
 
-    def check(self, repo_path: str, context: dict[str, Any] | None = None) -> InvariantResult:
+    def check(self, repo_path: str, context: dict[str, Any] = None) -> InvariantResult:
         """Check for retroactivity safety."""
         violations = []
 
         retro_keywords = ["retroactive", "backward", "rewrite history", "amend", "rebase"]
         retro_files = ["RETROACTIVITY.md", "HISTORY.md", "IMMUTABILITY.md", "APPEND_ONLY.md"]
 
-        found_retro_policy = any(
-            (Path(repo_path) / rf).exists()
-            for rf in retro_files
-        )
+        found_retro_policy = any((Path(repo_path) / rf).exists() for rf in retro_files)
 
         if not found_retro_policy:
             violations.append(

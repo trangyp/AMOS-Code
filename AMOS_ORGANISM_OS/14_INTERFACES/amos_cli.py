@@ -11,13 +11,10 @@ Owner: Trang
 Version: 2.0.0 - Now with standalone amos_brain
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Optional
 
 # Add paths for standalone brain
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -980,7 +977,7 @@ def cmd_orchestrator(args) -> int:
     return 0
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] = None) -> int:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(prog="amos", description="AMOS 7-System Organism CLI")
 

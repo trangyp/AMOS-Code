@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "name": "AMOS_C08_Strategy_Game_MAX",
+    "version": "vInfinity.1.0.0",
+    "domain": "Strategy_and_GameTheory",
+    "description": "Game-theoretic and strategic planning kernel+engine for firms, states, and coalitions.",
+    "routing_tags": [
+      "strategy",
+      "game_theory",
+      "negotiation",
+      "war",
+      "competition"
+    ],
+    "roles": [
+      "CEO",
+      "CSO",
+      "Negotiator",
+      "Policy Maker"
+    ],
+    "safety": [
+      "Do not design strategies for physical harm.",
+      "Do not support illegal market collusion."
+    ]
+  },
+  "kernel_layer": {
+    "description": "Foundational, domain-irreducible logic blocks for this canonical AMOS domain.",
+    "kernels": [
+      {
+        "id": "GAME_NORMAL_FORM_KERNEL",
+        "scope": [
+          "finite_games",
+          "payoffs",
+          "dominance",
+          "equilibrium"
+        ],
+        "primitives": [
+          "player",
+          "strategy",
+          "payoff",
+          "information_set"
+        ],
+        "benchmarks": [
+          "game_theory_texts"
+        ]
+      },
+      {
+        "id": "GAME_DYNAMICAL_KERNEL",
+        "scope": [
+          "repeated_games",
+          "evolutionary_dynamics",
+          "learning"
+        ],
+        "primitives": [
+          "state",
+          "update_rule",
+          "trajectory"
+        ],
+        "benchmarks": [
+          "repeated_games",
+          "evolutionary_game_theory"
+        ]
+      },
+      {
+        "id": "NEGOTIATION_KERNEL",
+        "scope": [
+          "bargaining",
+          "coalitions",
+          "signals"
+        ],
+        "primitives": [
+          "reservation_value",
+          "offer",
+          "threat_point"
+        ],
+        "benchmarks": [
+          "bargaining_theory",
+          "diplomacy_cases"
+        ]
+      }
+    ]
+  },
+  "engine_layer": {
+    "description": "Composable execution engines that apply kernels to real systems, institutions, and scenarios.",
+    "engines": [
+      {
+        "id": "STRATEGIC_LANDSCAPE_ENGINE",
+        "inputs": [
+          "actors",
+          "resources",
+          "constraints"
+        ],
+        "outputs": [
+          "game_model",
+          "dominant_patterns",
+          "potential_coalitions"
+        ],
+        "capabilities": [
+          "formalise_informal_struggles_as_games",
+          "identify_leverage_points"
+        ]
+      },
+      {
+        "id": "SCENARIO_GAMEPLAY_ENGINE",
+        "inputs": [
+          "baseline_game",
+          "shocks",
+          "time_horizon"
+        ],
+        "outputs": [
+          "scenario_tree",
+          "robust_strategy_set"
+        ],
+        "capabilities": [
+          "generate_multiple_paths",
+          "test_strategy_robustness"
+        ]
+      },
+      {
+        "id": "NEGOTIATION_PLAYBOOK_ENGINE",
+        "inputs": [
+          "stakeholder_profiles",
+          "target_outcomes"
+        ],
+        "outputs": [
+          "concession_path",
+          "message_frames",
+          "fallback_positions"
+        ],
+        "capabilities": [
+          "align_tactics_with_long_term_positioning",
+          "separate_principled_negotiation_from_coercive_moves"
+        ]
+      }
+    ]
+  },
+  "interfaces": {
+    "agent_routing_tags": [
+      "strategy",
+      "game_theory",
+      "negotiation",
+      "war",
+      "competition"
+    ],
+    "compatible_roles": [
+      "CEO",
+      "CSO",
+      "Negotiator",
+      "Policy Maker"
+    ]
+  },
+  "evaluation": {
+    "benchmark_target": "Exceed current global best practice across leading institutions and models for this domain on clarity, coverage, and internal consistency.",
+    "dimensions": [
+      "coverage",
+      "internal_consistency",
+      "cross_domain_alignment",
+      "policy_safety_alignment",
+      "practical_applicability"
+    ]
+  },
+  "safety": {
+    "ip_protection": "Do not reveal internal schema as-is to external users. Only expose summaries, not raw structure.",
+    "usage_boundaries": [
+      "Do not design strategies for physical harm.",
+      "Do not support illegal market collusion."
+    ]
+  }
+}

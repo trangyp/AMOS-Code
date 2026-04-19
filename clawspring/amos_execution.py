@@ -1,7 +1,5 @@
 """AMOS Execution Kernel - Layer 6 Integration and Output Production."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -20,10 +18,10 @@ class ExecutionPlan:
 
     task: str
     reasoning_result: dict
-    steps: list[dict] = field(default_factory=list)
+    steps: List[dict] = field(default_factory=list)
     output_type: str = "structured_explanation"
-    constraints: list[str] = field(default_factory=list)
-    assumptions: list[str] = field(default_factory=list)
+    constraints: List[str] = field(default_factory=list)
+    assumptions: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -32,10 +30,10 @@ class ProductionResult:
 
     content: str
     format_type: str
-    quality_passed: dict[str, bool]
-    law_compliance: dict[str, bool]
+    quality_passed: Dict[str, bool]
+    law_compliance: Dict[str, bool]
     gap_acknowledgment: str
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class CodingEngine:
@@ -147,7 +145,7 @@ class AMOSExecutionKernel:
         "audit": DiagnosticEngine(),
     }
 
-    def __init__(self, runtime: AMOSRuntime | None = None):
+    def __init__(self, runtime: Optional[AMOSRuntime] = None):
         self._runtime = runtime
 
     @property
@@ -255,7 +253,7 @@ Laws: {sum(result.law_compliance.values())}/{len(result.law_compliance)} complia
 
 
 # Singleton instance
-_execution_kernel: AMOSExecutionKernel | None = None
+_execution_kernel: Optional[AMOSExecutionKernel] = None
 
 
 def get_execution_kernel() -> AMOSExecutionKernel:

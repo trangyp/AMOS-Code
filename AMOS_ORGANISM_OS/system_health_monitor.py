@@ -8,14 +8,12 @@ Owner: Trang
 Version: 1.0.0
 """
 
-from __future__ import annotations
-
 import json
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -26,21 +24,21 @@ class SubsystemStatus:
     name: str
     folder_exists: bool = False
     init_importable: bool = False
-    core_modules: list[str] = field(default_factory=list)
+    core_modules: List[str] = field(default_factory=list)
     test_passed: bool = False
-    errors: list[str] = field(default_factory=list)
+    errors: List[str] = field(default_factory=list)
 
 
 @dataclass
 class SystemHealthReport:
     """Complete system health report."""
 
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     total_subsystems: int = 14
     healthy_count: int = 0
     warning_count: int = 0
     error_count: int = 0
-    subsystems: dict[str, SubsystemStatus] = field(default_factory=dict)
+    subsystems: Dict[str, SubsystemStatus] = field(default_factory=dict)
     overall_health: str = "unknown"  # healthy, degraded, critical
 
 
@@ -165,7 +163,7 @@ class SystemHealthMonitor:
         else:
             self.report.overall_health = "critical"
 
-    def get_summary(self) -> dict[str, Any]:
+    def get_summary(self) -> Dict[str, Any]:
         """Get summary of health check."""
         return {
             "timestamp": self.report.timestamp,

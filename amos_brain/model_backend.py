@@ -5,15 +5,13 @@ OpenAI-compatible local endpoints. This is the primary execution boundary
 for the AMOS local runtime.
 """
 
-from __future__ import annotations
-
 import json
 import os
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Callable, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 import requests
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -280,12 +281,13 @@ class CognitiveConfig:
         return config
 
 
-# Global config instance
+# Global config instance (using lru_cache for singleton pattern)
 _config_instance: CognitiveConfig | None = None
 
 
+@lru_cache(maxsize=1)
 def get_config() -> CognitiveConfig:
-    """Get or create global brain configuration."""
+    """Get or create global brain configuration (singleton)."""
     global _config_instance
     if _config_instance is None:
         # Try to load from file, env, or create default

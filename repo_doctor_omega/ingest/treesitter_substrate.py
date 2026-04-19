@@ -9,7 +9,6 @@ Provides concrete syntax tree ingestion with:
 Based on Tree-sitter Python bindings best practices 2024.
 """
 
-from __future__ import annotations
 
 import subprocess
 import sys
@@ -29,7 +28,7 @@ class ParseError:
     severity: str = "error"  # error | warning | recoverable
     node_type: str = ""
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "file": self.file,
             "line": self.line,
@@ -47,7 +46,7 @@ class FileParseResult:
     file: str
     language: str
     success: bool
-    errors: list[ParseError] = field(default_factory=list)
+    errors: List[ParseError] = field(default_factory=list)
     node_count: int = 0
     error_nodes: int = 0
 
@@ -87,9 +86,9 @@ class TreeSitterSubstrate:
             error_threshold: Max acceptable error rate percentage
         """
         self.error_threshold = error_threshold
-        self._parser: Any | None = None
-        self._python_language: Any | None = None
-        self._cache: dict[str, FileParseResult] = {}
+        self._parser: Optional[Any] = None
+        self._python_language: Optional[Any] = None
+        self._cache: Dict[str, FileParseResult] = {}
 
         # Initialize Python language support
         self._init_python_parser()
@@ -218,7 +217,7 @@ class TreeSitterSubstrate:
         }
         return mapping.get(ext, "unknown")
 
-    def _collect_errors(self, node: Any, file_path: str, source: bytes) -> list[ParseError]:
+    def _collect_errors(self, node: Any, file_path: str, source: bytes) -> List[ParseError]:
         """Recursively collect ERROR nodes from tree."""
         errors = []
 
@@ -277,6 +276,7 @@ class TreeSitterSubstrate:
     def _fallback_parse(self, file_path: Path) -> FileParseResult:
         """Fallback parsing using Python ast module."""
         import ast
+from typing import List
 
         try:
             source = file_path.read_text(encoding="utf-8", errors="replace")
@@ -308,7 +308,7 @@ class TreeSitterSubstrate:
 
     def parse_repository(
         self, repo_path: str | Path, pattern: str = "*.py"
-    ) -> list[FileParseResult]:
+    ) -> List[FileParseResult]:
         """Parse all matching files in repository.
 
         Args:
@@ -328,7 +328,7 @@ class TreeSitterSubstrate:
 
         return results
 
-    def get_summary(self, results: list[FileParseResult]) -> dict[str, Any]:
+    def get_summary(self, results: List[FileParseResult]) -> Dict[str, Any]:
         """Generate summary statistics from parse results."""
         total_files = len(results)
         successful = sum(1 for r in results if r.success)

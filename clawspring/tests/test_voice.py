@@ -5,8 +5,6 @@ They cover the pure-Python helpers: WAV wrapping, keyterm extraction,
 availability checks, and the REPL integration sentinel.
 """
 
-from __future__ import annotations
-
 import struct
 import sys
 from unittest.mock import MagicMock, patch

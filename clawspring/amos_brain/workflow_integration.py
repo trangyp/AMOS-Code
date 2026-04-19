@@ -7,10 +7,11 @@ seamless migration and backward compatibility.
 """
 
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 sys.path.insert(0, ".")
 sys.path.insert(0, "clawspring")
@@ -38,10 +39,10 @@ class WorkflowStep:
     params: dict[str, Any]
     depends_on: list[str]
     status: WorkflowStatus = WorkflowStatus.PENDING
-    result: Optional[dict] = None
-    error: Optional[str] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    result: dict = None
+    error: str = None
+    started_at: datetime = None
+    completed_at: datetime = None
 
 
 @dataclass
@@ -258,7 +259,7 @@ class WorkflowEngine:
         """Handle resilient operation."""
         from resilience import get_resilience
 
-        resilience = get_resilience()
+        get_resilience()  # Verify initialization
         return {"status": "configured", "resilience": "active"}
 
     def _handle_unified_task(self, action: str, params: dict) -> dict:

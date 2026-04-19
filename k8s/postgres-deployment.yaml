@@ -1,0 +1,103 @@
+# AMOS PostgreSQL Deployment
+#
+# PostgreSQL database for persistent storage.
+#
+# Creator: Trang Phan
+# Version: 3.0.0
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: amos-postgres
+  namespace: amos
+  labels:
+    app.kubernetes.io/name: amos-postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/version: "3.0.0"
+spec:
+  serviceName: amos-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: amos-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: amos-postgres
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: TCP
+        env:
+        - name: POSTGRES_DB
+          value: "amos"
+        - name: POSTGRES_USER
+          value: "amos"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: amos-secrets
+              key: DB_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - amos
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - amos
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: amos-postgres
+  namespace: amos
+  labels:
+    app.kubernetes.io/name: amos-postgres
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app.kubernetes.io/name: amos-postgres

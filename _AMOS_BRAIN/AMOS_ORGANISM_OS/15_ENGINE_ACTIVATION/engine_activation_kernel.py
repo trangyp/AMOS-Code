@@ -9,16 +9,15 @@ Responsible for:
 - Integrating with Organism BRAIN subsystem
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("amos.engine_activation")
@@ -33,17 +32,17 @@ class ActivatedEngine:
     category: str  # cognitive, tech, domain, unipower, core
     source_path: str
     size_bytes: int
-    capabilities: list[str] = field(default_factory=list)
-    dependencies: list[str] = field(default_factory=list)
+    capabilities: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
     is_active: bool = False
     is_loaded: bool = False
-    activation_time: Optional[str] = None
-    last_invoked: Optional[str] = None
+    activation_time: str = None
+    last_invoked: str = None
     invoke_count: int = 0
     content_hash: str = ""
-    metadata: dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "engine_id": self.engine_id,
             "name": self.name,
@@ -64,14 +63,14 @@ class EngineQuery:
 
     query_id: str
     text: str
-    domain_hints: list[str] = field(default_factory=list)
-    required_capabilities: list[str] = field(default_factory=list)
-    context: dict[str, Any] = field(default_factory=dict)
+    domain_hints: List[str] = field(default_factory=list)
+    required_capabilities: List[str] = field(default_factory=list)
+    context: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -81,14 +80,14 @@ class EngineResponse:
     engine_id: str
     engine_name: str
     success: bool
-    result: dict[str, Any] = field(default_factory=dict)
+    result: Dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
     processing_time_ms: float = 0.0
     timestamp: str = ""
 
     def __post_init__(self):
         if not self.timestamp:
-            self.timestamp = datetime.utcnow().isoformat()
+            self.timestamp = datetime.now(UTC).isoformat()
 
 
 class EngineActivationKernel:
@@ -133,7 +132,7 @@ class EngineActivationKernel:
         self.brain_instance = brain_instance
 
         # Engine registry
-        self.engines: dict[str, ActivatedEngine] = {}
+        self.engines: Dict[str, ActivatedEngine] = {}
         self.category_index: dict[str, set[str]] = defaultdict(set)
         self.capability_index: dict[str, set[str]] = defaultdict(set)
         self.domain_index: dict[str, set[str]] = defaultdict(set)
@@ -142,7 +141,7 @@ class EngineActivationKernel:
         self.engine_content: dict[str, dict[str, Any]] = {}
 
         # Invocation handlers
-        self._handlers: dict[str, Callable] = {}
+        self._handlers: Dict[str, Callable] = {}
         self._initialize_handlers()
 
         # Statistics
@@ -168,7 +167,7 @@ class EngineActivationKernel:
             "intelligence": self._invoke_intelligence_engine,
         }
 
-    def scan_and_discover(self) -> dict[str, Any]:
+    def scan_and_discover(self) -> Dict[str, Any]:
         """Scan _AMOS_BRAIN/ and discover all engine files."""
         logger.info("Scanning for engines in _AMOS_BRAIN/...")
 
@@ -246,7 +245,7 @@ class EngineActivationKernel:
 
         return True
 
-    def _extract_capabilities(self, name_lower: str) -> list[str]:
+    def _extract_capabilities(self, name_lower: str) -> List[str]:
         """Extract capabilities from engine name."""
         capabilities = []
 
@@ -298,7 +297,7 @@ class EngineActivationKernel:
 
             # Mark as active
             engine.is_active = True
-            engine.activation_time = datetime.utcnow().isoformat()
+            engine.activation_time = datetime.now(UTC).isoformat()
 
             self.stats["engines_activated"] += 1
             self.stats["activation_by_category"][engine.category] += 1
@@ -344,7 +343,7 @@ class EngineActivationKernel:
         logger.info(f"Activated {activated}/{len(engine_ids)} engines in category: {category}")
         return activated
 
-    def activate_all(self, skip_large: bool = True) -> dict[str, Any]:
+    def activate_all(self, skip_large: bool = True) -> Dict[str, Any]:
         """Activate all discovered engines."""
         logger.info("Activating all discovered engines...")
 
@@ -369,7 +368,7 @@ class EngineActivationKernel:
             "by_category": dict(self.stats["activation_by_category"]),
         }
 
-    def route_query(self, query_text: str) -> list[str]:
+    def route_query(self, query_text: str) -> List[str]:
         """Determine which engines should handle a query."""
         query_lower = query_text.lower()
         matched_engines = set()
@@ -423,13 +422,13 @@ class EngineActivationKernel:
             handler = self._handlers.get(engine.category, self._invoke_generic)
 
             # Invoke
-            start_time = datetime.utcnow()
+            start_time = datetime.now(UTC)
             result = handler(engine, query)
-            elapsed = (datetime.utcnow() - start_time).total_seconds() * 1000
+            elapsed = (datetime.now(UTC) - start_time).total_seconds() * 1000
 
             # Update stats
             engine.invoke_count += 1
-            engine.last_invoked = datetime.utcnow().isoformat()
+            engine.last_invoked = datetime.now(UTC).isoformat()
             self.stats["total_invocations"] += 1
 
             return EngineResponse(
@@ -451,13 +450,13 @@ class EngineActivationKernel:
                 confidence=0.0,
             )
 
-    def process_query(self, query_text: str, context: Optional[dict] = None) -> dict[str, Any]:
+    def process_query(self, query_text: str, context: dict = None) -> Dict[str, Any]:
         """Process a query through the appropriate engines."""
         self.stats["queries_processed"] += 1
 
         # Create query object
         query = EngineQuery(
-            query_id=f"qry_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+            query_id=f"qry_{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}",
             text=query_text,
             context=context or {},
         )
@@ -488,7 +487,7 @@ class EngineActivationKernel:
     # Invocation handlers by category
     def _invoke_cognitive_engine(
         self, engine: ActivatedEngine, query: EngineQuery
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Invoke a cognitive engine."""
         return {
             "type": "cognitive_analysis",
@@ -498,7 +497,7 @@ class EngineActivationKernel:
             "confidence": 0.85,
         }
 
-    def _invoke_tech_engine(self, engine: ActivatedEngine, query: EngineQuery) -> dict[str, Any]:
+    def _invoke_tech_engine(self, engine: ActivatedEngine, query: EngineQuery) -> Dict[str, Any]:
         """Invoke a tech kernel."""
         return {
             "type": "technical_analysis",
@@ -508,7 +507,7 @@ class EngineActivationKernel:
             "confidence": 0.80,
         }
 
-    def _invoke_domain_engine(self, engine: ActivatedEngine, query: EngineQuery) -> dict[str, Any]:
+    def _invoke_domain_engine(self, engine: ActivatedEngine, query: EngineQuery) -> Dict[str, Any]:
         """Invoke a domain engine."""
         return {
             "type": "domain_analysis",
@@ -520,7 +519,7 @@ class EngineActivationKernel:
 
     def _invoke_unipower_engine(
         self, engine: ActivatedEngine, query: EngineQuery
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Invoke a unipower engine."""
         return {
             "type": "unipower_analysis",
@@ -530,7 +529,7 @@ class EngineActivationKernel:
             "confidence": 0.80,
         }
 
-    def _invoke_core_engine(self, engine: ActivatedEngine, query: EngineQuery) -> dict[str, Any]:
+    def _invoke_core_engine(self, engine: ActivatedEngine, query: EngineQuery) -> Dict[str, Any]:
         """Invoke a core engine."""
         return {
             "type": "core_processing",
@@ -542,7 +541,7 @@ class EngineActivationKernel:
 
     def _invoke_intelligence_engine(
         self, engine: ActivatedEngine, query: EngineQuery
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         """Invoke a 7 Intelligences engine."""
         return {
             "type": "intelligence_analysis",
@@ -552,7 +551,7 @@ class EngineActivationKernel:
             "confidence": 0.85,
         }
 
-    def _invoke_generic(self, engine: ActivatedEngine, query: EngineQuery) -> dict[str, Any]:
+    def _invoke_generic(self, engine: ActivatedEngine, query: EngineQuery) -> Dict[str, Any]:
         """Generic engine invocation."""
         return {
             "type": "generic",
@@ -561,7 +560,7 @@ class EngineActivationKernel:
             "confidence": 0.70,
         }
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current activation state."""
         return {
             "engines_discovered": len(self.engines),
@@ -571,10 +570,10 @@ class EngineActivationKernel:
             "total_invocations": self.stats["total_invocations"],
             "by_category": {k: len(v) for k, v in self.category_index.items()},
             "activation_by_category": dict(self.stats["activation_by_category"]),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
-    def get_engine_stats(self) -> dict[str, Any]:
+    def get_engine_stats(self) -> Dict[str, Any]:
         """Get detailed engine statistics."""
         active_engines = [e for e in self.engines.values() if e.is_active]
 

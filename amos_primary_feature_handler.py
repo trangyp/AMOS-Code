@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """AMOS PRIMARY_LOOP Feature Registry Handler - Integrates 1,500+ components into orchestrator."""
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -24,12 +22,12 @@ class PrimaryFeatureHandler:
 
     def __init__(self, organism_root: Optional[Path] = None):
         self.root = organism_root or Path(__file__).parent
-        self.features: dict[str, FeatureCapability] = {}
-        self.engines: dict[str, Any] = {}
-        self.knowledge_index: dict[str, Any] = {}
+        self.features: Dict[str, FeatureCapability] = {}
+        self.engines: Dict[str, Any] = {}
+        self.knowledge_index: Dict[str, Any] = {}
         self.activated_count = 0
 
-    def scan_ecosystem(self) -> dict[str, Any]:
+    def scan_ecosystem(self) -> Dict[str, Any]:
         """Scan entire ecosystem for 1,500+ components."""
         print("[FEATURE_HANDLER] Scanning ecosystem...")
 
@@ -105,7 +103,7 @@ class PrimaryFeatureHandler:
 
         return stats
 
-    def activate_for_cycle(self, cycle_context: dict[str, Any]) -> dict[str, Any]:
+    def activate_for_cycle(self, cycle_context: Dict[str, Any]) -> Dict[str, Any]:
         """Activate relevant features for current cycle."""
         activated = {"engines": [], "knowledge": [], "capabilities": []}
 
@@ -134,7 +132,7 @@ class PrimaryFeatureHandler:
 
         return activated
 
-    def get_cycle_recommendation(self, cycle_context: dict[str, Any]) -> dict[str, Any]:
+    def get_cycle_recommendation(self, cycle_context: Dict[str, Any]) -> Dict[str, Any]:
         """Recommend features for next cycle based on discovered capabilities."""
         current = cycle_context.get("current_position", "01_BRAIN")
 
@@ -159,7 +157,7 @@ class PrimaryFeatureHandler:
         """Export current feature state for cycle persistence."""
         try:
             data = {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "total_features": len(self.features),
                 "activated_count": self.activated_count,
                 "available_engines": list(self.engines.keys())[:20],
