@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 """AMOS Real Brain Integration - Production-Ready Cognitive System
 

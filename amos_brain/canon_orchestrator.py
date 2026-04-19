@@ -96,7 +96,7 @@ class CanonOrchestrator:
         reasoning_path.append(f"Accessed {len(memories_accessed)} relevant memories")
 
         # Step 2: Process with Canon cognitive enrichment
-        cog_result = self._cognitive_processor.process_with_canon(
+        cog_result = self._cognitive_processor.process(
             task, domain, context or {}
         )
         reasoning_path.append(
