@@ -123,7 +123,7 @@ class CashflowTracker:
         """Save cashflow records to disk."""
         cashflow_file = self.data_dir / "cashflow.json"
         data = {
-            "saved_at": datetime.now(UTC).isoformat(),
+            "saved_at": datetime.now(timezone.utc).isoformat(),
             "initial_balance": self.initial_balance,
             "currency": self.currency,
             "records": [r.to_dict() for r in self.records],
@@ -138,7 +138,7 @@ class CashflowTracker:
         category: str = "",
         source: str = "",
         destination: str = "",
-        tags: list[str] | None = None,
+        tags: Optional[list] = None,
     ) -> CashflowRecord:
         """Record a cashflow entry."""
         record = CashflowRecord(

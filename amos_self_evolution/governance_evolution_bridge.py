@@ -291,7 +291,7 @@ class GovernanceEvolutionBridge:
         self._contract_registry.register(contract)
         return contract
 
-    def _generate_patches(self, opportunity: "evolution.DetectedOpportunity") -> List["PatchOperation"]:
+    def _generate_patches(self, opportunity: "DetectedOpportunity") -> List[PatchOperation]:
         """Generate patch operations for an opportunity.
 
         In production, this would analyze the opportunity and generate

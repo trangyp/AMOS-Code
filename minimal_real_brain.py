@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict
 
 """
 MINIMUM REAL BRAIN SPEC
@@ -24,7 +26,7 @@ import random
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 # ============================================================================
 # 1. WORLD STATE - Persistent structured world graph
@@ -39,8 +41,8 @@ class WorldNode:
     node_type: str  # 'entity', 'relation', 'goal', 'constraint'
     properties: Dict[str, Any] = field(default_factory=dict)
     confidence: float = 1.0
-    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
-    last_updated: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    last_updated: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def update(self, properties: Dict[str, Any], confidence: float | None = None) -> None:
         """Update node properties with conflict resolution."""
@@ -57,7 +59,7 @@ class WorldNode:
 
         if confidence is not None:
             self.confidence = (self.confidence + confidence) / 2
-        self.last_updated = datetime.now(UTC).isoformat()
+        self.last_updated = datetime.now(timezone.utc).isoformat()
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -688,7 +690,7 @@ class ErrorPattern:
     plan_step: str | None
     failure_reason: str
     correction_applied: str | None
-    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     recurrence_count: int = 1
 
     def signature(self) -> str:
@@ -977,7 +979,7 @@ class MinimalBrain:
         Main thinking loop: plan -> verify -> (optionally) execute.
         Returns full trace of cognition.
         """
-        trace = {"goal": goal, "timestamp": datetime.now(UTC).isoformat(), "phases": []}
+        trace = {"goal": goal, "timestamp": datetime.now(timezone.utc).isoformat(), "phases": []}
 
         # Phase 1: Plan
         plan = self.planner.plan(goal)

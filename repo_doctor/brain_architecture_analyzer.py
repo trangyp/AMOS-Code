@@ -29,13 +29,32 @@ except ImportError:
     _BRAIN_AVAILABLE = False
 
 # Import architecture types
-from .architecture import (
-    ArchNodeType,
-    ArchitectureBuilder,
-    ArchitectureGraph,
-    BoundaryViolation,
-    HiddenInterface,
-)
+try:
+    from .architecture import (
+        ArchEdge,
+        ArchEdgeType,
+        ArchNode,
+        ArchNodeType,
+        ArchitectureBuilder,
+        ArchitectureGraph,
+        AuthorityClaim,
+        BoundaryViolation,
+        HiddenInterface,
+        PlaneType,
+    )
+except ImportError:
+    from architecture import (
+        ArchEdge,
+        ArchEdgeType,
+        ArchNode,
+        ArchNodeType,
+        ArchitectureBuilder,
+        ArchitectureGraph,
+        AuthorityClaim,
+        BoundaryViolation,
+        HiddenInterface,
+        PlaneType,
+    )
 
 
 @dataclass
