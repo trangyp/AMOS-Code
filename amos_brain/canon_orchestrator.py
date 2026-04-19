@@ -116,14 +116,14 @@ class CanonOrchestrator:
         learn_result = self._learning_engine.learn_from_task(
             task_description=task,
             task_domain=domain,
-            outcome=cog_result.result[:100],
-            success=cog_result.success,
+            outcome=cog_result.content[:100],
+            success=cog_result.confidence > 0.7,
         )
         reasoning_path.append(f"Learned {len(learn_result.learned_patterns)} patterns")
 
         # Step 5: Store execution memory
         memory = self._memory_system.store(
-            content=f"Executed: {task}\nResult: {cog_result.result[:100]}",
+            content=f"Executed: {task}\nResult: {cog_result.content[:100]}",
             domain=domain,
             metadata={
                 "task_id": task_id,
@@ -146,12 +146,12 @@ class CanonOrchestrator:
 
         if reason_result:
             canon_context["reasoning_confidence"] = reason_result.confidence
-            canon_context["decision"] = reason_result.decision
+            canon_context["decision"] = reason_result.decision[:100]
 
         return OrchestrationResult(
             task_id=task_id,
-            success=cog_result.success,
-            result=cog_result.result,
+            success=cog_result.confidence > 0.6,
+            result=cog_result.content,
             canon_context=canon_context,
             reasoning_path=reasoning_path,
             memories_accessed=memories_accessed,

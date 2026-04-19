@@ -1,4 +1,6 @@
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, Dict, List
 
 """AMOS Active Brain - Real-time Cognitive Processing System
 
