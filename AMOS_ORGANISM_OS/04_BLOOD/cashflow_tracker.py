@@ -206,7 +206,7 @@ class CashflowTracker:
 
     def get_flow_summary(self, days: int = 30) -> Dict[str, Any]:
         """Get cashflow summary for a period."""
-        cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         recent = [
             r for r in self.records if r.timestamp > cutoff and r.status == CashflowStatus.COMPLETED
         ]
@@ -238,10 +238,10 @@ class CashflowTracker:
             "by_category": by_category,
         }
 
-    def get_trend(self, periods: int = 6, period_days: int = 30) -> list[dict[str, Any]]:
+    def get_trend(self, periods: int = 6, period_days: int = 30) -> List[dict]:
         """Get cashflow trend over multiple periods."""
         trends = []
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
 
         for i in range(periods):
             end = now - timedelta(days=i * period_days)
