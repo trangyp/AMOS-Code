@@ -91,16 +91,22 @@ class GlossaryConfig:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> GlossaryConfig:
-        terms = [
-            TermMapping(
-                human_term=t.get("term", ""),
-                code_scope=t.get("code_scope", ""),
-                file_patterns=t.get("file_patterns", []),
-                examples=t.get("examples", []),
-                confidence=t.get("confidence", 0.9),
-            )
-            for t in data.get("terms", [])
-        ]
+        terms = []
+        for t in data.get("terms", []):
+            if isinstance(t, str):
+                # Handle string format: just the human term
+                terms.append(TermMapping(human_term=t, code_scope=""))
+            elif isinstance(t, dict):
+                # Handle dict format with full term mapping
+                terms.append(
+                    TermMapping(
+                        human_term=t.get("term", t.get("human_term", "")),
+                        code_scope=t.get("code_scope", ""),
+                        file_patterns=t.get("file_patterns", []),
+                        examples=t.get("examples", []),
+                        confidence=t.get("confidence", 0.9),
+                    )
+                )
         return cls(terms=terms)
 
     def to_dict(self) -> dict[str, Any]:

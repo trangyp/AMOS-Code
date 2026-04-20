@@ -48,7 +48,7 @@ from collections.abc import AsyncIterator
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 try:
     from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
@@ -169,7 +169,7 @@ class DataPart:
     data: dict[str, Any] = field(default_factory=dict)
 
 
-Part = TextPart | FilePart | DataPart
+Part = Union[TextPart, FilePart, DataPart]
 
 
 @dataclass

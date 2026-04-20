@@ -35,7 +35,7 @@ class BrainLoader:
 
     DEFAULT_BRAIN_PATH = Path(__file__).resolve().parent.parent.parent / "_AMOS_BRAIN"
 
-    def __init__(self, brain_path: Path | None = None):
+    def __init__(self, brain_path: Optional[Path] = None):
         self.brain_path = brain_path or self.DEFAULT_BRAIN_PATH
         self.kernels: list[KernelConfig] = []
         self.global_laws: list[GlobalLaw] = []

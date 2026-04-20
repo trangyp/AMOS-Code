@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Optional
 
 UTC = timezone.utc
 
@@ -37,7 +37,7 @@ class CognitiveAuditTrail:
 
 
 def record_cognitive_decision(
-    decision: str, context: dict[str, Any], trail: CognitiveAuditTrail | None = None
+    decision: str, context: dict[str, Any], trail: Optional[CognitiveAuditTrail] = None
 ) -> AuditEntry:
     """Record a cognitive decision."""
     entry = AuditEntry(decision=decision, context=context)
@@ -47,7 +47,7 @@ def record_cognitive_decision(
 
 
 # Global audit trail instance
-_global_audit_trail: CognitiveAuditTrail | None = None
+_global_audit_trail: Optional[CognitiveAuditTrail] = None
 
 
 def get_audit_trail() -> CognitiveAuditTrail:

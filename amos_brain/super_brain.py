@@ -459,7 +459,7 @@ class SuperBrainRuntime:
                 import sys
                 sys.modules["amos_workflow_orchestrator"] = module
                 spec.loader.exec_module(module)
-                self._workflow_orchestrator = module.WorkflowOrchestrator()
+                self._workflow_orchestrator = module.AMOSWorkflowOrchestrator()
                 print("✅ Workflow Orchestrator: ACTIVE (Phase 21)")
 
                 # Emit event for orchestrator initialization

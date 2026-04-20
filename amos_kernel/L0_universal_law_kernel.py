@@ -329,23 +329,29 @@ class UniversalLawKernel:
 
         # Check for path contradictions
         paths = state.raw_data.get("paths", {})
-        for name, path_config in paths.items():
-            if self._is_path_contradictory(name, path_config):
-                contradictions.append(
-                    Contradiction(
-                        claim_a=f"{name}: {path_config.get('claimed', 'unknown')}",
-                        claim_b=f"{name}: {path_config.get('actual', 'unknown')}",
-                        invariant="path_consistency",
-                        severity=0.8,
-                        context=path_config,
-                        timestamp=datetime.now(UTC),
+        if isinstance(paths, dict):
+            for name, path_config in paths.items():
+                # Skip if path_config is not a dict (e.g., it's a string)
+                if not isinstance(path_config, dict):
+                    continue
+                if self._is_path_contradictory(name, path_config):
+                    contradictions.append(
+                        Contradiction(
+                            claim_a=f"{name}: {path_config.get('claimed', 'unknown')}",
+                            claim_b=f"{name}: {path_config.get('actual', 'unknown')}",
+                            invariant="path_consistency",
+                            severity=0.8,
+                            context=path_config,
+                            timestamp=datetime.now(UTC),
+                        )
                     )
-                )
 
         return contradictions
 
     def _is_path_contradictory(self, name: str, config: dict[str, Any]) -> bool:
         """Check if a path config is contradictory."""
+        if not isinstance(config, dict):
+            return False
         claimed = config.get("claimed")
         actual = config.get("actual")
         return claimed is not None and actual is not None and claimed != actual

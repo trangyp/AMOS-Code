@@ -340,6 +340,9 @@ class UniversalStateModel:
         # ν integrity: based on prediction error and contradictions
         pred_error = tensor.nu.get("prediction_error", 0.0)
         contradictions = tensor.nu.get("contradiction_count", 0)
+        # Handle case where contradictions might be a list
+        if isinstance(contradictions, list):
+            contradictions = len(contradictions)
         nu_score = max(0.0, 1.0 - pred_error - (contradictions * 0.1))
 
         # α integrity: based on system readiness
