@@ -24,7 +24,8 @@ Version: 1.0.0
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from enum import Enum

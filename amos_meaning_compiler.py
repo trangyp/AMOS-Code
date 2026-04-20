@@ -13,7 +13,8 @@ DMC_AMOS = (RK, MC, TC, CC, VK, CK, RR)
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 from enum import Enum, auto
 
 UTC = UTC

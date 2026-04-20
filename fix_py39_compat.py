@@ -10,7 +10,7 @@ def fix_file(filepath: Path) -> bool:
     content = filepath.read_text()
     original = content
 
-    # Pattern 1: from datetime import UTC, datetime, timezone
+    # Pattern 1: from datetime import datetime, timezone, timezone
     # Replace with: from datetime import datetime, timezone\nUTC = timezone.utc
     pattern1 = r'from datetime import UTC,\s*datetime,\s*timezone'
     replacement1 = 'from datetime import datetime, timezone\nUTC = timezone.utc'

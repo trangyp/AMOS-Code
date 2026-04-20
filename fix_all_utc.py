@@ -12,16 +12,16 @@ def fix_utc_imports(filepath: Path):
     content = filepath.read_text()
     original = content
 
-    # Pattern: from datetime import UTC, datetime, timezone
+    # Pattern: from datetime import datetime, timezone, timezone
     # -> from datetime import datetime, timezone\nUTC = timezone.utc
 
     # Handle various patterns
     patterns = [
-        (r'from datetime import UTC, datetime, timezone',
+        (r'from datetime import datetime, timezone, timezone',
          'from datetime import datetime, timezone\nUTC = timezone.utc'),
-        (r'from datetime import UTC, datetime, timedelta, timezone',
+        (r'from datetime import datetime, timezone, timedelta, timezone',
          'from datetime import datetime, timedelta, timezone\nUTC = timezone.utc'),
-        (r'from datetime import UTC, datetime',
+        (r'from datetime import datetime, timezone',
          'from datetime import datetime, timezone\nUTC = timezone.utc'),
         (r'from datetime import UTC, timezone',
          'from datetime import timezone\nUTC = timezone.utc'),

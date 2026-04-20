@@ -7,7 +7,8 @@ Full executable specification for the six core engines.
 
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 from enum import Enum
 
 UTC = UTC

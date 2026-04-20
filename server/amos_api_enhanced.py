@@ -35,7 +35,8 @@ Then visit: http://localhost:5000
 Owner: Trang
 """
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

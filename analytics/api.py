@@ -6,7 +6,8 @@ Author: AMOS Analytics Team
 Version: 2.0.0
 """
 
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 from typing import Any
 
 UTC = UTC

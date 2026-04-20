@@ -22,7 +22,8 @@ This performs:
 
 import json
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 

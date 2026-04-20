@@ -12,7 +12,8 @@ To:   RuntimeCost ∝ Σᵢ∈ActiveSet ModuleCostᵢ (active only)
 
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum, auto
 
 UTC = UTC

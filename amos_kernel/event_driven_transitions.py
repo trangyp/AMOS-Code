@@ -22,7 +22,8 @@ import json
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Protocol
 
 from amos_kernel.compiled_numeric_kernel import (

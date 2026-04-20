@@ -7,7 +7,8 @@ the most powerful code analysis and quality tools.
 """
 
 import subprocess
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 

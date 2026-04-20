@@ -31,7 +31,8 @@ Version: 2.0.0
 import json
 import sys
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from pathlib import Path

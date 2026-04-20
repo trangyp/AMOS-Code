@@ -6,7 +6,8 @@ Capabilities: run_command, check_status, log_output
 import logging
 import subprocess
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 @dataclass

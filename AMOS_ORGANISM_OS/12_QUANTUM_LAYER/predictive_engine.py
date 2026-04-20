@@ -12,7 +12,8 @@ Version: 1.0.0
 import json
 import statistics
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC, timedelta
 from pathlib import Path

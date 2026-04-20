@@ -45,7 +45,8 @@ import json
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from enum import Enum, auto

@@ -20,7 +20,8 @@ import random
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from enum import Enum

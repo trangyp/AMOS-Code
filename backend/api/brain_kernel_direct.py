@@ -15,7 +15,8 @@ This is the real production implementation using clawspring.amos_brain.
 
 import asyncio
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field

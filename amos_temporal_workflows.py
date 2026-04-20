@@ -1,7 +1,8 @@
 """AMOS Temporal Workflows - Durable execution for cross-repo operations."""
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 
 UTC = UTC
 from typing import Any, Optional

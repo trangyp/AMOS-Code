@@ -26,7 +26,8 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 from typing import Any
 
 UTC = UTC

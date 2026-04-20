@@ -53,7 +53,8 @@ import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from typing import Any, TypeVar

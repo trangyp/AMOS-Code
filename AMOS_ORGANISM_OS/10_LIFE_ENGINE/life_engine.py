@@ -11,7 +11,8 @@ Version: 1.0.0
 
 import json
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

@@ -4,7 +4,8 @@ import json
 import random
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

@@ -15,7 +15,8 @@ import hashlib
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field

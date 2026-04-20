@@ -15,7 +15,8 @@ Version: 1.0.0
 import argparse
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

@@ -42,7 +42,8 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import UTC
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from typing import Any, TypeVar

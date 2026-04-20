@@ -35,7 +35,8 @@ import re
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta
 from enum import Enum
 from typing import Any, Optional
 

@@ -12,7 +12,8 @@ Implements the Field lens of the 5-lens mathematical regime:
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from typing import Any, Optional, Protocol

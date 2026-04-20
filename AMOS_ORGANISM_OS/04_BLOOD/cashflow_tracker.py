@@ -6,7 +6,8 @@ Tracks cash movements, balances, and flow analysis over time.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 
 UTC = UTC
 from enum import Enum

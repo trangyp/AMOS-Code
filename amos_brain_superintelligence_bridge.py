@@ -19,7 +19,8 @@ Version: 29.1.0
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from amos_superintelligence_core import (

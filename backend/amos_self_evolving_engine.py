@@ -34,7 +34,8 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 from typing import Any
 
 UTC = UTC

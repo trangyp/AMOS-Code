@@ -22,7 +22,8 @@ References:
 - httpx TestClient for API testing
 """
 
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 import pytest
 

@@ -16,7 +16,8 @@ Usage:
 
 import argparse
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any
 
 UTC = UTC

@@ -5,7 +5,8 @@ FastAPI router for AXIOM One Execution Slots with AMOS Brain integration.
 Uses real brain components: CognitiveEngine, MasterOrchestrator, SuperBrain.
 """
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

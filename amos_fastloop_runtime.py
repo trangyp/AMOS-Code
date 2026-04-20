@@ -13,7 +13,8 @@ Target: 80% of requests < 50ms
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from amos_delta_state import create_delta, get_delta_manager

@@ -71,7 +71,8 @@ from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 
 UTC = UTC

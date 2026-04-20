@@ -33,7 +33,8 @@ from __future__ import annotations
 import os
 import re
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from decimal import Decimal

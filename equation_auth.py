@@ -56,7 +56,8 @@ import hashlib
 import logging
 import secrets
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta
 
 UTC = UTC
 from enum import Enum

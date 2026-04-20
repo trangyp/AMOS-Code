@@ -70,7 +70,8 @@ import re
 import sys
 import traceback
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from collections.abc import Callable

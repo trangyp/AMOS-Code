@@ -19,7 +19,8 @@ sys.path.insert(0, str(Path(__file__).parent / "AMOS_ORGANISM_OS"))
 
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from typing import Any

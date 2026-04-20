@@ -18,7 +18,8 @@ import json
 import sys
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 
 from fastapi import APIRouter

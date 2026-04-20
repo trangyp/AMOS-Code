@@ -29,7 +29,8 @@ System: AMOS vInfinity - Layer 20
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from typing import Any, Optional

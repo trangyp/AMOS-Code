@@ -9,7 +9,8 @@ Version: 3.0.0
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 

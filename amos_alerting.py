@@ -13,7 +13,8 @@ Monitors system health and metrics, sends alerts when thresholds are exceeded.
 import asyncio
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from collections.abc import Callable

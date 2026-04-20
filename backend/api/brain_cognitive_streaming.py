@@ -13,7 +13,8 @@ import asyncio
 import json
 import time
 from collections.abc import AsyncGenerator
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect

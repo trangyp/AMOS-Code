@@ -9,7 +9,8 @@ Version: 2.0.0
 """
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from unittest.mock import Mock, patch

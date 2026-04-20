@@ -14,7 +14,8 @@ import json
 import logging
 import sqlite3
 import threading
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

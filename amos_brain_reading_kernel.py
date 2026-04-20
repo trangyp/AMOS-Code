@@ -13,7 +13,8 @@ import asyncio
 import hashlib
 import re
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 

@@ -10,7 +10,8 @@ Provides production-ready health checks for Kubernetes/Docker.
 
 
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 

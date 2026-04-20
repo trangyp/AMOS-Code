@@ -7,7 +7,8 @@ Uses amos_brain_working.think() to:
 - Learn from healing outcomes
 """
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

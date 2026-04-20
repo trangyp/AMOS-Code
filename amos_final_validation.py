@@ -23,7 +23,8 @@ Version: 20.0.0
 
 import argparse
 import json
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from typing import Any

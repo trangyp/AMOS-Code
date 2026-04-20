@@ -15,7 +15,8 @@ import asyncio
 import hashlib
 import uuid
 from collections.abc import AsyncIterator
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from enum import Enum
 from typing import Any
 

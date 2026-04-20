@@ -44,7 +44,8 @@ Version: 15.0.0
 
 import re
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 from enum import Enum, auto
 from typing import Any
 

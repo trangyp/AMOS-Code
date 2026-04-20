@@ -61,7 +61,8 @@ Version: 1.0.0
 
 import sys
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from typing import Any, Optional

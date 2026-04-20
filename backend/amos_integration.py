@@ -16,7 +16,8 @@ from __future__ import annotations
 import asyncio
 import importlib.util
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from pathlib import Path
 from typing import Any
 

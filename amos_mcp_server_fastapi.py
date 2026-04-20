@@ -11,7 +11,8 @@ Compatible with Python 3.9+ (no mcp sdk required)
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException

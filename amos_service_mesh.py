@@ -51,7 +51,8 @@ import random
 import ssl
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC, timedelta
 from enum import Enum

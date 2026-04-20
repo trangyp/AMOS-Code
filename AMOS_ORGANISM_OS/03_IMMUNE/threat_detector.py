@@ -1,7 +1,8 @@
 """Threat Detector — Anomaly detection for AMOS."""
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from typing import Any

@@ -9,7 +9,8 @@ import shlex
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 
 def run_cmd(cmd, check=True):

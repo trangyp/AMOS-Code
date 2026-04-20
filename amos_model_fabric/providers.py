@@ -299,7 +299,7 @@ class LMStudioProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:1234",
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.LM_STUDIO, base_url, api_key or "lm-studio", timeout)
@@ -322,7 +322,7 @@ class VLLMProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:8000",
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.VLLM, base_url, api_key, timeout)
@@ -334,7 +334,7 @@ class SGLangProvider(OpenAICompatibleProvider):
     def __init__(
         self,
         base_url: str = "http://localhost:30000",
-        api_key: str | None = None,
+        api_key: Optional[str] = None,
         timeout: float = 120.0,
     ):
         super().__init__(ProviderType.SGLANG, base_url, api_key, timeout)
@@ -342,8 +342,8 @@ class SGLangProvider(OpenAICompatibleProvider):
 
 def create_provider(
     provider_type: ProviderType,
-    base_url: str | None = None,
-    api_key: str | None = None,
+    base_url: Optional[str] = None,
+    api_key: Optional[str] = None,
 ) -> BaseProvider:
     """Factory function to create provider instances."""
     urls = {

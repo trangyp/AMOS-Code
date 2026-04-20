@@ -9,7 +9,8 @@ to prevent 'taking a long time' errors.
 """
 
 import asyncio
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field

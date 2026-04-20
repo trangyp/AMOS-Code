@@ -29,7 +29,7 @@ import subprocess
 import uuid
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone, timezone
 
 UTC = UTC
 

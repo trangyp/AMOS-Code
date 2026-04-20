@@ -14,7 +14,8 @@ Connects the Brain-Reading Kernel to the AMOS ecosystem:
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from amos_brain_reading_kernel import (

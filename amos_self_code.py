@@ -8,7 +8,8 @@ new code following AMOS architectural principles.
 
 import ast
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

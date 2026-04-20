@@ -11,7 +11,8 @@ Version: 3.0.0
 from __future__ import annotations
 
 import os
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 
 UTC = UTC
 from fastapi import Depends, HTTPException, status

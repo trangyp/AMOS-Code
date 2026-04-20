@@ -11,7 +11,8 @@ import asyncio
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from pathlib import Path
@@ -262,7 +263,8 @@ class IntelligentModernizer:
                 # Add timezone import if needed
                 if "from datetime import datetime" in content and "timezone" not in content:
                     content = content.replace(
-                        "from datetime import datetime", "from datetime import datetime, timezone"
+                        "from datetime import datetime", "from datetime import datetime, timezone
+UTC = timezone.utc"
                     )
                     results["changes"] += 1
                     results["details"].append("Added timezone import")

@@ -9,7 +9,8 @@ Validates:
 - Engine Integration: Cross-engine coordination
 """
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from pathlib import Path

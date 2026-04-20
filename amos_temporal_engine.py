@@ -18,7 +18,8 @@ import heapq
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta
 from enum import Enum, auto
 
 UTC = UTC

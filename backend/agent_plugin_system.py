@@ -29,7 +29,8 @@ import os
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 from typing import Any, Optional
 
 UTC = UTC

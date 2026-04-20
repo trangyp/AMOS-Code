@@ -16,7 +16,8 @@ import logging
 import zlib
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC, timedelta
 from enum import Enum, auto

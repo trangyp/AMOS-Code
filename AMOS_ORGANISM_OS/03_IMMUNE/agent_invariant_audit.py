@@ -18,7 +18,8 @@ Architecture: 04_LAW layer enforcement for agent tasks
 import ast
 import sys
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from enum import Enum, auto

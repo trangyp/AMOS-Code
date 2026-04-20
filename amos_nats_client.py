@@ -4,7 +4,8 @@ import asyncio
 import json
 import logging
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from collections.abc import Callable

@@ -7,7 +7,8 @@ Provides risk scoring, mitigation recommendations, and governance.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from enum import Enum

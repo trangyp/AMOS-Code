@@ -35,7 +35,8 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 from enum import Enum, auto
 from pathlib import Path
 

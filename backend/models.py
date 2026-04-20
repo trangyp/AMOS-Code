@@ -10,7 +10,8 @@ Version: 3.0.0
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 

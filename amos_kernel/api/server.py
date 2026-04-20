@@ -3,7 +3,8 @@
 import asyncio
 import json
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Optional
 
 try:

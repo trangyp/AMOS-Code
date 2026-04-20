@@ -20,7 +20,8 @@ Interactive docs:
   http://localhost:8000/redoc (ReDoc)
 """
 
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from typing import Any

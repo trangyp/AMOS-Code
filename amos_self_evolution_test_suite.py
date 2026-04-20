@@ -9,7 +9,8 @@ Provides comprehensive safety guarantees for production deployment.
 import asyncio
 import tempfile
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 import hashlib

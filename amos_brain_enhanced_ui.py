@@ -12,7 +12,8 @@ Version: 3.0.0
 import json
 import sys
 import webbrowser
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timezone
 
 UTC = UTC
 from http.server import BaseHTTPRequestHandler, HTTPServer

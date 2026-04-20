@@ -34,7 +34,8 @@ from __future__ import annotations
 
 import os
 import re
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc, timedelta, timezone
 
 UTC = UTC
 from collections.abc import Callable

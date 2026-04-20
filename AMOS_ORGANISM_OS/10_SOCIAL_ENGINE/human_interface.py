@@ -7,7 +7,8 @@ Handles input interpretation, response generation, and context management.
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from enum import Enum

@@ -16,7 +16,8 @@ import atexit
 import hashlib
 import threading
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 from typing import Any, ClassVar
 
 UTC = UTC

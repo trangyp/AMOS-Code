@@ -40,7 +40,8 @@ Phase: 14 Enhancement
 
 import re
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 from enum import Enum

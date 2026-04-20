@@ -28,7 +28,8 @@ import sys
 import time
 import traceback
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+UTC = timezone.utc
 
 UTC = UTC
 
