@@ -18,9 +18,9 @@ import hashlib
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
+UTC = timezone.utc
 
-UTC = UTC
 from pathlib import Path
 from threading import Lock, RLock
 from typing import Any, Optional
